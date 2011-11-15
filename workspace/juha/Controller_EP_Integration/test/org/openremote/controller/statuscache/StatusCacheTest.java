@@ -518,7 +518,7 @@ public class StatusCacheTest
 
     // Two event updates on a request of 4 sensor IDs (same device)...
     
-    Event evt1 = new Range(100, "test100", 100);
+    Event evt1 = new Range(100, "test100", 100, -1000, 1000);
     Event evt2 = new CustomState(200, "test200", "acme");
 
 
