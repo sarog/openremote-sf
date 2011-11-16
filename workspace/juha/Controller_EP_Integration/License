@@ -699,8 +699,8 @@ OpenRemote Sub-components:
 * Jaxen library is licensed under the terms included below.
 * Log4j library is licensed under Apache License Version 2.0, see license
   below.
-* Quartz library is licensed under Apache License Version 2.0, see license
-  below.
+* Sunrise/Sunset library is licensed under Apache License Version 2.0, see
+  license below.
 * Jakarta Standard Tag Library is licensed under Apache License Version 2.0,
   see license below.
 * X10 Classes in package com.jpeterson are licensed under GNU Lesser General

@@ -323,7 +323,7 @@ class ApplicationProtocolDataUnit
   static ApplicationProtocolDataUnit createSceneNumber(CommandParameter parameter, boolean learn)
      throws ConversionException
   {
-    int value = parameter.getValue();
+    int value = parameter.getValue().intValue();
 
     if (value < 0 || value > 63)
     {
