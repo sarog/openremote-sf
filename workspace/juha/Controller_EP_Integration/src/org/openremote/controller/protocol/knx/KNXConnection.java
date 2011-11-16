@@ -19,7 +19,6 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 
 /**
  * TODO
