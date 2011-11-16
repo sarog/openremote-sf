@@ -228,7 +228,6 @@
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
    -->
 
-  
   <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 
     <constructor-arg>
@@ -248,6 +247,7 @@
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
         <entry key = "russound"         value-ref = "russoundCommandBuilder"/>
         <entry key = "hsc40"            value-ref = "hsc40CommandBuilder"/>
+        <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -290,7 +290,11 @@
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
-	
+
+	<!-- UDP Socket Command Builder for IP enabled devices -->
+	<bean id = "udpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPSocketCommandBuilder"
+	      scope = "prototype"/>
+	      
 	<!-- X10 Command Builder -->
 	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 	
