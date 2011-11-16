@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.knx;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.math.RoundingMode;
 
 
 import org.openremote.controller.command.StatusCommand;
@@ -31,6 +32,7 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
+import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.utils.Logger;
 
 
@@ -219,6 +221,13 @@ class GroupValueRead extends KNXCommand implements StatusCommand
         return Integer.toString(valueDPT.resolve());
       }
 
+      else if (dpt instanceof DataPointType.TwoOctetFloat)
+      {
+        TwoOctetFloat valueDPT = (TwoOctetFloat)responseAPDU.getDataType();
+
+        return Integer.toString(valueDPT.resolve().intValue());
+      }
+
       else if (dpt instanceof DataPointType.Float2ByteValue)
       {
         Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
@@ -237,12 +246,34 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     else if (sensorType == EnumSensorType.CUSTOM)
     {
 
-      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
-      {
-        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+//      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
+//      {
+//        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+//
+//        float resolution = valueDPT.resolve();
+//        return Float.toString(resolution);
+//      }
 
-        float resolution = valueDPT.resolve();
-        return Float.toString(resolution);
+      if (dpt instanceof DataPointType.TwoOctetFloat)
+      {
+        TwoOctetFloat valueDPT = (TwoOctetFloat)responseAPDU.getDataType();
+
+        if (statusMap.containsKey("precision"))
+        {
+          String precision = statusMap.get("precision");
+
+          if (precision.equals("1") || precision.equals("0.1"))
+          {
+            return valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+          }
+
+          else if (precision.equals("2") || precision.equals("0.01"))
+          {
+            return valueDPT.resolve().setScale(2, RoundingMode.HALF_UP).toString();
+          }
+        }
+
+        return Integer.toString(Math.round(valueDPT.resolve().floatValue()));
       }
 
       else
