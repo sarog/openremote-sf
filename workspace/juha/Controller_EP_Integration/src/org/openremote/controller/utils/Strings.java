@@ -24,6 +24,7 @@ package org.openremote.controller.utils;
  * String related utilities.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
  */
 public class Strings
 {
@@ -56,6 +57,46 @@ public class Strings
     
     return ( value < 16 ? "0x0" + Integer.toHexString(value).toUpperCase()
                         : "0x"  + Integer.toHexString(value).toUpperCase());
+  }
+  
+  /**
+   * Converts a String which represents a pollingInterval into an int which can be used as delay
+   * for Thread.sleep();  <p>
+   *
+   * Following conversion will happen:  <p>
+   *
+   * null || "" = -1                  <br>
+   * 500 = 500                        <br>
+   * 1s = 1000 * 1 = 1000             <br>
+   * 1m = 1000 * 60 = 60000           <br>
+   * 1h = 1000 * 60 * 60 = 3600000    <br>
+   * 
+   * @param pollingInterval   interval string, such as '1m' as millisecond value
+   *
+   * @return  interval in milliseconds
+   */
+  public static int convertPollingIntervalString(String pollingInterval)
+  {
+    if ((pollingInterval != null) && (pollingInterval.trim().length() != 0))
+    {
+      pollingInterval = pollingInterval.trim();
+      char lastChar = pollingInterval.charAt(pollingInterval.length()-1);
+      String timePart = pollingInterval.substring(0, pollingInterval.length()-1);
+
+      switch (lastChar)
+      {
+        case 's':
+          return Integer.parseInt(timePart) * 1000;
+        case 'm':
+          return Integer.parseInt(timePart) * 1000 * 60;
+        case 'h':
+          return Integer.parseInt(timePart) * 1000 * 60 * 60;
+        default:
+          return Integer.parseInt(pollingInterval);
+      }
+    }
+
+    return -1;
   }
 
 
