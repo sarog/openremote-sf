@@ -115,11 +115,24 @@ public abstract class DataPointType
   public final static Unsigned8BitValue RELPOS_VALVE = new Unsigned8BitValue(5, 4);
   public final static Unsigned8BitValue VALUE_1_UCOUNT = new Unsigned8BitValue(5, 10);
 
-  public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
+  public final static TwoOctetFloat VALUE_TEMP = new TwoOctetFloat(9, 1);
+  public final static TwoOctetFloat VALUE_TEMPD = new TwoOctetFloat(9, 2);
+  public final static TwoOctetFloat VALUE_TEMPA = new TwoOctetFloat(9, 3);
+  public final static TwoOctetFloat VALUE_LUX = new TwoOctetFloat(9, 4);
+  public final static TwoOctetFloat VALUE_WSP = new TwoOctetFloat(9, 5);
+  public final static TwoOctetFloat VALUE_PRES = new TwoOctetFloat(9, 6);
+  public final static TwoOctetFloat VALUE_TIME1 = new TwoOctetFloat(9, 10);
+  public final static TwoOctetFloat VALUE_TIME2 = new TwoOctetFloat(9, 11);
+  public final static TwoOctetFloat VALUE_VOLT = new TwoOctetFloat(9, 20);
+  public final static TwoOctetFloat VALUE_CURR = new TwoOctetFloat(9, 21);
+  
 
   // Scene management
   public final static Unsigned8BitValue SCENE_NUMBER = new Unsigned8BitValue(17, 1);
   public final static Unsigned8BitValue SCENE_CONTROL = new Unsigned8BitValue(18, 1);
+
+
+  //public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
 
   public static DataPointType lookup(String dptID)
   {
@@ -276,6 +289,15 @@ public abstract class DataPointType
   {
 
     private Unsigned8BitValue(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class TwoOctetFloat extends DataPointType
+  {
+
+    private TwoOctetFloat(int main, int sub)
     {
       super(main, sub, false);
     }

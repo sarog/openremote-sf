@@ -29,11 +29,15 @@ import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
+import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.text.DecimalFormat;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 
 /**
@@ -176,6 +180,12 @@ class ApplicationProtocolDataUnit
   }
 
 
+  /**
+   * TODO
+   *
+   * @param apdu
+   * @return
+   */
   static boolean isGroupValueWriteReq(byte[] apdu)
   {
     return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x80);
@@ -237,7 +247,7 @@ class ApplicationProtocolDataUnit
   static ApplicationProtocolDataUnit createScaling(CommandParameter parameter)
       throws ConversionException
   {
-    int value = parameter.getValue();
+    int value = parameter.getValue().intValue();
 
     if (value < 0 || value > 100)
     {
@@ -274,10 +284,10 @@ class ApplicationProtocolDataUnit
   * @throws ConversionException
   *            if the value is not in a given range
   */
-  static ApplicationProtocolDataUnit createRange(CommandParameter parameter)
-     throws ConversionException
+  static ApplicationProtocolDataUnit createRange(CommandParameter parameter) 
+      throws ConversionException
   {
-    int value = parameter.getValue();
+    int value = parameter.getValue().intValue();
 
     if (value < 0 || value > 255)
     {
@@ -294,22 +304,22 @@ class ApplicationProtocolDataUnit
 
 
   /**
-  * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
-  * 6-bit unsigned scene number value (DPT 17.001).
-  * <p>
-  *
-  * Valid parameter value range is [0-63].
-  *
-  * @param parameter
-  *           scene number value
-  * @param learn
-  *           <code>true</code> if command to learn scene
-  *
-  * @return APDU instance for a 8-bit unsigned counter value
-  *
-  * @throws ConversionException
-  *            if the value is not in a given range
-  */
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+   * 6-bit unsigned scene number value (DPT 17.001).
+   * <p>
+   *
+   * Valid parameter value range is [0-63].
+   *
+   * @param parameter
+   *           scene number value
+   * @param learn
+   *           <code>true</code> if command to learn scene
+   *
+   * @return APDU instance for a 8-bit unsigned counter value
+   *
+   * @throws ConversionException
+   *            if the value is not in a given range
+   */
   static ApplicationProtocolDataUnit createSceneNumber(CommandParameter parameter, boolean learn)
      throws ConversionException
   {
@@ -327,6 +337,72 @@ class ApplicationProtocolDataUnit
           learn ? value : 0x80 | value)
     );
   }
+
+  /**
+   * TODO
+   *
+   * @param parameter
+   * @return
+   */
+  static ApplicationProtocolDataUnit createIntegerCelsiusTemp(CommandParameter parameter)
+      throws ConversionException
+  {
+    BigDecimal value = parameter.getValue();
+
+    return createCelsiusTemp(value);
+  }
+
+  /**
+   * TODO
+   *
+   * @param parameter
+   * @return
+   */
+  static ApplicationProtocolDataUnit createSingleDecimalCelsiusTemp(CommandParameter parameter)
+      throws ConversionException
+  {
+    BigDecimal value = parameter.getValue().divide(new BigDecimal(10));
+
+    return createCelsiusTemp(value);
+  }
+
+  /**
+   * TODO
+   *
+   * @param parameter
+   * @return
+   */
+  static ApplicationProtocolDataUnit createDoubleDecimalCelsiusTemp(CommandParameter parameter)
+      throws ConversionException
+  {
+    BigDecimal value = parameter.getValue().divide(new BigDecimal(100));
+
+    return createCelsiusTemp(value);
+  }
+
+
+
+  private static ApplicationProtocolDataUnit createCelsiusTemp(BigDecimal decimal)
+      throws ConversionException
+  {
+    float value = decimal.setScale(2, RoundingMode.HALF_UP).floatValue();
+    
+    if (value < -273.00 || value > 670760.00)
+    {
+      DecimalFormat df = new DecimalFormat("######.##");
+
+      throw new ConversionException(
+          "Expected celsius temperature value range is [-273,00..+670760,00] -- received " +
+          df.format(value)
+      );
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new TwoOctetFloat(DataPointType.VALUE_TEMP, value)
+    );
+  }
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -727,6 +803,15 @@ class ApplicationProtocolDataUnit
         );
       }
 
+      else if (dpt instanceof DataPointType.TwoOctetFloat)
+      {
+        DataPointType.TwoOctetFloat value = (DataPointType.TwoOctetFloat)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToTwoOctetFloat(value, getDataType().getData())
+        );
+      }
       else if (dpt instanceof DataPointType.Float2ByteValue)
       {
         DataPointType.Float2ByteValue value = (DataPointType.Float2ByteValue) dpt;
@@ -767,6 +852,11 @@ class ApplicationProtocolDataUnit
     private Float2Byte resolveToFloat2ByteValue(DataPointType.Float2ByteValue dpt, byte[] value)
     {
       return new Float2Byte(dpt, value);
+    }
+
+    private TwoOctetFloat resolveToTwoOctetFloat(DataPointType.TwoOctetFloat dpt, byte[] value)
+    {
+      return new TwoOctetFloat(dpt, value);
     }
 
     /**
