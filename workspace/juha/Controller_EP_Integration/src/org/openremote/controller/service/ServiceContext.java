@@ -90,8 +90,8 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
-    DEVICE_STATE_CACHE("statusCache");                        // TODO : Deprecated, see ORCJAVA-197
-
+    DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
+    COMPONENT_CONTROL_SERVICE("controlCommandService");       // TODO : should be retrieved through deployer interface
 
     private String springBeanName;
 
@@ -223,6 +223,27 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Device state cache service implementation has had an incompatible change.", e
+      );
+    }
+  }
+
+  /**
+   * TODO :
+   *   currently used to access from REST servlet implementations -- should expose a single
+   *   (deployer?) reference in WAR application context that enables reference access to
+   *   other services as necessary
+   */
+  public static ControlCommandService getComponentControlService()
+  {
+    try
+    {
+      return (ControlCommandService)getInstance().getService(ServiceName.COMPONENT_CONTROL_SERVICE);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Component control service implementation has had an incompatible change.", e
       );
     }
   }
