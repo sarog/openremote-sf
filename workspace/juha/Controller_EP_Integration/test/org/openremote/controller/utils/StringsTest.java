@@ -27,6 +27,7 @@ import org.junit.Assert;
  * String utility tests {@link Strings}
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
  */
 public class StringsTest
 {
@@ -154,4 +155,36 @@ public class StringsTest
 
     Assert.assertTrue(Strings.byteToUnsignedHexString(zero).equals("0x00"));
   }
+  
+  /**
+   * 
+   */
+  @Test public void testPollingIntervalConvertion() 
+  {
+    String _empty = "";
+    String _empty2 = " ";
+    String _null = null;
+
+    String _500milli = "500";
+    String _2s = "2s";
+    String _23s = "23s";
+    String _3m = "3m";
+    String _132m = "132m";
+    String _2h = "2h";
+    String _13h = "13h";
+
+    Assert.assertEquals(-1, Strings.convertPollingIntervalString(_empty));
+    Assert.assertEquals(-1, Strings.convertPollingIntervalString(_empty2));
+    Assert.assertEquals(-1, Strings.convertPollingIntervalString(_null));
+
+    Assert.assertEquals(500, Strings.convertPollingIntervalString(_500milli));
+    Assert.assertEquals(2 * 1000, Strings.convertPollingIntervalString(_2s));
+    Assert.assertEquals(23 * 1000, Strings.convertPollingIntervalString(_23s));
+    Assert.assertEquals(3 * 1000 * 60, Strings.convertPollingIntervalString(_3m));
+    Assert.assertEquals(132 * 1000 * 60, Strings.convertPollingIntervalString(_132m));
+    Assert.assertEquals(2 * 1000 * 60 * 60, Strings.convertPollingIntervalString(_2h));
+    Assert.assertEquals(13 * 1000 * 60 * 60, Strings.convertPollingIntervalString(_13h));
+     
+  }
+
 }
