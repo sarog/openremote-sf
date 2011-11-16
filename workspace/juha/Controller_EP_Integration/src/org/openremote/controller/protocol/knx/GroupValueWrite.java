@@ -241,6 +241,60 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         }
       }
 
+      else if (name.equals("TEMP"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing temperature value for TEMP command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createIntegerCelsiusTemp(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("TEMP1D") || name.equals("TEMP 1D"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing temperature value for TEMP command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createSingleDecimalCelsiusTemp(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("TEMP2D") || name.equals("TEMP 2D"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing temperature value for TEMP command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createDoubleDecimalCelsiusTemp(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
       else
       {
         return null;                    // according to javadoc
