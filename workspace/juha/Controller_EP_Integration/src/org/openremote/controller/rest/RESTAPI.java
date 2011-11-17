@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 public abstract class RESTAPI extends HttpServlet
 {
 
-  public static enum ResponseType { APPLICATION_XML, APPLICATION_JSON }
+  public static enum ResponseType { APPLICATION_XML, APPLICATION_JSON, TEXT_JAVASCRIPT }
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -106,6 +106,12 @@ public abstract class RESTAPI extends HttpServlet
       response.setContentType(Constants.MIME_APPLICATION_JSON);
       responseType = ResponseType.APPLICATION_JSON;
     }
+    
+    else if (Constants.MIME_TEXT_JAVASCRIPT.equalsIgnoreCase(acceptHeader))
+    {
+       response.setContentType(Constants.MIME_TEXT_JAVASCRIPT);
+       responseType = ResponseType.TEXT_JAVASCRIPT;       
+    }
 
     else
     {
@@ -129,7 +135,6 @@ public abstract class RESTAPI extends HttpServlet
     finally
     {
       response.getWriter().flush();
-      response.getWriter().close();
     }
   }
 
@@ -146,12 +151,11 @@ public abstract class RESTAPI extends HttpServlet
       switch (responseType)
       {
         case APPLICATION_JSON:
-
           response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
-
           break;
-
-
+        case TEXT_JAVASCRIPT:
+           response.getWriter().print(JSONTranslator.translateXMLToJSONP(response, xml));
+           break;           
         case APPLICATION_XML:     // fall through to default...
         default:
 
