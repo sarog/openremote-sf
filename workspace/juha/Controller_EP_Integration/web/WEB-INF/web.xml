@@ -534,4 +534,9 @@
       <role-name>openremote</role-name>
     </security-role>
   -->
+  
+    <error-page>
+      <error-code>401</error-code>
+      <location>/401.jsp</location>
+    </error-page>
 </web-app>
