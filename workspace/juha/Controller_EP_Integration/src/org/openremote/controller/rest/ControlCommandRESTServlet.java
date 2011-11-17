@@ -20,21 +20,14 @@
  */
 package org.openremote.controller.rest;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
-import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.ServiceContext;
 
@@ -44,11 +37,11 @@ import org.openremote.controller.service.ServiceContext;
  * @author Handy.Wang
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 @SuppressWarnings("serial")
-public class ControlCommandRESTServlet extends HttpServlet
-{
-
+public class ControlCommandRESTServlet extends RESTAPI {
+   
   // Class Members --------------------------------------------------------------------------------
 
   private final static Logger logger = Logger.getLogger(Constants.REST_COMPONENT_ACTION_LOG_CATEGORY);
@@ -57,28 +50,11 @@ public class ControlCommandRESTServlet extends HttpServlet
     ServiceContext.getComponentControlService();
 
 
-  // Servlet Overrides ----------------------------------------------------------------------------
+  // Implement REST API ---------------------------------------------------------------------------
 
-  @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-     throws ServletException, IOException
+  @Override
+  protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
-    doPost(req, resp);
-  }
-
-  @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
-     throws ServletException, IOException
-  {
-
-    // Set response MIME type and character encoding...
-
-    response.setContentType(Constants.MIME_APPLICATION_XML);
-    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-
-    // Get the 'accept' header from client -- this will indicate whether we will send
-    // application/xml or application/json response...
-    
-    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
     String pathinfo = request.getPathInfo();
     String componentID = null;
     String commandParam = null;
@@ -94,17 +70,13 @@ public class ControlCommandRESTServlet extends HttpServlet
       commandParam = st.nextToken();
     }
 
-    PrintWriter output = response.getWriter();
-      
     try
     {
       if (isNotEmpty(componentID) && isNotEmpty(commandParam))
       {
         componentControlService.trigger(componentID, commandParam);
 
-        output.print(JSONTranslator.translateXMLToJSON(
-            acceptHeader, response, 200, RESTAPI.composeXMLErrorDocument(200, "SUCCESS"))
-        );
+        sendResponse(response, 200, "SUCCESS");
       }
 
       else
@@ -115,17 +87,12 @@ public class ControlCommandRESTServlet extends HttpServlet
 
     catch (ControlCommandException e)
     {
-      logger.error("Error in executing component control : {0}", e, e.getMessage());
-
-      output.print(JSONTranslator.translateXMLToJSON(
-          acceptHeader, response, e.getErrorCode(),
-          RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage()))
-      );
+      logger.error("Error executing command ''{0}'' : {1}", e, pathinfo, e.getMessage());
+      sendResponse(response, e.getErrorCode(), e.getMessage());
     }
-
-    output.flush();
   }
-   
+
+
   /**
    * Checks if String parameter is not empty.
    *
@@ -137,5 +104,4 @@ public class ControlCommandRESTServlet extends HttpServlet
   {
     return (param != null && !"".equals(param)) ? true : false;
   }
-
 }
