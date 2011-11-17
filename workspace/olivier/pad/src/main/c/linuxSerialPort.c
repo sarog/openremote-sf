@@ -12,6 +12,12 @@
 
 #define RCV_BUF_SIZE 256
 
+static const trsTbl_t speedTrsTbl = { "speed", 5, { { "9600", B9600 }, { "19200", B19200 }, { "38400", B38400 },
+		{ "57600", B57600 }, { "115200", B115200 } } };
+static const trsTbl_t nbBitsTrsTbl = { "nbBits", 2, { { "7", CS7 }, { "8", CS8 } } };
+static const trsTbl_t parityTrsTbl = { "parity", 2, { { "even", PARENB }, { "odd", PARODD } } };
+//static const trsTbl_t parityCheckTrsTbl = { "parityCheck", 2, { { "false", IGNPAR }, { "true", INPCK } } };
+
 void lsReceiveSignal(int sig) {
 	printf("Signal %d!\n", sig);
 }
@@ -51,7 +57,22 @@ void *lsRead(void *data) {
 	return NULL;
 }
 
-int lsConfigure(portContext_t *portContext) {
+tcflag_t lsGetCfg(apr_hash_t *cfg, const trsTbl_t *tbl, tcflag_t dft) {
+	char *s = apr_hash_get(cfg, tbl->key, strlen(tbl->key));
+	tcflag_t out = dft;
+	if (s != NULL) {
+		int i;
+		for (i = 0; i < tbl->nbValues; ++i) {
+			if (strcmp(tbl->values[i].cfgStr, s) == 0) {
+				out = tbl->values[i].cfgVal;
+				break;
+			}
+		}
+	}
+	return out;
+}
+
+int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 	struct serial_struct serinfo;
 
 	// Force low latency on serial ports
@@ -67,10 +88,9 @@ int lsConfigure(portContext_t *portContext) {
 	tcgetattr(portContext->fd, &portContext->oldtio);
 
 	// Prepare new settings
-	portContext->newtio.c_cflag = CS8 | // control modes : 8bits,
-			CLOCAL | // ignore modem status lines, enable
-			CREAD | PARENB | // receiver, enable parity
-			B19200;
+	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL | // ignore modem status lines, enable
+			CREAD | lsGetCfg(cfg, &parityTrsTbl, PARENB) | // receiver, enable parity
+			lsGetCfg(cfg, &speedTrsTbl, B19200);
 	portContext->newtio.c_iflag = INPCK | IGNPAR; // input modes : parity check & ignore parity-error bytes
 	portContext->newtio.c_lflag = 0 & ~(ICANON | ECHO | ECHOE | ISIG); // Raw mode
 	portContext->newtio.c_oflag = 0; // output modes
@@ -112,7 +132,7 @@ int lsUnconfigure(portContext_t *portContext) {
 	return R_SUCCESS;
 }
 
-int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, portReceive_t portReceiveCb) {
+int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, apr_hash_t *cfg, portReceive_t portReceiveCb) {
 	// Allocate serial port data memory
 	*portContext = apr_palloc(pool, sizeof(portContext_t));
 	(*portContext)->portReceiveCb = portReceiveCb;
@@ -125,7 +145,7 @@ int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, po
 		return R_PORT_ERROR;
 	}
 
-	CHECK(lsConfigure(*portContext));
+	CHECK(lsConfigure(*portContext, cfg));
 	CHECK(lsCreateReadThread(pool, *portContext));
 
 	return R_SUCCESS;

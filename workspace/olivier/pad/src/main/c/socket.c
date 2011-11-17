@@ -24,7 +24,7 @@
 // Default socket backlog number. SOMAXCONN is a system default value.
 #define DEF_SOCKET_BACKLOG	SOMAXCONN
 
-// TODO
+// TODO Comment
 #define DEF_POLLSET_NUM		32
 
 // Default socket timeout

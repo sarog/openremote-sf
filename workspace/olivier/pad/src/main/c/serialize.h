@@ -40,7 +40,7 @@ typedef struct _message_t {
 
 int readHeader(apr_socket_t *sock, char *code);
 int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code);
-int createACK(apr_pool_t *pool, message_t **message, apr_int32_t code);
+int createACK(apr_pool_t *pool, message_t **message, ackCode_t code);
 int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf, int len);
 
 #endif

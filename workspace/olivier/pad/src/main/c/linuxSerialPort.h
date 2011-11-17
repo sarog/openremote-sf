@@ -14,8 +14,15 @@ struct _portContext_t {
 	portReceive_t portReceiveCb;
 };
 
-int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, portReceive_t portReceiveCb);
-int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext);
-int physicalSend(portContext_t *portContext, char *data, int len);
+typedef struct _trsUnit_t {
+	char *cfgStr;
+	tcflag_t cfgVal;
+} trsUnit;
+
+typedef struct _trsTbl_t {
+  char *key;
+  apr_uint32_t nbValues;
+  trsUnit values[];
+} trsTbl_t;
 
 #endif
