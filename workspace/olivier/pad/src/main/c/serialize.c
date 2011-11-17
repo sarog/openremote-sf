@@ -99,7 +99,7 @@ void printMessage(message_t *message) {
 	printf("\n");
 }
 
-int createACK(apr_pool_t *pool, message_t **message, apr_int32_t code) {
+int createACK(apr_pool_t *pool, message_t **message, ackCode_t code) {
 	CHECK(createMessage(ACK, message, pool))
 	createMessageFields(pool, *message, 1);
 	(*message)->fields[0].int32Val = code;
@@ -248,7 +248,7 @@ int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char cod
 		break;
 	case CONFIGURE: {
 		field_t f1, f2;
-		int i;
+		apr_int32_t i;
 		CHECK(readString(pool, sock, &f1))CHECK(readString(pool, sock, &f2))
 		createMessageFields(pool, *message, f2.int32Val + 2);
 		(*message)->fields[0].length = f1.length;

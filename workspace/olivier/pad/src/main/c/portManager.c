@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include "apr_hash.h"
 #include "portManager.h"
-//#include "linuxSerialPort.h"
 
 extern physicalLock_t physicalLockCb;
 extern physicalUnlock_t physicalUnlockCb;
 extern physicalSend_t physicalSendCb;
-static apr_pool_t *portPool;
+static apr_pool_t *portsPool;
 static apr_hash_t *ports;
 
 int initPortManager() {
-	apr_pool_create(&portPool, NULL);
-	ports = apr_hash_make(portPool);
+	apr_pool_create(&portsPool, NULL);
+	ports = apr_hash_make(portsPool);
 	return R_SUCCESS;
 }
 
@@ -24,17 +23,20 @@ int createPort(char *portId, char *portType) {
 		return R_PORT_EXISTS;
 
 	// Otherwise create it
-	p = apr_palloc(portPool, sizeof(port_t));
-	p->portId = apr_palloc(portPool, strlen(portId) + 1);
+	p = apr_palloc(portsPool, sizeof(port_t));
+	apr_pool_create(&p->portPool, portsPool);
+	p->portId = apr_palloc(p->portPool, strlen(portId) + 1);
 	strcpy(p->portId, portId);
-	p->portType = apr_palloc(portPool, strlen(portType) + 1);
+	p->portType = apr_palloc(p->portPool, strlen(portType) + 1);
 	strcpy(p->portType, portType);
 	p->lockSource = NULL;
-	p->configuration = NULL;
-	apr_hash_set(ports, portId, strlen(portId), p);
+	p->cfg = apr_hash_make(p->portPool);
 	p->lockCb = physicalLockCb;
 	p->unlockCb = physicalUnlockCb;
 	p->portSendCb = physicalSendCb;
+
+	// Add newly created port to port list
+	apr_hash_set(ports, portId, strlen(portId), p);
 	return R_SUCCESS;
 }
 

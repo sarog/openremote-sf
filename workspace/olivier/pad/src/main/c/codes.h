@@ -21,7 +21,9 @@
 #define R_CONFIGURE_ERROR   -102
 
 // ACK codes
-#define ACK_OK               0
+typedef enum _ackCodes_t {
+	ackOk = 0, ackErr = 1
+} ackCode_t;
 
 #define CHECK(call)              {int r = call; if(r != R_SUCCESS) return r;}
 #define APR_CHECK(call, ret)     {apr_status_t rv = call; if(rv != APR_SUCCESS) return ret;}

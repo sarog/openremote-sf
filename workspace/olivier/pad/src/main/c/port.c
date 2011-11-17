@@ -6,14 +6,10 @@
 #include "port.h"
 
 int logicalLock(port_t *port, char *source) {
-	printf("=>logicalLock(0), source='%s'\n", source);
 	if (port->lockSource != NULL)
 		return R_WRONG_LOCK_STATUS;
-	printf("=>logicalLock(1)\n");
 	port->lockSource = malloc(strlen(source) + 1);
-	printf("=>logicalLock(2)\n");
 	strcpy(port->lockSource, source);
-	printf("=>logicalLock(3)\n");
 	return R_SUCCESS;
 }
 
@@ -26,25 +22,19 @@ int logicalUnlock(port_t *port, char *source) {
 }
 
 int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceiveCb) {
-	printf("=>lock(0)\n");
 	CHECK(logicalLock(port, source))
 
 	// Prepare runtime
-	printf("=>lock(1)\n");
-	apr_pool_create(&port->runtimePool, pool);
-	printf("=>lock(2)\n");
-	int r = port->lockCb(port->runtimePool, port->portId, &port->context, portReceiveCb);
-	printf("=>lock(3)\n");
+	int r = port->lockCb(port->portPool, port->portId, &port->context, port->cfg, portReceiveCb);
 	if (r != R_SUCCESS) {
 		return unlock(pool, port, source);
 	}
-	printf("=>lock(4)\n");
 	return r;
 }
 
 int unlock(apr_pool_t *pool, port_t *port, char *source) {
-	port->unlockCb(port->runtimePool, port->portId, &port->context);
-	apr_pool_destroy(port->runtimePool);
+	port->unlockCb(port->portPool, port->portId, &port->context);
+	apr_pool_destroy(port->portPool);
 	int r = logicalUnlock(port, source);
 	return r;
 }
@@ -79,4 +69,9 @@ int portSend(apr_pool_t *pool, port_t *port, char *data, int len) {
 
 	// Send data
 	return port->portSendCb(port->context, buf, len / 2);
+}
+
+int portConfigure(apr_pool_t *pool, port_t *port, char *cfgStr, char *cfgVal) {
+	apr_hash_set(port->cfg, cfgStr, strlen(cfgStr), cfgVal);
+	return R_SUCCESS;
 }

@@ -49,7 +49,7 @@ void testCreatePort() {
 	ASSERT_INTS_EQUAL(strcmp(port->portId, "foo"), 0);
 	ASSERT_INTS_EQUAL(strcmp(port->portType, "bar"), 0);
 	ASSERT_INTS_EQUAL((int)port->lockSource, 0);
-	ASSERT_INTS_EQUAL((int)port->configuration, 0);
+	ASSERT_INTS_EQUAL((int)port->cfg, 0);
 }
 
 void main(int argc, const char *argv[]) {

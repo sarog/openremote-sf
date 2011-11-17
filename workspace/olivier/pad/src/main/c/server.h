@@ -3,7 +3,7 @@
 
 #include "apr_network_io.h"
 #include "serialize.h"
-#include "osPort.h"  // TODO keep?
+#include "osPort.h"
 
 typedef struct _serverTransaction_t {
 	enum {

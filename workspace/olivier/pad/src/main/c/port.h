@@ -5,10 +5,10 @@
 #include "osPort.h"
 
 typedef struct _port_t {
+	apr_pool_t *portPool;
 	char *portId;
 	char *portType;
-	portConfiguration_t *configuration;
-	apr_pool_t *runtimePool;
+	apr_hash_t *cfg;
 	portContext_t *context;
 	char *lockSource;
 	physicalLock_t lockCb;
@@ -19,5 +19,6 @@ typedef struct _port_t {
 int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceiveCb);
 int unlock(apr_pool_t *pool, port_t *port, char *source);
 int portSend(apr_pool_t *pool, port_t *port, char *data, int len);
+int portConfigure(apr_pool_t *pool, port_t *port, char *cfgStr, char *cfgVal);
 
 #endif
