@@ -125,7 +125,13 @@ public class JSONFormatter {
                                  JSONObject max = slider.optJSONObject("max");
                                  updateValue(min, "value", min.optInt("value"));
                                  updateValue(max, "value", max.optInt("value"));
-                              }
+                              } else {                                 
+                                 // If component is a label force text to be a string
+                                 JSONObject label = comp.optJSONObject("label");
+                                 if (label != null) {
+                                    updateValue(label, "text", label.optString("text"));
+                                 }
+                              }     
                            }
                         }                  
                      }
@@ -164,6 +170,12 @@ public class JSONFormatter {
                                           JSONObject max = slider.optJSONObject("max");
                                           updateValue(min, "value", min.optInt("value"));
                                           updateValue(max, "value", max.optInt("value"));
+                                       } else {
+                                          // If component is a label force text to be a string
+                                          JSONObject label = cell.optJSONObject("label");
+                                          if (label != null) {
+                                             updateValue(label, "text", label.optString("text"));
+                                          }
                                        }
                                     }
                                  }                  
