@@ -39,6 +39,11 @@ public class JSONTranslator
 
   private static final Logger logger = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
   
+  public static String translateXMLToJSONP(HttpServletResponse response, String xml)
+  {
+     return translateXMLToJSON(Constants.MIME_TEXT_JAVASCRIPT, response, xml);
+  }
+  
   public static String translateXMLToJSON(HttpServletResponse response, String xml)
   {
     return translateXMLToJSON(Constants.MIME_APPLICATION_JSON, response, xml);
@@ -50,6 +55,15 @@ public class JSONTranslator
     {
       if (response != null) {
          response.setContentType(Constants.MIME_APPLICATION_JSON);
+      }
+
+      return translate(response, xml);
+    }
+    
+    else if (Constants.MIME_TEXT_JAVASCRIPT.equalsIgnoreCase(acceptHeader))
+    {
+      if (response != null) {
+         response.setContentType(Constants.MIME_TEXT_JAVASCRIPT);
       }
 
       return translate(response, xml);
