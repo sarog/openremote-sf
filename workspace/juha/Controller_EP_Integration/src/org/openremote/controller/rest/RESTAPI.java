@@ -75,7 +75,7 @@ public abstract class RESTAPI extends HttpServlet
 
 
   private ResponseType responseType = ResponseType.APPLICATION_XML;
-
+  private HttpServletRequest request;
 
 
   // Servlet Implementation -----------------------------------------------------------------------
@@ -89,9 +89,10 @@ public abstract class RESTAPI extends HttpServlet
   @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException
   {
+    this.request = request;
+    
     // Get the 'accept' header from client -- this will indicate whether we will send
-    // application/xml or application/json response...
-
+    // application/xml or application/json response...     
     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
 
     // Set character encoding...
@@ -154,7 +155,9 @@ public abstract class RESTAPI extends HttpServlet
           response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
           break;
         case TEXT_JAVASCRIPT:
-           response.getWriter().print(JSONTranslator.translateXMLToJSONP(response, xml));
+           // Additional JSON Formatter implemented to ensure JSONArray output where required
+           String output = JSONTranslator.translateXMLToJSONP(request, response, xml);
+           response.getWriter().print(output);
            break;           
         case APPLICATION_XML:     // fall through to default...
         default:
