@@ -107,6 +107,29 @@ public class JSONFormatter {
                      // Convert absolute array
                      updateValue(screenObj, "absolute", convertToArray(screenObj.opt("absolute")));
                      
+                     // Convert any 0 string values to integer values
+                     JSONArray absoluteComps = screenObj.optJSONArray("absolute");
+                     if (absoluteComps != null) {
+                        for (int j=0; j<absoluteComps.length(); j++) {
+                           JSONObject comp = absoluteComps.optJSONObject(j);
+                           if (comp != null) {
+                              updateValue(comp, "top", comp.optInt("top"));
+                              updateValue(comp, "left", comp.optInt("left"));
+                              updateValue(comp, "width", comp.optInt("width"));
+                              updateValue(comp, "height", comp.optInt("height"));
+                              
+                              // If component is a slider check min max values also
+                              JSONObject slider = comp.optJSONObject("slider");
+                              if (slider != null) {
+                                 JSONObject min = slider.optJSONObject("min");
+                                 JSONObject max = slider.optJSONObject("max");
+                                 updateValue(min, "value", min.optInt("value"));
+                                 updateValue(max, "value", max.optInt("value"));
+                              }
+                           }
+                        }                  
+                     }
+                     
                      // Convert grid array and the child cell arrays
                      updateValue(screenObj, "grid", convertToArray(screenObj.opt("grid")));
                      JSONArray gridArr = screenObj.optJSONArray("grid");
@@ -115,6 +138,29 @@ public class JSONFormatter {
                            JSONObject gridObj = gridArr.optJSONObject(j);
                            if (gridObj != null) {
                               updateValue(gridObj, "cell", convertToArray(gridObj.opt("cell")));
+                              
+                              // Convert any 0 string values to integer values
+                              JSONArray cells = gridObj.optJSONArray("cell");
+                              if (cells != null) {
+                                 for (int k=0; k<cells.length(); k++) {
+                                    JSONObject cell = cells.optJSONObject(k);
+                                    if (cell != null) {
+                                       updateValue(cell, "x", cell.optInt("x"));
+                                       updateValue(cell, "y", cell.optInt("y"));
+                                       updateValue(cell, "rowspan", cell.optInt("rowspan"));
+                                       updateValue(cell, "colspan", cell.optInt("colspan"));
+                                       
+                                       // If component is a slider check min max values also
+                                       JSONObject slider = cell.optJSONObject("slider");
+                                       if (slider != null) {
+                                          JSONObject min = slider.optJSONObject("min");
+                                          JSONObject max = slider.optJSONObject("max");
+                                          updateValue(min, "value", min.optInt("value"));
+                                          updateValue(max, "value", max.optInt("value"));
+                                       }
+                                    }
+                                 }                  
+                              }
                            }
                         }                  
                      }
