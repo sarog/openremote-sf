@@ -44,6 +44,7 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:domintell.properties</value>
           </list>
       </property>
   </bean>
@@ -91,6 +92,13 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="domintellConfig" class="org.openremote.controller.DomintellConfig">
+    <property name="address" value="${domintell.address}"/>
+    <property name="port" value="${domintell.port}"/>
+  </bean>
+  
+  <bean id="domintellGateway" class="org.openremote.controller.protocol.domintell.DomintellGateway"/>
+  
   <!-- TODO -->
   <bean id = "controlCommandService"
         class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
@@ -217,7 +225,8 @@
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "domintell">domintellCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -275,6 +284,9 @@
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+  <bean id="domintellCommandBuilder" class = "org.openremote.controller.protocol.domintell.DomintellCommandBuilder">
+    <property name="gateway" ref="domintellGateway"/>
+  </bean>
 
   <!-- TODO -->
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
