@@ -20,17 +20,18 @@
  */
 package org.openremote.controller.service;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.OpenRemoteRuntime;
-import org.openremote.controller.Constants;
-import org.openremote.controller.utils.Logger;
+import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
-import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.utils.Logger;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -93,6 +94,7 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
+    DOMINTELL_CONFIGURATION("domintellConfig"),               // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     PROTOCOL("commandFactory");                               // TODO : Deprecated, see ORCJAVA-194
 
@@ -184,6 +186,27 @@ public abstract class ServiceContext
       );
     }
   }
+  
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static DomintellConfig getDomintellConfiguration()
+  {
+    try
+    {
+      return (DomintellConfig)getInstance().getService(ServiceName.DOMINTELL_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Domintell service has had an incompatible change.", e
+      );
+    }
+  }
+
 
   /**
    * TODO :
