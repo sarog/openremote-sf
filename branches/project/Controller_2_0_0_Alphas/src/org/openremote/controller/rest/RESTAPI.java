@@ -73,11 +73,6 @@ public abstract class RESTAPI extends HttpServlet
      return sb.toString();
   }
 
-
-  private ResponseType responseType = ResponseType.APPLICATION_XML;
-  private HttpServletRequest request;
-
-
   // Servlet Implementation -----------------------------------------------------------------------
 
   @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -89,12 +84,11 @@ public abstract class RESTAPI extends HttpServlet
   @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException
   {
-    this.request = request;
-    
     // Get the 'accept' header from client -- this will indicate whether we will send
     // application/xml or application/json response...     
     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
+    ResponseType responseType;
+    
     // Set character encoding...
 
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
@@ -122,6 +116,9 @@ public abstract class RESTAPI extends HttpServlet
 
       responseType = ResponseType.APPLICATION_XML;
     }
+    
+    // Store response type in request object
+    request.setAttribute("responseType", responseType);
 
     try
     {
@@ -145,8 +142,13 @@ public abstract class RESTAPI extends HttpServlet
 
 
 
-  protected void sendResponse(HttpServletResponse response, String xml)
+  protected void sendResponse(HttpServletRequest request, HttpServletResponse response, String xml)
   {
+    ResponseType responseType = ResponseType.APPLICATION_XML;
+    Object obj = request.getAttribute("responseType");
+    if (obj != null) {
+       responseType = (ResponseType)obj;
+    }
     try
     {
       switch (responseType)
@@ -174,8 +176,13 @@ public abstract class RESTAPI extends HttpServlet
   }
 
 
-  protected void sendResponse(HttpServletResponse response, int errorCode, String message)
+  protected void sendResponse(HttpServletRequest request, HttpServletResponse response, int errorCode, String message)
   {
+     ResponseType responseType = ResponseType.APPLICATION_XML;
+     Object obj = request.getAttribute("responseType");
+     if (obj != null) {
+        responseType = (ResponseType)obj;
+     }
     switch (responseType)
     {
       case APPLICATION_XML:
@@ -204,7 +211,7 @@ public abstract class RESTAPI extends HttpServlet
 
     }
 
-    sendResponse(response, composeXMLErrorDocument(errorCode, message));
+    sendResponse(request, response, composeXMLErrorDocument(errorCode, message));
   }
 
 

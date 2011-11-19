@@ -84,7 +84,7 @@ public class ListPanelIDs extends RESTAPI
     try
     {
       String panelsXML = profileService.getAllPanels();
-      sendResponse(response, panelsXML);
+      sendResponse(request, response, panelsXML);
     }
 
     catch (ControlCommandException e)
@@ -97,7 +97,7 @@ public class ListPanelIDs extends RESTAPI
       //
       // response.setStatus(e.getErrorCode());
 
-      sendResponse(response, e.getErrorCode(), e.getMessage());
+      sendResponse(request, response, e.getErrorCode(), e.getMessage());
     }
   }
 

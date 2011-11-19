@@ -60,14 +60,14 @@ public class StatusCommandRESTServlet extends RESTAPI {
           unParsedSensorIDs = matcher.group(1);
           try {
               if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                 sendResponse(response, statusCommandService.readFromCache(unParsedSensorIDs));
+                 sendResponse(request, response, statusCommandService.readFromCache(unParsedSensorIDs));
               }
           } catch (ControllerException e) {
               logger.error("CommandException occurs", e);
-              sendResponse(response, e.getErrorCode(), e.getMessage());
+              sendResponse(request, response, e.getErrorCode(), e.getMessage());
           }
       } else {
-         sendResponse(response, 400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
+         sendResponse(request, response, 400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
       }
    }
 }
