@@ -72,16 +72,16 @@ public class ControlCommandRESTServlet extends RESTAPI {
          try {
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
                controlCommandService.trigger(controlID, commandParam);
-               sendResponse(response, 200, "SUCCESS");
+               sendResponse(request, response, 200, "SUCCESS");
             } else {
                throw new InvalidCommandTypeException(commandParam);
             }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            sendResponse(response, e.getErrorCode(), e.getMessage());
+            sendResponse(request, response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         sendResponse(response, 400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}");
+         sendResponse(request, response, 400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}");
       }
    }
    

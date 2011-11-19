@@ -102,10 +102,9 @@ public class JSONTranslator
     {
       if (response != null) {
          response.setContentType(Constants.MIME_APPLICATION_XML);
-         response.setStatus(errorCode);
       }
 
-      return xml;
+      return translate(null, response, xml);
     }
   }
 
@@ -119,11 +118,15 @@ public class JSONTranslator
      String json = "";     
      try {
         JSONObject jsonObj = XML.toJSONObject(xml);
-        // Format this JSON Object
-        jsonObj = JSONFormatter.format(request, jsonObj);
+        JSONObject errorObj = jsonObj.optJSONObject("error");
+        if (errorObj == null) {
+           // Format this JSON Object
+           jsonObj = JSONFormatter.format(request, jsonObj);
+        }
         json = jsonObj.toString();
      } catch (JSONException e) {
         logger.error("Can't convert XML to json.", e);
+        json = "{\"error\":{\"message\":\"XML to JSON Parsing error\",\"code\":520}}";
      }
      return json;
   }
