@@ -118,7 +118,6 @@ int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 	int l = len - 1;
 	apr_status_t rv = apr_socket_recv(sock, buf, &l);
 	if (rv == APR_EOF || l != len - 1) {
-		printf("expected %d, got %d\n", len - 1, l);
 		return R_INVALID_MESSAGE;
 	}
 	buf[l] = 0; // Make sure buf can be treated as a string
@@ -127,7 +126,8 @@ int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 
 int readInt32(apr_socket_t *sock, field_t *field) {
 	char buf[9];
-	CHECK(receiveStringBuf(sock, buf, 9))CHECK(buf2Int32(buf, &field->int32Val))
+	CHECK(receiveStringBuf(sock, buf, 9));
+	CHECK(buf2Int32(buf, &field->int32Val));
 	return R_SUCCESS;
 }
 
@@ -217,7 +217,6 @@ int readHeader(apr_socket_t *sock, char *code) {
 	// Check code is valid
 	APR_CHECK(checkCode(car), rv)
 	*code = car;
-	printf("code = %c\n", *code);
 	return R_SUCCESS;
 }
 
@@ -247,15 +246,16 @@ int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char cod
 		CHECK(readString(pool, sock, &(*message)->fields[1]))
 		break;
 	case CONFIGURE: {
-		field_t f1, f2;
+		field_t portNameField, nbParamsField;
 		apr_int32_t i;
-		CHECK(readString(pool, sock, &f1))CHECK(readString(pool, sock, &f2))
-		createMessageFields(pool, *message, f2.int32Val + 2);
-		(*message)->fields[0].length = f1.length;
-		(*message)->fields[0].stringVal = f1.stringVal;
-		(*message)->fields[1].length = f2.length;
-		(*message)->fields[1].int32Val = f2.int32Val;
-		for (i = 0; i < f2.int32Val; ++i) {
+		CHECK(readString(pool, sock, &portNameField));
+		CHECK(readInt32(sock, &nbParamsField));
+		createMessageFields(pool, *message, nbParamsField.int32Val * 2 + 2);
+		(*message)->fields[0].length = portNameField.length;
+		(*message)->fields[0].stringVal = portNameField.stringVal;
+		(*message)->fields[1].length = nbParamsField.length;
+		(*message)->fields[1].int32Val = nbParamsField.int32Val;
+		for (i = 0; i < nbParamsField.int32Val; ++i) {
 			CHECK(readString(pool, sock, &(*message)->fields[2 + (i * 2)]))
 			CHECK(readString(pool, sock, &(*message)->fields[3 + (i * 2)]))
 		}

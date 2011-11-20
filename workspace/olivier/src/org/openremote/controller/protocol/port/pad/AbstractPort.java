@@ -10,6 +10,9 @@ import org.openremote.controller.protocol.port.PortException;
 public class AbstractPort implements Port, PortListener {
    public final static String PORT_ID = "portId";
    public final static String PORT_TYPE = "portType";
+   public final static String PORT_SPEED = "speed";
+   public final static String PORT_NB_BITS = "nbBits";
+   public final static String PORT_PARITY = "parity";
    private Object notifyLock;
    private PadClient padClient;
    private NotifyMessage notification;
@@ -43,7 +46,12 @@ public class AbstractPort implements Port, PortListener {
          if (!(x.getCode() == PortException.SERVICE_FAILED && x.getRootCode() == -5)) throw x;
       }
 
-      // TODO configure port
+      // Configure port
+      ConfigureMessage m = new ConfigureMessage(portId);
+      for (String key : configuration.keySet()) {
+         m.addConfig(key, configuration.get(key).toString());
+      }
+      this.padClient.service(m);
    }
 
    @Override

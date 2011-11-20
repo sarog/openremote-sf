@@ -72,6 +72,6 @@ int portSend(apr_pool_t *pool, port_t *port, char *data, int len) {
 }
 
 int portConfigure(apr_pool_t *pool, port_t *port, char *cfgStr, char *cfgVal) {
-	apr_hash_set(port->cfg, cfgStr, strlen(cfgStr), cfgVal);
+	apr_hash_set(port->cfg, cfgStr, APR_HASH_KEY_STRING, cfgVal);
 	return R_SUCCESS;
 }

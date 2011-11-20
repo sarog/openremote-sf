@@ -26,6 +26,6 @@ public class LockMessage extends PadMessage {
 
    @Override
    protected void readBody(InputStream is) {
-      // TODO 
+      // Nothing to do
    }
 }
