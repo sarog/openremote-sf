@@ -22,6 +22,7 @@ package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.RussoundConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
@@ -71,6 +72,8 @@ public abstract class ServiceContext
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
 
     RUSSOUND_CONFIGURATION("russoundConfiguration"),
+
+    DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"),
 
     DEVICE_POLLING("pollingMachinesService"),
 
@@ -158,6 +161,21 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static DenonAVRSerialConfiguration getDenonAVRSerialConfiguration()
+  {
+    try
+    {
+      return (DenonAVRSerialConfiguration)getInstance().getService(ServiceName.DENONAVRSERIAL_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Denon AVR Serial Configuration service has had an incompatible change.", e
       );
     }
   }
