@@ -36,7 +36,7 @@ public class SensorChangeEvent extends GwtEvent<SensorChangeHandler> {
 		return sensorId;
 	}
 	
-	public String getSensorValue() {
+	public String getNewValue() {
 		return sensorValue;
 	}
 }

@@ -1,7 +1,10 @@
 package org.openremote.web.console.widget;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.Cell;
 import org.openremote.web.console.panel.entity.GridLayout;
@@ -16,7 +19,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GridPanelComponent extends PassiveConsoleComponent implements Positional {
+public class GridPanelComponent extends PassiveConsoleComponent implements Positional, PanelComponent {
 	private static final String CLASS_NAME = "gridPanelComponent";
 	//private ConsoleComponent component;
 	private int left;
@@ -26,6 +29,7 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 	private int rows;
 	private int cols;
 	private CellData[][] cellDataArr;
+	private Set<ConsoleComponent> components = new HashSet<ConsoleComponent>();
 	
 	private class CellData {
 		private int rowSpan;
@@ -90,6 +94,7 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 	
 	public void setComponent(int row, int col, ConsoleComponent component) {
 		((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
+		components.add(component);
 	}
 	
 	public ConsoleComponent getComponent(int row, int col) {
@@ -176,6 +181,21 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 	public void setColCount(int count) {
 		this.cols = count;
 	}
+	
+	@Override
+	public Set<Sensor> getSensors() {
+		Set<Sensor> sensors = new HashSet<Sensor>();
+		for (ConsoleComponent component : components) {
+			sensors.add(component.getSensor());
+		}
+		return sensors;
+	}
+	
+	@Override
+	public Set<ConsoleComponent> getComponents() {
+		return components;
+	}
+
 	
 	public static GridPanelComponent build(GridLayout layout) throws Exception {
 		GridPanelComponent panel = new GridPanelComponent();

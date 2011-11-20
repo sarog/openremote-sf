@@ -2,8 +2,6 @@ package org.openremote.web.console.widget.ext;
 
 import org.openremote.web.console.widget.HTMLComponent;
 
-import com.google.gwt.user.client.DOM;
-
 public class SpinnerComponent extends HTMLComponent {
 	private int size = 70;
 	private static final String SPINNER_HTML_CODE = 

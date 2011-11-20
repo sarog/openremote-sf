@@ -3,25 +3,13 @@ package org.openremote.web.console.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
-import org.openremote.web.console.panel.entity.Background;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Screen;
-import org.openremote.web.console.panel.entity.component.ButtonComponent;
-import org.openremote.web.console.panel.entity.component.ImageComponent;
-import org.openremote.web.console.panel.entity.component.LabelComponent;
-import org.openremote.web.console.panel.entity.component.SliderComponent;
-import org.openremote.web.console.panel.entity.component.SwitchComponent;
 import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.AbsolutePanelComponent;
-import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.GridPanelComponent;
-
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.Window;
 
 public class ScreenViewService {
@@ -35,9 +23,11 @@ public class ScreenViewService {
 	public ScreenViewImpl getScreenView(int screenId) {
 		ScreenViewImpl screenView;
 		screenView = screenViewMap.get(screenId);
-		if (screenView == null && screenId < 0) {
-			buildSystemScreenViews();
-			screenView = screenViewMap.get(screenId);
+		if (screenView == null) {
+			if (screenId < 0) {
+				buildSystemScreenViews();
+				screenView = screenViewMap.get(screenId);
+			}
 		}
 		return screenView;
 	}
@@ -71,7 +61,7 @@ public class ScreenViewService {
 				for (AbsoluteLayout layout : absoluteElems) {
 					// Create Absolute Panel Component
 					AbsolutePanelComponent absPanel = AbsolutePanelComponent.build(layout);
-					screenView.addConsoleWidget(absPanel);
+					screenView.addPanelComponent(absPanel);
 				}
 			}
 			
@@ -81,7 +71,7 @@ public class ScreenViewService {
 				for (GridLayout layout : gridElems) {
 					// Create Grid Panel Component
 					GridPanelComponent gridPanel = GridPanelComponent.build(layout);
-					screenView.addConsoleWidget(gridPanel);
+					screenView.addPanelComponent(gridPanel);
 				}
 			}
 		} catch (Exception e) {

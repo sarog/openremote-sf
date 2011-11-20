@@ -1,5 +1,6 @@
 package org.openremote.web.console.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,9 @@ import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.panel.PanelIdentityList;
+import org.openremote.web.console.panel.entity.Status;
+import org.openremote.web.console.panel.entity.StatusList;
+import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
@@ -16,7 +20,8 @@ import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class JSONPControllerService extends ControllerService {
-
+	private String uuid;
+	
 	private static String getJsonMethodUrl(EnumControllerCommand command) {
 		String methodUrl = "";
 		switch (command) {
@@ -52,7 +57,54 @@ public class JSONPControllerService extends ControllerService {
 	
 	public JSONPControllerService(Controller controller) {
 		setController(controller);
+		uuid = BrowserUtils.randomUUID().replace("-", "");
 	}
+	
+	// ------------------------   Interface Overrides	-------------------------------------------
+	
+	@Override
+	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback) {
+		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
+	}
+	
+	@Override
+	public void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback) {
+		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LAYOUT;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback));
+	}
+	
+	@Override
+	public void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
+	}
+
+	@Override
+	public void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback));	
+	}
+	
+	@Override
+	public void sendCommand(String controllerUrl, String sendCommand, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.SEND_COMMAND;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {sendCommand}, command), new JSONPControllerCallback(command, callback));
+	}
+
+	@Override
+	public void monitorSensors(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		EnumControllerCommand command = EnumControllerCommand.DO_SENSOR_POLLING;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {uuid, Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), new JSONPControllerCallback(command, callback),55000);
+	}
+	
+	@Override
+	public void getSensorValues(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		EnumControllerCommand command = EnumControllerCommand.GET_SENSOR_STATUS;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), new JSONPControllerCallback(command, callback));
+	}
+	
+	// ------------------------   Interface Overrides End -------------------------------------------
 	
 	@SuppressWarnings("unchecked")
 	private class JSONPControllerCallback implements AsyncCallback<JavaScriptObject> {
@@ -66,29 +118,26 @@ public class JSONPControllerService extends ControllerService {
 		
 		@Override
 		public void onFailure(Throwable caught) {
-			callback.onFailure(new Exception("Controller Service Error: " + caught.getMessage()));
+			callback.onFailure(caught);
 		}
 
 		@Override
 		public void onSuccess(JavaScriptObject jsObj) {
 			if (jsObj == null) {
-				callback.onFailure(new Exception("Controller Service Error: " + EnumControllerResponseCode.NOT_FOUND.getDescription()));
+				//callback.onFailure(new Exception(new Exception("Unknown Error JSON Response is Empty")));
+				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
 				return;
 			}
 			
 			// Check for JSONP Error Response and if set throw appropriate exception
 			JSONObject jsonObj = new JSONObject(jsObj);
-
-			
-			
 			int errorCode = 0;
-			String errorMessage = "";
 			
 			if (jsonObj.containsKey("error")) {
 				errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
-				errorMessage = jsonObj.get("error").isObject().get("message").isString().stringValue();
-				if (!((command == EnumControllerCommand.IS_SECURE && errorCode == 403) || errorCode == 200)) {
-					callback.onFailure(new Exception("Error: " + EnumControllerResponseCode.getResponseCode(errorCode).getDescription()));
+				if (!((command == EnumControllerCommand.IS_SECURE && errorCode == 403) || (command == EnumControllerCommand.DO_SENSOR_POLLING && errorCode == 504) || errorCode == 200)) {
+					callback.onFailure(EnumControllerResponseCode.getResponseCode(errorCode));
+					return;
 				}
 			}
 			
@@ -124,44 +173,49 @@ public class JSONPControllerService extends ControllerService {
 						successCallback.onSuccess(false);
 					}
 					break;
+				case DO_SENSOR_POLLING:
+					AsyncControllerCallback<Map<Integer,String>> pollingCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
+					Map<Integer,String> pollValues = new HashMap<Integer, String>();
+					if (errorCode == 504) {
+						pollingCallback.onSuccess(null);	
+					} else {
+						List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).getStatus();
+						if (statuses != null) {
+							for (Status status : statuses) {
+								if (status != null) {
+									pollValues.put(status.getId(), status.getContent());
+								}
+							}
+							pollingCallback.onSuccess(pollValues);
+						}
+					}
+					break;
+				case GET_SENSOR_STATUS:
+					AsyncControllerCallback<Map<Integer,String>> statusCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
+					Map<Integer,String> statusValues = new HashMap<Integer, String>();
+					List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).getStatus();
+					if (statuses != null) {
+						for (Status status : statuses) {
+							if (status != null) {
+								statusValues.put(status.getId(), status.getContent());
+							}
+						}
+						statusCallback.onSuccess(statusValues);
+					}
+					break;
 			}
 		}
 	};
 	
 	private void doJsonpRequest(String url, JSONPControllerCallback callback) {
+		doJsonpRequest(url, callback, null);
+	}
+	private void doJsonpRequest(String url, JSONPControllerCallback callback, Integer timeout) {
 		JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
+		if (timeout != null) {
+			jsonp.setTimeout(timeout);
+		}
 		jsonp.requestObject(url, callback);
-	}
-	
-	// ------------------------   Interface Overrides	-------------------------------------------
-	
-	@Override
-	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback) {
-		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
-	}
-	
-	@Override
-	public void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback) {
-		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LAYOUT;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback));
-	}
-	
-	@Override
-	public void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
-		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
-	}
-
-	@Override
-	public void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
-		doJsonpRequest(controllerUrl, new JSONPControllerCallback(EnumControllerCommand.IS_ALIVE, callback));	
-	}
-	
-	@Override
-	public void sendCommand(String controllerUrl, String sendCommand, AsyncControllerCallback<Boolean> callback) {
-		EnumControllerCommand command = EnumControllerCommand.SEND_COMMAND;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {sendCommand}, command), new JSONPControllerCallback(command, callback));
 	}
 	
 	// ------------------------	Internal JSON Methods ------------------------------------------

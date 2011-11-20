@@ -25,7 +25,6 @@ import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
-import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -34,14 +33,10 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive {
-	private List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	private List<Widget> interactiveChildren = new ArrayList<Widget>();
-	protected boolean handlersRegistered = false;
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
 	HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
@@ -118,74 +113,61 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	protected void registerHandlers(Widget component) {
 		if(BrowserUtils.isMobile()) {
-			storeHandler(component.addDomHandler(this, TouchStartEvent.getType()));
-			storeHandler(component.addDomHandler(this, TouchEndEvent.getType()));
+			registerHandler(component.addDomHandler(this, TouchStartEvent.getType()));
+			registerHandler(component.addDomHandler(this, TouchEndEvent.getType()));
 		} else {
-			storeHandler(component.addDomHandler(this, MouseDownEvent.getType()));
-			storeHandler(component.addDomHandler(this, MouseUpEvent.getType()));
-			storeHandler(component.addDomHandler(this, MouseOutEvent.getType()));
+			registerHandler(component.addDomHandler(this, MouseDownEvent.getType()));
+			registerHandler(component.addDomHandler(this, MouseUpEvent.getType()));
+			registerHandler(component.addDomHandler(this, MouseOutEvent.getType()));
 		}
 		
 		if (component instanceof PressStartHandler) {
 			PressStartHandler pressableComponent = (PressStartHandler) component;
-			storeHandler(component.addHandler(pressableComponent, PressStartEvent.getType()));
+			registerHandler(component.addHandler(pressableComponent, PressStartEvent.getType()));
 		}
 
 		if (component instanceof PressEndHandler) {
 			PressEndHandler pressableComponent = (PressEndHandler) component;
-			storeHandler(component.addHandler(pressableComponent, PressEndEvent.getType()));
+			registerHandler(component.addHandler(pressableComponent, PressEndEvent.getType()));
 		}
 
 		if (component instanceof PressCancelHandler) {
 			PressCancelHandler pressableComponent = (PressCancelHandler) component;
-			storeHandler(component.addHandler(pressableComponent, PressCancelEvent.getType()));
+			registerHandler(component.addHandler(pressableComponent, PressCancelEvent.getType()));
 		}
 		
 		if (component instanceof Draggable) {
 			Draggable draggableComponent = (Draggable) component;
-			storeHandler(component.addHandler(draggableComponent, DragStartEvent.getType()));
-			storeHandler(component.addHandler(draggableComponent, DragMoveEvent.getType()));
-			storeHandler(component.addHandler(draggableComponent, DragEndEvent.getType()));
-			storeHandler(component.addHandler(draggableComponent, DragCancelEvent.getType()));
+			registerHandler(component.addHandler(draggableComponent, DragStartEvent.getType()));
+			registerHandler(component.addHandler(draggableComponent, DragMoveEvent.getType()));
+			registerHandler(component.addHandler(draggableComponent, DragEndEvent.getType()));
+			registerHandler(component.addHandler(draggableComponent, DragCancelEvent.getType()));
 		}
 		
 		if (component instanceof TapHandler) {
 			TapHandler tappableComponent = (TapHandler) component;
-			storeHandler(component.addHandler(tappableComponent, TapEvent.getType()));
+			registerHandler(component.addHandler(tappableComponent, TapEvent.getType()));
 		}
 		
 		if (component instanceof DoubleTapHandler) {
 			DoubleTapHandler dblTappableComponent = (DoubleTapHandler) component;
-			storeHandler(component.addHandler(dblTappableComponent, DoubleTapEvent.getType()));
+			registerHandler(component.addHandler(dblTappableComponent, DoubleTapEvent.getType()));
 		}
 		
 		if (component instanceof HoldHandler) {
 			HoldHandler holdableComponent = (HoldHandler) component;
-			storeHandler(component.addHandler(holdableComponent, HoldEvent.getType()));
+			registerHandler(component.addHandler(holdableComponent, HoldEvent.getType()));
 		}
 		
 		if (component instanceof SwipeHandler) {
 			SwipeHandler pressableComponent = (SwipeHandler) component;
-			storeHandler(component.addHandler(pressableComponent, SwipeEvent.getType()));
+			registerHandler(component.addHandler(pressableComponent, SwipeEvent.getType()));
 		}
 		
 		if (component instanceof RotationHandler) {
 			RotationHandler pressableComponent = (RotationHandler) component;
-			storeHandler(component.addHandler(pressableComponent, RotationEvent.getType()));
+			registerHandler(component.addHandler(pressableComponent, RotationEvent.getType()));
 		}
-	}
-	
-	protected void unRegisterHandlers() {
-		for (HandlerRegistration handler : handlerRegistrations) {
-			handler.removeHandler();
-		}
-		handlerRegistrations.clear();
-		handlersRegistered = false;
-	}
-	
-	private void storeHandler(HandlerRegistration registration) {
-		handlerRegistrations.add(registration);
-		handlersRegistered = true;
 	}
 	
 	public void addInteractiveChild(Widget component) {

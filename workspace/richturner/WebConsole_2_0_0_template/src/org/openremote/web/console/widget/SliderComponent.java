@@ -6,19 +6,17 @@ import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
+import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
-import org.openremote.web.console.event.ui.NavigateEvent;
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SliderComponent extends InteractiveConsoleComponent {
+public class SliderComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "sliderComponent";
 	public static final String HANDLE_CLASS_NAME = "sliderComponentHandle";
 	public static final String BAR_CLASS_NAME = "sliderComponentBar";
@@ -90,9 +88,12 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			doValueChange();
 		}
 
+		/*
+		 *  This event occurs when press moves off the console display(non-Javadoc)
+		 * @see org.openremote.web.console.event.drag.DragCancelHandler#onDragCancel(org.openremote.web.console.event.drag.DragCancelEvent)
+		 */
 		@Override
 		public void onDragCancel(DragCancelEvent event) {
-			// This event occurs when press moves off the console display
 			doValueChange();
 		}
 	}
@@ -131,8 +132,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		public void onTap(TapEvent event) {
 			if (!clickable) {
 				return;
-			}
-			
+			}			
 			if (appearsVertical()) {
 				doHandleDrag(event.getYPos());
 			} else {
@@ -200,11 +200,34 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		}
 	}
 	
+	@Override
+	public void onSensorAdd() {}
+	
+	@Override
+	public void sensorChanged(String newValue) {
+		try {
+			int value = Integer.parseInt(newValue);
+			value = value < minValue ? minValue : value;
+			value = value > maxValue ? maxValue : value;
+			doHandleDragUsingValue(value);
+			doValueChange(true);
+		} catch(Exception e) {}
+	}
+	
+	private void doHandleDragUsingValue(int value) {
+		int limitedPos = (int)Math.round(((((double)value - minValue) / (maxValue - minValue)) * pixelRange) + halfHandle);
+		limitedPos = setHandlePosition(limitedPos);
+		setTrackLength(limitedPos);
+		setValue(value);
+	}
+	
 	private void doHandleDrag(int absPos) {
 		int relPos = calculateRelativePixelValue(absPos);
 		int limitedPos = setHandlePosition(relPos);
 		setTrackLength(limitedPos);
 		int value = (int)Math.round((((double)(limitedPos - halfHandle) / pixelRange) * (maxValue - minValue)) + minValue);
+		value = value < minValue ? minValue : value;
+		value = value > maxValue ? maxValue : value;
 		setValue(value);
 	}
 	
@@ -270,11 +293,19 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	}
 	
 	private void doValueChange() {
+		doValueChange(false);
+	}
+	
+	private void doValueChange(boolean changeFromSensor) {
 		if (value != lastValue) {
-			// Fire value change event on console unit event bus
-			lastValue = value;
-			if (hasControlCommand) {
-				eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
+			if (!changeFromSensor) {
+				// Fire value change event on console unit event bus
+				lastValue = value;
+				if (hasControlCommand) {
+					eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
+				}
+			} else {
+				
 			}
 		}
 	}
@@ -328,6 +359,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		component.setId(entity.getId());
 		component.setMax(entity.getMax().getValue());
 		component.setMin(entity.getMin().getValue());
+		component.setSensor(new Sensor(entity.getLink()));
 		component.setIsVertical(entity.getVertical());
 		component.setHasControlCommand(true);
 		return component;

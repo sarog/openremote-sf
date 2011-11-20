@@ -37,6 +37,10 @@ public class Sensor {
 		return sensorRef;
 	}
 	
+	public Map<String, String> getStateMap() {
+		return map;
+	}
+	
 	public String getMappedValue(String name) {
 		String value = "";
 		if (map != null && map.containsKey(name)) {

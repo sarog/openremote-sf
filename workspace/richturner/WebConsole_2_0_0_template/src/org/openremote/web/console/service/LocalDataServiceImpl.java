@@ -1,7 +1,6 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.panel.PanelCredentials;
-import org.openremote.web.console.panel.PanelCredentialsImpl;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.storage.client.StorageMap;
 import com.google.gwt.user.client.Cookies;

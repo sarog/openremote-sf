@@ -15,7 +15,9 @@ public enum EnumControllerResponseCode {
 	PANEL_XML_INVALID (427, "Panel XML is Invalid"),
 	XML_ERROR (429, "Invalid Controller XML Element"),
 	NO_RESPONSE (430, "No Response from Controller"),
-	UNKNOWN_ERROR (9999, "Unkown Response");	
+	XML_CHANGED (506, "Controller XML has Changed"),
+	XML_JSON_PARSING_ERROR (520, "XML to JSON Parsing Error"),
+	UNKNOWN_ERROR (9999, "Unkown Controller Error");	
 	
 	private final int code;
 	private final String description;

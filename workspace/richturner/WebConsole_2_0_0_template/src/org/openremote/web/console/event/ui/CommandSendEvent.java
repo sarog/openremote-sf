@@ -42,4 +42,8 @@ public class CommandSendEvent extends GwtEvent<CommandSendHandler> {
 	public int getCommandId() {
 		return commandId;
 	}
+	
+	public InteractiveConsoleComponent getSender() {
+		return sender;
+	}
 }

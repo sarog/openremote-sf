@@ -1,31 +1,37 @@
 package org.openremote.web.console.widget;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
-import org.openremote.web.console.panel.entity.ButtonDefault;
-import org.openremote.web.console.panel.entity.Link;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
+import org.openremote.web.console.util.ImageContainer;
+import org.openremote.web.console.util.ImageLoadedCallback;
+
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 
 public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler, TapHandler {
 	public static final String CLASS_NAME = "switchComponent";
-	private String name;
-	private int width;
-	private int height;
-	private Image onImage;
-	private Image offImage;
-	private boolean onImageExists = false;
-	private boolean offImageExists = false;
 	private LabelComponent label;
-	private String state = "";
+	private ImageContainer currentImage;
+	private String state;
+	private Map<String, ImageContainer> stateImageMap = new LinkedHashMap<String, ImageContainer>();
+	private ImageLoadedCallback loadedCallback = new ImageLoadedCallback() {
+		@Override
+		public void onImageLoaded(ImageContainer container) {
+			if (container != null) {
+				if (currentImage == container) {
+					setImage(container);
+				}
+			}
+		}
+	};
+	
 	
 	private SwitchComponent() {
 		super(new AbsolutePanel(), CLASS_NAME);
@@ -34,52 +40,38 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
 		
 		label = new LabelComponent();
-		setName("OFF");
 		label.setVisible(true);
-		// Remove standard style name from label component
 		label.removeStyleName("labelComponent");
-		
-		onImage = new Image();
-		onImage.setVisible(false);
-		
-		offImage = new Image();
-		offImage.setVisible(false);
-		
 		((AbsolutePanel)getWidget()).add(label, 0, 0);
-		((AbsolutePanel)getWidget()).add(onImage, 0, 0);
-		((AbsolutePanel)getWidget()).add(offImage, 0, 0);
 	}
 	
-	/*
-	 * Check images exist so we don't waste time initialising sensor later on if they don't
-	 */
+	@Override
 	public void onSensorAdd() {
-		if (sensor.isValid()) {
+		Map<String, String> map = sensor.getStateMap();
+		for (String name : map.keySet()) {
+			String value = map.get(name);
 			String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-			onImage.addLoadHandler(new LoadHandler() {
-
-				@Override
-				public void onLoad(LoadEvent event) {
-					onImageExists = true;
-				}
-			});
-			onImage.setUrl(url + "/" + sensor.getMappedValue("on"));
-			
-			offImage.addLoadHandler(new LoadHandler() {
-
-				@Override
-				public void onLoad(LoadEvent event) {
-					offImageExists = true;
-					onRender(0, 0);
-				}
-			});
-			offImage.setUrl(url + "/" + sensor.getMappedValue("off"));			
+			url += "/" + value;
+			ImageContainer container = new ImageContainer(new Image(url), loadedCallback);
+			stateImageMap.put(name, container);
+			((AbsolutePanel)getWidget()).add(container.getImage(), 0, 0);
 		}
 	}
-
-	private void setName(String name) {
-		this.name = name;
-		label.setText(name);
+	
+	@Override
+	public void sensorChanged(String value) {
+		if (!value.equalsIgnoreCase("off") && !value.equalsIgnoreCase("on")) {
+			try {
+				int numValue = Integer.parseInt(value);
+				numValue = numValue > 0 ? 1 : 0;
+				value = numValue == 0 ? "off" : "on";
+			} catch (Exception e) {}
+		}
+		if (value.equalsIgnoreCase("off") || value.equalsIgnoreCase("on")) {
+			state = value;
+			label.setText(value.toUpperCase());
+			setImage(stateImageMap.get(value));
+		}
 	}
 	
 	@Override
@@ -87,24 +79,9 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		if (!isInitialised) {
 			label.setWidth(width + "px");
 			label.setHeight(height + "px");
-			label.onRender(width, height);
+			DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
+			sensorChanged("off");
 		}
-		updateState("off");
-		checkSensor();
-	}
-	
-	/*
-	 * Only use the sensor if either the on or off image exist
-	 */
-	private void checkSensor() {
-		if (!onImageExists && !offImageExists) {
-			sensor = null;
-		}
-	}
-	
-	@Override
-	public void sensorChanged(String value) {
-		updateState(value);
 	}
 	
 	@Override
@@ -114,6 +91,28 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		} else if (hasControlCommand) {
 			eventBus.fireEvent(new CommandSendEvent(getId(), getSendCommand(), this));
 		}
+	}
+	
+	private void setImage(ImageContainer container) {
+		boolean showLabel = true;
+		if (container != null) {
+			if (container.getExists()) {
+				if (currentImage != null) {
+					currentImage.setVisible(false);
+				}
+				showLabel = false;
+				container.setVisible(true);	
+			}
+			currentImage = container;
+		} else {
+			if (currentImage != null) {
+				currentImage.setVisible(false);
+				currentImage = null;
+			}
+		}
+		String backgroundStyle = showLabel ? "" : "none";
+		label.setVisible(showLabel);
+		DOM.setStyleAttribute(getElement(), "background", backgroundStyle);
 	}
 	
 	private String getSendCommand() {
@@ -128,36 +127,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	public void onCommandSendResponse(Boolean success, String command) {
 		// Update the state of the switch if send command was a success
 		if (success) {
-			updateState(command);
-		}
-	}
-	
-	private void updateState(String newState) {
-		if (!newState.equalsIgnoreCase(state)) {
-			if (newState.equalsIgnoreCase("on")) {
-				offImage.setVisible(false);
-				if (onImageExists) {
-					onImage.setVisible(true);
-					label.setVisible(false);
-					DOM.setStyleAttribute(getElement(), "background", "none");
-				} else {
-					setName(newState.toUpperCase());
-					label.setVisible(true);
-					DOM.setStyleAttribute(getElement(), "background", "");
-				}		
-			} else if (newState.equalsIgnoreCase("off")) {
-				onImage.setVisible(false);
-				if (offImageExists) {
-					offImage.setVisible(true);
-					label.setVisible(false);
-					DOM.setStyleAttribute(getElement(), "background", "none");
-				} else {
-					setName(newState.toUpperCase());
-					label.setVisible(true);
-					DOM.setStyleAttribute(getElement(), "background", "");
-				}
-			}
-			this.state = newState;
+			sensorChanged(command);
 		}
 	}
 	
@@ -167,10 +137,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 			return component;
 		}
 		component.setId(entity.getId());
-		Link link = entity.getLink();
-		if (link != null) {
-			component.setSensor(new Sensor(entity.getLink()));
-		}
+		component.setSensor(new Sensor(entity.getLink()));
 		component.setHasControlCommand(true);
 		return component;
 	}

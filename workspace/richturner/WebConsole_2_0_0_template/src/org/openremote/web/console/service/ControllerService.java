@@ -1,7 +1,7 @@
 package org.openremote.web.console.service;
 
 import java.util.List;
-
+import java.util.Map;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
@@ -74,4 +74,24 @@ public abstract class ControllerService {
 		}
 	}
 	public abstract void sendCommand(String controllerUrl, String command, AsyncControllerCallback<Boolean> callback);
+	
+	/*
+	 * Monitor sensors for change
+	 */
+	public void monitorSensors(Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		if (controller != null) {
+			monitorSensors(controller.getUrl(), sensorIds, callback);
+		}
+	}
+	public abstract void monitorSensors(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback);
+	
+	/*
+	 * Get sensor values
+	 */
+	public void getSensorValues(Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		if (controller != null) {
+			getSensorValues(controller.getUrl(), sensorIds, callback);
+		}
+	}
+	public abstract void getSensorValues(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback);
 }

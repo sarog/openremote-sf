@@ -1,6 +1,5 @@
 package org.openremote.web.console.service;
 
-import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.service.MyFactory;
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
