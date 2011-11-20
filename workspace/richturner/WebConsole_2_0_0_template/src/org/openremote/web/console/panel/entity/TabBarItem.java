@@ -19,8 +19,6 @@
 */
 package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.panel.entity.component.ImageComponent;
-
 /**
  * This class is responsible for storing data about tabBarItem.
  */

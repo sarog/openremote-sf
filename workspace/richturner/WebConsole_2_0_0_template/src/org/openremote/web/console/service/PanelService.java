@@ -1,7 +1,6 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.panel.Panel;
-import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 

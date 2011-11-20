@@ -54,6 +54,12 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
+	public void resize(int width, int height) {
+		// TODO: Check this functionality works as expected
+		onRemove();
+		onAdd(width, height);
+	}
+	
 	/**
 	 * Set the display orientation which changes the CSS class causing a
 	 * rotate transform to be applied, have to also adjust the display

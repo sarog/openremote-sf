@@ -12,13 +12,10 @@ import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.ButtonDefault;
-import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.util.BrowserUtils;
-
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;

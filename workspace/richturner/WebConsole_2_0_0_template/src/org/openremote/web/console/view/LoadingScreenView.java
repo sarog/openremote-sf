@@ -32,7 +32,7 @@ public class LoadingScreenView extends ScreenViewImpl {
 		absPanel2.setComponent(msgWidget);
 		
 		// Add components to screen view
-		super.addConsoleWidget(absPanel);
-		super.addConsoleWidget(absPanel2);
+		super.addPanelComponent(absPanel);
+		super.addPanelComponent(absPanel2);
 	}
 }

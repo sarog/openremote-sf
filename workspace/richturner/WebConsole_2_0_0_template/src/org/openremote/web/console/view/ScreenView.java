@@ -1,8 +1,10 @@
 package org.openremote.web.console.view;
 
-import java.util.List;
-import org.openremote.web.console.widget.ConsoleComponent;
+import java.util.Set;
+import org.openremote.web.console.widget.PanelComponent;
 
 public interface ScreenView {
-	public List<ConsoleComponent> getConsoleWidgets();
+	public Set<PanelComponent> getPanelComponents();
+	
+	public Set<Integer> getSensorIds();
 }

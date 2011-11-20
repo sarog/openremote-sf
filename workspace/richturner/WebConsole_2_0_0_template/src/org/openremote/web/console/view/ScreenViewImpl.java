@@ -1,14 +1,14 @@
 package org.openremote.web.console.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashSet;
+import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.Background;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
+import org.openremote.web.console.widget.PanelComponent;
 import org.openremote.web.console.widget.Positional;
-
+import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -25,9 +25,10 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
-	List<ConsoleComponent> consoleWidgets = new ArrayList<ConsoleComponent>();
+	Set<PanelComponent> panelComponents = new HashSet<PanelComponent>();
 	public static final String CLASS_NAME = "screenView";
 	private Image background;
+	private Set<Integer> sensorIds = new HashSet<Integer>();
 	
 	public ScreenViewImpl() {
 		super(new AbsolutePanel(), CLASS_NAME);
@@ -35,28 +36,37 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 		setHeight("100%");
 	}
 	
-	public void addConsoleWidget(ConsoleComponent widget) {
-		addToScreen(widget);
+	public void addPanelComponent(PanelComponent component) {
+		Set<Sensor> sensors = component.getSensors();
+		if (sensors != null) {
+			for (Sensor sensor : sensors) {
+				if (sensor != null) { 
+					sensorIds.add(sensor.getSensorRef());
+				}
+			}
+		}
+		addToScreen(component);
 	}
 
 	@Override
-	public List<ConsoleComponent> getConsoleWidgets() {
-		return consoleWidgets;
+	public Set<PanelComponent> getPanelComponents() {
+		return panelComponents;
 	}
 	
 	/**
 	 * Add specified component to the Screen View Panel
 	 */
-	private void addToScreen(ConsoleComponent widget) {
+	private void addToScreen(PanelComponent component) {
 		int left = 0;
 		int top = 0;
-		consoleWidgets.add(widget);
+		panelComponents.add(component);
 		
-		if (widget instanceof Positional) {
-			left = ((Positional) widget).getLeft();
-			top = ((Positional) widget).getTop();
+		if (component instanceof Positional) {
+			Positional positional = (Positional) component; 
+			left = positional.getLeft();
+			top = positional.getTop();
 		}
-		((AbsolutePanel)getWidget()).add((Widget) widget, left, top);
+		((AbsolutePanel)getWidget()).add((Widget) component, left, top);
 	}
 	
 	/**
@@ -79,16 +89,21 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	
 	@Override
 	public void onRender(int width, int height) {
-		for (ConsoleComponent component : consoleWidgets) {
-			component.onAdd(width, height);
+		for (PanelComponent component : panelComponents) {
+			((ConsoleComponent)component).onAdd(width, height);
 		}
 	}
 	
 	@Override
 	public void onRemove() {
-		for (ConsoleComponent component : consoleWidgets) {
-			component.onRemove();
+		for (PanelComponent component : panelComponents) {
+			((ConsoleComponent)component).onRemove();
 		}
+	}
+	
+	@Override
+	public Set<Integer> getSensorIds() {
+		return sensorIds;
 	}
 	
 	public void setBackground(Background entity) {

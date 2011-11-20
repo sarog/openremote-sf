@@ -1,5 +1,8 @@
 package org.openremote.web.console.widget;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
@@ -13,7 +16,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AbsolutePanelComponent extends PassiveConsoleComponent implements Positional {
+public class AbsolutePanelComponent extends PassiveConsoleComponent implements Positional, PanelComponent {
 	private static final String CLASS_NAME = "absolutePanelComponent";
 	private ConsoleComponent component;
 	private HorizontalPanel componentContainer;
@@ -126,6 +129,22 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 			} catch (Exception e) {}
 		}
 		setWidth(widthInt);
+	}
+	
+	@Override
+	public Set<Sensor> getSensors() {
+		Set<Sensor> sensors = new HashSet<Sensor>();
+		if (component != null) {
+			sensors.add(component.getSensor());
+		}
+		return sensors;
+	}
+	
+	@Override
+	public Set<ConsoleComponent> getComponents() {
+		Set<ConsoleComponent> components = new HashSet<ConsoleComponent>();
+		components.add(component);
+		return components;
 	}
 	
 	public static AbsolutePanelComponent build(AbsoluteLayout layout) throws Exception {
