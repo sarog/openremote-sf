@@ -20,7 +20,7 @@ int createPort(char *portId, char *portType) {
 	// Check if port already exists
 	p = apr_hash_get(ports, portId, APR_HASH_KEY_STRING);
 	if (p != NULL)
-		return R_PORT_EXISTS;
+		return R_SUCCESS;
 
 	// Otherwise create it
 	p = apr_palloc(portsPool, sizeof(port_t));
