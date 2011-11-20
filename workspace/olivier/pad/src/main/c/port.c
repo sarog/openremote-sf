@@ -6,10 +6,12 @@
 #include "port.h"
 
 int logicalLock(port_t *port, char *source) {
-	if (port->lockSource != NULL)
+	if (port->lockSource != NULL && strcmp(port->lockSource, source) != 0)
 		return R_WRONG_LOCK_STATUS;
-	port->lockSource = malloc(strlen(source) + 1);
-	strcpy(port->lockSource, source);
+	if (port->lockSource == NULL) {
+		port->lockSource = malloc(strlen(source) + 1);
+		strcpy(port->lockSource, source);
+	}
 	return R_SUCCESS;
 }
 
