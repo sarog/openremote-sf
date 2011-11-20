@@ -58,7 +58,7 @@ void *lsRead(void *data) {
 }
 
 tcflag_t lsGetCfg(apr_hash_t *cfg, const trsTbl_t *tbl, tcflag_t dft) {
-	char *s = apr_hash_get(cfg, tbl->key, strlen(tbl->key));
+	char *s = apr_hash_get(cfg, tbl->key, APR_HASH_KEY_STRING);
 	tcflag_t out = dft;
 	if (s != NULL) {
 		int i;

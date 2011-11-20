@@ -18,7 +18,7 @@ int createPort(char *portId, char *portType) {
 	port_t *p;
 
 	// Check if port already exists
-	p = apr_hash_get(ports, portId, strlen(portId));
+	p = apr_hash_get(ports, portId, APR_HASH_KEY_STRING);
 	if (p != NULL)
 		return R_PORT_EXISTS;
 
@@ -36,13 +36,14 @@ int createPort(char *portId, char *portType) {
 	p->portSendCb = physicalSendCb;
 
 	// Add newly created port to port list
-	apr_hash_set(ports, portId, strlen(portId), p);
+	apr_hash_set(ports, p->portId, APR_HASH_KEY_STRING, p);
+
 	return R_SUCCESS;
 }
 
 int getPort(char *portId, port_t **port) {
 	port_t *p;
-	p = apr_hash_get(ports, portId, strlen(portId));
+	p = apr_hash_get(ports, portId, APR_HASH_KEY_STRING);
 	if (p == NULL)
 		return R_NO_SUCH_PORT;
 	*port = p;
