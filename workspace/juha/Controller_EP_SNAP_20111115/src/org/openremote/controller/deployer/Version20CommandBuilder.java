@@ -94,7 +94,7 @@ public class Version20CommandBuilder implements DeviceProtocolBuilder
   @SuppressWarnings("unchecked")
   private List<Element> getPropertyElements(Element rootElement)
   {
-    return rootElement.getChildren("property");
+    return rootElement.getChildren("property", ModelBuilder.SchemaVersion.OPENREMOTE_NAMESPACE);
   }
 
 }

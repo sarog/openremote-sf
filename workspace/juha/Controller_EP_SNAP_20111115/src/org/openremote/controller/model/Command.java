@@ -286,7 +286,7 @@ public class Command
 
     for (String propertyKey : properties.keySet())
     {
-      Element property = new Element("property");
+      Element property = new Element("property", ns);
 
       property.setAttribute(COMMAND_NAME_PROPERTY, propertyKey);
       property.setAttribute("value", properties.get(propertyKey));
