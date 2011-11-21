@@ -168,7 +168,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			}
 
 			else {
-				log.warn("Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
+				log.warn("Unknown Lutron HomeWorks property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
 			}
 		}
 
