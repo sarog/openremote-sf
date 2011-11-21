@@ -35,6 +35,7 @@ import java.util.HashMap;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
 import org.openremote.controller.protocol.lutron.model.GrafikEye;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
@@ -405,9 +406,7 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
     return response;
   }
 
-  public class LutronCommand {
-
-    // TODO: protocol for coalesce
+  public class LutronCommand implements Coalescable {
 
     private String command;
     private LutronHomeWorksAddress address;
@@ -431,6 +430,16 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
       }
       return buf.toString();
     }
+    
+    @Override
+    public boolean isCoalesable(Coalescable other) {
+      if (!(other instanceof LutronCommand)) {
+        return false;
+      }
+      LutronCommand otherCommand = (LutronCommand)other;
+      return (otherCommand.command.equals(this.command) && (otherCommand.address.equals(this.address)));
+    }
+
   }
 
   private class LutronResponse {
