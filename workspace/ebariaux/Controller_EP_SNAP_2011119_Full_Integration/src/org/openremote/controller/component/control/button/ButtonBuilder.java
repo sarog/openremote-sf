@@ -43,7 +43,6 @@ import org.openremote.controller.service.Deployer;
 public class ButtonBuilder extends ComponentBuilder
 {
 
-
   // Instance Fields ------------------------------------------------------------------------------
   
   private Deployer deployer;
@@ -67,23 +66,24 @@ public class ButtonBuilder extends ComponentBuilder
 
     if (button.isValidActionWith(commandParam))
     {
-      List<Element> commandRefElements = componentElement.getChildren();
-
-      for (Element commandRefElement : commandRefElements)
-      {
-        if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName()))
-        {
-          button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
-          continue;
-        }
-
-        String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-        Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
-        ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
-        button.addExecutableCommand(command);
-      }
-    }
-    return button;
+         List<Element> macroElements = componentElement.getChildren();
+         for (Element macroElement : macroElements) {
+           if (commandParam.equalsIgnoreCase(macroElement.getAttribute("commandParam").getValue())) {
+              List<Element> commandRefElements = macroElement.getChildren();
+              for (Element commandRefElement : commandRefElements) {
+                if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
+                  button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
+                  continue;
+                }
+                String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+                Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
+                ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
+                button.addExecutableCommand(command);
+              }
+            }
+          }
+       }
+       return button;
   }
 
 
