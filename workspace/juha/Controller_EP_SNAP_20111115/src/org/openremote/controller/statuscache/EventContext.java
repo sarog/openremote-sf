@@ -59,6 +59,11 @@ public class EventContext
 
   // Public Instance Methods ----------------------------------------------------------------------
 
+  public StatusCache getDeviceStateCache()
+  {
+     return cache;
+  }
+
 //  public SensorFacade getSensorFacade()
 //  {
 //    return new SensorFacade(cache);
@@ -97,8 +102,7 @@ public class EventContext
 
     return events;
   }
-
-
+  
 
   // Nested Classes -------------------------------------------------------------------------------
 
