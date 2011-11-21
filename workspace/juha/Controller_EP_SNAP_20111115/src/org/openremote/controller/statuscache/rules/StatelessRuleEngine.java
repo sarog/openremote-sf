@@ -129,7 +129,14 @@ public class StatelessRuleEngine extends EventProcessor
 
     session.setGlobal("execute", ctx.getCommandFacade());
     
-    session.execute(ctx.getEvents());
+    Event evt = ctx.getEvent();
+
+    String cachedEvent = ctx.getDeviceStateCache().queryStatus(evt.getSourceID());
+
+    if (!evt.serialize().equals(cachedEvent))
+    {
+     session.execute(ctx.getEvents());
+    }
   }
 
 
