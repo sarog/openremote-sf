@@ -18,7 +18,7 @@ public class DimmerCommand extends DomintellCommand implements ExecutableCommand
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
-   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level) {
+   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
 
       log.info("createCommand (" + name + "," + gateway + "," + moduleType + "," + address + "," + output + ")");
 
@@ -31,6 +31,9 @@ public class DimmerCommand extends DomintellCommand implements ExecutableCommand
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
 
+      
+      // TODO: output is mandatory
+      
       if ("FADE".equalsIgnoreCase(name) && level == null) {
          throw new NoSuchCommandException("Level is required for a dimmer Fade command");
        }
@@ -73,7 +76,6 @@ public class DimmerCommand extends DomintellCommand implements ExecutableCommand
        } catch (DomintellModuleException e) {
          log.error("Impossible to get module", e);
        }
-      
    }   
 
    @Override
