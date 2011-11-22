@@ -1,0 +1,45 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+//
+// Prefix header for all source files of the 'openremote' target in the 'openremote' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+#endif
+
+//Removing NSLogs on Release Builds by redefining NSLog to empty.
+//If you are in development mode, comment this empty NSLog to show log.
+//#define NSLog(...) {}
+
+#define kAuthenticationRequiredControllerRequest @"kAuthenticationRequiredControllerRequest"
+
+#define log4Debug(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Info(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Warn(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Error(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Fatal(message, ...) NSLog(message, ##__VA_ARGS__)
+
+#define OR_LogAffineTransform(message, t) NSLog(@"%@\n[%f %f 0]\n[%f %f 0]\n[%f %f 1]", message, t.a, t.b, t.c, t.d, t.tx, t.ty);
+#define OR_LogRect(message, r) NSLog(@"%@ (%f,%f)-(%f,%f)", message, r.origin.x, r.origin.y, r.size.width, r.size.height);
+#define OR_LogPoint(message, p) NSLog(@"%@ (%f,%f)", message, p.x, p.y);
