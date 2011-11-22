@@ -6,13 +6,12 @@ public class DomintellAddress {
 
    private int address;
    
-   public DomintellAddress(String address) {
+   public DomintellAddress(String address) throws InvalidDomintellAddressException {
       if (address.startsWith("0x")) {
          if (address.length() > 2) {
             this.address = Integer.parseInt(address.substring(2).trim(), 16);
          } else {
-            // TODO: throw invalid address exception
-            this.address = 0;
+            throw new InvalidDomintellAddressException("Could not parse Domintell address", address);
          }
       } else {
          this.address = Integer.parseInt(address);
@@ -24,6 +23,6 @@ public class DomintellAddress {
    }
    
    public String toString() {
-      return StringUtils.right("      " + Integer.toString(address, 16), 6);
+      return StringUtils.right("      " + Integer.toString(address, 16).toUpperCase(), 6);
    }
 }

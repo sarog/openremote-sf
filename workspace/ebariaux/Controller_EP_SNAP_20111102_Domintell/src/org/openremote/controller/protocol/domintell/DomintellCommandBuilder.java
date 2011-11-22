@@ -59,6 +59,12 @@ public class DomintellCommandBuilder implements CommandBuilder {
     * controller.xml file.
     */
    public final static String DOMINTELL_XMLPROPERTY_OUTPUT = "output";
+   
+   /**
+    * String constant for parsing Domintell protocol XML entries from
+    * controller.xml file.
+    */
+   public final static String DOMINTELL_XMLPROPERTY_LEVEL = "level";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -117,13 +123,11 @@ public class DomintellCommandBuilder implements CommandBuilder {
       String addressAsString = null;
       String commandAsString = null;
       String outputAsString = null;
-/*    
-      LutronHomeWorksAddress address = null;
-      Integer scene = null;
-      Integer key = null;
-      Integer level = null;
-  */  
+      String levelAsString = null;
+      
+      DomintellAddress address = null;
       Integer output = null;
+      Integer level = null;
       
       // Get the list of properties from XML...
 
@@ -150,6 +154,10 @@ public class DomintellCommandBuilder implements CommandBuilder {
             outputAsString = propertyValue;
          }
 
+         else if (DOMINTELL_XMLPROPERTY_LEVEL.equalsIgnoreCase(propertyName)) {
+            levelAsString = propertyValue;
+         }
+
          else {
             log.warn("Unknown Domintell property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
          }
@@ -165,23 +173,21 @@ public class DomintellCommandBuilder implements CommandBuilder {
          throw new NoSuchCommandException("Domintell command must have a '" + DOMINTELL_XMLPROPERTY_COMMAND + "' property.");
       }
 
-      /*
-      // If an address was provided, attempt to build Lutron Address
-      // instance...
+      // If an address was provided, attempt to build Domintell Address instance
 
       if (addressAsString != null && !"".equals(addressAsString)) {
          log.info("Will attemp to build address");
 
          try {
-            address = new LutronHomeWorksAddress(addressAsString.trim());
-         } catch (InvalidLutronHomeWorksAddressException e) {
-           log.error("Invalid Lutron HomeWorks address", e);
+            address = new DomintellAddress(addressAsString.trim());
+         } catch (InvalidDomintellAddressException e) {
+           log.error("Invalid Domintell address", e);
             // TODO: re-check, message is not clear when address is invalid
 
             throw new NoSuchCommandException(e.getMessage(), e);
          }
       }
-*/
+
       // If an output was provided, attempt to convert to integer
       if (outputAsString != null && !"".equals(outputAsString)) {
          try {
@@ -191,7 +197,16 @@ public class DomintellCommandBuilder implements CommandBuilder {
             throw new NoSuchCommandException(e.getMessage(), e);
          }
       }
-  /*    
+
+      // If a level was provided, attempt to convert to integer
+      if (levelAsString != null && !"".equals(levelAsString)) {
+         try {
+            level = Integer.parseInt(levelAsString);
+         } catch (NumberFormatException e) {
+           log.error("Invalid level number", e);
+            throw new NoSuchCommandException(e.getMessage(), e);
+         }
+      }
       
       if (level == null) {
          // No specific level provided, check for parameter (passed in from Slider)
@@ -205,18 +220,14 @@ public class DomintellCommandBuilder implements CommandBuilder {
             }
          }
       }
-      
-      // Translate the command string to a type safe Lutron Command types...
-*/
-      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, new DomintellAddress(addressAsString), output);
 
-//      log.info("Created Lutron Command " + cmd + " for address '" + address + "'");
+      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, address, output, level);
+
+      log.info("Created Domintell Command " + cmd + " for address '" + addressAsString + "'");
 
       return cmd;
 
    }
-
-
 
    // Getters / Setters ----------------------------------------------------------------------------
 

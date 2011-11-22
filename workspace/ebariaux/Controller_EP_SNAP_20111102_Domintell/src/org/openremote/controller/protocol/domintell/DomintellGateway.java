@@ -31,11 +31,9 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.DomintellConfig;
+import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
-import org.openremote.controller.protocol.lutron.Dimmer;
-import org.openremote.controller.protocol.lutron.GrafikEye;
-import org.openremote.controller.protocol.lutron.Keypad;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
 
@@ -64,6 +62,9 @@ public class DomintellGateway {
    
    static {
       moduleClasses.put("BIR", RelayModule.class);
+      moduleClasses.put("DMR", RelayModule.class);
+      moduleClasses.put("DIM", DimmerModule.class);
+      moduleClasses.put("D10", DimmerModule.class);      
    }
    
    public synchronized void startGateway() {
@@ -327,12 +328,16 @@ public class DomintellGateway {
                   Class<? extends DomintellModule> moduleClass = moduleClasses.get(moduleType);
                   log.info("Module class " + moduleClass);
                   if (moduleClass != null) {
-                     DomintellModule module = getDomintellModule(moduleType, new DomintellAddress("0x" + address), moduleClass);                     
+                     DomintellAddress domintellAddress;
+                     domintellAddress = new DomintellAddress("0x" + address);
+                     DomintellModule module = getDomintellModule(moduleType, domintellAddress, moduleClass);                     
                     if (module != null) {
                        module.processUpdate(packetText.substring(9).trim());
                     }
                   }
                } catch (DomintellModuleException e) {
+                  log.error("Impossible to get module", e);
+               } catch (InvalidDomintellAddressException e) {
                   log.error("Impossible to get module", e);
                }
               } /*else {
