@@ -34,6 +34,7 @@ import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
+import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
 
@@ -65,6 +66,7 @@ public class DomintellGateway {
       moduleClasses.put("DMR", RelayModule.class);
       moduleClasses.put("DIM", DimmerModule.class);
       moduleClasses.put("D10", DimmerModule.class);      
+      moduleClasses.put("TSB", TemperatureModule.class);      
    }
    
    public synchronized void startGateway() {

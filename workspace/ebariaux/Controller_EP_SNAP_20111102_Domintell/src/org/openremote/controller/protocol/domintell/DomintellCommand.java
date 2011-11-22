@@ -67,6 +67,7 @@ public abstract class DomintellCommand implements Command {
       commandClasses.put("D10TOGGLE", DimmerCommand.class);
       commandClasses.put("D10FADE", DimmerCommand.class);
       commandClasses.put("D10STATUS", DimmerCommand.class);
+      commandClasses.put("TSBREAD_CURRENT_TEMP", TemperatureCommand.class);
    }
 
    /**
@@ -75,7 +76,7 @@ public abstract class DomintellCommand implements Command {
     * 
     * @return new Domintell command instance
     */
-   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level) {
+   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
      log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
@@ -89,10 +90,10 @@ public abstract class DomintellCommand implements Command {
       }
       DomintellCommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class, Integer.class);
+         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class, Integer.class, Float.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output, level);
+         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output, level, floatValue);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          // TODO: should this be logged, check other source code

@@ -128,6 +128,7 @@ public class DomintellCommandBuilder implements CommandBuilder {
       DomintellAddress address = null;
       Integer output = null;
       Integer level = null;
+      Float floatValue = null; // TODO: handle
       
       // Get the list of properties from XML...
 
@@ -221,7 +222,7 @@ public class DomintellCommandBuilder implements CommandBuilder {
          }
       }
 
-      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, address, output, level);
+      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, address, output, level, floatValue);
 
       log.info("Created Domintell Command " + cmd + " for address '" + addressAsString + "'");
 

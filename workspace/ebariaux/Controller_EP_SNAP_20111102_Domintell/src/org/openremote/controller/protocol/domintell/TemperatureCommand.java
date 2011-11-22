@@ -2,11 +2,14 @@ package org.openremote.controller.protocol.domintell;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
-import org.openremote.controller.protocol.domintell.model.Temperature;
+import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 
 public class TemperatureCommand extends DomintellCommand implements ExecutableCommand, EventListener {
 
@@ -15,7 +18,7 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
-   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level) {
+   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
 
       log.info("createCommand (" + name + "," + gateway + "," + moduleType + "," + address + "," + output + ")");
 
@@ -27,12 +30,14 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
       if (address == null) {
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
+      /*
 
       if ("FADE".equalsIgnoreCase(name) && level == null) {
          throw new NoSuchCommandException("Level is required for a dimmer Fade command");
        }
 
-      return new DimmerCommand(name, gateway, moduleType, address, output, level);
+*/
+      return new TemperatureCommand(name, gateway, moduleType, address, floatValue);
     }
    
    // Private Instance Fields
@@ -49,29 +54,68 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
       this.setPoint = floatValue;
    }
 
-
-   @Override
-   protected void updateSensor(DomintellModule module, Sensor sensor) {
-      // TODO Auto-generated method stub
-
-   }
-
-   @Override
-   public void setSensor(Sensor sensor) {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void stop(Sensor sensor) {
-      // TODO Auto-generated method stub
-      
-   }
-
    @Override
    public void send() {
       // TODO Auto-generated method stub
       
+   }
+
+   @Override
+   public void setSensor(Sensor sensor) {
+      if (sensors.isEmpty()) {
+         // First sensor registered, we also need to register ourself with the device
+         try {
+            TemperatureModule temperature = (TemperatureModule) gateway.getDomintellModule(moduleType, address, TemperatureModule.class);
+            if (temperature == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a Temperature module we're receiving feedback for (" + address + ")");
+            }
+
+            // Register ourself with the Temperature so it can propagate update when received
+            temperature.addCommand(this);
+            addSensor(sensor);
+
+            // Trigger a query to get the initial value
+            temperature.queryState();
+         } catch (DomintellModuleException e) {
+            log.error("Impossible to get module", e);
+         }
+      } else {
+         addSensor(sensor);
+      }
+   }
+
+   @Override
+   public void stop(Sensor sensor) {
+      removeSensor(sensor);
+      if (sensors.isEmpty()) {
+         // Last sensor removed, we may unregister ourself from device
+         try {
+            TemperatureModule temperature = (TemperatureModule) gateway.getDomintellModule(moduleType, address, TemperatureModule.class);
+            if (temperature == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a Temperature module we're receiving feedback for (" + address + ")");
+            }
+
+            temperature.removeCommand(this);
+         } catch (DomintellModuleException e) {
+            log.error("Impossible to get module", e);
+         }
+      }
+   }
+
+   @Override
+   protected void updateSensor(DomintellModule module, Sensor sensor) {
+     TemperatureModule temperature = (TemperatureModule)module;
+     if (sensor instanceof LevelSensor) {
+       sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
+     } else if (sensor instanceof RangeSensor) {
+       sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
+     } else if (sensor instanceof StateSensor) {
+       sensor.update(Float.toString(temperature.getCurrentTemperature()));
+     } else {
+        log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+     }
    }
 
 }
