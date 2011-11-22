@@ -18,17 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol
+package org.openremote.controller.model.event
 
 
-rule "Modify Event State"
+rule "Modify Switch State"
 
 when
 
-  $event : Event( sourceID == 123 )
+  $switch : Switch( sourceID == 123 )
 
 then
 
-  $event.setSourceID( 321 );
+  $switch.off();
 
 end
