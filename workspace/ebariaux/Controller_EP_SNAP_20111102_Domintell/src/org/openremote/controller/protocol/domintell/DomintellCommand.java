@@ -49,10 +49,24 @@ public abstract class DomintellCommand implements Command {
    private static HashMap<String, Class<? extends DomintellCommand>> commandClasses = new HashMap<String, Class<? extends DomintellCommand>>();
 
    static {
-      commandClasses.put("ON", RelayCommand.class);
-      commandClasses.put("OFF", RelayCommand.class);
-      commandClasses.put("TOGGLE", RelayCommand.class);
-      commandClasses.put("STATUS", RelayCommand.class);
+      commandClasses.put("BIRON", RelayCommand.class);
+      commandClasses.put("BIROFF", RelayCommand.class);
+      commandClasses.put("BIRTOGGLE", RelayCommand.class);
+      commandClasses.put("BIRSTATUS", RelayCommand.class);
+      commandClasses.put("DMRON", RelayCommand.class);
+      commandClasses.put("DMROFF", RelayCommand.class);
+      commandClasses.put("DMRTOGGLE", RelayCommand.class);
+      commandClasses.put("DMRSTATUS", RelayCommand.class);
+      commandClasses.put("DIMON", DimmerCommand.class);
+      commandClasses.put("DIMOFF", DimmerCommand.class);
+      commandClasses.put("DIMTOGGLE", DimmerCommand.class);
+      commandClasses.put("DIMFADE", DimmerCommand.class);
+      commandClasses.put("DIMSTATUS", DimmerCommand.class);
+      commandClasses.put("D10ON", DimmerCommand.class);
+      commandClasses.put("D10OFF", DimmerCommand.class);
+      commandClasses.put("D10TOGGLE", DimmerCommand.class);
+      commandClasses.put("D10FADE", DimmerCommand.class);
+      commandClasses.put("D10STATUS", DimmerCommand.class);
    }
 
    /**
@@ -61,11 +75,12 @@ public abstract class DomintellCommand implements Command {
     * 
     * @return new Domintell command instance
     */
-   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output) {
-    log.debug("Received request to build command with name " + name);
+   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level) {
+     log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
-      Class<? extends DomintellCommand> commandClass = commandClasses.get(name);
+      moduleType = moduleType.trim().toUpperCase();
+      Class<? extends DomintellCommand> commandClass = commandClasses.get(moduleType + name);
 
       log.debug("This command maps to the command class " + commandClass);
 
@@ -74,10 +89,10 @@ public abstract class DomintellCommand implements Command {
       }
       DomintellCommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class);
+         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class, Integer.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output);
+         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output, level);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          // TODO: should this be logged, check other source code

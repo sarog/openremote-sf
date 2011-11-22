@@ -1,28 +1,26 @@
 package org.openremote.controller.protocol.domintell.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.domintell.DomintellAddress;
 import org.openremote.controller.protocol.domintell.DomintellCommandBuilder;
 import org.openremote.controller.protocol.domintell.DomintellGateway;
 
-public class RelayModule extends DomintellModule implements Relay {
+public class DimmerModule extends DomintellModule implements Dimmer {
 
    /**
     * Domintell logger. Uses a common category for all Domintell related logging.
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
-   private boolean[] states = new boolean[8];
+   private int[] levels = new int[8];
    
-   public RelayModule(DomintellGateway gateway, String moduleType, DomintellAddress address) {
+   public DimmerModule(DomintellGateway gateway, String moduleType, DomintellAddress address) {
       super(gateway, moduleType, address);
    }
-   
+
    @Override
    public void on(Integer output) {
-      // moduleType is supposed to be BIR
-      // address should be in hex, formatted on 6 characters
-      
       gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%I");
    }
 
@@ -40,18 +38,20 @@ public class RelayModule extends DomintellModule implements Relay {
    public void queryState(Integer output) {
       gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%S");
    }
+
+   @Override
+   public void setLevel(Integer output, int level) {
+      gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%D" + StringUtils.right("00" + Integer.toString(level) , 2));
+   }
    
    // Feedback method from HomeWorksDevice ---------------------------------------------------------
 
    @Override
    public void processUpdate(String info) {
      try {
-        // O00
-        int value = Integer.parseInt(info.substring(1), 16);
-        int bitmask = 1;
+        // D 064 0 0 0 0 0 0
         for (int i = 0; i < 8; i++) {
-           states[i] = (value & bitmask) == bitmask;
-           bitmask = bitmask<<1;
+           levels[i] = Integer.parseInt(info.substring(1 + i * 2, 3 + i *2).trim(), 16);
         }
      } catch (NumberFormatException e) {
        // Not understood as a scene, do not update ourself
@@ -61,7 +61,7 @@ public class RelayModule extends DomintellModule implements Relay {
      super.processUpdate(info);
    }
 
-   public boolean getState(int output) {
-      return states[output - 1];
+   public int getLevel(int output) {
+      return levels[output - 1];
    }
 }

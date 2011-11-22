@@ -2,16 +2,17 @@ package org.openremote.controller.protocol.domintell;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.domintell.model.Dimmer;
+import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
-import org.openremote.controller.protocol.domintell.model.Relay;
-import org.openremote.controller.protocol.domintell.model.RelayModule;
 
-public class RelayCommand extends DomintellCommand implements ExecutableCommand, EventListener {
-   
+public class DimmerCommand extends DomintellCommand implements ExecutableCommand, EventListener {
+
    /**
     * Domintell logger. Uses a common category for all Domintell related logging.
     */
@@ -30,7 +31,11 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
 
-      return new RelayCommand(name, gateway, moduleType, address, output);
+      if ("FADE".equalsIgnoreCase(name) && level == null) {
+         throw new NoSuchCommandException("Level is required for a dimmer Fade command");
+       }
+
+      return new DimmerCommand(name, gateway, moduleType, address, output, level);
     }
 
    // Private Instance Fields
@@ -40,22 +45,30 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
     * Number of the output this command must actuate.
     */
    private Integer output;
+   
+   /**
+    * Level to set the dimmer to
+    */
+   private Integer level;
 
-   public RelayCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output) {
+   public DimmerCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level) {
       super(name, gateway, moduleType, address);
       this.output = output;
+      this.level = level;
    }
 
    @Override
    public void send() {
       try {
-         Relay relay = (Relay) gateway.getDomintellModule(moduleType, address, RelayModule.class);
+         Dimmer dimmer = (Dimmer) gateway.getDomintellModule(moduleType, address, DimmerModule.class);
          if ("ON".equals(name)) {
-           relay.on(output);
+           dimmer.on(output);
          } else if ("OFF".equals(name)) {
-           relay.off(output);
+           dimmer.off(output);
          } else if ("TOGGLE".equals(name)) {
-           relay.toggle(output);
+           dimmer.toggle(output);
+         } else if ("FADE".equals(name)) {
+            dimmer.setLevel(output, level);
          }
        } catch (DomintellModuleException e) {
          log.error("Impossible to get module", e);
@@ -68,18 +81,18 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
        if (sensors.isEmpty()) {
           // First sensor registered, we also need to register ourself with the device
           try {
-             RelayModule relay = (RelayModule) gateway.getDomintellModule(moduleType, address, RelayModule.class);
-             if (relay == null) {
+             DimmerModule dimmer = (DimmerModule) gateway.getDomintellModule(moduleType, address, DimmerModule.class);
+             if (dimmer == null) {
                // This should never happen as above command is supposed to create device
-               log.warn("Gateway could not create a Relay module we're receiving feedback for (" + address + ")");
+               log.warn("Gateway could not create a Dimmer module we're receiving feedback for (" + address + ")");
              }
 
-             // Register ourself with the Relay so it can propagate update when received
-             relay.addCommand(this);
+             // Register ourself with the Dimmer so it can propagate update when received
+             dimmer.addCommand(this);
              addSensor(sensor);
 
              // Trigger a query to get the initial value
-             relay.queryState(output);
+             dimmer.queryState(output);
           } catch (DomintellModuleException e) {
              log.error("Impossible to get module", e);
           }
@@ -94,13 +107,13 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from device
          try {
-            RelayModule relay = (RelayModule) gateway.getDomintellModule(moduleType, address, RelayModule.class);
-            if (relay == null) {
+            DimmerModule dimmer = (DimmerModule) gateway.getDomintellModule(moduleType, address, DimmerModule.class);
+            if (dimmer == null) {
               // This should never happen as above command is supposed to create device
               log.warn("Gateway could not create a Relay module we're receiving feedback for (" + address + ")");
             }
 
-            relay.removeCommand(this);
+            dimmer.removeCommand(this);
          } catch (DomintellModuleException e) {
             log.error("Impossible to get module", e);
          }
@@ -109,11 +122,13 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
 
    @Override
    protected void updateSensor(DomintellModule module, Sensor sensor) {
-      RelayModule relay = (RelayModule)module;
+      DimmerModule dimmer = (DimmerModule)module;
       if (sensor instanceof SwitchSensor) {
-         sensor.update(relay.getState(output) ? "on" : "off");
+         sensor.update((dimmer.getLevel(output) > 0) ? "on" : "off");
+       } else if (sensor instanceof LevelSensor) {
+          sensor.update(Integer.toString(dimmer.getLevel(output)));
        } else {
-          log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+          log.warn("Query Dimmer status for incompatible sensor type (" + sensor + ")");
        }
    }
 }
