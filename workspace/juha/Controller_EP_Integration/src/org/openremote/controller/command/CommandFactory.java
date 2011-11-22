@@ -20,74 +20,67 @@
  */
 package org.openremote.controller.command;
 
-import java.util.Properties;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jdom.Element;
-import org.openremote.controller.exception.CommandBuildException;
-import org.openremote.controller.exception.NoSuchCommandBuilderException;
+import org.jdom.output.XMLOutputter;
 import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.service.ServiceContext;
 
 
 /**
- * TODO :
+ * TODO:
  *
- *   ORCJAVA-194 (http://jira.openremote.org/browse/ORCJAVA-194) : protocol implementations
- *   should be injected (using bean reference) by DI framework, instead of using the currently
- *   deprecated lookup from service context.
+ *   - ORCJAVA-209 : merge command models -- expecting this implementation to be further
+ *                   reduced or removed altogether as part of 209 refactoring
  *
- * 
+ *
+ * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Handy.Wang 2009-10-13
  */
 public class CommandFactory
 {
-   
-   private Properties commandBuilders;
-   
-   public Command getCommand(Element element) throws ConfigurationException
-   {
-     if (commandBuilders == null)
-     {
-       throw new IllegalArgumentException("CommandFactory has not been initialized with protocol builders.");
-     }
 
-      if (element == null)
-      {
-         throw new CommandBuildException("Command DOM element is null.");
-      }
+  private Map<String, CommandBuilder> commandBuilders = new HashMap<String, CommandBuilder>();
 
-      String protocolType = element.getAttributeValue(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME);
 
-      if (protocolType == null || "".equals(protocolType))
-      {
-         throw new CommandBuildException("Protocol type is null.");
-      }
-
-      String builder = commandBuilders.getProperty(protocolType);
-
-      if (builder == null)
-      {
-         throw new NoSuchCommandBuilderException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' protocol.");
-      }
-
-      // TODO : see ORCJAVA-194
-      CommandBuilder commandBuilder = ServiceContext.getProtocol(protocolType);
-
-      return commandBuilder.build(element);
-   }
-
-   public void setCommandBuilders(Properties commandBuilders)
-   {
-      this.commandBuilders = commandBuilders;
-   }
-
-  public Map<String, String> getProtocols()
+  public CommandFactory(Map<String, CommandBuilder> commandBuilders)
   {
-    Map protocols = new HashMap(20);
-    protocols.putAll(commandBuilders);
+   if (commandBuilders == null)
+   {
+     return;
+   }
 
-    return protocols;
+   this.commandBuilders = commandBuilders;
+  }
+
+
+  public Command getCommand(Element element) throws ConfigurationException
+  {
+    if (element == null)
+    {
+       throw new ConfigurationException("Null reference trying to create a protocol command.");
+    }
+
+    String protocolType = element.getAttributeValue(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME);
+
+    if (protocolType == null || protocolType.equals(""))
+    {
+       throw new ConfigurationException(
+           "Protocol attribute is missing in {0}",
+           new XMLOutputter().outputString(element)
+       );
+    }
+
+    CommandBuilder builder = commandBuilders.get(protocolType);
+
+    if (builder == null)
+    {
+      throw new ConfigurationException(
+          "No device protocol builders registered with protocol type ''{0}''.", protocolType
+      );
+    }
+
+    return builder.build(element);
   }
 }
