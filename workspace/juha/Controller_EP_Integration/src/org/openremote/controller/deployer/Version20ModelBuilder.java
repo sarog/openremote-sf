@@ -703,10 +703,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
       {
         Command cmd = deviceProtocolBuilder.build(commandElement);
 
-        log.debug(
-            "Created object model for command ''{0}'' (ID = ''{1}'').",
-            cmd.getName(), cmd.getID()
-        );
+        log.debug("Created object model for {0}.", cmd);
 
         commandModels.add(cmd);
       }
