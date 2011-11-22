@@ -34,6 +34,8 @@ then
 end
 
 
+/* This rule should be executed as a result of the first one going off... */
+
 rule "Turn switch off, with value 'closed'"
 
 when
@@ -46,6 +48,8 @@ then
 
 end
 
+
+/* This rule is next in chain, triggered by the switch state change in above rule */
 
 rule "Turn switch on, with value 'Complete'"
 
