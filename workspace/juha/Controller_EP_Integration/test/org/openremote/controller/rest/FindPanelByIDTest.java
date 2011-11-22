@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Before;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.JSONMapping;
 import org.openremote.controller.suite.RESTTests;
@@ -72,6 +73,11 @@ public class FindPanelByIDTest
   // Test Lifecycle -------------------------------------------------------------------------------
 
 
+  @Before public void setup()
+  {
+    AllTests.initServiceContext();
+  }
+  
   @After public void tearDown()
   {
     RESTTests.deleteControllerPanelXML();
