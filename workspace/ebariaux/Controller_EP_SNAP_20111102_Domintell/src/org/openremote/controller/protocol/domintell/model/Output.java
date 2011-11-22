@@ -1,6 +1,6 @@
 package org.openremote.controller.protocol.domintell.model;
 
-public interface Relay {
+public interface Output {
 
    public void on(Integer output);
    

@@ -49,14 +49,14 @@ public abstract class DomintellCommand implements Command {
    private static HashMap<String, Class<? extends DomintellCommand>> commandClasses = new HashMap<String, Class<? extends DomintellCommand>>();
 
    static {
-      commandClasses.put("BIRON", RelayCommand.class);
-      commandClasses.put("BIROFF", RelayCommand.class);
-      commandClasses.put("BIRTOGGLE", RelayCommand.class);
-      commandClasses.put("BIRSTATUS", RelayCommand.class);
-      commandClasses.put("DMRON", RelayCommand.class);
-      commandClasses.put("DMROFF", RelayCommand.class);
-      commandClasses.put("DMRTOGGLE", RelayCommand.class);
-      commandClasses.put("DMRSTATUS", RelayCommand.class);
+      commandClasses.put("BIRON", OutputCommand.class);
+      commandClasses.put("BIROFF", OutputCommand.class);
+      commandClasses.put("BIRTOGGLE", OutputCommand.class);
+      commandClasses.put("BIRSTATUS", OutputCommand.class);
+      commandClasses.put("DMRON", OutputCommand.class);
+      commandClasses.put("DMROFF", OutputCommand.class);
+      commandClasses.put("DMRTOGGLE", OutputCommand.class);
+      commandClasses.put("DMRSTATUS", OutputCommand.class);
       commandClasses.put("DIMON", DimmerCommand.class);
       commandClasses.put("DIMOFF", DimmerCommand.class);
       commandClasses.put("DIMTOGGLE", DimmerCommand.class);
