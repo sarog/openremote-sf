@@ -55,7 +55,16 @@ public class CommandFactory
   }
 
 
-  public Command getCommand(Element element) throws ConfigurationException
+  /**
+   *
+   * @deprecated    Additional use of this method should be avoided -- implementations should
+   *                delegate to in-memory object model for commands instead (see
+   *                {@link org.openremote.controller.model.Command} and
+   *                {@link org.openremote.controller.deployer.Version20CommandBuilder}
+   *                implementations). Expecting this method to be refactored/removed as part
+   *                of ORCJAVA-209.
+   */
+  @Deprecated public Command getCommand(Element element) throws ConfigurationException
   {
     if (element == null)
     {
