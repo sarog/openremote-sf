@@ -29,6 +29,6 @@ when
 
 then
 
-  $event.setSourceID( 321 );
+  $event.setValue( 321 );
 
 end
