@@ -7,10 +7,10 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
-import org.openremote.controller.protocol.domintell.model.Relay;
+import org.openremote.controller.protocol.domintell.model.Output;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 
-public class RelayCommand extends DomintellCommand implements ExecutableCommand, EventListener {
+public class OutputCommand extends DomintellCommand implements ExecutableCommand, EventListener {
    
    /**
     * Domintell logger. Uses a common category for all Domintell related logging.
@@ -30,7 +30,7 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
 
-      return new RelayCommand(name, gateway, moduleType, address, output);
+      return new OutputCommand(name, gateway, moduleType, address, output);
     }
 
    // Private Instance Fields
@@ -41,7 +41,7 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
     */
    private Integer output;
 
-   public RelayCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output) {
+   public OutputCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output) {
       super(name, gateway, moduleType, address);
       this.output = output;
    }
@@ -49,7 +49,7 @@ public class RelayCommand extends DomintellCommand implements ExecutableCommand,
    @Override
    public void send() {
       try {
-         Relay relay = (Relay) gateway.getDomintellModule(moduleType, address, RelayModule.class);
+         Output relay = (Output) gateway.getDomintellModule(moduleType, address, RelayModule.class);
          if ("ON".equals(name)) {
            relay.on(output);
          } else if ("OFF".equals(name)) {

@@ -5,7 +5,7 @@ import org.openremote.controller.protocol.domintell.DomintellAddress;
 import org.openremote.controller.protocol.domintell.DomintellCommandBuilder;
 import org.openremote.controller.protocol.domintell.DomintellGateway;
 
-public class RelayModule extends DomintellModule implements Relay {
+public class RelayModule extends DomintellModule implements Output {
 
    /**
     * Domintell logger. Uses a common category for all Domintell related logging.
