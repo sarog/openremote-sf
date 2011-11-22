@@ -20,37 +20,40 @@
  */
 package org.openremote.controller.service;
 
-import java.util.Properties;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.net.URI;
 
 import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.ChangedStatusRecord;
-import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.deployer.Version20ModelBuilder;
+import org.openremote.controller.deployer.ModelBuilder;
+import org.openremote.controller.deployer.Version20CommandBuilder;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
-import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
-import org.openremote.controller.model.xml.ObjectBuilder;
-import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.model.xml.Version20SensorBuilder;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.jdom.Element;
 
 /**
- * Basic unit tests for {@link org.openremote.controller.service.Deployer Deployer} service.
+ * Basic unit tests for {@link org.openremote.controller.service.Deployer Deployer} service.  <p>
+ *
+ * This test class also provides generic build methods to create deployer instances for other
+ * tests -- in this way the use of deployer API is centralized and evolution of the API is easier
+ * to manage in single location rather than spread across many test classes.
+ *
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -60,78 +63,308 @@ public class DeployerTest
   private final static String deployerName = "Deployer for " + DeployerTest.class.getSimpleName();
 
 
+  // Deployer Builder Methods ---------------------------------------------------------------------
+
+  /**
+   * Creates a deployer where the controller's configuration has been configured to a given
+   * resource path URI (where controller artifacts are loaded from). Also uses a given command
+   * factory configuration for the built deployer instead of the default one.
+   *
+   * @param resourcePath
+   *            the URI to set for {@link ControllerConfiguration#setResourcePath}
+   *
+   * @param cf
+   *            command factory configuration for the built deployer (command builder implementations)
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException  if instantiation fails
+   */
+  public static Deployer createDeployer(URI resourcePath, CommandFactory cf)
+      throws InitializationException
+  {
+    return createDeployer(resourcePath, cf, new Version20SensorBuilder(), new StatusCache());
+  }
+
+  /**
+   * Creates a deployer with given dependant objects.
+   *
+   * @param resourcePath
+   *            the URI to set for {@link ControllerConfiguration#setResourcePath}
+   *
+   * @param cf
+   *            command factory configuration for the built deployer (command builder implementations)
+   *
+   * @param sensorBuilder
+   *            a sensor builder instance to use with the built deployer
+   *
+   * @param cache
+   *            a device state cache instance to use with the built deployer
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException    if instantiation fails
+   */
+  public static Deployer createDeployer(URI resourcePath, CommandFactory cf,
+                                        Version20SensorBuilder sensorBuilder,
+                                        StatusCache cache)
+      throws InitializationException
+  {
+    ControllerConfiguration config = new ControllerConfiguration();
+    config.setResourcePath(resourcePath.getPath());
+
+    return createDeployer("Deployment for " + resourcePath.getPath(), cache, config, cf, sensorBuilder);
+  }
+
+
+  /**
+   * Creates a deployer with a given controller configuration. Other dependant objects are
+   * using default implementations.
+   *
+   * @param config
+   *            controller configuration
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException    if initialization fails
+   */
+  public static Deployer createDeployer(ControllerConfiguration config)
+      throws InitializationException
+  {
+    return createDeployer(
+        "Deployer for " + config.getResourcePath(),
+        new StatusCache(),
+        config,
+        createCommandFactory(),
+        new Version20SensorBuilder()
+    );
+  }
+
+
+  /**
+   * Creates a deployer where the controller's configuration has been configured to a given
+   * resource path URI (where controller artifacts are loaded from). Also uses a given sensor
+   * builder instance for the deployer instead of the default one.
+   *
+   * @param resourcePath
+   *            the URI to set for {@link ControllerConfiguration#setResourcePath}
+   *
+   * @param sensorBuilder
+   *            a sensor builder instance to use with the built deployer instance
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException    if instantiation fails
+   */
+  public static Deployer createDeployer(URI resourcePath, Version20SensorBuilder sensorBuilder)
+      throws InitializationException
+  {
+    return createDeployer(resourcePath, createCommandFactory(), sensorBuilder, new StatusCache());
+  }
+
+  
+
+  /**
+   * Creates a deployer where the controller's configuration has been configured to a given
+   * resource path URI (where controller artifacts are loaded from). Otherwise uses a default
+   * configuration for cache, XML builders and a command builder configuration that includes
+   * only virtual commands.
+   *
+   * @param resourcePath    the URI to set for {@link ControllerConfiguration#setResourcePath}
+   *
+   * @return                deployer instance
+   *
+   * @throws InitializationException    if instantiation fails
+   */
+  private static Deployer createDeployer(URI resourcePath) throws InitializationException
+  {
+    return createDeployer(resourcePath, createCommandFactory());
+  }
+
+
+  /**
+   * Creates a deployer with a given name and default dependent objects.
+   *
+   * @param name    deployer name
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException    if instantiation fails
+   */
+  private static Deployer createDeployer(String name) throws InitializationException
+  {
+    return createDeployer(name, new StatusCache());
+  }
+
+  /**
+   * Creates a deployer with a given name and a given device state cache instance.
+   *
+   * @param name    deployer name
+   * @param cache   device state cache instance to use with the built deployer
+   *
+   * @return        deployer instance
+   *
+   * @throws InitializationException    if instantiation fails
+   */
+  private static Deployer createDeployer(String name, StatusCache cache)
+      throws InitializationException
+  {
+    return createDeployer(
+        name, cache, new ControllerConfiguration(),
+        createCommandFactory(), new Version20SensorBuilder()
+    );
+  }
+
+
+  /**
+   * Creates a deployer with given dependent objects.
+   *
+   * @param deployerName
+   *            name of the deployer
+   *
+   * @param cache
+   *            reference to device state cache to be used with the built deployer
+   *
+   * @param config
+   *            controller's configuration
+   *
+   * @param cf
+   *            command factory instance for the built deployer (command builders)
+   *
+   * @param sensorBuilder
+   *            sensor builder instance for the built deployer
+   *
+   * @return    deployer instance
+   *
+   * @throws InitializationException    if initialization fails
+   */
+  private static Deployer createDeployer(String deployerName, StatusCache cache,
+                                         ControllerConfiguration config,
+                                         CommandFactory cf, Version20SensorBuilder sensorBuilder)
+      throws InitializationException
+  {
+    sensorBuilder.setCommandFactory(cf);
+
+
+    Version20ModelBuilder builder =
+        new Version20ModelBuilder(cache, config, sensorBuilder, new Version20CommandBuilder(cf));
+
+    Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
+    modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
+
+    return new Deployer(deployerName, cache, config, modelBuilders);
+  }
+
+
+  /**
+   * Creates a preconfigured command factory instance that includes virtual commands only.
+   *
+   * @return    command factory instance that has been configured with a builder for virtual
+   *            commands
+   */
+  public static CommandFactory createCommandFactory()
+  {
+    Map<String, CommandBuilder> builders = new HashMap<String, CommandBuilder>();
+    builders.put("virtual", new VirtualCommandBuilder());
+
+    return new CommandFactory(builders);
+  }
+
+
   // Constructor Tests ----------------------------------------------------------------------------
 
 
   /**
    * Test valid constructor execution.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void construction()
+  @Test public void construction() throws Exception
   {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
+    StatusCache cache = new StatusCache();
+    ControllerConfiguration config = new ControllerConfiguration();
 
-    new Deployer(deployerName, sc, cc);
+    Map<String, ModelBuilder> map = new HashMap<String, ModelBuilder>();
+    map.put(
+        ModelBuilder.SchemaVersion.VERSION_2_0.toString(),
+        new Version20ModelBuilder(
+            cache, config,
+            new Version20SensorBuilder(),
+            new Version20CommandBuilder(new CommandFactory(null))
+        )
+    );
+
+    new Deployer(deployerName, cache, config, map);
   }
 
   /**
    * Test invalid construction execution with null args.
+   *
+   * @throws Exception if test fails
    */
-  @Test (expected = IllegalArgumentException.class)
-  public void constructionNullArgs()
+  @Test public void constructionNullArgs() throws Exception
   {
-    new Deployer(null, null, null);
+    try
+    {
+      new Deployer(null, null, null, null);
+
+      Assert.fail("should not get here...");
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      // expected...
+    }
   }
 
   /**
    * Test invalid construction execution with null configuration.
+   *
+   * @throws Exception if test fails
    */
-  @Test (expected = IllegalArgumentException.class)
-  public void constructionNullArgs2()
+  @Test public void constructionNullArgs2() throws Exception
   {
-    new Deployer(null, new StatusCache(), null);
+    try
+    {
+      new Deployer(null, new StatusCache(), null, null);
+
+      Assert.fail("should not get here...");
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      // Expected...
+    }
   }
 
   /**
    * Test invalid construction execution with null status cache.
+   *
+   * @throws Exception if test fails
    */
-  @Test (expected = IllegalArgumentException.class)
-  public void constructionNullArgs3()
+  @Test public void constructionNullArgs3() throws Exception
   {
-    new Deployer(null, null, new ControllerConfiguration());
+    try
+    {
+      new Deployer(null, null, new ControllerConfiguration(), null);
+
+      Assert.fail("should not get here...");
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      // Expected...
+    }
   }
 
   /**
    * Test construction with null name
+   *
+   * @throws Exception if test fails
    */
-  public void constructionNullArgs4()
+  public void constructionNullArgs4() throws Exception
   {
-    new Deployer(null, new StatusCache(), new ControllerConfiguration());
-  }
-
-
-  // RegisterObjectBuilder Tests ------------------------------------------------------------------
-
-  @Test public void testRegisterOB()
-  {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    Deployer d = new Deployer(deployerName, sc, cc);
-
-    ObjectBuilder ob = new TestOB(d);
-    
-  }
-
-
-  @Test public void testRegisterBrokenOB()
-  {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    Deployer d = new Deployer(deployerName, sc, cc);
-
-    ObjectBuilder ob = new BrokenOB(d);
+      new Deployer(null, new StatusCache(), new ControllerConfiguration(), null);
   }
 
 
@@ -139,24 +372,26 @@ public class DeployerTest
 
   // GetSensor Tests ------------------------------------------------------------------------------
 
-  @Test public void testGetSensor()
+  /**
+   *
+   * @throws Exception  if test fails
+   */
+  @Test public void testGetSensor() throws Exception
   {
-    StatusCache sc = new StatusCache();
+    StatusCache cache = new StatusCache();
+    Deployer d = createDeployer(deployerName, cache);
 
-    Sensor s1 = new SwitchSensor("Sensor 1", 1, sc, new TestEventListener());
-    Sensor s2 = new RangeSensor("Sensor 2", 2, sc, new TestEventListener(), 0, 10);
-    Sensor s3 = new LevelSensor("Sensor 3", 3, sc, new TestEventListener());
-    Sensor s4 = new StateSensor("Sensor 4", 4, sc, new TestEventListener(),
+    Sensor s1 = new SwitchSensor("Sensor 1", 1, cache, new TestEventListener());
+    Sensor s2 = new RangeSensor("Sensor 2", 2, cache, new TestEventListener(), 0, 10);
+    Sensor s3 = new LevelSensor("Sensor 3", 3, cache, new TestEventListener());
+    Sensor s4 = new StateSensor("Sensor 4", 4, cache, new TestEventListener(),
                                 new StateSensor.DistinctStates());
 
-    sc.registerSensor(s1);
-    sc.registerSensor(s2);
-    sc.registerSensor(s3);
-    sc.registerSensor(s4);
+    cache.registerSensor(s1);
+    cache.registerSensor(s2);
+    cache.registerSensor(s3);
+    cache.registerSensor(s4);
 
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    Deployer d = new Deployer(deployerName, sc, cc);
 
     Sensor sensor1 = d.getSensor(1);
 
@@ -202,13 +437,12 @@ public class DeployerTest
   /**
    * Test retrieving sensor ID that is not registered with status cache. This currently
    * returns a null pointer.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testGetSensorUnknownID()
+  @Test public void testGetSensorUnknownID() throws Exception
   {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    Deployer d = new Deployer(deployerName, sc, cc);
+    Deployer d = createDeployer(deployerName);
 
     Sensor s = d.getSensor(0);
 
@@ -227,26 +461,10 @@ public class DeployerTest
    */
   @Test public void testSoftRestart() throws Exception
   {
-    ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
+    Deployer d = createDeployer(deploymentURI);
 
-    StatusCache sc = new StatusCache(cst, echain);
-
-    Deployer d = new Deployer("Deployer for " + deploymentURI, sc, cc);
-
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-
-    cf.setCommandBuilders(p);
-
-    SensorBuilder sb = new SensorBuilder(d, sc);
-    sb.setCommandFactory(cf);
-    
     d.softRestart();
 
     Sensor sensor1 = d.getSensor(1);
@@ -299,21 +517,7 @@ public class DeployerTest
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
     cc.setResourcePath(deploymentURI.getPath());
 
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-
-    Deployer d = new Deployer("Deployer2 for " + deploymentURI, sc, cc);
-
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-
-    cf.setCommandBuilders(p);
-
-    SensorBuilder sb = new SensorBuilder(d, sc);
-    sb.setCommandFactory(cf);
+    Deployer d = createDeployer(cc);
 
     d.softRestart();
 
@@ -455,25 +659,9 @@ public class DeployerTest
    */
   @Test public void redeployItself() throws Exception
   {
-    ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-
-    Deployer d = new Deployer("Deployer3 for " + deploymentURI, sc, cc);
-
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-
-    cf.setCommandBuilders(p);
-
-    SensorBuilder sb = new SensorBuilder(d, sc);
-    sb.setCommandFactory(cf);
+    Deployer d = createDeployer(deploymentURI);
 
     d.softRestart();
 
@@ -566,20 +754,14 @@ public class DeployerTest
    *
    * At the moment, no exception is propagated, the error is logged but the runtime
    * stays operational although not executing any functions.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSoftRestartNoXMLDoc()
+  @Test public void testSoftRestartNoXMLDoc() throws Exception
   {
-    ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/doesntexist");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-    
-    Deployer d = new Deployer("Deployer4 for " + deploymentURI, sc, cc);
+    Deployer d = createDeployer(deploymentURI);
 
     try
     {
@@ -637,16 +819,14 @@ public class DeployerTest
    *   from elsewhere. It documents a contract change from return a null to raising a checked
    *   exception. Since it's a checked exception, should be a relatively easy contract change
    *   to track due to compiler checks.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testQueryElementFromXMLByIdNotFound()
+  @Test public void testQueryElementFromXMLByIdNotFound() throws Exception
   {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    Deployer d = new Deployer("Deployer6 for " + deploymentURI, sc, cc);
+    Deployer d = createDeployer(deploymentURI);
 
     d.startController();
 
@@ -673,13 +853,9 @@ public class DeployerTest
    */  
   @Test public void testQueryElementFromXMLById() throws Exception
   {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    Deployer d = new Deployer("Deployer7 for " + deploymentURI, sc, cc);
+    Deployer d = createDeployer(deploymentURI);
 
     d.startController();
 
@@ -703,75 +879,6 @@ public class DeployerTest
   }
 
 
-  /**
-   * TODO :
-   *   test is temporarily moved here, the method being tested on the Deployer API
-   *   may still be moved elsewhere or made non-public
-   *
-   * @throws Exception      if test fails
-   */
-  @Test public void testQueryElementFromXMLByName() throws Exception
-  {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
-
-    Deployer d = new Deployer("Deployer8 for " + deploymentURI, sc, cc);
-
-    d.startController();
-
-
-
-    Element sensors = d.queryElementByName(Deployer.XMLSegment.SENSORS);
-
-    Assert.assertTrue("sensors".equals(sensors.getName()));
-
-    List<Element> sensorsChildren = sensors.getChildren();
-
-    Assert.assertTrue(sensorsChildren.size() == 4);
-
-    Element sensor = sensorsChildren.get(0);
-
-    Assert.assertTrue(sensor.getName().equals("sensor"));
-    Assert.assertTrue(sensor.getAttributeValue("name").equals("Sensor 1"));
-    Assert.assertTrue(sensor.getAttributeValue("type").equals("switch"));
-  }
-
-
-  /**
-   * TODO :
-   *   test is temporarily moved here, the method being tested on the Deployer API
-   *   may still be moved elsewhere or made non-public
-   *
-   * @throws Exception      if test fails
-   */
-  @Test public void testQueryElementFromXMLByNameNotFound() throws Exception
-  {
-    StatusCache sc = new StatusCache();
-    ControllerConfiguration cc = new ControllerConfiguration();
-
-    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
-    cc.setResourcePath(deploymentURI.getPath());
-
-    Deployer d = new Deployer("Deployer9 for " + deploymentURI, sc, cc);
-
-    d.startController();
-
-    try
-    {
-      d.queryElementByName(Deployer.XMLSegment.SLIDER);
-
-      Assert.fail("should not get here");
-    }
-    catch (XMLParsingException e)
-    {
-      // expected
-    }
-  }
-
-
 
 
   // Nested Classes -------------------------------------------------------------------------------
@@ -790,41 +897,5 @@ public class DeployerTest
     }
   }
 
-
-  private static class TestOB extends ObjectBuilder
-  {
-    private TestOB(Deployer d)
-    {
-      super(d);
-    }
-
-    @Override public Object build(Element e)
-    {
-      return null;
-    }
-
-    @Override public Deployer.XMLSegment getRootSegment()
-    {
-      return Deployer.XMLSegment.SENSORS;
-    }
-
-    @Override public Deployer.ControllerSchemaVersion getSchemaVersion()
-    {
-      return Deployer.ControllerSchemaVersion.VERSION_2_0;
-    }
-  }
-
-  private static class BrokenOB extends TestOB
-  {
-    private BrokenOB(Deployer d)
-    {
-      super(d);
-    }
-
-    @Override public Deployer.XMLSegment getRootSegment()
-    {
-      throw new Error("testing broken object builder");
-    }
-  }
 }
 
