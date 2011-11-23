@@ -173,7 +173,7 @@ int writeString(apr_socket_t *sock, field_t *field) {
 int writeOctetString(apr_socket_t *sock, field_t *field) {
 	int i;
 	int len = 2 * field->length;
-	char tmp[len + 1];
+	char tmp[1024];
 	writeFieldLength(sock, len);
 	for (i = 0; i < field->length; ++i) {
 		apr_snprintf(&tmp[2 * i], 3, "%02X", field->stringVal[i] & 0xFF);

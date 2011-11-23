@@ -2,7 +2,13 @@ cmake_minimum_required (VERSION 2.6)
 project (pad-all)
 
 # Directories
+if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 set (APR_PATH "C:/Users/Olivier Gandit/Documents/src/apr-1.4.5")
+set (APR_LIB "${APR_PATH}/Release/libapr-1.lib")
+elseif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
+set (APR_PATH "C:/Users/Olivier Gandit/Documents/src/apr-1.4.5")
+set (APR_LIB "${APR_PATH}/.libs/libapr-1.a")
+endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 
 # The version number.
 set (pad_VERSION_MAJOR 1)
