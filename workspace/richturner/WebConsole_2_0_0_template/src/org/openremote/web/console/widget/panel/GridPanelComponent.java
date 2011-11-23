@@ -1,11 +1,9 @@
-package org.openremote.web.console.widget;
+package org.openremote.web.console.widget.panel;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.Cell;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
@@ -13,19 +11,16 @@ import org.openremote.web.console.panel.entity.component.ImageComponent;
 import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
+import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GridPanelComponent extends PassiveConsoleComponent implements Positional, PanelComponent {
+public class GridPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "gridPanelComponent";
-	//private ConsoleComponent component;
-	private int left;
-	private int top;
-	private int height;
-	private int width;
 	private int rows;
 	private int cols;
 	private CellData[][] cellDataArr;
@@ -37,24 +32,47 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 	}
 	
 	public GridPanelComponent() {
-		super(new FlexTable(), CLASS_NAME);
-		FlexTable grid = (FlexTable)getWidget();
+		FlexTable grid = new FlexTable();
 		grid.setCellPadding(0);
 		grid.setCellSpacing(0);
-	}
-
-	@Override
-	public void onAdd(int width, int height) {
-		setVisible(true);
-		onRender(width, height);
+		setPanelWidget(grid);
 	}
 	
+	public void setComponent(int row, int col, ConsoleComponent component) {
+		((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
+		components.add(component);
+	}
+	
+	public ConsoleComponent getComponent(int row, int col) {
+		return (ConsoleComponent)(((FlexTable)getWidget()).getWidget(row, col));
+	}
+	
+	private void init() {
+		FlexTable grid = (FlexTable)getWidget();
+		for (int i=0; i<rows; i++) {
+			for (int j=0; j<cols; j++) {
+				grid.setText(i, j, "&nbsp");
+			}
+		}
+	}
+	
+	public void setRowCount(int count) {
+		this.rows = count;
+	}
+	
+	public void setColCount(int count) {
+		this.cols = count;
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
 	@Override
-	// Pass size info to widget so explicit size can be set to avoid any cross browser rendering issues
 	public void onRender(int width, int height) {
 		FlexTable grid = (FlexTable)getWidget();
-		int colWidth = (int)Math.round((double)this.width / cols);
-		int rowHeight = (int)Math.round((double)this.height / rows);
+		int colWidth = (int)Math.round((double)width / cols);
+		int rowHeight = (int)Math.round((double)height / rows);
 		
 		for (int i=0; i<rows; i++) {
 			for (int j=0; j<cols; j++) {
@@ -92,96 +110,6 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 		}
 	}
 	
-	public void setComponent(int row, int col, ConsoleComponent component) {
-		((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
-		components.add(component);
-	}
-	
-	public ConsoleComponent getComponent(int row, int col) {
-		return (ConsoleComponent)(((FlexTable)getWidget()).getWidget(row, col));
-	}
-
-	@Override
-	public void setPosition(int left, int top) {
-		this.left = left;
-		this.top = top;
-	}
-
-	@Override
-	public int getLeft() {
-		return this.left;
-	}
-
-	@Override
-	public int getTop() {
-		return this.top;
-	}
-	
-	public void setHeight(int height) {
-		this.height = height;
-		super.setHeight(height + "px");
-	}
-	
-	public void setWidth(int width) {
-		this.width = width;
-		super.setWidth(width + "px");
-	}
-	
-	private void init() {
-		FlexTable grid = (FlexTable)getWidget();
-		for (int i=0; i<rows; i++) {
-			for (int j=0; j<cols; j++) {
-				grid.setText(i, j, "&nbsp");
-			}
-		}
-	}
-	
-	@Override
-	public void setHeight(String height) {
-		int heightInt = 0;
-		if (height.endsWith("%")) {
-			height = height.replaceAll("%", "");
-			try {
-				double calc = Integer.parseInt(height);
-				int displayHeight = WebConsole.getConsoleUnit().getConsoleDisplay().getHeight();
-				heightInt = (int)Math.round((calc / 100) * displayHeight); 
-			} catch (Exception e) {}
-		} else if (height.endsWith("px")) {
-			height = height.replaceAll("px", "");
-			try {
-				heightInt = Integer.parseInt(height);
-			} catch (Exception e) {}
-		}
-		setHeight(heightInt);
-	}
-	
-	@Override
-	public void setWidth(String width) {
-		int widthInt = 0;
-		if (width.endsWith("%")) {
-			width = width.replaceAll("%", "");
-			try {
-				double calc = Integer.parseInt(width);
-				int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
-				widthInt = (int)Math.round((calc / 100) * displayWidth); 
-			} catch (Exception e) {}
-		} else if (width.endsWith("px")) {
-			width = width.replaceAll("px", "");
-			try {
-				widthInt = Integer.parseInt(width);
-			} catch (Exception e) {}
-		}
-		setWidth(widthInt);
-	}
-	
-	public void setRowCount(int count) {
-		this.rows = count;
-	}
-	
-	public void setColCount(int count) {
-		this.cols = count;
-	}
-	
 	@Override
 	public Set<Sensor> getSensors() {
 		Set<Sensor> sensors = new HashSet<Sensor>();
@@ -195,7 +123,15 @@ public class GridPanelComponent extends PassiveConsoleComponent implements Posit
 	public Set<ConsoleComponent> getComponents() {
 		return components;
 	}
+	
+	@Override
+	public String getClassName() {
+		return CLASS_NAME;
+	}
 
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
 	
 	public static GridPanelComponent build(GridLayout layout) throws Exception {
 		GridPanelComponent panel = new GridPanelComponent();

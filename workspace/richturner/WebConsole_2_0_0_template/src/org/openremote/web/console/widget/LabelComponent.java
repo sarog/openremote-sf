@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Label;
 public class LabelComponent extends PassiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "labelComponent";
 	
-	protected LabelComponent() {
+	public LabelComponent() {
 		super(new Label(), CLASS_NAME);
 		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
 		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");

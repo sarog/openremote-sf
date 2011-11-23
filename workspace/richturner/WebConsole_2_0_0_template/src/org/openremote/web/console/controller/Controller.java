@@ -3,10 +3,26 @@ package org.openremote.web.console.controller;
 public class Controller {
 	private boolean isAlive;
 	private boolean isSecure;
-	private boolean supportsJson;
+	private boolean isSupported;
 	private String name;
 	private String url;
-	private ControllerLoginCredentials loginCredentials;
+	private String username;
+	private String password;
+	private String defaultPanel;
+	
+	public Controller() {
+		this(null);
+	}
+	
+	public Controller(ControllerCredentials credentials) {
+		if (credentials != null) {
+			this.name = credentials.getName();
+			this.url = credentials.getUrl();
+			this.username = credentials.getUsername();
+			this.password = credentials.getPassword();
+			this.defaultPanel = credentials.getDefaultPanel();
+		}
+	}
 	
 	public boolean isAlive() {
 		return isAlive;
@@ -18,31 +34,60 @@ public class Controller {
 	public boolean isSecure() {
 		return isSecure;
 	}
+	
 	public void setSecure(boolean isSecure) {
 		this.isSecure = isSecure;
 	}
-	public boolean isSupportsJson() {
-		return supportsJson;
+	
+	public boolean isSupported() {
+		return isSupported;
 	}
-	public void setSupportsJson(boolean supportsJson) {
-		this.supportsJson = supportsJson;
+	
+	public void setIsSupported(boolean isSupported) {
+		this.isSupported = isSupported;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public String getUrl() {
 		return url;
 	}
+	
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	public ControllerLoginCredentials getLoginCredentials() {
-		return loginCredentials;
+	
+	public String getUsername() {
+		return username;
 	}
-	public void setLoginCredentials(ControllerLoginCredentials loginCredentials) {
-		this.loginCredentials = loginCredentials;
-	}	
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String getDefaultPanel() {
+		return defaultPanel;
+	}
+	
+	public void setDefaultPanel(String defaultPanel) {
+		this.defaultPanel = defaultPanel;
+	}
+	
+	public ControllerCredentials getCredentials() {
+		return new ControllerCredentialsImpl(name, url, username, password, defaultPanel);
+	}
 }

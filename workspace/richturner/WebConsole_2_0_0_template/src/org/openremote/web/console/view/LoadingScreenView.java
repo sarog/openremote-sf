@@ -1,8 +1,8 @@
 package org.openremote.web.console.view;
 
-import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.LabelComponent;
 import org.openremote.web.console.widget.ext.SpinnerComponent;
+import org.openremote.web.console.widget.panel.AbsolutePanelComponent;
 
 public class LoadingScreenView extends ScreenViewImpl {
 	public static final String LOADING_MESSAGE = "LOADING....";

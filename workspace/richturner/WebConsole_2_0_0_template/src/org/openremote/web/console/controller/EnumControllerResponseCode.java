@@ -13,6 +13,7 @@ public enum EnumControllerResponseCode {
 	CONTROLLER_XML_INVALID (424, "Controller or Panel XML is Invalid"),
 	PANEL_XML_NOT_FOUND (426, "Panel XML Not Found"),
 	PANEL_XML_INVALID (427, "Panel XML is Invalid"),
+	PANEL_NOT_FOUND (428, "No such Panel"),
 	XML_ERROR (429, "Invalid Controller XML Element"),
 	NO_RESPONSE (430, "No Response from Controller"),
 	XML_CHANGED (506, "Controller XML has Changed"),
