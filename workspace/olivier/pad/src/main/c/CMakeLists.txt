@@ -10,7 +10,7 @@ configure_file (
 # add the binary tree to the search path for include files
 # so that we will find padConfig.h
 include_directories("${PROJECT_BINARY_DIR}")
-include_directories(${APR_PATH}/include)
+include_directories("${APR_PATH}/include")
  
 # external libraries
 add_library(apr-1 STATIC IMPORTED)

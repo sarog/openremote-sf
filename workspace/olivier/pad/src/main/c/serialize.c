@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "apr_pools.h"
+#include "apr_strings.h"
 
 #include "codes.h"
 #include "serialize.h"
@@ -54,7 +55,6 @@ void createMessageFields(apr_pool_t *pool, message_t *message, int nbFields) {
 }
 
 int fillStringField(apr_pool_t *pool, field_t *field, char *buf, int len) {
-	int i;
 	field->length = len;
 	field->stringVal = apr_palloc(pool, len);
 	memcpy(field->stringVal, buf, len);
@@ -197,10 +197,11 @@ int setCode(message_t *message, char code) {
 int readHeader(apr_socket_t *sock, char *code) {
 	char car;
 	int len;
+	apr_status_t rv;
 
 	// Read version
 	len = 1;
-	apr_status_t rv = apr_socket_recv(sock, &car, &len);
+	rv = apr_socket_recv(sock, &car, &len);
 	if (rv == APR_EOF || len == 0) {
 		return R_INVALID_MESSAGE;
 	}

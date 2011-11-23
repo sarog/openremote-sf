@@ -9,7 +9,7 @@
 void main(int argc, const char *argv[]) {
   printf("pad version %d.%d\n", pad_VERSION_MAJOR, pad_VERSION_MINOR);
 
-  apr_status_t st = apr_initialize();
+  apr_initialize();
 
   initPortManager();
 
