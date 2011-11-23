@@ -5,15 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.openremote.web.console.controller.Controller;
+import org.openremote.web.console.controller.ControllerCredentials;
+import org.openremote.web.console.controller.ControllerCredentialsImpl;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.*;
@@ -23,8 +26,6 @@ import org.openremote.web.console.event.swipe.*;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
-import org.openremote.web.console.panel.PanelCredentials;
-import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
@@ -49,9 +50,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private PanelService panelService = new PanelServiceImpl();
 	private LocalDataService dataService = new LocalDataServiceImpl();
 	private ScreenViewService screenViewService = new ScreenViewService();
-	private PanelCredentials currentPanelCredentials;
-	private PanelCredentials lastPanelCredentials;
-	private PanelIdentity currentPanelIdentity;
+	//private PanelCredentials currentPanelCredentials;
+	private ControllerCredentials currentControllerCredentials;
+	private String currentPanelName;
 	private Integer currentGroupId;
 	private Integer currentScreenId;
 	private TabBarComponent currentTabBar;
@@ -59,8 +60,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
 	ScreenViewImpl loadingScreen;
-	private boolean panelIsLoaded = false;
-	private int panelReloadAttempts = 0;
+	private PopupPanel alertPopup;
 	
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
 		@Override
@@ -96,6 +96,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
+		
+		// Initialise Popup
+		alertPopup = new PopupPanel(true);
+		alertPopup.setWidget(new Label());
 	}
 	
 	public void resize(int width, int height) {
@@ -174,25 +178,44 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public void initialise() {
+		ControllerCredentials controllerCreds;
+		String panelName = "";
+		
 		// Display loading screen
+//		loadingScreen = new ControllerCredentialsScreenView();//screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
+//		loadScreenView(loadingScreen);
+//		return;
+		
 		loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
 		loadScreenView(loadingScreen);
 
-		// Check for Last Panel in Cache
-//		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://multimation.co.uk:8080/controller", 30, "Mobile");
-//		dataService.setLastPanelCredentials(panelCred);
-		PanelCredentials panelCredentials = dataService.getLastPanelCredentials();
+		dataService.setDefaultControllerCredentials(new ControllerCredentialsImpl("test", "http://multimation.co.uk:8080/controller", "", "", "Mobile"));
 		
+		// Check for default Controller in Settings
+		controllerCreds = dataService.getDefaultControllerCredentials();
+		if (controllerCreds != null) {
+			panelName = controllerCreds.getDefaultPanel();
+		}
 		
-		// If Panel Credentials found look for Controller and Panel if found then load that panel
-		// Otherwise go to the settings screen view
-		if (panelCredentials != null) {
-			// Check Controller is still alive if it is then check panel
-			loadControllerAndPanel(panelCredentials);
+		if (panelName != null && !panelName.equals("")) {
+			loadControllerAndPanel(controllerCreds, panelName);
 		} else {
-			// Go to settings
-			loadSettings();
-		}		
+			// Check for Last Controller and Panel in Cache
+			controllerCreds = dataService.getLastControllerCredentials();
+			if (controllerCreds != null) {
+				panelName = controllerCreds.getDefaultPanel();
+			}
+			if (panelName == null || panelName.equals("")) {
+				panelName = dataService.getLastPanelName();
+			}
+			
+			if (panelName != null && !panelName.equals("")) {
+				loadControllerAndPanel(controllerCreds, panelName);
+			} else {
+				// No panel or controller to load so go to settings
+				loadSettings("No History");		
+			}
+		}	
 	}
 	
 	/*
@@ -200,118 +223,81 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	 */
 	private void destroy() {
 		// TODO:
-	}	
+	}
 	
-	private void loadController() {
-		if (currentPanelCredentials == null) {
+	public void alert(String msg) {
+		if (msg != null && msg.length() > 0) {
+			Label label = (Label)alertPopup.getWidget();
+			label.setText(msg);
+			alertPopup.show();
+		}
+	}
+	
+	private void loadControllerAndPanel(ControllerCredentials controllerCreds, String panelName) {
+		if (controllerCreds == null) {
 			loadSettings();
 		} else {
-			controllerService.isAlive(currentPanelCredentials.getControllerUrl(), new AsyncControllerCallback<Boolean>() {
+			// Instantiate controller from credentials and check it is alive then load the panel by name
+			currentControllerCredentials = controllerCreds;
+			currentPanelName = panelName;
+			controllerService.setController(new Controller(controllerCreds));
+			controllerService.isAlive(new AsyncControllerCallback<Boolean>() {
 				@Override
 				public void onSuccess(Boolean isAlive) {
 					if (isAlive) {
-						// Get Panel list and look for last panel name in list
-						Controller controller = new Controller();
-						controller.setUrl(currentPanelCredentials.getControllerUrl());
-						controllerService.setController(controller);
-						// TODO: Load Panel Selection Screen
+						// If current panel name set try and load it otherwise prompt for panel to load
+						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
+							loadPanel(currentPanelName);
+						} else {
+							// TODO: Panel Selection 
+							loadSettings("SELECT PANEL TO LOAD");
+						}
+					} else {
+						// TODO: Controller Selection 
+						loadSettings("Controller Not Found");
 					}
 				}
 			});
 		}
 	}
 	
-	private void unLoadController() {
-		if (panelIsLoaded) {
-			unLoadPanel();		
-		}
-		controllerService.setController(null);
-	}
-	
-	private void loadControllerAndPanel(PanelCredentials credentials) {
-		lastPanelCredentials = currentPanelCredentials;
-		currentPanelCredentials = credentials;
-		if (currentPanelCredentials != lastPanelCredentials) {
-			panelReloadAttempts = 0;
-		}
-		loadControllerAndPanel();
-	}
-	
-	private void loadControllerAndPanel() {
-		if (currentPanelCredentials == null) {
-			loadSettings();
-		} else {
-			controllerService.isAlive(currentPanelCredentials.getControllerUrl(), new AsyncControllerCallback<Boolean>() {
-				@Override
-				public void onSuccess(Boolean isAlive) {
-					if (isAlive) {
-						// Get Panel list and look for last panel name in list
-						Controller controller = new Controller();
-						controller.setUrl(currentPanelCredentials.getControllerUrl());
-						controllerService.setController(controller);
-						loadPanel();
-					}
-				}
-			});
-		}
-	}
-	
-	private void loadPanel() {
-		controllerService.getPanelIdentities(new AsyncControllerCallback<List<PanelIdentity>>() {
+	private void loadPanel(String panelName) {
+		controllerService.getPanel(panelName, new AsyncControllerCallback<Panel>() {
 			@Override
-			public void onSuccess(List<PanelIdentity> result) {
-				boolean panelFound = false;
-				for (PanelIdentity identity : result) {
-					if (currentPanelCredentials.getName().equalsIgnoreCase(identity.getName())) {
-						currentPanelIdentity = identity;
-						panelFound = true;
-						break;
-					}
+			public void onFailure(EnumControllerResponseCode response) {
+				if(response == EnumControllerResponseCode.PANEL_NOT_FOUND) {
+					// TODO: Panel Selection
+					loadSettings("Load Panel Selection");
 				}
-				if (!panelFound) {
-					loadSettings("Panel Not Found");
+			}
+			
+			@Override
+			public void onSuccess(Panel result) {
+				if (result != null) {
+					panelService.setCurrentPanel(result);
+					
+					// Get default group ID
+					Integer defaultGroupId = panelService.getDefaultGroupId();
+					Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
+					
+					if (defaultScreen != null) {
+						// Load default Screen for default group
+						loadScreen(defaultGroupId, defaultScreen);
+					} else {
+						loadSettings("Failed to load Panel");
+					}
 				} else {
-					getPanel();
+					// TODO: Panel Selection
+					loadSettings("Failed to load Panel");
 				}
 			}			
 		});
 	}
 	
-	private void getPanel() {
-		if (currentPanelIdentity == null) {
-			loadSettings("Current Panel not Defined");
-		} else {
-			controllerService.getPanel(currentPanelIdentity.getName(), new AsyncControllerCallback<Panel>() {
-				@Override
-				public void onSuccess(Panel result) {
-					if (result != null) {
-						panelService.setCurrentPanel(result);
-						panelIsLoaded = true;
-						
-						// Get default group ID
-						Integer defaultGroupId = panelService.getDefaultGroupId();
-						Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
-						
-						if (defaultScreen != null) {
-							// Load default Screen for default group
-							loadScreen(defaultGroupId, defaultScreen);
-						} else {
-							loadSettings("Failed to load Panel");
-						}
-					}
-				}			
-			});
-		}
-	}
-	
-	private void unLoadPanel() {
-		if (panelIsLoaded) {
-			unLoadScreen();
-			loadScreenView(loadingScreen);
-			currentPanelIdentity = null;
-			panelService.setCurrentPanel(null);
-			panelIsLoaded = false;
-		}
+	private void unLoadController() {	
+		panelService.setCurrentPanel(null);
+		controllerService.setController(null);
+		unLoadScreen();
 	}
 	
 	private void loadScreen(Screen screen) {
@@ -640,33 +626,20 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public void onError(EnumControllerResponseCode errorCode) {
 		switch (errorCode) {
-			case COMPONENT_INVALID:
-				if (!panelIsLoaded) {
-					break;
-				} else if (panelReloadAttempts > 1) {
-					unLoadPanel();
-					loadSettings(EnumControllerResponseCode.CONTROLLER_XML_INVALID.getDescription());
-					break;
-				} else {
-					// Lets assume panel has just been loaded from RPC not cache so no point in reloading it!
-					unLoadPanel();
-					loadSettings(EnumControllerResponseCode.CONTROLLER_XML_INVALID.getDescription());					
-					panelReloadAttempts++;
-					break;
-				}
 			case XML_CHANGED:
 				// Try and reload the panel
-				unLoadPanel();
+				unLoadController();
 				// Wait 2s before reloading to allow controller time to re-initialise
 				Timer reloadTimer = new Timer() {
 					@Override
 					public void run() {
-						loadPanel();
+						loadControllerAndPanel(currentControllerCredentials, currentPanelName);
 					}
 				};
 				reloadTimer.schedule(2000);
 				break;
 			default:
+				unLoadController();
 				loadSettings(errorCode.getDescription());
 				break;
 		}

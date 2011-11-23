@@ -43,26 +43,26 @@ public abstract class ControllerService {
 			getPanel(controller.getUrl(), panelName, callback);
 		}
 	}
-	
 	public abstract void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback);
-	
+
 	/*
-	 * Method for retrieving controller security status
+	 * Static Method for retrieving controller security status
 	 */
 	public void isSecure(AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
 			isSecure(controller.getUrl(), callback);
 		}
 	}
-
-	/*
-	 * Static Method for retrieving controller security status
-	 */
 	public abstract void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
 	/*
 	 * Static Method for retrieving controller alive status
 	 */
+	public void isAlive(AsyncControllerCallback<Boolean> callback) {
+		if (controller != null) {
+			isAlive(controller.getUrl(), callback);
+		}
+	}
 	public abstract void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
 	/*

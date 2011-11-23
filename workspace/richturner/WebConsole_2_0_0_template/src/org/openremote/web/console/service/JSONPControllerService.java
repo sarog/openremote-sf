@@ -83,7 +83,7 @@ public class JSONPControllerService extends ControllerService {
 	@Override
 	public void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback));	
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),2000);	
 	}
 	
 	@Override
@@ -118,7 +118,12 @@ public class JSONPControllerService extends ControllerService {
 		
 		@Override
 		public void onFailure(Throwable caught) {
-			callback.onFailure(caught);
+			if (command == EnumControllerCommand.IS_ALIVE) {
+				AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callback;
+				isAliveCallback.onSuccess(false);
+			} else {
+				callback.onFailure(caught);
+			}
 		}
 
 		@Override

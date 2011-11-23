@@ -17,6 +17,7 @@ import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
@@ -27,7 +28,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	private Image img;
 	private boolean srcExists = false;
 	
-	private ButtonComponent() {
+	protected ButtonComponent() {
 		super(new AbsolutePanel(), CLASS_NAME);
 		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
@@ -35,6 +36,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		label = new Label();
 		label.setWidth("100%");
 		label.setHeight("100%");
+		label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
 		img = new Image();
 		img.addLoadHandler(new LoadHandler() {

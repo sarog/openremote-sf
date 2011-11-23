@@ -1,9 +1,17 @@
 package org.openremote.web.console.service;
 
-import org.openremote.web.console.panel.PanelCredentials;
+import org.openremote.web.console.controller.ControllerCredentials;
 
 public interface LocalDataService {
-	public PanelCredentials getLastPanelCredentials();
+	public ControllerCredentials getLastControllerCredentials();
 	
-	public void setLastPanelCredentials(PanelCredentials panelCredentials);
+	public String getLastPanelName();
+	
+	public ControllerCredentials getDefaultControllerCredentials();
+	
+	public void setLastControllerCredentials(ControllerCredentials controllerCredentials);
+	
+	public void setLastPanelName(String panelName);
+	
+	public void setDefaultControllerCredentials(ControllerCredentials controllerCredentials);
 }

@@ -8,8 +8,9 @@ import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
-import org.openremote.web.console.widget.AbsolutePanelComponent;
-import org.openremote.web.console.widget.GridPanelComponent;
+import org.openremote.web.console.widget.panel.AbsolutePanelComponent;
+import org.openremote.web.console.widget.panel.GridPanelComponent;
+
 import com.google.gwt.user.client.Window;
 
 public class ScreenViewService {

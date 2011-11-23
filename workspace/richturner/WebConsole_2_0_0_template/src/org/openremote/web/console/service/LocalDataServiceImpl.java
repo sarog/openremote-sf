@@ -1,6 +1,6 @@
 package org.openremote.web.console.service;
 
-import org.openremote.web.console.panel.PanelCredentials;
+import org.openremote.web.console.controller.ControllerCredentials;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.storage.client.StorageMap;
 import com.google.gwt.user.client.Cookies;
@@ -16,30 +16,67 @@ public class LocalDataServiceImpl implements LocalDataService {
 		}
 	}
 	
-	@Override
-	public PanelCredentials getLastPanelCredentials() {
-		PanelCredentials panelCredentials = null;
-		String panelString = null;
+	private void setData(String dataName, String data) {
+		if (dataStore != null) {
+			dataStore.setItem(dataName, data);
+		} else {
+			Cookies.setCookie(dataName, data);
+		}
+	}
+	
+	private String getData(String dataName) {
+		String data = "";
 		
 		if (dataStore != null) {
-			panelString = dataStore.getItem("LocalDataService.LastPanelCredentials");
+			data = dataStore.getItem(dataName);
 		} else {
-			panelString = Cookies.getCookie("LocalDataService.LastPanelCredentials");
+			data = Cookies.getCookie(dataName);
 		}
-		if (panelString != null && !panelString.equals("null")) {
-			//String panelJson = AutoBeanService.getInstance().toJsonString(panelCred);
-			panelCredentials = AutoBeanService.getInstance().fromJsonString(PanelCredentials.class, panelString);
+		return data;
+	}
+	
+	@Override
+	public ControllerCredentials getLastControllerCredentials() {
+		ControllerCredentials credentials = null;
+		String jsonString = getData("LocalDataService.LastControllerCredentials");
+
+		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
+			credentials = AutoBeanService.getInstance().fromJsonString(ControllerCredentials.class, jsonString);
 		}
-		return panelCredentials;
+		return credentials;
 	}
 
 	@Override
-	public void setLastPanelCredentials(PanelCredentials panelCredentials) {
-		String data = AutoBeanService.getInstance().toJsonString(PanelCredentials.class, panelCredentials);
-		if (dataStore != null) {
-			dataStore.setItem("LocalDataService.LastPanelCredentials", data);
-		} else {
-			Cookies.setCookie("LocalDataService.LastPanelCredentials", data);
+	public void setLastControllerCredentials(ControllerCredentials credentials) {
+		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentials.class, credentials);
+		setData("LocalDataService.LastControllerCredentials", data);
+	}
+
+	@Override
+	public String getLastPanelName() {
+		// TODO Auto-generated method stub
+		return getData("LocalDataService.LastPanelName");
+	}
+
+	@Override
+	public void setLastPanelName(String panelName) {
+		setData("LocalDataService.LastPanelName", panelName);
+	}
+	
+	@Override
+	public ControllerCredentials getDefaultControllerCredentials() {
+		ControllerCredentials credentials = null;
+		String jsonString = getData("LocalDataService.DefaultControllerCredentials");
+
+		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
+			credentials = AutoBeanService.getInstance().fromJsonString(ControllerCredentials.class, jsonString);
 		}
+		return credentials;
+	}
+
+	@Override
+	public void setDefaultControllerCredentials(ControllerCredentials credentials) {
+		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentials.class, credentials);
+		setData("LocalDataService.DefaultControllerCredentials", data);
 	}
 }

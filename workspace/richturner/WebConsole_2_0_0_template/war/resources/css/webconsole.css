@@ -246,3 +246,42 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	background: #3A495E;
 	color: #DDD;
 }
+
+.formPanelComponent {
+	background: #7A899E;
+	border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border: 2px solid #333;
+}
+
+.formFieldComponent {
+	
+}
+
+.formFieldLabelComponent {
+	color: #333;
+	font-weight: bold;
+	font-size: 15px;
+	line-height: 20px;
+}
+
+.formFieldInputComponent {
+	border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+.formButtonComponent {
+	background: #5A697E;
+    border: 1px solid black;
+    color: #FFF;
+    font-weight: bold;
+    font-family: arial;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
+    margin-left: 10px;
+    margin-right: 10px;
+}
