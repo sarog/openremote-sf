@@ -7,7 +7,9 @@
 
 #include <stdio.h>
 #include <assert.h>
+#ifdef LINUX
 #include <sys/socket.h>  // To please Eclipse
+#endif
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_strings.h"
@@ -17,6 +19,7 @@
 #include "codes.h"
 #include "server.h"
 #include "client.h"
+#include "serialize.h"
 
 // Default listen port number
 #define DEF_LISTEN_PORT		7876
@@ -142,12 +145,12 @@ static apr_socket_t* createListenSocket(apr_pool_t *listenPool) {
 }
 
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool) {
-	apr_status_t rv;
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, NULL };
 
 	// Create service context
-	context = apr_palloc(socketPool, sizeof(serviceContext_t));
+	context = (serviceContext_t *) apr_palloc(socketPool, sizeof(serviceContext_t));
 	apr_socket_accept(&context->socket, lsock, socketPool);
-	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+	descriptor.client_data = context;
 	descriptor.desc.s = context->socket;
 	context->status = RECV_MESSAGE;
 	context->cbFunc = receiveMessage;
@@ -172,8 +175,9 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 }
 
 void closeSocket(apr_pool_t *socketPool,serviceContext_t *context) {
+	int r;
 	apr_socket_close(context->socket);
-	int r = apr_thread_mutex_destroy(context->clientMutex);
+	apr_thread_mutex_destroy(context->clientMutex);
 	r = apr_thread_cond_destroy(context->clientCond);
 	apr_pool_clear(socketPool);
 	context = NULL;
@@ -196,18 +200,19 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 }
 
 static int receiveRequest(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, char code) {
+	int r;
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
 	// Create a new server transaction
 	// TODO what happens if a transaction was already created?
 	createServerTransaction(context->serverTxPool, &context->serverTx, receiveData);
 
-	int r = operateRequest(context->socket, context->serverTx, context->serverTxPool, code);
+	r = operateRequest(context->socket, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
 		closeSocket(socketPool, context);
 		return r;
 	}
 
 	// Change context status from receive to send
-	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
 	descriptor.desc.s = context->socket;
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLOUT;
@@ -218,12 +223,13 @@ static int receiveRequest(apr_pool_t *socketPool, serviceContext_t *context, apr
 }
 
 static int receiveResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, char code) {
+	int r;
 	// Check if a transaction is running
 	if (context->clientTx == NULL)
 		return R_TX_NOT_FOUND;
 
 	// Read response
-	int r = operateResponse(context->socket, context->clientTx, context->clientTxPool, code);
+	r = operateResponse(context->socket, context->clientTx, context->clientTxPool, code);
 	if (r != R_SUCCESS) {
 		closeSocket(socketPool, context);
 		return r;
@@ -262,13 +268,13 @@ int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollse
  * Send a response to the client.
  */
 static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset) {
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
 	writeMessage(context->socket, context->serverTx->response);
 
 	// Clear all memory related to request and response
 	clearServerTransaction(context->serverTxPool, &context->serverTx);
 
 	// Change context status from write to read
-	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
 	descriptor.desc.s = context->socket;
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLIN;
@@ -279,6 +285,7 @@ static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_p
 }
 
 int receiveData(char *portId, char *buf, int len) {
+	int r;
 	if (context->clientTx != NULL)
 		return R_TX_RUNNING;
 	createClientTransaction(context->clientTxPool, &context->clientTx);
@@ -287,7 +294,7 @@ int receiveData(char *portId, char *buf, int len) {
 
 	// Send message and synchronize with response if message sent
 	apr_thread_mutex_lock(context->clientMutex);
-	int r = writeMessage(context->socket, context->clientTx->request);
+	r = writeMessage(context->socket, context->clientTx->request);
 	if (r == R_SUCCESS) {
 		apr_thread_cond_timedwait(context->clientCond, context->clientMutex, 2000000);
 	}

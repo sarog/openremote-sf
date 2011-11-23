@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "apr_strings.h"
+
 #include "codes.h"
 #include "port.h"
 
@@ -24,10 +26,11 @@ int logicalUnlock(port_t *port, char *source) {
 }
 
 int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceiveCb) {
+	int r;
 	CHECK(logicalLock(port, source))
 
 	// Prepare runtime
-	int r = port->lockCb(port->portPool, port->portId, &port->context, port->cfg, portReceiveCb);
+	r = port->lockCb(port->portPool, port->portId, &port->context, port->cfg, portReceiveCb);
 	if (r != R_SUCCESS) {
 		return unlock(pool, port, source);
 	}
@@ -35,20 +38,21 @@ int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceive
 }
 
 int unlock(apr_pool_t *pool, port_t *port, char *source) {
+	int r;
 	port->unlockCb(port->portPool, port->portId, &port->context);
 	apr_pool_destroy(port->portPool);
-	int r = logicalUnlock(port, source);
+	r = logicalUnlock(port, source);
 	return r;
 }
 
 int unencode(apr_pool_t *pool, char **buf, char *data, int len) {
 	int i;
+	char tmp[3];
+	char *end;
 	if (len % 2 != 0)
 		return R_INVALID_MESSAGE;
 	*buf = apr_palloc(pool, len / 2);
-	char tmp[3];
 	tmp[2] = 0;
-	char *end;
 	for (i = 0; i < len; i += 2) {
 		tmp[0] = data[i];
 		tmp[1] = data[i + 1];
