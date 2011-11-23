@@ -56,7 +56,7 @@ int unencode(apr_pool_t *pool, char **buf, char *data, int len) {
 	for (i = 0; i < len; i += 2) {
 		tmp[0] = data[i];
 		tmp[1] = data[i + 1];
-		APR_CHECK(apr_strtoff(&(*buf)[i / 2], tmp, &end, 16), R_INVALID_MESSAGE);
+		APR_CHECK(apr_strtoff((apr_off_t *) &(*buf)[i / 2], tmp, &end, 16), R_INVALID_MESSAGE);
 		if (*end != 0 || end - tmp != 2)
 			return R_INVALID_MESSAGE;
 	}

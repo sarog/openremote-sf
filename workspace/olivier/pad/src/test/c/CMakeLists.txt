@@ -8,7 +8,7 @@ include_directories("../../main/c")
  
 # external libraries
 add_library(apr-1 STATIC IMPORTED)
-set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_PATH}/.libs/libapr-1.a)
+set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_LIB})
 #add_library(pthread MODULE IMPORTED)
 #add_library(pa STATIC IMPORTED)
 
@@ -16,4 +16,6 @@ set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_PATH}/.libs/libapr-1.
 add_executable(padTest main.c test.c)
 target_link_libraries(padTest pa)
 target_link_libraries(padTest apr-1)
+if (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 target_link_libraries(padTest pthread)
+endif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
