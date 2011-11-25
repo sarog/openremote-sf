@@ -1,7 +1,9 @@
 #ifndef _SERVER_H
 #define _SERVER_H
 
+#define APR_DECLARE_STATIC
 #include "apr_network_io.h"
+
 #include "serialize.h"
 #include "osPort.h"
 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#define APR_DECLARE_STATIC
 #include "apr_pools.h"
 #include "apr_strings.h"
 
@@ -132,7 +133,7 @@ int readInt32(apr_socket_t *sock, field_t *field) {
 }
 
 int writeInt32(apr_socket_t *sock, field_t *field) {
-	char buf[8];
+	char buf[9];
 	int len = 8;
 	CHECK(int322Buf(buf, field->int32Val))
 	apr_socket_send(sock, buf, &len);

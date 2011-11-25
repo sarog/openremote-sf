@@ -2,7 +2,9 @@
 #define _LINUXSERIALPORT_H
 
 #include <termios.h>
+
 #include "apr_pools.h"
+
 #include "osPort.h"
 
 struct _portContext_t {

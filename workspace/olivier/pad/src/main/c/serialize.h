@@ -1,6 +1,7 @@
 #ifndef _SERIALIZE_H
 #define _SERIALIZE_H
 
+#define APR_DECLARE_STATIC
 #include "apr_network_io.h"
 
 typedef enum _messageTxType_t {

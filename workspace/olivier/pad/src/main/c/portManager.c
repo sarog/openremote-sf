@@ -1,5 +1,8 @@
 #include <stdio.h>
+
+#define APR_DECLARE_STATIC
 #include "apr_hash.h"
+
 #include "portManager.h"
 
 extern physicalLock_t physicalLockCb;

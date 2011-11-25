@@ -4,7 +4,7 @@ project (pad-all)
 # Directories
 if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 set (APR_PATH "C:/Users/Olivier Gandit/Documents/src/apr-1.4.5")
-set (APR_LIB "${APR_PATH}/Release/libapr-1.lib")
+set (APR_LIB "${APR_PATH}/LibR/apr-1.lib")
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 set (APR_PATH "C:/Users/Olivier Gandit/Documents/src/apr-1.4.5")
 set (APR_LIB "${APR_PATH}/.libs/libapr-1.a")

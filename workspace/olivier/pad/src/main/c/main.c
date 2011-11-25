@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#define APR_DECLARE_STATIC
 #include "apr_general.h"
 
 #include "padConfig.h"
