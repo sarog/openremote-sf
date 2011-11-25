@@ -10,6 +10,8 @@
 #ifdef LINUX
 #include <sys/socket.h>  // To please Eclipse
 #endif
+
+#define APR_DECLARE_STATIC
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_strings.h"

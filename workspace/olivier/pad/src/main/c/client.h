@@ -1,7 +1,9 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
+#define APR_DECLARE_STATIC
 #include "apr_thread_cond.h"
+
 #include "serialize.h"
 
 typedef struct _clientTransaction_t {

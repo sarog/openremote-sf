@@ -1,7 +1,9 @@
 #ifndef _PORT_H
 #define _PORT_H
 
+#define APR_DECLARE_STATIC
 #include "apr_pools.h"
+
 #include "osPort.h"
 
 typedef struct _port_t {

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#define APR_DECLARE_STATIC
 #include "apr_strings.h"
 
 #include "codes.h"

@@ -1,6 +1,7 @@
 #ifndef _OSPORT_H
 #define _OSPORT_H
 
+#define APR_DECLARE_STATIC
 #include "apr_hash.h"
 
 typedef struct _portContext_t portContext_t;
