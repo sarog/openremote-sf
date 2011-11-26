@@ -22,7 +22,7 @@ package org.openremote.controller.protocol
 
 import org.openremote.controller.model.event.*;
 
-global org.openremote.controller.statuscache.EventContext.CommandFacade execute;
+global org.openremote.controller.statuscache.CommandFacade execute;
 
 
 /* -------------------------------------------------------------------------
@@ -39,7 +39,7 @@ when
 
 then
 
-  execute.command("My Command", "hit the min");
+  execute.command("counter", "hit the min");
 
 end
 
@@ -59,7 +59,7 @@ when
 
 then
 
-  execute.command("My Command", "hit the max");
+  execute.command("counter", "hit the max");
 
 end
 
@@ -75,11 +75,11 @@ rule "Set range value as command param"
 
 when
 
-  $evt : Range (source == "temperature")
+  $evt : Range (source == "temperature", value != minValue, value != maxValue)
 
 then
 
-  execute.command("My Command", $evt.getValue());
+  execute.command("counter", $evt.getValue());
 
 end
 
