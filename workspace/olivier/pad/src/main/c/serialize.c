@@ -116,7 +116,7 @@ int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf,
 }
 
 int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
-	int l = len - 1;
+	apr_size_t l = len - 1;
 	apr_status_t rv = apr_socket_recv(sock, buf, &l);
 	if (rv == APR_EOF || l != len - 1) {
 		return R_INVALID_MESSAGE;
@@ -134,7 +134,7 @@ int readInt32(apr_socket_t *sock, field_t *field) {
 
 int writeInt32(apr_socket_t *sock, field_t *field) {
 	char buf[9];
-	int len = 8;
+	apr_size_t len = 8;
 	CHECK(int322Buf(buf, field->int32Val))
 	apr_socket_send(sock, buf, &len);
 	return R_SUCCESS;
@@ -149,7 +149,7 @@ int readFieldLength(apr_socket_t *sock, apr_uint16_t *fieldLength) {
 
 int writeFieldLength(apr_socket_t *sock, apr_uint16_t fieldLength) {
 	char buf[4];
-	int len = 4;
+	apr_size_t len = 4;
 	CHECK(int162Buf(buf, fieldLength))
 	apr_socket_send(sock, buf, &len);
 	// TODO check len and return value
@@ -173,7 +173,7 @@ int writeString(apr_socket_t *sock, field_t *field) {
 
 int writeOctetString(apr_socket_t *sock, field_t *field) {
 	int i;
-	int len = 2 * field->length;
+	apr_size_t len = 2 * field->length;
 	char tmp[1024];
 	writeFieldLength(sock, len);
 	for (i = 0; i < field->length; ++i) {
@@ -197,7 +197,7 @@ int setCode(message_t *message, char code) {
 
 int readHeader(apr_socket_t *sock, char *code) {
 	char car;
-	int len;
+	apr_size_t len;
 	apr_status_t rv;
 
 	// Read version
@@ -274,7 +274,7 @@ int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char cod
 
 int writeHeader(apr_socket_t *sock, message_t *message) {
 	char buf[2] = { 'a', 0 };
-	int len = 2;
+	apr_size_t len = 2;
 	buf[1] = message->code;
 	apr_socket_send(sock, buf, &len);
 	return R_SUCCESS;
