@@ -20,15 +20,20 @@
  */
 package org.openremote.controller.protocol
 
+global org.openremote.controller.statuscache.CommandFacade execute;
+
+import org.openremote.controller.model.event.*
+
 
 rule "Execute on Sensor State"
 
 when
 
-  $event : Event( source == "my event" )
-           Event( source == "test sensor 1")
+  Switch( source == "my event" )
+  Event ( source == "test sensor 1")
+
 then
 
-  $event.setSourceID( 9999 );
+  execute.command("counter", "triggered");
 
 end
