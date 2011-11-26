@@ -20,7 +20,7 @@
  */
 package org.openremote.controller.protocol
 
-global org.openremote.controller.statuscache.EventContext.CommandFacade execute;
+global org.openremote.controller.statuscache.CommandFacade execute;
 
 rule "Execute Int Param Command"
 
@@ -30,6 +30,6 @@ when
 
 then
 
-  execute.command("My Command", 5);
+  execute.command("counter", 5);
 
 end
