@@ -18,19 +18,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol
+package org.openremote.controller.model.event
+
+global org.openremote.controller.statuscache.CommandFacade execute;
 
 
 rule "Execute on three-way switch ON"
 
 when
 
-            Event( source == "sensor 1", value == "on")
-            Event( source == "sensor 2", value == "on")
-  $assert : Event( source == "sensor 3", value == "on")
+  Switch( source == "sensor 1", value == "on")
+  Switch( source == "sensor 2", value == "on")
+  Switch( source == "sensor 3", value == "on")
 
 then
 
-  $assert.setSource("Complete");
+  execute.command("counter", "all on");
+
+end
+
+
+rule "Execute on three-way switch OFF"
+
+when
+
+  Switch( source == "sensor 1", value == "off")
+  Switch( source == "sensor 2", value == "off")
+  Switch( source == "sensor 3", value == "off")
+
+then
+
+  execute.command("counter", "all off");
 
 end
