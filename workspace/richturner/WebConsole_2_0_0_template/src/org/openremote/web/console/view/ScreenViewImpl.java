@@ -1,9 +1,12 @@
 package org.openremote.web.console.view;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.Background;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.panel.PanelComponent;
@@ -83,14 +86,23 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 
 	@Override
 	public void onAdd(int width, int height) {
+		onAdd(width, height, null);
+	}
+	
+	@Override
+	public void onAdd(int width, int height, List<DataValuePair> data) {
 		setVisible(true);
-		onRender(width, height);
+		onRender(width, height, data);
 	}
 	
 	@Override
 	public void onRender(int width, int height) {
+		onRender(width, height, null);
+	}
+	
+	private void onRender(int width, int height, List<DataValuePair> data) {
 		for (PanelComponent component : panelComponents) {
-			((ConsoleComponent)component).onAdd(width, height);
+			component.onAdd(width, height, data);
 		}
 	}
 	

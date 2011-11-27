@@ -1,6 +1,7 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.controller.ControllerCredentials;
+import org.openremote.web.console.controller.ControllerCredentialsList;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.panel.PanelIdentityList;
@@ -12,6 +13,8 @@ import com.google.web.bindery.autobean.shared.AutoBeanFactory;
 public interface MyFactory extends AutoBeanFactory {
 	AutoBean<ControllerCredentials> controllerCredentials();
 	AutoBean<ControllerCredentials> controllerCredentials(ControllerCredentials toWrap);
+	AutoBean<ControllerCredentialsList> controllerCredentialsList();
+	AutoBean<ControllerCredentialsList> controllerCredentials(ControllerCredentialsList toWrap);
 	AutoBean<PanelIdentityList> panelIdentityList();
 	AutoBean<PanelIdentity> panelIdentity();
 	AutoBean<Panel> panel();

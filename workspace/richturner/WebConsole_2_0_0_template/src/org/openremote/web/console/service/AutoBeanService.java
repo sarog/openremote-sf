@@ -5,6 +5,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
+import com.google.web.bindery.autobean.shared.Splittable;
 
 public class AutoBeanService {
 	private static AutoBeanService instance = null;
@@ -20,6 +21,10 @@ public class AutoBeanService {
 		return instance;
 	}
 	
+	public <T> String toJsonString(Class<T> clazz, AutoBean<T> obj) {
+		return AutoBeanCodex.encode(obj).getPayload();
+	}
+	
 	public <T> String toJsonString(Class<T> clazz, T obj) {
 		AutoBean<T> bean = null;
 		bean = AutoBeanUtils.getAutoBean(obj);
@@ -29,9 +34,14 @@ public class AutoBeanService {
 	   return AutoBeanCodex.encode(bean).getPayload();
 	}
 
-	public <T> T fromJsonString(Class<T> clazz, String json) {
+	public <T> AutoBean<T> fromJsonString(Class<T> clazz, String json) {
 	   AutoBean<T> bean = AutoBeanCodex.decode(factory, clazz, json);     
-	   return bean.as();
+	   return bean;
+	}
+	
+	public <T> AutoBean<T> fromJsonString(Class<T> clazz, Splittable data) {
+	   AutoBean<T> bean = AutoBeanCodex.decode(factory, clazz, data); 
+	   return bean;
 	}
 	
 	public MyFactory getFactory() {

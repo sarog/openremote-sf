@@ -266,6 +266,10 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	line-height: 20px;
 }
 
+.formFieldLabelComponent.invalid {
+	color: #FF0000;
+}
+
 .formFieldInputComponent {
 	border-radius: 2px;
     -moz-border-radius: 2px;

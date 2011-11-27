@@ -1,6 +1,8 @@
 package org.openremote.web.console.controller;
 
-public class Controller {
+import org.openremote.web.console.service.AutoBeanService;
+
+public class Controller implements ControllerCredentials {
 	private boolean isAlive;
 	private boolean isSecure;
 	private boolean isSupported;
@@ -88,6 +90,6 @@ public class Controller {
 	}
 	
 	public ControllerCredentials getCredentials() {
-		return new ControllerCredentialsImpl(name, url, username, password, defaultPanel);
+		return AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class, this).as();
 	}
 }

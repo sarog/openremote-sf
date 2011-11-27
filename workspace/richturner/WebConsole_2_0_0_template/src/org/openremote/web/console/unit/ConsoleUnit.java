@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
-import org.openremote.web.console.controller.ControllerCredentialsImpl;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.*;
@@ -26,11 +25,13 @@ import org.openremote.web.console.event.swipe.*;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.service.*;
+import org.openremote.web.console.service.ScreenViewService.EnumSystemScreen;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
@@ -50,7 +51,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private PanelService panelService = new PanelServiceImpl();
 	private LocalDataService dataService = new LocalDataServiceImpl();
 	private ScreenViewService screenViewService = new ScreenViewService();
-	//private PanelCredentials currentPanelCredentials;
 	private ControllerCredentials currentControllerCredentials;
 	private String currentPanelName;
 	private Integer currentGroupId;
@@ -59,7 +59,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private ScreenViewImpl currentScreen;
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
-	ScreenViewImpl loadingScreen;
 	private PopupPanel alertPopup;
 	
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
@@ -182,14 +181,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		String panelName = "";
 		
 		// Display loading screen
-//		loadingScreen = new ControllerCredentialsScreenView();//screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
-//		loadScreenView(loadingScreen);
-//		return;
-		
-		loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
-		loadScreenView(loadingScreen);
-
-		dataService.setDefaultControllerCredentials(new ControllerCredentialsImpl("test", "http://multimation.co.uk:8080/controller", "", "", "Mobile"));
+		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
 		
 		// Check for default Controller in Settings
 		controllerCreds = dataService.getDefaultControllerCredentials();
@@ -213,16 +205,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 				loadControllerAndPanel(controllerCreds, panelName);
 			} else {
 				// No panel or controller to load so go to settings
-				loadSettings("No History");		
+				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 			}
 		}	
-	}
-	
-	/*
-	 * Clean up currently loaded panel and go to loading screen
-	 */
-	private void destroy() {
-		// TODO:
 	}
 	
 	public void alert(String msg) {
@@ -235,7 +220,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	private void loadControllerAndPanel(ControllerCredentials controllerCreds, String panelName) {
 		if (controllerCreds == null) {
-			loadSettings();
+			loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 		} else {
 			// Instantiate controller from credentials and check it is alive then load the panel by name
 			currentControllerCredentials = controllerCreds;
@@ -249,12 +234,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
 							loadPanel(currentPanelName);
 						} else {
-							// TODO: Panel Selection 
-							loadSettings("SELECT PANEL TO LOAD");
+							loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
 						}
 					} else {
-						// TODO: Controller Selection 
-						loadSettings("Controller Not Found");
+						loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 					}
 				}
 			});
@@ -266,8 +249,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				if(response == EnumControllerResponseCode.PANEL_NOT_FOUND) {
-					// TODO: Panel Selection
-					loadSettings("Load Panel Selection");
+					loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
 				}
 			}
 			
@@ -282,13 +264,12 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 					
 					if (defaultScreen != null) {
 						// Load default Screen for default group
-						loadScreen(defaultGroupId, defaultScreen);
+						loadScreen(defaultGroupId, defaultScreen, null);
 					} else {
-						loadSettings("Failed to load Panel");
+						loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
 					}
 				} else {
-					// TODO: Panel Selection
-					loadSettings("Failed to load Panel");
+					loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
 				}
 			}			
 		});
@@ -300,11 +281,30 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		unLoadScreen();
 	}
 	
-	private void loadScreen(Screen screen) {
-		loadScreen(currentGroupId, screen);
+	public void reloadController() {
+		unLoadController();
+		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
+		// Wait 2s before reloading to allow controller time to re-initialise
+		Timer reloadTimer = new Timer() {
+			@Override
+			public void run() {
+				loadControllerAndPanel(currentControllerCredentials, currentPanelName);
+			}
+		};
+		reloadTimer.schedule(2000);
 	}
 	
-	private void loadScreen(Integer groupId, Screen screen) {
+	public void restartController() {
+		unLoadController();
+		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
+		initialise();
+	}
+	
+	private void loadScreen(Screen screen, List<DataValuePair> data) {
+		loadScreen(currentGroupId, screen, data);
+	}
+	
+	private void loadScreen(Integer groupId, Screen screen, List<DataValuePair> data) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
 		boolean screenOrientationChanged = false;
@@ -343,7 +343,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			ScreenViewImpl screenView = screenViewService.getScreenView(screen);
 		
 			if (screenView != null) {
-				loadScreenView(screenView);
+				loadScreenView(screenView, data);
 				
 				// Configure gestures
 				setGestureMap(screen.getGesture());
@@ -368,7 +368,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 					pollingHelper.startSensorMonitoring();
 				}
 			} else {
-				loadSettings();
+				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 				return;
 			}
 		}
@@ -376,7 +376,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		if (groupChanged) {
 			// Get Tab Bar for this group
 			TabBar tabBar = panelService.getTabBar(currentGroupId);
-			if (tabBar != null) {
+			if (tabBar != null && tabBar.getItem() != null) {
 				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
 				tabBarChanged = loadTabBar(tabBarComponent);
 			}
@@ -448,25 +448,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		});
 	}
 	
-	public void loadSettings() {
-		loadSettings(null);
-	}
-	
-	public void loadSettings(String displayMessage) {
-		// TODO Load the settings screen
-		Window.alert("LOAD SETTINGS: " + displayMessage);
-	}
-	
-	private void loadScreenView(ScreenViewImpl screenView) {
+	public void loadScreenView(ScreenViewImpl screenView, List<DataValuePair> data) {
 		if (screenView == null) {
 			return;
 		}
-	
+		
 		if (currentScreen != null && screenView != currentScreen) {
 			consoleDisplay.removeComponent(currentScreen);
 		}
 	
-		consoleDisplay.addComponent(screenView);
+		consoleDisplay.addComponent(screenView, data);
 		
 		currentScreen = screenView;
 	}
@@ -503,6 +494,26 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public ControllerService getControllerService() {
 		return this.controllerService;
 	}
+
+	public LocalDataService getLocalDataService() {
+		return this.dataService;
+	}
+	
+//	public void loadSettings() {
+//		loadSettings(null);
+//	}
+//	
+//	public void loadSettings(String displayMessage) {
+//		// TODO Load the settings screen
+//		Window.alert("LOAD SETTINGS: " + displayMessage);
+//	}
+//	
+//	public void loadSystemScreen(String to, List<DataValuePair> data) {
+//		EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
+//		if (screen != null) {
+//			Window.alert("Load System Screen: " + screen.getName());
+//		}
+//	}
 	
 	/*
 	 * **********************************************
@@ -538,7 +549,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			if (!orientation.equalsIgnoreCase(panelService.getScreenOrientation(currentScreenId))) {
 				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
 				if (inverseScreen != null) {
-					loadScreen(currentGroupId, inverseScreen);
+					loadScreen(currentGroupId, inverseScreen, null);
 				}
 			}
 		}
@@ -547,7 +558,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	@Override
 	public void onHold(HoldEvent event) {
 		if (event.getSource() == consoleDisplay) {
-			loadSettings();
+			loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 		}
 	}
 
@@ -583,11 +594,11 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		switch (event.getDirection()) {
 			case LEFT:
 				Screen nextScreen = panelService.getNextScreen(currentGroupId, currentScreenId);
-				loadScreen(nextScreen);
+				loadScreen(nextScreen, null);
 				break;
 			case RIGHT:
 				Screen prevScreen = panelService.getPreviousScreen(currentGroupId, currentScreenId);
-				loadScreen(prevScreen);
+				loadScreen(prevScreen, null);
 				break;
 		}
 	}
@@ -599,13 +610,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			String to = navigate.getTo();
 			Integer toGroupId = navigate.getToGroup();
 			Integer toScreenId = navigate.getToScreen();
+			List<DataValuePair> data = navigate.getData();
 			
 			if (to != null && !to.equals("")) {
-				// TODO Load System Screen
-				Window.alert("Load System Screen");
+				EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
+				if (screen != null) {
+					loadScreenView(screenViewService.getScreenView(screen), data);
+				}
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);
-				loadScreen(toGroupId, screen);
+				loadScreen(toGroupId, screen, data);
 			}
 		}
 	}
@@ -628,19 +642,11 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		switch (errorCode) {
 			case XML_CHANGED:
 				// Try and reload the panel
-				unLoadController();
-				// Wait 2s before reloading to allow controller time to re-initialise
-				Timer reloadTimer = new Timer() {
-					@Override
-					public void run() {
-						loadControllerAndPanel(currentControllerCredentials, currentPanelName);
-					}
-				};
-				reloadTimer.schedule(2000);
+				reloadController();
 				break;
 			default:
 				unLoadController();
-				loadSettings(errorCode.getDescription());
+				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
 				break;
 		}
 	}

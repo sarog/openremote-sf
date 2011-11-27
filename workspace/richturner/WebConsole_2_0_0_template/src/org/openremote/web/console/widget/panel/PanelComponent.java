@@ -1,7 +1,9 @@
 package org.openremote.web.console.widget.panel;
 
+import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
@@ -60,14 +62,24 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	
 	@Override
 	public void onAdd(int width, int height) {
-		onAdd();
+		onAdd(null);
 	}
 	
-	private void onAdd() {
+	public void onAdd(int width, int height, List<DataValuePair> data) {
+		onAdd(data);
+	}
+	
+	private void onAdd(List<DataValuePair> data) {
 		setVisible(true);
 		getWidget().setWidth(width + "px");
 		getWidget().setHeight(height + "px");
 		onRender(width, height);
+		isInitialised = true;
+	}
+	
+	@Override
+	public void onRender(int width, int height) {
+		onRender(width, height, null);
 	}
 	
 	@Override
@@ -138,4 +150,6 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	public abstract Set<ConsoleComponent> getComponents();
 	
 	public abstract String getClassName();
+	
+	public abstract void onRender(int width, int height, List<DataValuePair> data);
 }
