@@ -71,7 +71,7 @@ public class JSONPControllerService extends ControllerService {
 	@Override
 	public void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LAYOUT;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback));
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback),20000);
 	}
 	
 	@Override
@@ -150,12 +150,12 @@ public class JSONPControllerService extends ControllerService {
 			switch(command) {
 				case GET_PANEL_LIST:
 					AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callback;
-					PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString());
+					PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString()).as();
 					panelListCallback.onSuccess(panels.getPanel());
 					break;
 				case GET_PANEL_LAYOUT:
 					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callback;
-					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString());
+					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString()).as();
 					panelLayoutCallback.onSuccess(panel);
 					break;
 				case IS_ALIVE:
@@ -184,7 +184,7 @@ public class JSONPControllerService extends ControllerService {
 					if (errorCode == 504) {
 						pollingCallback.onSuccess(null);	
 					} else {
-						List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).getStatus();
+						List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).as().getStatus();
 						if (statuses != null) {
 							for (Status status : statuses) {
 								if (status != null) {
@@ -198,7 +198,7 @@ public class JSONPControllerService extends ControllerService {
 				case GET_SENSOR_STATUS:
 					AsyncControllerCallback<Map<Integer,String>> statusCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
 					Map<Integer,String> statusValues = new HashMap<Integer, String>();
-					List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).getStatus();
+					List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).as().getStatus();
 					if (statuses != null) {
 						for (Status status : statuses) {
 							if (status != null) {

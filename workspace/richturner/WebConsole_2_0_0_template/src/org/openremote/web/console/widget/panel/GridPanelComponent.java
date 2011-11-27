@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.panel.entity.Cell;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
@@ -69,7 +70,7 @@ public class GridPanelComponent extends PanelComponent {
 	// ---------------------------------------------------------------------------------
 	
 	@Override
-	public void onRender(int width, int height) {
+	public void onRender(int width, int height, List<DataValuePair> data) {
 		FlexTable grid = (FlexTable)getWidget();
 		int colWidth = (int)Math.round((double)width / cols);
 		int rowHeight = (int)Math.round((double)height / rows);

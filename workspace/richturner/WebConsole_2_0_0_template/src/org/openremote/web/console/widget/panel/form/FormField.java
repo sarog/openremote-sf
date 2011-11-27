@@ -2,22 +2,33 @@ package org.openremote.web.console.widget.panel.form;
 
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FormField extends InteractiveConsoleComponent {
+public class FormField extends InteractiveConsoleComponent implements KeyDownHandler {
 	public static final String CLASS_NAME = "formFieldComponent";
 	public static final String LABEL_CLASS_NAME = "formFieldLabelComponent";
 	public static final String INPUT_CLASS_NAME = "formFieldInputComponent";
 	private String label = null;
 	private EnumFormInputType inputType;
+	private Label lbl = null;
 	private Widget input = null;
-	
+	private String validationStr = null;
+	private boolean isValid;
+	private boolean isOptional = false;
+	private String name = null;
+	private String defaultValue = null;
+
 	public enum EnumFormInputType {
 		TEXTBOX,
+		PASSWORD,
 		TEXTAREA,
 		SELECT;
 	}
@@ -27,6 +38,11 @@ public class FormField extends InteractiveConsoleComponent {
 		VerticalPanel container = (VerticalPanel)getWidget();
 		container.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		container.setSpacing(0);
+		
+		lbl = new Label();
+		lbl.setHeight("20px");
+		lbl.setWidth("100%");
+		lbl.setStylePrimaryName(LABEL_CLASS_NAME);
 	}
 	
 	public void setLabel(String label) {
@@ -36,30 +52,156 @@ public class FormField extends InteractiveConsoleComponent {
 	public void setInputType(EnumFormInputType inputType) {
 		this.inputType = inputType;
 	}
+	
+	public EnumFormInputType getInputType() {
+		return inputType;
+	}
+	
+	public void setValidationString(String validationStr) {
+		this.validationStr = validationStr; 
+	}
+	
+	public boolean isValid() {
+		return isValid;
+	}
+	
+	public boolean getIsOptional() {
+		return isOptional;
+	}
+	
+	public void setIsOptional(boolean isOptional) {
+		this.isOptional = isOptional;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	
+	public void setValue(String value) {
+		switch (inputType) {
+			case TEXTBOX:
+			case PASSWORD:
+				((TextBox)input).setText(value); 
+				break;
+		}
+	}
+	
+	public String getValue() {
+		String value = "";
+		switch (inputType) {
+			case TEXTBOX:
+			case PASSWORD:
+				value = ((TextBox)input).getText(); 
+				break;
+		}
+		return value;
+	}
 
 	@Override
 	public void onRender(int width, int height) {
+		if (!isInitialised) {
+			switch (inputType) {
+				case TEXTBOX:
+					input = new TextBox();
+					input.setWidth("100%");
+					input.addStyleName("formInputComponent");
+					input.addStyleName("formTextBoxComponent");
+					((TextBox)input).setText(defaultValue);
+					break;
+				case PASSWORD:
+					input = new PasswordTextBox();
+					input.setWidth("100%");
+					input.addStyleName("formInputComponent");
+					input.addStyleName("formPasswordComponent");
+					((TextBox)input).setText(defaultValue);
+			}
+			
+			if (label != null && input != null) {
+				lbl.setText(label);
+				
+				input.setStylePrimaryName(INPUT_CLASS_NAME);
+				((VerticalPanel)getWidget()).add(lbl);
+				((VerticalPanel)getWidget()).add(input);
+				setVisible(true);
+				
+				validateInput();
+				
+				// Initialise validation handler
+				if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
+					input.addDomHandler(this, KeyDownEvent.getType());
+				}
+			}
+		}
+		
 		setHeight("50px");
 		setWidth("95%");
 		
 		switch (inputType) {
+		case TEXTBOX:
+			((TextBox)input).setText(defaultValue);
+			break;
+		case PASSWORD:
+			((TextBox)input).setText(defaultValue);
+		}
+	
+		if (label != null && input != null) {
+			setVisible(true);
+			validateInput();
+			
+			// Initialise validation handler
+			if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
+				input.addDomHandler(this, KeyDownEvent.getType());
+			}
+		}
+	}
+	
+	private void setInputValid(boolean valid) {
+		isValid = valid;
+		if (valid) {
+			lbl.removeStyleName("invalid");
+		} else {
+			lbl.addStyleName("invalid");			
+		}
+	}
+	
+	private void validateInput() {
+		String value = "";
+		switch (inputType) {
 			case TEXTBOX:
-				input = new TextBox();
-				input.setWidth("100%");
-				input.addStyleName("formTextBoxComponent");
+				value = ((TextBox)input).getValue();
+				break;
+			case TEXTAREA:
+				value = ((TextArea)input).getValue();
+				break;
+			case PASSWORD:
+				value = ((PasswordTextBox)input).getValue();
 				break;
 		}
-		
-		if (label != null && input != null) {
-			Label lbl = new Label(label);
-			lbl.setHeight("20px");
-			lbl.setWidth("100%");
-			lbl.setStylePrimaryName(LABEL_CLASS_NAME);
-			
-			input.setStylePrimaryName(INPUT_CLASS_NAME);
-			((VerticalPanel)getWidget()).add(lbl);
-			((VerticalPanel)getWidget()).add(input);
-			setVisible(true);
+		if (isOptional && value.length() == 0) {
+			setInputValid(true);
+		} else {
+			if (validationStr != null) {
+				setInputValid(value.matches(validationStr));
+			} else {
+				setInputValid(true);
+			}
 		}
+	}
+
+	@Override
+	public void onKeyDown(KeyDownEvent event) {
+		validateInput();
 	}
 }

@@ -39,4 +39,8 @@ public class FormButton extends ButtonComponent {
 		}
 		setName(buttonType.getText());
 	}
+	
+	public EnumFormButtonType getType() {
+		return buttonType;
+	}
 }

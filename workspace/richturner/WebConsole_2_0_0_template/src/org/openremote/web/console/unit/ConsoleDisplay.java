@@ -1,9 +1,13 @@
 package org.openremote.web.console.unit;
 
+import java.util.List;
+
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -140,9 +144,18 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		addComponent(component, 0, 0);
 	}
 	
+	protected void addComponent(ScreenViewImpl screen, List<DataValuePair> data) {
+		addComponent(screen, 0, 0, data);
+	}
+	
 	protected void addComponent(ConsoleComponentImpl component, int left, int top) {
 		display.add(component, left, top);
 		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight());
+	}
+	
+	protected void addComponent(ScreenViewImpl component, int left, int top, List<DataValuePair> data) {
+		display.add(component, left, top);
+		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight(), data);
 	}
 	
 	protected void removeComponent(ConsoleComponentImpl component) {
