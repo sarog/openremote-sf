@@ -98,6 +98,8 @@ public class JSONFormatter {
                   JSONObject tabbarObj = jsonObj.optJSONObject("tabbar");
                   if (tabbarObj != null) {
                      updateValue(tabbarObj, "item", convertToArray(tabbarObj.opt("item")));
+                  } else {
+                     jsonObj.remove("tabbar");
                   }
                   
                   // Convert Screen array
@@ -212,6 +214,8 @@ public class JSONFormatter {
                         JSONObject groupTabbarObj = groupObj.optJSONObject("tabbar");
                         if (groupTabbarObj != null) {
                            updateValue(groupTabbarObj, "item", convertToArray(groupTabbarObj.opt("item")));
+                        } else {
+                           groupObj.remove("tabbar");
                         }
                      }
                   }
