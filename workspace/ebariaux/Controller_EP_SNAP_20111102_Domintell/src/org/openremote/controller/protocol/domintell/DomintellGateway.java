@@ -64,9 +64,14 @@ public class DomintellGateway {
    static {
       moduleClasses.put("BIR", RelayModule.class);
       moduleClasses.put("DMR", RelayModule.class);
+      moduleClasses.put("TRP", RelayModule.class);
       moduleClasses.put("DIM", DimmerModule.class);
-      moduleClasses.put("D10", DimmerModule.class);      
-      moduleClasses.put("TSB", TemperatureModule.class);      
+      moduleClasses.put("D10", DimmerModule.class);
+      moduleClasses.put("TSB", TemperatureModule.class);
+      moduleClasses.put("TE1", TemperatureModule.class);
+      moduleClasses.put("TE2", TemperatureModule.class);
+      moduleClasses.put("LC3", TemperatureModule.class);
+      moduleClasses.put("PBL", TemperatureModule.class);
    }
    
    public synchronized void startGateway() {
