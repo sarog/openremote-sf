@@ -20,16 +20,17 @@
  */
 package org.openremote.controller.model.event
 
+global org.openremote.controller.statuscache.SwitchFacade switches;
 
 rule "Turn Switch On"
 
 when
 
-  $switch : Switch( sourceID == 444, value == "off" )
+  Switch( source == "switch444", value == "off" )
 
 then
 
-  modify ( $switch ) { on() };
+  switches.name("switch444").on();
 
 end
 
@@ -40,11 +41,11 @@ rule "Turn switch off, with value 'closed'"
 
 when
 
-  $switch : Switch (sourceID == 444, value == "on")
+  Switch (sourceID == 444, value == "on", $name : source)
 
 then
 
-  modify ( $switch ) { off("closed") };
+  switches.name($name).off("closed");
 
 end
 
@@ -55,11 +56,11 @@ rule "Turn switch on, with value 'Complete'"
 
 when
 
-  $switch : Switch (sourceID == 444, value == "closed")
+  Switch (sourceID == 444, value == "closed", $name : source)
 
 then
 
-  $switch.on("Complete");
+  switches.name($name).on("Complete");
 
 end
 
