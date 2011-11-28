@@ -17,7 +17,7 @@ public class OutputCommand extends DomintellCommand implements ExecutableCommand
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
-   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
+   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue, TemperatureMode mode) {
 
       log.info("createCommand (" + name + "," + gateway + "," + moduleType + "," + address + "," + output + ")");
 
@@ -59,8 +59,7 @@ public class OutputCommand extends DomintellCommand implements ExecutableCommand
          }
        } catch (DomintellModuleException e) {
          log.error("Impossible to get module", e);
-       }
-      
+       }      
    }   
 
    @Override

@@ -68,6 +68,11 @@ public abstract class DomintellCommand implements Command {
       commandClasses.put("D10FADE", DimmerCommand.class);
       commandClasses.put("D10STATUS", DimmerCommand.class);
       commandClasses.put("TSBREAD_CURRENT_TEMP", TemperatureCommand.class);
+      commandClasses.put("TSBREAD_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TSBSET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TSBREAD_MODE", TemperatureCommand.class);
+      commandClasses.put("TSBSET_MODE", TemperatureCommand.class);
+      commandClasses.put("TSBREAD_PRESET_SET_POINT", TemperatureCommand.class);
    }
 
    /**
@@ -76,7 +81,7 @@ public abstract class DomintellCommand implements Command {
     * 
     * @return new Domintell command instance
     */
-   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
+   static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float setPoint, TemperatureMode mode) {
      log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
@@ -90,10 +95,10 @@ public abstract class DomintellCommand implements Command {
       }
       DomintellCommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class, Integer.class, Float.class);
+         Method method = commandClass.getMethod("createCommand", String.class, DomintellGateway.class, String.class, DomintellAddress.class, Integer.class, Integer.class, Float.class, TemperatureMode.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output, level, floatValue);
+         cmd = (DomintellCommand) method.invoke(null, name, gateway, moduleType, address, output, level, setPoint, mode);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          // TODO: should this be logged, check other source code
