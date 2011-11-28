@@ -7,8 +7,10 @@ import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
+import org.openremote.controller.protocol.domintell.model.Temperature;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 
 public class TemperatureCommand extends DomintellCommand implements ExecutableCommand, EventListener {
@@ -18,7 +20,7 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
-   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float floatValue) {
+   public static DomintellCommand createCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Integer output, Integer level, Float setPoint, TemperatureMode mode) {
 
       log.info("createCommand (" + name + "," + gateway + "," + moduleType + "," + address + "," + output + ")");
 
@@ -30,6 +32,9 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
       if (address == null) {
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
+      
+      // TODO: more on parameters
+      
       /*
 
       if ("FADE".equalsIgnoreCase(name) && level == null) {
@@ -37,7 +42,7 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
        }
 
 */
-      return new TemperatureCommand(name, gateway, moduleType, address, floatValue);
+      return new TemperatureCommand(name, gateway, moduleType, address, setPoint, mode);
     }
    
    // Private Instance Fields
@@ -46,18 +51,31 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
    /**
     * Set point.
     */
-
    private Float setPoint;
+   
+   /**
+    * Temperature mode.
+    */
+   private TemperatureMode mode;
 
-   public TemperatureCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Float floatValue) {
+   public TemperatureCommand(String name, DomintellGateway gateway, String moduleType, DomintellAddress address, Float setPoint, TemperatureMode mode) {
       super(name, gateway, moduleType, address);
-      this.setPoint = floatValue;
+      this.setPoint = setPoint;
+      this.mode = mode;
    }
 
    @Override
    public void send() {
-      // TODO Auto-generated method stub
-      
+      try {
+         Temperature temperature = (Temperature) gateway.getDomintellModule(moduleType, address, TemperatureModule.class);
+         if ("SET_SET_POINT".equals(name)) {
+            temperature.setSetPoint(setPoint);
+         } else if ("SET_MODE".equals(name)) {
+            temperature.setMode(mode);
+         }
+       } catch (DomintellModuleException e) {
+         log.error("Impossible to get module", e);
+       }      
    }
 
    @Override
@@ -104,18 +122,75 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
       }
    }
 
+   private void updateSensorForCurrentTemperature(TemperatureModule temperature, Sensor sensor) {
+      if (sensor instanceof LevelSensor) {
+         sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
+       } else if (sensor instanceof RangeSensor) {
+         sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
+       } else if (sensor instanceof StateSensor) {
+         sensor.update(Float.toString(temperature.getCurrentTemperature()));
+       } else {
+          log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+       }
+   }
+   
+   private void updateSensorForSetPoint(TemperatureModule temperature, Sensor sensor) {
+      if (sensor instanceof LevelSensor) {
+         sensor.update(Integer.toString((int)temperature.getSetPoint()));
+       } else if (sensor instanceof RangeSensor) {
+         sensor.update(Integer.toString((int)temperature.getSetPoint()));
+       } else if (sensor instanceof StateSensor) {
+         sensor.update(Float.toString(temperature.getSetPoint()));
+       } else {
+          log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+       }
+   }
+   
+   private void updateSensorForMode(TemperatureModule temperature, Sensor sensor) {
+      if (sensor instanceof SwitchSensor) {
+         if (TemperatureMode.ABSENCE == mode) {
+            sensor.update(TemperatureMode.ABSENCE == temperature.getMode()?"on":"off");
+         } else if (TemperatureMode.AUTO == mode) {
+            sensor.update(TemperatureMode.AUTO == temperature.getMode()?"on":"off");
+         } else if (TemperatureMode.COMFORT == mode) {
+            sensor.update(TemperatureMode.COMFORT == temperature.getMode()?"on":"off");
+         } else if (TemperatureMode.FROST == mode) {
+            sensor.update(TemperatureMode.FROST == temperature.getMode()?"on":"off");
+         } else {
+            log.warn(""); // TODO
+         }
+         
+      }
+      if (sensor instanceof StateSensor) {
+         sensor.update(temperature.getMode().toString());
+       } else {
+          log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+       }
+   }
+
+   private void updateSensorForPresetSetPoint(TemperatureModule temperature, Sensor sensor) {
+      if (sensor instanceof LevelSensor) {
+         sensor.update(Integer.toString((int)temperature.getPresetSetPoint()));
+       } else if (sensor instanceof RangeSensor) {
+         sensor.update(Integer.toString((int)temperature.getPresetSetPoint()));
+       } else if (sensor instanceof StateSensor) {
+         sensor.update(Float.toString(temperature.getPresetSetPoint()));
+       } else {
+          log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
+       }
+   }
+
    @Override
    protected void updateSensor(DomintellModule module, Sensor sensor) {
-     TemperatureModule temperature = (TemperatureModule)module;
-     if (sensor instanceof LevelSensor) {
-       sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
-     } else if (sensor instanceof RangeSensor) {
-       sensor.update(Integer.toString((int)temperature.getCurrentTemperature()));
-     } else if (sensor instanceof StateSensor) {
-       sensor.update(Float.toString(temperature.getCurrentTemperature()));
-     } else {
-        log.warn("Query Relay status for incompatible sensor type (" + sensor + ")");
-     }
+      if ("READ_CURRENT_TEMP".equals(name)) {
+         updateSensorForCurrentTemperature((TemperatureModule)module, sensor);
+      } else if ("READ_SET_POINT".equals(name)) {
+         updateSensorForSetPoint((TemperatureModule)module, sensor);
+      } else if ("READ_MODE".equals(name)) {
+         updateSensorForMode((TemperatureModule)module, sensor);
+      } else if ("READ_PRESET_SET_POINT".equals(name)) {
+         updateSensorForPresetSetPoint((TemperatureModule)module, sensor);
+      }
    }
 
 }

@@ -65,6 +65,19 @@ public class DomintellCommandBuilder implements CommandBuilder {
     * controller.xml file.
     */
    public final static String DOMINTELL_XMLPROPERTY_LEVEL = "level";
+   
+   /**
+    * String constant for parsing Domintell protocol XML entries from
+    * controller.xml file.
+    */
+   public final static String DOMINTELL_XMLPROPERTY_SET_POINT = "set_point";
+
+   /**
+    * String constant for parsing Domintell protocol XML entries from
+    * controller.xml file.
+    */
+   public final static String DOMINTELL_XMLPROPERTY_TEMP_MODE = "temp_mode";
+
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -124,11 +137,14 @@ public class DomintellCommandBuilder implements CommandBuilder {
       String commandAsString = null;
       String outputAsString = null;
       String levelAsString = null;
+      String setPointAsString = null;
+      String modeAsString = null;
       
       DomintellAddress address = null;
       Integer output = null;
       Integer level = null;
-      Float floatValue = null; // TODO: handle
+      Float setPoint = null;
+      TemperatureMode mode = null;
       
       // Get the list of properties from XML...
 
@@ -157,6 +173,14 @@ public class DomintellCommandBuilder implements CommandBuilder {
 
          else if (DOMINTELL_XMLPROPERTY_LEVEL.equalsIgnoreCase(propertyName)) {
             levelAsString = propertyValue;
+         }
+
+         else if (DOMINTELL_XMLPROPERTY_SET_POINT.equalsIgnoreCase(propertyName)) {
+            setPointAsString = propertyValue;
+         }
+
+         else if (DOMINTELL_XMLPROPERTY_TEMP_MODE.equalsIgnoreCase(propertyName)) {
+            modeAsString = propertyValue;
          }
 
          else {
@@ -222,7 +246,25 @@ public class DomintellCommandBuilder implements CommandBuilder {
          }
       }
 
-      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, address, output, level, floatValue);
+      if (setPointAsString != null && !"".equals(setPointAsString)) {
+         try {
+            setPoint = Float.parseFloat(setPointAsString);
+         } catch (NumberFormatException e) {
+           log.error("Invalid set point value", e);
+            throw new NoSuchCommandException(e.getMessage(), e);
+         }
+      }
+
+      if (modeAsString != null && !"".equals(modeAsString)) {
+         try {
+            mode = TemperatureMode.valueOf(modeAsString);
+          } catch (IllegalArgumentException e) {
+           log.error("Invalid temperature mode value", e);
+            throw new NoSuchCommandException(e.getMessage(), e);
+         }
+      }
+
+      Command cmd = DomintellCommand.createCommand(commandAsString, gateway, moduleTypeAsString, address, output, level, setPoint, mode);
 
       log.info("Created Domintell Command " + cmd + " for address '" + addressAsString + "'");
 
