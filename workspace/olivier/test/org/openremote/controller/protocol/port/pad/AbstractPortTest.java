@@ -51,9 +51,7 @@ public class AbstractPortTest {
          synchronized (this.lock) {
             this.message = null;
             this.port.send(new Message(new byte[] { 0x10, 0x40, 0x40, 0x16 }));
-            System.out.println("0");
             this.lock.wait(3000);
-            System.out.println("1");
             Assert.assertNotNull(this.message);
             Assert.assertEquals(1, this.message.getContent().length);
             Assert.assertEquals((byte) 0xE5, this.message.getContent()[0]);
