@@ -57,6 +57,10 @@ public abstract class DomintellCommand implements Command {
       commandClasses.put("DMROFF", OutputCommand.class);
       commandClasses.put("DMRTOGGLE", OutputCommand.class);
       commandClasses.put("DMRSTATUS", OutputCommand.class);
+      commandClasses.put("TRPON", OutputCommand.class);
+      commandClasses.put("TRPOFF", OutputCommand.class);
+      commandClasses.put("TRPTOGGLE", OutputCommand.class);
+      commandClasses.put("TRPSTATUS", OutputCommand.class);
       commandClasses.put("DIMON", DimmerCommand.class);
       commandClasses.put("DIMOFF", DimmerCommand.class);
       commandClasses.put("DIMTOGGLE", DimmerCommand.class);
@@ -73,6 +77,30 @@ public abstract class DomintellCommand implements Command {
       commandClasses.put("TSBREAD_MODE", TemperatureCommand.class);
       commandClasses.put("TSBSET_MODE", TemperatureCommand.class);
       commandClasses.put("TSBREAD_PRESET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE1READ_CURRENT_TEMP", TemperatureCommand.class);
+      commandClasses.put("TE1READ_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE1SET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE1READ_MODE", TemperatureCommand.class);
+      commandClasses.put("TE1SET_MODE", TemperatureCommand.class);
+      commandClasses.put("TE1READ_PRESET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE2READ_CURRENT_TEMP", TemperatureCommand.class);
+      commandClasses.put("TE2READ_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE2SET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("TE2READ_MODE", TemperatureCommand.class);
+      commandClasses.put("TE2SET_MODE", TemperatureCommand.class);
+      commandClasses.put("TE2READ_PRESET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("LC3READ_CURRENT_TEMP", TemperatureCommand.class);
+      commandClasses.put("LC3READ_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("LC3SET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("LC3READ_MODE", TemperatureCommand.class);
+      commandClasses.put("LC3SET_MODE", TemperatureCommand.class);
+      commandClasses.put("LC3READ_PRESET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("PBLREAD_CURRENT_TEMP", TemperatureCommand.class);
+      commandClasses.put("PBLREAD_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("PBLSET_SET_POINT", TemperatureCommand.class);
+      commandClasses.put("PBLREAD_MODE", TemperatureCommand.class);
+      commandClasses.put("PBLSET_MODE", TemperatureCommand.class);
+      commandClasses.put("PBLREAD_PRESET_SET_POINT", TemperatureCommand.class);
    }
 
    /**
