@@ -7,16 +7,24 @@
 #include <sys/ioctl.h>
 #include <asm-generic/ioctls.h>  // To please Eclipse
 #include <signal.h>
+
+#include "apr_hash.h"
+
 #include "codes.h"
-#include "linuxSerialPort.h"
+#include "serialPortLinux.h"
 
 #define RCV_BUF_SIZE 256
 
-static const trsTbl_t speedTrsTbl = { "speed", 5, { { "9600", B9600 }, { "19200", B19200 }, { "38400", B38400 },
-		{ "57600", B57600 }, { "115200", B115200 } } };
-static const trsTbl_t nbBitsTrsTbl = { "nbBits", 2, { { "7", CS7 }, { "8", CS8 } } };
-static const trsTbl_t parityTrsTbl = { "parity", 2, { { "even", PARENB }, { "odd", PARODD } } };
-//static const trsTbl_t parityCheckTrsTbl = { "parityCheck", 2, { { "false", IGNPAR }, { "true", INPCK } } };
+static const trsTbl_t speedTrsTbl = { "speed", 5, { { "9600", B9600 }, {
+		"19200", B19200 }, { "38400", B38400 }, { "57600", B57600 }, { "115200",
+		B115200 } } };
+static const trsTbl_t nbBitsTrsTbl = { "nbBits", 2,
+		{ { "7", CS7 }, { "8", CS8 } } };
+#define PARITY_NO 1
+#define PARITY_EVEN 2
+#define PARITY_ODD 3
+static const trsTbl_t parityTrsTbl = { "parity", 3, { { "no", PARITY_NO }, {
+		"even", PARITY_EVEN }, { "odd", PARITY_ODD } } };
 
 void lsReceiveSignal(int sig) {
 	printf("Signal %d!\n", sig);
@@ -88,10 +96,18 @@ int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 	tcgetattr(portContext->fd, &portContext->oldtio);
 
 	// Prepare new settings
-	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL | // ignore modem status lines, enable
-			CREAD | lsGetCfg(cfg, &parityTrsTbl, PARENB) | // receiver, enable parity
-			lsGetCfg(cfg, &speedTrsTbl, B19200);
-	portContext->newtio.c_iflag = INPCK | IGNPAR; // input modes : parity check & ignore parity-error bytes
+	tcflag_t parity = lsGetCfg(cfg, &parityTrsTbl, PARITY_EVEN);
+	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL
+			| lsGetCfg(cfg, &speedTrsTbl, B19200);
+	if (parity != PARITY_NO) {
+		portContext->newtio.c_cflag |= PARENB;
+	}
+	if (parity == PARITY_ODD) {
+		portContext->newtio.c_cflag |= PARODD;
+	}
+	if (parity != PARITY_ODD) {
+		portContext->newtio.c_iflag = INPCK;
+	}
 	portContext->newtio.c_lflag = 0 & ~(ICANON | ECHO | ECHOE | ISIG); // Raw mode
 	portContext->newtio.c_oflag = 0; // output modes
 	portContext->newtio.c_cc[VMIN] = 1;
@@ -132,7 +148,8 @@ int lsUnconfigure(portContext_t *portContext) {
 	return R_SUCCESS;
 }
 
-int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, apr_hash_t *cfg, portReceive_t portReceiveCb) {
+int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext,
+		apr_hash_t *cfg, portReceive_t portReceiveCb) {
 	// Allocate serial port data memory
 	*portContext = apr_palloc(pool, sizeof(portContext_t));
 	(*portContext)->portReceiveCb = portReceiveCb;
