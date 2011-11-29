@@ -1,5 +1,6 @@
 package org.openremote.controller.protocol.port.pad;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,8 +11,10 @@ public abstract class PadMessage {
    private byte VERSION = 'a';
 
    public void write(OutputStream os) throws IOException {
-      this.writeHeader(os);
-      this.writeBody(os);
+      ByteArrayOutputStream o = new ByteArrayOutputStream();
+      this.writeHeader(o);
+      this.writeBody(o);
+      os.write(o.toByteArray());
    }
 
    protected void writeHeader(OutputStream os) throws IOException {
