@@ -11,6 +11,8 @@ public abstract class PadMessage {
    private byte VERSION = 'a';
 
    public void write(OutputStream os) throws IOException {
+      // Using a temporary buffer to make sure all data is sent in a single TCP packet
+      // to optimize exchanges and ensure data interpretation
       ByteArrayOutputStream o = new ByteArrayOutputStream();
       this.writeHeader(o);
       this.writeBody(o);
