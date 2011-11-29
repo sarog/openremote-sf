@@ -20,15 +20,16 @@
  */
 package org.openremote.controller.protocol
 
+global org.openremote.controller.statuscache.RangeFacade ranges;
 
-rule "Modify Event State"
+rule "Modify Level State Above Max"
 
 when
 
-  $event : Event( sourceID == 123 )
+  Event( sourceID == 123, $name : source )
 
 then
 
-  $event.setSourceID( 321 );
+  ranges.name($name).value( 321 );
 
 end

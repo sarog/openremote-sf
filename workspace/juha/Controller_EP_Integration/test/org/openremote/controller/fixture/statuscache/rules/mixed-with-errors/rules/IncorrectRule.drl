@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol
 
 
-rule "Modify Event State"
+rule "Incorrect Event Modification Attempt"
 
 when
 
