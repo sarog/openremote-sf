@@ -1,6 +1,8 @@
 #include <stdio.h>
 
+#define APR_DECLARE_STATIC
 #include "apr_general.h"
+
 #include "codes.h"
 #include "test.h"
 #include "serialize.h"
@@ -21,7 +23,6 @@ void testBuf2Int32() {
 }
 
 void testInt322Buf() {
-	int r;
 	char buf[9];
 	buf[8] = 0;
 	ASSERT_INTS_EQUAL(int322Buf(buf, 16), R_SUCCESS);
