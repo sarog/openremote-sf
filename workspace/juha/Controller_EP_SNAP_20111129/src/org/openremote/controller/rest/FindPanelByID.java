@@ -80,7 +80,7 @@ public class FindPanelByID extends RESTAPI
 
         String panelXML = profileService.getProfileByPanelName(decodedPanelName);
 
-        sendResponse(response, panelXML);
+        sendResponse(request, response, panelXML);
       }
 
       catch (ControlCommandException e)
@@ -93,14 +93,14 @@ public class FindPanelByID extends RESTAPI
         //
         // response.setStatus(e.getErrorCode());
 
-        sendResponse(response, e.getErrorCode(), e.getMessage());
+        sendResponse(request, response, e.getErrorCode(), e.getMessage());
       }
 
       catch (UnsupportedEncodingException e)
       {
         logger.error(e.getMessage(), e);
 
-        sendResponse(response, 400, e.getMessage());    // TODO : check API documentation   
+        sendResponse(request, response, 400, e.getMessage());    // TODO : check API documentation   
       }
     }
 
@@ -112,7 +112,7 @@ public class FindPanelByID extends RESTAPI
       //
       //response.setStatus(400);
 
-      sendResponse(response, 400, "Bad REST Request, should be /rest/panel/{panelName}");
+      sendResponse(request, response, 400, "Bad REST Request, should be /rest/panel/{panelName}");
     }
   }
 
