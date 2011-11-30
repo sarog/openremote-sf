@@ -97,19 +97,18 @@ int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 
 	// Prepare new settings
 	tcflag_t parity = lsGetCfg(cfg, &parityTrsTbl, PARITY_EVEN);
-	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL
-			| lsGetCfg(cfg, &speedTrsTbl, B19200);
+	cfsetspeed(&portContext->newtio, lsGetCfg(cfg, &speedTrsTbl, B19200));
+	cfmakeraw(&portContext->newtio);
+	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL | CREAD;
 	if (parity != PARITY_NO) {
 		portContext->newtio.c_cflag |= PARENB;
+		portContext->newtio.c_iflag = INPCK | IGNPAR;
+		if (parity == PARITY_ODD) {
+			portContext->newtio.c_cflag |= PARODD;
+		}
+	} else {
+		portContext->newtio.c_cflag &= ~PARENB;
 	}
-	if (parity == PARITY_ODD) {
-		portContext->newtio.c_cflag |= PARODD;
-	}
-	if (parity != PARITY_ODD) {
-		portContext->newtio.c_iflag = INPCK;
-	}
-	portContext->newtio.c_lflag = 0 & ~(ICANON | ECHO | ECHOE | ISIG); // Raw mode
-	portContext->newtio.c_oflag = 0; // output modes
 	portContext->newtio.c_cc[VMIN] = 1;
 	portContext->newtio.c_cc[VTIME] = 0; // read timeout = 0 * 0.1s
 	tcsetattr(portContext->fd, TCSANOW, &portContext->newtio);
