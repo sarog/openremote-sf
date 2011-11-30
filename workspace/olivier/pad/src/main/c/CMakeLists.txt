@@ -13,9 +13,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${APR_PATH}/include")
  
 # external libraries
-# add_library(apr-1 STATIC IMPORTED)
-# set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_LIB})
-#add_library(pthread MODULE IMPORTED)
+link_directories("${APR_PATH}/lib")
 
 
 # add the executable

@@ -7,10 +7,7 @@ include_directories(${APR_PATH}/include)
 include_directories("../../main/c")
  
 # external libraries
-#add_library(apr-1 STATIC IMPORTED)
-#set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_LIB})
-#add_library(pthread MODULE IMPORTED)
-#add_library(pa STATIC IMPORTED)
+link_directories("${APR_PATH}/lib")
 
 # add the executable
 add_executable(padTest main.c test.c)
