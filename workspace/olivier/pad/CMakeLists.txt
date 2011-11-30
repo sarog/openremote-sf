@@ -9,9 +9,8 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.5/linux32-x86")
 set (APR_LIB "apr-1")
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-set (APR_PATH "/Users/ogandit/Documents/src/apr-1.4.5")
-set (APR_LIB "${APR_PATH}/.libs/libapr-1.a")
-# include_directories("${APR_PATH}/include")
+set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.5/darwin64-x86")
+set (APR_LIB "apr-1")
 endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 
 # The version number.
