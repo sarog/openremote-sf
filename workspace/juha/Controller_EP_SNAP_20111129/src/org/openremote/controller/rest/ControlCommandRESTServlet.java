@@ -76,7 +76,7 @@ public class ControlCommandRESTServlet extends RESTAPI {
       {
         componentControlService.trigger(componentID, commandParam);
 
-        sendResponse(response, 200, "SUCCESS");
+        sendResponse(request, response, 200, "SUCCESS");
       }
 
       else
@@ -88,7 +88,7 @@ public class ControlCommandRESTServlet extends RESTAPI {
     catch (ControlCommandException e)
     {
       logger.error("Error executing command ''{0}'' : {1}", e, pathinfo, e.getMessage());
-      sendResponse(response, e.getErrorCode(), e.getMessage());
+      sendResponse(request, response, e.getErrorCode(), e.getMessage());
     }
   }
 

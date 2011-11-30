@@ -63,14 +63,14 @@ public class RoundRobinRESTServlet extends RESTAPI {
          try {
             Set<String> groupMemberControllerAppURLSet = roundRobinService.discoverGroupMembersAppURL();
             String serversXML = roundRobinService.constructServersXML(groupMemberControllerAppURLSet);
-            sendResponse(response, serversXML);
+            sendResponse(request, response, serversXML);
             logger.info("Finished RoundRobin group member REST service.  at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (RoundRobinException e) {
             logger.error("CommandException occurs", e);
-            sendResponse(response, e.getErrorCode(), e.getMessage());
+            sendResponse(request, response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         sendResponse(response, RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url);
+         sendResponse(request, response, RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url);
       }
    }
 }

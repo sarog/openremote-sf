@@ -24,10 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.openremote.controller.Constants;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
@@ -64,12 +64,11 @@ public class StatusPollingRESTServlet extends RESTAPI {
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
       String unParsedSensorIDs = null;
-      String deviceID = null;
       
       if (matcher.find()) {
-         deviceID = matcher.group(1);
+         String deviceID = matcher.group(1);
          if (deviceID == null || "".equals(deviceID)) {
-            throw new NullPointerException("Device id was null");
+            sendResponse(request, response, ControlCommandException.INVALID_POLLING_URL, "Device id was null");
          }
          unParsedSensorIDs = matcher.group(2);
          try {
@@ -77,19 +76,21 @@ public class StatusPollingRESTServlet extends RESTAPI {
             String pollingResults = statusPollingService.queryChangedState(deviceID, unParsedSensorIDs);
             if (pollingResults != null && !"".equals(pollingResults)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults)) {
-                  sendResponse(response, 504, "Time out");
+                  sendResponse(request, response, 504, "Time out");
                } else {
                   logger.info("Return the polling status.");
-                  sendResponse(response, pollingResults);
+                  sendResponse(request, response, pollingResults);
                }
+            } else {
+               sendResponse(request, response, 504, "Time out");
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControllerException e) {
             logger.error("CommandException occurs", e);
-            sendResponse(response, e.getErrorCode(), e.getMessage());
+            sendResponse(request, response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         sendResponse(response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
+         sendResponse(request, response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
       }
    }
    
