@@ -1,0 +1,51 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.openremote.controller.model.event
+
+import java.awt.Color
+
+global org.openremote.controller.statuscache.CommandFacade execute
+
+function int getRedComponent(int rgb)
+{
+  Color c = new Color(rgb);
+  return c.getRed();
+}
+
+rule "Color Manipulation Functions"
+
+when
+
+  Range ( source == "hue", $hue : value )
+  Level ( source == "saturation", $sat : value )
+  Level ( source == "brightness", $bri : value )
+
+then
+
+  execute.command(
+      "count", getRedComponent( Color.HSBtoRGB(
+          new Float($hue) / 100,
+          new Float($sat) / 100,
+          new Float($bri) / 100 )
+      )
+  );
+
+end
