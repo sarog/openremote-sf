@@ -69,7 +69,8 @@
         sipController = [[SipController alloc] init];
     #endif
 	
-	[self checkConfigAndUpdate];
+    // Delay so that loading message is displayed
+    [self performSelector:@selector(checkConfigAndUpdate) withObject:nil afterDelay:0.0];
 }
 
 // when it's launched by other apps.
