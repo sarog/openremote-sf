@@ -1,22 +1,18 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.protocol.knx.ip;
 
@@ -24,21 +20,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.openremote.controller.Constants;
+import org.openremote.controller.protocol.bus.DatagramSocketMessage;
+import org.openremote.controller.protocol.bus.Message;
+import org.openremote.controller.protocol.bus.PhysicalBus;
+import org.openremote.controller.protocol.bus.PhysicalBusFactory;
 import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
-import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -56,34 +55,32 @@ class IpProcessor {
    public final static String KNXIP_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx.ip";
 
    private final static Logger log = Logger.getLogger(KNXIP_LOG_CATEGORY);
-   private DatagramSocket socket;
    private Object syncLock;
    private IpMessage con;
-   private IpSocketListener socketListener;
-   private InetSocketAddress srcAddr;
+   private PhysicalBusListener busListener;
    private IpProcessorListener listener;
+   private PhysicalBus bus;
+   private DatagramSocket inSocket;
+   private String physicalBusClazz;
 
-   private class IpSocketListener extends Thread {
-      private byte[] buffer;
+   private class PhysicalBusListener extends Thread {
 
-      public IpSocketListener(String name) {
-         super("IpSocketListener for " + name + ", listening on "+ IpProcessor.this.srcAddr);
-         this.buffer = new byte[1024];
+      public PhysicalBusListener(String name) {
+         super("PhysicalBusListener for " + name);
       }
 
       @Override
       public void run() {
-         DatagramPacket p = new DatagramPacket(this.buffer, this.buffer.length);
          synchronized (this) {
             this.notify();
          }
          while (!this.isInterrupted()) {
             try {
-               IpProcessor.this.socket.receive(p);
+               Message b = IpProcessor.this.bus.receive();
                // TODO Check sender address?
 
                // Create an IpMessage from received data
-               IpMessage m = IpProcessor.this.create(new ByteArrayInputStream(p.getData()));
+               IpMessage m = IpProcessor.this.create(new ByteArrayInputStream(b.getContent()));
 
                // Handle Discovery responses specifically
                if (m instanceof IpDiscoverResp) {
@@ -104,45 +101,52 @@ class IpProcessor {
                }
             } catch (IOException x) {
                // Socket read error, stop thread
-              log.debug("KNX-IP socket listener IOException", x);
-              Thread.currentThread().interrupt();
+               log.info("KNX-IP socket listener IOException", x);
+               Thread.currentThread().interrupt();
             } catch (KnxIpException x) {
                // Invalid message, stop thread
-              log.warn("KNX-IP socket listener KnxIpException", x);
-              Thread.currentThread().interrupt();
-            } 
+               log.warn("KNX-IP socket listener KnxIpException", x);
+               Thread.currentThread().interrupt();
+            }
          }
          log.warn("KNX-IP socket listener stopped");
       }
    }
 
-   IpProcessor(InetAddress srcAddr, IpProcessorListener listener) {
+   IpProcessor(IpProcessorListener listener) {
       this.syncLock = new Object();
       this.listener = listener;
-      this.srcAddr = new InetSocketAddress(srcAddr, 0);
+      this.physicalBusClazz = "org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus";
    }
 
-   void start(String src) throws KnxIpException, IOException, InterruptedException {
-      this.socket = new DatagramSocket();
-      this.srcAddr = new InetSocketAddress(this.srcAddr.getAddress(), this.socket.getLocalPort());
-      this.socketListener = new IpSocketListener(src);
-      synchronized (this.socketListener) {
-         this.socketListener.start();
-         this.socketListener.wait();
+   void start(String src, InetAddress srcAddr, DatagramSocket outSocket) throws KnxIpException, IOException,
+         InterruptedException {
+      this.bus = PhysicalBusFactory.createPhysicalBus(this.physicalBusClazz);
+      this.inSocket = new DatagramSocket(new InetSocketAddress(srcAddr, 0));
+
+      // Start bus
+      this.bus.start(this.inSocket, outSocket == null ? this.inSocket : outSocket);
+      
+      // Start bus listener
+      this.busListener = new PhysicalBusListener(src);
+      PhysicalBusFactory.createPhysicalBus(this.physicalBusClazz);
+      synchronized (this.busListener) {
+         this.busListener.start();
+         this.busListener.wait();
       }
    }
 
-   void stop() throws InterruptedException {
-      // Close socket
-      this.socket.close();
-
-      // Stop IpListener
-      this.socketListener.interrupt();
-      this.socketListener.join();
+   InetSocketAddress getSrcSocketAddr() {
+      return (InetSocketAddress) this.inSocket.getLocalSocketAddress();
    }
 
-   InetSocketAddress getSrcAddr() {
-      return this.srcAddr;
+   void stop() throws InterruptedException {
+      // Stop bus
+      this.bus.stop();
+
+      // Stop IpListener
+      this.busListener.interrupt();
+      this.busListener.join();
    }
 
    synchronized IpMessage service(IpMessage message, InetSocketAddress destAddr) throws InterruptedException,
@@ -163,21 +167,22 @@ class IpProcessor {
    }
 
    void send(IpMessage message, InetSocketAddress destAddr) throws IOException {
-      this.send(message, destAddr, this.socket);
+      this.send(message, destAddr, this.bus);
    }
 
-   void send(IpMessage message, InetSocketAddress destAddr, DatagramSocket socket) throws IOException {
+   private void send(IpMessage message, InetSocketAddress destAddr, PhysicalBus bus) throws IOException {
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       message.write(os);
       byte[] b = os.toByteArray();
-      socket.send(new DatagramPacket(b, b.length, destAddr));
+      bus.send(new DatagramSocketMessage(destAddr, b));
    }
 
    private IpMessage create(InputStream is) throws IOException, KnxIpException {
       IpMessage out = null;
 
       // Check header is 0x06 0x10
-      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException(Code.invalidHeader, "Create message failed");
+      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException(Code.invalidHeader,
+            "Create message failed");
 
       // Extract Service Type Identifier
       int sti = (is.read() << 8) + is.read();
