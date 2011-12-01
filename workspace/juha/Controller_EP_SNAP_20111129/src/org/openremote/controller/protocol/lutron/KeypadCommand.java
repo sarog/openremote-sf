@@ -20,20 +20,21 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.protocol.lutron.model.Keypad;
 
 /**
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  *
  */
-public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableCommand, StatusCommand {
+public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableCommand, EventListener {
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -103,37 +104,62 @@ public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableC
     }
   }
 
-  // Implements StatusCommand -------------------------------------------------------------------
+  // Implements EventListener -------------------------------------------------------------------
 
   @Override
-  public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
-    try {
-      Keypad keypad = (Keypad) gateway.getHomeWorksDevice(address, Keypad.class);
-      if (keypad == null) {
-        // This should never happen as above command is supposed to create device
-        log.warn("Gateway could not create a Keypad we're receiving feedback for (" + address + ")");
-        return "";
-      }
-      if (keypad.getLedStatuses() == null) {
-        // We don't have any information about the state yet, ask Lutron processor about it
-        keypad.queryLedStatus();
-        return "";
-      }
-      if (keypad.getLedStatuses()[key - 1] == null) {
-        // We don't have any information about the state yet, ask Lutron processor about it
-        keypad.queryLedStatus();
-        return "";
-      }
-      if (sensorType == EnumSensorType.SWITCH) {
-        return (keypad.getLedStatuses()[key - 1] == 1) ? "on" : "off";
+  public void setSensor(Sensor sensor) {
+      if (sensors.isEmpty()) {
+         // First sensor registered, we also need to register ourself with the device
+         try {
+            Keypad keypad = (Keypad) gateway.getHomeWorksDevice(address, Keypad.class);
+            if (keypad == null) {
+               // This should never happen as above command is supposed to create device
+               log.warn("Gateway could not create a Keypad we're receiving feedback for (" + address + ")");
+               return;
+            }
+
+            // Register ourself with the Keypad so it can propagate update when received
+            keypad.addCommand(this);
+            addSensor(sensor);
+
+            // Trigger a query to get the initial value
+            keypad.queryLedStatus();
+         } catch (LutronHomeWorksDeviceException e) {
+            log.error("Impossible to get device", e);
+         }
       } else {
-        log.warn("Query Keypad status for incompatible sensor type " + sensorType);
-        return "";
+         addSensor(sensor);
       }
-    } catch (LutronHomeWorksDeviceException e) {
-      log.error("Impossible to get device", e);
-    }
-    return "";
+  }
+  
+  @Override
+  public void stop(Sensor sensor) {
+     removeSensor(sensor);
+     if (sensors.isEmpty()) {
+        // Last sensor removed, we may unregister ourself from device
+        try {
+           Keypad keypad = (Keypad) gateway.getHomeWorksDevice(address, Keypad.class);
+           if (keypad == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a Keypad we're receiving feedback for (" + address + ")");
+              return;
+           }
+
+           keypad.removeCommand(this);
+        } catch (LutronHomeWorksDeviceException e) {
+           log.error("Impossible to get device", e);
+        }
+     }
+  }
+
+  @Override
+  protected void updateSensor(HomeWorksDevice device, Sensor sensor) {
+     Keypad keypad = (Keypad)device;
+     if (sensor instanceof SwitchSensor) {
+        sensor.update((keypad.getLedStatuses()[key - 1] == 1) ? "on" : "off");
+     } else {
+        log.warn("Query Keypad status for incompatible sensor type (" + sensor + ")");
+     }
   }
 
 }

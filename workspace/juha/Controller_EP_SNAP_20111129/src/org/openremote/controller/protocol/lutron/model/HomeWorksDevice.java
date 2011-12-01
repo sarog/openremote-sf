@@ -18,7 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.lutron;
+package org.openremote.controller.protocol.lutron.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.controller.protocol.lutron.LutronHomeWorksAddress;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksCommand;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksGateway;
 
 /**
  * Represents one of the Lutron "device" connected to the bus that can be used in OpenRemote.
@@ -41,12 +48,18 @@ public abstract class HomeWorksDevice {
 	 * Address of this device in the Lutron system.
 	 */
 	protected LutronHomeWorksAddress address;
+	
+	/**
+	 * Commands we should update when our status changes
+	 */
+	private List<LutronHomeWorksCommand> commands;
 
 	// Constructors ---------------------------------------------------------------------------------
 
 	public HomeWorksDevice(LutronHomeWorksGateway gateway, LutronHomeWorksAddress address) {
 		this.gateway = gateway;
 		this.address = address;
+		this.commands = new ArrayList<LutronHomeWorksCommand>();
 	}
 
 	// Public methods -------------------------------------------------------------------------------
@@ -54,11 +67,38 @@ public abstract class HomeWorksDevice {
 	/**
 	 * Called when a feedback information is received from the Lutron HomeWorks in order for this device to update its status.
 	 * This is implemented by each specific device to process the feedback received as appropriate for it.
+	 * Subclasses must then call this implementation to make sure value change is propagated to registered commands.
 	 * 
 	 * @param info String as received from the Lutron after the device address
 	 */
 	public void processUpdate(String info) {
-		// Do nothing here, implemented by subclasses that require it
+	   updateCommands();
 	}
 	
+	/**
+	 * Add a command to update on value change.
+	 * 
+	 * @param command LutronHomeWorksCommand to add
+	 */
+	public void addCommand(LutronHomeWorksCommand command) {
+	   commands.add(command);
+	}
+	
+   /**
+    * Remove a command to update on value change.
+    * 
+    * @param command LutronHomeWorksCommand to remove
+    */
+	public void removeCommand(LutronHomeWorksCommand command) {
+	   commands.remove(command);
+	}
+
+	/**
+	 * Update all registered commands (because of a status change received from bus)
+	 */
+	protected void updateCommands() {
+	   for (LutronHomeWorksCommand command : commands) {
+	      command.updateSensors(this);
+	   }
+	}
 }
