@@ -35,6 +35,11 @@ import java.util.HashMap;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
+import org.openremote.controller.protocol.lutron.model.Dimmer;
+import org.openremote.controller.protocol.lutron.model.GrafikEye;
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.protocol.lutron.model.Keypad;
 
 /**
  * 
@@ -48,16 +53,19 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
   // have a logout command on system down
   // security and vacation mode commands
 
-  // Have a queue class with management of coalesce and TTL
   /*
    * State machine describing the connection / string parsing
    * not logged in -> send message -> log in
    * receive log in confirm -> logged in, can send messages
-   * receive invalid log in -> stays not logged in, clear the queue, stops trying, refuse any messages
+   * receive invalid log in -> close connection, so will retry as if connection not possible (stays not logged in, clear the queue, stops trying, refuse any messages)
    * socket closed -> not logged in, retry process queue
   */
 
   // Class Members --------------------------------------------------------------------------------
+
+  private static final int TELNET_TIMOUT = 10000;
+  private static final int COMMUNICATION_ERROR_RETRY_DELAY = 15000;
+  private static final int INVALID_LOGIN_RETRY_DELAY = 60000;
 
   /**
    * Lutron HomeWorks logger. Uses a common category for all Lutron related
@@ -87,7 +95,6 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
       log.info("UserName >" + lutronConfig.getUserName() + "<");
       log.info("Password >" + lutronConfig.getPassword() + "<");
     }
-
 
     if (connectionThread == null) {
       // Starts some thread that has the responsibility to establish connection and keep it alive
@@ -156,67 +163,55 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
 
   private class LutronHomeWorksConnectionThread extends Thread {
 
-    TelnetClient tc;
-    private LutronHomeWorksReaderThread readerThread;
-    private LutronHomeWorksWriterThread writerThread;
+   private LutronHomeWorksReaderThread readerThread;
+   private LutronHomeWorksWriterThread writerThread;
 
     @Override
     public void run() {
-      if (tc == null) {
-        tc = new TelnetClient();
-        tc.setConnectTimeout(10000); // TODO: timeout in config ?
-        while (!isInterrupted()) {
-          try {
-            log.info("Trying to connect to " + lutronConfig.getAddress() + " on port " + lutronConfig.getPort());
-            tc.connect(lutronConfig.getAddress(), lutronConfig.getPort());
-            log.info("Telnet client connected");
-            readerThread = new LutronHomeWorksReaderThread(tc.getInputStream());
-            readerThread.start();
-            log.info("Reader thread started");
-            writerThread = new LutronHomeWorksWriterThread(tc.getOutputStream());
-            writerThread.start();
-            log.info("Writer thread started");
-            // Wait for the read thread to die, this would indicate the connection was dropped
-            while (readerThread != null) {
-              readerThread.join(1000);
-              if (!readerThread.isAlive()) {
-                log.info("Reader thread is dead, clean and re-try to connect");
-                tc.disconnect();
-                readerThread = null;
-                writerThread.interrupt();
-                writerThread = null;
-              }
+      TelnetClient tc = new TelnetClient();
+      tc.setConnectTimeout(TELNET_TIMOUT);
+      while (!isInterrupted()) {
+        try {
+          log.info("Trying to connect to " + lutronConfig.getAddress() + " on port " + lutronConfig.getPort());
+          tc.connect(lutronConfig.getAddress(), lutronConfig.getPort());
+          log.info("Telnet client connected");
+          readerThread = new LutronHomeWorksReaderThread(tc.getInputStream());
+          readerThread.start();
+          log.info("Reader thread asked to start");
+          writerThread = new LutronHomeWorksWriterThread(tc.getOutputStream());
+          writerThread.start();
+          log.info("Writer thread asked to start");
+          // Wait for the read thread to die, this would indicate the connection was dropped
+          while (readerThread != null) {
+            readerThread.join(1000);
+            if (!readerThread.isAlive()) {
+              log.info("Reader thread is dead, clean and re-try to connect");
+              tc.disconnect();
+              readerThread = null;
+              writerThread.interrupt();
+              writerThread = null;
             }
-          } catch (SocketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-            // We could not connect, sleep for a while before trying again
-            try {
-              Thread.sleep(15000);
-            } catch (InterruptedException e1) {
-              // TODO Auto-generated catch block
-              e1.printStackTrace();
-            }
-
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            // We could not connect, sleep for a while before trying again
-            try {
-              Thread.sleep(15000);
-            } catch (InterruptedException e1) {
-              // TODO Auto-generated catch block
-              e1.printStackTrace();
-            }
-
-          } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
           }
+        } catch (SocketException e) {
+           log.error("Connection to Lutron impossible, sleeping and re-trying later", e);
+          // We could not connect, sleep for a while before trying again
+          try {
+            Thread.sleep(COMMUNICATION_ERROR_RETRY_DELAY);
+          } catch (InterruptedException e1) {
+             log.warn("Interrupted during our sleep", e1);
+          }
+        } catch (IOException e) {
+          log.error("Connection to Lutron impossible, sleeping and re-trying later", e);
+          // We could not connect, sleep for a while before trying again
+          try {
+            Thread.sleep(COMMUNICATION_ERROR_RETRY_DELAY);
+          } catch (InterruptedException e1) {
+             log.warn("Interrupted during our sleep", e1);
+          }
+        } catch (InterruptedException e) {
+           log.warn("Interrupted during our sleep", e);
         }
       }
-
       // For now do not support discovery, use information defined in config
     }
 
@@ -237,9 +232,10 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
     public void run() {
 
       log.info("Writer thread starting");
-      // Send something to trigger prompt for Login from Lutron
+      // Directly send login/password to Lutron. If not sending anything, Lutron sends nothing and this just sits waiting forever.
+      // Sending empty CR/LF causes invalid login, so we kill are threads and start over again -> infinite loop
       PrintWriter pr = new PrintWriter(new OutputStreamWriter(os));
-      pr.println("");
+      pr.println(lutronConfig.getUserName() + "," + lutronConfig.getPassword());
       pr.flush();
 
       while (!isInterrupted()) {
@@ -250,9 +246,10 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
                 log.info("Not logged in, waiting to be woken up");
                 // We're not logged in, wait until the reader thread ask to login and confirms we're logged in
                 loginState.wait();
-                log.info("Woken up on loggedIn, loggedIn: " + loginState.loggedIn + "- needsLogin: " + loginState.needsLogin);
+                log.info("Woken up on loggedIn, loggedIn: " + loginState.loggedIn + " - needsLogin: " + loginState.needsLogin);
               }
               if (!loginState.loggedIn) {
+                log.info("Sending login info: " + lutronConfig.getUserName() + "," + lutronConfig.getPassword());
                 // We've been awakened and we're not yet logged in. It means we need to send login info
                 pr.println(lutronConfig.getUserName() + "," + lutronConfig.getPassword());
                 pr.flush();
@@ -273,14 +270,13 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
         }
       }
     }
-
   }
 
   // ---
 
   private class LutronHomeWorksReaderThread extends Thread {
 
-    private InputStream is;
+   private InputStream is;
 
     public LutronHomeWorksReaderThread(InputStream is) {
       super();
@@ -298,8 +294,7 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
       try {
         line = br.readLine();
       } catch (IOException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+         log.warn("Could not read from Lutron", e1);
       }
       do {
         try {
@@ -319,7 +314,7 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
           } else if (line.startsWith("LOGIN:")) {
             log.info("Asked to login, wakening writer thread");
             synchronized (loginState) {
-              // If we though we were already logged in, reset that
+              // If we thought we were already logged in, reset that
               loginState.loggedIn = false;
 
               loginState.needsLogin = true;
@@ -327,11 +322,17 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
               loginState.notify();
             }
           } else if (line.startsWith("login incorrect")) {
-            // TODO: close the connection, nothing we can do
             synchronized (loginState) {
               loginState.loggedIn = false;
               loginState.invalidLogin = true;
             }
+            // Wait a moment and get out of our read loop, this will terminate the thread, close the connection and re-try
+            try {
+               Thread.sleep(INVALID_LOGIN_RETRY_DELAY);
+             } catch (InterruptedException e1) {
+                log.warn("Interrupted during our sleep", e1);
+             }
+             break;
           } else if (line.startsWith("closing connection")) {
             synchronized (loginState) {
               loginState.loggedIn = false;
@@ -373,14 +374,12 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
                 }
               }
             } else {
-              // Unknown response
-              // TODO
+               log.info("Received unknown information from Lutron >" + line + "<");
             }
           }
           line = br.readLine();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+           log.warn("Could not read from Lutron", e);
         }
       } while (line != null && !isInterrupted());
     }
@@ -394,7 +393,6 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
     // All the responses we currently understand have 3 components
     if (parts.length == 3) {
       try {
-        // System.out.println("Building response from Lutron feedback");
         response = new LutronResponse();
         response.response = parts[0].trim();
         response.address = new LutronHomeWorksAddress(parts[1].trim());
@@ -408,9 +406,7 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
     return response;
   }
 
-  public class LutronCommand {
-
-    // TODO: protocol for coalesce
+  public class LutronCommand implements Coalescable {
 
     private String command;
     private LutronHomeWorksAddress address;
@@ -434,6 +430,16 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
       }
       return buf.toString();
     }
+    
+    @Override
+    public boolean isCoalesable(Coalescable other) {
+      if (!(other instanceof LutronCommand)) {
+        return false;
+      }
+      LutronCommand otherCommand = (LutronCommand)other;
+      return (otherCommand.command.equals(this.command) && (otherCommand.address.equals(this.address)));
+    }
+
   }
 
   private class LutronResponse {
