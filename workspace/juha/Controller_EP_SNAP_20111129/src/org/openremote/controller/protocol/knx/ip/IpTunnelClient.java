@@ -55,10 +55,12 @@ public class IpTunnelClient implements IpProcessorListener {
    private InetSocketAddress destDataEndpointAddr;
    private Timer heartBeat;
    private Thread shutdownHook;
+   private InetAddress srcAddr;
 
    public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
+      this.srcAddr = srcAddr;
       this.destControlEndpointAddr = destControlEndpointAddr;
-      this.processor = new IpProcessor(srcAddr, this);
+      this.processor = new IpProcessor(this);
       this.destDataEndpointAddr = null;
       this.shutdownHook = new ShutdownHook();
       this.heartBeat = new Timer("KNX IP heartbeat");
@@ -104,8 +106,8 @@ public class IpTunnelClient implements IpProcessorListener {
 
    public synchronized void connect() throws KnxIpException, InterruptedException, IOException {
       if (this.isConnected()) throw new KnxIpException(Code.alreadyConnected, "Connect failed");
-      this.processor.start("runtime");
-      Hpai ep = new Hpai(this.processor.getSrcAddr());
+      this.processor.start("runtime", this.srcAddr, null);
+      Hpai ep = new Hpai(this.processor.getSrcSocketAddr());
       IpMessage resp = this.processor.service(new IpConnectReq(ep, ep), this.destControlEndpointAddr);
 
       // Check response
@@ -142,8 +144,8 @@ public class IpTunnelClient implements IpProcessorListener {
    public synchronized void disconnect() throws KnxIpException, InterruptedException, IOException {
       try {
         if (!this.isConnected()) throw new KnxIpException(Code.notConnected, "Disconnect failed");
-        IpMessage resp = this.processor.service(
-            new IpDisconnectReq(this.channelId, new Hpai(this.processor.getSrcAddr())), this.destDataEndpointAddr);
+         IpMessage resp = this.processor.service(new IpDisconnectReq(this.channelId, new Hpai(
+               this.processor.getSrcSocketAddr())), this.destDataEndpointAddr);
 
         // Check response
         if (resp instanceof IpDisconnectResp) {
@@ -261,7 +263,7 @@ public class IpTunnelClient implements IpProcessorListener {
       }
 
       private void monitor() throws KnxIpException, InterruptedException, IOException {
-         Hpai ep = new Hpai(IpTunnelClient.this.processor.getSrcAddr());
+         Hpai ep = new Hpai(IpTunnelClient.this.processor.getSrcSocketAddr());
          IpMessage resp = IpTunnelClient.this.processor.service(new IpConnectionStateReq(IpTunnelClient.this.channelId,
                ep), IpTunnelClient.this.destControlEndpointAddr);
 
