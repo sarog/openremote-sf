@@ -533,8 +533,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   {
     // TODO : at the moment only contains sensor model and partial command model
 
-    buildSensorModel();
     buildCommandModel();
+    buildSensorModel();
   }
 
 
@@ -612,6 +612,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    */
   protected void buildSensorModel()
   {
+    deviceStateCache.start();
+    
     // Build...
 
     Set<Sensor> sensors = buildSensorObjectModelFromXML();
