@@ -188,10 +188,12 @@ private int knxIpInterfacePort;
   /**
    * TODO
    */
-  public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort)
+  public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort, String physicalBusClazz)
   {
-     this.knxIpInterfaceHostname = knxIpInterfaceHostname;
-     this.knxIpInterfacePort = knxIpInterfacePort;
+    this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
+    this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
+    this.connectionManager.setPhysicalBusClazz(physicalBusClazz);
+    this.connectionManager.scheduleConnection();
   }
 
 

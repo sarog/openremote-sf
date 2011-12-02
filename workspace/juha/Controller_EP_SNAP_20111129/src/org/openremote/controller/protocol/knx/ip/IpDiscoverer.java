@@ -34,10 +34,10 @@ public class IpDiscoverer implements IpProcessorListener {
    private DiscoveryListener discoveryListener;
    private InetAddress srcAddr;
 
-   public IpDiscoverer(InetAddress srcAddr, DiscoveryListener discoveryListener) {
+   public IpDiscoverer(InetAddress srcAddr, DiscoveryListener discoveryListener, String physicalBusClazz) {
       this.discoveryListener = discoveryListener;
       this.srcAddr = srcAddr;
-      this.processor = new IpProcessor(this);
+      this.processor = new IpProcessor(this, physicalBusClazz);
    }
 
    public void start() throws KnxIpException, IOException, InterruptedException {
