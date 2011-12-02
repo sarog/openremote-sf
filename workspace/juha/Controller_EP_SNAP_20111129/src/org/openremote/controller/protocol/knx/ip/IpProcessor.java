@@ -113,10 +113,10 @@ class IpProcessor {
       }
    }
 
-   IpProcessor(IpProcessorListener listener) {
+   IpProcessor(IpProcessorListener listener, String physicalBusClazz) {
       this.syncLock = new Object();
       this.listener = listener;
-      this.physicalBusClazz = "org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus";
+      this.physicalBusClazz = physicalBusClazz;
    }
 
    void start(String src, InetAddress srcAddr, DatagramSocket outSocket) throws KnxIpException, IOException,

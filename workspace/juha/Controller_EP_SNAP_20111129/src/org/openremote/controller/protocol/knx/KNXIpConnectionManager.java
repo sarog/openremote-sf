@@ -100,6 +100,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private int knxIpInterfacePort;
   private Timer connectionTimer;
   private Object connectionTimerLock;
+  private String physicalBusClazz;
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -113,12 +114,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.connectionTimerLock = new Object();
   }
 
-  public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
-     throws KnxIpException, IOException, InterruptedException
-  {
-    this();
-    this.connection = new KNXConnectionImpl(new IpTunnelClient(srcAddr, destControlEndpointAddr));
-  }
+//  public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
+//     throws KnxIpException, IOException, InterruptedException
+//  {
+//    this();
+//    this.connection = new KNXConnectionImpl(new IpTunnelClient(srcAddr, destControlEndpointAddr));
+//  }
 
 
   // Implements DiscoveryListener -----------------------------------------------------------------
@@ -141,7 +142,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
       {
         this.connection = new KNXConnectionImpl(new IpTunnelClient(
           discoverer.getSrcAddr(),
-          destControlEndpointAddr)
+          destControlEndpointAddr,
+          this.physicalBusClazz)
         );
 
         this.connectionLock.notify();
@@ -171,7 +173,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
     for (InetAddress inet : nics)
     {
-      IpDiscoverer discoverer = new IpDiscoverer(inet, this);
+      IpDiscoverer discoverer = new IpDiscoverer(inet, this, this.physicalBusClazz);
 
       try
       {
@@ -426,6 +428,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
     log.info("KNX IP interface port set to '" + this.knxIpInterfacePort + "'");
   }
 
+  protected void setPhysicalBusClazz(String physicalBusClazz)
+  {
+    this.physicalBusClazz = physicalBusClazz;
+    log.info("KNX PhysicalBus clazz set to '" + this.physicalBusClazz + "'");
+  }
 
 
   // Private Instance Methods ---------------------------------------------------------------------

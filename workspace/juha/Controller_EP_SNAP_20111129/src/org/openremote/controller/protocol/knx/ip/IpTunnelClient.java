@@ -57,10 +57,10 @@ public class IpTunnelClient implements IpProcessorListener {
    private Thread shutdownHook;
    private InetAddress srcAddr;
 
-   public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
+   public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr, String physicalBusClazz) {
       this.srcAddr = srcAddr;
       this.destControlEndpointAddr = destControlEndpointAddr;
-      this.processor = new IpProcessor(this);
+      this.processor = new IpProcessor(this, physicalBusClazz);
       this.destDataEndpointAddr = null;
       this.shutdownHook = new ShutdownHook();
       this.heartBeat = new Timer("KNX IP heartbeat");

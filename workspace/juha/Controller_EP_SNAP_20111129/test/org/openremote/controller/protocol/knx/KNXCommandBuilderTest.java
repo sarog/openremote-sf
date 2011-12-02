@@ -24,7 +24,6 @@ import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -47,7 +46,7 @@ public class KNXCommandBuilderTest
   private KNXCommandBuilder builder = null;
 
   @Before public void setUp() {
-    builder = new KNXCommandBuilder("127.0.0.1", 9999);
+    builder = new KNXCommandBuilder("127.0.0.1", 9999, "org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus");
   }
 
 
