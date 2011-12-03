@@ -71,9 +71,9 @@ import org.jdom.input.DOMBuilder;
    ComponentTests.class,
    SensorTests.class,
    EventTests.class,
+   StatusCacheTests.class,
    ProtocolTests.class,
-   StatusCacheTests.class
-
+   BusTests.class
 })
 
 
