@@ -29,6 +29,7 @@ import org.openremote.controller.utils.Logger;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
+import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
 
 /**
@@ -91,7 +92,8 @@ public abstract class ServiceContext
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
-    COMPONENT_CONTROL_SERVICE("controlCommandService");       // TODO : should be retrieved through deployer interface
+    COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
+    DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"); // TODO : To be removed, see ORCJAVA-183
 
     private String springBeanName;
 
@@ -201,7 +203,22 @@ public abstract class ServiceContext
     catch (ClassCastException e)
     {
       throw new Error(
-          "Controller XML parser service implementation has had an incompatible change.", e
+          "Deployer service has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static DenonAVRSerialConfiguration getDenonAVRSerialConfiguration()
+  {
+    try
+    {
+      return (DenonAVRSerialConfiguration)getInstance().getService(ServiceName.DENONAVRSERIAL_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Denon AVR Serial Configuration service has had an incompatible change.", e
       );
     }
   }

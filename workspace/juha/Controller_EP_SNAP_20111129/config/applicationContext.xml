@@ -44,13 +44,14 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:denonAVRSerial.properties</value>
           </list>
       </property>
   </bean>
 
-  <bean id="denonAVRSerialConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+  <bean id="denonAVRSerialCommands" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 	<property name="location">
-		<value>classpath:denonAVRSerial.properties</value>
+		<value>classpath:denonAVRSerialCommands.properties</value>
 	</property>
   </bean>
 
@@ -103,6 +104,14 @@
     <constructor-arg ref = "deployer"/>
     <constructor-arg ref = "componentFactory"/>
   </bean>
+  
+  <bean id="denonAVRSerialConfiguration" class="org.openremote.controller.DenonAVRSerialConfiguration">
+   	<property name="connectionType" value="${denonAVRSerial.connectionType}" />
+   	<property name="comPort" value="${denonAVRSerial.comPort}" />
+   	<property name="udpIp" value="${denonAVRSerial.udpIp}" />
+   	<property name="udpPort" value="${denonAVRSerial.udpPort}" />
+  </bean>
+
     
     <!-- controller.xml parser -->
 <!--
@@ -449,3 +458,4 @@
 	</bean>
 
 </beans>
+
