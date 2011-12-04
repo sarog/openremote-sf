@@ -2,20 +2,26 @@ package org.openremote.web.console.unit;
 
 import java.util.List;
 
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
+import org.openremote.web.console.widget.TabBarComponent;
+
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
@@ -26,13 +32,12 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  *
  */
 public class ConsoleDisplay extends InteractiveConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
-	public static final int DEFAULT_DISPLAY_WIDTH = 320;
-	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
-	private static final String DEFAULT_DISPLAY_COLOUR = "black";
 	public static final String CLASS_NAME = "consoleDisplay";
 	private AbsolutePanel display;
-	private String colour;
 	private String currentOrientation = "portrait";
+	private ScreenViewImpl loadingScreen;
+	private TabBarComponent currentTabBar;
+	private ScreenViewImpl currentScreen;
 	
 	public ConsoleDisplay() {
 		super(new AbsolutePanel(), CLASS_NAME);
@@ -45,12 +50,9 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		
 		// Add display to the wrapper
 		((AbsolutePanel)getWidget()).add(display, 0, 0);
-		
-		// Set default colour
-		setColour(DEFAULT_DISPLAY_COLOUR);
-		
+				
 		// Add move handlers which are only used on this display component
-		if(BrowserUtils.isMobile()) {
+		if(BrowserUtils.isMobile) {
 			this.addDomHandler(this, TouchMoveEvent.getType());
 		} else {
 			this.addDomHandler(this, MouseMoveEvent.getType());
@@ -58,10 +60,29 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
-	public void resize(int width, int height) {
-		// TODO: Check this functionality works as expected
-		onRemove();
-		onAdd(width, height);
+	public void setSize(int width, int height) {
+		if (this.width == width && this.height == height) {
+			return;
+		}
+		if (getOrientation().equalsIgnoreCase("portrait")) {
+			this.width = width;
+			this.height = height;
+			setWidth(width + "px");
+			setHeight(height + "px");
+			display.setWidth(width + "px");
+			display.setHeight(height + "px");
+		} else {
+			this.width = height;
+			this.height = width;
+			setWidth(height + "px");
+			setHeight(width + "px");
+			display.setWidth(height + "px");
+			display.setHeight(width + "px");
+		}
+		
+		// Resize the screen view and tab bar
+		updateScreenView();
+		updateTabBar();
 	}
 	
 	/**
@@ -96,15 +117,6 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		return this.currentOrientation;
 	}
 	
-	public void setColour(String colour) {
-		getElement().getStyle().setBackgroundColor(colour);
-		this.colour = colour;
-	}
-	
-	public String getColour() {
-		return colour;
-	}
-	
 	public boolean getIsVertical() {
 		boolean response = false;
 		if (currentOrientation.equalsIgnoreCase("portrait")) {
@@ -136,35 +148,117 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	/**
 	 * Completely clear the display
 	 */
-	public void clearDisplay() {
-		display.clear();
+	protected void clearDisplay() {
+		if (currentTabBar != null) {
+			removeComponent(currentTabBar);
+		}
+		if (currentScreen != null) {
+			removeComponent(currentScreen);
+		}
+		showLoadingScreen();
 	}
 	
-	protected void addComponent(ConsoleComponentImpl component) {
-		addComponent(component, 0, 0);
+	private void showLoadingScreen() {
+		if (currentScreen != null) {
+			currentScreen.setVisible(false);
+			removeComponent(currentScreen);
+		}
+		if (currentTabBar != null) {
+			currentTabBar.setVisible(false);
+		}
+		currentScreen = loadingScreen;
+		loadingScreen.setVisible(true);
 	}
 	
-	protected void addComponent(ScreenViewImpl screen, List<DataValuePair> data) {
-		addComponent(screen, 0, 0, data);
+	private void hideLoadingScreen() {
+		loadingScreen.setVisible(false);
+		if (currentTabBar != null) {
+			currentTabBar.setVisible(true);
+		}
 	}
 	
-	protected void addComponent(ConsoleComponentImpl component, int left, int top) {
+	protected boolean setScreenView(ScreenViewImpl screen, List<DataValuePair> data) {
+		boolean screenChanged = false;
+		
+		if (screen == null) {
+			return screenChanged;
+		}
+		
+		if (currentScreen != screen) {
+			hideLoadingScreen();
+			if (currentScreen != null) {
+				removeComponent(currentScreen);
+				currentScreen = null;
+			}
+			// Adjust display orientation if necessary
+			if (screen.isLandscape()) {
+				setOrientation("landscape");
+			} else {
+				setOrientation("portrait");
+			}
+			display.add(screen, 0, 0);
+			screen.onAdd(getWidth(), getHeight(), data);
+			
+			currentScreen = screen;
+			screenChanged = true;
+		}
+		return screenChanged;
+	}
+	
+	protected boolean setTabBar(TabBarComponent tabBar) {
+		boolean tabBarChanged = false;
+		
+		if (tabBar == null) {
+			return tabBarChanged;
+		}
+		
+		if (currentTabBar != tabBar) {
+			if (currentTabBar != null) {
+				removeComponent(currentTabBar);
+				currentTabBar = null;
+			}
+			addComponent(tabBar, 0, getHeight() - tabBar.getHeight());
+			currentTabBar = tabBar;
+			tabBarChanged = true;
+		}
+		return tabBarChanged;
+	}
+	
+	protected void removeTabBar() {
+		if (currentTabBar != null) {
+			removeComponent(currentTabBar);
+			currentTabBar = null;
+		}
+	}
+	
+	private void addComponent(ConsoleComponentImpl component, int left, int top) {
 		display.add(component, left, top);
 		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight());
 	}
 	
-	protected void addComponent(ScreenViewImpl component, int left, int top, List<DataValuePair> data) {
-		display.add(component, left, top);
-		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight(), data);
-	}
-	
-	protected void removeComponent(ConsoleComponentImpl component) {
+	private void removeComponent(ConsoleComponentImpl component) {
 		component.onRemove();
 		display.remove(component);
 	}
 	
-	protected void setComponentPosition(ConsoleComponentImpl component, int left, int top) {
-		display.setWidgetPosition(component, left, top);
+	private void updateTabBar() {
+		if (currentTabBar != null) {
+			currentTabBar.refresh();
+			display.setWidgetPosition(currentTabBar, 0, getHeight() - currentTabBar.getHeight());
+		}
+	}
+	
+	private void updateScreenView() {
+		if (currentScreen != null) {
+			currentScreen.onRefresh(getWidth(), getHeight());
+			display.setWidgetPosition(currentScreen, 0, 0);
+		}
+	}
+	
+	protected void highlightTabBarItem(int screenId) {
+		if (currentTabBar != null) {
+			currentTabBar.onScreenViewChange(screenId);
+		}
 	}
 	
 	protected void doResize(int width, int height) {
@@ -199,5 +293,9 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	public void onRender(int width, int height) {
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
+		loadingScreen = new LoadingScreenView();
+		display.add(loadingScreen, 0, 0);
+		loadingScreen.onAdd(width, height, null);
+		showLoadingScreen();		
 	}
 }

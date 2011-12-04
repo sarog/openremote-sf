@@ -1,6 +1,5 @@
 package org.openremote.web.console.view;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +31,7 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	public static final String CLASS_NAME = "screenView";
 	private Image background;
 	private Set<Integer> sensorIds = new HashSet<Integer>();
+	private boolean isLandscape = false;
 	
 	public ScreenViewImpl() {
 		super(new AbsolutePanel(), CLASS_NAME);
@@ -69,7 +69,7 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 			left = positional.getLeft();
 			top = positional.getTop();
 		}
-		((AbsolutePanel)getWidget()).add((Widget) component, left, top);
+		getWidget().add((Widget) component, left, top);
 	}
 	
 	/**
@@ -82,6 +82,10 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 		if (((AbsolutePanel)getWidget()).getWidgetIndex((Widget)widget) >= 0) {
 			((AbsolutePanel)getWidget()).setWidgetPosition((Widget)widget, left, top);
 		}		
+	}
+	
+	public AbsolutePanel getWidget() {
+		return (AbsolutePanel)super.getWidget();
 	}
 
 	@Override
@@ -100,9 +104,15 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 		onRender(width, height, null);
 	}
 	
-	private void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePair> data) {
 		for (PanelComponent component : panelComponents) {
-			component.onAdd(width, height, data);
+			component.onAdd(this, width, height, data);
+		}
+	}
+	
+	public void onRefresh(int width, int height) {
+		for (PanelComponent component : panelComponents) {
+			component.onRefresh(width, height);
 		}
 	}
 	
@@ -148,5 +158,15 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 			background.setHeight("100%");
 		}
 		((AbsolutePanel)getWidget()).add(background, 0, 0);
+	}
+
+	@Override
+	public void setIsLandscape(boolean isLandscape) {
+		this.isLandscape = isLandscape;
+	}
+
+	@Override
+	public boolean isLandscape() {
+		return isLandscape;
 	}
 }

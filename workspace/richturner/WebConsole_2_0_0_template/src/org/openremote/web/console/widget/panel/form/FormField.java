@@ -1,5 +1,6 @@
 package org.openremote.web.console.widget.panel.form;
 
+import org.openremote.web.console.unit.ConsoleUnit.EnumSystemScreen;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -27,10 +28,31 @@ public class FormField extends InteractiveConsoleComponent implements KeyDownHan
 	private String defaultValue = null;
 
 	public enum EnumFormInputType {
-		TEXTBOX,
-		PASSWORD,
-		TEXTAREA,
-		SELECT;
+		TEXTBOX("textbox"),
+		PASSWORD("password"),
+		TEXTAREA("textarea"),
+		SELECT("select");
+		
+		private final String name;
+		
+		EnumFormInputType(String name) {
+			this.name = name;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public static EnumFormInputType getInputType(String name) {
+			EnumFormInputType result = null;
+			for (EnumFormInputType input : EnumFormInputType.values()) {
+				if (input.getName().equalsIgnoreCase(name)) {
+					result = input;
+					break;
+				}
+			}
+			return result;
+		}
 	}
 	
 	public FormField() {

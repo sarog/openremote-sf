@@ -32,6 +32,15 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 	}
 	
 	@Override
+	public void onUpdate(int width, int height) {
+		this.width = width;
+		this.height = height;
+		setWidth(width + "px");
+		setHeight(height + "px");
+		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
+	}
+	
+	@Override
 	public void onSensorAdd() {
 		// TODO Auto-generated method stub
 		

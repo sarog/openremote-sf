@@ -112,7 +112,7 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	}
 	
 	protected void registerHandlers(Widget component) {
-		if(BrowserUtils.isMobile()) {
+		if(BrowserUtils.isMobile) {
 			registerHandler(component.addDomHandler(this, TouchStartEvent.getType()));
 			registerHandler(component.addDomHandler(this, TouchEndEvent.getType()));
 		} else {

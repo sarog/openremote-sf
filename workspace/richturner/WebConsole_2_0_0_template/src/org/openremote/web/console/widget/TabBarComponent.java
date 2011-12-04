@@ -128,11 +128,12 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	public TabBarComponent(TabBar tabBar) {
 		super(new HorizontalPanel(), CLASS_NAME);
 		DOM.setIntStyleAttribute(getElement(), "zIndex", 30000 );
-		
-		// Add Elements from tab bar entity
-		for (TabBarItem item : tabBar.getItem()) {
-			TabBarItemComponent tabBarItem = new TabBarItemComponent(item);
-			this.addItem(tabBarItem);
+		if (tabBar != null) {
+			// Add Elements from tab bar entity
+			for (TabBarItem item : tabBar.getItem()) {
+				TabBarItemComponent tabBarItem = new TabBarItemComponent(item);
+				this.addItem(tabBarItem);
+			}
 		}
 	}
 	
@@ -271,7 +272,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		}
 		component = new TabBarItemComponent(tabBarItem, itemType);
 		// Add handlers as not created by usual mechanism
-		if(BrowserUtils.isMobile()) {
+		if(BrowserUtils.isMobile) {
 			systemTabHandlers.add(component.addDomHandler(this, TouchStartEvent.getType()));
 			systemTabHandlers.add(component.addDomHandler(this, TouchEndEvent.getType()));
 		} else {

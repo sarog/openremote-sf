@@ -51,17 +51,9 @@
 	    
 	    <!-- GWT Bootstrap -->
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
-	    
-	    <script type="text/javascript">
-	    	function fullScreenCheck() {
-	    		if (("standalone" in window.navigator) && !window.navigator.standalone) {
-	    				window.alert("To run in full screen mode please add this page to your Home Screen");
-	    		}
-	    	}
-	    </script>
 	</head>
 
-	<body onload="fullScreenCheck();">
+	<body>
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		
 		<div style="font: 10px arial, tahoma, sans-serif;" id="welcome-content">
@@ -69,9 +61,6 @@
 			<div class="spinner" style="margin: 10px 15px 0 0; width:40px; height: 40px; position: relative; display: inline-block;"><div class="bar1"></div><div class="bar2"></div><div class="bar3"></div><div class="bar4"></div><div class="bar5"></div><div class="bar6"></div><div class="bar7"></div><div class="bar8"></div><div class="bar9"></div><div class="bar10"></div><div class="bar11"></div><div class="bar12"></div></div>
 		    <span style="line-height: 40px" id="loading-msg">Loading resources, please wait...</span>
 		</div>
-    
-		<div id="consoleContainer"></div>
-		
 	    <noscript>
 	      <div id="noScriptError">
 	        Your web browser must have JavaScript enabled

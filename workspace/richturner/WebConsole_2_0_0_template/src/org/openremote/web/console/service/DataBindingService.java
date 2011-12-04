@@ -54,7 +54,10 @@ public class DataBindingService {
 		if (map != null) {
 			switch(map) {
 			case DEFAULT_CONTROLLER:
-				bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), WebConsole.getConsoleUnit().getLocalDataService().getDefaultControllerCredentials());
+				ControllerCredentials credentials = WebConsole.getConsoleUnit().getLocalDataService().getDefaultControllerCredentials();
+				if (credentials != null) {
+					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), credentials);
+				}
 				break;				
 			}
 		}

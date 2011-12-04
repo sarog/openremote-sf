@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.dom.client.Style;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
@@ -25,42 +25,54 @@ import org.openremote.web.console.event.swipe.*;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.PanelSize;
+import org.openremote.web.console.panel.SystemPanel;
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.service.*;
-import org.openremote.web.console.service.ScreenViewService.EnumSystemScreen;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.TabBarComponent;
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
 
-public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
+public class ConsoleUnit extends VerticalPanel implements RotationHandler, WindowResizeHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
+	public static final int MIN_WIDTH = 320;
+	public static final int MIN_HEIGHT = 460;
+	public static final int DEFAULT_DISPLAY_WIDTH = 320;
+	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
+	public static final String DEFAULT_DISPLAY_COLOUR = "black";
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
+	public static final int FRAME_WIDTH_TOP = 20;
+	public static final int FRAME_WIDTH_BOTTOM = 50;
+	public static final int FRAME_WIDTH_LEFT = 20;
+	public static final int FRAME_WIDTH_RIGHT = 20;
+	public static final int BOSS_WIDTH = 2;
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
-	private VerticalPanel componentContainer;
 	protected ConsoleDisplay consoleDisplay;
+	private Boolean isFullscreen = null;
 	protected int width;
 	protected int height;
+	private int systemPanelLoadAttemptCounter = 0;
 	private String orientation = "portrait";
-	private ControllerService controllerService = new JSONPControllerService();
-	private PanelService panelService = new PanelServiceImpl();
-	private LocalDataService dataService = new LocalDataServiceImpl();
-	private ScreenViewService screenViewService = new ScreenViewService();
-	private ControllerCredentials currentControllerCredentials;
-	private String currentPanelName;
-	private Integer currentGroupId;
-	private Integer currentScreenId;
-	private TabBarComponent currentTabBar;
-	private ScreenViewImpl currentScreen;
+	private ControllerService controllerService = JSONPControllerService.getInstance();
+	private PanelService panelService = PanelServiceImpl.getInstance();
+	private LocalDataService dataService = LocalDataServiceImpl.getInstance();
+	private ScreenViewService screenViewService = ScreenViewService.getInstance();
+	private ControllerCredentials currentControllerCredentials = null;
+	private Panel systemPanel = null;
+	private String currentPanelName = null;
+	private Integer currentGroupId = 0;
+	private Integer currentScreenId = 0;
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
 	private PopupPanel alertPopup;
-	
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
 		@Override
 		public void onSuccess(Map<Integer, String> result) {
@@ -73,25 +85,83 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		}
 	};
 	
+	public enum EnumSystemScreen {
+		CONTROLLER_LIST(50, 2, "controllerlist"),
+		ADD_EDIT_CONTROLLER(54, 5, "editcontroller"),
+		CONSOLE_SETTINGS(51, 3, "settings"),
+		LOGIN(52, 4, "login"),
+		LOGOUT(53, 4, "logout"),
+		PANEL_SELECTION(55, 6, "panelselection");
+		
+		private final int id;
+		private final int groupId;
+		private final String name;
+		
+		EnumSystemScreen(int id, int groupId, String name) {
+			this.id = id;
+			this.groupId = groupId;
+			this.name = name;
+		}
+		
+		public int getId() {
+			return id;
+		}
+		
+		public int getGroupId() {
+			return groupId;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public static EnumSystemScreen getSystemScreen(int id) {
+			EnumSystemScreen result = null;
+			for (EnumSystemScreen screen : EnumSystemScreen.values()) {
+				if (screen.getId() == id) {
+					result = screen;
+					break;
+				}
+			}
+			return result;
+		}
+		
+		public static EnumSystemScreen getSystemScreen(String name) {
+			EnumSystemScreen result = null;
+			for (EnumSystemScreen screen : EnumSystemScreen.values()) {
+				if (screen.getName().equalsIgnoreCase(name)) {
+					result = screen;
+					break;
+				}
+			}
+			return result;
+		}
+	}
+	
 	public ConsoleUnit() {
-		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
+		this(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT);
 	}
 	
 	public ConsoleUnit(int width, int height) {
-		// Create console container to store display and possibly logo for resizable units
-		componentContainer = new VerticalPanel();
-		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		super.add(componentContainer);
-		
-		// Set console unit properties
-		setSize(width, height);
-		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
-		this.addStyleName("consoleUnit");
+		// Initialise the system panel definition
+		SystemPanel.get();
+		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		if (width > height) {
+			int tempWidth = height;
+			height = width;
+			width = tempWidth;
+		}
+		this.width = width;
+		this.height = height;
 		
 		// Create a display and add to console container
 		consoleDisplay = new ConsoleDisplay();
 		add(consoleDisplay);
-		consoleDisplay.onAdd(width, height);
+		consoleDisplay.getElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
+
+		// Set console unit properties
+		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
+		this.addStyleName("consoleUnit");
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
@@ -101,21 +171,90 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		alertPopup.setWidget(new Label());
 	}
 	
-	public void resize(int width, int height) {
-		if (width != this.width || height != this.height) {
-			setSize(width, height);
-			consoleDisplay.resize(width, height);
-		}
-	}
-	
-	@Override
-	public void add(Widget widget) {
-		componentContainer.add(widget);
-	}
-	
 	public void setSize(int width, int height) {
+		if (width > height) {
+			int tempWidth = height;
+			height = width;
+			width = tempWidth;
+		}
 		this.width = width;
 		this.height = height;
+		
+		consoleDisplay.setSize(width, height);
+		
+		int maxDim = height + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
+		
+		if (BrowserUtils.isMobile || maxDim > BrowserUtils.getWindowWidth() || maxDim > BrowserUtils.getWindowHeight()) {
+			showFrame(false);
+		} else {
+			showFrame(true);
+		}
+		
+		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
+	}
+		
+	private void showFrame(boolean showFrame) {
+		if(isFullscreen != null && isFullscreen != showFrame) {
+			return;
+		}
+		
+		if (showFrame) {
+			removeStyleName("fullscreenConsole");
+			
+			// Create console frame
+			createFrame();
+			addStyleName("resizableConsole");
+			
+			// Clear document body colour setting
+			RootPanel.getBodyElement().getStyle().clearBackgroundColor();
+		} else {
+			// Set document body colour the same as the console display
+			removeFrame();
+			removeStyleName("resizableConsole");
+			addStyleName("fullscreenConsole");
+			RootPanel.getBodyElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
+		}
+		isFullscreen = !showFrame;
+	}
+	
+	private void createFrame() {
+		Style style = consoleDisplay.getElement().getStyle();
+		style.setMarginTop(FRAME_WIDTH_TOP-BOSS_WIDTH, Unit.PX);
+		style.setMarginRight(FRAME_WIDTH_RIGHT-BOSS_WIDTH, Unit.PX);
+		style.setMarginLeft(FRAME_WIDTH_LEFT-BOSS_WIDTH, Unit.PX);
+		style.setMarginBottom(-BOSS_WIDTH, Unit.PX);
+		addStyleName("consoleFrame");
+		
+		// Add boss to screen
+		style.setBorderWidth(BOSS_WIDTH,Unit.PX);
+		style.setBorderStyle(BorderStyle.SOLID);
+		style.setBorderColor("#333");
+		
+		// Add the logo along the bottom of the frame
+		HorizontalPanel logoPanel = new HorizontalPanel();
+		logoPanel.setStylePrimaryName("consoleFrameLogo");
+		logoPanel.setHeight(FRAME_WIDTH_BOTTOM + "px");
+		logoPanel.getElement().setAttribute("style", "line-height: " + FRAME_WIDTH_BOTTOM + "px;");		
+		Label logoLeft = new Label();
+		logoLeft.setText(LOGO_TEXT_LEFT);
+		logoLeft.getElement().setId("consoleFrameLogoLeft");
+		logoPanel.add(logoLeft);
+		Label logoRight = new Label();
+		logoRight.setText(LOGO_TEXT_RIGHT);
+		logoRight.getElement().setId("consoleFrameLogoRight");
+		logoPanel.add(logoRight);
+		add(logoPanel);
+	}
+	
+	private void removeFrame() {
+		Style style = consoleDisplay.getElement().getStyle();
+		
+		style.clearMargin();		
+		style.clearBorderColor();
+		style.clearBorderStyle();
+		style.clearBorderWidth();
+		
+		removeStyleName("consoleFrame");
 	}
 	
 	public ConsoleDisplay getConsoleDisplay() {
@@ -123,29 +262,29 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public int getWidth() {
-		return width;
+		if (isFullscreen) {
+			return width;
+		} else {
+			return width + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT;
+		}
 	}
 	
 	public int getHeight() {
-		return height;
+		if (isFullscreen) {
+			return height;
+		}
+		else {
+			return height + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
+		}		
 	}
 	
 	/**
 	 * Position the console unit in the centre of the window
 	 */
 	public void setPosition(int winWidth, int winHeight) {
-		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
-		consoleContainer.setWidgetPosition(this, (winWidth/2)-(width/2), (winHeight/2)-(height/2));
-	}
-	
-	public void doResize(int width, int height) {
-		if (getOrientation().equalsIgnoreCase("portrait")) {
-			setSize(width, height);
-			consoleDisplay.doResize(width, height);
-		} else {
-			setSize(height, width);
-			consoleDisplay.doResize(height, width);			
-		}
+		int xPos = (int)Math.round(((double)winWidth/2)-(getWidth()/2));
+		int yPos = (int)Math.round(((double)winHeight/2)-(getHeight()/2));
+		BrowserUtils.getConsoleContainer().setWidgetPosition(this, xPos, yPos);
 	}
 
 	/**
@@ -160,7 +299,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			getElement().removeClassName("portraitConsole");
 			getElement().addClassName("landscapeConsole");
 		}
-
+		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
 		this.orientation = orientation;
 	}
 	
@@ -176,40 +315,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		 setVisible(true);
 	}
 	
-	public void initialise() {
-		ControllerCredentials controllerCreds;
-		String panelName = "";
-		
-		// Display loading screen
-		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
-		
-		// Check for default Controller in Settings
-		controllerCreds = dataService.getDefaultControllerCredentials();
-		if (controllerCreds != null) {
-			panelName = controllerCreds.getDefaultPanel();
-		}
-		
-		if (panelName != null && !panelName.equals("")) {
-			loadControllerAndPanel(controllerCreds, panelName);
-		} else {
-			// Check for Last Controller and Panel in Cache
-			controllerCreds = dataService.getLastControllerCredentials();
-			if (controllerCreds != null) {
-				panelName = controllerCreds.getDefaultPanel();
-			}
-			if (panelName == null || panelName.equals("")) {
-				panelName = dataService.getLastPanelName();
-			}
-			
-			if (panelName != null && !panelName.equals("")) {
-				loadControllerAndPanel(controllerCreds, panelName);
-			} else {
-				// No panel or controller to load so go to settings
-				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
-			}
-		}	
-	}
-	
 	public void alert(String msg) {
 		if (msg != null && msg.length() > 0) {
 			Label label = (Label)alertPopup.getWidget();
@@ -220,7 +325,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	private void loadControllerAndPanel(ControllerCredentials controllerCreds, String panelName) {
 		if (controllerCreds == null) {
-			loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
+			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		} else {
 			// Instantiate controller from credentials and check it is alive then load the panel by name
 			currentControllerCredentials = controllerCreds;
@@ -234,10 +339,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
 							loadPanel(currentPanelName);
 						} else {
-							loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
+							loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
 						}
 					} else {
-						loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
+						loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 					}
 				}
 			});
@@ -249,41 +354,80 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				if(response == EnumControllerResponseCode.PANEL_NOT_FOUND) {
-					loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
+					loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
 				}
 			}
 			
 			@Override
 			public void onSuccess(Panel result) {
 				if (result != null) {
-					panelService.setCurrentPanel(result);
-					
-					// Get default group ID
-					Integer defaultGroupId = panelService.getDefaultGroupId();
-					Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
-					
-					if (defaultScreen != null) {
-						// Load default Screen for default group
-						loadScreen(defaultGroupId, defaultScreen, null);
-					} else {
-						loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
-					}
-				} else {
-					loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.PANEL_SELECTION), null);
+					setPanel(result);
+					initialisePanel();
 				}
 			}			
 		});
 	}
 	
-	private void unLoadController() {	
-		panelService.setCurrentPanel(null);
-		controllerService.setController(null);
-		unLoadScreen();
+	private void setPanel(Panel result) {
+		if (result != null) {
+			unloadPanel();
+			
+			panelService.setCurrentPanel(result);
+		}
+//			// If desktop resize console unit to match panel definition
+//			if (!isFullscreen) {
+//				PanelSize size = panelService.getPanelSize();
+//				setSize(size.getWidth(), size.getHeight());
+//			}
 	}
 	
-	public void reloadController() {
-		unLoadController();
-		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
+	private void initialisePanel() {
+		if (panelService.isInitialized()) {
+			// Get default group ID
+			Integer defaultGroupId = panelService.getDefaultGroupId();
+			Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
+			
+			if (defaultScreen != null) {
+				// Load default Screen for default group
+				loadDisplay(defaultGroupId, defaultScreen, null);
+			} else {
+				loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
+			}
+		} else {
+			loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
+		}
+	}
+	
+	private void unloadPanel() {
+		panelService.setCurrentPanel(null);
+		screenViewService.reset();
+		consoleDisplay.clearDisplay();
+		clearGestureMap();
+
+		for (Integer screenId : pollingHelperMap.keySet()) {
+			PollingHelper helper = pollingHelperMap.get(screenId);
+			if (helper != null) {
+				helper.stopMonitoring();
+			}
+		}
+		pollingHelperMap.clear();
+
+		currentGroupId = 0;
+		currentScreenId = 0;		
+	}
+	
+	private void unloadControllerAndPanel() {
+		unloadPanel();
+		unloadController();
+	}
+	
+	private void unloadController() {
+		controllerService.setController(null);
+	}
+	
+	public void reloadControllerAndPanel() {
+		unloadControllerAndPanel();
+		
 		// Wait 2s before reloading to allow controller time to re-initialise
 		Timer reloadTimer = new Timer() {
 			@Override
@@ -294,31 +438,77 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		reloadTimer.schedule(2000);
 	}
 	
-	public void restartController() {
-		unLoadController();
-		loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.LOADING_SCREEN), null);
-		initialise();
+	public void restart() {
+		unloadControllerAndPanel();
+		onAdd();
 	}
 	
-	private void loadScreen(Screen screen, List<DataValuePair> data) {
-		loadScreen(currentGroupId, screen, data);
+	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePair> data) {
+		if (systemPanel == null) {
+			systemPanel = SystemPanel.get();
+			
+         Timer systemPanelTimer = new Timer() {
+            @Override
+            public void run() {
+            	systemPanel = SystemPanel.get();
+            	systemPanelLoadAttemptCounter++;
+            	if (systemPanel != null || systemPanelLoadAttemptCounter > 10) {                                    
+	                   this.cancel();
+	           }
+            }
+         };
+         systemPanelTimer.scheduleRepeating(1000);
+		}
+		
+		if (systemPanel == null) {
+			Window.alert("Cannot load system panel defition");
+			return;
+		}
+		if (panelService.getCurrentPanel() != systemPanel) { 
+			unloadPanel();
+			setPanel(systemPanel);
+		}
+		
+		Integer groupId = systemScreen.getGroupId();
+		Screen screen = panelService.getScreenById(systemScreen.getId());
+		
+		if (screen != null) {
+			loadDisplay(groupId, screen, null);
+		}
+		//consoleDisplay.setOrientation("portrait");
+		//Window.alert("LOAD SETTINGS: " + systemScreen.getName());
+		// TODO: Sort out loading of system panel
+		//loadDisplay(screenViewService.getSystemScreenView(systemScreen), null);
 	}
 	
-	private void loadScreen(Integer groupId, Screen screen, List<DataValuePair> data) {
+	private void loadDisplay(Screen screen, List<DataValuePair> data) {
+		loadDisplay(currentGroupId, screen, false, data);
+	}
+	
+	private void loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePair> data) {
+		loadDisplay(currentGroupId, screen, orientationChanged, data);
+	}
+	
+	private void loadDisplay(Integer newGroupId, Screen screen, List<DataValuePair> data) {
+		loadDisplay(newGroupId, screen, false, data);
+	}
+	
+	private void loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePair> data) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
-		boolean screenOrientationChanged = false;
 		boolean tabBarChanged = false;
 		Integer oldScreenId = currentScreenId;
 		
-		if (screen == null) {
+		if (screen == null || newGroupId == null) {
 			return;
 		}
 		
-		if (currentScreenId != screen.getId()) {
+		int newScreenId = screen.getId();
+		
+		if (currentScreenId != newScreenId) {
 			screenChanged = true;
 		}
-		if (currentGroupId != groupId) {
+		if (currentGroupId != newGroupId) {
 			groupChanged = true;
 		}
 		
@@ -326,92 +516,61 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			return;
 		}
 		
-		currentScreenId = screen.getId();
-		currentGroupId = groupId;
-		
 		if (screenChanged) {
-			// Check if orientation has changed
-			String newScreenOrientation = panelService.getScreenOrientation(currentScreenId);
-			String currentDisplayOrientation = consoleDisplay.getOrientation();
-			if(!newScreenOrientation.equalsIgnoreCase(currentDisplayOrientation)) {
-				screenOrientationChanged = true;
-				
-				// Adjust console display to suit new screen
-				consoleDisplay.setOrientation(newScreenOrientation);				
-			}
+//			// If old screen is system screen and this is desktop resize console unit to match panel definition
+//			if (!BrowserUtils.isMobile) {
+//				if (oldScreenId < 0) {
+//					PanelSize size = panelService.getPanelSize();
+//					resize(size.getWidth(), size.getHeight());
+//				}
+//			}
 			
+			// Setting screen should return true at this point
 			ScreenViewImpl screenView = screenViewService.getScreenView(screen);
-		
-			if (screenView != null) {
-				loadScreenView(screenView, data);
-				
+			if (consoleDisplay.setScreenView(screenView, data)) {
 				// Configure gestures
 				setGestureMap(screen.getGesture());
 				
-				// Stop previous polling and start new polling
+				// Stop previous polling
 				if (pollingHelperMap.containsKey(oldScreenId)) {
 					PollingHelper pollingHelper = pollingHelperMap.get(oldScreenId);
 					if (pollingHelper != null) {
 						pollingHelper.stopMonitoring();
 					}
 				}
-				if (!pollingHelperMap.containsKey(currentScreenId)) {
+				// Start new polling
+				if (!pollingHelperMap.containsKey(newScreenId)) {
 					Set<Integer> sensorIds = screenView.getSensorIds();
 					if (sensorIds == null || sensorIds.size() == 0) {
-						pollingHelperMap.put(currentScreenId, null);
+						pollingHelperMap.put(newScreenId, null);
 					} else {
-						pollingHelperMap.put(currentScreenId, new PollingHelper(sensorIds, pollingCallback));
+						pollingHelperMap.put(newScreenId, new PollingHelper(sensorIds, pollingCallback));
 					}
 				}
-				PollingHelper pollingHelper = pollingHelperMap.get(currentScreenId);
+				PollingHelper pollingHelper = pollingHelperMap.get(newScreenId);
 				if (pollingHelper != null) {
 					pollingHelper.startSensorMonitoring();
 				}
+				currentScreenId = newScreenId;
 			} else {
-				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
+				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				return;
 			}
 		}
 		
 		if (groupChanged) {
+			consoleDisplay.removeTabBar();
 			// Get Tab Bar for this group
-			TabBar tabBar = panelService.getTabBar(currentGroupId);
+			TabBar tabBar = panelService.getTabBar(newGroupId);
 			if (tabBar != null && tabBar.getItem() != null) {
 				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
-				tabBarChanged = loadTabBar(tabBarComponent);
+				tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
 			}
-		}
-		
-		if (currentTabBar == null) {
-			return;
-		}
-		
-		// Update the tab bar only if it's not new
-		if (screenOrientationChanged && !tabBarChanged) {
-			currentTabBar.refresh();
-			consoleDisplay.setComponentPosition(currentTabBar,  0, consoleDisplay.getHeight() - currentTabBar.getHeight());
+			currentGroupId = newGroupId;
 		}
 		
 		if (screenChanged) {
-			currentTabBar.onScreenViewChange(currentScreenId);			
-		}
-	}
-	
-	private void unLoadScreen() {
-		if (currentScreen != null) {
-			currentGroupId = null;
-			currentScreenId = null;
-			
-			clearGestureMap();
-			unLoadScreenView();
-			unLoadTabBar();
-			for (Integer screenId : pollingHelperMap.keySet()) {
-				PollingHelper helper = pollingHelperMap.get(screenId);
-				if (helper != null) {
-					helper.stopMonitoring();
-				}
-			}
-			pollingHelperMap.clear();
+			consoleDisplay.highlightTabBarItem(currentScreenId);			
 		}
 	}
 	
@@ -448,49 +607,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		});
 	}
 	
-	public void loadScreenView(ScreenViewImpl screenView, List<DataValuePair> data) {
-		if (screenView == null) {
-			return;
-		}
-		
-		if (currentScreen != null && screenView != currentScreen) {
-			consoleDisplay.removeComponent(currentScreen);
-		}
-	
-		consoleDisplay.addComponent(screenView, data);
-		
-		currentScreen = screenView;
-	}
-	
-	private void unLoadScreenView() {
-		if (currentScreen != null) {
-			consoleDisplay.removeComponent(currentScreen);
-		}
-	}
-	
-	private boolean loadTabBar(TabBarComponent tabBar) {
-		boolean changeOccurred = false;
-		if (tabBar == null) {
-			return changeOccurred;
-		}
-	
-		if (currentTabBar != null && tabBar != currentTabBar) {
-			consoleDisplay.removeComponent(currentTabBar);
-		}
-		consoleDisplay.addComponent(tabBar, 0, consoleDisplay.getHeight() - tabBar.getHeight());
-		currentTabBar = tabBar;
-		changeOccurred = true;
-		
-		return changeOccurred;
-	}
-	
-	private void unLoadTabBar() {
-		if (currentTabBar != null) {
-			consoleDisplay.removeComponent(currentTabBar);
-		}
-		currentTabBar = null;
-	}
-	
 	public ControllerService getControllerService() {
 		return this.controllerService;
 	}
@@ -498,22 +614,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public LocalDataService getLocalDataService() {
 		return this.dataService;
 	}
-	
-//	public void loadSettings() {
-//		loadSettings(null);
-//	}
-//	
-//	public void loadSettings(String displayMessage) {
-//		// TODO Load the settings screen
-//		Window.alert("LOAD SETTINGS: " + displayMessage);
-//	}
-//	
-//	public void loadSystemScreen(String to, List<DataValuePair> data) {
-//		EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
-//		if (screen != null) {
-//			Window.alert("Load System Screen: " + screen.getName());
-//		}
-//	}
 	
 	/*
 	 * **********************************************
@@ -523,42 +623,95 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private void registerHandlers() {
 		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 		eventBus.addHandler(RotationEvent.getType(), this);
+		eventBus.addHandler(WindowResizeEvent.getType(), this);
 		eventBus.addHandler(SwipeEvent.getType(), this);
 		eventBus.addHandler(HoldEvent.getType(), this);
 		eventBus.addHandler(NavigateEvent.getType(), this);
 		eventBus.addHandler(CommandSendEvent.getType(), this);
 	}
 	
+	public void onAdd() {
+		ControllerCredentials controllerCreds;
+		String panelName = "";
+		
+		// Set size
+		setSize(width, height);
+		
+		// Configure display
+		consoleDisplay.onAdd(width, height);
+		if (isFullscreen) {
+			setOrientation(BrowserUtils.getWindowOrientation());
+		} else {
+			setOrientation("portrait");
+		}
+		
+		show();
+		
+		// Check for default Controller in Settings
+		controllerCreds = dataService.getDefaultControllerCredentials();
+		if (controllerCreds != null) {
+			panelName = controllerCreds.getDefaultPanel();
+		}
+		
+		if (panelName != null && !panelName.equals("")) {
+			loadControllerAndPanel(controllerCreds, panelName);
+		} else {
+			// Check for Last Controller and Panel in Cache
+			controllerCreds = dataService.getLastControllerCredentials();
+			if (controllerCreds != null) {
+				panelName = controllerCreds.getDefaultPanel();
+			}
+			if (panelName == null || panelName.equals("")) {
+				panelName = dataService.getLastPanelName();
+			}
+			
+			if (panelName != null && !panelName.equals("")) {
+				loadControllerAndPanel(controllerCreds, panelName);
+			} else {
+				// No panel or controller to load so go to settings
+				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+			}
+		}
+	}
+	
 	@Override
 	public void onRotate(RotationEvent event) {
 		String orientation = event.getOrientation();
-		setOrientation(orientation);
-		// Resize if mobile
-		if(BrowserUtils.isMobile) {
-			doResize(event.getWindowWidth(), event.getWindowHeight());
-			// Refresh the tab bar
-			if (currentTabBar != null) {
-				currentTabBar.refresh();
-				consoleDisplay.setComponentPosition(currentTabBar,  0, consoleDisplay.getHeight() - currentTabBar.getHeight());
-			}
+		
+		// Rotate the console unit if fullscreen but if desktop just rotate the display
+		if (BrowserUtils.isMobile || (!BrowserUtils.isMobile && !isFullscreen)) {
+			setOrientation(orientation);
 		}
-		setPosition(event.getWindowWidth(), event.getWindowHeight());
 		
 		// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
 		if (panelService.isInitialized()) {
-			if (!orientation.equalsIgnoreCase(panelService.getScreenOrientation(currentScreenId))) {
+			if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation())) {
 				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
 				if (inverseScreen != null) {
-					loadScreen(currentGroupId, inverseScreen, null);
+					loadDisplay(inverseScreen, true, null);
 				}
 			}
 		}
 	}
 	
 	@Override
+	public void onWindowResize(WindowResizeEvent event) {
+		// If fullscreen unit then we update the console unit size
+		if (isFullscreen) {
+			if (getOrientation().equalsIgnoreCase("portrait")) {
+				setSize(event.getWindowWidth(), event.getWindowHeight());
+			} else {
+				setSize(event.getWindowHeight(), event.getWindowWidth());
+			}
+		} else {
+			setPosition(event.getWindowWidth(), event.getWindowHeight());
+		}
+	}
+	
+	@Override
 	public void onHold(HoldEvent event) {
 		if (event.getSource() == consoleDisplay) {
-			loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
+			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		}
 	}
 
@@ -594,11 +747,11 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		switch (event.getDirection()) {
 			case LEFT:
 				Screen nextScreen = panelService.getNextScreen(currentGroupId, currentScreenId);
-				loadScreen(nextScreen, null);
+				loadDisplay(nextScreen, null);
 				break;
 			case RIGHT:
 				Screen prevScreen = panelService.getPreviousScreen(currentGroupId, currentScreenId);
-				loadScreen(prevScreen, null);
+				loadDisplay(prevScreen, null);
 				break;
 		}
 	}
@@ -615,11 +768,11 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			if (to != null && !to.equals("")) {
 				EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
 				if (screen != null) {
-					loadScreenView(screenViewService.getScreenView(screen), data);
+					loadSettings(screen, null);
 				}
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);
-				loadScreen(toGroupId, screen, data);
+				loadDisplay(toGroupId, screen, data);
 			}
 		}
 	}
@@ -642,11 +795,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		switch (errorCode) {
 			case XML_CHANGED:
 				// Try and reload the panel
-				reloadController();
+				reloadControllerAndPanel();
 				break;
 			default:
-				unLoadController();
-				loadScreenView(screenViewService.getScreenView(ScreenViewService.EnumSystemScreen.CONTROLLER_LIST), null);
+				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				break;
 		}
 	}

@@ -2,8 +2,8 @@ package org.openremote.web.console.widget.panel;
 
 import java.util.List;
 import java.util.Set;
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
@@ -16,34 +16,39 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	private int top;
 	private int height;
 	private int width;
+	private Double widthPercentage = null;
+	private Double heightPercentage = null;
+	private Double leftPercentage = null;
+	private Double topPercentage = null;
+	private ScreenViewImpl parent = null;
 	
-	private enum ScreenDirection {
-		WIDTH,
-		HEIGHT;
+	public static enum DimensionUnit {
+		PX,
+		PERCENTAGE;
+	}
+	
+	public static class DimensionResult {
+		private double value;
+		private DimensionUnit unit;
+		
+		public DimensionResult(double value, DimensionUnit unit) {
+			this.value = value;
+			this.unit = unit;
+		}
+		
+		public double getValue() {
+			return value;
+		}
+		
+		public DimensionUnit getUnit() {
+			return unit;
+		}
 	}
 	
 	public PanelComponent() {
 		super(new SimplePanel(), CLASS_NAME);
 		super.getWidget().addStyleName(CLASS_NAME);
 		super.getWidget().setStylePrimaryName(getClassName());
-	}
-	
-	public void setHeight(int height) {
-		this.height = height;
-		super.setHeight(height + "px");
-	}
-	
-	public void setWidth(int width) {
-		this.width = width;
-		super.setWidth(width + "px");
-	}
-	
-	public int getHeight() {
-		return height;
-	}
-	
-	public int getWidth() {
-		return width;
 	}
 	
 	public void setPanelWidget(Widget panelWidget) {
@@ -61,19 +66,19 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	}
 	
 	@Override
-	public void onAdd(int width, int height) {
-		onAdd(null);
+	public void onAdd(int screenWidth, int screenHeight) {
+		onAdd(null, screenWidth, screenHeight, null);
 	}
 	
-	public void onAdd(int width, int height, List<DataValuePair> data) {
-		onAdd(data);
+	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight) {
+		onAdd(parent, screenWidth, screenHeight, null);
 	}
 	
-	private void onAdd(List<DataValuePair> data) {
-		setVisible(true);
-		getWidget().setWidth(width + "px");
-		getWidget().setHeight(height + "px");
+	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight, List<DataValuePair> data) {
+		this.parent = parent;
+		setPositionAndSize(screenWidth, screenHeight);
 		onRender(width, height);
+		setVisible(true);
 		isInitialised = true;
 	}
 	
@@ -82,14 +87,65 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		onRender(width, height, null);
 	}
 	
+	public void onRefresh(int screenWidth, int screenHeight) {
+		setPositionAndSize(screenWidth, screenHeight);
+		onUpdate(width, height);
+	}
+	
+	private void setPositionAndSize(int screenWidth, int screenHeight) {
+		if (widthPercentage != null) {
+			width = (int)Math.round(widthPercentage * screenWidth); 
+		}
+		if (heightPercentage != null) {
+			height = (int)Math.round(heightPercentage * screenHeight); 
+		}
+		if (leftPercentage != null) {
+			left = (int)Math.round(leftPercentage * screenWidth); 
+		}
+		if (topPercentage != null) {
+			top = (int)Math.round(topPercentage * screenHeight); 
+		}
+		if (parent != null && (leftPercentage != null || topPercentage != null)) {
+			parent.getWidget().setWidgetPosition(this, left, top);
+		}
+		getWidget().setWidth(width + "px");
+		getWidget().setHeight(height + "px");
+	}
+	
 	@Override
 	public void setHeight(String height) {
-		setHeight(calculateDimensionFromString(height, ScreenDirection.HEIGHT));
+		DimensionResult result = getDimFromString(height);
+		if (result.getUnit() == DimensionUnit.PERCENTAGE) {
+			heightPercentage = result.getValue();
+		} else {
+			this.height = (int)Math.round(result.getValue());
+		}
 	}
 	
 	@Override
 	public void setWidth(String width) {
-		setWidth(calculateDimensionFromString(width, ScreenDirection.WIDTH));
+		DimensionResult result = getDimFromString(width);
+		if (result.getUnit() == DimensionUnit.PERCENTAGE) {
+			widthPercentage = result.getValue();
+		} else {
+			this.width = (int)Math.round(result.getValue());
+		}
+	}
+	
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getWidth() {
+		return width;
 	}
 	
 	@Override
@@ -100,13 +156,19 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	
 	@Override
 	public void setPosition(String leftStr, String topStr) {
-		int left = 0;
-		int top = 0;
+		DimensionResult left = getDimFromString(leftStr);
+		DimensionResult top = getDimFromString(topStr);
 		
-		left = calculateDimensionFromString(leftStr, ScreenDirection.WIDTH);
-		top = calculateDimensionFromString(topStr, ScreenDirection.HEIGHT);
-		
-		setPosition(left, top);
+		if (left.getUnit() == DimensionUnit.PERCENTAGE) {
+			leftPercentage = left.getValue();
+		} else {
+			this.left = (int)Math.round(left.getValue()); 
+		}
+		if (top.getUnit() == DimensionUnit.PERCENTAGE) {
+			topPercentage = top.getValue();
+		} else {
+			this.top = (int)Math.round(top.getValue()); 
+		}
 	}
 
 	@Override
@@ -119,31 +181,55 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		return this.top;
 	}
 	
-	private int calculateDimensionFromString(String dimStr, ScreenDirection direction) {
-		int dim = 0;
-		int refLength = 0;
+	public static DimensionResult getDimFromString(String dimStr) {
+		double dim = 0;
+		DimensionUnit unit = DimensionUnit.PX;
 		
-		switch(direction) {
-			case WIDTH:
-				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
-				break;
-			case HEIGHT:
-				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getHeight();
-		}
 		if (dimStr.endsWith("%")) {
 			dimStr = dimStr.replaceAll("%", "");
 			try {
-				double calc = Double.parseDouble(dimStr);
-				dim = (int)Math.round((calc / 100) * refLength); 
-			} catch (Exception e) {}
-		} else if (dimStr.endsWith("px")) {
-			dimStr = dimStr.replaceAll("px", "");
+				dim = (Double.parseDouble(dimStr)/100); 
+			} catch (Exception e) {
+				dim = 1;
+			}
+			unit = DimensionUnit.PERCENTAGE;
+		} else {
+			if (dimStr.endsWith("px")) {
+				dimStr = dimStr.replaceAll("px", "");
+			}
 			try {
 				dim = Integer.parseInt(dimStr);
 			} catch (Exception e) {}
 		}
-		return dim;
+		
+		return new DimensionResult(dim, unit);
 	}
+	
+//	public int calculateDynamicDimension(String dimStr, ScreenDirection direction) {
+//		int dim = 0;
+//		int refLength = 0;
+//		
+//		switch(direction) {
+//			case WIDTH:
+//				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
+//				break;
+//			case HEIGHT:
+//				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getHeight();
+//		}
+//		if (dimStr.endsWith("%")) {
+//			dimStr = dimStr.replaceAll("%", "");
+//			try {
+//				double calc = Double.parseDouble(dimStr);
+//				dim = (int)Math.round((calc / 100) * refLength); 
+//			} catch (Exception e) {}
+//		} else if (dimStr.endsWith("px")) {
+//			dimStr = dimStr.replaceAll("px", "");
+//			try {
+//				dim = Integer.parseInt(dimStr);
+//			} catch (Exception e) {}
+//		}
+//		return dim;
+//	}
 	
 	public abstract Set<Sensor> getSensors();
 	
@@ -152,4 +238,6 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	public abstract String getClassName();
 	
 	public abstract void onRender(int width, int height, List<DataValuePair> data);
+	
+	public abstract void onUpdate(int width, int height);
 }
