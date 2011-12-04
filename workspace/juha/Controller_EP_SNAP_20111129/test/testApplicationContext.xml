@@ -48,6 +48,12 @@
       </property>
   </bean>
 
+  <bean id="denonAVRSerialConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<property name="location">
+		<value>classpath:denonAVRSerial.properties</value>
+	</property>
+  </bean>
+
   <!--
   | Configuration variable mapping from controller config.properties file
   | to org.openremote.controller.ControllerConfiguration class.
@@ -172,14 +178,21 @@
     <constructor-arg ref = "configuration"/>
     <constructor-arg>
       <map>
-        <entry key = "2.0" value-ref = "version20ModelBuilder"/>
+        <entry key = "2.0" value-ref = "schema20"/>
+        <entry key = "3.0" value-ref = "schema30"/>
       </map>
     </constructor-arg>
 
   </bean>
 
 
-  <bean id = "version20ModelBuilder" class = "org.openremote.controller.deployer.Version20ModelBuilder" >
+
+  <!--
+   | TODO   : XML mappers
+   |
+   |
+   +-->
+  <bean id = "schema20" class = "org.openremote.controller.deployer.Version20ModelBuilder">
 
     <constructor-arg ref = "statusCache"/>
     <constructor-arg ref = "configuration"/>
@@ -188,11 +201,9 @@
     
   </bean>
 
-  <!--
-   | TODO   : XML mappers
-   |
-   |
-   +-->
+  <bean id = "schema30" class = "org.openremote.controller.deployer.Version30ModelBuilder"/>
+
+  
   <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.Version20SensorBuilder">
 <!--
     <constructor-arg ref = "version20ModelBuilder"/>
@@ -223,9 +234,7 @@
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
    -->
 
-  
   <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
-
     <constructor-arg>
       <map>
         <entry key = "ir"               value-ref = "irCommandBuilder"/>
@@ -238,6 +247,13 @@
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
+        <entry key = "wol"              value-ref = "wolCommandBuilder"/>
+        <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
+        <entry key = "russound"         value-ref = "russoundCommandBuilder"/>
+        <entry key = "hsc40"            value-ref = "hsc40CommandBuilder"/>
+        <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
+        <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -275,12 +291,17 @@
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
 		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
 		<constructor-arg index="1" value="${knx.ip.interface.port}" type="int" />
+		<constructor-arg index="2" value="org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus"/>
 	</bean>
 
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
-	
+
+	<!-- UDP Socket Command Builder for IP enabled devices -->
+	<bean id = "udpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPSocketCommandBuilder"
+	      scope = "prototype"/>
+	      
 	<!-- X10 Command Builder -->
 	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 	
@@ -298,6 +319,10 @@
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
+  <!-- Russound Command Builder -->
+  <bean id = "denonAVRSerialCommandBuilder"
+        class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
+        scope = "prototype"/>
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
@@ -311,6 +336,34 @@
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
+
+
+  <!-- DateTime Command Builder -->
+  <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
+
+  <!-- WOL Command Builder -->
+  <bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
+
+  <!-- Samsung TV Command Builder -->
+  <bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
+    <constructor-arg index="0" value="${samsungTV.interface.ip}" />
+  </bean>
+
+  <!-- Russound Command Builder -->
+  <bean id = "russoundCommandBuilder" class = "org.openremote.controller.protocol.russound.RussoundCommandBuilder">
+    <constructor-arg index="0" value="${russound.ip}" />
+    <constructor-arg index="1" value="${russound.port}" type="int" />
+    <constructor-arg index="2" value="${russound.keypadId}" />
+    <constructor-arg index="3" value="${russound.serialDevice}" />
+    <constructor-arg index="4" value="${russound.statusPollingInterval}" />
+  </bean>
+
+  <!-- HSC-40 Command Builder -->
+  <bean id = "hsc40CommandBuilder" class = "org.openremote.controller.protocol.hsc40.Hsc40CommandBuilder">
+    <constructor-arg index="0" value="${hsc40.interface.ip}" />
+    <constructor-arg index="1" value="${hsc40.interface.port}" type="int" />
+  </bean>
+
 
 
   <!-- TODO -->
