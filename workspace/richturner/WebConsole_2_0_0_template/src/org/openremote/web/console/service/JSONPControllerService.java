@@ -20,6 +20,7 @@ import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class JSONPControllerService extends ControllerService {
+	private static JSONPControllerService instance = null;
 	private String uuid;
 	
 	private static String getJsonMethodUrl(EnumControllerCommand command) {
@@ -51,13 +52,15 @@ public class JSONPControllerService extends ControllerService {
 		return methodUrl;
 	}
 	
-	public JSONPControllerService() {
-		this(null);
+	private JSONPControllerService() {
+		uuid = BrowserUtils.randomUUID().replace("-", "");
 	}
 	
-	public JSONPControllerService(Controller controller) {
-		setController(controller);
-		uuid = BrowserUtils.randomUUID().replace("-", "");
+	public static synchronized JSONPControllerService getInstance() {
+		if (instance == null) {
+			instance = new JSONPControllerService();
+		}
+		return instance;
 	}
 	
 	// ------------------------   Interface Overrides	-------------------------------------------
@@ -147,67 +150,71 @@ public class JSONPControllerService extends ControllerService {
 			}
 			
 			// If we've got this far then we assume JSON response is correctly formatted so we build the response object
-			switch(command) {
-				case GET_PANEL_LIST:
-					AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callback;
-					PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString()).as();
-					panelListCallback.onSuccess(panels.getPanel());
-					break;
-				case GET_PANEL_LAYOUT:
-					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callback;
-					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString()).as();
-					panelLayoutCallback.onSuccess(panel);
-					break;
-				case IS_ALIVE:
-					AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callback;
-					isAliveCallback.onSuccess(true);
-					break;
-				case IS_SECURE:
-					AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-					if (errorCode == 403) {
-						isSecureCallback.onSuccess(true);
-					} else {
-						isSecureCallback.onSuccess(false);
-					}
-					break;
-				case SEND_COMMAND:
-					AsyncControllerCallback<Boolean> successCallback = (AsyncControllerCallback<Boolean>)callback;
-					if (errorCode == 200) {
-						successCallback.onSuccess(true);
-					} else {
-						successCallback.onSuccess(false);
-					}
-					break;
-				case DO_SENSOR_POLLING:
-					AsyncControllerCallback<Map<Integer,String>> pollingCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
-					Map<Integer,String> pollValues = new HashMap<Integer, String>();
-					if (errorCode == 504) {
-						pollingCallback.onSuccess(null);	
-					} else {
+			try { 
+				switch(command) {
+					case GET_PANEL_LIST:
+						AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callback;
+						PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString()).as();
+						panelListCallback.onSuccess(panels.getPanel());
+						break;
+					case GET_PANEL_LAYOUT:
+						AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callback;
+						Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString()).as();
+						panelLayoutCallback.onSuccess(panel);
+						break;
+					case IS_ALIVE:
+						AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callback;
+						isAliveCallback.onSuccess(true);
+						break;
+					case IS_SECURE:
+						AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
+						if (errorCode == 403) {
+							isSecureCallback.onSuccess(true);
+						} else {
+							isSecureCallback.onSuccess(false);
+						}
+						break;
+					case SEND_COMMAND:
+						AsyncControllerCallback<Boolean> successCallback = (AsyncControllerCallback<Boolean>)callback;
+						if (errorCode == 200) {
+							successCallback.onSuccess(true);
+						} else {
+							successCallback.onSuccess(false);
+						}
+						break;
+					case DO_SENSOR_POLLING:
+						AsyncControllerCallback<Map<Integer,String>> pollingCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
+						Map<Integer,String> pollValues = new HashMap<Integer, String>();
+						if (errorCode == 504) {
+							pollingCallback.onSuccess(null);	
+						} else {
+							List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).as().getStatus();
+							if (statuses != null) {
+								for (Status status : statuses) {
+									if (status != null) {
+										pollValues.put(status.getId(), status.getContent());
+									}
+								}
+								pollingCallback.onSuccess(pollValues);
+							}
+						}
+						break;
+					case GET_SENSOR_STATUS:
+						AsyncControllerCallback<Map<Integer,String>> statusCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
+						Map<Integer,String> statusValues = new HashMap<Integer, String>();
 						List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).as().getStatus();
 						if (statuses != null) {
 							for (Status status : statuses) {
 								if (status != null) {
-									pollValues.put(status.getId(), status.getContent());
+									statusValues.put(status.getId(), status.getContent());
 								}
 							}
-							pollingCallback.onSuccess(pollValues);
+							statusCallback.onSuccess(statusValues);
 						}
-					}
-					break;
-				case GET_SENSOR_STATUS:
-					AsyncControllerCallback<Map<Integer,String>> statusCallback = (AsyncControllerCallback<Map<Integer, String>>)callback;
-					Map<Integer,String> statusValues = new HashMap<Integer, String>();
-					List<Status> statuses = AutoBeanService.getInstance().fromJsonString(StatusList.class, jsonObj.toString()).as().getStatus();
-					if (statuses != null) {
-						for (Status status : statuses) {
-							if (status != null) {
-								statusValues.put(status.getId(), status.getContent());
-							}
-						}
-						statusCallback.onSuccess(statusValues);
-					}
-					break;
+						break;
+				}
+			} catch (Exception e) {
+				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
 			}
 		}
 	};

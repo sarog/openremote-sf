@@ -29,6 +29,7 @@ public interface Screen {
    String getName();
    List<AbsoluteLayout> getAbsolute();
    List<GridLayout> getGrid();
+   List<FormLayout> getForm();
    List<Gesture> getGesture();
    Background getBackground();
    Integer getInverseScreenId();
@@ -38,6 +39,7 @@ public interface Screen {
    void setName(String name);
    void setAbsolute(List<AbsoluteLayout> layouts);
    void setGrid(List<GridLayout> layouts);
+   void setForm(List<FormLayout> layouts);
    void setGesture(List<Gesture> gestures);
    void setBackground(Background background);
    void setInverseScreenId(Integer id);

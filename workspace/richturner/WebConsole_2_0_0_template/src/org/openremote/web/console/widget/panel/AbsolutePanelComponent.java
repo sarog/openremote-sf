@@ -45,6 +45,11 @@ public class AbsolutePanelComponent extends PanelComponent {
 		if (component != null) {
 			component.onAdd(width, height);
 		}
+	}	
+
+	@Override
+	public void onUpdate(int width, int height) {
+		component.onUpdate(width, height);
 	}
 	
 	@Override

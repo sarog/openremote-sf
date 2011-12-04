@@ -236,11 +236,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		int pixelMin = 0;
 		
 		if (appearsVertical()) {
-			pixelMin = (int)(slideBar.getAbsoluteTop() + getWidth());
+			pixelMin = slideBar.getAbsoluteTop() + getWidth();
 			value = pixelMin - value;
 		} else {
 			if (isVertical) {
-				pixelMin = (int)(getAbsoluteLeft() + getWidth());
+				pixelMin = getAbsoluteLeft() + getWidth();
 				value = pixelMin - value;		
 			} else {
 				pixelMin = getAbsoluteLeft();
@@ -270,12 +270,12 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	
 	// Relative Pos to centre of handle
 	private int setHandlePosition(int pos) {
-		pos = pos < (0 + halfHandle) ? (int)(0 + halfHandle) : pos;
-		pos = pos > (getWidth() - halfHandle) ? (int)(getWidth() - halfHandle) : pos;
+		pos = pos < (0 + halfHandle) ? (0 + halfHandle) : pos;
+		pos = pos > (getWidth() - halfHandle) ? (getWidth() - halfHandle) : pos;
 		if (isVertical) {
-			((AbsolutePanel)getWidget()).setWidgetPosition(handle, handleFixedPos, (int)(getWidth() - pos - halfHandle - handleInternalMargin));			
+			((AbsolutePanel)getWidget()).setWidgetPosition(handle, handleFixedPos, (getWidth() - pos - halfHandle - handleInternalMargin));			
 		} else {
-			((AbsolutePanel)getWidget()).setWidgetPosition(handle, (int)(pos - halfHandle - handleInternalMargin), handleFixedPos);
+			((AbsolutePanel)getWidget()).setWidgetPosition(handle, (pos - halfHandle - handleInternalMargin), handleFixedPos);
 		}
 		return pos;
 	}
@@ -299,7 +299,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private void doValueChange(boolean changeFromSensor) {
 		if (value != lastValue) {
 			if (!changeFromSensor) {
-				// Fire value change event on console unit event bus
 				lastValue = value;
 				if (hasControlCommand) {
 					eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));

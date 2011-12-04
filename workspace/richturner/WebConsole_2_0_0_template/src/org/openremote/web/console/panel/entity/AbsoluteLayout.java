@@ -32,20 +32,20 @@ import org.openremote.web.console.panel.entity.component.SwitchComponent;
  * 
  */
 public interface AbsoluteLayout {
-   int getHeight();
-   int getWidth();
-   int getLeft();
-   int getTop();
+   String getHeight();
+   String getWidth();
+   String getLeft();
+   String getTop();
 	ButtonComponent getButton();
 	LabelComponent getLabel();
 	SliderComponent getSlider();
 	ImageComponent getImage();
 	SwitchComponent getSwitch();
 	
-   void setHeight(int height);
-   void setWidth(int width);
-   void setLeft(int left);
-   void setTop(int top);
+   void setHeight(String height);
+   void setWidth(String width);
+   void setLeft(String left);
+   void setTop(String top);
 	void setButton(ButtonComponent component);
 	void setLabel(LabelComponent component);
 	void setSlider(SliderComponent component);

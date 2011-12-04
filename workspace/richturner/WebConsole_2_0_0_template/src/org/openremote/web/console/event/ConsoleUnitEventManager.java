@@ -6,11 +6,7 @@ import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressMoveReleaseHandlerImpl;
 import org.openremote.web.console.event.press.PressStartEvent;
-import org.openremote.web.console.util.BrowserUtils;
-import com.google.gwt.event.dom.client.TouchMoveEvent;
-import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.ui.RootPanel;
 
 public class ConsoleUnitEventManager {
 	private static ConsoleUnitEventManager instance;
@@ -23,17 +19,7 @@ public class ConsoleUnitEventManager {
 		attachHandlers();
 	}
 	
-	private void attachHandlers() {
-		// Disable scrolling on mobile devices
-		if (BrowserUtils.isMobile) {
-			// Prevent touch moves
-			RootPanel.get().addDomHandler(new TouchMoveHandler() {
-				public void onTouchMove(TouchMoveEvent e) {
-						e.preventDefault();
-				}
-			}, TouchMoveEvent.getType());
-		}
-		
+	private void attachHandlers() {		
 		// Add Press handlers to capture Press Events
 		eventBus.addHandler(PressStartEvent.getType(), pressMoveReleaseHandler);
 		eventBus.addHandler(PressMoveEvent.getType(), pressMoveReleaseHandler);

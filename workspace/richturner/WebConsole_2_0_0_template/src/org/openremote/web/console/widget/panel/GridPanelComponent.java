@@ -1,7 +1,6 @@
 package org.openremote.web.console.widget.panel;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.panel.entity.Cell;
@@ -100,11 +99,15 @@ public class GridPanelComponent extends PanelComponent {
 	}
 	
 	@Override
+	public void onUpdate(int width, int height) {
+		for (ConsoleComponent component : components) {
+			component.onUpdate(width, height);
+		}
+	}
+	
+	@Override
 	public void onRemove() {
-		Iterator<Widget> iterator = ((FlexTable)getWidget()).iterator();
-		while(iterator.hasNext()) {
-			Widget widget = iterator.next();			
-			ConsoleComponent component = (ConsoleComponent)widget;
+		for (ConsoleComponent component : components) {
 			if (component != null) {
 				component.onRemove();
 			}

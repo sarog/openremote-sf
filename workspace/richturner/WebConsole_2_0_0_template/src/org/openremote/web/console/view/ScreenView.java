@@ -11,5 +11,9 @@ public interface ScreenView {
 	
 	public Set<Integer> getSensorIds();
 	
+	public void setIsLandscape(boolean isLandscape);
+	
+	public boolean isLandscape();
+	
 	public void onAdd(int width, int height, List<DataValuePair> data);
 }

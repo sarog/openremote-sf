@@ -1,6 +1,7 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 
@@ -25,7 +26,7 @@ public interface PanelService {
 	
 	Screen getInverseScreen(Integer screenId);
 	
-	String getScreenOrientation(Integer screenId);
-	
 	boolean isInitialized();
+	
+	PanelSize getPanelSize();
 }

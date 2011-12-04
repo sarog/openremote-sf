@@ -10,14 +10,22 @@ import com.google.gwt.user.client.Cookies;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class LocalDataServiceImpl implements LocalDataService {
+	private static LocalDataServiceImpl instance;
 	private Storage dataStore = null;
 	private StorageMap dataStoreMap = null;
 	
-	public LocalDataServiceImpl() {
+	private LocalDataServiceImpl() {
 		dataStore = Storage.getLocalStorageIfSupported();
 		if (dataStore != null) {
 			dataStoreMap = new StorageMap(dataStore);
 		}
+	}
+	
+	public static synchronized LocalDataServiceImpl getInstance() {
+		if (instance == null) {
+			instance = new LocalDataServiceImpl();
+		}
+		return instance;
 	}
 	
 	private void setData(String dataName, String data) {

@@ -3,10 +3,10 @@ package org.openremote.web.console.panel.entity;
 import java.util.List;
 
 public interface GridLayout {
-	Integer getLeft();
-	Integer getTop();
-	Integer getWidth();
-	Integer getHeight();
+	String getLeft();
+	String getTop();
+	String getWidth();
+	String getHeight();
 	Integer getRows();
 	Integer getCols();
 	List<Cell> getCell();

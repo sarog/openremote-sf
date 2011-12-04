@@ -11,13 +11,18 @@ import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.Field;
+import org.openremote.web.console.panel.entity.FormButton;
+import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.panel.entity.GridLayout;
+import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
-import org.openremote.web.console.widget.panel.form.FormButton.EnumFormButtonType;
+import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
+import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
 import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
@@ -37,7 +42,7 @@ import com.google.web.bindery.autobean.shared.Splittable;
 public class FormPanelComponent extends PanelComponent implements TapHandler {
 	private static final String CLASS_NAME = "formPanelComponent";
 	private List<FormField> fields = new ArrayList<FormField>();
-	private List<FormButton> buttons = new ArrayList<FormButton>();
+	private List<FormButtonComponent> buttons = new ArrayList<FormButtonComponent>();
 	private String dataSource = null;
 	private FormHandler handler = null;
 	private AutoBean<?> inputObject = null;
@@ -60,7 +65,7 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		return (ConsoleComponent)(((Grid)getWidget()).getWidget(row, 0));
 	}
 	
-	public void addButton(FormButton button) {
+	public void addButton(FormButtonComponent button) {
 		if (button != null) {
 			buttons.add(button);
 		}
@@ -102,6 +107,21 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 	// ---------------------------------------------------------------------------------
 	
 	@Override
+	public Set<Sensor> getSensors() {
+		return null;
+	}
+
+	@Override
+	public Set<ConsoleComponent> getComponents() {
+		return new HashSet<ConsoleComponent>(buttons);
+	}
+	
+	@Override
+	public String getClassName() {
+		return CLASS_NAME;
+	}
+	
+	@Override
 	public void onRender(int width, int height, List<DataValuePair> data) {
 		Grid grid = (Grid)getWidget();
 		int rows = fields.size();
@@ -122,7 +142,7 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		
 			// Force button size to be 80 x 35
 			HorizontalPanel buttonPanel = new HorizontalPanel();
-			for (FormButton button : buttons) {
+			for (FormButtonComponent button : buttons) {
 				switch (button.getType()) {
 					case SUBMIT:
 						button.addHandler(this, TapEvent.getType());
@@ -139,7 +159,9 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		// Get data source if it is defined
 		if (dataSource != null && !dataSource.equals("")) {
 			inputObject = DataBindingService.getInstance().getData(dataSource);
-			dataMap = AutoBeanCodex.encode(inputObject);
+			if (inputObject != null) {
+				dataMap = AutoBeanCodex.encode(inputObject);
+			}
 		}
 		
 		// Populate fields using binding data
@@ -155,6 +177,13 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 	}
 	
 	@Override
+	public void onUpdate(int width, int height) {
+		for (FormField field : fields) {
+			field.onUpdate(width, height);
+		}
+	}
+	
+	@Override
 	public void onRemove() {
 		for (FormField field : fields) {
 			field.onRemove();
@@ -162,23 +191,8 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 	}
 	
 	@Override
-	public Set<Sensor> getSensors() {
-		return null;
-	}
-
-	@Override
-	public Set<ConsoleComponent> getComponents() {
-		return new HashSet<ConsoleComponent>(buttons);
-	}
-	
-	@Override
-	public String getClassName() {
-		return CLASS_NAME;
-	}
-	
-	@Override
 	public void onTap(TapEvent event) {
-		FormButton btn = (FormButton)event.getSource();
+		FormButtonComponent btn = (FormButtonComponent)event.getSource();
 		switch (btn.getType()) {
 			case SUBMIT:
 				if (isValid()) {
@@ -205,14 +219,14 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		if (diffMap.size() > 0) {
 			DataBindingService.getInstance().setData(dataSource, bean);
 		}
-		WebConsole.getConsoleUnit().restartController();
+		WebConsole.getConsoleUnit().restart();
 	}
 	
 	// ---------------------------------------------------------------------------------
 	//			BUILD METHOD BELOW HERE
 	// ---------------------------------------------------------------------------------
 	
-	public static FormPanelComponent build(GridLayout layout) throws Exception {
+	public static FormPanelComponent build(FormLayout layout) throws Exception {
 		FormPanelComponent panel = new FormPanelComponent();
 		if (layout == null) {
 			return panel;
@@ -220,8 +234,31 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		panel.setHeight(layout.getHeight());
 		panel.setWidth(layout.getWidth());
 		panel.setPosition(layout.getLeft(),layout.getTop());
+		panel.setDataSource(layout.getDataSource());
 		
 		// Add Fields
+		List<Field> fields = layout.getField();
+		if (fields != null) {
+			for (Field field : fields) {
+				FormField fieldComp = new FormField();
+				fieldComp.setLabel(field.getLabel());
+				fieldComp.setInputType(EnumFormInputType.getInputType(field.getInputType()));
+				fieldComp.setValidationString(field.getValidationString());
+				fieldComp.setIsOptional(field.getOptional());
+				fieldComp.setName(field.getName());
+				panel.addField(fieldComp);
+			}
+		}
+		
+		// Add Buttons
+		List<FormButton> buttons = layout.getButton();
+		if (buttons != null) {
+			for (FormButton button : buttons) {
+				FormButtonComponent buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()));
+				buttonComp.setNavigate(button.getNavigate());
+				panel.addButton(buttonComp);
+			}
+		}
 		
 		return panel;
 	}

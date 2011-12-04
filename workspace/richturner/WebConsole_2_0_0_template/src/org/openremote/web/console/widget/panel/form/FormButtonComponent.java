@@ -3,27 +3,44 @@ package org.openremote.web.console.widget.panel.form;
 import org.openremote.web.console.widget.ButtonComponent;
 import com.google.gwt.user.client.DOM;
 
-public class FormButton extends ButtonComponent {
+public class FormButtonComponent extends ButtonComponent {
 	public static final String CLASS_NAME = "formButtonComponent";
 	private EnumFormButtonType buttonType;
 
 	public enum EnumFormButtonType {
-		SUBMIT("SUBMIT"),
-		CLEAR("CLEAR"),
-		CANCEL("CANCEL");
+		SUBMIT("submit","SUBMIT"),
+		CLEAR("clear","CLEAR"),
+		CANCEL("cancel","CANCEL");
 		
 		private final String text;
+		private final String name;
 		
-		EnumFormButtonType(String text) {
+		EnumFormButtonType(String name, String text) {
+			this.name = name;
 			this.text = text;
 		}
 		
 		public String getText() {
 			return text;
 		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public static EnumFormButtonType getButtonType(String name) {
+			EnumFormButtonType result = null;
+			for (EnumFormButtonType input : EnumFormButtonType.values()) {
+				if (input.getName().equalsIgnoreCase(name)) {
+					result = input;
+					break;
+				}
+			}
+			return result;
+		}
 	}	
 	
-	public FormButton(EnumFormButtonType type) {
+	public FormButtonComponent(EnumFormButtonType type) {
 		super();
 		setStylePrimaryName(CLASS_NAME);
 		DOM.setStyleAttribute(getElement(), "lineHeight", "35px");

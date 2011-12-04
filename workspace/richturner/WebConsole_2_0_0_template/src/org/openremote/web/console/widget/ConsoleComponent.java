@@ -10,6 +10,9 @@ public interface ConsoleComponent {
 	// Configures the widget based on the values supplied
 	public void onRender(int width, int height);
 	
+	// Called when screen size changes
+	public void onUpdate(int width, int height);
+	
 	// Sets the visibility of the widget
 	public void setVisible(boolean visible);
 	

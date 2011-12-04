@@ -55,15 +55,15 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		return id;
 	}
 	
+	@Override
 	public void onAdd(int width, int height) {
-		// Call Widgets onRender Method and then display it
-		setVisible(true);
 		// Set container to explicit size to avoid any issues using percentages
 		this.width = width;
 		this.height = height;
 		setWidth(width + "px");
 		setHeight(height + "px");
 		onRender(width, height);
+		setVisible(true);
 		isInitialised = true;
 		
 		// Check that handlers have been registered if interactive if not register them on the top level widget
@@ -89,11 +89,20 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		}
 	}
 	
+	@Override
 	public void onRemove() {
 		if (this instanceof InteractiveConsoleComponent) {
 			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;
 			thisWidget.unRegisterHandlers();
 		}
+	}
+	
+	@Override
+	public void onUpdate(int width, int height) {
+		this.width = width;
+		this.height = height;
+		setWidth(width + "px");
+		setHeight(height + "px");
 	}
 	
 	public void onSensorChange(SensorChangeEvent event) {
