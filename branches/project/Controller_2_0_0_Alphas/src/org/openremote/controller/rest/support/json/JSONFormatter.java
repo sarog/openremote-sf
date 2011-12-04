@@ -122,10 +122,10 @@ public class JSONFormatter {
                            for (int j=0; j<absoluteComps.length(); j++) {
                               JSONObject comp = absoluteComps.optJSONObject(j);
                               if (comp != null) {
-                                 updateValue(comp, "top", comp.optInt("top"));
-                                 updateValue(comp, "left", comp.optInt("left"));
-                                 updateValue(comp, "width", comp.optInt("width"));
-                                 updateValue(comp, "height", comp.optInt("height"));
+                                 updateValue(comp, "top", comp.optString("top"));
+                                 updateValue(comp, "left", comp.optString("left"));
+                                 updateValue(comp, "width", comp.optString("width"));
+                                 updateValue(comp, "height", comp.optString("height"));
                                  
                                  // If component is a slider check min max values also
                                  JSONObject slider = comp.optJSONObject("slider");
@@ -152,10 +152,10 @@ public class JSONFormatter {
                            for (int j=0; j<gridArr.length(); j++) {
                               JSONObject gridObj = gridArr.optJSONObject(j);
                               if (gridObj != null) {
-                                 updateValue(gridObj, "top", gridObj.optInt("top"));
-                                 updateValue(gridObj, "left", gridObj.optInt("left"));
-                                 updateValue(gridObj, "width", gridObj.optInt("width"));
-                                 updateValue(gridObj, "height", gridObj.optInt("height"));
+                                 updateValue(gridObj, "top", gridObj.optString("top"));
+                                 updateValue(gridObj, "left", gridObj.optString("left"));
+                                 updateValue(gridObj, "width", gridObj.optString("width"));
+                                 updateValue(gridObj, "height", gridObj.optString("height"));
                                  updateValue(gridObj, "rows", gridObj.optInt("rows"));
                                  updateValue(gridObj, "cols", gridObj.optInt("cols"));
                                  
@@ -189,6 +189,27 @@ public class JSONFormatter {
                                        }
                                     }                  
                                  }
+                              }
+                           }                  
+                        }
+                        
+                        // Convert form array
+                        updateValue(screenObj, "form", convertToArray(screenObj.opt("form")));
+                        
+                        // Convert any 0 string values to integer values
+                        JSONArray formComps = screenObj.optJSONArray("form");
+                        if (formComps != null) {
+                           for (int j=0; j<formComps.length(); j++) {
+                              JSONObject comp = formComps.optJSONObject(j);
+                              if (comp != null) {
+                                 updateValue(comp, "top", comp.optString("top"));
+                                 updateValue(comp, "left", comp.optString("left"));
+                                 updateValue(comp, "width", comp.optString("width"));
+                                 updateValue(comp, "height", comp.optString("height"));
+                                 
+                                 // Force field and button array
+                                 updateValue(comp, "field", convertToArray(comp.opt("field")));
+                                 updateValue(comp, "button", convertToArray(comp.opt("button")));      
                               }
                            }                  
                         }
