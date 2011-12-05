@@ -24,9 +24,9 @@
 -->
 
 <!--
-  Russound RNET Transport protocol (send-only).
+  Russound RNET Transport protocol. Complete rewrite to support dynmaic values, read and write
 
-  Author: Torbjörn Österdahl
+  Author: Marcus Redeker
 -->
 <openremote xmlns = "http://www.openremote.org" 
             xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
@@ -34,10 +34,30 @@
 
   <protocol displayName="Russound RNET Protocol" tagName="russound">
 
+    <attr name="controller" label="Controller">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message = "Controller number (1-6)">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name="zone" label="Zone">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message = "Zone number (1-6) or (1-8) depending on modell">.*</regex>
+      </validations>
+    </attr>
+
     <attr name="command" label="Russound Command">
       <validations>
         <allowBlank>false</allowBlank>
-        <regex message = "A Russound command as defined in russoundCommand.properties">.*</regex>
+        <regex message = "A Russound command as defined in RussCmdEnum">.*</regex>
+      </validations>
+    </attr>
+    
+    <attr name="name" label="Name used in Rules">
+      <validations>
+        <allowBlank>true</allowBlank>
       </validations>
     </attr>
 
