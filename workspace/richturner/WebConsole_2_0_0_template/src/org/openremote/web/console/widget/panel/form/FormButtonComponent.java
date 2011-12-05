@@ -41,6 +41,10 @@ public class FormButtonComponent extends ButtonComponent {
 	}	
 	
 	public FormButtonComponent(EnumFormButtonType type) {
+		this(type, type.getText());
+	}
+	
+	public FormButtonComponent(EnumFormButtonType type, String name) {
 		super();
 		setStylePrimaryName(CLASS_NAME);
 		DOM.setStyleAttribute(getElement(), "lineHeight", "35px");
@@ -54,7 +58,7 @@ public class FormButtonComponent extends ButtonComponent {
 			case CANCEL:
 				
 		}
-		setName(buttonType.getText());
+		setName(name);
 	}
 	
 	public EnumFormButtonType getType() {

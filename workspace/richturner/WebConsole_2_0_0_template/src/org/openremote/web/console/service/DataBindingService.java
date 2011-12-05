@@ -57,6 +57,8 @@ public class DataBindingService {
 				ControllerCredentials credentials = WebConsole.getConsoleUnit().getLocalDataService().getDefaultControllerCredentials();
 				if (credentials != null) {
 					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), credentials);
+				} else {
+					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());
 				}
 				break;				
 			}

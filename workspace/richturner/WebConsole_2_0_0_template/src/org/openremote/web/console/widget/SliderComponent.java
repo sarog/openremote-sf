@@ -10,6 +10,7 @@ import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -234,16 +235,34 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private int calculateRelativePixelValue(int absValue) {
 		int value = absValue;
 		int pixelMin = 0;
+		boolean appearsVertical = appearsVertical();
+		int consoleCentreX = (int)Math.round(((double)BrowserUtils.getWindowWidth()/2));
+		int consoleCentreY = (int)Math.round(((double)BrowserUtils.getWindowHeight()/2));
 		
-		if (appearsVertical()) {
-			pixelMin = slideBar.getAbsoluteTop() + getWidth();
+		if (((appearsVertical && !isVertical) || (!appearsVertical && isVertical)) && (BrowserUtils.isCssDodgy)) {
+			if (!isVertical) {
+				pixelMin = consoleCentreY + (consoleCentreX - getAbsoluteLeft());
+			} else {
+				pixelMin = consoleCentreX + (consoleCentreY - (slideBar.getAbsoluteTop() + getWidth()));
+			}
+		} else {
+			if (appearsVertical) {
+				pixelMin = slideBar.getAbsoluteTop() + getWidth();
+			} else {
+				if (isVertical) {
+					pixelMin = getAbsoluteLeft() + getWidth();
+				} else {
+					pixelMin = getAbsoluteLeft();
+				}
+			}
+		}		
+		
+		if (appearsVertical) {
 			value = pixelMin - value;
 		} else {
 			if (isVertical) {
-				pixelMin = getAbsoluteLeft() + getWidth();
 				value = pixelMin - value;		
 			} else {
-				pixelMin = getAbsoluteLeft();
 				value = value - pixelMin;				
 			}
 		}

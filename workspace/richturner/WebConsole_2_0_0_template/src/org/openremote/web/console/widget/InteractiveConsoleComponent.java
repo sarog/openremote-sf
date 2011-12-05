@@ -174,7 +174,7 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 		interactiveChildren.add(component);
 	}
 	
-	public Navigate getNaviate() {
+	public Navigate getNavigate() {
 		return navigate;
 	}
 	

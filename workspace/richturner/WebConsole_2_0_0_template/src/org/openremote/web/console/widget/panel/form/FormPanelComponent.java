@@ -2,37 +2,31 @@ package org.openremote.web.console.widget.panel.form;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.controller.ControllerCredentials;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.Field;
 import org.openremote.web.console.panel.entity.FormButton;
 import org.openremote.web.console.panel.entity.FormLayout;
-import org.openremote.web.console.panel.entity.GridLayout;
-import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
-import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
 import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
 import org.openremote.web.console.widget.Sensor;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -200,9 +194,9 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 				}
 				break;
 			case CANCEL:
+				// This is handled by the button component superclass as a navigate action should be specified
 				break;
 			case CLEAR:
-				
 				break;
 		}
 	}
@@ -210,7 +204,7 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 	private void onSubmit() {
 		for (FormField field : fields) {
 			String name = field.getName();
-			if (name != null) {
+			if (dataMap != null && name != null) {
 				dataMap.setReified(name, field.getValue());
 			}
 		}
@@ -254,7 +248,13 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		List<FormButton> buttons = layout.getButton();
 		if (buttons != null) {
 			for (FormButton button : buttons) {
-				FormButtonComponent buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()));
+				FormButtonComponent buttonComp;
+				String name = button.getName();
+				if (name != null && name.length() > 0) {
+					buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()), name);
+				} else {
+					buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()));
+				}
 				buttonComp.setNavigate(button.getNavigate());
 				panel.addButton(buttonComp);
 			}

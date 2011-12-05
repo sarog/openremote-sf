@@ -1,8 +1,9 @@
 package org.openremote.web.console.widget.panel.form;
 
-import org.openremote.web.console.unit.ConsoleUnit.EnumSystemScreen;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -13,7 +14,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FormField extends InteractiveConsoleComponent implements KeyDownHandler {
+public class FormField extends InteractiveConsoleComponent implements KeyDownHandler, BlurHandler {
 	public static final String CLASS_NAME = "formFieldComponent";
 	public static final String LABEL_CLASS_NAME = "formFieldLabelComponent";
 	public static final String INPUT_CLASS_NAME = "formFieldInputComponent";
@@ -185,6 +186,7 @@ public class FormField extends InteractiveConsoleComponent implements KeyDownHan
 			// Initialise validation handler
 			if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
 				input.addDomHandler(this, KeyDownEvent.getType());
+				input.addDomHandler(this, BlurEvent.getType());
 			}
 		}
 	}
@@ -225,5 +227,10 @@ public class FormField extends InteractiveConsoleComponent implements KeyDownHan
 	@Override
 	public void onKeyDown(KeyDownEvent event) {
 		validateInput();
+	}
+
+	@Override
+	public void onBlur(BlurEvent event) {
+		validateInput();		
 	}
 }
