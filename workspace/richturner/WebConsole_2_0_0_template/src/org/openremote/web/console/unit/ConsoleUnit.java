@@ -25,7 +25,6 @@ import org.openremote.web.console.event.swipe.*;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
-import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.SystemPanel;
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.Gesture;
@@ -59,7 +58,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private Boolean isFullscreen = null;
 	protected int width;
 	protected int height;
-	private int systemPanelLoadAttemptCounter = 0;
 	private String orientation = "portrait";
 	private ControllerService controllerService = JSONPControllerService.getInstance();
 	private PanelService panelService = PanelServiceImpl.getInstance();
@@ -86,12 +84,21 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	};
 	
 	public enum EnumSystemScreen {
-		CONTROLLER_LIST(50, 2, "controllerlist"),
-		ADD_EDIT_CONTROLLER(54, 5, "editcontroller"),
+//		CONTROLLER_LIST(50, 2, "controllerlist"),
+//		ADD_EDIT_CONTROLLER(54, 5, "editcontroller"),
+//		CONSOLE_SETTINGS(51, 3, "settings"),
+//		LOGIN(52, 4, "login"),
+//		LOGOUT(53, 4, "logout"),
+//		PANEL_SELECTION(55, 6, "panelselection");
+		
+//TODO: System Screens - For now point everything to settings screen
+		
+		CONTROLLER_LIST(51, 3, "controllerlist"),
+		ADD_EDIT_CONTROLLER(51, 3, "editcontroller"),
 		CONSOLE_SETTINGS(51, 3, "settings"),
-		LOGIN(52, 4, "login"),
-		LOGOUT(53, 4, "logout"),
-		PANEL_SELECTION(55, 6, "panelselection");
+		LOGIN(51, 3, "login"),
+		LOGOUT(51, 3, "logout"),
+		PANEL_SELECTION(51, 3, "panelselection");
 		
 		private final int id;
 		private final int groupId;
@@ -143,8 +150,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public ConsoleUnit(int width, int height) {
-		// Initialise the system panel definition
-		SystemPanel.get();
 		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		if (width > height) {
 			int tempWidth = height;
@@ -446,22 +451,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePair> data) {
 		if (systemPanel == null) {
 			systemPanel = SystemPanel.get();
-			
-         Timer systemPanelTimer = new Timer() {
-            @Override
-            public void run() {
-            	systemPanel = SystemPanel.get();
-            	systemPanelLoadAttemptCounter++;
-            	if (systemPanel != null || systemPanelLoadAttemptCounter > 10) {                                    
-	                   this.cancel();
-	           }
-            }
-         };
-         systemPanelTimer.scheduleRepeating(1000);
 		}
 		
 		if (systemPanel == null) {
-			Window.alert("Cannot load system panel defition");
+			Window.alert("Cannot load system panel definition");
 			return;
 		}
 		if (panelService.getCurrentPanel() != systemPanel) { 
@@ -475,10 +468,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (screen != null) {
 			loadDisplay(groupId, screen, null);
 		}
-		//consoleDisplay.setOrientation("portrait");
-		//Window.alert("LOAD SETTINGS: " + systemScreen.getName());
-		// TODO: Sort out loading of system panel
-		//loadDisplay(screenViewService.getSystemScreenView(systemScreen), null);
 	}
 	
 	private void loadDisplay(Screen screen, List<DataValuePair> data) {
@@ -651,6 +640,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		controllerCreds = dataService.getDefaultControllerCredentials();
 		if (controllerCreds != null) {
 			panelName = controllerCreds.getDefaultPanel();
+		} else {
+			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
+			controllerCreds.setUrl("http://controller.openremote.org/iphone/controller/");
+			controllerCreds.setDefaultPanel("My Home");
 		}
 		
 		if (panelName != null && !panelName.equals("")) {

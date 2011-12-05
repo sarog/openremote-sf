@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		public static boolean isMobile;
 		public static boolean isWebkit;
 		public static boolean isApple;
+		public static boolean isCssDodgy;
 		private static String windowOrientation = "portrait";
 		private static int windowHeight;
 		private static int windowWidth;
@@ -39,6 +40,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 			isMobile = isMobile();
 			isWebkit = isWebkit();
 			isApple = isApple();
+			isCssDodgy = isCssDodgy();
 		}
 		
 		public static int getWindowHeight() {
@@ -183,6 +185,24 @@ import com.google.gwt.user.client.ui.RootPanel;
 				return true;
 			}
 			return false;
+		}
+		
+		private static boolean isCssDodgy() {
+			if (userAgent.toLowerCase().contains("firefox")) {
+//				int start = userAgent.indexOf("msie");
+//				int end = userAgent.indexOf(";", userAgent.indexOf("msie"));
+//				if (start >= 0 && end >= 0) {
+//					String version = userAgent.substring(start, end);
+//					try {
+//						double vNum = Double.parseDouble(version);
+//						if (vNum > 9) {
+//							return false;
+//						}
+//					} catch (Exception e) {}
+//				}
+				return true;
+			}
+			return false;			
 		}
 		
 		/*
