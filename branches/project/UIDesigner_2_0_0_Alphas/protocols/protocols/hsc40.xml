@@ -28,36 +28,49 @@
  |  HSC IP gateway (HSC-40) protocol configuration for OpenRemote Designer.
  |
  |  Author: Marcus Redeker
+ |  Author: Juha Lindfors
  +-->
 <openremote xmlns="http://www.openremote.org"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 
-    <protocol displayName="HSC Z-Wave IP gateway" tagName="hsc40">
+  <protocol displayName="HSC Z-Wave IP gateway" tagName="hsc40">
 
-        <attr name="deviceId" label="Hex-Value of device eg. 0x11">
-            <validations>
-                <allowBlank>false</allowBlank>
-            </validations>
-        </attr>
+    <attr name="name" label="Logical command name used by scheduling, scripts and rules.">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
 
-        <attr name="portId" label="Hex-Value of port eg. 0x01">
-            <validations>
-                <allowBlank>false</allowBlank>
-            </validations>
-        </attr>
+    <attr name="deviceId" label="Hex-Value of device eg. 0x11">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
 
-        <attr name="command" label="Command to use eg. 'on', 'off' or 'status'">
-            <validations>
-                <allowBlank>false</allowBlank>
-            </validations>
-        </attr>
-        
-        <attr name="deviceType" label="Z-Wave device type, eg. Switch, Dimmer, ...">
-            <validations>
-                <allowBlank>false</allowBlank>
-            </validations>
-        </attr>
-        
-    </protocol>
+    <attr name="deviceId" label="Hex-Value of device eg. 0x11">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name="portId" label="Hex-Value of port eg. 0x01">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name="command" label="Command to use eg. 'on', 'off' or 'status'">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name="deviceType" label="Z-Wave device type, eg. Switch, Dimmer, ...">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+  </protocol>
 </openremote>
