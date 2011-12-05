@@ -37,7 +37,7 @@
     <attr name="command" label="Denon AVR Serial Command">
       <validations>
         <allowBlank>false</allowBlank>
-        <regex message = "A Russound command as defined in denonAVRSerialCommand.properties">.*</regex>
+        <regex message = "A Denon command as defined in denonAVRSerialCommand.properties">.*</regex>
       </validations>
     </attr>
 
