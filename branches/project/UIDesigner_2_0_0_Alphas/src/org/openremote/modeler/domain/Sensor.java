@@ -30,6 +30,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.FetchType;
 
 import flexjson.JSON;
 
@@ -68,14 +69,14 @@ public class Sensor extends BusinessEntity {
       this.name = name;
    }
 
-   @OneToOne(mappedBy = "sensor", cascade = CascadeType.ALL)
+   @OneToOne(mappedBy = "sensor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    public SensorCommandRef getSensorCommandRef() {
       return sensorCommandRef;
    }
    public void setSensorCommandRef(SensorCommandRef sensorCommandRef) {
       this.sensorCommandRef = sensorCommandRef;
    }
-   @ManyToOne
+   @ManyToOne(fetch = FetchType.LAZY)
    @JSON(include = false)
    public Account getAccount() {
       return account;
@@ -97,7 +98,7 @@ public class Sensor extends BusinessEntity {
    public String getDisplayName() {
       return getName();
    }
-   @ManyToOne
+   @ManyToOne(fetch = FetchType.LAZY)
    @JSON(include = false)
    public Device getDevice() {
       return device;
