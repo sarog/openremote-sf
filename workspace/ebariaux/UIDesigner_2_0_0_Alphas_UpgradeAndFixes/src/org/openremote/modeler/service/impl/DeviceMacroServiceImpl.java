@@ -84,6 +84,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       List<DeviceMacro> list = account.getDeviceMacros();
       for (DeviceMacro deviceMacro : list) {
          Hibernate.initialize(deviceMacro.getDeviceMacroItems());
+         System.out.println("Macro is " + deviceMacro.getDisplayName());
+         System.out.println("It has " + deviceMacro.getDeviceMacroItems().size() + " elements");
       }
       return list;
    }
@@ -101,10 +103,10 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
+    * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro, List<org.openremote.modeler.domain.DeviceMacroItem> items)
     */
    @Transactional
-   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
+   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items) {
       DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
       if (old.getAccount() == null) {
          old.setAccount(userService.getAccount());
@@ -113,11 +115,11 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       old.getDeviceMacroItems().clear();
 
       old.setName(deviceMacro.getName());
-      for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+      for (DeviceMacroItem deviceMacroItem : items) {
          deviceMacroItem.setOid(0);
          deviceMacroItem.setParentDeviceMacro(old);
       }
-      old.getDeviceMacroItems().addAll(deviceMacro.getDeviceMacroItems());
+      old.getDeviceMacroItems().addAll(items);
       return old;
    }
 

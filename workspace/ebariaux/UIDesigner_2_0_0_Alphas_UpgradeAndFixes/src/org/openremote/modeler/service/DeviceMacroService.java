@@ -59,10 +59,11 @@ public interface DeviceMacroService {
     * Update device macro.
     * 
     * @param deviceMacro the device macro
+    * @param items the device macro items to use to update the macro
     * 
     * @return the device macro
     */
-   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
+   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items);
    
    
    /**
