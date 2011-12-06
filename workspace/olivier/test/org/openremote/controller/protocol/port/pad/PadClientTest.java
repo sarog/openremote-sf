@@ -12,15 +12,15 @@ import org.openremote.controller.protocol.port.PortException;
 public class PadClientTest {
    @Before
    public void setUp() throws IOException, InterruptedException {
-      Runtime.getRuntime().exec("pad/src/main/c/pad");
-      synchronized (this) {
-         this.wait(1000);
-      }
+//      Runtime.getRuntime().exec("pad/src/main/c/pad");
+//      synchronized (this) {
+//         this.wait(1000);
+//      }
    }
 
    @After
    public void tearDown() throws InterruptedException, IOException {
-      Runtime.getRuntime().exec("pkill pad");
+//      Runtime.getRuntime().exec("pkill pad");
    }
 
    @Test
@@ -31,6 +31,7 @@ public class PadClientTest {
       } catch (IOException e) {
          Assert.fail(e.getMessage());
       } catch (PortException e) {
+         e.printStackTrace();
          Assert.fail(e.getMessage());
       }
    }
