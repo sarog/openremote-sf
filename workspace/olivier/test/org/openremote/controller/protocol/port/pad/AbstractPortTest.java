@@ -37,9 +37,10 @@ public class AbstractPortTest {
    @Test
    public void testPort() {
       this.port = new AbstractPort();
+      this.listener.start();
 
       Map<String, Object> cfg = new HashMap<String, Object>();
-      cfg.put(AbstractPort.PORT_ID, "/dev/ttyUSB0");
+      cfg.put(AbstractPort.PORT_ID, "/dev/cu.usbserial-0000103D");
       cfg.put(AbstractPort.PORT_TYPE, "serial");
       cfg.put(AbstractPort.PORT_SPEED, "19200");
       cfg.put(AbstractPort.PORT_NB_BITS, "8");
@@ -47,14 +48,16 @@ public class AbstractPortTest {
       try {
          this.port.configure(cfg);
          this.port.start();
-         this.listener.start();
-         synchronized (this.lock) {
-            this.message = null;
-            this.port.send(new Message(new byte[] { 0x10, 0x40, 0x40, 0x16 }));
-            this.lock.wait(3000);
-            Assert.assertNotNull(this.message);
-            Assert.assertEquals(1, this.message.getContent().length);
-            Assert.assertEquals((byte) 0xE5, this.message.getContent()[0]);
+         for (int i = 0; i < 3; ++i) {
+            synchronized (this.lock) {
+               this.message = null;
+               this.port.send(new Message(new byte[] { 0x10, 0x40, 0x40, 0x16 }));
+               this.lock.wait(3000);
+               Assert.assertNotNull(this.message);
+               Assert.assertEquals(1, this.message.getContent().length);
+               Assert.assertEquals((byte) 0xE5, this.message.getContent()[0]);
+               this.message = null;
+            }
          }
          this.port.stop();
       } catch (IOException e) {
@@ -70,13 +73,16 @@ public class AbstractPortTest {
    private class PortListener extends Thread {
       @Override
       public void run() {
-         try {
-            AbstractPortTest.this.message = AbstractPortTest.this.port.receive();
-            synchronized (AbstractPortTest.this.lock) {
-               AbstractPortTest.this.lock.notify();
+         while (!this.isInterrupted()) {
+            try {
+               Message m = AbstractPortTest.this.port.receive();
+               synchronized (AbstractPortTest.this.lock) {
+                  AbstractPortTest.this.message = m;
+                  AbstractPortTest.this.lock.notify();
+               }
+            } catch (IOException e) {
+               Assert.fail(e.getMessage());
             }
-         } catch (IOException e) {
-            Assert.fail(e.getMessage());
          }
       }
    }
