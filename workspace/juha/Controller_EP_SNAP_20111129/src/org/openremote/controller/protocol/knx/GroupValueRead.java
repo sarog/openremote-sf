@@ -273,7 +273,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
           }
         }
 
-        return Integer.toString(Math.round(valueDPT.resolve().floatValue()));
+        return valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
       }
 
       else
