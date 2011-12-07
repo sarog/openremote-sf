@@ -32,6 +32,7 @@ public class ZWavePortTest {
    @Test
    public void testPort() {
       this.port = new AbstractPort();
+      this.listener.start();
 
       Map<String, Object> cfg = new HashMap<String, Object>();
       cfg.put(AbstractPort.PORT_ID, "/dev/cu.SLAB_USBtoUART");
@@ -42,30 +43,30 @@ public class ZWavePortTest {
       try {
          this.port.configure(cfg);
          this.port.start();
-         this.listener.start();
          synchronized (this.lock) {
             this.message = null;
-            
+
             byte NODE_ID = 0x03;
-            byte STATE_ON = (byte)0xff;
-            byte STATE_OFF = (byte)0x00;
-            byte[] data = new byte[]{0x01, 0x09, 0x00, 0x13, NODE_ID, 0x03, 0x20, 0x01, STATE_ON, 0x05, 0x00};
+            byte STATE_ON = (byte) 0xff;
+            byte STATE_OFF = (byte) 0x00;
+            byte[] data = new byte[] { 0x01, 0x09, 0x00, 0x13, NODE_ID, 0x03, 0x20, 0x01, STATE_ON, 0x05, 0x00 };
             data[data.length - 1] = checksum(data);
             this.port.send(new Message(data));
             System.out.println("ON sent");
             this.lock.wait(300);
-            this.port.send(new Message(new byte[]{0x06}));
+            if (this.message == null) Assert.fail();
+            this.port.send(new Message(new byte[] { 0x06 }));
             System.out.println("ACK sent");
-            this.lock.wait(5000);
-            data = new byte[]{0x01, 0x09, 0x00, 0x13, NODE_ID, 0x03, 0x20, 0x01, STATE_OFF, 0x05, 0x00};
+            this.lock.wait(300);
+            if (this.message == null) Assert.fail();
+            data = new byte[] { 0x01, 0x09, 0x00, 0x13, NODE_ID, 0x03, 0x20, 0x01, STATE_OFF, 0x05, 0x00 };
             data[data.length - 1] = checksum(data);
             this.port.send(new Message(data));
             System.out.println("OFF sent");
             this.lock.wait(300);
-            this.port.send(new Message(new byte[]{0x06}));
+            if (this.message == null) Assert.fail();
+            this.port.send(new Message(new byte[] { 0x06 }));
             System.out.println("ACK sent");
-
-
          }
          this.port.stop();
       } catch (IOException e) {
@@ -76,14 +77,12 @@ public class ZWavePortTest {
       } catch (InterruptedException e) {
          Assert.fail(e.getMessage());
       }
-      
+
    }
-   
-   private static byte checksum(byte[] data)
-   {
-      byte ret = (byte)0xff;
-      for (int i = 1; i < (data.length-1); i++)
-      {
+
+   private static byte checksum(byte[] data) {
+      byte ret = (byte) 0xff;
+      for (int i = 1; i < (data.length - 1); i++) {
          ret ^= data[i];
       }
       return ret;
@@ -92,13 +91,16 @@ public class ZWavePortTest {
    private class PortListener extends Thread {
       @Override
       public void run() {
-         try {
-            ZWavePortTest.this.message = ZWavePortTest.this.port.receive();
-            synchronized (ZWavePortTest.this.lock) {
-               ZWavePortTest.this.lock.notify();
+         while (!this.isInterrupted()) {
+            try {
+               Message m = ZWavePortTest.this.port.receive();
+               synchronized (ZWavePortTest.this.lock) {
+                  ZWavePortTest.this.message = m;
+                  ZWavePortTest.this.lock.notify();
+               }
+            } catch (IOException e) {
+               Assert.fail(e.getMessage());
             }
-         } catch (IOException e) {
-            Assert.fail(e.getMessage());
          }
       }
    }
