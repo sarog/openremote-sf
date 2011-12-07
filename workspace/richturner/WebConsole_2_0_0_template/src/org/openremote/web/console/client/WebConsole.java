@@ -40,35 +40,8 @@ public class WebConsole implements EntryPoint {
 		getConsoleUnit().onAdd();
 		
 		if (!BrowserUtils.isMobile) {
-			addToolbar();
+			SlidingToolbar.initialise();
 		}
-	}
-	
-	/**
-	 * Create the console unit and add it to the page
-	 * Vertically align the console unit in the middle
-	 * Horizontally align the console in the centre
-	 */
-	private void addToolbar() {
-		Button test = new Button();
-		test.setWidth("200px");
-		test.setHeight("100px");
-		test.setText("ROTATE");
-		test.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				String eventOrientation = "landscape";
-				if (getConsoleUnit().getOrientation().equals("landscape")) {
-					eventOrientation = "portrait";
-				}
-				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(eventOrientation, BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight()));
-			}
-			
-		});
-		AbsolutePanel consoleContainer = BrowserUtils.getConsoleContainer();
-		consoleContainer.add(test);
-		consoleContainer.setWidgetPosition(test, 20, 20);
 	}
 	
 	public static ConsoleUnit getConsoleUnit() {

@@ -21,6 +21,49 @@ body {
 	height: 3000px;
 }
 
+/************************************************************************
+TOOLBAR 
+*************************************************************************/
+
+.toolbar {
+	color: #FFF;
+	float: left;
+}
+
+.toolbar .mainToolbarPanel {
+	background-color: #245E36;
+	border-radius: 20px;
+}
+
+.toolbar .tabToolbarPanel {
+	background-color: #245E36;
+	border-radius: 5px;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.toolbar .title {
+	color: #FFF;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.toolbarInputLabel {
+	color: #FFF;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.invalidToolbarField {
+	color: #F00;
+}
+
+.toolbarInput {}
+
+/************************************************************************
+CONSOLE UNIT
+*************************************************************************/
+
 #consoleUnit {
 	display:-moz-inline-stack;
 	display:inline-block;
@@ -118,9 +161,9 @@ body {
 }
 
 
-/*
-SCREEN WIDGET CSS BELOW 
-*/
+/************************************************************************
+WIDGETS
+*************************************************************************/
 
 .sliderComponentBar {
 	background-color: buttonFace;
@@ -260,7 +303,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 .formFieldLabelComponent {
 	color: #333;
 	font-weight: bold;
-	font-size: 15px;
+	font-size: 16px;
 	line-height: 20px;
 }
 
@@ -272,6 +315,15 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
+}
+
+.formTextBoxComponent {
+	-webkit-appearance: textfield;
+	font-size: 16px;
+}
+
+.formPasswordComponent {
+	
 }
 
 .formButtonComponent {

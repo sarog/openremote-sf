@@ -1,11 +1,11 @@
 package org.openremote.web.console.widget.panel.form;
 
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
-
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FormField extends InteractiveConsoleComponent implements KeyDownHandler, BlurHandler {
+public class FormField extends InteractiveConsoleComponent implements KeyUpHandler, BlurHandler {
 	public static final String CLASS_NAME = "formFieldComponent";
 	public static final String LABEL_CLASS_NAME = "formFieldLabelComponent";
 	public static final String INPUT_CLASS_NAME = "formFieldInputComponent";
@@ -131,65 +131,6 @@ public class FormField extends InteractiveConsoleComponent implements KeyDownHan
 		}
 		return value;
 	}
-
-	@Override
-	public void onRender(int width, int height) {
-		if (!isInitialised) {
-			switch (inputType) {
-				case TEXTBOX:
-					input = new TextBox();
-					input.setWidth("100%");
-					input.addStyleName("formInputComponent");
-					input.addStyleName("formTextBoxComponent");
-					((TextBox)input).setText(defaultValue);
-					break;
-				case PASSWORD:
-					input = new PasswordTextBox();
-					input.setWidth("100%");
-					input.addStyleName("formInputComponent");
-					input.addStyleName("formPasswordComponent");
-					((TextBox)input).setText(defaultValue);
-			}
-			
-			if (label != null && input != null) {
-				lbl.setText(label);
-				
-				input.setStylePrimaryName(INPUT_CLASS_NAME);
-				((VerticalPanel)getWidget()).add(lbl);
-				((VerticalPanel)getWidget()).add(input);
-				setVisible(true);
-				
-				validateInput();
-				
-				// Initialise validation handler
-				if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
-					input.addDomHandler(this, KeyDownEvent.getType());
-				}
-			}
-		}
-		
-		setHeight("50px");
-		setWidth("95%");
-		
-		switch (inputType) {
-		case TEXTBOX:
-			((TextBox)input).setText(defaultValue);
-			break;
-		case PASSWORD:
-			((TextBox)input).setText(defaultValue);
-		}
-	
-		if (label != null && input != null) {
-			setVisible(true);
-			validateInput();
-			
-			// Initialise validation handler
-			if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
-				input.addDomHandler(this, KeyDownEvent.getType());
-				input.addDomHandler(this, BlurEvent.getType());
-			}
-		}
-	}
 	
 	private void setInputValid(boolean valid) {
 		isValid = valid;
@@ -225,12 +166,86 @@ public class FormField extends InteractiveConsoleComponent implements KeyDownHan
 	}
 
 	@Override
-	public void onKeyDown(KeyDownEvent event) {
+	public void onRender(int width, int height) {
+		if (!isInitialised) {
+			switch (inputType) {
+				case TEXTBOX:
+					input = new TextBox();
+					input.addStyleName("formInputComponent");
+					input.addStyleName("formTextBoxComponent");
+					((TextBox)input).setText(defaultValue);
+					break;
+				case PASSWORD:
+					input = new PasswordTextBox();
+					input.addStyleName("formInputComponent");
+					input.addStyleName("formPasswordComponent");
+					((TextBox)input).setText(defaultValue);
+			}
+			
+			if (label != null && input != null) {
+				int fieldWidth = (int)Math.round(width*.95);
+				int leftMargin = (int)Math.round(width*.02);				
+				lbl.setText(label);
+				lbl.setWidth(fieldWidth + "px");
+				input.setWidth(fieldWidth + "px");
+				DOM.setStyleAttribute(lbl.getElement(), "marginLeft", leftMargin * 2 + "px");
+				DOM.setStyleAttribute(input.getElement(), "marginLeft", leftMargin + "px");
+				input.setStylePrimaryName(INPUT_CLASS_NAME);
+				((VerticalPanel)getWidget()).add(lbl);
+				((VerticalPanel)getWidget()).add(input);
+				setVisible(true);
+				
+				validateInput();
+				
+				// Initialise validation handler
+				if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
+					input.addDomHandler(this, KeyUpEvent.getType());
+				}
+			}
+		}
+		
+		setHeight("50px");
+		setWidth(width  + "px");
+		
+		switch (inputType) {
+		case TEXTBOX:
+			((TextBox)input).setText(defaultValue);
+			break;
+		case PASSWORD:
+			((TextBox)input).setText(defaultValue);
+		}
+	
+		if (label != null && input != null) {
+			setVisible(true);
+			validateInput();
+			
+			// Initialise validation handler
+			if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
+				input.addDomHandler(this, KeyUpEvent.getType());
+				input.addDomHandler(this, BlurEvent.getType());
+			}
+		}
+	}
+
+	@Override
+	public void onUpdate(int width, int height) {
+		int fieldWidth = (int)Math.round(width*.95);
+		int leftMargin = (int)Math.round(width*.02);
+		this.width = width;
+		setWidth(width + "px");
+		input.setWidth(fieldWidth + "px");
+		lbl.setWidth(fieldWidth + "px");
+		DOM.setStyleAttribute(lbl.getElement(), "marginLeft", leftMargin * 2 + "px");
+		DOM.setStyleAttribute(input.getElement(), "marginLeft", leftMargin + "px");
+	}
+	
+	@Override
+	public void onKeyUp(KeyUpEvent event) {
 		validateInput();
 	}
 
 	@Override
 	public void onBlur(BlurEvent event) {
-		validateInput();		
+		validateInput();
 	}
 }
