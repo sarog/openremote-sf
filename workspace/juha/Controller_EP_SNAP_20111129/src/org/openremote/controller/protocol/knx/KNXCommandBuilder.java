@@ -177,8 +177,11 @@ public class KNXCommandBuilder implements CommandBuilder
 
 
   // TODO : inject service dependency
-  private final KNXIpConnectionManager connectionManager = new KNXIpConnectionManager();
+  private KNXIpConnectionManager connectionManager = null;
 
+  private String knxIpInterfaceHostname;
+  private int knxIpInterfacePort;
+  private String physicalBusClazz;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -187,10 +190,10 @@ public class KNXCommandBuilder implements CommandBuilder
    */
   public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort, String physicalBusClazz)
   {
-    this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
-    this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
-    this.connectionManager.setPhysicalBusClazz(physicalBusClazz);
-    this.connectionManager.scheduleConnection();
+    //Moved initialization of connectionManger into build() method to only start it when needed
+    this.knxIpInterfaceHostname = knxIpInterfaceHostname;
+    this.knxIpInterfacePort = knxIpInterfacePort;
+    this.physicalBusClazz = physicalBusClazz;
   }
 
 
@@ -222,6 +225,14 @@ public class KNXCommandBuilder implements CommandBuilder
    */
   public Command build(Element element)
   {
+    //Start the KNX connectionManager only if KNX commands are created
+    if (this.connectionManager == null) {
+      this.connectionManager = new KNXIpConnectionManager();
+      this.connectionManager.setKnxIpInterfaceHostname(this.knxIpInterfaceHostname);
+      this.connectionManager.setKnxIpInterfacePort(this.knxIpInterfacePort);
+      this.connectionManager.setPhysicalBusClazz(physicalBusClazz);
+      this.connectionManager.scheduleConnection();         
+    }
     /*
      * TODO : ${param} handling (javadoc)
      *
