@@ -2,8 +2,12 @@ package org.openremote.web.console.util;
 
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
+import org.openremote.web.console.event.ui.AnimationEndHandler;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -63,6 +67,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 			consoleContainer = new AbsolutePanel();
 			consoleContainer.setWidth("100%");
 			consoleContainer.setHeight("100%");
+
 			RootPanel.get().add(consoleContainer, 0, 0);
 			
 			updateWindowInfo();
@@ -245,6 +250,16 @@ import com.google.gwt.user.client.ui.RootPanel;
 // -------------------------------------------------------------
 //			NATIVE METHODS BELOW HERE
 // -------------------------------------------------------------		
+		
+		private native void registerAnimationEndHandler(final Element pElement, final AnimationEndHandler pHandler) /*-{
+	   	var callback = function() {
+	      	pHandler.@org.openremote.web.console.event.ui.AnimationEndHandler::onAnimationEnd()();
+	    	}
+	    	if (navigator.userAgent.indexOf('MSIE') < 0) {  // no MSIE support
+	      	pElement.addEventListener("webkitAnimationEnd", callback, false); // Webkit
+	       	pElement.addEventListener("animationend", callback, false); // Mozilla
+	    	}
+		}-*/;
 		
 		// Seem to have issue with getting height using GWT on ipod so resort to native JS
 		public native static int getNativeWindowDim(String dim) /*-{

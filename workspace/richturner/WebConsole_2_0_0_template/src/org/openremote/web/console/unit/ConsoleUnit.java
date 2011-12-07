@@ -71,6 +71,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
 	private PopupPanel alertPopup;
+	private HorizontalPanel logoPanel;
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
 		@Override
 		public void onSuccess(Map<Integer, String> result) {
@@ -182,6 +183,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			height = width;
 			width = tempWidth;
 		}
+		
+		width = width < MIN_WIDTH ? MIN_WIDTH : width;
+		height = height < MIN_HEIGHT ? MIN_HEIGHT : height;
+				
 		this.width = width;
 		this.height = height;
 		
@@ -236,18 +241,20 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		style.setBorderColor("#333");
 		
 		// Add the logo along the bottom of the frame
-		HorizontalPanel logoPanel = new HorizontalPanel();
-		logoPanel.setStylePrimaryName("consoleFrameLogo");
-		logoPanel.setHeight(FRAME_WIDTH_BOTTOM + "px");
-		logoPanel.getElement().setAttribute("style", "line-height: " + FRAME_WIDTH_BOTTOM + "px;");		
-		Label logoLeft = new Label();
-		logoLeft.setText(LOGO_TEXT_LEFT);
-		logoLeft.getElement().setId("consoleFrameLogoLeft");
-		logoPanel.add(logoLeft);
-		Label logoRight = new Label();
-		logoRight.setText(LOGO_TEXT_RIGHT);
-		logoRight.getElement().setId("consoleFrameLogoRight");
-		logoPanel.add(logoRight);
+		if (logoPanel == null) {
+			logoPanel = new HorizontalPanel();
+			logoPanel.setStylePrimaryName("consoleFrameLogo");
+			logoPanel.setHeight(FRAME_WIDTH_BOTTOM + "px");
+			logoPanel.getElement().setAttribute("style", "line-height: " + FRAME_WIDTH_BOTTOM + "px;");		
+			Label logoLeft = new Label();
+			logoLeft.setText(LOGO_TEXT_LEFT);
+			logoLeft.getElement().setId("consoleFrameLogoLeft");
+			logoPanel.add(logoLeft);
+			Label logoRight = new Label();
+			logoRight.setText(LOGO_TEXT_RIGHT);
+			logoRight.getElement().setId("consoleFrameLogoRight");
+			logoPanel.add(logoRight);
+		}
 		add(logoPanel);
 	}
 	
@@ -258,7 +265,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		style.clearBorderColor();
 		style.clearBorderStyle();
 		style.clearBorderWidth();
-		
+		remove(logoPanel);
 		removeStyleName("consoleFrame");
 	}
 	
