@@ -1,17 +1,19 @@
 <html>
 <body>
 
-<h2>Welcome to OpenRemote Boss 2.0 Online</h2>
+<h2>Welcome to OpenRemote Designer</h2>
 
 <p>
-${host} has invited you to share an OpenRemote Boss 2.0 Online account using  
+${host} has invited you to share an OpenRemote Designer account using
 your own email address and password with ${role} role.
 </p>
 
 <p>
-To accept this invitation, please click the link below. You'll then create  
-a Account to log in to OpenRemote Boss 2.0 Online in the future. After you complete the process, 
-you will be able to access to the OpenRemote Boss 2.0 Online account.
+To accept this invitation, please click the link below. Please create
+an account to log in to OpenRemote Designer. Please note that for the
+moment you will need to create separate logins for each shared account
+and you cannot use your existing OpenRemote Designer account, should
+you already have one.
 </p>
 
 <p>
