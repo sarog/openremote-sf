@@ -8,7 +8,7 @@
 <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
-<title>Register - OpenRemote Boss 2.0 Online</title>
+<title>Register - OpenRemote Designer</title>
 <style type="text/css">
     body{
         line-height:100%;
@@ -71,7 +71,7 @@
 		<div class="inner-boundary">
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
-	            <p class="title">You have been invited to access OpenRemote Boss 2.0 Online</p>
+	            <p class="title">You have been invited to access OpenRemote Designer</p>
                <c:if test="${isChecked ne null and not isChecked}">
                   <a class="register_btn" href="register.jsp">Create a New Account</a>
                </c:if>

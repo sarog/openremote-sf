@@ -8,7 +8,7 @@
 <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
-<title>Register - OpenRemote Boss 2.0 Online</title>
+<title>Register - OpenRemote Designer</title>
 <style type="text/css">
     body{
         line-height:100%;
@@ -71,7 +71,7 @@
 		<div class="inner-boundary">
 			  <div class="inner-border">
 	            <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
-	            <p class="title">Create OpenRemote Boss 2.0 Online Account</p>
+	            <p class="title">Create OpenRemote Designer Account</p>
 	            <div style="padding-left:70px">
 		            <p>If you already have an account, you can <a href="login.jsp">login here</a>.</p>
 		            <p class="input"><b class="form_label">Desired username</b><input id="username" style="width:150px" type="text" name="username" value="${username}"></p>
