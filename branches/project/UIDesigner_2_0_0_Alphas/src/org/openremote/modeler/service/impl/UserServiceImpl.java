@@ -57,9 +57,16 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  * TODO
  * 
  * @author Dan 2009-7-14
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
-   
+
+
+  public final static String MAILER_LOG_CATEGORY = "OpenRemote.Designer.Mail";
+  public final static String ACTIVATION_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Activate";
+  public final static String SHARED_ACCOUNT_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Share.Account";
+
+
    private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
    private JavaMailSenderImpl mailSender;
@@ -171,7 +178,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   {
     // TODO : use common log facade
 
-    final Logger mailLog = Logger.getLogger("OpenRemote.Designer.Mail");
+    final Logger mailLog = Logger.getLogger(ACTIVATION_MAIL_LOG_CATEGORY);
 
     if (user == null || user.getOid() == 0 ||
         StringUtils.isEmpty(user.getEmail()) ||
@@ -320,39 +327,68 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
-   public boolean sendInvitation(final User invitee, final User currentUser) {
-       if (invitee == null || invitee.getOid() == 0 || StringUtils.isEmpty(invitee.getEmail())) {
-         return false;
-       }
-       
-       MimeMessagePreparator preparator = new MimeMessagePreparator() {
-          @SuppressWarnings("unchecked")
-          public void prepare(MimeMessage mimeMessage) throws Exception {
-             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-             message.setSubject("Invitation to Share an OpenRemote Boss 2.0 Account");
-             message.setTo(invitee.getEmail());
-             message.setFrom(mailSender.getUsername());
-             Map model = new HashMap();
-             model.put("uid", invitee.getOid());
-             model.put("role", invitee.getRole());
-             model.put("cid", currentUser.getOid());
-             model.put("host", currentUser.getEmail());
-             model.put("webapp", configuration.getWebappServerRoot());
-             model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getEmail(), currentUser.getPassword()));
-             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                  Constants.REGISTRATION_INVITATION_EMAIL_VM_NAME, "UTF-8", model);
-             message.setText(text, true);
-          }
-       };
-       try {
-          this.mailSender.send(preparator);
-          log.info("Sent 'Modeler Account Invitation' email to " + invitee.getEmail());
-          return true;
-       } catch (MailException e) {
-          log.error("Can't send 'Modeler Account Invitation' email", e);
-          return false;
-       }
-   }
+  /**
+   * TODO
+   */
+  public boolean sendInvitation(final User invitee, final User currentUser)
+  {
+    if (invitee == null || invitee.getOid() == 0 ||
+        StringUtils.isEmpty(invitee.getEmail()))
+    {
+      return false;
+    }
+
+    // TODO : share some basics with sendRegisterActivationEmail(), e.g. aid handling
+
+    MimeMessagePreparator preparator = new MimeMessagePreparator()
+    {
+      public void prepare(MimeMessage mimeMessage) throws Exception
+      {
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        message.setSubject("Invitation to Share an OpenRemote Designer Account");
+        message.setTo(invitee.getEmail());
+        message.setFrom(mailSender.getUsername());
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("uid", invitee.getOid());
+        model.put("role", invitee.getRole());
+        model.put("cid", currentUser.getOid());
+        model.put("host", currentUser.getEmail());
+        model.put("webapp", configuration.getWebappServerRoot());
+
+        // TODO : this needs to be fixed
+        model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getEmail(), currentUser.getPassword()));
+
+        String text = VelocityEngineUtils.mergeTemplateIntoString(
+            velocityEngine,
+            Constants.REGISTRATION_INVITATION_EMAIL_VM_NAME,
+            "UTF-8",
+            model
+        );
+
+        message.setText(text, true);
+      }
+    };
+
+    try
+    {
+      mailSender.send(preparator);
+
+      Logger mailLog = Logger.getLogger(SHARED_ACCOUNT_MAIL_LOG_CATEGORY);
+      mailLog.info("Sent 'Modeler Account Invitation' email to " + invitee.getEmail());
+
+      return true;
+    }
+
+    catch (Throwable t)
+    {
+      Logger mailLog = Logger.getLogger(SHARED_ACCOUNT_MAIL_LOG_CATEGORY);
+      mailLog.error("Can't send 'Modeler Account Invitation' email", t);
+
+      return false;
+    }
+  }
+
 
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
       long uid = 0;
