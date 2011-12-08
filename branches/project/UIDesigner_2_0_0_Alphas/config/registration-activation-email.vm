@@ -1,11 +1,11 @@
 <html>
 <body>
 
-<h2>Welcome to OpenRemote Boss 2.0</h2>
+<h2>Welcome to OpenRemote Designer</h2>
 
 <p>
 This email has been sent from ${webapp}. You have received this email because
-your address was used to regiser for OpenRemote Boss 2.0.
+your email address was used to register with OpenRemote Designer.
 </p>
 
 <p>
@@ -27,7 +27,7 @@ To activate your account, simply click on the following link:
 </p>
 
 <p>
-For questions or concerns about your account, please use public forums on
+For questions or concerns about your account, please use our public forums on
 <a href="http://www.openremote.org/display/forums/OpenRemote+Forums">http://www.openremote.org/display/forums/OpenRemote+Forums</a>
 </p>
 </body>
