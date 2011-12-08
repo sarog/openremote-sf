@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
- * The service implementation for UserService.
+ * TODO
  * 
  * @author Dan 2009-7-14
  */
@@ -162,49 +162,97 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
        }
        genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean sendRegisterActivationEmail(final User user) {
-       if (user == null || user.getOid() == 0 || StringUtils.isEmpty(user.getEmail())
-            || StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword())) {
-         return false;
-       }
-       
-       MimeMessagePreparator preparator = new MimeMessagePreparator() {
-          @SuppressWarnings("unchecked")
-          public void prepare(MimeMessage mimeMessage) throws Exception {
-             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-             message.setSubject("OpenRemote Boss 2.0 Account Registration Confirmation");
-             message.setTo(user.getEmail());
-             message.setFrom(mailSender.getUsername());
-             Map model = new HashMap();
-             model.put("user", user);
-             String rpwd = user.getRawPassword();
-             StringBuffer maskPwd = new StringBuffer();
-             maskPwd.append(rpwd.substring(0, 1));
-             for (int i = 0; i < rpwd.length() - 2; i++) {
-               maskPwd.append("*");
-             }
-             maskPwd.append(rpwd.substring(rpwd.length() - 1));
-             model.put("maskPassword", maskPwd.toString());
-             model.put("webapp", configuration.getWebappServerRoot());
-             model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
-             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                  Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME, "UTF-8", model);
-             message.setText(text, true);
-          }
-       };
-       try {
-          this.mailSender.send(preparator);
-          log.info("Sent 'Modeler Account Registration Confirmation' email to " + user.getEmail());
-          return true;
-       } catch (MailException e) {
-          log.error("Can't send 'Modeler Account Registration Confirmation' email", e);
-          return false;
-       }
-   }
+
+
+  /**
+   * TODO
+   */
+  public boolean sendRegisterActivationEmail(final User user)
+  {
+    // TODO : use common log facade
+
+    final Logger mailLog = Logger.getLogger("OpenRemote.Designer.Mail");
+
+    if (user == null || user.getOid() == 0 ||
+        StringUtils.isEmpty(user.getEmail()) ||
+        StringUtils.isEmpty(user.getUsername()) ||
+        StringUtils.isEmpty(user.getPassword()))
+    {
+      mailLog.warn(
+          "Attempted to send email with incomplete user information : " + user
+      );
+
+      return false;
+    }
+
+
+    MimeMessagePreparator preparator = new MimeMessagePreparator()
+    {
+      public void prepare(MimeMessage mimeMessage) throws Exception
+      {
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+        message.setSubject("OpenRemote Designer Account Registration");
+        message.setTo(user.getEmail());
+        message.setFrom(mailSender.getUsername());
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("user", user);
+
+//        String rpwd = user.getRawPassword();
+//        StringBuffer maskPwd = new StringBuffer();
+//        maskPwd.append(rpwd.substring(0, 1));
+//
+//        for (int i = 0; i < rpwd.length() - 2; i++)
+//        {
+//          maskPwd.append("*");
+//        }
+//
+//        maskPwd.append(rpwd.substring(rpwd.length() - 1));
+//        model.put("maskPassword", maskPwd.toString());
+        model.put("webapp", configuration.getWebappServerRoot());
+
+        // TODO : this needs to be fixed
+        model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
+
+        String text = VelocityEngineUtils.mergeTemplateIntoString(
+            velocityEngine,
+            Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME,
+            "UTF-8",
+            model
+        );
+
+        message.setText(text, true);
+      }
+    };
+
+
+    try
+    {
+      mailSender.send(preparator);
+
+      mailLog.info(
+          "Sent account registration email to " + user.getEmail() +
+          "(User : " + user.getOid() + ", " + user.getUsername() + ")."
+      );
+
+      return true;
+    }
+
+    catch (Throwable t)
+    {
+      mailLog.error(
+          "\n\n-----------------------------------------------------------\n\n" +
+          "FAILED to send registration email to " + user.getEmail() +
+          "(User : " + user.getOid() + ", " +user.getUsername() + ") : " +
+          t.getMessage() +
+          "\n\n-----------------------------------------------------------\n\n", t
+      );
+
+      return false;
+    }
+  }
+
 
     /**
     * {@inheritDoc}
