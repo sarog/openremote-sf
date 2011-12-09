@@ -22,6 +22,8 @@ package org.openremote.controller.protocol.http;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -85,6 +87,8 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   /** The sensor which is updated */
   private Sensor sensor;
   
+  /** Boolean to indicate if polling thread should run */
+  boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
   public HttpGetCommand(URL url, String xpathExpression, String regex, Integer pollingInterval)
@@ -132,6 +136,7 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
       throw new RuntimeException("Could not set sensor because no polling interval was given");
     }
     this.sensor = sensor;
+    this.doPoll = true;
     pollingThread = new Thread(this);
     pollingThread.setName("Polling thread for sensor: " + sensor.getName());
     pollingThread.start();
@@ -140,8 +145,7 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   @Override
   public void stop(Sensor sensor)
   {
-    // TODO Auto-generated method stub
-    
+    this.doPoll = false;
   }
   
   
@@ -174,11 +178,19 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   @Override
   public void run() {
      logger.debug("Sensor thread started for sensor: " + sensor);
-     boolean doPoll = true;
      while (doPoll) {
         String readValue = this.requestURL();
         if (regex != null) {
-          //TODO
+          Pattern regexPattern = Pattern.compile(regex);
+          Matcher matcher = regexPattern.matcher(readValue);
+          if (matcher.find()) {
+            String result = matcher.group();
+            logger.info("result of regex evaluation: " + result);
+            sensor.update(result);
+          } else {
+            logger.info("regex evaluation did not find a match");
+            sensor.update("N/A");
+          }
         } else if (xpathExpression != null) {
           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
           factory.setNamespaceAware(true); // never forget this!
