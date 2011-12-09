@@ -59,7 +59,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
   private final static String STR_ATTRIBUTE_NAME_PASSWORD = "password";
   private final static String STR_ATTRIBUTE_NAME_XPATH = "xpath";
   private final static String STR_ATTRIBUTE_NAME_REGEX = "regex";
-  private final static String STR_ATTRIBUTE_NAME_INTERVAL = "interval";
+  private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
   // Class Members
   // --------------------------------------------------------------
   // ------------------
@@ -114,10 +114,10 @@ public class HttpGetCommandBuilder implements CommandBuilder
          **************************************************************************************/
         password = elementValue;
         logger.debug("HttpGetCommand: password = " + password);
-      } else if (STR_ATTRIBUTE_NAME_INTERVAL.equals(elementName))
+      } else if (STR_ATTRIBUTE_NAME_POLLINGINTERVAL.equals(elementName))
       {
         interval = elementValue;
-        logger.debug("HttpGetCommand: interval = " + interval);
+        logger.debug("HttpGetCommand: pollingInterval = " + interval);
       } else if (STR_ATTRIBUTE_NAME_REGEX.equals(elementName))
       {
         regex = elementValue;
@@ -141,7 +141,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
       }
     } catch (Exception e1)
     {
-      throw new NoSuchCommandException("Unable to create HttpGet command, interval could not be converted into milliseconds");
+      throw new NoSuchCommandException("Unable to create HttpGet command, pollingInterval could not be converted into milliseconds");
     }
 
     URL url;
