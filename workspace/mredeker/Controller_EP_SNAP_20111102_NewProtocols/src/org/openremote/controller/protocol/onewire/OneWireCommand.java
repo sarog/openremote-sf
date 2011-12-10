@@ -20,20 +20,19 @@
  */
 package org.openremote.controller.protocol.onewire;
 
+import java.io.IOException;
+
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
-import org.owfs.jowfsclient.Enums.*;
 import org.owfs.jowfsclient.OwfsClient;
 import org.owfs.jowfsclient.OwfsClientFactory;
 import org.owfs.jowfsclient.OwfsException;
-
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Map;
+import org.owfs.jowfsclient.Enums.OwBusReturn;
+import org.owfs.jowfsclient.Enums.OwDeviceDisplayFormat;
+import org.owfs.jowfsclient.Enums.OwPersistence;
+import org.owfs.jowfsclient.Enums.OwTemperatureScale;
 
 /**
  * 1-wire protocol implementation for OpenRemote. Program accesses 1-wire network (owserver) via
@@ -51,7 +50,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:jmisura@gmail.com">Jaroslav Misura</a>
  */
-public class OneWireCommand implements ExecutableCommand, StatusCommand
+public class OneWireCommand implements ExecutableCommand, EventListener, Runnable
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -65,26 +64,30 @@ public class OneWireCommand implements ExecutableCommand, StatusCommand
   private int port = 4304;
   private String deviceAddress;
   private String filename;
-  private long refreshTime = 0;
+  private int pollingInterval;
 
-  private String lastValue = UNKNOWN_STATUS;
-  private long lastUpdateTimestamp = 0;
-
-
+  /** The thread that is used to peridically update the sensor */
+  private Thread pollingThread;
+  
+  /** The sensor which is updated */
+  private Sensor sensor;
+  
+  /** Boolean to indicate if polling thread should run */
+  boolean doPoll = false;
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, long refreshTime)
+  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, int pollingInterval)
   {
     this.hostname = hostname;
     this.port = port;
     this.deviceAddress = deviceAddress;
     this.filename = filename;
-    this.refreshTime = refreshTime;
+    this.pollingInterval = pollingInterval;
 
     logger.debug("OneWireCommand created with values hostname=" + hostname +
                "; port=" + port + "; deviceAddress=" + deviceAddress + "; filename=" +filename +
-               "; refreshTime=" + refreshTime);
+               "; pollingInterval=" + pollingInterval);
   }
 
 
@@ -113,89 +116,43 @@ public class OneWireCommand implements ExecutableCommand, StatusCommand
    *           NOTE: if sensor type is RANGE, this map only contains min/max states.
    * @return string value in format dependent on selected sensor type
    */
-  public String read(EnumSensorType sensorType, Map<String, String> stateMap)
+  private String read()
   {
-    logger.debug("Reading sensor " + deviceAddress + "/" + filename);
+    logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be read.");
+    OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
 
-    long timestamp = System.currentTimeMillis();
+    client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
+    client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
+    client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
+    client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);
+    String value = null;
 
-    // check if we should read now or use cached value
-    if (timestamp > lastUpdateTimestamp + refreshTime)
+    logger.debug("Client created, before call");
+
+    try
     {
-      logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be read.");
-      OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
+      value = client.read(deviceAddress+"/"+filename);
+    }
+    catch (OwfsException e)
+    {
+      logger.error("OneWire error, unable to read from OWSERVER.", e);
+      value = null;
+    }
+    catch (IOException e)
+    {
+      logger.error("OneWire IO error, unable to read from OWSERVER.", e);
+      value = null;
+    }
+    logger.debug("After client call, value = '"+value+"'");
 
-      client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
-      client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
-      client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
-      client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);
-      String value = null;
-
-      logger.debug("Client created, before call");
-
-      try
-      {
-        value = client.read(deviceAddress+"/"+filename);
-      }
-
-      catch (OwfsException e)
-      {
-        logger.error("OneWire error, unable to read from OWSERVER.", e);
-        value = null;
-      }
-
-      catch (IOException e)
-      {
-        logger.error("OneWire IO error, unable to read from OWSERVER.", e);
-        value = null;
-      }
-
-      logger.debug("After client call, value = '"+value+"'");
-      String valueFormatted = null;
-
-      if (null == value)
-      {
-        // we were not able to read value, so let's use old one
-        // do not update lastUpdateTimestamp, we will retry to read value in next turn
-        return lastValue;
-      }
-
-      value = value.trim();
-
-
-
-      switch (sensorType)
-      {
-        case SWITCH:
-          valueFormatted = processSwitchSensor(value);
-          break;
-        case LEVEL:
-          valueFormatted = processLevelSensor(value);
-          break;
-        case RANGE:
-          valueFormatted = processRangeSensor(value, stateMap);
-          break;
-        default:
-          valueFormatted = UNKNOWN_STATUS;
-      }
-
-      logger.debug("Sensor " + deviceAddress + "/" + filename + " returns value '"+ valueFormatted + "' (original = '"+value+"')");
-
-      lastValue = valueFormatted;
-      lastUpdateTimestamp = System.currentTimeMillis();
-
-      return valueFormatted;
+    if (null == value)
+    {
+      return "N/A";
     }
 
-    else
-    {
-      logger.debug(
-          "1-Wire sensor " + deviceAddress + "/" + filename +
-          " value is still within cache timeout limit -> No update."
-      );
-
-      return lastValue;
-    }
+    value = value.trim();
+    logger.debug("Sensor " + deviceAddress + "/" + filename + " returns value '"+ value + "'");
+    return value;
   }
 
 
@@ -247,107 +204,41 @@ public class OneWireCommand implements ExecutableCommand, StatusCommand
   }
 
 
-
-  private String processRangeSensor(String value, Map<String, String> stateMap)
+  @Override
+  public void setSensor(Sensor sensor)
   {
-
-    String valueFormatted = null;
-
-    try
-    {
-
-      double doubleValue = Double.parseDouble(value);
-
-      double rangeMin = Double.MIN_VALUE;
-      double rangeMax = Double.MAX_VALUE;
-
-      if (stateMap != null)
-      {
-        rangeMin = getRangeMin(stateMap.get(Sensor.RANGE_MIN_STATE));
-        rangeMax = getRangeMax(stateMap.get(Sensor.RANGE_MAX_STATE));
-      }
-
-      if(doubleValue>rangeMax)
-      {
-        doubleValue = rangeMax;
-      } else if(doubleValue<rangeMin)
-      {
-        doubleValue = rangeMin;
-      }
-
-
-      NumberFormat nf = new DecimalFormat("#0.0");
-      valueFormatted = nf.format(doubleValue);
-      return valueFormatted;
-
-    } catch (NumberFormatException e) {
-      logger.info("Unable to parse value '"+value+"' to process it as range, returning UNKNOWN_STATUS.");
-      return UNKNOWN_STATUS;
-    }
-
+    logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
+    this.sensor = sensor;
+    this.doPoll = true;
+    pollingThread = new Thread(this);
+    pollingThread.setName("Polling thread for sensor: " + sensor.getName());
+    pollingThread.start();
   }
 
 
-
-
-  private String processLevelSensor(String value)
+  @Override
+  public void stop(Sensor sensor)
   {
-    String valueFormatted = null;
-
-    try
-    {
-      double doubleValue = Double.parseDouble(value);
-
-      long longValue = Math.round(doubleValue);
-      if(longValue>=100)
-      {
-        return "100";
-      } else if(longValue<=0)
-      {
-        return "0";
-      } else
-      {
-        return String.valueOf(longValue);
-      }
-    } catch(NumberFormatException e) {
-      logger.info("Unable to parse value '"+value+"' to process it as level, returning UNKNOWN_STATUS.");
-      return UNKNOWN_STATUS;
-    }
+    this.doPoll = false;
   }
 
-  private String processSwitchSensor(String value)
+
+  @Override
+  public void run()
   {
-    if ("1".equals(value))
-    {
-      return "on";
-    } else
-    {
-      return "off";
+    logger.debug("Sensor thread started for sensor: " + sensor);
+    while (doPoll) {
+       String readValue = this.read();
+       sensor.update(readValue);
+       try {
+          Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
+       } catch (InterruptedException e) {
+          doPoll = false;
+          pollingThread.interrupt();
+       }
     }
+    logger.debug("*** Out of run method: " + sensor);
   }
 
-  private double getRangeMin(String strValue)
-  {
-    try
-    {
-      return Double.parseDouble(strValue);
-    } catch (NumberFormatException e) {
-      logger.info("Unable to parse double from range min value '"+strValue+"'");
-    }
-
-    return Double.MIN_VALUE;
-  }
-
-  private double getRangeMax(String strValue)
-  {
-    try
-    {
-      return Double.parseDouble(strValue);
-    } catch (NumberFormatException e) {
-      logger.info("Unable to parse double from range max value '"+strValue+"'");
-    }
-
-    return Double.MAX_VALUE;
-  }
 
 }
