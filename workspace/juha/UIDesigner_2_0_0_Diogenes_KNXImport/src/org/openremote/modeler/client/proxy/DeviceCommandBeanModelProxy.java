@@ -114,14 +114,14 @@ public class DeviceCommandBeanModelProxy {
    }
    
    /**
-    * Save all device commands.
+    * Save all ir device commands from IR import form
     * 
     * @param device the device
     * @param datas the datas
     * @param callback the callback
     */
-   public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      List<DeviceCommand> deviceCommands = convert2DeviceCommand(device, datas);
+   public static void saveAllIrDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      List<DeviceCommand> deviceCommands = convertToIrDeviceCommand(device, datas);
       AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
          public void onSuccess(List<DeviceCommand> deviceCommands) {
             List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
@@ -132,7 +132,26 @@ public class DeviceCommandBeanModelProxy {
    }
    
    /**
-    * Convert to device command.
+    * Save all KNX device commands from KNX import
+    * 
+    * @param device the device
+    * @param datas the datas
+    * @param callback the callback
+    */
+   public static void saveAllKnxDeviceCommands(Device device, List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
+         public void onSuccess(List<DeviceCommand> deviceCommands) {
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
+            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+            callback.onSuccess(deviceCommandModels);
+         }
+      });
+   }
+   
+   
+   
+   /**
+    * Convert to IR device command.
     * 
     * @param device
     *           the device
@@ -141,7 +160,7 @@ public class DeviceCommandBeanModelProxy {
     * 
     * @return the list< device command>
     */
-   public static List<DeviceCommand> convert2DeviceCommand(Device device, List<ModelData> datas) {
+   public static List<DeviceCommand> convertToIrDeviceCommand(Device device, List<ModelData> datas) {
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (ModelData m : datas) {
          Protocol protocol = new Protocol();
@@ -173,6 +192,47 @@ public class DeviceCommandBeanModelProxy {
       }
       return deviceCommands;
    }
+   
+
+   public static DeviceCommand convertToKnxDeviceCommand(Device device, String name, String groupAddress, String command, String dpt) {
+
+       Protocol protocol = new Protocol();
+       protocol.setType(Constants.KNX_TYPE);
+
+       ProtocolAttr nameAttr = new ProtocolAttr();
+       nameAttr.setName("name");
+       nameAttr.setValue(name);
+       nameAttr.setProtocol(protocol);
+       protocol.getAttributes().add(nameAttr);
+
+       ProtocolAttr commandAttr = new ProtocolAttr();
+       commandAttr.setName("command");
+       commandAttr.setValue(command);
+       commandAttr.setProtocol(protocol);
+       protocol.getAttributes().add(commandAttr);
+       
+       ProtocolAttr dptAttr = new ProtocolAttr();
+       dptAttr.setName("DPT");
+       dptAttr.setValue(dpt);
+       dptAttr.setProtocol(protocol);
+       protocol.getAttributes().add(dptAttr);
+       
+       ProtocolAttr groupAddrAttr = new ProtocolAttr();
+       groupAddrAttr.setName("groupAddress");
+       groupAddrAttr.setValue(groupAddress);
+       groupAddrAttr.setProtocol(protocol);
+       protocol.getAttributes().add(groupAddrAttr);
+
+       DeviceCommand deviceCommand = new DeviceCommand();
+       deviceCommand.setDevice(device);
+       deviceCommand.setProtocol(protocol);
+       deviceCommand.setName(name);
+
+       protocol.setDeviceCommand(deviceCommand);
+       device.getDeviceCommands().add(deviceCommand);
+       return deviceCommand;
+     }
+   
    
    /**
     * Delete device command.

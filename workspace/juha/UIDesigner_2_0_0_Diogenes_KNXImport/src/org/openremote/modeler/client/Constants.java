@@ -34,7 +34,7 @@ public class Constants {
    public static final String INFRARED_TYPE = "Infrared";
    
    /** The Constant KNX_TYPE. */
-   public static final String KNX_TYPE = "knx";
+   public static final String KNX_TYPE = "KNX";
    
    /** The Constant X10. */
    public static final String X10_TYPE = "x10";
