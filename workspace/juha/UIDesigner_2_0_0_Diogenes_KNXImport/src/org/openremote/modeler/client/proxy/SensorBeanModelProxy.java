@@ -109,4 +109,15 @@ public class SensorBeanModelProxy {
          
       });
    }*/
+
+  public static void saveSensorList(List<Sensor> sensorList, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
+      AsyncServiceFactory.getSensorRPCServiceAsync().saveAll(sensorList, new AsyncSuccessCallback<List<Sensor>>() {
+          public void onSuccess(List<Sensor> sensorList) {
+             List<BeanModel> sensorModels = Sensor.createModels(sensorList);
+             BeanModelDataBase.sensorTable.insertAll(sensorModels);
+             asyncSuccessCallback.onSuccess(sensorModels);
+          }
+       });
+  }
+  
 }
