@@ -40,13 +40,20 @@ import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.SliderCommandRef;
+import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.SwitchCommandOffRef;
+import org.openremote.modeler.domain.SwitchCommandOnRef;
+import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -58,10 +65,12 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -134,6 +143,116 @@ public class DevicePanel extends ContentPanel {
          }
          
       });
+      
+      final Menu contextMenu = new Menu();
+      MenuItem createSwitchMenuItem = new MenuItem();
+      createSwitchMenuItem.setText("Create Switch from selection");
+      createSwitchMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+        public void componentSelected(MenuEvent ce) {
+          List<BeanModel> selectedData = tree.getSelectionModel().getSelectedItems();
+          DeviceCommand onCmd = null;
+          DeviceCommand offCmd = null;
+          Sensor sensor = null;
+          for (BeanModel beanModel : selectedData)
+          {
+            BusinessEntity be = beanModel.getBean();
+            if ((be instanceof Sensor) && ((Sensor)be).getType() == SensorType.SWITCH) {
+              sensor = (Sensor)be;
+            }
+            if ((be instanceof DeviceCommand) && ((DeviceCommand)be).getName().indexOf("(ON)") != -1) {
+              onCmd = (DeviceCommand)be;
+            }
+            if ((be instanceof DeviceCommand) && ((DeviceCommand)be).getName().indexOf("(OFF)") != -1) {
+              offCmd = (DeviceCommand)be;
+            }
+          }
+          if ((onCmd == null) || (offCmd == null) || (sensor == null) || (selectedData.size() != 3)) {
+            MessageBox.alert("Wrong selection for Switch", "Make sure you have 1 SwitchSensor, 1 'On' and 1 'Off' command selected.<br><br>" +
+                    "To automatically find 'On' and 'Off' commands these have to have the String '(ON)' or '(OFF)' within the name.", null);
+            return;
+          }
+          
+          final Switch newSwitch = new Switch();
+          newSwitch.setDevice(sensor.getDevice());
+          SwitchCommandOnRef onRef = new SwitchCommandOnRef();
+          onRef.setDeviceCommand(onCmd);
+          onRef.setDeviceName(onCmd.getDevice().getName());
+          onRef.setOnSwitch(newSwitch);
+          SwitchCommandOffRef offRef = new SwitchCommandOffRef();
+          offRef.setDeviceCommand(offCmd);
+          offRef.setDeviceName(offCmd.getDevice().getName());
+          offRef.setOffSwitch(newSwitch);
+          SwitchSensorRef sensorRef = new SwitchSensorRef(newSwitch);
+          sensorRef.setSensor(sensor);
+          newSwitch.setSwitchCommandOnRef(onRef);
+          newSwitch.setSwitchCommandOffRef(offRef);
+          newSwitch.setSwitchSensorRef(sensorRef);
+          MessageBox.prompt("Switch name", "Please enter a name for the switch", new Listener<MessageBoxEvent>() {  
+            public void handleEvent(MessageBoxEvent be) {
+              if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
+                newSwitch.setName(be.getValue());
+                SwitchBeanModelProxy.save(newSwitch.getBeanModel(), new AsyncSuccessCallback<Switch>() {
+                  @Override
+                  public void onSuccess(Switch result) {
+                    tree.getStore().add(result.getDevice().getBeanModel(), result.getBeanModel(), false);
+                  };
+                });
+              }
+            }  
+          });
+        }
+      });
+      contextMenu.add(createSwitchMenuItem);
+      
+      MenuItem createSliderMenuItem = new MenuItem();
+      createSliderMenuItem.setText("Create Slider from selection");
+      createSliderMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+        public void componentSelected(MenuEvent ce) {
+          List<BeanModel> selectedData = tree.getSelectionModel().getSelectedItems();
+          DeviceCommand setValuCmd = null;
+          Sensor sensor = null;
+          for (BeanModel beanModel : selectedData)
+          {
+            BusinessEntity be = beanModel.getBean();
+            if ((be instanceof Sensor) && ((((Sensor)be).getType() == SensorType.LEVEL) || (((Sensor)be).getType() == SensorType.RANGE))) {
+              sensor = (Sensor)be;
+            }
+            if (be instanceof DeviceCommand) {
+              setValuCmd = (DeviceCommand)be;
+            }
+          }
+          if ((setValuCmd == null) || (sensor == null) || (selectedData.size() != 2)) {
+            MessageBox.alert("Wrong selection for Slider", "Make sure you have 1 Range-/Scale-Sensor and 1 command selected.", null);
+            return;
+          }
+          final Slider newSlider = new Slider();
+          newSlider.setDevice(sensor.getDevice());
+          SliderCommandRef setValueCmdRef = new SliderCommandRef();
+          setValueCmdRef.setDeviceCommand(setValuCmd);
+          setValueCmdRef.setDeviceName(setValuCmd.getDevice().getName());
+          setValueCmdRef.setSlider(newSlider);
+          SliderSensorRef sensorRef = new SliderSensorRef(newSlider);
+          sensorRef.setSensor(sensor);
+          newSlider.setSetValueCmd(setValueCmdRef);
+          newSlider.setSliderSensorRef(sensorRef);
+          MessageBox.prompt("Slider name", "Please enter a name for the slider", new Listener<MessageBoxEvent>() {  
+            public void handleEvent(MessageBoxEvent be) {
+              if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
+                newSlider.setName(be.getValue());
+                SliderBeanModelProxy.save(newSlider.getBeanModel(), new AsyncSuccessCallback<Slider>() {
+                  @Override
+                  public void onSuccess(Slider result) {
+                    tree.getStore().add(result.getDevice().getBeanModel(), result.getBeanModel(), false);
+                  };
+                });
+              }
+            }  
+          });
+        }
+      });
+      contextMenu.add(createSliderMenuItem);
+      
+      tree.setContextMenu(contextMenu);
    }
    
    /**
