@@ -1,4 +1,4 @@
-package org.openremote.modeler.client.widget.buildingmodeler;
+package org.openremote.modeler.client.utils;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
@@ -22,4 +22,16 @@ public class NoButtonsRowEditor<M extends ModelData> extends RowEditor<M> {
         }
     }
 
+    public ListStore<ModelData> getStore() {
+        return store;
+    }
+
+    public void setStore(ListStore<ModelData> store) {
+        this.store = store;
+    }
+
+    public int getRowIndex() {
+        return super.rowIndex;
+    }
+    
 }
