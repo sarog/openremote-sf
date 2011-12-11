@@ -1,4 +1,4 @@
-package org.openremote.modeler.client.widget.buildingmodeler;
+package org.openremote.modeler.client.utils;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.GridEvent;

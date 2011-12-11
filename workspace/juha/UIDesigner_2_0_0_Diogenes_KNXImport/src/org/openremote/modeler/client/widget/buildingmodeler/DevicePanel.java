@@ -616,7 +616,7 @@ public class DevicePanel extends ContentPanel {
     * @return the menu item
     */
    private MenuItem createImportKnxMenuItem() {
-      MenuItem importCommandItem = new MenuItem("Import KNX Commands from ETS4");
+      MenuItem importCommandItem = new MenuItem("Import ETS4 project");
       importCommandItem.setIcon(icon.importFromDB());
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
