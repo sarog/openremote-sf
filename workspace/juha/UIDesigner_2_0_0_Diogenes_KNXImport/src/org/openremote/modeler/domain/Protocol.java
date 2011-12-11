@@ -72,6 +72,20 @@ public class Protocol extends BusinessEntity {
       this.attributes = attributes;
    }
 
+  /**
+   * Returns the value of the given attribute name or null
+   * @param attrName
+   * @return
+   */
+  public String getAttributeValue(String attrName) {
+    for (ProtocolAttr attr : attributes) {
+      if (attr.getName().equalsIgnoreCase(attrName)) {
+          return attr.getValue();
+      }
+    }
+    return null;
+  }
+
    /**
     * Gets the type.
     * 
