@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.domain.KnxGroupAddress;
-import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
@@ -55,9 +54,6 @@ public class FileUploadController extends MultiActionController {
 
     /** The resource service. */
     private ResourceService resourceService;
-
-    /** The deviceCommand service */
-    private DeviceCommandService deviceCommandService;
 
     /**
      * Import openremote.zip into application, but now is not use.
@@ -91,7 +87,7 @@ public class FileUploadController extends MultiActionController {
         data.put("records", addresses);
         JSONSerializer serializer = new JSONSerializer();
         String jsonResult = serializer.exclude("*.class").deepSerialize(data);
-        System.out.println("Responding with string\n" + jsonResult);
+        logger.debug("Responding with string\n" + jsonResult);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().println(jsonResult);
     }
@@ -156,10 +152,6 @@ public class FileUploadController extends MultiActionController {
     private void rotateBackgroud(File sourceFile) {
         String targetImagePath = sourceFile.getParent() + File.separator + sourceFile.getName().replace(".", "_h.");
         ImageRotateUtil.rotate(sourceFile, targetImagePath, -90);
-    }
-
-    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-        this.deviceCommandService = deviceCommandService;
     }
 
 }

@@ -74,5 +74,12 @@ public interface SensorRPCService extends RemoteService {
     * @return the by id
     */
    Sensor getById(long id);
+
+   /**
+    * Saves all sensors in the database
+    * @param sensorList
+    * @return
+    */
+   List<Sensor> saveAll(List<Sensor> sensorList);
    
 }
