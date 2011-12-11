@@ -119,4 +119,15 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       }
       return result;
    }
+
+
+  @Transactional
+  public List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account) {
+      for (Sensor sensor : sensorList) {
+          sensor.setAccount(account);
+          genericDAO.save(sensor);
+      }
+      return sensorList;
+  }
+  
 }
