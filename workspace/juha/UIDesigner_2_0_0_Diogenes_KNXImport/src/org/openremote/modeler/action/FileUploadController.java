@@ -23,6 +23,7 @@ package org.openremote.modeler.action;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -81,8 +82,15 @@ public class FileUploadController extends MultiActionController {
 
     public void importETS4(HttpServletRequest request, HttpServletResponse response) throws IOException {
         MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "knxproj");
-
-        List<KnxGroupAddress> addresses = new KnxImporter().importETSConfiguration(multipartFile.getInputStream());
+        String contentType = multipartFile.getContentType();
+        List<KnxGroupAddress> addresses = null;
+        
+        if ("text/csv".equalsIgnoreCase(contentType)) {
+          addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
+        } else {
+          addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());  
+        }
+        
         HashMap<String, List<KnxGroupAddress>> data = new HashMap<String, List<KnxGroupAddress>>();
         data.put("records", addresses);
         JSONSerializer serializer = new JSONSerializer();
