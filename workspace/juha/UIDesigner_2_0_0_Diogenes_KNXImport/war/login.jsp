@@ -50,6 +50,29 @@
       }
 
 
+      DIV.warning-notice
+      {
+        margin:              20px 10px;
+        padding:             20px;
+
+        box-shadow:          0px 0px 35px rgba(212, 71, 15, 0.4);
+        -moz-box-shadow:     0px 0px 35px rgba(212, 71, 15, 0.4);
+        -webkit-box-shadow:  0px 0px 35px rgba(212, 71, 15, 0.4);
+
+        background-color:    rgba(212, 71, 15, 0.6);
+        color:               rgba(156, 48, 26, 0.95);
+
+        border-width:        3px;
+        border-color:        rgba(156, 48, 26, .8);
+        border-style:        solid;
+
+        border-radius:         15px;
+        -moz-border-radius:    15px;
+        -webkit-border-radius: 15px;
+
+        display:             none;
+      }
+      
       .form_label
       {
         padding-right:      10px;
@@ -146,6 +169,7 @@
     <div class = "main">
 
 
+      <!-- ============ LOGO TITLE ======================================= -->
 
       <div style = "text-align: center;">
         <p>
@@ -156,16 +180,22 @@
         </p>
       </div>
 
-
-
       <div class="center-form">
+
+        <!-- ========== OPTIONAL WARNING NOTICE ========================= -->
+
+        <div class = "warning-notice">
+
+        </div>
+
+        <!-- ========== LOGIN FORM ====================================== -->
 
         <form method="POST" action="j_security_check">
 
           <div class="inner-boundary">
             <div class="inner-border">
 
-              <p class="title">Login to OpenRemote Designer Alpha (Diogenes)</p>
+              <p class="title">Login to OpenRemote Designer Alpha (Voldemort)</p>
 
               <c:if test = "${isActivated ne null and isActivated}">
                 <p class="pass"><b>${username}</b> has been activated, please login.</p>
@@ -232,7 +262,7 @@
 
         <p class = "copyright">
             Copyright &copy; 2008-<fmt:formatDate value = "${now}" pattern = "yyyy"/>
-            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111205
+            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111212
         </p>
 
         <img class = "watermark" src = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
