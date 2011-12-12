@@ -204,6 +204,7 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 static int receiveRequest(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, char code) {
 	int r;
 	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+
 	// Create a new server transaction
 	// TODO what happens if a transaction was already created?
 	createServerTransaction(context->serverTxPool, &context->serverTx, receiveData);
@@ -250,9 +251,10 @@ static int receiveResponse(apr_pool_t *socketPool, serviceContext_t *context, ap
 int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset) {
 	char code;
 	messageTxType_t txType;
+	int r;
 
 	// Read message header
-	int r = checkInputMessage(context->socket, &code, &txType);
+	r = checkInputMessage(context->socket, &code, &txType);
 	if (r != R_SUCCESS) {
 		closeSocket(socketPool,  context);
 		return r;

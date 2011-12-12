@@ -50,5 +50,6 @@ int writeOctetString(apr_socket_t *sock, field_t *field);
 int buf2Int32(const char *buf, apr_int32_t *res);
 int int322Buf(char *buf, apr_int32_t val);
 int buf2Uint16(const char *buf, apr_uint16_t *res);
+void printMessage(message_t *message);
 
 #endif

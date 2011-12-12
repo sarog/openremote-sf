@@ -65,7 +65,7 @@ int fillStringField(apr_pool_t *pool, field_t *field, char *buf, int len) {
 void printMessage(message_t *message) {
 	int i;
 	printf("message code %c", message->code);
-	switch (message->code) {
+switch (message->code) {
 	case PING:
 		printf(" (PING)");
 		break;

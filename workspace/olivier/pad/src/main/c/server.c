@@ -43,7 +43,6 @@ ackCode_t getAckCode(int err) {
 }
 
 int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPool, char code) {
-
 	CHECK(readBody(sock, &tx->request, txPool, code))
 
 	switch (tx->request->code) {
@@ -51,6 +50,7 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		return createACK(txPool, &tx->response, ackOk);
 		break;
 	case SHUTDOWN:
+		// TODO
 		break;
 	case NOTIFY: {
 		port_t *port;
