@@ -40,7 +40,8 @@ public class AbstractPortTest {
       this.listener.start();
 
       Map<String, Object> cfg = new HashMap<String, Object>();
-      cfg.put(AbstractPort.PORT_ID, "/dev/cu.usbserial-0000103D");
+//      cfg.put(AbstractPort.PORT_ID, "/dev/cu.usbserial-0000103D");
+      cfg.put(AbstractPort.PORT_ID, "COM6");
       cfg.put(AbstractPort.PORT_TYPE, "serial");
       cfg.put(AbstractPort.PORT_SPEED, "19200");
       cfg.put(AbstractPort.PORT_NB_BITS, "8");

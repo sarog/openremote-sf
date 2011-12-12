@@ -57,8 +57,9 @@ void createMessageFields(apr_pool_t *pool, message_t *message, int nbFields) {
 
 int fillStringField(apr_pool_t *pool, field_t *field, char *buf, int len) {
 	field->length = len;
-	field->stringVal = apr_palloc(pool, len);
+	field->stringVal = apr_palloc(pool, len + 1);
 	memcpy(field->stringVal, buf, len);
+	field->stringVal[len] = 0;
 	return R_SUCCESS;
 }
 
@@ -110,7 +111,7 @@ int createACK(apr_pool_t *pool, message_t **message, ackCode_t code) {
 int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf, int len) {
 	CHECK(createMessage(NOTIFY, message, pool))
 	createMessageFields(pool, *message, 2);
-	CHECK( fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)));
+	CHECK(fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)));
 	CHECK(fillStringField(pool, &(*message)->fields[1], buf, len));
 	return R_SUCCESS;
 }
@@ -148,8 +149,9 @@ int readFieldLength(apr_socket_t *sock, apr_uint16_t *fieldLength) {
 }
 
 int writeFieldLength(apr_socket_t *sock, apr_uint16_t fieldLength) {
-	char buf[4];
 	apr_size_t len = 4;
+	char buf[5];
+	buf[4] = 0;
 	CHECK(int162Buf(buf, fieldLength))
 	apr_socket_send(sock, buf, &len);
 	// TODO check len and return value

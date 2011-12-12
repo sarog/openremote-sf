@@ -21,7 +21,7 @@ void lsRead(void *data) {
 	printf("started read thread\n");
 	while (res) {
 		res = ReadFile(portContext->hComm, buf, RCV_BUF_SIZE, &len, 0);
-		if (res) {
+		if (res && len > 0) {
 			int r = portContext->portReceiveCb(portContext->portId, buf, len);
 		}
 	}
@@ -45,6 +45,8 @@ DWORD lsGetCfg(apr_hash_t *cfg, const trsTbl_t *tbl, DWORD dft) {
 }
 
 int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
+	COMMTIMEOUTS timeouts = {0};
+
 	if(!GetCommState(portContext->hComm, &portContext->params)) {
 		return R_CONFIGURE_ERROR;
 	}
@@ -60,6 +62,15 @@ int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 	portContext->params.fDtrControl = DTR_CONTROL_DISABLE;
 	portContext->params.fParity = FALSE;
 	if(!SetCommState(portContext->hComm, &portContext->params)) {
+		return R_CONFIGURE_ERROR;
+	}
+
+	timeouts.ReadIntervalTimeout = MAXDWORD;
+	timeouts.ReadTotalTimeoutConstant = 1;
+	timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+	timeouts.WriteTotalTimeoutConstant = 0;
+	timeouts.WriteTotalTimeoutMultiplier = 0;
+	if(!SetCommTimeouts(portContext->hComm, &timeouts)) {
 		return R_CONFIGURE_ERROR;
 	}
 	return R_SUCCESS;
