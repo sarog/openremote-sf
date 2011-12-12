@@ -64,10 +64,9 @@
             </validations>
         </attr>
 
-        <attr name="refreshTime" label="Minimum refresh time (sec)">
+        <attr name="pollingInterval" label="Polling interval in form of (1s, 1m, 1h) or just milliseconds">
             <validations>
                 <allowBlank>false</allowBlank>
-                <regex message="Minimal amount of seconds between two updates of sensor">[0-9]{1,6}</regex>
             </validations>
         </attr>
 
