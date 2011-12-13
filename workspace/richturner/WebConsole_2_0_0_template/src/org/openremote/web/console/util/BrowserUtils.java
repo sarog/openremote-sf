@@ -2,12 +2,7 @@ package org.openremote.web.console.util;
 
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
-import org.openremote.web.console.event.ui.AnimationEndHandler;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
-
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -21,9 +16,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 	public class BrowserUtils {
 		public static boolean isMobile;
-		public static boolean isWebkit;
 		public static boolean isApple;
 		public static boolean isCssDodgy;
+		public static boolean isIE;
 		private static String windowOrientation = "portrait";
 		private static int windowHeight;
 		private static int windowWidth;
@@ -38,21 +33,29 @@ import com.google.gwt.user.client.ui.RootPanel;
 	      "windows ce","windowsce","smartphone","240x320",
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
-	      "sie","sonyericsson","mmp","ucweb","ipod", "ipad"};
+	      "sonyericsson","mmp","ucweb","ipod", "ipad"};
 
 		static {
 			isMobile = isMobile();
-			isWebkit = isWebkit();
 			isApple = isApple();
 			isCssDodgy = isCssDodgy();
+			isIE = isIE();
 		}
 		
 		public static int getWindowHeight() {
-			return getNativeWindowDim("height");
+			if (isMobile) {
+				return getNativeWindowDim("height");
+			} else {
+				return Window.getClientHeight();
+			}
 		}
 		
 		public static int getWindowWidth() {
-			return getNativeWindowDim("width");
+			if (isMobile) {
+				return getNativeWindowDim("width");
+			} else {
+				return Window.getClientWidth();
+			}
 		}
 		
 		public static String getWindowOrientation() {
@@ -65,8 +68,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 		public static void initWindow() {
 			consoleContainer = new AbsolutePanel();
-			consoleContainer.setWidth("100%");
-			consoleContainer.setHeight("100%");
+			consoleContainer.setWidth("3000px");
+			consoleContainer.setHeight("3000px");
 
 			RootPanel.get().add(consoleContainer, 0, 0);
 			
@@ -178,8 +181,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 	     return false;
 		}
 		
-		private static boolean isWebkit() {
-			if (userAgent.toLowerCase().contains("webkit")) {
+		private static boolean isIE() {
+			if (userAgent.toLowerCase().contains("msie")) {
 				return true;
 			}
 			return false;
@@ -193,7 +196,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		}
 		
 		private static boolean isCssDodgy() {
-			if (userAgent.toLowerCase().contains("firefox")) {
+			if (userAgent.toLowerCase().contains("firefox") || userAgent.toLowerCase().contains("msie")) {
 //				int start = userAgent.indexOf("msie");
 //				int end = userAgent.indexOf(";", userAgent.indexOf("msie"));
 //				if (start >= 0 && end >= 0) {
@@ -215,12 +218,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 		 * one character at a time until the label width is less than or equal
 		 * to the specified value
 		 */
-		public static String limitStringLength(String name, int width) {
+		public static String limitStringLength(String name, int width, int fontSize) {
 			Label label = new Label(name);
 			label.setHeight("auto");
 			label.setWidth("auto");
 			DOM.setStyleAttribute(label.getElement(), "position", "absolute");
 			DOM.setStyleAttribute(label.getElement(), "visibility", "hidden");
+			DOM.setStyleAttribute(label.getElement(), "fontSize", fontSize + "px");
 			
 			RootPanel.get().add(label);
 			String retName = name;
@@ -251,20 +255,15 @@ import com.google.gwt.user.client.ui.RootPanel;
 //			NATIVE METHODS BELOW HERE
 // -------------------------------------------------------------		
 		
-		private native void registerAnimationEndHandler(final Element pElement, final AnimationEndHandler pHandler) /*-{
-	   	var callback = function() {
-	      	pHandler.@org.openremote.web.console.event.ui.AnimationEndHandler::onAnimationEnd()();
-	    	}
-	    	if (navigator.userAgent.indexOf('MSIE') < 0) {  // no MSIE support
-	      	pElement.addEventListener("webkitAnimationEnd", callback, false); // Webkit
-	       	pElement.addEventListener("animationend", callback, false); // Mozilla
-	    	}
-		}-*/;
-		
 		// Seem to have issue with getting height using GWT on ipod so resort to native JS
 		public native static int getNativeWindowDim(String dim) /*-{
-			var height = $wnd.innerHeight;
-			var width = $wnd.innerWidth;
+			if (typeof $wnd.innerWidth != 'undefined') {
+				var height = $wnd.innerHeight;
+				var width = $wnd.innerWidth;
+			} else {
+				var height = document.documentElement.clientHeight;
+				var width = document.documentElement.clientWidth;
+			}
 			return (dim=="width" ? width : height);
 		}-*/;
 		
@@ -285,44 +284,9 @@ import com.google.gwt.user.client.ui.RootPanel;
     		return bookmarked;
 		}-*/;
 		
-// -------------------------------------------------------------
-//		BORROWED UTILITY BELOW HERE
-// -------------------------------------------------------------
-		
-		/* randomUUID.js - Version 1.0
-		*
-		* Copyright 2008, Robert Kieffer
-		*
-		* This software is made available under the terms of the Open Software License
-		* v3.0 (available here: http://www.opensource.org/licenses/osl-3.0.php )
-		*
-		* The latest version of this file can be found at:
-		* http://www.broofa.com/Tools/randomUUID.js
-		*
-		* For more information, or to comment on this, please go to:
-		* http://www.broofa.com/blog/?p=151
-		*/
-		 
-		/**
-		* Create and return a "version 4" RFC-4122 UUID string.
-		*/
 		public native static String randomUUID() /*-{
-		  var s = [], itoh = '0123456789ABCDEF';
-		 
-		  // Make array of random hex digits. The UUID only has 32 digits in it, but we
-		  // allocate an extra items to make room for the '-'s we'll be inserting.
-		  for (var i = 0; i <36; i++) s[i] = Math.floor(Math.random()*0x10);
-		 
-		  // Conform to RFC-4122, section 4.4
-		  s[14] = 4;  // Set 4 high bits of time_high field to version
-		  s[19] = (s[19] & 0x3) | 0x8;  // Specify 2 high bits of clock sequence
-		 
-		  // Convert to hex chars
-		  for (var i = 0; i <36; i++) s[i] = itoh[s[i]];
-		 
-		  // Insert '-'s
-		  s[8] = s[13] = s[18] = s[23] = '-';
-		 
+		  var s = [];
+		  for (var i = 0; i <36; i++) s.push(Math.floor(Math.random()*10));
 		  return s.join('');
 		}-*/;
 }

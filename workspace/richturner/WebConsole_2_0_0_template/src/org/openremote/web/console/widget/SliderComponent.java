@@ -13,6 +13,7 @@ import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -56,20 +57,20 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			visibleHandle.setWidth(innerSize + "px");
 			visibleHandle.setHeight(innerSize + "px");
 			visibleHandle.setStylePrimaryName(HANDLE_CLASS_NAME);
-			DOM.setStyleAttribute(visibleElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
-			DOM.setStyleAttribute(visibleElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
-			DOM.setStyleAttribute(visibleElem, "borderRadius", HANDLE_SIZE/2 + "px");
-			DOM.setStyleAttribute(visibleElem, "borderWidth", BORDER_WIDTH + "px");
-			DOM.setStyleAttribute(visibleElem, "borderStyle", "solid");
 			DOM.setStyleAttribute(visibleElem, "marginTop", handleInternalMargin + "px");
 			
 			this.setWidth(HANDLE_CLICK_AREA_SIZE + "px");
 			this.setHeight(HANDLE_CLICK_AREA_SIZE + "px");
 			this.setWidget(visibleHandle);
-			
-			DOM.setStyleAttribute(touchElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
-			DOM.setStyleAttribute(touchElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
-			DOM.setStyleAttribute(touchElem, "borderRadius", HANDLE_SIZE/2 + "px");
+
+//			DOM.setStyleAttribute(visibleElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
+//			DOM.setStyleAttribute(visibleElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
+//			DOM.setStyleAttribute(visibleElem, "borderRadius", HANDLE_SIZE/2 + "px");
+//			DOM.setStyleAttribute(visibleElem, "borderWidth", BORDER_WIDTH + "px");
+//			DOM.setStyleAttribute(visibleElem, "borderStyle", "solid");
+//			DOM.setStyleAttribute(touchElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
+//			DOM.setStyleAttribute(touchElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
+//			DOM.setStyleAttribute(touchElem, "borderRadius", HANDLE_SIZE/2 + "px");
 		}
 		
 		public void onDragStart(DragStartEvent event) {
@@ -106,26 +107,16 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		public SlideBar() {
 			Element element = getElement();
 			this.setStylePrimaryName(BAR_CLASS_NAME);
-			int rad = (SLIDE_BAR_HEIGHT/2);
-			DOM.setStyleAttribute(element, "MozBorderRadius", rad + "px");
-			DOM.setStyleAttribute(element, "WebkitBorderRadius", rad + "px");
-			DOM.setStyleAttribute(element, "borderRadius", rad + "px");
-			DOM.setStyleAttribute(element, "borderStyle", "1px solid");
 			DOM.setStyleAttribute(element, "overflow", "hidden");
 			
 			SimplePanel track = new SimplePanel();
 			track.setStylePrimaryName(TRACK_CLASS_NAME);
-			Element trackElem = track.getElement();	
 			if (isVertical) {
 				track.setWidth("100%");
 				track.setHeight("100%");
 			} else {
 				track.setHeight("100%");
-			}			
-			DOM.setStyleAttribute(trackElem, "MozBorderRadius", rad + "px");
-			DOM.setStyleAttribute(trackElem, "WebkitBorderRadius", rad + "px");
-			DOM.setStyleAttribute(trackElem, "borderRadius", rad + "px");
-			DOM.setStyleAttribute(trackElem, "borderStyle", "1px solid");
+			}
 			this.setWidget(track);
 		}
 
@@ -241,6 +232,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		
 		if (((appearsVertical && !isVertical) || (!appearsVertical && isVertical)) && (BrowserUtils.isCssDodgy)) {
 			if (!isVertical) {
+				//Window.alert(absValue +"");
 				pixelMin = consoleCentreY + (consoleCentreX - getAbsoluteLeft());
 			} else {
 				pixelMin = consoleCentreX + (consoleCentreY - (slideBar.getAbsoluteTop() + getWidth()));
@@ -343,17 +335,17 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 
 	public int getHeight() {
 		if (isVertical) {
-			return width;
+			return width + 2;
 		} else {
-			return height;
+			return height + 2;
 		}
 	}
 	
 	public int getWidth() {
 		if (isVertical) {
-			return height;
+			return height + 2;
 		} else {
-			return width;
+			return width + 2;
 		}
 	}
 	

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -45,7 +46,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final int MIN_HEIGHT = 460;
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
-	public static final String DEFAULT_DISPLAY_COLOUR = "black";
+	public static final String DEFAULT_DISPLAY_COLOUR = "#000";
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final int FRAME_WIDTH_TOP = 20;
 	public static final int FRAME_WIDTH_BOTTOM = 50;
@@ -55,7 +56,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
 	protected ConsoleDisplay consoleDisplay;
-	private Boolean isFullscreen = null;
+	private Boolean isFullscreen = true;
 	protected int width;
 	protected int height;
 	private String orientation = "portrait";
@@ -164,10 +165,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		consoleDisplay = new ConsoleDisplay();
 		add(consoleDisplay);
 		consoleDisplay.getElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
-
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", DEFAULT_DISPLAY_COLOUR);
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", DEFAULT_DISPLAY_COLOUR);
+		
 		// Set console unit properties
-		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
-		this.addStyleName("consoleUnit");
+		getElement().setId(CONSOLE_HTML_ELEMENT_ID);
+		addStyleName("portraitConsole");
+		addStyleName("consoleUnit");
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
@@ -178,53 +182,64 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public void setSize(int width, int height) {
+		boolean setFullscreen = false;
+
 		if (width > height) {
 			int tempWidth = height;
 			height = width;
 			width = tempWidth;
 		}
+
+		if (BrowserUtils.isMobile) {
+			setFullscreen = true;
+		} else {
+			int winWidth = BrowserUtils.getWindowWidth();
+			int winHeight = BrowserUtils.getWindowHeight();
+			int maxDim = width > height ? width : height; 
+			String winOrientation = BrowserUtils.getWindowOrientation();
 		
-		width = width < MIN_WIDTH ? MIN_WIDTH : width;
-		height = height < MIN_HEIGHT ? MIN_HEIGHT : height;
-				
+			width = width < MIN_WIDTH ? MIN_WIDTH : width;
+			height = height < MIN_HEIGHT ? MIN_HEIGHT : height;	
+			
+			if (maxDim >= winWidth || maxDim >= winHeight) {
+				if (winOrientation.equals("portrait")) {
+					width = winWidth;
+					height = winHeight;
+				} else {
+					width = winHeight;
+					height = winWidth;
+				}
+				setFullscreen = true;
+			}
+		}
+		
+		if(isFullscreen != setFullscreen) {
+			showFrame(!setFullscreen);
+		}
+		
 		this.width = width;
 		this.height = height;
+		isFullscreen = setFullscreen;
 		
-		consoleDisplay.setSize(width, height);
-		
-		int maxDim = height + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
-		
-		if (BrowserUtils.isMobile || maxDim > BrowserUtils.getWindowWidth() || maxDim > BrowserUtils.getWindowHeight()) {
-			showFrame(false);
-		} else {
-			showFrame(true);
+		if (setFullscreen) {
+			setOrientation(BrowserUtils.getWindowOrientation());
 		}
 		
 		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
+		
+		consoleDisplay.setSize(width, height);
 	}
 		
 	private void showFrame(boolean showFrame) {
-		if(isFullscreen != null && isFullscreen != showFrame) {
-			return;
-		}
-		
 		if (showFrame) {
 			removeStyleName("fullscreenConsole");
 			
 			// Create console frame
 			createFrame();
-			addStyleName("resizableConsole");
-			
-			// Clear document body colour setting
-			RootPanel.getBodyElement().getStyle().clearBackgroundColor();
 		} else {
 			// Set document body colour the same as the console display
 			removeFrame();
-			removeStyleName("resizableConsole");
-			addStyleName("fullscreenConsole");
-			RootPanel.getBodyElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
 		}
-		isFullscreen = !showFrame;
 	}
 	
 	private void createFrame() {
@@ -234,6 +249,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		style.setMarginLeft(FRAME_WIDTH_LEFT-BOSS_WIDTH, Unit.PX);
 		style.setMarginBottom(-BOSS_WIDTH, Unit.PX);
 		addStyleName("consoleFrame");
+		addStyleName("resizableConsole");
+		removeStyleName("fullscreenConsole");
+		
+		// Clear document body colour setting
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", "");
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", "");
 		
 		// Add boss to screen
 		style.setBorderWidth(BOSS_WIDTH,Unit.PX);
@@ -245,13 +266,15 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			logoPanel = new HorizontalPanel();
 			logoPanel.setStylePrimaryName("consoleFrameLogo");
 			logoPanel.setHeight(FRAME_WIDTH_BOTTOM + "px");
-			logoPanel.getElement().setAttribute("style", "line-height: " + FRAME_WIDTH_BOTTOM + "px;");		
+			DOM.setStyleAttribute(logoPanel.getElement(), "lineHeight", FRAME_WIDTH_BOTTOM + "px");
 			Label logoLeft = new Label();
 			logoLeft.setText(LOGO_TEXT_LEFT);
+			logoLeft.setHeight(FRAME_WIDTH_BOTTOM + "px");
 			logoLeft.getElement().setId("consoleFrameLogoLeft");
 			logoPanel.add(logoLeft);
 			Label logoRight = new Label();
 			logoRight.setText(LOGO_TEXT_RIGHT);
+			logoRight.setHeight(FRAME_WIDTH_BOTTOM + "px");
 			logoRight.getElement().setId("consoleFrameLogoRight");
 			logoPanel.add(logoRight);
 		}
@@ -266,7 +289,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		style.clearBorderStyle();
 		style.clearBorderWidth();
 		remove(logoPanel);
+		removeStyleName("resizableConsole");
+		addStyleName("fullscreenConsole");
 		removeStyleName("consoleFrame");
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", DEFAULT_DISPLAY_COLOUR);
+		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", DEFAULT_DISPLAY_COLOUR);
 	}
 	
 	public ConsoleDisplay getConsoleDisplay() {
@@ -294,8 +321,15 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	 * Position the console unit in the centre of the window
 	 */
 	public void setPosition(int winWidth, int winHeight) {
-		int xPos = (int)Math.round(((double)winWidth/2)-(getWidth()/2));
-		int yPos = (int)Math.round(((double)winHeight/2)-(getHeight()/2));
+		int xPos = 0;
+		int yPos = 0;
+		if (BrowserUtils.isIE && orientation.equalsIgnoreCase("landscape")) {
+			xPos = (int)Math.round(((double)winWidth/2)-(getHeight()/2));
+			yPos = (int)Math.round(((double)winHeight/2)-(getWidth()/2));
+		} else {
+			xPos = (int)Math.round(((double)winWidth/2)-(getWidth()/2));
+			yPos = (int)Math.round(((double)winHeight/2)-(getHeight()/2));
+		}
 		BrowserUtils.getConsoleContainer().setWidgetPosition(this, xPos, yPos);
 	}
 
@@ -311,8 +345,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			getElement().removeClassName("portraitConsole");
 			getElement().addClassName("landscapeConsole");
 		}
-		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
+		
 		this.orientation = orientation;
+		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
 	}
 	
 	public String getOrientation() {
@@ -635,11 +670,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		// Configure display
 		consoleDisplay.onAdd(width, height);
-		if (isFullscreen) {
-			setOrientation(BrowserUtils.getWindowOrientation());
-		} else {
-			setOrientation("portrait");
-		}
 		
 		show();
 		
@@ -678,7 +708,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public void onRotate(RotationEvent event) {
 		String orientation = event.getOrientation();
 		
-		// Rotate the console unit if fullscreen but if desktop just rotate the display
+		// Rotate the console unit if fullscreen or mobile but if desktop and fullscreen just rotate the display
 		if (BrowserUtils.isMobile || (!BrowserUtils.isMobile && !isFullscreen)) {
 			setOrientation(orientation);
 		}
@@ -689,6 +719,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
 				if (inverseScreen != null) {
 					loadDisplay(inverseScreen, true, null);
+					consoleDisplay.updateTabBar();
 				}
 			}
 		}
@@ -697,7 +728,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	@Override
 	public void onWindowResize(WindowResizeEvent event) {
 		// If fullscreen unit then we update the console unit size
-		if (isFullscreen) {
+		if (BrowserUtils.isMobile || isFullscreen) {
 			if (getOrientation().equalsIgnoreCase("portrait")) {
 				setSize(event.getWindowWidth(), event.getWindowHeight());
 			} else {

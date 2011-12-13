@@ -241,7 +241,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		display.remove(component);
 	}
 	
-	private void updateTabBar() {
+	protected void updateTabBar() {
 		if (currentTabBar != null) {
 			currentTabBar.refresh();
 			display.setWidgetPosition(currentTabBar, 0, getHeight() - currentTabBar.getHeight());

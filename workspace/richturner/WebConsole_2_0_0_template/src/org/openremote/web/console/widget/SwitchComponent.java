@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Image;
 
 public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler, TapHandler {
 	public static final String CLASS_NAME = "switchComponent";
+	public static final int LABEL_FONT_SIZE = 12;
 	private LabelComponent label;
 	private ImageContainer currentImage;
 	private String state;
@@ -40,6 +41,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
 		
 		label = new LabelComponent();
+		label.setFontSize(LABEL_FONT_SIZE);
 		label.setVisible(true);
 		label.removeStyleName("labelComponent");
 		((AbsolutePanel)getWidget()).add(label, 0, 0);
@@ -110,9 +112,9 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 				currentImage = null;
 			}
 		}
-		String backgroundStyle = showLabel ? "" : "none";
+		//String backgroundStyle = showLabel ? "" : "none";
 		label.setVisible(showLabel);
-		DOM.setStyleAttribute(getElement(), "background", backgroundStyle);
+		//DOM.setStyleAttribute(getElement(), "backgroundColor", backgroundStyle);
 	}
 	
 	private String getSendCommand() {
