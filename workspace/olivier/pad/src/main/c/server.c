@@ -13,6 +13,7 @@ void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx, portRec
 		(*tx)->response = NULL;
 		(*tx)->status = WAITING_FOR_REQUEST;
 		(*tx)->portReceiveCb = receiveCb;
+		(*tx)->shutdown = FALSE;
 	}
 }
 
@@ -50,7 +51,8 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		return createACK(txPool, &tx->response, ackOk);
 		break;
 	case SHUTDOWN:
-		// TODO
+		tx->shutdown = TRUE;
+		return createACK(txPool, &tx->response, ackOk);
 		break;
 	case NOTIFY: {
 		port_t *port;

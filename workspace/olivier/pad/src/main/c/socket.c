@@ -68,6 +68,7 @@ int receiveData(char *portId, char *buf, int len);
  *
  */
 int runServer() {
+	int r = R_SUCCESS;
 	apr_status_t rv;
 	apr_pool_t *listenPool, *socketPool;
 	apr_socket_t *lsock;/* listening socket */
@@ -88,7 +89,7 @@ int runServer() {
 		apr_pollset_add(pollset, &pfd);
 	}
 
-	while (1) {
+	while (r == R_SUCCESS) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &descriptors);
 		if (rv == APR_SUCCESS) {
 			int i;
@@ -101,7 +102,8 @@ int runServer() {
 				} else {
 					serviceContext_t *context = descriptors[i].client_data;
 					socket_callback_t cbFunc = context->cbFunc;
-					cbFunc(socketPool, context, pollset);
+					r = cbFunc(socketPool, context, pollset);
+					if(r == R_SHUTDOWN_REQUESTED) break;
 				}
 			}
 		}
@@ -272,8 +274,12 @@ int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollse
  * Send a response to the client.
  */
 static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset) {
+	int out = R_SUCCESS;
 	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
 	writeMessage(context->socket, context->serverTx->response);
+
+	// Check if shutdown was requested
+	if(context->serverTx->shutdown == TRUE) out = R_SHUTDOWN_REQUESTED;
 
 	// Clear all memory related to request and response
 	clearServerTransaction(context->serverTxPool, &context->serverTx);
@@ -285,7 +291,8 @@ static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_p
 	apr_pollset_add(pollset, &descriptor);
 	context->status = RECV_MESSAGE;
 	context->cbFunc = receiveMessage;
-	return R_SUCCESS;
+
+	return out;
 }
 
 int receiveData(char *portId, char *buf, int len) {

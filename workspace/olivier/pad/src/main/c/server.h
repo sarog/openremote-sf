@@ -14,6 +14,7 @@ typedef struct _serverTransaction_t {
 	message_t *request;
 	message_t *response;
 	portReceive_t portReceiveCb;
+	apr_uint32_t shutdown;
 } serverTransaction_t;
 
 void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx, portReceive_t receiveCb);
