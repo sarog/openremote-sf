@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Label;
 
 public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
+	public static final int LABEL_FONT_SIZE = 12;
 	private String name;
 	private Label label; 
 	private Image img;
@@ -34,6 +35,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
 		
 		label = new Label();
+		DOM.setStyleAttribute(label.getElement(), "fontSize", LABEL_FONT_SIZE + "px");
 		label.setWidth("100%");
 		label.setHeight("100%");
 		label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -57,7 +59,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		if (!isInitialised) {
 			return;
 		}
-		this.name = BrowserUtils.limitStringLength(name, width);
+		this.name = BrowserUtils.limitStringLength(name, width, LABEL_FONT_SIZE);
 		label.setText(this.name);
 	}
 	
@@ -71,7 +73,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		if (srcExists) {
 			img.setVisible(true);
 			label.setVisible(false);
-			DOM.setStyleAttribute(getElement(), "background", "none");
+			//DOM.setStyleAttribute(getElement(), "background", "none");
 		} else {
 			hideImage();
 		}
@@ -80,7 +82,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	public void hideImage() {
 		img.setVisible(false);
 		label.setVisible(true);
-		DOM.setStyleAttribute(getElement(), "background", "");
+		//DOM.setStyleAttribute(getElement(), "background", "");
 	}
 	
 	@Override

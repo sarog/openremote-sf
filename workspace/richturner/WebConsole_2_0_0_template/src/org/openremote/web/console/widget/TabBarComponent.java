@@ -82,7 +82,8 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				this.add(imageComponent);
 			} else {
 				HTML dummy = new HTML();
-				dummy.setSize(TAB_IMAGE_SIZE + "px", TAB_IMAGE_SIZE + "px");
+				dummy.setSize("100%", "100%");
+				dummy.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
 				this.add(dummy);
 			}
 			

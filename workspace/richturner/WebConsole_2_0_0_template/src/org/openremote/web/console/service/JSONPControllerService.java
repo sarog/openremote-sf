@@ -53,7 +53,7 @@ public class JSONPControllerService extends ControllerService {
 	}
 	
 	private JSONPControllerService() {
-		uuid = BrowserUtils.randomUUID().replace("-", "");
+		uuid = BrowserUtils.randomUUID();
 	}
 	
 	public static synchronized JSONPControllerService getInstance() {

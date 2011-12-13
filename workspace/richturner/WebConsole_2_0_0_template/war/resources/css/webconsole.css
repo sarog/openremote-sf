@@ -17,8 +17,6 @@ body {
 	-webkit-user-select: none;
 	tap-highlight-color: rgba(0,0,0,0);
 	user-select: none;
-	width: 3000px;
-	height: 3000px;
 }
 
 /************************************************************************
@@ -27,7 +25,6 @@ TOOLBAR
 
 .toolbar {
 	color: #FFF;
-	float: left;
 }
 
 .toolbar .mainToolbarPanel {
@@ -37,7 +34,7 @@ TOOLBAR
 
 .toolbar .tabToolbarPanel {
 	background-color: #245E36;
-	border-radius: 5px;
+	border-radius: 0 5px 5px 0;
 	font-size: 20px;
 	font-weight: bold;
 }
@@ -95,20 +92,32 @@ CONSOLE UNIT
 }
 
 .consoleFrame {
-	background-image: -webkit-gradient(
-	    linear,
-	    left bottom,
-	    left top,
-	    color-stop(0, rgb(0,0,0)),
-	    color-stop(0.5, rgb(56,56,56))
-	);
-	background-image: -moz-linear-gradient(
-	    center bottom,
-	    rgb(0,0,0) 0%,
-	    rgb(56,56,56) 50%
-	);
+	background-color: #383838;
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(0,0,0)), color-stop(0.5, rgb(56,56,56)));
+	background-image: -moz-linear-gradient(center bottom, rgb(0,0,0) 0%, rgb(56,56,56) 50%);
+	/* ie10 */
+	background-image: -ms-linear-gradient(#383838,#000000);
+	/* opera 11.1 */
+	background-image: -o-linear-gradient(#383838,#000000);
+	/* The "standard" */
+	background-image: linear-gradient(#383838,#000000);			
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
 	-moz-border-radius: 15px;
-	border-radius: 15px;		
+	border-radius: 15px;
+}
+
+.consoleFrame.portraitConsole {
+	/* ie 6+ */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000');
+}
+
+.consoleFrame.landscapeConsole {
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000') progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000') progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
 }
 
 #consoleFrameLogoLeft {
@@ -167,15 +176,30 @@ WIDGETS
 
 .sliderComponentBar {
 	background-color: buttonFace;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-o-border-radius: 6px;
+	border-radius: 6px;
+	border-width: 1px;
+	border-style: solid;
 }
 
 .sliderComponentBarTrack {
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-o-border-radius: 6px;
+	border-radius: 6px;
 	background-color: #4FA800;
 }
   
 .sliderComponentHandle {
    background-color: buttonFace;
-   -webkit-border-radius: 12px;
+	-moz-border-radius: 13px;
+	-webkit-border-radius: 13px;
+	-o-border-radius: 13px;
+	border-radius: 13px;
+	border-width: 2px;
+	border-style: solid;
 }
 
 /*
@@ -199,6 +223,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	-moz-animation: fade 1s linear infinite;
 	animation: fade 1s linear infinite;
 	-moz-border-radius: 50px;
+	-o-border-radius: 3px;
 	border-radius: 50px;
 	-webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
@@ -227,35 +252,40 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .tabBarComponent {
+	background-color: #5A5A5A;
 	background-image: linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0, rgb(0,0,0)),
-		color-stop(1, rgb(90,90,90))
-	);
+	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);	
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(0,0,0)), color-stop(1, rgb(90,90,90)));
+	/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+	margin: 0;
+	border: none;
+}
+
+.tabBarItem td {
+	padding: 0;
 }
 
 .tabBarItem.selected {
+	background-color: #6E6E6E;
 	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -webkit-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -ms-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	
-	background-image: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0, rgb(20,20,20)),
-		color-stop(1, rgb(110,110,110))
-	);
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(20,20,20)),color-stop(1, rgb(110,110,110)));
+		/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+	margin: 0;
+	padding: 0;
+	border: none;
 }
 
 .tabBarItemText {
@@ -272,13 +302,14 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .buttonComponent, .switchComponent {
-	background: #5A697E;
+	background-color: #5A697E;
     border: none;
     color: #FFF;
     font-weight: bold;
     font-family: arial;
     border-radius: 3px;
     -moz-border-radius: 3px;
+    -o-border-radius: 3px;
     -webkit-border-radius: 3px;
     -webkit-appearance: none;
 }

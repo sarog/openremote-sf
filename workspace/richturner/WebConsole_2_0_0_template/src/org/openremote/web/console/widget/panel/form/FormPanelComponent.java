@@ -136,6 +136,8 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		
 			// Force button size to be 80 x 35
 			HorizontalPanel buttonPanel = new HorizontalPanel();
+			buttonPanel.setWidth("100%");
+			buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			for (FormButtonComponent button : buttons) {
 				switch (button.getType()) {
 					case SUBMIT:

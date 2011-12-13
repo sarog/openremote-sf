@@ -12,6 +12,7 @@ import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.ScreenRef;
 import org.openremote.web.console.panel.entity.TabBar;
+import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionResult;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionUnit;
@@ -236,8 +237,8 @@ public class PanelServiceImpl implements PanelService {
 			return panelSize;
 		}
 		PanelSize size = new PanelSize();
-		int width = 0;
-		int height = 0;
+		int width = ConsoleUnit.DEFAULT_DISPLAY_WIDTH;
+		int height = ConsoleUnit.DEFAULT_DISPLAY_HEIGHT;
 		
 		// No direct way to get this info so cycle through elements to determine
 		if (currentPanel != null) {
@@ -249,10 +250,10 @@ public class PanelServiceImpl implements PanelService {
 						DimensionResult l = PanelComponent.getDimFromString(panel.getLeft());
 						DimensionResult t = PanelComponent.getDimFromString(panel.getTop());
 						DimensionResult w = PanelComponent.getDimFromString(panel.getWidth());
-						DimensionResult h = PanelComponent.getDimFromString(panel.getWidth());
+						DimensionResult h = PanelComponent.getDimFromString(panel.getHeight());
 						if (screen.getLandscape() != null && screen.getLandscape()) {
 							if (l.getUnit() == DimensionUnit.PERCENTAGE || t.getUnit() == DimensionUnit.PERCENTAGE || w.getUnit() == DimensionUnit.PERCENTAGE || h.getUnit() == DimensionUnit.PERCENTAGE) {
-								return panelSize;
+								continue;
 							}
 							maxY = (int)Math.round(l.getValue() + w.getValue());
 							maxX = (int)Math.round(t.getValue() + h.getValue());

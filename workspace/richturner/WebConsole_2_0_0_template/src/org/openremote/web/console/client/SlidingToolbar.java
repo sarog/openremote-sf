@@ -39,7 +39,7 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 	private SlidingToolbar() {
 		HorizontalPanel container = new HorizontalPanel();
 		this.initWidget(container);
-		setWidth("350px");
+		setWidth("340px");
 		setStylePrimaryName("toolbar");
 		setHeight(BrowserUtils.getWindowHeight() + "px");
 		container.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -63,16 +63,14 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		DOM.setStyleAttribute(mainElem, "marginTop", "10%");
 		
 		// Configure Tab
-		tab.setWidth("30px");
+		tab.setWidth("20px");
 		tab.setHeight("50px");
 		tab.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		Element tabElem = tab.getElement();
 		DOM.setStyleAttribute(tabElem, "lineHeight", "50px");
-		DOM.setStyleAttribute(tabElem, "marginLeft", "-20px");
-		DOM.setStyleAttribute(tabElem, "paddingLeft", "20px");
 		
 		// Add to Window
-		BrowserUtils.getConsoleContainer().add(this);
+		BrowserUtils.getConsoleContainer().add(this, 0, 0);
 		
 		addAnimation();
 		
