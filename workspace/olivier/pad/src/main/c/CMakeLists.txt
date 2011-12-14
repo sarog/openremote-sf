@@ -17,7 +17,7 @@ link_directories("${APR_PATH}/lib")
 
 
 # add the executable
-add_library(pa socket.c serialize.c portManager.c port.c serialPort${CMAKE_SYSTEM_NAME}.c)
+add_library(pa socket.c server.c client.c serialize.c portManager.c port.c serialPort${CMAKE_SYSTEM_NAME}.c)
 add_executable(pad main.c socket.c server.c client.c serialize.c serialPort${CMAKE_SYSTEM_NAME}.c portManager.c port.c)
 target_link_libraries(pad ${APR_LIB})
 if (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
