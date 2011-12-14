@@ -103,7 +103,11 @@ int runServer() {
 					serviceContext_t *context = descriptors[i].client_data;
 					socket_callback_t cbFunc = context->cbFunc;
 					r = cbFunc(socketPool, context, pollset);
-					if(r == R_SHUTDOWN_REQUESTED) break;
+					if(r == R_SHUTDOWN_REQUESTED) { 
+						break;
+					} else {
+						r = R_SUCCESS;
+					}
 				}
 			}
 		}
