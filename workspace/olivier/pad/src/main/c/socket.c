@@ -60,37 +60,17 @@ static serviceContext_t *context;
 
 static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
-int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
+static int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
 static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
-int receiveData(char *portId, char *buf, int len);
+static int receiveData(char *portId, char *buf, int len);
 
-/**
- *
- */
-int runServer() {
-	int r = R_SUCCESS;
-	char errMsg[256];
+int poll(apr_pool_t * socketPool, apr_pollset_t *pollset, apr_socket_t *lsock) {
 	apr_status_t rv;
-	apr_pool_t *listenPool, *socketPool;
-	apr_socket_t *lsock;/* listening socket */
-	apr_pollset_t *pollset;
+	int r;
 	apr_int32_t num;
 	const apr_pollfd_t *descriptors;
 
-	apr_pool_create(&listenPool, NULL);
-	apr_pool_create(&socketPool, NULL);
-
-	lsock = createListenSocket(listenPool);
-
-	apr_pollset_create(&pollset, DEF_POLLSET_NUM, listenPool, 0);
-	{
-		// Monitor with pollset the listen socket can read without blocking
-		apr_pollfd_t pfd = { listenPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, NULL };
-		pfd.desc.s = lsock;
-		apr_pollset_add(pollset, &pfd);
-	}
-
-	while (r == R_SUCCESS) {
+	while (TRUE) {
 		rv = apr_pollset_poll(pollset, DEF_POLL_TIMEOUT, &num, &descriptors);
 		if (rv == APR_SUCCESS) {
 			int i;
@@ -105,17 +85,40 @@ int runServer() {
 					socket_callback_t cbFunc = context->cbFunc;
 					r = cbFunc(socketPool, context, pollset);
 					if(r == R_SHUTDOWN_REQUESTED) { 
-						break;
-					} else {
-						r = R_SUCCESS;
-					}
+						return r;
+					} 
 				}
 			}
 		} else {
-			printf("apr_pollset_poll() returns %s\n", apr_strerror(rv, errMsg, 256));
+			return R_INTERN_ERROR;
 		}
 	}
+}
 
+/**
+ *
+ */
+int runServer() {
+	apr_pool_t *listenPool, *socketPool;
+	apr_socket_t *lsock;/* listening socket */
+	apr_pollset_t *pollset;
+
+	apr_pool_create(&listenPool, NULL);
+	apr_pool_create(&socketPool, NULL);
+
+	lsock = createListenSocket(listenPool);
+
+	apr_pollset_create(&pollset, DEF_POLLSET_NUM, listenPool, 0);
+	{
+		// Monitor with pollset the listen socket can read without blocking
+		apr_pollfd_t pfd = { listenPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, NULL };
+		pfd.desc.s = lsock;
+		apr_pollset_add(pollset, &pfd);
+	}
+
+	poll(socketPool, pollset, lsock);
+
+	apr_pollset_destroy(pollset);
 	apr_pool_destroy(socketPool);
 	apr_pool_destroy(listenPool);
 	return R_SUCCESS;
@@ -185,11 +188,22 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 	return TRUE;
 }
 
-void closeSocket(apr_pool_t *socketPool,serviceContext_t *context) {
-	int r;
+void closeSocket(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, apr_int16_t reqevents) {
+	// Stop monitoring 
+	if(pollset != NULL) {
+		apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, reqevents, 0, { NULL }, context };
+		descriptor.desc.s = context->socket;
+		apr_pollset_remove(pollset, &descriptor);
+	}
+
+	// Close socket
 	apr_socket_close(context->socket);
+
+	// Free associateded sync objects
 	apr_thread_mutex_destroy(context->clientMutex);
-	r = apr_thread_cond_destroy(context->clientCond);
+	apr_thread_cond_destroy(context->clientCond);
+
+	// Free socket pool
 	apr_pool_clear(socketPool);
 	context = NULL;
 	printf("Closed socket\n");
@@ -219,14 +233,18 @@ static int receiveRequest(apr_pool_t *socketPool, serviceContext_t *context, apr
 	createServerTransaction(context->serverTxPool, &context->serverTx, receiveData);
 
 	r = operateRequest(context->socket, context->serverTx, context->serverTxPool, code);
+
+	// Stop monitoring requests 
+	descriptor.desc.s = context->socket;
+	apr_pollset_remove(pollset, &descriptor);
+
+	// Check request was correctly operated
 	if (r != R_SUCCESS) {
-		closeSocket(socketPool, context);
+		closeSocket(socketPool, context, NULL, 0);
 		return r;
 	}
 
-	// Change context status from receive to send
-	descriptor.desc.s = context->socket;
-	apr_pollset_remove(pollset, &descriptor);
+	// Start monitoring responses to send
 	descriptor.reqevents = APR_POLLOUT;
 	apr_pollset_add(pollset, &descriptor);
 	context->status = SEND_MESSAGE;
@@ -243,7 +261,7 @@ static int receiveResponse(apr_pool_t *socketPool, serviceContext_t *context, ap
 	// Read response
 	r = operateResponse(context->socket, context->clientTx, context->clientTxPool, code);
 	if (r != R_SUCCESS) {
-		closeSocket(socketPool, context);
+		closeSocket(socketPool, context, pollset, APR_POLLIN);
 		return r;
 	}
 
@@ -265,7 +283,7 @@ int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollse
 	// Read message header
 	r = checkInputMessage(context->socket, &code, &txType);
 	if (r != R_SUCCESS) {
-		closeSocket(socketPool,  context);
+		closeSocket(socketPool,  context, pollset, APR_POLLIN);
 		return r;
 	}
 

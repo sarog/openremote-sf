@@ -58,6 +58,7 @@ void *lsRead(void *data) {
 			int r = portContext->portReceiveCb(portContext->portId, buf, res);
 		}
 	}
+printf("exiting\n");
 
 	pthread_exit(R_SUCCESS);
 	return NULL;
