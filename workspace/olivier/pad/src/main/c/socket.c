@@ -69,6 +69,7 @@ int receiveData(char *portId, char *buf, int len);
  */
 int runServer() {
 	int r = R_SUCCESS;
+	char errMsg[256];
 	apr_status_t rv;
 	apr_pool_t *listenPool, *socketPool;
 	apr_socket_t *lsock;/* listening socket */
@@ -111,7 +112,7 @@ int runServer() {
 				}
 			}
 		} else {
-			printf("apr_pollset_poll() returns %d\n", rv);
+			printf("apr_pollset_poll() returns %s\n", apr_strerror(rv, errMsg, 256));
 		}
 	}
 
