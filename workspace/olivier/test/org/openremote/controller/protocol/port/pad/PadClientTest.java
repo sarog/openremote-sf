@@ -28,22 +28,22 @@ public class PadClientTest {
       PadClient c = PadClient.instance();
       try {
          c.service(new PingMessage());
-         c.service(new ShutdownMessage());
+ //        c.service(new ShutdownMessage());
       } catch (IOException e) {
          Assert.fail(e.getMessage());
       } catch (PortException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
-      try {
-         c.service(new PingMessage());
-         Assert.fail("Ping should have failed");
-      } catch (IOException e) {
-         Assert.fail(e.getMessage());
-      } catch (PortException e) {
-         if(e.getCode() != PortException.SERVICE_TIMEOUT) {
-            Assert.fail(e.getMessage());
-         }
-      }
+//      try {
+//         c.service(new PingMessage());
+//         Assert.fail("Ping should have failed");
+//      } catch (IOException e) {
+//         Assert.fail(e.getMessage());
+//      } catch (PortException e) {
+//         if(e.getCode() != PortException.SERVICE_TIMEOUT) {
+//            Assert.fail(e.getMessage());
+//         }
+//      }
    }
 }
