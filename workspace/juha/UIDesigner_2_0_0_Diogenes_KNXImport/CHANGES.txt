@@ -1,5 +1,13 @@
-Designer 2.0 Alpha SNAPSHOT 2011-12-05
-======================================
+
+Designer 2.0 Alpha 9 (2011-12-12 Voldemort)
+===========================================
+
+- KNX ETS4 Project Import (Marcus Redeker)
+- KNX ETS3 CSV Group Address Import (Marcus Redeker)
+
+
+Designer 2.0 Alpha SNAPSHOT 2011-12-05 (Diogenes)
+=================================================
 
 - Fix for email verification issues (R4861 based on patch in R3133)
 - Switch to Spring AOP with @Transactional annotations instead of 
