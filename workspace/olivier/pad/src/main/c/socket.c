@@ -110,6 +110,8 @@ int runServer() {
 					}
 				}
 			}
+		} else {
+			printf("apr_pollset_poll() returns %d\n", rv);
 		}
 	}
 
