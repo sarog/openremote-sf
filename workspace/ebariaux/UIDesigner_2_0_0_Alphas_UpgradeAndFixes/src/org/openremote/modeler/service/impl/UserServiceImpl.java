@@ -353,8 +353,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
-   public List<User> getPendingInviteesByAccount(User currentUser) {
-      List<User> invitees = new ArrayList<User>();
+   public ArrayList<User> getPendingInviteesByAccount(User currentUser) {
+      ArrayList<User> invitees = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
       sameAccountUsers.remove(currentUser);
       for (User invitee : sameAccountUsers) {
@@ -391,8 +391,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       genericDAO.delete(user);
    }
 
-   public List<User> getAccountAccessUsers(User currentUser) {
-      List<User> accessUsers = new ArrayList<User>();
+   public ArrayList<User> getAccountAccessUsers(User currentUser) {
+      ArrayList<User> accessUsers = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
       sameAccountUsers.remove(currentUser);
       accessUsers.add(currentUser);

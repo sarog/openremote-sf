@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
@@ -50,7 +50,7 @@ public interface UserRPCService extends RemoteService {
     * 
     * @return the pending invitees by account
     */
-   List<User> getPendingInviteesByAccount();
+   ArrayList<User> getPendingInviteesByAccount();
    
    /**
     * Update the invited user roles.
@@ -74,7 +74,7 @@ public interface UserRPCService extends RemoteService {
     * 
     * @return the account access users
     */
-   List<User> getAccountAccessUsers();
+   ArrayList<User> getAccountAccessUsers();
    
    /**
     * Gets the current user's id.

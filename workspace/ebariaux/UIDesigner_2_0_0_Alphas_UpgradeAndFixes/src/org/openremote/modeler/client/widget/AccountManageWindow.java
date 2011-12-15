@@ -122,8 +122,8 @@ public class AccountManageWindow extends Dialog {
     * Initialize the invited user grid's store by getting the invited users from server.
     */
    private void addInvitedUsers() {
-      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<List<User>>() {
-         public void onSuccess(List<User> invitedUsers) {
+      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<User>>() {
+         public void onSuccess(ArrayList<User> invitedUsers) {
             if (invitedUsers.size() > 0) {
                createInvitedUserGrid();
                invitedUsersGrid.getStore().add(User.createModels(invitedUsers));
@@ -250,8 +250,8 @@ public class AccountManageWindow extends Dialog {
       accessUsersContainer.setSize(440, 150);
       accessUsersContainer.add(accessUsersGrid);
       add(accessUsersContainer);
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsers(new AsyncSuccessCallback<List<User>>() {
-         public void onSuccess(List<User> accessUsers) {
+      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsers(new AsyncSuccessCallback<ArrayList<User>>() {
+         public void onSuccess(ArrayList<User> accessUsers) {
             if (accessUsers.size() > 0) {
                accessUsersGrid.getStore().add(User.createModels(accessUsers));
                accessUsersGrid.unmask();
