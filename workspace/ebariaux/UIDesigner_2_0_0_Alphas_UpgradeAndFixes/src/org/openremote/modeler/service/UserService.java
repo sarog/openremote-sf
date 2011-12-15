@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.service;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
@@ -119,7 +119,7 @@ public interface UserService {
     * 
     * @return the pending invitees by account
     */
-   List<User> getPendingInviteesByAccount(User currentUser);
+   ArrayList<User> getPendingInviteesByAccount(User currentUser);
    
    /**
     * Update user roles by the user id.
@@ -140,7 +140,7 @@ public interface UserService {
     * 
     * @return the account access users
     */
-   List<User> getAccountAccessUsers(User currentUser);
+   ArrayList<User> getAccountAccessUsers(User currentUser);
    
    /**
     * The user forget password, send to the email that the user have registered.

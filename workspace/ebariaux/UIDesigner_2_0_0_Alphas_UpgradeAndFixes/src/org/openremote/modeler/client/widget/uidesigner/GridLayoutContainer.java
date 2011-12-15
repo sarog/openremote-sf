@@ -52,6 +52,7 @@ import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
@@ -187,6 +188,7 @@ public class GridLayoutContainer extends ComponentContainer {
          // rendered.
          List<Cell> cells = grid.getCells();
          for (Cell cell : cells) {
+           Info.display("INFO", "Cell pos x " + cell.getPosX() + " pos Y " + cell.getPosY());
             GridCellContainer cellContainer = createCellContainer(grid, cell, (cellWidth + 1) * cell.getColspan()+1,
                   (cellHeight + 1) * cell.getRowspan()+1);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);

@@ -36,7 +36,7 @@ public class Authority implements Serializable {
    private String username;
    
    /** The roles. */
-   private List<String> roles;
+ private ArrayList<String> roles;
    
    /**
     * Instantiates a new authority.
@@ -59,7 +59,7 @@ public class Authority implements Serializable {
     * 
     * @return the roles
     */
-   public List<String> getRoles() {
+   public ArrayList<String> getRoles() {
       return roles;
    }
    

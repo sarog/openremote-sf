@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.modeler.domain.User;
 
@@ -29,13 +29,13 @@ public interface UserRPCServiceAsync {
 
    void inviteUser(String email, String role, AsyncCallback<User> callback);
 
-   void getPendingInviteesByAccount(AsyncCallback<List<User>> callback);
+   void getPendingInviteesByAccount(AsyncCallback<ArrayList<User>> callback);
 
    void updateUserRoles(long uid, String roles, AsyncCallback<User> callback);
 
    void deleteUser(long uid, AsyncCallback<Void> callback);
 
-   void getAccountAccessUsers(AsyncCallback<List<User>> callback);
+   void getAccountAccessUsers(AsyncCallback<ArrayList<User>> callback);
 
    void getUserId(AsyncCallback<Long> callback);
 

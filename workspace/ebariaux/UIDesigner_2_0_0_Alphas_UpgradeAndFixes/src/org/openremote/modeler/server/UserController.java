@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.server;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.openremote.modeler.client.rpc.UserRPCService;
@@ -46,7 +46,7 @@ public class UserController extends BaseGWTSpringControllerWithHibernateSupport 
       this.userService = userService;
    }
 
-   public List<User> getPendingInviteesByAccount() {
+   public ArrayList<User> getPendingInviteesByAccount() {
       return userService.getPendingInviteesByAccount(userService.getCurrentUser());
    }
 
@@ -58,7 +58,7 @@ public class UserController extends BaseGWTSpringControllerWithHibernateSupport 
       userService.deleteUser(uid);
    }
 
-   public List<User> getAccountAccessUsers() {
+   public ArrayList<User> getAccountAccessUsers() {
       return userService.getAccountAccessUsers(userService.getCurrentUser());
    }
 
