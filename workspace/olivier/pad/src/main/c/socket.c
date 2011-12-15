@@ -90,7 +90,9 @@ int poll(apr_pool_t * socketPool, apr_pollset_t *pollset, apr_socket_t *lsock) {
 				}
 			}
 		} else {
-			return R_INTERN_ERROR;
+//			char errBuf[256];
+//			printf("apr_pollset_poll() returned %d, '%s'\n", rv, apr_strerror(rv, errBuf, 256));
+			if(rv != APR_TIMEUP) return R_INTERN_ERROR;
 		}
 	}
 }
