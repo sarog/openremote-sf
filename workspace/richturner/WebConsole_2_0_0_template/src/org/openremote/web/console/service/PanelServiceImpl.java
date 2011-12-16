@@ -1,5 +1,6 @@
 package org.openremote.web.console.service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -289,5 +290,29 @@ public class PanelServiceImpl implements PanelService {
 		size.setWidth(width+10);
 		size.setHeight(height+10);
 		return size;
+	}
+
+	@Override
+	public List<Integer> getGroupScreenIds(Integer groupId) {
+		List<Integer> screenIds = new ArrayList<Integer>();
+		
+		if (groupId != null && currentGroupMap != null) {
+			Group group = getGroupById(groupId);
+			if (group != null) {
+				List<ScreenRef> screenRefs = group.getInclude();
+				if (screenRefs != null) {
+					for(ScreenRef ref : screenRefs) { 
+						if (ref != null) {
+							Screen screen = getScreenById(ref.getRef());
+							if (screen != null && screen.getLandscape() == null) {
+								screenIds.add(ref.getRef());
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return screenIds;
 	}
 }

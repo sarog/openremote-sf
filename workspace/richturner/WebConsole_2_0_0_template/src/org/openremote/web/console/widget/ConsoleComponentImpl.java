@@ -91,10 +91,7 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 	
 	@Override
 	public void onRemove() {
-		if (this instanceof InteractiveConsoleComponent) {
-			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;
-			thisWidget.unRegisterHandlers();
-		}
+		unRegisterHandlers();
 	}
 	
 	@Override

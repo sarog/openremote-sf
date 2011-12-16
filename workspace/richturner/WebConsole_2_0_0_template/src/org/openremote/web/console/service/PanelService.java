@@ -1,5 +1,7 @@
 package org.openremote.web.console.service;
 
+import java.util.List;
+
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.entity.Screen;
@@ -29,4 +31,6 @@ public interface PanelService {
 	boolean isInitialized();
 	
 	PanelSize getPanelSize();
+
+	List<Integer> getGroupScreenIds(Integer groupId);
 }
