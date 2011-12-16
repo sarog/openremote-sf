@@ -1,7 +1,6 @@
 package org.openremote.web.console.unit;
 
 import java.util.List;
-
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
@@ -13,8 +12,8 @@ import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
+import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
-
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -37,6 +36,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	private String currentOrientation = "portrait";
 	private ScreenViewImpl loadingScreen;
 	private TabBarComponent currentTabBar;
+	private ScreenIndicator currentScreenIndicator;
 	private ScreenViewImpl currentScreen;
 	
 	public ConsoleDisplay() {
@@ -166,6 +166,9 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		if (currentTabBar != null) {
 			currentTabBar.setVisible(false);
 		}
+		if (currentScreenIndicator != null) {
+			currentScreenIndicator.setVisible(false);
+		}
 		currentScreen = loadingScreen;
 		loadingScreen.setVisible(true);
 	}
@@ -231,6 +234,28 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
+	protected void setScreenIndicator(ScreenIndicator screenIndicator) {		
+		if (screenIndicator == null) {
+			return;
+		}
+		
+		if (screenIndicator != currentScreenIndicator) {
+			if (currentScreenIndicator != null) {
+				removeComponent(currentScreenIndicator);
+				currentScreenIndicator = null;
+			}
+			addComponent(screenIndicator, (int)Math.round((((double)getWidth() - screenIndicator.getWidth())/2)), getHeight() - 55);
+			currentScreenIndicator = screenIndicator;
+		}
+	}
+	
+	protected void removeScreenIndicator() {
+		if (currentScreenIndicator != null) {
+			removeComponent(currentScreenIndicator);
+			currentScreenIndicator = null;
+		}
+	}
+	
 	private void addComponent(ConsoleComponentImpl component, int left, int top) {
 		display.add(component, left, top);
 		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight());
@@ -255,11 +280,11 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
-	protected void highlightTabBarItem(int screenId) {
-		if (currentTabBar != null) {
-			currentTabBar.onScreenViewChange(screenId);
-		}
-	}
+//	protected void highlightTabBarItem(int screenId) {
+//		if (currentTabBar != null) {
+//			currentTabBar.onScreenViewChange(screenId);
+//		}
+//	}
 	
 	protected void doResize(int width, int height) {
 		display.setWidth(width + "px");

@@ -36,6 +36,7 @@ import org.openremote.web.console.service.*;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
+import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
@@ -596,12 +597,22 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			if (tabBar != null && tabBar.getItem() != null) {
 				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
 				tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
+				tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(currentScreenId));
+			}
+			// Get Screen ID List and create screenIndicator
+			List<Integer> screenIds = panelService.getGroupScreenIds(newGroupId);
+			if (screenIds != null && screenIds.size() > 1) {
+				ScreenIndicator screenIndicator = new ScreenIndicator(screenIds);
+				consoleDisplay.setScreenIndicator(screenIndicator);
+				screenIndicator.onScreenViewChange(new ScreenViewChangeEvent(currentScreenId));
+			} else {
+				consoleDisplay.removeScreenIndicator();
 			}
 			currentGroupId = newGroupId;
 		}
 		
 		if (screenChanged) {
-			consoleDisplay.highlightTabBarItem(currentScreenId);			
+			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(currentScreenId));		
 		}
 	}
 	

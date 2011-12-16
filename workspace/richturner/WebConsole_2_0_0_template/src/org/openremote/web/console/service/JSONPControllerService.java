@@ -86,7 +86,7 @@ public class JSONPControllerService extends ControllerService {
 	@Override
 	public void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),2000);	
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),5000);	
 	}
 	
 	@Override
@@ -104,7 +104,7 @@ public class JSONPControllerService extends ControllerService {
 	@Override
 	public void getSensorValues(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_SENSOR_STATUS;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), new JSONPControllerCallback(command, callback));
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), new JSONPControllerCallback(command, callback),20000);
 	}
 	
 	// ------------------------   Interface Overrides End -------------------------------------------

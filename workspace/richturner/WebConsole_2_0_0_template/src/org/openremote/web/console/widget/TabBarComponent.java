@@ -3,9 +3,13 @@ package org.openremote.web.console.widget;
 import java.util.ArrayList;
 import java.util.List;
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
+import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
+import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.panel.entity.TabBar;
@@ -29,7 +33,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class TabBarComponent extends InteractiveConsoleComponent {
+public class TabBarComponent extends InteractiveConsoleComponent implements ScreenViewChangeHandler {
 	public static final String CLASS_NAME = "tabBarComponent";
 	public static final String TAB_ITEM_CLASS_NAME = "tabBarItem";
 	public static final String TAB_IMAGE_CLASS_NAME = "tabBarItemImage";
@@ -154,6 +158,8 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				this.addItem(tabBarItem);
 			}
 		}
+		// Register screen change handler
+		registerHandler(ConsoleUnitEventManager.getInstance().getEventBus().addHandler(ScreenViewChangeEvent.getType(),this));
 	}
 	
 	public int getHeight() {
@@ -303,7 +309,8 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		return component;
 	}
 
-	public void onScreenViewChange(int newScreenId) {
+	@Override
+	public void onScreenViewChange(ScreenViewChangeEvent event) {
 		if (!handlersRegistered) {
 			return;
 		}
@@ -313,7 +320,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 			if (navigate != null) {
 				Integer toScreen = navigate.getToScreen();
 				if (toScreen != null) {
-					if (toScreen == newScreenId) {
+					if (toScreen == event.getNewScreenId()) {
 						item.addStyleName("selected");
 					} else {
 						item.removeStyleName("selected");
