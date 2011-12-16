@@ -34,10 +34,11 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	public static final String TAB_ITEM_CLASS_NAME = "tabBarItem";
 	public static final String TAB_IMAGE_CLASS_NAME = "tabBarItemImage";
 	public static final String TAB_TEXT_CLASS_NAME = "tabBarItemText";
-	public static final int TAB_IMAGE_SIZE = 30;
+	public static final int TAB_BAR_HEIGHT = 46;
 	public static final int TAB_TEXT_HEIGHT = 12;
 	public static final int PADDING_TOP = 2;
 	public static final int PADDING_BOTTOM = 2;
+	public static final int PADDING_BETWEEN_IMAGE_AND_TEXT = 2;
 	private static final int TAB_ITEM_MIN_WIDTH = 60;
 	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
 	private int pageCount = 0;
@@ -60,42 +61,58 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		}
 		
 		public TabBarItemComponent(TabBarItem item, EnumSystemTabItemType systemTabType) {
+			boolean hasImage = false;
+			boolean hasText = false;
+			Image imageComponent = null;
+			Label nameComponent = null;
 			this.item = item;
 			this.systemTabType = systemTabType;
 			setStylePrimaryName(TAB_ITEM_CLASS_NAME);
 			TabImage tabImage = item.getImage();
 			setHeight("100%");
 			setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-			setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			DOM.setStyleAttribute(getElement(), "overflow", "hidden");
-			DOM.setStyleAttribute(getElement(), "paddingTop", PADDING_TOP + "px");
-			DOM.setStyleAttribute(getElement(), "paddingBottom", PADDING_BOTTOM + "px");
 			
 			// Add Image
 			if (tabImage != null) {
-				Image imageComponent = new Image();
+				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM);
+				imageComponent = new Image();
 				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
 				String controllerUrl = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
 				imageComponent.setUrl(controllerUrl + "/" + tabImage.getSrc());
-				imageComponent.setSize(TAB_IMAGE_SIZE + "px", TAB_IMAGE_SIZE + "px");
+				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
 				imageComponent.setStylePrimaryName("tabBarItemImage");
+				DOM.setStyleAttribute(imageComponent.getElement(), "padding", "0px");
+				DOM.setStyleAttribute(imageComponent.getElement(), "marginTop", PADDING_TOP + "px");
+				DOM.setStyleAttribute(imageComponent.getElement(), "marginBottom", PADDING_BOTTOM + "px");
 				this.add(imageComponent);
-			} else {
-				HTML dummy = new HTML();
-				dummy.setSize("100%", "100%");
-				dummy.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
-				this.add(dummy);
+				hasImage = true;
 			}
 			
 			// Add Text
 			if (item.getName() != null && !item.getName().equals("")) {
-				Label nameComponent = new Label();
+				int lineHeight = TAB_TEXT_HEIGHT;
+				if (!hasImage) {
+					lineHeight = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM); 
+				}
+				nameComponent = new Label();
 				nameComponent.setText(item.getName());
-				nameComponent.setSize("100%", TAB_TEXT_HEIGHT + "px");
+				nameComponent.setWidth("100%");
 				nameComponent.setStylePrimaryName(TAB_TEXT_CLASS_NAME);
-				DOM.setStyleAttribute(nameComponent.getElement(), "lineHeight", TAB_TEXT_HEIGHT + "px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "lineHeight", lineHeight + "px");
 				DOM.setStyleAttribute(nameComponent.getElement(), "fontSize", TAB_TEXT_HEIGHT + "px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "padding", "0px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "marginBottom", PADDING_BOTTOM + "px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "marginTop", PADDING_TOP + "px");
 				this.add(nameComponent);
+				hasText = true;
+			}
+			
+			// If image and text add padding between them and adjust image size
+			if (hasImage && hasText) {
+				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM + TAB_TEXT_HEIGHT + PADDING_BETWEEN_IMAGE_AND_TEXT);
+				DOM.setStyleAttribute(imageComponent.getElement(), "marginBottom", PADDING_BETWEEN_IMAGE_AND_TEXT/2 + "px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "marginTop", PADDING_BETWEEN_IMAGE_AND_TEXT/2 + "px");
+				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
 			}
 		}
 
@@ -128,7 +145,8 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	
 	public TabBarComponent(TabBar tabBar) {
 		super(new HorizontalPanel(), CLASS_NAME);
-		DOM.setIntStyleAttribute(getElement(), "zIndex", 30000 );
+		DOM.setIntStyleAttribute(getElement(), "zIndex", 1000 );
+		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
 		if (tabBar != null) {
 			// Add Elements from tab bar entity
 			for (TabBarItem item : tabBar.getItem()) {
@@ -139,7 +157,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	}
 	
 	public int getHeight() {
-		return TAB_IMAGE_SIZE + TAB_TEXT_HEIGHT + PADDING_TOP + PADDING_BOTTOM;
+		return TAB_BAR_HEIGHT;
 	}
 	
 	/*
