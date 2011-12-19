@@ -56,6 +56,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
@@ -76,6 +77,8 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
+
+import flexjson.JSONDeserializer;
 
 /**
  * @author marcus@openremote.org
@@ -472,8 +475,13 @@ public class KNXImportWindow extends FormWindow {
     private void addListenersToForm() {
         form.addListener(Events.Submit, new Listener<FormEvent>() {
             public void handleEvent(FormEvent be) {
+              Map<String, Object> data = JsonConverter.decode(be.getResultHtml());
+              if (data.containsKey("exception")) {
+                MessageBox.alert("Import Error", (String)data.get("exception"), null);
+              } else {
                 proxy.setData(be.getResultHtml());
                 loader.load();
+              }
             }
         });
     }
