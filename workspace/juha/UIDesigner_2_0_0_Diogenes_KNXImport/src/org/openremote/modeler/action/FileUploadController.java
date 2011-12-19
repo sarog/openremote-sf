@@ -84,15 +84,22 @@ public class FileUploadController extends MultiActionController {
         MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "knxproj");
         String contentType = multipartFile.getContentType();
         List<KnxGroupAddress> addresses = null;
+        HashMap<String, Object> data = new HashMap<String, Object>();
         
-        if ("text/csv".equalsIgnoreCase(contentType)) {
-          addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
-        } else {
-          addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());  
+        try
+        {
+          if ("text/csv".equalsIgnoreCase(contentType)) {
+            addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
+          } else {
+            addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());  
+          }
+          data.put("records", addresses);
+        } catch (Exception e)
+        {
+          LOGGER.error("Could not import ETS data", e);
+          data.put("exception", e.toString());
         }
         
-        HashMap<String, List<KnxGroupAddress>> data = new HashMap<String, List<KnxGroupAddress>>();
-        data.put("records", addresses);
         JSONSerializer serializer = new JSONSerializer();
         String jsonResult = serializer.exclude("*.class").deepSerialize(data);
         logger.debug("Responding with string\n" + jsonResult);
