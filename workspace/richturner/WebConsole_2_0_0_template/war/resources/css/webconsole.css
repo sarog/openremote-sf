@@ -302,9 +302,9 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .screenIndicatorItem {
-	-moz-border-radius: 2px;
-	-o-border-radius: 2px;
-	border-radius: 2px;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
 	background-color: #6E6E6E;
 }
 

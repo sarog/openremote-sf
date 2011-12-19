@@ -50,7 +50,7 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 	
 	@Override
 	public void onRender(int width, int height) {
-		initialImage.setVisible(true);
+		//initialImage.setVisible(true);
 	}
 
 	@Override

@@ -97,24 +97,28 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	
 	private void setImage(ImageContainer container) {
 		boolean showLabel = true;
+		
+		if (currentImage != null) {
+			currentImage.setVisible(false);
+			currentImage = null;
+		}
+		
 		if (container != null) {
 			if (container.getExists()) {
-				if (currentImage != null) {
-					currentImage.setVisible(false);
-				}
 				showLabel = false;
 				container.setVisible(true);	
 			}
 			currentImage = container;
-		} else {
-			if (currentImage != null) {
-				currentImage.setVisible(false);
-				currentImage = null;
-			}
 		}
-		//String backgroundStyle = showLabel ? "" : "none";
+		
 		label.setVisible(showLabel);
-		//DOM.setStyleAttribute(getElement(), "backgroundColor", backgroundStyle);
+		if	(showLabel) {
+			getElement().getStyle().clearBackgroundColor();
+			getElement().getStyle().clearBackgroundImage();
+		} else {
+			DOM.setStyleAttribute(getElement(), "backgroundColor", "transparent");
+			DOM.setStyleAttribute(getElement(), "backgroundImage", "none");
+		}
 	}
 	
 	private String getSendCommand() {

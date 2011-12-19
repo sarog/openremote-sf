@@ -1,6 +1,7 @@
 package org.openremote.web.console.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
@@ -32,7 +33,7 @@ public class LocalDataServiceImpl implements LocalDataService {
 		if (dataStore != null) {
 			dataStore.setItem(dataName, data);
 		} else {
-			Cookies.setCookie(dataName, data);
+			Cookies.setCookie(dataName, data, new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365 * 100)));
 		}
 	}
 	
