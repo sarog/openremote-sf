@@ -10,7 +10,7 @@
     <meta http-equiv = "Content-Type" content = "text/html; charset=UTF-8">
     <meta content = "openremote, open source, home automation, iphone, android,
                      knx, insteon, x10, infrared, z-wave, zigbee, isy-99, russound,
-                     lutron, domintell"
+                     lutron, domintell, globalcache, irtrans"
           name = "KEYWORDS"/>
 
     <link href = "image/OpenRemote.Logo.16x16.png" rel = "shortcut icon"/>
@@ -37,41 +37,109 @@
 
       }
 
+
+      DIV.logo
+      {
+        margin:       0px 0px 30px 0px;
+
+        text-align:   center;
+        overflow:     visible;
+
+        height:       80px;
+        max-height:   80px;
+      }
+
+
       IMG.watermark
       {
-        opacity:     0.20;
-        overflow:    visible;
+        opacity:      0.20;
 
-        z-index:     -10;
+        z-index:      -10;
 
-        position:    relative;
-        top:         -350px;
-        left:        -400px;
+        position:     relative;
+        top:          -60px;
+        left:         -390px;
       }
 
 
       DIV.warning-notice
       {
-        margin:              20px 10px;
-        padding:             20px;
+        margin:                20px 2px;
+        padding:               20px;
 
-        box-shadow:          0px 0px 35px rgba(212, 71, 15, 0.4);
-        -moz-box-shadow:     0px 0px 35px rgba(212, 71, 15, 0.4);
-        -webkit-box-shadow:  0px 0px 35px rgba(212, 71, 15, 0.4);
+        box-shadow:            0px 0px 8px rgba(212, 71, 15, 0.4);
+        -moz-box-shadow:       0px 0px 8px rgba(212, 71, 15, 0.4);
+        -webkit-box-shadow:    0px 0px 8px rgba(212, 71, 15, 0.4);
 
-        background-color:    rgba(212, 71, 15, 0.6);
-        color:               rgba(156, 48, 26, 0.95);
+        background-color:      rgba(212, 71, 15, 0.6);
+        color:                 rgba(156, 48, 26, 0.8);
 
-        border-width:        3px;
-        border-color:        rgba(156, 48, 26, .8);
-        border-style:        solid;
+        border-width:          3px;
+        border-color:          rgba(156, 48, 26, .8);
+        border-style:          solid;
 
         border-radius:         15px;
         -moz-border-radius:    15px;
         -webkit-border-radius: 15px;
 
-        display:             none;
+        display:               none;
       }
+
+
+      DIV.box
+      {
+        margin:                20px 0px;
+        padding:               0px 20px 0px 20px;
+
+        box-shadow:            0px 0px 35px rgba(107, 92, 79, 0.4);
+        -moz-box-shadow:       0px 0px 35px rgba(107, 92, 79, 0.4);
+        -webkit-box-shadow:    0px 0px 35px rgba(107, 92, 79, 0.4);
+
+        background-color:      rgba(245, 245, 245, 0.6);
+
+        border-width:          3px;
+        border-color:          white;
+        border-style:          solid;
+
+        border-radius:         15px;
+        -moz-border-radius:    15px;
+        -webkit-border-radius: 15px;
+
+        position:              relative;
+      }
+
+      H2.box-header
+      {
+        font-weight:  normal;
+        font-size:    15px;
+
+        margin:	      10px 0px 20px 0px;
+        color:        rgba(79, 168, 0, 1.0);
+        text-shadow:  2px 2px 2px rgba(230, 219, 209, 1.0);
+      }
+
+
+      DIV.box P
+      {
+        color:        rgba(107, 92, 79, 1.0);
+        margin:       10px 0px 20px 0px;
+
+        font-family:    Verdana, Arial, sans-serif;
+        letter-spacing: 0.08em
+      }
+
+
+      DIV.box P A,
+      DIV.box P A:visited
+      {
+        color:        rgba(79, 168, 0, 1.0);
+      }
+
+      DIV.box P A:hover
+      {
+        color:        rgba(186, 235, 92, 1.0);
+      }
+
       
       .form_label
       {
@@ -80,7 +148,7 @@
 
       .center-form
       {
-        margin:             8em auto;
+        margin:             auto;
         font-size:          11px;
         color:              #4D4D4D;
         width:              500px;
@@ -100,6 +168,7 @@
       .copyright
       {
         text-align:         center;
+        margin:             5px 0px 80px 0px;
       }
 
       p.title
@@ -168,17 +237,24 @@
 
     <div class = "main">
 
-
       <!-- ============ LOGO TITLE ======================================= -->
 
-      <div style = "text-align: center;">
+      <div class = "logo">
         <p>
           <a href = "http://www.openremote.org">
             <img src = "http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png"
-                 border = "0"/>
+              border = "0"/>
           </a>
         </p>
+
+      <!-- 'watermark' -->
+
+      <img class = "watermark" src = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
+          border = "0"/>
+
       </div>
+
+        
 
       <div class="center-form">
 
@@ -260,13 +336,44 @@
 		  </div>
 	    </form>
 
+
+        <!-- ========== COPYRIGHT NOTICE =================================================== -->
+
+
         <p class = "copyright">
             Copyright &copy; 2008-<fmt:formatDate value = "${now}" pattern = "yyyy"/>
-            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111212
+            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111219 (Alpha 9)
         </p>
 
-        <img class = "watermark" src = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
-             align = "absmiddle" border = "0"/>
+
+
+        <!-- ========== CONTROLLER DOWNLOAD REMINDER ====================================== -->
+
+<!--
+        <div class = "box">
+
+          <img style  = "position: absolute; left: -50px; bottom: 0px;"
+               src    = "http://www.openremote.org/download/attachments/12845303/ControllerBox_192x144.png"
+               border = "0" />
+            
+          <div style = "margin: 0px 0px 30px 120px;">
+
+            <h2 class = "box-header">Have You Installed OpenRemote Controller?</h2>
+
+            <p>
+              OpenRemote Automation requires controller installed in your local area
+              network (LAN).
+            </p>
+
+            <p>
+              Installation instructions are available for Windows, Linux,
+              Mac OS X, Synology NAS, ReadyNAS, QNAP NAS and <a href = "http://openremote.org/display/orb/Building+OpenRemote+Hardware+Reference+Implementation">ALIX</a>.
+            </p>
+
+          </div>
+
+        </div>
+-->
 
       </div>
     </div>
