@@ -79,6 +79,9 @@ public class KnxImporter
 
       if (xmlData != null)
       {
+        //Remove UTF-8 Byte-order mark from the beginning of the data
+        xmlData = xmlData.trim().replaceFirst("^([\\W]+)<","<");
+        
         // parse the XML as a W3C Document
         StringReader in = new StringReader(xmlData);
         document = builder.build(in);
