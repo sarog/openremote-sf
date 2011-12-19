@@ -17,6 +17,8 @@ public class ImageContainer implements LoadHandler {
 		this.loadedCallback = loadedCallback;
 		image.addLoadHandler(this);
 		image.setVisible(false);
+		image.setWidth("100%");
+		image.setHeight("100%");
 		this.image = image;
 	}
 	

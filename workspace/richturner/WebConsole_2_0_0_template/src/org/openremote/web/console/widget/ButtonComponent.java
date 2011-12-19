@@ -13,6 +13,9 @@ import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.ButtonDefault;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.util.ImageContainer;
+import org.openremote.web.console.util.ImageLoadedCallback;
+
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
@@ -21,7 +24,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
-public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
+public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler, LoadHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	public static final int LABEL_FONT_SIZE = 12;
 	private String name;
@@ -41,6 +44,8 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
 		img = new Image();
+		img.setWidth("100%");
+		img.setHeight("100%");
 		img.addLoadHandler(new LoadHandler() {
 
 			@Override
@@ -72,8 +77,9 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	public void showImage() {
 		if (srcExists) {
 			img.setVisible(true);
-			label.setVisible(false);
-			//DOM.setStyleAttribute(getElement(), "background", "none");
+			label.setVisible(false);			
+			DOM.setStyleAttribute(getElement(), "backgroundColor", "transparent");
+			DOM.setStyleAttribute(getElement(), "backgroundImage", "none");
 		} else {
 			hideImage();
 		}
@@ -82,7 +88,8 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	public void hideImage() {
 		img.setVisible(false);
 		label.setVisible(true);
-		//DOM.setStyleAttribute(getElement(), "background", "");
+		getElement().getStyle().clearBackgroundColor();
+		getElement().getStyle().clearBackgroundImage();
 	}
 	
 	@Override
@@ -116,6 +123,12 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		} else if (hasControlCommand) {
 			eventBus.fireEvent(new CommandSendEvent(getId(), "click", this));
 		}
+	}
+	
+	@Override
+	public void onLoad(LoadEvent event) {
+		srcExists = true;
+		showImage();
 	}
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
