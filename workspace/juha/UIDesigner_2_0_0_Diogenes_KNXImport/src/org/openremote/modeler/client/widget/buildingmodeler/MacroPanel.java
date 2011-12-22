@@ -93,7 +93,7 @@ public class MacroPanel extends ContentPanel {
       setLayout(new FitLayout());
       selectionService = new SelectionServiceExt<BeanModel>();
       createMenu();
-      createMacroTree();
+//      createMacroTree();
       setIcon(icons.macroIcon());
       getHeader().ensureDebugId(DebugId.DEVICE_MACRO_PANEL_HEADER);
    }
@@ -376,4 +376,12 @@ public class MacroPanel extends ContentPanel {
       return changeListener;
    }
 
+  @Override
+  protected void onExpand() {
+     if (macroListContainer == null) {
+       createMacroTree();
+     }
+    super.onExpand();
+  }
+   
 }
