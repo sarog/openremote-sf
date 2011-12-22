@@ -19,6 +19,7 @@
  <inherits name='com.extjs.gxt.themes.Themes' />            
 	<source path='domain'/>
 	<source path='client'/>
+	<source path='shared'/>
 	<source path='protocol'/>
 	<source path='touchpanel'/>
 	<source path='auth'/>
