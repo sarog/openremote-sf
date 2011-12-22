@@ -223,6 +223,7 @@
                 <prop key = "samsungTV">samsungTVCommandBuilder</prop>
                 <prop key = "russound">russoundCommandBuilder</prop>
                 <prop key = "hsc40">hsc40CommandBuilder</prop>
+                <prop key = "shellexe">shellexeCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -241,6 +242,9 @@
 	
 	<!-- WOL Command Builder -->
 	<bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
+	
+	<!-- shellexe Command Builder -->
+	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	
 	<!-- Samsung TV Command Builder -->
 	<bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
