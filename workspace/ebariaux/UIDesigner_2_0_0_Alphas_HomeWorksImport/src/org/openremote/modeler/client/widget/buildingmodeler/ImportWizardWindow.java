@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.lutron.OutputType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -134,6 +135,9 @@ public class ImportWizardWindow extends FormWindow {
         }
         
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
+        
+        // TODO: have a method that saves everything in 1 go, maybe everything is created on the server side, just pass the info required to do it
+        
         DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(projectOverlay.getAreas()), new AsyncSuccessCallback<List<BeanModel>>() {
           @Override
           public void onSuccess(final List<BeanModel> deviceCommandModels) {
@@ -148,6 +152,13 @@ public class ImportWizardWindow extends FormWindow {
                   public void onSuccess(List<BeanModel> sliderModels) {
                     Info.display("INFO", "Slider saved");
                     allModels.addAll(sliderModels);
+                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
+                  }
+                  
+                  @Override
+                  public void onFailure(Throwable caught) {
+                    Info.display("ERROR", "Error saving sliders");
+                    // TODO: better handling of this
                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
                   }
                 });
@@ -166,33 +177,27 @@ public class ImportWizardWindow extends FormWindow {
               if (room.getOutputs() != null) {
                 for (int k = 0; k < room.getOutputs().length(); k++) {
                   OutputOverlay output = room.getOutputs().get(k);
-                  Info.display("INFO", "Output " + output.getName() + " - type is " + output.getType());
-                  if ("Dimmer".equals(output.getType()) || "QEDShade".equals(output.getType())) {
-    //              if (Output.OutputType.Dimmer.equals(output.getType()) || Output.OutputType.QEDShade.equals(output.getType())) {
+                  if (OutputType.Dimmer.toString().equals(output.getType()) || OutputType.QEDShade.toString().equals(output.getType())) {
                     addDeviceCommand(device, output, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
                     addDeviceCommand(device, output, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
                     addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
                     addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
                     addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-    //              } else if (Output.OutputType.GrafikEyeMainUnit.equals(output.getType())) {
-                  } else if ("GrafikEyeMainUnit".equals(output.getType())) {
+                  } else if (OutputType.GrafikEyeMainUnit.toString().equals(output.getType())) {
                     addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
                     addDeviceCommand(device, output, "STATUS_SCENE", "0", NoLevel, NoKey, "_OffRead");
                     for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
                       addDeviceCommand(device, output, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
                       addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
                     }
-    
                     addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
-                  } else if ("Fan".equals(output.getType())) {
-    //              } else if (Output.OutputType.Fan.equals(output.getType())) {
+                  } else if (OutputType.Fan.toString().equals(output.getType())) {
                     addDeviceCommand(device, output, "FADE", NoScene, "0", NoKey, "_Off");
                     addDeviceCommand(device, output, "FADE", NoScene, "25", NoKey, "_Low");
                     addDeviceCommand(device, output, "FADE", NoScene, "50", NoKey, "_Medium");
                     addDeviceCommand(device, output, "FADE", NoScene, "75", NoKey, "_MediumHigh");
                     addDeviceCommand(device, output, "FADE", NoScene, "100", NoKey, "_Full");
-                  }
-    
+                  }    
                   // TODO: handle other output types
                 }
               }
