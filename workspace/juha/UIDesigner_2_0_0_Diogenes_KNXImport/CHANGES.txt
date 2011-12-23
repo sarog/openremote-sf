@@ -1,4 +1,13 @@
 
+Designer 2.0 Alpha 10 (2011-12-24 Jolly Noel)
+=============================================
+
+- Fixed issue with macro display tree not always showing content,
+  http://jira.openremote.org/browse/MODELER-259 (R5436 - Eric Bariaux)
+- KNX Import bug fix on parsing DPTs (R5439 - Marcus Redeker)
+
+
+
 Designer 2.0 Alpha 9 (2011-12-12 Voldemort)
 ===========================================
 
