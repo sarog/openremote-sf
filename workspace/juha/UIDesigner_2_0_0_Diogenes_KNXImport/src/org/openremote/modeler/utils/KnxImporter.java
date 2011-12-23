@@ -106,7 +106,13 @@ public class KnxImporter
           {
             StringTokenizer st = new StringTokenizer(dpt, "-");
             st.nextElement();
-            dpt = st.nextToken() + "." + df.format(Integer.parseInt(st.nextToken()));
+            try
+            {
+              dpt = st.nextToken() + "." + df.format(Integer.parseInt(st.nextToken()));
+            } catch (Exception e)
+            {
+              dpt = null;
+            }
           } else
           {
             dpt = null;
