@@ -33,7 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.openremote.modeler.client.lutron.importmodel.Project;
 import org.openremote.modeler.domain.KnxGroupAddress;
+import org.openremote.modeler.lutron.ImportException;
+import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
@@ -52,7 +55,7 @@ import flexjson.JSONSerializer;
 public class FileUploadController extends MultiActionController {
 
     private static final Logger LOGGER = Logger.getLogger(FileUploadController.class);
-
+   
     /** The resource service. */
     private ResourceService resourceService;
 
@@ -107,6 +110,20 @@ public class FileUploadController extends MultiActionController {
         response.getWriter().println(jsonResult);
     }
 
+    public void importLutron(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "lutron");
+
+      try {
+        Project project = LutronHomeworksImporter.importXMLConfiguration(multipartFile.getInputStream());
+        JSONSerializer serializer = new JSONSerializer();
+        response.getWriter().println(serializer.exclude("*.class").deepSerialize(project));
+      } catch (ImportException e) {
+        LOGGER.error("Import file error.", e);
+        response.getWriter().println("{\"ERROR\":\"" + e.getMessage() + "\"}");
+        
+      }
+    }
+    
     /**
      * Sets the resource service.
      * 
