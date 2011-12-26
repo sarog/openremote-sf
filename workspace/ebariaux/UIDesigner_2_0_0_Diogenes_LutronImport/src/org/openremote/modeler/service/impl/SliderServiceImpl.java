@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
@@ -100,6 +102,15 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          }
       }
       return result;
+   }
+
+   @Transactional
+   public List<Slider> saveAllSliders(List<Slider> sliderList, Account account) {
+       for (Slider slider : sliderList) {
+           slider.setAccount(account);
+           genericDAO.save(slider);
+       }
+       return sliderList;
    }
 
    public void setUserService(UserService userService) {
