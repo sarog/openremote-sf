@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.lutron.importmodel.Area;
-import org.openremote.modeler.client.lutron.importmodel.ControlStation;
-import org.openremote.modeler.client.lutron.importmodel.Output;
-import org.openremote.modeler.client.lutron.importmodel.Room;
+import org.openremote.modeler.client.lutron.importmodel.AreaOverlay;
+import org.openremote.modeler.client.lutron.importmodel.ArrayOverlay;
+import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
+import org.openremote.modeler.client.lutron.importmodel.OutputOverlay;
+import org.openremote.modeler.client.lutron.importmodel.ProjectOverlay;
+import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
@@ -25,6 +27,7 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.lutron.OutputType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -32,15 +35,13 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.Label;
 
 public class ImportWizardWindow extends FormWindow {
@@ -121,85 +122,43 @@ public class ImportWizardWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-
-        JSONObject jsonProject = JSONParser.parse(be.getResultHtml()).isObject();
-
-        if (jsonProject.get("ERROR") != null) {
-          reportError(jsonProject.get("ERROR").isString().stringValue());
+        LutronImportResultOverlay importResult = LutronImportResultOverlay.fromJSONString(be.getResultHtml());
+        if (importResult.getErrorMessage() != null) {
+          reportError(importResult.getErrorMessage());
           return;
         }
-        List<Area> areas = new ArrayList<Area>();
-
-        try {
-          if (jsonProject.get("areas") == null) {
-            reportError("File does not contain any information");
-            return;
-          }
-
-          // Start by re-building the Lutron import object model form JSON
-          // TODO: this should be handled by a deserializer and not done manually
-          JSONArray jsonAreas = jsonProject.get("areas").isArray();
-          for (int i = 0; i < jsonAreas.size(); i++) {
-            JSONObject jsonArea = jsonAreas.get(i).isObject();
-            Area area = new Area(jsonArea.get("name").isString().stringValue());
-            areas.add(area);
-            if (jsonArea.get("rooms") != null) {
-              JSONArray jsonRooms = jsonArea.get("rooms").isArray();
-              for (int j = 0; j < jsonRooms.size(); j++) {
-                JSONObject jsonRoom = jsonRooms.get(i).isObject();
-                Room room = new Room(jsonRoom.get("name").isString().stringValue());
-                area.addRoom(room);
-                if (jsonRoom.get("outputs") != null) {
-                  JSONArray jsonOutputs = jsonRoom.get("outputs").isArray();
-                  for (int k = 0; k < jsonOutputs.size(); k++) {
-                    JSONObject jsonOutput = jsonOutputs.get(k).isObject();
-                    Output output = new Output(jsonOutput.get("name").isString().stringValue(), Output.OutputType.valueOf(jsonOutput.get("type").isString().stringValue()), jsonOutput.get("address").isString().stringValue());
-                    room.addOutput(output);
-                  }
-                }
-                if (jsonRoom.get("inputs") != null) {
-                  JSONArray jsonInputs = jsonRoom.get("inputs").isArray();
-                  for (int k = 0; k < jsonInputs.size(); k++) {
-                    JSONObject jsonControlStation = jsonInputs.get(k).isObject();
-                    ControlStation controlStation = new ControlStation(jsonControlStation.get("name").isString().stringValue());
-                    room.addInput(controlStation);
-                    JSONArray jsonDevices = jsonControlStation.get("devices").isArray();
-                    for (int l = 0; l < jsonDevices.size(); l++) {
-                      JSONObject jsonDevice = jsonDevices.get(l).isObject();
-                      org.openremote.modeler.client.lutron.importmodel.Device aDevice = new org.openremote.modeler.client.lutron.importmodel.Device(
-                              org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.valueOf(jsonDevice.get("type").isString().stringValue()),
-                              jsonDevice.get("address").isString().stringValue(),
-                              jsonDevice.get("webEnabled").isBoolean().booleanValue(), jsonDevice.get("webKeypadName").isString().stringValue());
-                      controlStation.addDevice(aDevice);
-                      JSONArray jsonButtons = jsonDevice.get("buttons").isArray();
-                      for (int m = 0; m < jsonButtons.size(); m++) {
-                        JSONObject jsonButton = jsonButtons.get(m).isObject();
-                        org.openremote.modeler.client.lutron.importmodel.Button button = new org.openremote.modeler.client.lutron.importmodel.Button(jsonButton.get("name").isString().stringValue(), (int) jsonButton.get("number").isNumber().doubleValue());
-                        aDevice.addButton(button);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } catch (Exception e) {
-          reportError(PARSING_ERROR_MESSAGE);
+        
+        ProjectOverlay projectOverlay = importResult.getProject();
+        if (projectOverlay.getAreas() == null) {
+          reportError("File does not contain any information");
           return;
         }
         
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
-        DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(areas), new AsyncSuccessCallback<List<BeanModel>>() {
+        
+        // TODO: have a method that saves everything in 1 go, maybe everything is created on the server side, just pass the info required to do it
+        
+        DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(projectOverlay.getAreas()), new AsyncSuccessCallback<List<BeanModel>>() {
           @Override
           public void onSuccess(final List<BeanModel> deviceCommandModels) {
+            Info.display("INFO", "Commands saved");
             allModels.addAll(deviceCommandModels);
             SensorBeanModelProxy.saveSensorList(createSensors(deviceCommandModels), new AsyncSuccessCallback<List<BeanModel>>() {
               @Override
               public void onSuccess(List<BeanModel> sensorModels) {
+                Info.display("INFO", "Sensor saved");
                 allModels.addAll(sensorModels);
                 SliderBeanModelProxy.saveSliderList(createSliders(deviceCommandModels, sensorModels), new AsyncSuccessCallback<List<BeanModel>>() {
                   public void onSuccess(List<BeanModel> sliderModels) {
+                    Info.display("INFO", "Slider saved");
                     allModels.addAll(sliderModels);
+                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
+                  }
+                  
+                  @Override
+                  public void onFailure(Throwable caught) {
+                    Info.display("ERROR", "Error saving sliders");
+                    // TODO: better handling of this
                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
                   }
                 });
@@ -209,57 +168,63 @@ public class ImportWizardWindow extends FormWindow {
         });
       }
 
-      private List<DeviceCommand> createDeviceCommands(final List<Area> areas) {
-        for (Area area : areas) {
-          for (Room room : area.getRooms()) {
-            for (Output output : room.getOutputs()) {
-              if (Output.OutputType.Dimmer.equals(output.getType()) || Output.OutputType.QEDShade.equals(output.getType())) {
-                addDeviceCommand(device, output, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
-                addDeviceCommand(device, output, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
-                addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
-                addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
-                addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-              } else if (Output.OutputType.GrafikEyeMainUnit.equals(output.getType())) {
-                addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
-                addDeviceCommand(device, output, "STATUS_SCENE", "0", NoLevel, NoKey, "_OffRead");
-                for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
-                  addDeviceCommand(device, output, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
-                  addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
+      private List<DeviceCommand> createDeviceCommands(final ArrayOverlay<AreaOverlay> areas) {
+        for (int i = 0; i < areas.length(); i++) {
+          AreaOverlay area = areas.get(i);
+          if (area.getRooms() != null) {
+            for (int j = 0; j < area.getRooms().length(); j++) {
+              RoomOverlay room = area.getRooms().get(j);
+              if (room.getOutputs() != null) {
+                for (int k = 0; k < room.getOutputs().length(); k++) {
+                  OutputOverlay output = room.getOutputs().get(k);
+                  if (OutputType.Dimmer.toString().equals(output.getType()) || OutputType.QEDShade.toString().equals(output.getType())) {
+                    addDeviceCommand(device, output, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
+                    addDeviceCommand(device, output, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
+                    addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
+                    addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
+                    addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
+                  } else if (OutputType.GrafikEyeMainUnit.toString().equals(output.getType())) {
+                    addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
+                    addDeviceCommand(device, output, "STATUS_SCENE", "0", NoLevel, NoKey, "_OffRead");
+                    for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
+                      addDeviceCommand(device, output, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
+                      addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
+                    }
+                    addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
+                  } else if (OutputType.Fan.toString().equals(output.getType())) {
+                    addDeviceCommand(device, output, "FADE", NoScene, "0", NoKey, "_Off");
+                    addDeviceCommand(device, output, "FADE", NoScene, "25", NoKey, "_Low");
+                    addDeviceCommand(device, output, "FADE", NoScene, "50", NoKey, "_Medium");
+                    addDeviceCommand(device, output, "FADE", NoScene, "75", NoKey, "_MediumHigh");
+                    addDeviceCommand(device, output, "FADE", NoScene, "100", NoKey, "_Full");
+                  }    
+                  // TODO: handle other output types
                 }
-
-                addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
-              } else if (Output.OutputType.Fan.equals(output.getType())) {
-                addDeviceCommand(device, output, "FADE", NoScene, "0", NoKey, "_Off");
-                addDeviceCommand(device, output, "FADE", NoScene, "25", NoKey, "_Low");
-                addDeviceCommand(device, output, "FADE", NoScene, "50", NoKey, "_Medium");
-                addDeviceCommand(device, output, "FADE", NoScene, "75", NoKey, "_MediumHigh");
-                addDeviceCommand(device, output, "FADE", NoScene, "100", NoKey, "_Full");
               }
-
-              // TODO: handle other output types
-            }
-            for (ControlStation controlStation : room.getInputs()) {
-              for (org.openremote.modeler.client.lutron.importmodel.Device roomDevice : controlStation.getDevices()) {
-                for (org.openremote.modeler.client.lutron.importmodel.Button button : roomDevice.getButtons()) {
-                  if (org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.Keypad.equals(roomDevice.getType())) {
-                    /*
-                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Press", roomDevice.getAddress(), "PRESS", NoScene, NoLevel, Integer.toString(button.getNumber()));
-                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Release", roomDevice.getAddress(), "RELEASE", NoScene, NoLevel, Integer.toString(button.getNumber()));
-                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Hold", roomDevice.getAddress(), "HOLD", NoScene, NoLevel, Integer.toString(button.getNumber()));
-                    */
-                    // TODO: if defined as web keypad, generate UI
+              /*
+              for (ControlStation controlStation : room.getInputs()) {
+                for (org.openremote.modeler.server.lutron.importmodel.Device roomDevice : controlStation.getDevices()) {
+                  for (org.openremote.modeler.server.lutron.importmodel.Button button : roomDevice.getButtons()) {
+                    if (org.openremote.modeler.server.lutron.importmodel.Device.DeviceType.Keypad.equals(roomDevice.getType())) {
+                      /*
+                      addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Press", roomDevice.getAddress(), "PRESS", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                      addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Release", roomDevice.getAddress(), "RELEASE", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                      addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Hold", roomDevice.getAddress(), "HOLD", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                      *//*
+                      // TODO: if defined as web keypad, generate UI
+                    }
                   }
                 }
-              }
-              // TODO: handle other input types
+                // TODO: handle other input types
+              }*/
             }
           }
         }
-
+        Info.display("INFO", "Before returning commands");
         return device.getDeviceCommands();
       }
-      
-      private List<Sensor> createSensors(final List<BeanModel> deviceCommands) {
+
+     private List<Sensor> createSensors(final List<BeanModel> deviceCommands) {
         List<Sensor> result = new ArrayList<Sensor>();
         
         for (BeanModel commandBeanModel : deviceCommands) {
@@ -341,7 +306,7 @@ public class ImportWizardWindow extends FormWindow {
     return slider;
   }
 
-  private DeviceCommand addDeviceCommand(Device aDevice, Output output, String command, String scene, String level, String key, String nameSuffix) {
+  private DeviceCommand addDeviceCommand(Device aDevice, OutputOverlay output, String command, String scene, String level, String key, String nameSuffix) {
     return addDeviceCommand(aDevice, output.getName() + nameSuffix, output.getAddress(), command, scene, level, key);
   }
 
@@ -366,7 +331,7 @@ public class ImportWizardWindow extends FormWindow {
     aDevice.getDeviceCommands().add(dc);
     return dc;
   }
-  
+
   private String removeEnd(String receiver, int length) {
     if (receiver == null) {
       return null;
