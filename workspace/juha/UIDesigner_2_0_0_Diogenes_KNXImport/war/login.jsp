@@ -271,7 +271,7 @@
           <div class="inner-boundary">
             <div class="inner-border">
 
-              <p class="title">Login to OpenRemote Designer Alpha (Voldemort)</p>
+              <p class="title">Login to OpenRemote Designer Alpha (Jolly Noel)</p>
 
               <c:if test = "${isActivated ne null and isActivated}">
                 <p class="pass"><b>${username}</b> has been activated, please login.</p>
@@ -342,7 +342,7 @@
 
         <p class = "copyright">
             Copyright &copy; 2008-<fmt:formatDate value = "${now}" pattern = "yyyy"/>
-            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111219 (Alpha 9)
+            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111226 (Alpha 10)
         </p>
 
 
