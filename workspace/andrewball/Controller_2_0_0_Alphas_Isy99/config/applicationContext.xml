@@ -184,6 +184,7 @@
         <prop key = "russound">russoundCommandBuilder</prop>
         <prop key = "udp">udpSocketCommandBuilder</prop>
         <prop key = "denonAVRSerial">denonAVRSerialCommandBuilder</prop>
+        <prop key = "isy99">isy99CommandBuilder</prop>
       </props>
     </property>
   </bean>
@@ -239,6 +240,11 @@
   <bean id = "denonAVRSerialCommandBuilder"
         class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
         scope = "prototype"/>
+
+  <!-- ISY-99 Command Builder-->
+  <bean id = "isy99CommandBuilder"
+        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder"
+        scope = "prototype" />
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
