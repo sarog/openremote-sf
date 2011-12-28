@@ -23,7 +23,6 @@ package org.openremote.modeler.action;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -88,10 +87,12 @@ public class FileUploadController extends MultiActionController {
         
         try
         {
-          if ("text/csv".equalsIgnoreCase(contentType)) {
+          if (("text/csv".equalsIgnoreCase(contentType)) || ("text/plain".equalsIgnoreCase(contentType))) {
             addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
-          } else {
+          } else if ("application/octet-stream" .equalsIgnoreCase(contentType)) {
             addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());  
+          } else {
+            throw new RuntimeException("Unsupported content-type: " + contentType);
           }
           data.put("records", addresses);
         } catch (Exception e)
