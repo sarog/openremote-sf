@@ -77,11 +77,8 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
 //  private Isy99Config isy99Config;
 
   private String host;
-  //= "192.168.41.12"; // TODO get from config.properties
   private String userName;
-  //= "admin"; // TODO get from config.properties
-  private String password; 
-  //= "admin"; // TODO get from config.properties
+  private String password;
 
   /**
    * The address for this particular 'command' instance.
