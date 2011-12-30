@@ -146,7 +146,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       urlBuilder.append("http://");
       urlBuilder.append(host);
       urlBuilder.append(urlPath);
-      urlBuilder.append(address);
+      urlBuilder.append(address.replaceAll(" ", "%20"));
       urlBuilder.append(preIsy99Cmd);
       urlBuilder.append(command);
 
@@ -213,7 +213,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
           new AuthScope(host, 80),
           new UsernamePasswordCredentials(userName, password));
       // does this work with the map?
-      urlStr = "http://" + host + urlPath + address + preIsy99Cmd;
+      urlStr = "http://" + host + urlPath + address.replaceAll(" ", "%20") + preIsy99Cmd;
 
       HttpGet httpget = new HttpGet(urlStr);
 
