@@ -35,29 +35,30 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch </a>
  *
  */
-public class Isy99CommandBuilder implements CommandBuilder {
+public class Isy99CommandBuilder implements CommandBuilder
+{
 
-	// Constants ------------------------------------------------------------------------------------
+  // Constants ------------------------------------------------------------------------------------
 
-	/**
-	 * A common log category name intended to be used across all classes related
-	 * to isy99 implementation.
-	 */
-	public final static String ISY99_LOG_CATEGORY = "ISY99";
+  /**
+   * A common log category name intended to be used across all classes related
+   * to isy99 implementation.
+   */
+  public final static String ISY99_LOG_CATEGORY = "ISY99";
 
-	/**
-	 * String constant for parsing isy99 protocol XML entries from
-	 * controller.xml file.
-	 */
-	public final static String ISY99_XMLPROPERTY_ADDRESS = "address";
+  /**
+   * String constant for parsing isy99 protocol XML entries from
+   * controller.xml file.
+   */
+  public final static String ISY99_XMLPROPERTY_ADDRESS = "address";
 
-	/**
-	 * String constant for parsing  protocol XML entries from
-	 * controller.xml file.
-	 */
-	public final static String ISY99_XMLPROPERTY_COMMAND = "command";
+  /**
+   * String constant for parsing  protocol XML entries from
+   * controller.xml file.
+   */
+  public final static String ISY99_XMLPROPERTY_COMMAND = "command";
 
-	/**
+  /**
    * String constant for parsing isy99 protocol XML entries from
    * controller.xml file.
    */
@@ -74,23 +75,21 @@ public class Isy99CommandBuilder implements CommandBuilder {
    * controller.xml file.
    */
   public final static String ISY99_XMLPROPERTY_HOST = "isy99host";
-	
+
   /**
    * String constant for parsing isy99 protocol XML entries from
    * controller.xml file.
    */
   public final static String ISY99_XMLPROPERTY_REVOFXML = "revOfXml";
-  
-  
-	
-	// Class Members --------------------------------------------------------------------------------
 
-	/**
-	 *isy99 logger. Uses a common category for allisy99 related logging.
-	 */
-	private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
+  // Class Members --------------------------------------------------------------------------------
 
-	// Instance Fields ------------------------------------------------------------------------------
+  /**
+   *isy99 logger. Uses a common category for allisy99 related logging.
+   */
+  private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
+
+  // Instance Fields ------------------------------------------------------------------------------
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -99,118 +98,126 @@ public class Isy99CommandBuilder implements CommandBuilder {
 
   }
 
+  // Implements EventBuilder ----------------------------------------------------------------------
 
-  
-	// Implements EventBuilder ----------------------------------------------------------------------
-
-	/**
-	 * Parses the isy99  command XML snippets and builds a
-	 * corresponding isy99  command instance.
-	 * <p>
-	 * 
-	 * The expected XML structure is:
-	 * 
-	 * <pre>
-	 * @code
-	 * REST API for isy99 
-	 * http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
-	 * TODO remove %20 
-	 * <command protocol = "isy99" >
+  /**
+   * Parses the isy99  command XML snippets and builds a
+   * corresponding isy99  command instance.
+   * <p>
+   * 
+   * The expected XML structure is:
+   * 
+   * <pre>
+   * @code
+   * REST API for isy99 
+   * http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
+   * TODO remove %20 
+   * <command protocol = "isy99" >
    *   <property name = "host" value = "192.168.1.10"/>
    *   <property name = "username" value = "admin"/>
    *   <property name = "password" value = "admin"/>
-	 *   <property name = "address" value = "17%2054%20AE%201"/>
-	 *   <property name = "command" value = "DON"/>
+   *   <property name = "address" value = "17%2054%20AE%201"/>
+   *   <property name = "command" value = "DON"/>
    *   <property name = "revOfXm" value = "1"/>
-	 * </command>
-	 * }
-	 * </pre>
-	 * 
-	 * Additional properties not listed here are ignored.
-	 * 
-	 * @throws NoSuchCommandException
-	 *             if the isy99  command instance cannot be
-	 *             constructed from the XML snippet for any reason
-	 * 
-	 * @return an immutable isy99  command instance with known
-	 *         configured properties set
-	 */
-	@Override
-	public Command build(Element element) {
-	  //todo should be in the dot 
-	  String userNameAsStr = null;
+   * </command>
+   * }
+   * </pre>
+   * 
+   * Additional properties not listed here are ignored.
+   * 
+   * @throws NoSuchCommandException
+   *             if the isy99  command instance cannot be
+   *             constructed from the XML snippet for any reason
+   * 
+   * @return an immutable isy99  command instance with known
+   *         configured properties set
+   */
+  @Override
+  public Command build(Element element)
+  {
+    //todo should be in the dot 
+    String userNameAsStr = null;
     String passwordAsStr = null;
-    String hostAsStr     = null; 
-    
-		String addressAsStr  = null;
-		String commandAsStr  = null;
-		String commandParmsAsStr  = null;
-    
-		String revOfXmlAsStr = null; 
-		
-		
-    
-		// Get the list of properties from XML...
-		String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-    
-		@SuppressWarnings("unchecked")
-    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
+    String hostAsStr = null;
+    String addressAsStr = null;
+    String commandAsStr = null;
+    String commandParmsAsStr = null;
+    String revOfXmlAsStr = null;
 
-		for (Element el : propertyElements) {
-			String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
-			String propertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
-      log.debug("parsing controler.xml "+propertyName + " ="+ propertyValue ); 
-			if (ISY99_XMLPROPERTY_HOST.equalsIgnoreCase(propertyName)) {
+    // Get the list of properties from XML...
+    String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+
+    @SuppressWarnings("unchecked")
+    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
+        element.getNamespace());
+
+    for (Element el : propertyElements)
+    {
+      String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
+      String propertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
+      log.debug("parsing controler.xml " + propertyName + " = " + propertyValue);
+      if (ISY99_XMLPROPERTY_HOST.equalsIgnoreCase(propertyName))
+      {
         hostAsStr = propertyValue;
       }
-			else if (ISY99_XMLPROPERTY_USERNAME.equalsIgnoreCase(propertyName)) {
+      else if (ISY99_XMLPROPERTY_USERNAME.equalsIgnoreCase(propertyName))
+      {
         userNameAsStr = propertyValue;
       }
-      else if (ISY99_XMLPROPERTY_PASSWORD.equalsIgnoreCase(propertyName)) {
+      else if (ISY99_XMLPROPERTY_PASSWORD.equalsIgnoreCase(propertyName))
+      {
         passwordAsStr = propertyValue;
       }
-      else if (ISY99_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName)) {
-				addressAsStr = propertyValue;
-			}
-      else if (ISY99_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName)) {
-				commandAsStr = propertyValue;
-			}
-			else if (ISY99_XMLPROPERTY_REVOFXML.equalsIgnoreCase(propertyName)) {
+      else if (ISY99_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
+      {
+        addressAsStr = propertyValue;
+      }
+      else if (ISY99_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName))
+      {
+        commandAsStr = propertyValue;
+      }
+      else if (ISY99_XMLPROPERTY_REVOFXML.equalsIgnoreCase(propertyName))
+      {
         revOfXmlAsStr = propertyValue;
       }
-		 else {
-				log.warn("Unknown ISY-99 property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
-			}
-			// 1st dimmer code 
-		/*	if (null != el.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME) )
+      else
+      {
+        log.warn("Unknown ISY-99 property '<" + XML_ELEMENT_PROPERTY + " " +
+            XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE +
+            " = \"" + propertyValue + "\"/>'.");
+      }
+
+      // 1st dimmer code 
+      /* if (null != el.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME) )
       {
         commandParmsAsStr = el.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
       }
-      */ 
-		}
-		
-		// Sanity check on mandatory property'command'
+      */
+    }
 
-		if (commandAsStr == null || "".equals(commandAsStr)) {
-			throw new NoSuchCommandException("ISY-99 command must have a '" + ISY99_XMLPROPERTY_COMMAND + "' property.");
-		}
-		
-		if (addressAsStr == null || "".equals(addressAsStr)) {
+    // Sanity check on mandatory property'command'
+
+    if (commandAsStr == null || "".equals(commandAsStr))
+    {
+      throw new NoSuchCommandException("ISY-99 command must have a '" + ISY99_XMLPROPERTY_COMMAND + "' property.");
+    }
+
+    if (addressAsStr == null || "".equals(addressAsStr))
+    {
       throw new NoSuchCommandException("ISY-99 address  must have a '" + ISY99_XMLPROPERTY_ADDRESS + "' property.");
     }
 
-    if (hostAsStr == null || "".equals(hostAsStr)) {
+    if (hostAsStr == null || "".equals(hostAsStr))
+    {
       log.warn("host = null "); 
       throw new NoSuchCommandException("ISY-99 host must have a '" + ISY99_XMLPROPERTY_HOST + "' property.");
-      
-    
     }
 
-		// If an address was provided, attempt to buildisy99 Address
-		// instance...
+    // If an address was provided, attempt to buildisy99 Address
+    // instance...
 
-		// TODO validate Insteon or X-10 address
-		
+    // TODO validate Insteon or X-10 address
+
 //		if (addressAsString != null && !"".equals(addressAsString)) {
 //			log.info("Will attemp to build address");
 //
@@ -223,41 +230,36 @@ public class Isy99CommandBuilder implements CommandBuilder {
 //				throw new NoSuchCommandException(e.getMessage(), e);
 //			}
 //		}
-		
-		
-		// Translate the command string to a type safe isy99 Command types...
 
-		// Command cmd =isy99HomeWorksCommand.createCommand(commandAsString, gateway, address, scene, key, level);
+    // Translate the command string to a type safe isy99 Command types...
 
-		
+    // Command cmd =isy99HomeWorksCommand.createCommand(commandAsString, gateway, address, scene, key, level);
+
     // Needed for dimmer like commands for dynamic values 
-		// controller rest calls like                     dimmerSwitch#/Set to value # 
-		// defined in controller.xml 
-		// http://localhost:8080/controller/rest/control/100/255
-		
+    // controller rest calls like                     dimmerSwitch#/Set to value # 
+    // defined in controller.xml 
+    // http://localhost:8080/controller/rest/control/100/255
+
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-		Isy99Command cmd ; 
-	
-	  log.info("Created ISY-99 Host "+ hostAsStr + " username "+ userNameAsStr+" Password: "+ passwordAsStr +
-            " Command " + commandAsStr + " for address '" + addressAsStr + "'"
-	          + "DYNAMIC_VALUE_ATTR_NAME"+"'"+commandParam+"'");
-  
+    Isy99Command cmd;
+
+    log.info("Created ISY-99 Host "+ hostAsStr + " username "+ userNameAsStr+" Password: " +
+        passwordAsStr + " Command " + commandAsStr + " for address '" + addressAsStr + "'" +
+        "DYNAMIC_VALUE_ATTR_NAME" + "'" + commandParam + "'");
+
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command( hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr);
-              
+      cmd = new Isy99Command(hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr);
     }
     else
     {
-      cmd =new Isy99Command( hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr,commandParam ); 
+      cmd = new Isy99Command(hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr,
+          commandParam );
     }
 
     // Done!
+    return cmd; 
+  }
 
-
-		return cmd; 
-	}
-	
-	// Getters / Setters ----------------------------------------------------------------------------
-
+  // Getters / Setters ----------------------------------------------------------------------------
 }
