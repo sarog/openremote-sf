@@ -263,6 +263,7 @@
         <entry key = "hsc40"            value-ref = "hsc40CommandBuilder"/>
         <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
+        <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -292,6 +293,9 @@
 	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
 	 | extend the implementation with additional command types.
 	 +-->
+
+	<!-- shellexe Command Builder -->
+	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
