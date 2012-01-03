@@ -385,7 +385,7 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
          switch (sensorType) {
             // Switch: on or off response needed
             case SWITCH:
-               filteredResponse.replaceAll("1|on", "true");
+               filteredResponse = filteredResponse.toLowerCase().replaceAll("1|on", "true");
                Boolean bool = Boolean.parseBoolean(filteredResponse);
                if (bool) {
                   readResponse = "on";
