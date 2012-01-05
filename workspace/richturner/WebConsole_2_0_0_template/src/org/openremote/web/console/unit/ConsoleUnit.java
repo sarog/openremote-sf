@@ -168,6 +168,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		consoleDisplay.getElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
 		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", DEFAULT_DISPLAY_COLOUR);
 		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", DEFAULT_DISPLAY_COLOUR);
+		//RootPanel.getBodyElement().setAttribute("onselect", "return false;");
+		getElement().setAttribute("onselect", "return false;");
+		consoleDisplay.getElement().setAttribute("onselect", "return false;");
 		
 		// Set console unit properties
 		getElement().setId(CONSOLE_HTML_ELEMENT_ID);
@@ -278,6 +281,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			logoRight.setHeight(FRAME_WIDTH_BOTTOM + "px");
 			logoRight.getElement().setId("consoleFrameLogoRight");
 			logoPanel.add(logoRight);
+			logoPanel.getElement().setAttribute("onselect", "return false;");
+			logoLeft.getElement().setAttribute("onselect", "return false;");
+			logoRight.getElement().setAttribute("onselect", "return false;");
 		}
 		add(logoPanel);
 	}
@@ -692,6 +698,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
 			controllerCreds.setUrl("http://controller.openremote.org/iphone/controller/");
 			controllerCreds.setDefaultPanel("My Home");
+			dataService.setDefaultControllerCredentials(controllerCreds);
 		}
 		
 		if (panelName != null && !panelName.equals("")) {
@@ -838,6 +845,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			case XML_CHANGED:
 				// Try and reload the panel
 				reloadControllerAndPanel();
+				break;
+			case COMPONENT_INVALID:
+				// TODO: display message in alert popup
+				Window.alert("Some component IDs are invalid and some sensors will not work");
 				break;
 			default:
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);

@@ -25,12 +25,8 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		setVisible(false);
 		this.setStylePrimaryName(className);
 		addStyleName("consoleWidget");
-		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "MozUserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "KhtmlUserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "OUserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "UserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "cursor", "pointer");
+		getElement().setAttribute("onselect", "return false;");
+//		DOM.setStyleAttribute(container.getElement(), "cursor", "pointer");
 	}
 	
 	public void setSensor(Sensor sensor) {
