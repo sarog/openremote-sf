@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.DeviceRPCService;
@@ -59,6 +60,17 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    public Device saveDevice(Device device) {
       device.setAccount(userService.getAccount());
       return deviceService.saveDevice(device);
+   }
+   
+
+   public ArrayList<Device> saveDevices(ArrayList<Device> devices)
+   {
+     ArrayList<Device> result = new ArrayList<Device>();
+     for (Device device : devices)
+     {
+       result.add(saveDevice(device));
+     }
+     return result;
    }
 
    /**
@@ -120,5 +132,6 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    public Account getAccount() {
       return userService.getAccount();
    }
+
    
 }

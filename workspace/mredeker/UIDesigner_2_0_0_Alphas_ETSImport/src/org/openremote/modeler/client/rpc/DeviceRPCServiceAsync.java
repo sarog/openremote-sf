@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Account;
@@ -80,4 +81,6 @@ public interface DeviceRPCServiceAsync {
    void loadAll(Account account, AsyncCallback<List<Device>> callback);
    
    void getAccount(AsyncCallback<Account> callback);
+
+  void saveDevices(ArrayList<Device> devices, AsyncCallback<ArrayList<Device>> callback);
 }
