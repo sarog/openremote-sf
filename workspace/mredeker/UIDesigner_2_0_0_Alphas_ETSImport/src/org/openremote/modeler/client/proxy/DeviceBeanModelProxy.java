@@ -330,6 +330,29 @@ public class DeviceBeanModelProxy {
       });
    }
    
+   public static void saveDevicesWithContents(ArrayList<Device> devices, final AsyncSuccessCallback<ArrayList<BeanModel>> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().saveDevices(devices, new AsyncSuccessCallback<ArrayList<Device>>() {
+        public void onSuccess(ArrayList<Device> result) {
+          ArrayList<BeanModel> deviceModels = new ArrayList<BeanModel>();
+          for (Device device : result)
+          {
+            BeanModel deviceModel = device.getBeanModel();
+            BeanModelDataBase.deviceTable.insert(deviceModel);
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
+            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+            List<BeanModel> sensorModels = Sensor.createModels(device.getSensors());
+            BeanModelDataBase.sensorTable.insertAll(sensorModels);
+            List<BeanModel> switchModels = Switch.createModels(device.getSwitchs());
+            BeanModelDataBase.switchTable.insertAll(switchModels);
+            List<BeanModel> sliderModels = Slider.createModels(device.getSliders());
+            BeanModelDataBase.sliderTable.insertAll(sliderModels);
+            deviceModels.add(deviceModel);
+          }
+          callback.onSuccess(deviceModels);
+        }
+     });
+  }
+   
    public static void getAccount(final AsyncCallback<Account> callback) {
       AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncSuccessCallback <Account>() {
          public void onFailure(Throwable caught) {
