@@ -114,6 +114,18 @@ public class PathConfig {
    public String controllerXmlFilePath(Account account) {
       return userFolder(account) + "controller.xml";
    }
+   
+   
+   /**
+    * Gets the rules file path
+    * @param account
+    * @return
+    */
+   public String rulesFilePath(Account account) {
+     return userFolder(account) + "rules" + File.separator + "modeler_rules.drl";
+   }
+   
+   
    /**
     * Gets panel description file path.
     * 
