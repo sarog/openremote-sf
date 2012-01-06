@@ -49,6 +49,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -196,18 +197,24 @@ public class ControllerConfigTabItem extends TabItem {
     */
    private void createProperty(ControllerConfig config,boolean isNewConfig) {
       if (config.getOptions().trim().length() == 0) {
-         TextField<String> configValueField = new TextField<String>();
-         if (isNewConfig) {
-            configValueField.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
-         } else {
-            configValueField.setFieldLabel(config.getName());
-         }
-         configValueField.setName(config.getName());
-         configValueField.setValue(config.getValue());
-         configValueField.setRegex(config.getValidation());
-         configValueField.getMessages().setRegexText("This property must match: " + config.getValidation());
-         addUpdateListenerToTextField(config,configValueField);
-         configContainer.add(configValueField);
+        TextField<String> configValueField = new TextField<String>();
+        if (config.getName().equals("rules.editor")) {
+          configValueField = new TextArea();
+          configValueField.setSize(200, 400);
+        } else {
+          configValueField = new TextField<String>();
+          configValueField.setRegex(config.getValidation());
+          configValueField.getMessages().setRegexText("This property must match: " + config.getValidation());
+        }
+        if (isNewConfig) {
+          configValueField.setFieldLabel("<font color=\"red\">"+config.getName()+"</font>");
+        } else {
+          configValueField.setFieldLabel(config.getName());
+        }
+        configValueField.setName(config.getName());
+        configValueField.setValue(config.getValue());
+        addUpdateListenerToTextField(config,configValueField);
+        configContainer.add(configValueField);
       } else {
          final ComboBox<ModelData> optionComboBox = new ComboBox<ModelData>();
          optionComboBox.setTriggerAction(TriggerAction.ALL);

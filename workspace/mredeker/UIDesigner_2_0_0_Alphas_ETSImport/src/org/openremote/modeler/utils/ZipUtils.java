@@ -84,7 +84,12 @@ public class ZipUtils {
             }
             fileInputStream = new FileInputStream(file);
             bufferedInputStream = new BufferedInputStream(fileInputStream, buffer);
-            ZipEntry entry = new ZipEntry(file.getName());
+            ZipEntry entry;
+            if (file.getName().equals("modeler_rules.drl")) {
+              entry = new ZipEntry("rules" + File.separatorChar + file.getName());
+            } else {
+              entry = new ZipEntry(file.getName());              
+            }
             entry.setSize(file.length());
             entry.setTime(file.lastModified());
             zipOutputStream.putNextEntry(entry);

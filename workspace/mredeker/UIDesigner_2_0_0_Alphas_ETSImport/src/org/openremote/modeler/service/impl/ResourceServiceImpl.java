@@ -639,6 +639,12 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
       configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
+      for (ControllerConfig controllerConfig : configs)
+      {
+        if (controllerConfig.getName().equals("rules.editor")) {
+          configs.remove(controllerConfig);
+        }
+      }
 
       context.put("switchs", switchs);
       context.put("buttons", buttons);
@@ -769,6 +775,7 @@ public class ResourceServiceImpl implements ResourceService {
       String controllerXmlContent = getControllerXML(screens, maxOid);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
+      String rulesFileContent = getRulesFileContent();
 
       // replaceUrl(screens, sessionId);
       // String activitiesJson = getActivitiesJson(activities);
@@ -793,6 +800,7 @@ public class ResourceServiceImpl implements ResourceService {
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
       File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      File rulesFile = new File(pathConfig.rulesFilePath(userService.getAccount()));
       // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
       /*
@@ -809,10 +817,15 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);
+         FileUtilsExt.deleteQuietly(rulesFile);
+         
          // FileUtilsExt.deleteQuietly(dotImport);
 
          FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
+         if (!rulesFileContent.isEmpty()) {
+           FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
+         }
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != null && !sectionIds.equals("")) {
@@ -833,7 +846,22 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
+  private String getRulesFileContent()
+  {
+    String result = "";
+    Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+    configs.removeAll(controllerConfigService.listAllexpiredConfigs());
+    configs.addAll(controllerConfigService.listAllMissingConfigs());
+    for (ControllerConfig controllerConfig : configs)
+    {
+      if (controllerConfig.getName().equals("rules.editor")) {
+        result = controllerConfig.getValue();
+      }
+    }
+    return result;
+  }
+
+  private void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       ObjectOutputStream oos = null;
@@ -1165,12 +1193,14 @@ public class ResourceServiceImpl implements ResourceService {
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
       File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      File rulesFile = new File(pathConfig.rulesFilePath(userService.getAccount()));
 
       Collection<File> exportFile = new HashSet<File>();
       exportFile.addAll(imageFiles);
       exportFile.add(panelXMLFile);
       exportFile.add(controllerXMLFile);
       exportFile.add(panelsObjFile);
+      exportFile.add(rulesFile);
 
       if (lircdFile.exists()) {
          exportFile.add(lircdFile);
