@@ -12,11 +12,12 @@
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->
   <inherits name="com.google.gwt.user.Debug"/>
+
+  <!-- Default GWT css  -->
+  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
   
-  <!-- Inherit the default GWT style sheet.  You can change       -->
-  <!-- the theme of your GWT application by uncommenting          -->
-  <!-- any one of the following lines.                            -->
- <inherits name='com.extjs.gxt.themes.Themes' />            
+  <inherits name='com.extjs.gxt.themes.Themes' />
+              
 	<source path='domain'/>
 	<source path='client'/>
 	<source path='shared'/>
