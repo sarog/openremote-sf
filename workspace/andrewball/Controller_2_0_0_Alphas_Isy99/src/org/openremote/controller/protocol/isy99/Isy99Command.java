@@ -20,27 +20,19 @@
  */
 package org.openremote.controller.protocol.isy99;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
@@ -48,8 +40,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-// Will put back later 
-//import org.openremote.controller.Isy99Config;
 
 /**
  * OpenRemote isy99 command implementation.  <p>
