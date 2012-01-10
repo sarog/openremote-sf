@@ -58,12 +58,6 @@ public class Isy99CommandBuilder implements CommandBuilder
    */
   public final static String ISY99_XMLPROPERTY_COMMAND = "command";
 
-  /**
-   * String constant for parsing isy99 protocol XML entries from
-   * controller.xml file.
-   */
-  public final static String ISY99_XMLPROPERTY_REVOFXML = "revOfXml";
-
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -108,7 +102,6 @@ public class Isy99CommandBuilder implements CommandBuilder
    * <command protocol = "isy99" >
    *   <property name = "address" value = "17%2054%20AE%201"/>
    *   <property name = "command" value = "DON"/>
-   *   <property name = "revOfXm" value = "1"/>
    * </command>
    * }
    * </pre>
@@ -128,7 +121,6 @@ public class Isy99CommandBuilder implements CommandBuilder
     String addressAsStr = null;
     String commandAsStr = null;
     String commandParmsAsStr = null;
-    String revOfXmlAsStr = null;
 
     // Get the list of properties from XML...
     String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
@@ -149,10 +141,6 @@ public class Isy99CommandBuilder implements CommandBuilder
       else if (ISY99_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName))
       {
         commandAsStr = propertyValue;
-      }
-      else if (ISY99_XMLPROPERTY_REVOFXML.equalsIgnoreCase(propertyName))
-      {
-        revOfXmlAsStr = propertyValue;
       }
       else
       {
