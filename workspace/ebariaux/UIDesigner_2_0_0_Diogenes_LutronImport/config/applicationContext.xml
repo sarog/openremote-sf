@@ -111,11 +111,13 @@
   <bean id="dispatch" class="net.customware.gwt.dispatch.server.spring.SpringDispatch">
     <constructor-arg index="0" ref="registry"/>
   </bean>
+  
+  <bean id="importLutronConfigActionHandler" class="org.openremote.modeler.server.lutron.ImportLutronConfigActionHandler"></bean>
         
   <bean id="registry" class="net.customware.gwt.dispatch.server.DefaultActionHandlerRegistry">
     <property name="actionHandlers">
         <list>
-            <bean class="org.openremote.modeler.server.lutron.ImportLutronConfigActionHandler"/>
+            <ref bean="importLutronConfigActionHandler"/>
         </list>
     </property>
   </bean>
