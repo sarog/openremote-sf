@@ -98,12 +98,12 @@ public class Isy99CommandBuilder implements CommandBuilder
    * @code
    * REST API for isy99 
    * http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
-   * TODO remove %20 
+   *
    * <command protocol = "isy99" >
-   *   <property name = "address" value = "17%2054%20AE%201"/>
+   *   <property name = "address" value = "17 54 AE 1"/>
    *   <property name = "command" value = "DON"/>
    * </command>
-   * }
+   *
    * </pre>
    * 
    * Additional properties not listed here are ignored.
