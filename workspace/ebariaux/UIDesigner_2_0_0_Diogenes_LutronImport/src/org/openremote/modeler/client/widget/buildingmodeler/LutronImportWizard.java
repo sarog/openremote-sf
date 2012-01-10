@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openremote.modeler.client.event.SubmitEvent;
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
+import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.lutron.importmodel.AreaOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ArrayOverlay;
 import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
@@ -25,6 +27,8 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
+import org.openremote.modeler.shared.lutron.ImportLutronConfigResult;
 import org.openremote.modeler.shared.lutron.OutputType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -35,6 +39,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -91,7 +96,23 @@ public class LutronImportWizard extends DialogBox {
           reportError("File does not contain any information");
           return;
         }
-        
+
+        ModelerGinjector injector = GWT.create(ModelerGinjector.class);
+        DispatchAsync dispatcher = injector.getDispatchAsync();
+        dispatcher.execute(new ImportLutronConfigAction(), new AsyncCallback<ImportLutronConfigResult>() {
+
+          @Override
+          public void onFailure(Throwable caught) {
+            Info.display("ERROR", "Call failed " + caught.getLocalizedMessage());
+            reportError(caught.getMessage());
+          }
+
+          @Override
+          public void onSuccess(ImportLutronConfigResult result) {
+             Info.display("INFO", "Got result");
+          }
+          
+        });
 
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
         
@@ -129,8 +150,6 @@ public class LutronImportWizard extends DialogBox {
             });
           }
         });
-        
-        
         
 //        hide();
        }
