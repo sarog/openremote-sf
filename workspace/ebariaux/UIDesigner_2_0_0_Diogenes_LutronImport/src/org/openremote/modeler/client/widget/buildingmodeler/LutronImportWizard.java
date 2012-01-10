@@ -118,12 +118,10 @@ public class LutronImportWizard extends DialogBox {
             }
           }
         }
-        
-        importConfig.setDevice(device); // TODO : double check this is the device we want or how to access the member's variable
-        
-        
-        
+
         ImportLutronConfigAction action = new ImportLutronConfigAction(importConfig);
+        action.setDevice(device); // TODO : double check this is the device we want or how to access the member's variable
+        
         dispatcher.execute(action, new AsyncCallback<ImportLutronConfigResult>() {
 
           @Override
