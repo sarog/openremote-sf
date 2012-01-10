@@ -50,7 +50,7 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   public ImportLutronConfigResult execute(ImportLutronConfigAction action, ExecutionContext context) throws DispatchException {
     System.out.println("In ImportLutronConfigActionHandler");
 
-    createDeviceElements(action.getConfig());
+    createDeviceElements(action.getDevice(), action.getConfig());
     
     
     // TODO: handle potential errors and return error message
@@ -71,12 +71,11 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   }
 
   @Transactional
-  private void createDeviceElements(ImportConfig config) {
+  private void createDeviceElements(Device device, ImportConfig config) {
     final String NoScene = null;
     final String NoLevel = null;
     final String NoKey = null;
 
-    Device device = config.getDevice();
     for (OutputImportConfig outputConfig : config.getOutputs()) {
       if (OutputType.Dimmer == outputConfig.getType() || OutputType.QEDShade == outputConfig.getType()) {
         deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Raise", outputConfig.getAddress(), "RAISE", NoScene, NoLevel, NoKey));

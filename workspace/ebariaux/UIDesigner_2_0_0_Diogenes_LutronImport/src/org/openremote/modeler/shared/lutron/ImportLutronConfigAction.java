@@ -2,12 +2,11 @@ package org.openremote.modeler.shared.lutron;
 
 import net.customware.gwt.dispatch.shared.Action;
 
-public class ImportLutronConfigAction implements Action<ImportLutronConfigResult> {
+import org.openremote.modeler.domain.Device;
 
+public class ImportLutronConfigAction implements Action<ImportLutronConfigResult> {
   
-  // TODO: device should be on here and not on the import config
-  
-  
+  private Device device;
   private ImportConfig config;
   
   public ImportLutronConfigAction() {
@@ -23,6 +22,14 @@ public class ImportLutronConfigAction implements Action<ImportLutronConfigResult
 
   public void setConfig(ImportConfig config) {
     this.config = config;
+  }
+  
+  public Device getDevice() {
+    return device;
+  }
+
+  public void setDevice(Device device) {
+    this.device = device;
   }
 
 }
