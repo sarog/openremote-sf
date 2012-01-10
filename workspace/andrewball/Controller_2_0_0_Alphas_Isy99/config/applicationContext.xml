@@ -243,8 +243,7 @@
 
   <!-- ISY-99 Command Builder-->
   <bean id = "isy99CommandBuilder"
-        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder"
-        scope = "prototype" />
+        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder" />
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
