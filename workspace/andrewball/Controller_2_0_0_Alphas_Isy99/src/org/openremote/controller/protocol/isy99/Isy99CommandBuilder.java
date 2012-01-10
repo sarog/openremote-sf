@@ -62,24 +62,6 @@ public class Isy99CommandBuilder implements CommandBuilder
    * String constant for parsing isy99 protocol XML entries from
    * controller.xml file.
    */
-  public final static String ISY99_XMLPROPERTY_USERNAME = "username";
-
-  /**
-   * String constant for parsing  protocol XML entries from
-   * controller.xml file.
-   */
-  public final static String ISY99_XMLPROPERTY_PASSWORD = "password";
-
-  /**
-   * String constant for parsing isy99 protocol XML entries from
-   * controller.xml file.
-   */
-  public final static String ISY99_XMLPROPERTY_HOST = "isy99host";
-
-  /**
-   * String constant for parsing isy99 protocol XML entries from
-   * controller.xml file.
-   */
   public final static String ISY99_XMLPROPERTY_REVOFXML = "revOfXml";
 
   // Class Members --------------------------------------------------------------------------------
@@ -90,12 +72,23 @@ public class Isy99CommandBuilder implements CommandBuilder
   private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
 
   // Instance Fields ------------------------------------------------------------------------------
+  
+  private String hostname;
+  private String username;
+  private String password;
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public Isy99CommandBuilder()
+  /**
+   * @param hostname hostname or IP address for the ISY-99
+   * @param username username for authentication to the ISY-99
+   * @param password password for authentication to the ISY-99
+   */
+  public Isy99CommandBuilder(String hostname, String username, String password)
   {
-
+    this.hostname = hostname;
+    this.username = username;
+    this.password = password;
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -113,9 +106,6 @@ public class Isy99CommandBuilder implements CommandBuilder
    * http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
    * TODO remove %20 
    * <command protocol = "isy99" >
-   *   <property name = "host" value = "192.168.1.10"/>
-   *   <property name = "username" value = "admin"/>
-   *   <property name = "password" value = "admin"/>
    *   <property name = "address" value = "17%2054%20AE%201"/>
    *   <property name = "command" value = "DON"/>
    *   <property name = "revOfXm" value = "1"/>
@@ -135,10 +125,6 @@ public class Isy99CommandBuilder implements CommandBuilder
   @Override
   public Command build(Element element)
   {
-    //todo should be in the dot 
-    String userNameAsStr = null;
-    String passwordAsStr = null;
-    String hostAsStr = null;
     String addressAsStr = null;
     String commandAsStr = null;
     String commandParmsAsStr = null;
@@ -156,19 +142,7 @@ public class Isy99CommandBuilder implements CommandBuilder
       String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
       String propertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
       log.debug("parsing controler.xml " + propertyName + " = " + propertyValue);
-      if (ISY99_XMLPROPERTY_HOST.equalsIgnoreCase(propertyName))
-      {
-        hostAsStr = propertyValue;
-      }
-      else if (ISY99_XMLPROPERTY_USERNAME.equalsIgnoreCase(propertyName))
-      {
-        userNameAsStr = propertyValue;
-      }
-      else if (ISY99_XMLPROPERTY_PASSWORD.equalsIgnoreCase(propertyName))
-      {
-        passwordAsStr = propertyValue;
-      }
-      else if (ISY99_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
+      if (ISY99_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
       {
         addressAsStr = propertyValue;
       }
@@ -207,12 +181,6 @@ public class Isy99CommandBuilder implements CommandBuilder
       throw new NoSuchCommandException("ISY-99 address  must have a '" + ISY99_XMLPROPERTY_ADDRESS + "' property.");
     }
 
-    if (hostAsStr == null || "".equals(hostAsStr))
-    {
-      log.warn("host = null "); 
-      throw new NoSuchCommandException("ISY-99 host must have a '" + ISY99_XMLPROPERTY_HOST + "' property.");
-    }
-
     // If an address was provided, attempt to buildisy99 Address
     // instance...
 
@@ -243,17 +211,17 @@ public class Isy99CommandBuilder implements CommandBuilder
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
     Isy99Command cmd;
 
-    log.info("Created ISY-99 Host "+ hostAsStr + " username "+ userNameAsStr+" Password: " +
-        passwordAsStr + " Command " + commandAsStr + " for address '" + addressAsStr + "'" +
+    log.info("Created ISY-99 Host "+ hostname + " username "+ username +" Password: " +
+        password + " Command " + commandAsStr + " for address '" + addressAsStr + "'" +
         "DYNAMIC_VALUE_ATTR_NAME" + "'" + commandParam + "'");
 
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command(hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr);
+      cmd = new Isy99Command(hostname, username, password, addressAsStr, commandAsStr);
     }
     else
     {
-      cmd = new Isy99Command(hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr,
+      cmd = new Isy99Command(hostname, username, password, addressAsStr, commandAsStr,
           commandParam );
     }
 
