@@ -27,8 +27,10 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.lutron.ImportConfig;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigResult;
+import org.openremote.modeler.shared.lutron.OutputImportConfig;
 import org.openremote.modeler.shared.lutron.OutputType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -99,7 +101,26 @@ public class LutronImportWizard extends DialogBox {
 
         ModelerGinjector injector = GWT.create(ModelerGinjector.class);
         DispatchAsync dispatcher = injector.getDispatchAsync();
-        dispatcher.execute(new ImportLutronConfigAction(), new AsyncCallback<ImportLutronConfigResult>() {
+        
+        ImportConfig importConfig = new ImportConfig();
+        
+        ArrayOverlay<AreaOverlay> areas = projectOverlay.getAreas();
+        for (int i = 0; i < areas.length(); i++) {
+          AreaOverlay areaOverlay = areas.get(i);
+          if (areaOverlay.getRooms() != null) {
+            for (int j = 0; j < areaOverlay.getRooms().length(); j++) {
+              RoomOverlay roomOverlay = areaOverlay.getRooms().get(j);
+              if (roomOverlay.getOutputs() != null) {
+                for (int k = 0; k < roomOverlay.getOutputs().length(); k++) {
+                  OutputOverlay outputOverlay = roomOverlay.getOutputs().get(k);
+                  importConfig.addOutputConfig(new OutputImportConfig(outputOverlay.getName(), OutputType.valueOf(outputOverlay.getType()), outputOverlay.getAddress(), roomOverlay.getName(), areaOverlay.getName()));
+                }
+              }
+            }
+          }
+        }
+        ImportLutronConfigAction action = new ImportLutronConfigAction(importConfig);
+        dispatcher.execute(action, new AsyncCallback<ImportLutronConfigResult>() {
 
           @Override
           public void onFailure(Throwable caught) {
@@ -113,6 +134,8 @@ public class LutronImportWizard extends DialogBox {
           }
           
         });
+        
+        if (1 == 1) return;
 
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
         
