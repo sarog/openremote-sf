@@ -243,7 +243,11 @@
 
   <!-- ISY-99 Command Builder-->
   <bean id = "isy99CommandBuilder"
-        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder" />
+        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder">
+    <constructor-arg index="0" value="${isy99.hostname}" />
+    <constructor-arg index="1" value="${isy99.username}" />
+    <constructor-arg index="2" value="${isy99.password}" />
+  </bean>
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
