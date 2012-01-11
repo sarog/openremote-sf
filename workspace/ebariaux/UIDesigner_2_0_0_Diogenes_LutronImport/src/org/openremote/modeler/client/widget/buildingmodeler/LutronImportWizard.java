@@ -14,6 +14,7 @@ import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverla
 import org.openremote.modeler.client.lutron.importmodel.OutputOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ProjectOverlay;
 import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
@@ -133,6 +134,15 @@ public class LutronImportWizard extends DialogBox {
           @Override
           public void onSuccess(ImportLutronConfigResult result) {
              Info.display("INFO", "Got result");
+             
+             
+             /*
+              * Not use for now as issue with serialiazation of Hibernate beans (Gilead + gwt-dispatch)
+              * 
+             List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
+             BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+             */
+             
           }
           
         });
@@ -140,9 +150,6 @@ public class LutronImportWizard extends DialogBox {
         /*
 
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
-        
-        // TODO: have a method that saves everything in 1 go, maybe everything is created on the server side, just pass the info required to do it
-        
         DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(projectOverlay.getAreas()), new AsyncSuccessCallback<List<BeanModel>>() {
           @Override
           public void onSuccess(final List<BeanModel> deviceCommandModels) {

@@ -1,16 +1,14 @@
 package org.openremote.modeler.server.lutron;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import net.customware.gwt.dispatch.server.ActionHandler;
 import net.customware.gwt.dispatch.server.ExecutionContext;
 import net.customware.gwt.dispatch.shared.DispatchException;
 
-import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
-import org.openremote.modeler.client.widget.buildingmodeler.DeviceCommandWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
@@ -49,15 +47,17 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   @Override
   public ImportLutronConfigResult execute(ImportLutronConfigAction action, ExecutionContext context) throws DispatchException {
     System.out.println("In ImportLutronConfigActionHandler");
+    ImportLutronConfigResult result = new ImportLutronConfigResult();
 
-    createDeviceElements(action.getDevice(), action.getConfig());
+    result.setDeviceCommands(createDeviceElements(action.getDevice(), action.getConfig()));
     
     
     // TODO: handle potential errors and return error message
     // TODO: return created elements / updated device ? See also with RequestProxy mechanism
     
 
-    return new ImportLutronConfigResult();
+    return result;
+    
   }
 
   @Override
@@ -71,46 +71,51 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   }
 
   @Transactional
-  private void createDeviceElements(Device device, ImportConfig config) {
+  private ArrayList<DeviceCommand> createDeviceElements(Device device, ImportConfig config) {
     final String NoScene = null;
     final String NoLevel = null;
     final String NoKey = null;
 
+    DeviceCommand deviceCommand;
+    ArrayList<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
+    ArrayList<Sensor> sensors = new ArrayList<Sensor>();
+    ArrayList<Slider> sliders = new ArrayList<Slider>();
+    
     for (OutputImportConfig outputConfig : config.getOutputs()) {
       if (OutputType.Dimmer == outputConfig.getType() || OutputType.QEDShade == outputConfig.getType()) {
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Raise", outputConfig.getAddress(), "RAISE", NoScene, NoLevel, NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Lower", outputConfig.getAddress(), "LOWER", NoScene, NoLevel, NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Stop", outputConfig.getAddress(), "STOP", NoScene, NoLevel, NoKey));
-        DeviceCommand deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_LevelRead", outputConfig.getAddress(), "STATUS_DIMMER", NoScene, NoLevel, NoKey);
-        deviceCommandService.save(deviceCommand);        
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Raise", outputConfig.getAddress(), "RAISE", NoScene, NoLevel, NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Lower", outputConfig.getAddress(), "LOWER", NoScene, NoLevel, NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Stop", outputConfig.getAddress(), "STOP", NoScene, NoLevel, NoKey));
+        deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_LevelRead", outputConfig.getAddress(), "STATUS_DIMMER", NoScene, NoLevel, NoKey);
+        deviceCommands.add(deviceCommand);        
         Sensor sensor = createDeviceSensor(device, SensorType.LEVEL, deviceCommand, outputConfig.getOutputName() + "_Level");
-        sensorService.saveSensor(sensor);
+        sensors.add(sensor);
         deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_Fade", outputConfig.getAddress(), "FADE", NoScene, NoLevel, NoKey);
-        deviceCommandService.save(deviceCommand);
-        sliderService.save(createDeviceSlider(device, deviceCommand, sensor, outputConfig.getOutputName() + "_Slider"));        
+        deviceCommands.add(deviceCommand);
+        sliders.add(createDeviceSlider(device, deviceCommand, sensor, outputConfig.getOutputName() + "_Slider"));        
       } else if (OutputType.GrafikEyeMainUnit == outputConfig.getType()) {
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_SceneOff", outputConfig.getAddress(), "SCENE", "0", NoLevel, NoKey));
-        DeviceCommand deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_OffRead", outputConfig.getAddress(), "STATUS_SCENE", "0", NoLevel, NoKey);
-        deviceCommandService.save(deviceCommand);
-        sensorService.saveSensor(createDeviceSensor(device, SensorType.SWITCH, deviceCommand, outputConfig.getOutputName() + "_OffSelected"));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_SceneOff", outputConfig.getAddress(), "SCENE", "0", NoLevel, NoKey));
+        deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_OffRead", outputConfig.getAddress(), "STATUS_SCENE", "0", NoLevel, NoKey);
+        deviceCommands.add(deviceCommand);
+        sensors.add(createDeviceSensor(device, SensorType.SWITCH, deviceCommand, outputConfig.getOutputName() + "_OffSelected"));
         for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
-          deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Scene" + Integer.toString(sceneNumber), outputConfig.getAddress(), "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey));
+          deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Scene" + Integer.toString(sceneNumber), outputConfig.getAddress(), "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey));
           deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_Scene" + Integer.toString(sceneNumber) + "Read", outputConfig.getAddress(), "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey);
-          deviceCommandService.save(deviceCommand);
-          sensorService.saveSensor(createDeviceSensor(device, SensorType.SWITCH, deviceCommand, outputConfig.getOutputName() + "_Scene" + Integer.toString(sceneNumber) + "Selected"));
+          deviceCommands.add(deviceCommand);
+          sensors.add(createDeviceSensor(device, SensorType.SWITCH, deviceCommand, outputConfig.getOutputName() + "_Scene" + Integer.toString(sceneNumber) + "Selected"));
         }
         deviceCommand = addDeviceCommand(device, outputConfig.getOutputName() + "_SceneRead", outputConfig.getAddress(), "STATUS_SCENE", NoScene, NoLevel, NoKey);
-        deviceCommandService.save(deviceCommand);
+        deviceCommands.add(deviceCommand);
         Sensor sensor = createDeviceSensor(device, SensorType.RANGE, deviceCommand, outputConfig.getOutputName() + "_SelectedScene");
         ((RangeSensor) sensor).setMin(0);
         ((RangeSensor) sensor).setMax(8);
-        sensorService.saveSensor(sensor);
+        sensors.add(sensor);
       } else if (OutputType.Fan == outputConfig.getType()) {
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Off", outputConfig.getAddress(), "FADE", NoScene, "0", NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Low", outputConfig.getAddress(), "FADE", NoScene, "25", NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Medium", outputConfig.getAddress(), "FADE", NoScene, "50", NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_MediumHigh", outputConfig.getAddress(), "FADE", NoScene, "75", NoKey));
-        deviceCommandService.save(addDeviceCommand(device, outputConfig.getOutputName() + "_Full", outputConfig.getAddress(), "FADE", NoScene, "100", NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Off", outputConfig.getAddress(), "FADE", NoScene, "0", NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Low", outputConfig.getAddress(), "FADE", NoScene, "25", NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Medium", outputConfig.getAddress(), "FADE", NoScene, "50", NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_MediumHigh", outputConfig.getAddress(), "FADE", NoScene, "75", NoKey));
+        deviceCommands.add(addDeviceCommand(device, outputConfig.getOutputName() + "_Full", outputConfig.getAddress(), "FADE", NoScene, "100", NoKey));
       }
       // TODO: handle other output types
     }
@@ -131,25 +136,31 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
       }
       // TODO: handle other input types
     }*/
-
+    
+    deviceCommandService.saveAll(deviceCommands);
+    sensorService.saveAllSensors(sensors, device.getAccount());
+    sliderService.saveAllSliders(sliders, device.getAccount());
+    return null;
   }
 
   private DeviceCommand addDeviceCommand(Device aDevice, String name, String address, String command, String scene, String level, String key) {
     DeviceCommand dc = new DeviceCommand();
-    Map<String, String> attrMap = new HashMap<String, String>();
-    attrMap.put(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL, "Lutron HomeWorks"); // Display name of protocol needs to be used
-    attrMap.put("address", address);
-    attrMap.put("command", command);
+    
+    Protocol protocol = new Protocol();
+    protocol.setType("Lutron HomeWorks");
+    protocol.setDeviceCommand(dc);
+    dc.setProtocol(protocol);
+    protocol.addProtocolAttribute("address", address);
+    protocol.addProtocolAttribute("command", command);
     if (scene != null) {
-      attrMap.put("scene", scene);
+      protocol.addProtocolAttribute("scene", scene);
     }
     if (level != null) {
-      attrMap.put("level", level);
+      protocol.addProtocolAttribute("level", level);
     }
     if (key != null) {
-      attrMap.put("key", key);
+      protocol.addProtocolAttribute("key", key);
     }
-    dc.setProtocol(DeviceCommandBeanModelProxy.careateProtocol(attrMap, dc));
     dc.setName(name);
     dc.setDevice(aDevice);
     aDevice.getDeviceCommands().add(dc);

@@ -64,7 +64,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
         
         System.out.println("Saving command : " + command);
         
-         genericDAO.save(command);
+//         genericDAO.save(command);
+        save(command);
       }
       return deviceCommands;
    }
