@@ -823,9 +823,8 @@ public class ResourceServiceImpl implements ResourceService {
 
          FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-         if (!rulesFileContent.isEmpty()) {
-           FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
-         }
+         FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
+
          // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
 
          if (sectionIds != null && !sectionIds.equals("")) {
