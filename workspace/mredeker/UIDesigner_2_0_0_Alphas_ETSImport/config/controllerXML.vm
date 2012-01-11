@@ -154,6 +154,7 @@
     		#foreach($property in $protocoAttrKeySet)
     			<property name="${property}" value="$!{stringUtils.escapeXml($uiButtonEvent.getProtocolAttrs().get(${property}))}" />
     		#end
+    			<property name="name" value="${uiButtonEvent.getLabel()}" />
     		</command>
     	#end
     #end
