@@ -47,7 +47,8 @@ import org.jdom.input.SAXBuilder;
  * Maintains a isy99-machine-wide state for each address.<p>  
  *
  *
- * @author <a href="mailto:"></a>
+ * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch</a>
+ * @author Andrew D. Ball
  */
 public class Isy99Command implements ExecutableCommand, StatusCommand
 {
