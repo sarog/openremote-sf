@@ -29,11 +29,11 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
+ * Command builder for the ISY-99 protocol, which communicates with the Universal Devices
+ * ISY-99 Insteon-to-HTTP bridge.
  * 
- * based on work for the lutron
- * 
- * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch </a>
- * @author Andrew D. Ball
+ * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch</a>
+ * @author <a href="mailto:aball@osintegrators.com">Andrew D. Ball</a>
  */
 public class Isy99CommandBuilder implements CommandBuilder
 {
@@ -42,27 +42,16 @@ public class Isy99CommandBuilder implements CommandBuilder
 
   /**
    * A common log category name intended to be used across all classes related
-   * to isy99 implementation.
+   * to ISY-99 implementation.
    */
   public final static String ISY99_LOG_CATEGORY = "ISY99";
 
-  /**
-   * String constant for parsing isy99 protocol XML entries from
-   * controller.xml file.
-   */
   public final static String ISY99_XMLPROPERTY_ADDRESS = "address";
 
-  /**
-   * String constant for parsing  protocol XML entries from
-   * controller.xml file.
-   */
   public final static String ISY99_XMLPROPERTY_COMMAND = "command";
 
   // Class Members --------------------------------------------------------------------------------
 
-  /**
-   *isy99 logger. Uses a common category for allisy99 related logging.
-   */
   private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -88,16 +77,12 @@ public class Isy99CommandBuilder implements CommandBuilder
   // Implements EventBuilder ----------------------------------------------------------------------
 
   /**
-   * Parses the isy99  command XML snippets and builds a
-   * corresponding isy99  command instance.
+   * Parses the ISY-99 command XML snippets and builds a corresponding ISY-99 command instance.
    * <p>
    * 
    * The expected XML structure is:
    * 
    * <pre>
-   * @code
-   * REST API for isy99 
-   * http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
    *
    * <command protocol = "isy99" >
    *   <property name = "address" value = "17 54 AE 1"/>
@@ -105,25 +90,34 @@ public class Isy99CommandBuilder implements CommandBuilder
    * </command>
    *
    * </pre>
-   * 
+   *
+   *
+   * For reading a device's status, the "command" property can be set to whatever you want -- it will
+   * be ignored.
+   *
+   * The write commands are named the same as they are for the ISY-99 REST API
+   * (http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface).
+   *
+   * For changing the illumination level on a dimmer, DON should be used.
+   *
+   * For turning on a switch, DON should also be used.
+   *
+   * For turning off a switch, DOF should be used.
+   *
    * Additional properties not listed here are ignored.
    * 
    * @throws NoSuchCommandException
-   *             if the isy99  command instance cannot be
+   *             if the ISY-99 command instance cannot be
    *             constructed from the XML snippet for any reason
    * 
-   * @return an immutable isy99  command instance with known
+   * @return an immutable ISY-99 command instance with known
    *         configured properties set
    */
   @Override
   public Command build(Element element)
   {
-    String addressAsStr = null;
-    String commandAsStr = null;
-    String commandParmsAsStr = null;
-
-    // Get the list of properties from XML...
-    String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+    String address = null;
+    String command = null;
 
     @SuppressWarnings("unchecked")
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
@@ -133,14 +127,14 @@ public class Isy99CommandBuilder implements CommandBuilder
     {
       String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
       String propertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
-      log.debug("parsing controler.xml " + propertyName + " = " + propertyValue);
+
       if (ISY99_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
       {
-        addressAsStr = propertyValue;
+        address = propertyValue;
       }
       else if (ISY99_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName))
       {
-        commandAsStr = propertyValue;
+        command = propertyValue;
       }
       else
       {
@@ -148,74 +142,32 @@ public class Isy99CommandBuilder implements CommandBuilder
             XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE +
             " = \"" + propertyValue + "\"/>'.");
       }
-
-      // 1st dimmer code 
-      /* if (null != el.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME) )
-      {
-        commandParmsAsStr = el.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-      }
-      */
     }
 
-    // Sanity check on mandatory property'command'
-
-    if (commandAsStr == null || "".equals(commandAsStr))
+    if (command == null || "".equals(command))
     {
       throw new NoSuchCommandException("ISY-99 command must have a '" + ISY99_XMLPROPERTY_COMMAND + "' property.");
     }
 
-    if (addressAsStr == null || "".equals(addressAsStr))
+    if (address == null || "".equals(address))
     {
-      throw new NoSuchCommandException("ISY-99 address  must have a '" + ISY99_XMLPROPERTY_ADDRESS + "' property.");
+      throw new NoSuchCommandException("ISY-99 address must have a '" + ISY99_XMLPROPERTY_ADDRESS + "' property.");
     }
 
-    // If an address was provided, attempt to buildisy99 Address
-    // instance...
-
-    // TODO validate Insteon or X-10 address
-
-//		if (addressAsString != null && !"".equals(addressAsString)) {
-//			log.info("Will attemp to build address");
-//
-//			try {
-//				address = newisy99HomeWorksAddress(addressAsString.trim());
-//			} catch (InvalidLutronHomeWorksAddressException e) {
-//			  log.error("Invalidisy99 HomeWorks address", e);
-//				// TODO: re-check, message is not clear when address is invalid
-//
-//				throw new NoSuchCommandException(e.getMessage(), e);
-//			}
-//		}
-
-    // Translate the command string to a type safe isy99 Command types...
-
-    // Command cmd =isy99HomeWorksCommand.createCommand(commandAsString, gateway, address, scene, key, level);
-
-    // Needed for dimmer like commands for dynamic values 
-    // controller rest calls like                     dimmerSwitch#/Set to value # 
-    // defined in controller.xml 
-    // http://localhost:8080/controller/rest/control/100/255
-
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-    Isy99Command cmd;
 
-    log.info("Created ISY-99 Host "+ hostname + " username "+ username +" Password: " +
-        password + " Command " + commandAsStr + " for address '" + addressAsStr + "'" +
-        "DYNAMIC_VALUE_ATTR_NAME" + "'" + commandParam + "'");
+    Isy99Command cmd = null;
 
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command(hostname, username, password, addressAsStr, commandAsStr);
+      cmd = new Isy99Command(hostname, username, password, address, command);
     }
     else
     {
-      cmd = new Isy99Command(hostname, username, password, addressAsStr, commandAsStr,
-          commandParam );
+      cmd = new Isy99Command(hostname, username, password, address, command, commandParam);
     }
 
-    // Done!
     return cmd; 
   }
 
-  // Getters / Setters ----------------------------------------------------------------------------
 }
