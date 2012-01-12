@@ -45,15 +45,12 @@ import org.jdom.input.SAXBuilder;
  * OpenRemote isy99 command implementation.  <p>
  *
  * Maintains a isy99-machine-wide state for each address.<p>  
- * TODO <p>
- * Parse the dot.properties file. 
+ *
  *
  * @author <a href="mailto:"></a>
  */
 public class Isy99Command implements ExecutableCommand, StatusCommand
 {
-
-  // hostname, username, and password from properties file
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -63,8 +60,6 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
   private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
 
   // Instance Fields ------------------------------------------------------------------------------
-
-//  private Isy99Config isy99Config;
 
   private String host;
   private String userName;
@@ -83,7 +78,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
   private String commandParam = null;
 
   // Constructors ---------------------------------------------------------------------------------
-  //Isy99Command( hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr);
+
   public Isy99Command(String host, String userName, String password, String address, String command)
   {
     this.host = host;
@@ -100,8 +95,6 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     log.info("Switch Command >" + this.command + "<");
   }
 
-  //TODO this needs to be tested 
-  // Called from the Isy99CommandBuilder
   public Isy99Command(String host, String userName, String password, String address, String command, String commandParam)
   {
     this(host, userName, password, address, command);
@@ -129,7 +122,6 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       httpclient.getCredentialsProvider().setCredentials(new AuthScope(host, 80),
           new UsernamePasswordCredentials(userName, password));
 
-      // TODO handle percent encoding when constructing URL
       StringBuilder urlBuilder = new StringBuilder();
       // urlStr = "http://" + url + UrlPath + switchMac + PreIsy99Cmd + Isy99Cmd;
       // TODO support https scheme as well
@@ -188,8 +180,6 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     String urlPath = "/rest/nodes/";
     String preIsy99Cmd = "/";
     String urlStr = null;
-    // String switchMac = args[0];
-    // String Isy99Cmd = args[1];
 
     // TODO consider reducing the size of this try block
     DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -197,12 +187,10 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     String value = null;
     try
     {
-      //TODO
-      //Need to change to https or http from .property file 
+      //Need to change to https or http from .property file
       httpclient.getCredentialsProvider().setCredentials(
           new AuthScope(host, 80),
           new UsernamePasswordCredentials(userName, password));
-      // does this work with the map?
       urlStr = "http://" + host + urlPath + address.replaceAll(" ", "%20") + preIsy99Cmd;
 
       HttpGet httpget = new HttpGet(urlStr);
@@ -214,18 +202,15 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
 
       if (response.getStatusLine().getStatusCode() != 200)
       {
-        // TODO log this
         log.debug("status line " + response.getStatusLine());
         if (entity != null)
         {
-          // TODO log this
           log.debug("Response content length: " + entity.getContentLength());
         }
         // EntityUtils.consume(entity);
       }
       else
       {
-        // TODO log this
         log.debug("Command was sent successfull");
       }
 
@@ -298,7 +283,6 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     }
     catch (NumberFormatException e)
     {
-      // TODO log
       log.error("invalid sensor reading from ISY-99: expected an integer, got \"" + value + "\"");
       return "";
     }
