@@ -1,43 +1,26 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 import org.openremote.modeler.client.ModelerGinjector;
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.lutron.importmodel.AreaOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ArrayOverlay;
 import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.lutron.importmodel.OutputOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ProjectOverlay;
 import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
-import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
-import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.RangeSensor;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorCommandRef;
-import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderCommandRef;
-import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.shared.lutron.ImportConfig;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigResult;
 import org.openremote.modeler.shared.lutron.OutputImportConfig;
 import org.openremote.modeler.shared.lutron.OutputType;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -59,6 +42,8 @@ public class LutronImportWizard extends DialogBox {
   interface LutronImportWizardUiBinder extends UiBinder<Widget, LutronImportWizard> {
   }
   
+  private HandlerManager eventBus;
+  
   private Device device;
   
   final String NoScene = null;
@@ -70,7 +55,8 @@ public class LutronImportWizard extends DialogBox {
     return this;
   }
 
-  public LutronImportWizard(final Device device) {    
+  public LutronImportWizard(final Device device, final HandlerManager eventBus) {
+    this.eventBus = eventBus;
     this.device = device;
 
     uiBinder.createAndBindUi(this);
@@ -136,12 +122,14 @@ public class LutronImportWizard extends DialogBox {
              Info.display("INFO", "Got result");
              
              
+             eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO: double check access as for device
              /*
               * Not use for now as issue with serialiazation of Hibernate beans (Gilead + gwt-dispatch)
               * 
              List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
              BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
              */
+             hide();
              
           }
           

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
+import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -81,6 +83,7 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -91,6 +94,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DevicePanel extends ContentPanel {
 
+  private HandlerManager eventBus;
+  
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
@@ -105,7 +110,9 @@ public class DevicePanel extends ContentPanel {
    /**
     * Instantiates a new device panel.
     */
-   public DevicePanel() {
+   public DevicePanel(HandlerManager eventBus) {
+     this.eventBus = eventBus;
+     bind();
       setHeading("Device");
       setIcon(icon.device());
       setLayout(new FitLayout());
@@ -113,6 +120,23 @@ public class DevicePanel extends ContentPanel {
       createMenu();
       createTreeContainer();
       show();
+   }
+   
+   private void bind() {
+     eventBus.addHandler(DeviceUpdatedEvent.TYPE, new DeviceUpdatedEventHandler() {
+
+      @Override
+      public void onDeviceUpdated(DeviceUpdatedEvent event) {
+        
+        Info.display("INFO", "Should expand device");
+        
+        // TODO: should lookup device model based on updated device from event
+        tree.getStore().getLoader().load(); // This reloads the all tree, collapsing all nodes (all those that were expanded)
+        
+//        tree.setExpanded(getDeviceModel(), true);
+      }
+       
+     });
    }
 
    /**
@@ -817,10 +841,16 @@ public class DevicePanel extends ContentPanel {
      final BeanModel deviceModel = getDeviceModel();
      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
        
-       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean());
+       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean(), eventBus);
        importWizard.show();
        importWizard.center();
+       
+
+       
        /*
+        * TODO: check to replace this with an event bus, import wizard posts notification that device changed
+        * and tree does expand (and reload if required)
+        * 
        final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
        importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
