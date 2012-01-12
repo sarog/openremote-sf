@@ -63,7 +63,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
   // Instance Fields ------------------------------------------------------------------------------
 
   private String host;
-  private String userName;
+  private String username;
   private String password;
 
   /**
@@ -80,29 +80,29 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public Isy99Command(String host, String userName, String password, String address, String command)
+  public Isy99Command(String host, String username, String password, String address, String command)
   {
     this.host = host;
-    this.userName = userName;
+    this.username = username;
     this.password = password;
     this.address = address;
     this.command = command;
 
     log.info("Got isy99 config");
     log.info("Host >" + this.host + "<");
-    log.info("UserName >" + this.userName + "<");
+    log.info("UserName >" + this.username + "<");
     log.info("Password >" + this.password + "<");
     log.info("Switch Address >" + this.address + "<");
     log.info("Switch Command >" + this.command + "<");
   }
 
-  public Isy99Command(String host, String userName, String password, String address, String command, String commandParam)
+  public Isy99Command(String host, String username, String password, String address, String command, String commandParam)
   {
-    this(host, userName, password, address, command);
+    this(host, username, password, address, command);
     this.commandParam = commandParam;
     log.info("Got isy99 config-commandParmam");
     log.info("Host >" + this.host + "<");
-    log.info("UserName >" + this.userName + "<");
+    log.info("UserName >" + this.username + "<");
     log.info("Password >" + this.password + "<");
     log.info("Switch Address >" + this.address + "<");
     log.info("Switch Command >" + this.command + "<");
@@ -121,7 +121,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     try
     {
       httpclient.getCredentialsProvider().setCredentials(new AuthScope(host, 80),
-          new UsernamePasswordCredentials(userName, password));
+          new UsernamePasswordCredentials(username, password));
 
       StringBuilder urlBuilder = new StringBuilder();
       // urlStr = "http://" + url + UrlPath + switchMac + PreIsy99Cmd + Isy99Cmd;
@@ -191,7 +191,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       //Need to change to https or http from .property file
       httpclient.getCredentialsProvider().setCredentials(
           new AuthScope(host, 80),
-          new UsernamePasswordCredentials(userName, password));
+          new UsernamePasswordCredentials(username, password));
       urlStr = "http://" + host + urlPath + address.replaceAll(" ", "%20") + preIsy99Cmd;
 
       HttpGet httpget = new HttpGet(urlStr);
