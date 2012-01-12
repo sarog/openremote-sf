@@ -33,7 +33,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * based on work for the lutron
  * 
  * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch </a>
- *
+ * @author Andrew D. Ball
  */
 public class Isy99CommandBuilder implements CommandBuilder
 {
