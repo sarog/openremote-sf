@@ -62,6 +62,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -77,6 +78,9 @@ import com.google.gwt.user.client.ui.RootPanel;
  * @author Tomsky,Allen
  */
 public class ApplicationView implements View {
+
+  /** Event bus used for communication throughout application */
+  private HandlerManager eventBus;
 
    /** The viewport. */
    private Viewport viewport;
@@ -98,7 +102,12 @@ public class ApplicationView implements View {
    
    private Button exportButton;
    
-   /**
+   public ApplicationView(HandlerManager eventBus) {
+    super();
+    this.eventBus = eventBus;
+  }
+
+  /**
     * Initialize the application's main view.
     * 
     * @see org.openremote.modeler.client.view.View#initialize()
@@ -376,7 +385,7 @@ public class ApplicationView implements View {
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
       if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
-         this.buildingModelerView = new BuildingModelerView();
+         this.buildingModelerView = new BuildingModelerView(eventBus);
          this.uiDesignerView = new UIDesignerView();
          if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
             modelerContainer.add(uiDesignerView);
@@ -384,7 +393,7 @@ public class ApplicationView implements View {
             modelerContainer.add(buildingModelerView);
          }
       } else if (roles.contains(Role.ROLE_MODELER) && !roles.contains(Role.ROLE_DESIGNER)) {
-         this.buildingModelerView = new BuildingModelerView();
+         this.buildingModelerView = new BuildingModelerView(eventBus);
          modelerContainer.add(buildingModelerView);
       } else if(roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
          this.uiDesignerView = new UIDesignerView();
