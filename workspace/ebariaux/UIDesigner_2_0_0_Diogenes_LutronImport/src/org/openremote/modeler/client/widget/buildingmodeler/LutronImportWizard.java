@@ -1,9 +1,10 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
+
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 import org.openremote.modeler.client.ModelerGinjector;
-import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.lutron.importmodel.AreaOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ArrayOverlay;
 import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
@@ -12,12 +13,10 @@ import org.openremote.modeler.client.lutron.importmodel.ProjectOverlay;
 import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.shared.lutron.ImportConfig;
-import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
-import org.openremote.modeler.shared.lutron.ImportLutronConfigResult;
 import org.openremote.modeler.shared.lutron.OutputImportConfig;
 import org.openremote.modeler.shared.lutron.OutputType;
 
-import com.extjs.gxt.ui.client.widget.Info;
+import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -25,7 +24,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -63,6 +63,31 @@ public class LutronImportWizard extends DialogBox {
     mainLayout.setSize("50em", "20em");
     center();
     
+    TextColumn<OutputImportConfig> areaNameColumn = new TextColumn<OutputImportConfig>() {
+      @Override
+      public String getValue(OutputImportConfig outputConfig) {
+        return outputConfig.getAreaName();
+      }
+    };
+    TextColumn<OutputImportConfig> roomNameColumn = new TextColumn<OutputImportConfig>() {
+      @Override
+      public String getValue(OutputImportConfig outputConfig) {
+        return outputConfig.getRoomName();
+      }
+    };
+    TextColumn<OutputImportConfig> outputNameColumn = new TextColumn<OutputImportConfig>() {
+      @Override
+      public String getValue(OutputImportConfig outputConfig) {
+        return outputConfig.getOutputName();
+      }
+    };
+
+    // Add the columns.
+    table.addColumn(areaNameColumn, "Area");
+    table.addColumn(roomNameColumn, "Room");
+    table.addColumn(outputNameColumn, "Output");
+    table.setRowCount(0);
+    
     errorMessageLabel.setVisible(false);
 
     uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -90,6 +115,8 @@ public class LutronImportWizard extends DialogBox {
         
         ImportConfig importConfig = new ImportConfig();
         
+        // todo: import config should have just one element for both input and output ? Check for display in table
+        
         ArrayOverlay<AreaOverlay> areas = projectOverlay.getAreas();
         for (int i = 0; i < areas.length(); i++) {
           AreaOverlay areaOverlay = areas.get(i);
@@ -105,7 +132,11 @@ public class LutronImportWizard extends DialogBox {
             }
           }
         }
+        
+        table.setRowData(new ArrayList<OutputImportConfig>(importConfig.getOutputs())); // TODO: have importConfig directly store list
+        table.setRowCount(importConfig.getOutputs().size());
 
+        /*
         ImportLutronConfigAction action = new ImportLutronConfigAction(importConfig);
         action.setDevice(device); // TODO : double check this is the device we want or how to access the member's variable
         
@@ -128,12 +159,13 @@ public class LutronImportWizard extends DialogBox {
               * 
              List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
              BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-             */
+             *//*
              hide();
              
           }
           
         });
+      */
         
         /*
 
@@ -183,6 +215,9 @@ public class LutronImportWizard extends DialogBox {
     errorMessageLabel.setVisible(true);
   }
 
+  @UiField
+  CellTable<OutputImportConfig> table;
+  
   @UiField
   DockLayoutPanel mainLayout;
 

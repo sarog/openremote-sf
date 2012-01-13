@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
 	<ui:style>
 		.errorMessageStyle {
 			color: red;
@@ -26,10 +26,13 @@
 					</g:HorizontalPanel>
 				</g:south>
 				<g:center>
-					<g:HorizontalPanel>
-						<g:FileUpload ui:field="uploadField" name="file" />
-						<g:SubmitButton ui:field="submitButton">Import</g:SubmitButton>
-					</g:HorizontalPanel>
+					<g:VerticalPanel>
+						<g:HorizontalPanel>
+							<g:FileUpload ui:field="uploadField" name="file" />
+							<g:SubmitButton ui:field="submitButton">Load</g:SubmitButton>
+						</g:HorizontalPanel>
+						<c:CellTable width='100%' ui:field='table' />
+					</g:VerticalPanel>
 				</g:center>
 			</g:DockLayoutPanel>
 		</g:FormPanel>
