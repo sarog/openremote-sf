@@ -66,6 +66,7 @@ import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -375,6 +376,7 @@ public class ResourceServiceImpl implements ResourceService {
          } else if (command instanceof CommandRefItem) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
                   .getOid());
+            protocolEventContainer.removeDeviceCommand(deviceCommand);
             addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
          } else {
             return new ArrayList<Command>();
@@ -615,6 +617,16 @@ public class ResourceServiceImpl implements ResourceService {
    @SuppressWarnings("unchecked")
    public String getControllerXML(Collection<Screen> screens, long maxOid) {
 
+     /*
+      * Get all sensors and commands from database.
+      */
+     List<Sensor> dbSensors = userService.getAccount().getSensors();
+     List<Device> allDevices = userService.getAccount().getDevices();
+     List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
+     for (Device device : allDevices) {
+        allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
+     }
+     
       /*
        * store the max oid
        */
@@ -627,8 +639,9 @@ public class ResourceServiceImpl implements ResourceService {
       initUIComponentBox(screens, uiComponentBox);
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
+      eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
-      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId);
+      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
       Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
@@ -653,6 +666,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("resouceServiceImpl", this);
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
+      context.put("dbSensors", dbSensors);
       context.put("gestures", gestures);
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
@@ -689,7 +703,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId) {
+   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId, List<Sensor> dbSensors) {
       Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
       Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
@@ -705,6 +719,16 @@ public class ResourceServiceImpl implements ResourceService {
             }
          }
       }
+      
+      List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
+      for (Sensor dbSensor : dbSensors) {
+         for (Sensor clientSensor : sensorWithoutDuplicate) {
+            if (dbSensor.getOid() == clientSensor.getOid()) {
+               duplicateDBSensors.add(dbSensor);
+            }
+         }
+      }
+      dbSensors.removeAll(duplicateDBSensors);
 
       /*
        * reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
@@ -1314,6 +1338,39 @@ public class ResourceServiceImpl implements ResourceService {
 
       public Long maxId() {
          return maxId++;
+      }
+   }
+   
+   /**
+     *
+     * This method is calling by controllerXML.vm, to export sensors which from database.
+     */
+   public Long getMaxId(MaxId maxId) {
+     return maxId.maxId();
+   }
+   
+   /**
+    * Adds the data base commands into protocolEventContainer.
+    * 
+    * @param protocolEventContainer
+    *           the protocol event container
+    * @param maxId
+    *           the max id
+    */
+   public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId) {
+      List<DeviceCommand> dbDeviceCommands = protocolEventContainer.getAllDBDeviceCommands();
+      for (DeviceCommand deviceCommand : dbDeviceCommands) {
+         String protocolType = deviceCommand.getProtocol().getType();
+         List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
+
+         Command uiButtonEvent = new Command();
+         uiButtonEvent.setId(maxId.maxId());
+         uiButtonEvent.setProtocolDisplayName(protocolType);
+         for (ProtocolAttr protocolAttr : protocolAttrs) {
+            uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
+         }
+         uiButtonEvent.setLabel(deviceCommand.getName());
+         protocolEventContainer.addUIButtonEvent(uiButtonEvent);
       }
    }
 

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openremote.modeler.client.model.Command;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
 
@@ -65,6 +66,12 @@ public class ProtocolCommandContainer {
     * The <b>List<UIButtonEvent></b> means all UIButtonEvents
     */
    private Map<String, List<Command>> protocolEvents = new HashMap<String, List<Command>>();
+   
+   /** 
+    * Store all deviceCommands from database.
+    */
+   private List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
+      
    
    /**
     * Constructor<br />
@@ -183,6 +190,18 @@ public class ProtocolCommandContainer {
       }
       uiButtonEventXml.append("  </commands>\n");
       return uiButtonEventXml.toString();
+   }
+   
+   public List<DeviceCommand> getAllDBDeviceCommands() {
+     return allDBDeviceCommands;
+   }
+   
+   public void setAllDBDeviceCommands(List<DeviceCommand> allDBDeviceCommands) {
+     this.allDBDeviceCommands = allDBDeviceCommands;
+   }
+   
+   public void removeDeviceCommand(DeviceCommand deviceCommand) {
+     this.allDBDeviceCommands.remove(deviceCommand);
    }
    
    /**
