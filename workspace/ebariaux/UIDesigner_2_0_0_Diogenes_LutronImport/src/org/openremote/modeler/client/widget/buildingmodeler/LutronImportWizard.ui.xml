@@ -23,16 +23,21 @@
 						<g:cell horizontalAlignment="ALIGN_CENTER">
 							<g:Button ui:field="cancelButton" width="6em">Cancel</g:Button>
 						</g:cell>
+						<g:cell horizontalAlignment="ALIGN_CENTER">
+							<g:Button ui:field="importButton" width="6em">Import</g:Button>
+						</g:cell>
 					</g:HorizontalPanel>
 				</g:south>
 				<g:center>
-					<g:VerticalPanel>
+					<g:FlowPanel width="100%">
 						<g:HorizontalPanel>
 							<g:FileUpload ui:field="uploadField" name="file" />
 							<g:SubmitButton ui:field="submitButton">Load</g:SubmitButton>
 						</g:HorizontalPanel>
-						<c:CellTable width='100%' ui:field='table' />
-					</g:VerticalPanel>
+						<g:ScrollPanel>
+							<c:CellTable width='100%' ui:field='table' />
+						</g:ScrollPanel>
+					</g:FlowPanel>
 				</g:center>
 			</g:DockLayoutPanel>
 		</g:FormPanel>
