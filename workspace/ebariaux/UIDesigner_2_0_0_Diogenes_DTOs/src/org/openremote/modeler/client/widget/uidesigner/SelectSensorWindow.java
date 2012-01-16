@@ -19,13 +19,11 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.dto.SensorDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.RangeSensor;
-import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -74,7 +72,7 @@ public class SelectSensorWindow extends Dialog {
       sensorListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
-      store.add(BeanModelDataBase.sensorTable.loadAll());
+      store.add(((SensorBeanModelTable)BeanModelDataBase.sensorTable).loadAllAsDTOs());
       sensorList.setHeight(150);
       sensorList.setStore(store);
       sensorList.setDisplayProperty("displayName");
@@ -91,19 +89,14 @@ public class SelectSensorWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSensorModel = se.getSelectedItem();
             if (selectedSensorModel != null) {
-               Sensor sensor = selectedSensorModel.getBean();
+               SensorDTO sensor = selectedSensorModel.getBean();
                String sensorInfo = "<p><b>Sensor info</b></p><p>Type: " + sensor.getType() + "</p><p>Command: "
-                     + sensor.getSensorCommandRef().getDisplayName() + "</P>";
+                     + sensor.getCommandName() + "</P>";
                if (sensor.getType() == SensorType.RANGE) {
-                  sensorInfo = sensorInfo + "<p>Min: " + ((RangeSensor)sensor).getMin() + "</p>";
-                  sensorInfo = sensorInfo + "<p>Max: " + ((RangeSensor)sensor).getMax() + "</p>";
+                  sensorInfo = sensorInfo + "<p>Min: " + sensor.getMinValue() + "</p>";
+                  sensorInfo = sensorInfo + "<p>Max: " + sensor.getMaxValue() + "</p>";
                } else if (sensor.getType() == SensorType.CUSTOM) {
-                  CustomSensor customSensor = (CustomSensor)sensor;
-                  String states = "";
-                  for (State state : customSensor.getStates()) {
-                     states = states + state.getName() + ". ";
-                  }
-                  sensorInfo = sensorInfo + "<p>States: " + states + "</p>";
+                  sensorInfo = sensorInfo + "<p>States: " + sensor.getStatesInfo() + "</p>";
                }
                sensorInfoHtml.setHtml(sensorInfo);
             }
@@ -121,7 +114,7 @@ public class SelectSensorWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a sensor.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof Sensor) {
+                  if (beanModel.getBean() instanceof SensorDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a sensor.", null);
