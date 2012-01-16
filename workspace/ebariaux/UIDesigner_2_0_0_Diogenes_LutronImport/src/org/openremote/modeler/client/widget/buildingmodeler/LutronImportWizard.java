@@ -97,7 +97,7 @@ public class LutronImportWizard extends DialogBox {
     table.setSelectionModel(selectionModel, DefaultSelectionEventManager.<OutputImportConfig> createCheckboxManager());
     
     // Add the columns.
-    Column<OutputImportConfig, Boolean> checkColumn = new Column<OutputImportConfig, Boolean>(new CheckboxCell(true, false)) {
+    Column<OutputImportConfig, Boolean> checkColumn = new Column<OutputImportConfig, Boolean>(new CheckboxCell(false, false)) {
       @Override
       public Boolean getValue(OutputImportConfig object) {
         return selectionModel.isSelected(object);
@@ -109,7 +109,7 @@ public class LutronImportWizard extends DialogBox {
     table.addColumn(outputNameColumn, "Output"); 
     table.setRowCount(0); // No rows for now, otherwise loading indicator is displayed
     
-    errorMessageLabel.setVisible(false);
+    errorMessageLabel.setText("");
 
     uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
     uploadForm.setMethod(FormPanel.METHOD_POST);
@@ -119,6 +119,8 @@ public class LutronImportWizard extends DialogBox {
     
       @Override
       public void onSubmitComplete(SubmitCompleteEvent event) {
+        table.setRowCount(0); // No rows for now, otherwise loading indicator is displayed
+
         LutronImportResultOverlay importResult = LutronImportResultOverlay.fromJSONString(event.getResults());
         if (importResult.getErrorMessage() != null) {
           reportError(importResult.getErrorMessage());
@@ -148,7 +150,6 @@ public class LutronImportWizard extends DialogBox {
           }
         }        
         table.setRowData(outputs);
-        table.setRowCount(outputs.size());
         
         /*
 
@@ -195,7 +196,6 @@ public class LutronImportWizard extends DialogBox {
   private void reportError(String errorMessage) {
     uploadForm.reset();
     errorMessageLabel.setText(errorMessage);
-    errorMessageLabel.setVisible(true);
   }
 
   @UiField
@@ -223,13 +223,20 @@ public class LutronImportWizard extends DialogBox {
   @UiField
   FileUpload uploadField;
   
+  @UiHandler("submitButton")
+  void handleSubmit(ClickEvent e) {
+    // TODO: this is not really working because GUI is not updated while file uploads, only afterwards
+    table.setVisibleRangeAndClearData(table.getVisibleRange(), false);
+    errorMessageLabel.setText("");
+  }
+  
   @UiHandler("cancelButton")
   void handleClick(ClickEvent e) {
     hide();
   }
   
   @UiHandler("importButton")
-  void handleImportClick(ClickEvent e) {   
+  void handleImportClick(ClickEvent e) {
     ModelerGinjector injector = GWT.create(ModelerGinjector.class);
     DispatchAsync dispatcher = injector.getDispatchAsync();
 
