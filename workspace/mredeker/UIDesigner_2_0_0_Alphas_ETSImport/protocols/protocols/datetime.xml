@@ -25,50 +25,45 @@
 -->
 
 <!--
- |  1-Wire protocol configuration for OpenRemote Designer.
+ |  DateTime protocol configuration for OpenRemote Designer.
  |
- |  Author: Jaroslav Misura
+ |  Author: Marcus Redeker
  +-->
 <openremote xmlns="http://www.openremote.org"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 
-    <protocol displayName="1-Wire Protocol" tagName="onewire">
+    <protocol displayName="DateTime Protocol" tagName="datetime">
 
-        <attr name="hostname" label="Hostname">
+        <attr name="latitude" label="Latitude for Sunrise/Sunset calculation">
             <validations>
-                <allowBlank>false</allowBlank>
-                <regex message="Hostname or IP address">^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])|(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9]))$</regex>
+                <allowBlank>true</allowBlank>
             </validations>
         </attr>
 
-        <attr name="port" label="Port">
+        <attr name="longitude" label="Longitude for Sunrise/Sunset calculation">
             <validations>
-                <allowBlank>false</allowBlank>
-                <maxLength>5</maxLength>
-                <regex message="Port number, only numbers allowed">[0-9]{1,5}</regex>
+                <allowBlank>true</allowBlank>
             </validations>
         </attr>
 
-        <attr name="deviceAddress" label="Device address">
+        <attr name="timezone" label="Timezone todo time corrections. If not set, default is taken.">
             <validations>
-                <allowBlank>false</allowBlank>
-                <regex message="Device address format">.*</regex>
+                <allowBlank>true</allowBlank>
             </validations>
         </attr>
-
-        <attr name="filename" label="Sensor attribute" >
-            <validations>
-                <allowBlank>false</allowBlank>
-                <regex message="Sensor attribute, such as temperature or humidity">.*</regex>
-            </validations>
-        </attr>
-
-        <attr name="pollingInterval" label="Polling interval in form of (1s, 1m, 1h) or just milliseconds">
+        
+        <attr name="command" label="What should be calculated / returned?">
             <validations>
                 <allowBlank>false</allowBlank>
             </validations>
         </attr>
-
+        
+        <attr name="format" label="How should date/time values be formatted?">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+        
     </protocol>
 </openremote>
