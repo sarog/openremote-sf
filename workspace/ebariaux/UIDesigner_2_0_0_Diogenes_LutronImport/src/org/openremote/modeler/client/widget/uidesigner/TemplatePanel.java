@@ -64,6 +64,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class TemplatePanel extends ContentPanel {
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
+   private LayoutContainer treeContainer;
+   
    private ScreenPanel templateEditPanel = null;
    
    private Template templateInEditing = null;
@@ -86,7 +88,7 @@ public class TemplatePanel extends ContentPanel {
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
       createMenu();
-      createTreeContainer();
+//      createTreeContainer();
       createAutoSaveTimer();
    }
 
@@ -259,7 +261,7 @@ public class TemplatePanel extends ContentPanel {
 
    
    private void createTreeContainer() {
-      LayoutContainer treeContainer = new LayoutContainer() {
+      treeContainer = new LayoutContainer() {
          @Override
          protected void onRender(Element parent, int index) {
             super.onRender(parent, index);
@@ -387,5 +389,14 @@ public class TemplatePanel extends ContentPanel {
 
       });
    }
+   
+   @Override
+   protected void onExpand() {
+      if (treeContainer == null) {
+        createTreeContainer();
+      }
+     super.onExpand();
+   }
+
 
 }
