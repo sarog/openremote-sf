@@ -218,7 +218,7 @@ public class LutronImportWizard extends DialogBox {
   @UiField
   FileUpload uploadField;
   
-  @UiHandler("submitButton")
+  @UiHandler("loadButton")
   void handleSubmit(ClickEvent e) {
     // TODO: this is not really working because GUI is not updated while file uploads, only afterwards
     selectionModel.clear(); // Must clear selection, otherwise keeps previous selection
@@ -237,25 +237,21 @@ public class LutronImportWizard extends DialogBox {
     DispatchAsync dispatcher = injector.getDispatchAsync();
 
     ImportConfig importConfig = new ImportConfig();
-    importConfig.setOutputs(new HashSet<OutputImportConfig>(selectionModel.getSelectedSet())); // TODO: see how to not re-encapsulate
+    importConfig.setOutputs(new HashSet<OutputImportConfig>(selectionModel.getSelectedSet()));
     
     ImportLutronConfigAction action = new ImportLutronConfigAction(importConfig);
-    action.setDevice(device); // TODO : double check this is the device we want or how to access the member's variable
+    action.setDevice(this.device);
     
     dispatcher.execute(action, new AsyncCallback<ImportLutronConfigResult>() {
 
       @Override
       public void onFailure(Throwable caught) {
-        Info.display("ERROR", "Call failed " + caught.getLocalizedMessage());
         reportError(caught.getMessage());
       }
 
       @Override
       public void onSuccess(ImportLutronConfigResult result) {
-         Info.display("INFO", "Got result");
-         
-         
-         eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO: double check access as for device
+         eventBus.fireEvent(new DeviceUpdatedEvent(LutronImportWizard.this.device));
          /*
           * Not use for now as issue with serialiazation of Hibernate beans (Gilead + gwt-dispatch)
           * 
@@ -263,7 +259,6 @@ public class LutronImportWizard extends DialogBox {
          BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
          */
          hide();
-         
       }
       
     });
