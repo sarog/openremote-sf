@@ -48,13 +48,7 @@ public class WidgetSelectionUtil {
      }
      
       if (selectedWidget != null) {
-         selectedWidget.addStyleName("button-border");
-         
-         // add tab index and focus it, for catch keyboard "delete" event in Firefox.
-         if (selectedWidget.isRendered()) {
-            selectedWidget.el().dom.setPropertyInt("tabIndex", 0);
-         }
-         selectedWidget.focus();
+         selectWidget(selectedWidget);
       }
       selectedWidgets.clear();
       if (selectedWidget != null) {
@@ -64,5 +58,30 @@ public class WidgetSelectionUtil {
       // TODO - EBR : this should go through the event bus, not via a direct dependency
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
    }
+
+   public static void toggleSelectWidget(ComponentContainer selectedWidget) {
+     if (selectedWidget != null) {
+       if (selectedWidgets.contains(selectedWidget)) {
+         selectedWidget.removeStyleName("button-border");
+         selectedWidgets.remove(selectedWidget);
+       } else {
+         selectWidget(selectedWidget);
+         selectedWidgets.add(selectedWidget);
+       }
+       
+       // TODO - EBR : this should go through the event bus, not via a direct dependency
+       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
+     }
+   }
    
+   private static void selectWidget(ComponentContainer selectedWidget) {
+     selectedWidget.addStyleName("button-border");
+      
+      // add tab index and focus it, for catch keyboard "delete" event in Firefox.
+      if (selectedWidget.isRendered()) {
+         selectedWidget.el().dom.setPropertyInt("tabIndex", 0);
+      }
+      selectedWidget.focus();
+   }
+    
 }
