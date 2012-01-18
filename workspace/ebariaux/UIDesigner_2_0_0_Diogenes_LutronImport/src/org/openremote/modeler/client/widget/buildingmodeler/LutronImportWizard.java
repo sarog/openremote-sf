@@ -184,45 +184,6 @@ public class LutronImportWizard extends DialogBox {
           }
         }        
         table.setRowData(outputs);
-        
-        /*
-
-        final List<BeanModel> allModels = new ArrayList<BeanModel>();
-        DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(projectOverlay.getAreas()), new AsyncSuccessCallback<List<BeanModel>>() {
-          @Override
-          public void onSuccess(final List<BeanModel> deviceCommandModels) {
-            Info.display("INFO", "Commands saved");
-            allModels.addAll(deviceCommandModels);
-            SensorBeanModelProxy.saveSensorList(createSensors(deviceCommandModels), new AsyncSuccessCallback<List<BeanModel>>() {
-              @Override
-              public void onSuccess(List<BeanModel> sensorModels) {
-                Info.display("INFO", "Sensor saved");
-                allModels.addAll(sensorModels);
-                SliderBeanModelProxy.saveSliderList(createSliders(deviceCommandModels, sensorModels), new AsyncSuccessCallback<List<BeanModel>>() {
-                  public void onSuccess(List<BeanModel> sliderModels) {
-                    Info.display("INFO", "Slider saved");
-                    allModels.addAll(sliderModels);
-                    
-                    hide();
-//                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
-                  }
-                  
-                  @Override
-                  public void onFailure(Throwable caught) {
-                    Info.display("ERROR", "Error saving sliders");
-                    // TODO: better handling of this
-//                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
-                    
-                    hide();
-                  }
-                });
-              }
-            });
-          }
-        });
-        */
-        
-//        hide();
        }
     });
   }
