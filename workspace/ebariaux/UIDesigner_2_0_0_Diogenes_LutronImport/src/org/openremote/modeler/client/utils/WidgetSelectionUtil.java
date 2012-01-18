@@ -62,7 +62,7 @@ public class WidgetSelectionUtil {
       }
 
       // TODO - EBR : this should go through the event bus, not via a direct dependency
-      widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));
+      widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
    }
    
 }
