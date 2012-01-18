@@ -33,11 +33,11 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UITabbar;
@@ -79,6 +79,9 @@ public class ScreenCanvas extends ComponentContainer {
    private ScreenTabbar tabbarContainer;
 
    private ScreenIndicator screenIndicator;
+   
+   private boolean shiftKeyDown = false;
+   
 
    /**
     * Instantiates a new screen canvas.
@@ -479,10 +482,15 @@ public class ScreenCanvas extends ComponentContainer {
    private AbsoluteLayoutContainer createAbsoluteLayoutContainer(final Screen screen, final Absolute absolute,
          final ScreenComponent screenControl) {
       final AbsoluteLayoutContainer controlContainer = new AbsoluteLayoutContainer(this, absolute, screenControl) {
+        
          @Override
          public void onComponentEvent(ComponentEvent ce) {
             if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-               WidgetSelectionUtil.setSelectWidget(this);
+              if (shiftKeyDown) {
+                WidgetSelectionUtil.toggleSelectWidget(this); 
+              } else {
+                WidgetSelectionUtil.setSelectWidget(this);
+              }
                if (screenControl instanceof ScreenButton) {
                   ((ScreenButton) screenControl).setPressedImage();
                } else if (screenControl instanceof ScreenSwitch) {
@@ -498,7 +506,19 @@ public class ScreenCanvas extends ComponentContainer {
                }
             } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
                WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
+            } 
+            
+            // TODO - EBR: check this is the correct place for this. Should be at higher level / global
+            else if (ce.getEventTypeInt() == Event.ONKEYDOWN) {
+              if (ce.getKeyCode() == 16) {
+                shiftKeyDown = true;
+              }
+            } else if (ce.getEventTypeInt() == Event.ONKEYUP) {
+              if (ce.getKeyCode() == 16) {
+                shiftKeyDown = false;
+              }
             }
+
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
@@ -512,6 +532,10 @@ public class ScreenCanvas extends ComponentContainer {
       };
       controlContainer.sinkEvents(Event.ONMOUSEUP);
       controlContainer.sinkEvents(Event.ONDBLCLICK);
+      // TODO - EBR : Is this correct, seems required
+      controlContainer.sinkEvents(Event.ONKEYUP);
+      controlContainer.sinkEvents(Event.ONKEYDOWN);
+      
       controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeAbsolute(absolute);
@@ -544,7 +568,7 @@ public class ScreenCanvas extends ComponentContainer {
             super.onBackspace(ce);
             this.onDelete(ce);
          }
-
+         
       }.bind(controlContainer);
       absolute.setBelongsTo(controlContainer);
       return controlContainer;
@@ -588,10 +612,26 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-               WidgetSelectionUtil.setSelectWidget(this);
+              if (shiftKeyDown) {
+                WidgetSelectionUtil.toggleSelectWidget(this); 
+              } else {
+                WidgetSelectionUtil.setSelectWidget(this);
+              }
             } else if (event.getTypeInt() == Event.ONDBLCLICK) {
                WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
             }
+            
+            // TODO - EBR: check this is the correct place for this. Should be at higher level / global
+            else if (event.getTypeInt() == Event.ONKEYDOWN) {
+              if (event.getKeyCode() == 16) {
+                shiftKeyDown = true;
+              }
+            } else if (event.getTypeInt() == Event.ONKEYUP) {
+              if (event.getKeyCode() == 16) {
+                shiftKeyDown = false;
+              }
+            }
+
             event.stopPropagation();
             super.onBrowserEvent(event);
          }
@@ -604,6 +644,10 @@ public class ScreenCanvas extends ComponentContainer {
 
       };
       gridContainer.sinkEvents(Event.ONDBLCLICK);
+      // TODO - EBR : Is this correct, seems required
+      gridContainer.sinkEvents(Event.ONKEYUP);
+      gridContainer.sinkEvents(Event.ONKEYDOWN);
+
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeGrid(grid);
