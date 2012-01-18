@@ -46,7 +46,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.RowCountChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class LutronImportWizard extends DialogBox {
@@ -243,7 +242,7 @@ public class LutronImportWizard extends DialogBox {
   Label errorMessageLabel;
   
   @UiField
-  Button submitButton;
+  Button loadButton;
   
   @UiField
   Button cancelButton;

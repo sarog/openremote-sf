@@ -21,7 +21,7 @@
 				<g:north size="2">
 					<g:HorizontalPanel>
 							<g:FileUpload styleName='{style.uploadFieldStyle}' ui:field="uploadField" name="file" />
-							<g:SubmitButton ui:field="submitButton">Load</g:SubmitButton>
+							<g:SubmitButton ui:field="loadButton">Load</g:SubmitButton>
 							<g:Label styleName='{style.errorMessageStyle}' ui:field='errorMessageLabel' />
 					</g:HorizontalPanel>
 				</g:north>
