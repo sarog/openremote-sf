@@ -44,6 +44,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class LutronImportWizard extends DialogBox {
 
@@ -72,8 +73,17 @@ public class LutronImportWizard extends DialogBox {
     this.device = device;
 
     uiBinder.createAndBindUi(this);
+    importButton.setEnabled(false);
     mainLayout.setSize("50em", "20em");
     center();
+    
+    // Have import button only enabled if user has selected items to import
+    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
+      @Override
+      public void onSelectionChange(SelectionChangeEvent event) {
+        importButton.setEnabled(!selectionModel.getSelectedSet().isEmpty());
+      }
+    });
     
     TextColumn<OutputImportConfig> areaNameColumn = new TextColumn<OutputImportConfig>() {
       @Override
@@ -226,6 +236,7 @@ public class LutronImportWizard extends DialogBox {
   @UiHandler("submitButton")
   void handleSubmit(ClickEvent e) {
     // TODO: this is not really working because GUI is not updated while file uploads, only afterwards
+    selectionModel.clear(); // Must clear selection, otherwise keeps previous selection
     table.setVisibleRangeAndClearData(table.getVisibleRange(), false);
     errorMessageLabel.setText("");
   }
