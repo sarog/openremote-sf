@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.client.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
@@ -30,7 +33,9 @@ public class WidgetSelectionUtil {
 
    private WidgetSelectionUtil() {
    }
-   private static ComponentContainer currentSelectedWidget;
+   
+   private static List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
+   
    private static WidgetSelectChangeListener widgetSelectChangeListener;
    
    public static void setChangeListener(WidgetSelectChangeListener listener) {
@@ -38,9 +43,10 @@ public class WidgetSelectionUtil {
    }
    
    public static void setSelectWidget(ComponentContainer selectedWidget) {
-      if (currentSelectedWidget != null) {
-         currentSelectedWidget.removeStyleName("button-border");
-      }
+     for (ComponentContainer widget : selectedWidgets) {
+       widget.removeStyleName("button-border");
+     }
+     
       if (selectedWidget != null) {
          selectedWidget.addStyleName("button-border");
          
@@ -50,7 +56,12 @@ public class WidgetSelectionUtil {
          }
          selectedWidget.focus();
       }
-      currentSelectedWidget = selectedWidget;
+      selectedWidgets.clear();
+      if (selectedWidget != null) {
+        selectedWidgets.add(selectedWidget);
+      }
+
+      // TODO - EBR : this should go through the event bus, not via a direct dependency
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));
    }
    
