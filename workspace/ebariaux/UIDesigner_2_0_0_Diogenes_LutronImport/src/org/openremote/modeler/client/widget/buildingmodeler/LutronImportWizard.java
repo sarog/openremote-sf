@@ -14,6 +14,8 @@ import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverla
 import org.openremote.modeler.client.lutron.importmodel.OutputOverlay;
 import org.openremote.modeler.client.lutron.importmodel.ProjectOverlay;
 import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
+import org.openremote.modeler.client.utils.CheckboxCellHeader;
+import org.openremote.modeler.client.utils.CheckboxCellHeader.ChangeValue;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.shared.lutron.ImportConfig;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
@@ -44,6 +46,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.RowCountChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class LutronImportWizard extends DialogBox {
@@ -76,12 +79,18 @@ public class LutronImportWizard extends DialogBox {
     importButton.setEnabled(false);
     mainLayout.setSize("50em", "20em");
     center();
-    
-    // Have import button only enabled if user has selected items to import
-    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
+        
+    final CheckboxCellHeader selectionHeader = new CheckboxCellHeader(new CheckboxCell());
+    selectionHeader.setChangeValue(new ChangeValue() {      
       @Override
-      public void onSelectionChange(SelectionChangeEvent event) {
-        importButton.setEnabled(!selectionModel.getSelectedSet().isEmpty());
+      public void changedValue(int columnIndex, Boolean value) {
+        if (value) {
+          for (OutputImportConfig oic : table.getVisibleItems()) {
+            selectionModel.setSelected(oic, true);
+          }
+        } else {
+          selectionModel.clear();          
+        }
       }
     });
     
@@ -103,6 +112,22 @@ public class LutronImportWizard extends DialogBox {
         return outputConfig.getOutputName();
       }
     };
+    
+    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
+      @Override
+      public void onSelectionChange(SelectionChangeEvent event) {
+        // Have import button only enabled if user has selected items to import
+        importButton.setEnabled(!selectionModel.getSelectedSet().isEmpty());
+
+        // And manage the select all/deselect all header based on individual selection
+        if (selectionModel.getSelectedSet().isEmpty()) {
+          selectionHeader.setValue(false);
+        }
+        if (selectionModel.getSelectedSet().size() == table.getVisibleItemCount()) {
+          selectionHeader.setValue(true);
+        }
+      }
+    });
 
     table.setSelectionModel(selectionModel, DefaultSelectionEventManager.<OutputImportConfig> createCheckboxManager());
     
@@ -113,7 +138,7 @@ public class LutronImportWizard extends DialogBox {
         return selectionModel.isSelected(object);
       }
     };
-    table.addColumn(checkColumn);
+    table.addColumn(checkColumn, selectionHeader);
     table.addColumn(areaNameColumn, "Area");
     table.addColumn(roomNameColumn, "Room");
     table.addColumn(outputNameColumn, "Output"); 
