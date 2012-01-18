@@ -111,6 +111,12 @@ public class LutronImportWizard extends DialogBox {
         return outputConfig.getOutputName();
       }
     };
+    TextColumn<OutputImportConfig> outputTypeColumn = new TextColumn<OutputImportConfig>() {
+      @Override
+      public String getValue(OutputImportConfig outputConfig) {
+        return outputConfig.getType().toString();
+      }
+    };
     
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
       @Override
@@ -140,7 +146,8 @@ public class LutronImportWizard extends DialogBox {
     table.addColumn(checkColumn, selectionHeader);
     table.addColumn(areaNameColumn, "Area");
     table.addColumn(roomNameColumn, "Room");
-    table.addColumn(outputNameColumn, "Output"); 
+    table.addColumn(outputNameColumn, "Output");
+    table.addColumn(outputTypeColumn, "Type");
     table.setRowCount(0); // No rows for now, otherwise loading indicator is displayed
     
     errorMessageLabel.setText("");
