@@ -461,38 +461,6 @@ public class TreePanelBuilder {
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
          @SuppressWarnings("unchecked")
          @Override
-         protected void onClick(TreePanelEvent tpe) {
-            super.onClick(tpe);
-            BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-            if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
-               ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
-               screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-               screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
-               ScreenTab screenTabItem = screenPanel.getScreenItem();
-               if (screenTabItem != null) {
-                  if (screen == screenTabItem.getScreenPair()) {
-                     screenTabItem.updateTouchPanel();
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                  } else {
-                     screenTabItem = new ScreenTab(screen);
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                     screenPanel.setScreenItem(screenTabItem);
-                  }
-               } else {
-                  screenTabItem = new ScreenTab(screen);
-                  screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                  screenPanel.setScreenItem(screenTabItem);
-               }
-               screenTabItem.updateScreenIndicator();
-            }
-            if (beanModel != null) {
-               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
-                     .getPropertyEditable(beanModel, this)));
-            }
-         }
-
-         @SuppressWarnings("unchecked")
-         @Override
          protected void onDoubleClick(TreePanelEvent tpe) {
             super.onDoubleClick(tpe);
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());

@@ -62,11 +62,13 @@ import org.openremote.modeler.exception.UIRestoreException;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -141,6 +143,39 @@ public class ProfilePanel extends ContentPanel {
     */
    private void createPanelTree() {
       panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
+
+      panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
+        public void handleEvent(TreePanelEvent<ModelData> be) {
+          BeanModel beanModel = panelTree.getSelectionModel().getSelectedItem();
+          if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
+             ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
+             screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
+             screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
+             ScreenTab screenTabItem = screenPanel.getScreenItem();
+             if (screenTabItem != null) {
+                if (screen == screenTabItem.getScreenPair()) {
+                   screenTabItem.updateTouchPanel();
+                   screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+                } else {
+                   screenTabItem = new ScreenTab(screen);
+                   screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+                   screenPanel.setScreenItem(screenTabItem);
+                }
+             } else {
+                screenTabItem = new ScreenTab(screen);
+                screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+                screenPanel.setScreenItem(screenTabItem);
+             }
+             screenTabItem.updateScreenIndicator();
+          }
+          
+          if (beanModel != null) {
+             panelTree.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
+                   .getPropertyEditable(beanModel, panelTree)));
+          }          
+        };
+    });
+      
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
