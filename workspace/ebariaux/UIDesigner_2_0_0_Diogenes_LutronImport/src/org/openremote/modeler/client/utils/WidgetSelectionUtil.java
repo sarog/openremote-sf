@@ -74,7 +74,11 @@ public class WidgetSelectionUtil {
      }
    }
    
-   private static void selectWidget(ComponentContainer selectedWidget) {
+   public static List<ComponentContainer> getSelectedWidgets() {
+    return selectedWidgets;
+  }
+
+  private static void selectWidget(ComponentContainer selectedWidget) {
      selectedWidget.addStyleName("button-border");
       
       // add tab index and focus it, for catch keyboard "delete" event in Firefox.
