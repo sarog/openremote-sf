@@ -23,9 +23,7 @@ import org.openremote.modeler.client.event.ScreenSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
-import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
