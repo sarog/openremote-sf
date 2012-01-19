@@ -121,22 +121,6 @@ public class ScreenCanvas extends ComponentContainer {
          }
       }
       
-      
-      new KeyNav<ComponentEvent>() {
-        public void onRight(ComponentEvent ce) {
-          
-          Info.display("INFO", "Right key event");
-          /*
-          for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-            if (cc instanceof AbsoluteLayoutContainer) {
-              Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-              absolute.setLeft(absolute.getLeft() + 1);
-            }
-               
-          }*/
-        };
-      }.bind(this);      
-      
       layout();
 
       addDropTargetDNDListener(screen, dropTarget);
@@ -155,7 +139,6 @@ public class ScreenCanvas extends ComponentContainer {
          add(tabbarContainer);
       }
       sinkEvents(Event.ONMOUSEDOWN);
-      sinkEvents(Event.ONKEYDOWN);
    }
 
    public void updateGround() {
@@ -589,23 +572,52 @@ public class ScreenCanvas extends ComponentContainer {
          }
          
          public void onRight(ComponentEvent ce) {
-           
-           Info.display("INFO", "Absolute Right key event");
-
            for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
              if (cc instanceof AbsoluteLayoutContainer) {
                Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-               Info.display("INFO", "Absolute position is " + Integer.toString(absolute.getLeft()));
-               absolute.setLeft(absolute.getLeft() + 1);
-               // TODO - EBR : Model is updated but this is not reflected anywhere
+               absolute.setLeft(absolute.getLeft() + (shiftKeyDown?10:1));
+               
+               cc.setPosition(absolute.getLeft(), absolute.getTop());
+
+               // TODO - EBR : If only model is updated, this is not reflected anywhere
+               // Updating view object directly makes it work but is tight coupling
                // -> implement a correct model / view decoupling and bus communication first
-               
-               
-               // Post event from here for now, this should move out of the view
+               // Issue is we don't have access to event bus from here
+               // -> code to post event should not be in view, view should communicate with a presenter through interface
              }
                 
            }
-         };
+         }
+         
+         public void onLeft(ComponentEvent ce) {
+           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+             if (cc instanceof AbsoluteLayoutContainer) {
+               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+               absolute.setLeft(absolute.getLeft() - (shiftKeyDown?10:1));               
+               cc.setPosition(absolute.getLeft(), absolute.getTop());
+             }
+           }
+         }
+
+         public void onUp(ComponentEvent ce) {
+           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+             if (cc instanceof AbsoluteLayoutContainer) {
+               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+               absolute.setTop(absolute.getTop() - (shiftKeyDown?10:1));               
+               cc.setPosition(absolute.getLeft(), absolute.getTop());
+             }
+           }
+         }
+
+         public void onDown(ComponentEvent ce) {
+           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+             if (cc instanceof AbsoluteLayoutContainer) {
+               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+               absolute.setTop(absolute.getTop() + (shiftKeyDown?10:1));               
+               cc.setPosition(absolute.getLeft(), absolute.getTop());
+             }
+           }
+         }
 
          
       }.bind(controlContainer);
