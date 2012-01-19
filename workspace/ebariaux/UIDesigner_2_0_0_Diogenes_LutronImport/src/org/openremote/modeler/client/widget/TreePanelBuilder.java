@@ -459,13 +459,6 @@ public class TreePanelBuilder {
          panelTreeStore = new TreeStore<BeanModel>();
       }
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
-         @SuppressWarnings("unchecked")
-         @Override
-         protected void onDoubleClick(TreePanelEvent tpe) {
-            super.onDoubleClick(tpe);
-            this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
-         }
-
          @Override
          protected void afterRender() {
             super.afterRender();

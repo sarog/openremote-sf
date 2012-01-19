@@ -181,6 +181,13 @@ public class ProfilePanel extends ContentPanel {
         };
     });
       
+      panelTree.addListener(Events.OnDoubleClick, new Listener<TreePanelEvent<ModelData>>() {
+        @Override
+        public void handleEvent(TreePanelEvent<ModelData> be) {
+          editSelectedModel();
+        }        
+      });
+      
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
@@ -191,12 +198,6 @@ public class ProfilePanel extends ContentPanel {
             new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
             initTreeWithAutoSavedPanels();
-            panelTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
-               public void handleEvent(DoubleClickEvent be) {
-                  editSelectedModel();
-               }
-               
-            });            
          }
       };
       // overflow-auto style is for IE hack.
