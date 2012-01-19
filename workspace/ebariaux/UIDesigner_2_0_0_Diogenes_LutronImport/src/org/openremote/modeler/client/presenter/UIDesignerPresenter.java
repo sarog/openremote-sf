@@ -54,6 +54,11 @@ public class UIDesignerPresenter {
 
   private HandlerManager eventBus;
   private UIDesignerView view;
+  
+  private ProfilePanelPresenter profilePanelPresenter;
+  private TemplatePanelPresenter templatePanelPresenter;
+  private ScreenPanelPresenter screenPanelPresenter;
+  private PropertyPanelPresenter propertyPanelPresenter;
 
   /** The auto_save_interval millisecond. */
   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
@@ -64,7 +69,12 @@ public class UIDesignerPresenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
-
+    
+    this.profilePanelPresenter = new ProfilePanelPresenter(eventBus, view.getProfilePanel());
+    this.templatePanelPresenter = new TemplatePanelPresenter(eventBus, view.getTemplatePanel());
+    this.screenPanelPresenter = new ScreenPanelPresenter(eventBus, view.getScreenPanel());
+    this.propertyPanelPresenter = new PropertyPanelPresenter(eventBus, view.getPropertyPanel());
+    
     AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncSuccessCallback<String>() {
       public void onFailure(Throwable caught) {
         Info.display("Error", "failed to get account path.");

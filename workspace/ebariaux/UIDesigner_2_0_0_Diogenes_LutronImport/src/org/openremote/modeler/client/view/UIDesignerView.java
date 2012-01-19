@@ -159,4 +159,11 @@ public class UIDesignerView extends TabItem {
     return profilePanel;
   }
 
+  public ScreenPanel getScreenPanel() {
+    return screenPanel;
+  }
+  
+  public PropertyPanel getPropertyPanel() {
+    return propertyPanel;
+  }
 }
