@@ -27,6 +27,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -34,6 +35,7 @@ import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ContainerEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
@@ -111,7 +113,54 @@ public class ScreenPanel extends LayoutContainer {
                   remove(screenTab);
                   screenItem = null;
                } else if (event.getType() == BeanModelTable.UPDATE) {
-                  screenTab.updateTouchPanel();
+                 ScreenPair screenPair = ((BeanModel)event.getItem()).getBean();
+                 
+                 // Ensure tabs portrait/landscape are correct based on object model
+                 switch (screenPair.getOrientation()) {
+                   case PORTRAIT:
+                   {
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).disable();
+                     }
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) == null) {
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                     } else {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).enable();
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+                     break;
+                   }
+                   case LANDSCAPE:
+                   {
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).disable();
+                     }
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) == null) {
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                     } else {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.LANDSCAPE));
+                     break;
+                   }
+                   case BOTH:
+                   {
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).enable();
+                     } else {
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                     }
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
+                     } else {
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+                     break;
+                   }                  
+                 }
+
+                 screenTab.updateTouchPanel();
                }
             }
          };
