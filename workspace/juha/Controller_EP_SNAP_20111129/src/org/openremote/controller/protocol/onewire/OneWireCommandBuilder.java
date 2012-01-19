@@ -23,8 +23,10 @@ package org.openremote.controller.protocol.onewire;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.exception.NoSuchCommandException;
 
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class OneWireCommandBuilder implements CommandBuilder
   private final static String STR_ATTRIBUTE_NAME_PORT = "port";
   private final static String STR_ATTRIBUTE_NAME_DEVICE_ADDRESS = "deviceAddress";
   private final static String STR_ATTRIBUTE_NAME_FILENAME = "filename";
-  private final static String STR_ATTRIBUTE_NAME_REFRESH_TIME = "refreshTime";
+  private final static String STR_ATTRIBUTE_NAME_POLLING_INTERVAL = "pollingInterval";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -69,8 +71,8 @@ public class OneWireCommandBuilder implements CommandBuilder
       int port = INT_DEFAULT_OWSERVER_PORT;
       String deviceAddress = null;
       String filename = null;
-      String refreshTimeStr = null;
-      long refreshTime = 0;
+      String pollingIntervalStr = null;
+      int pollingInterval = 0;
 
       // read values from config xml
 
@@ -102,11 +104,11 @@ public class OneWireCommandBuilder implements CommandBuilder
             filename = elementValue;
             logger.debug("OneWire Command: filename = " + filename);
         }
-
-        else if (STR_ATTRIBUTE_NAME_REFRESH_TIME.equals(elementName))
+        
+        else if (STR_ATTRIBUTE_NAME_POLLING_INTERVAL.equals(elementName))
         {
-            refreshTimeStr = elementValue;
-            logger.debug("OneWire Command: refreshTime = " + refreshTimeStr);
+          pollingIntervalStr = elementValue;
+          logger.debug("OneWire Command: pollingInterval = " + pollingIntervalStr);
         }
       }
 
@@ -128,23 +130,25 @@ public class OneWireCommandBuilder implements CommandBuilder
 
       try
       {
-          refreshTime = Long.parseLong(refreshTimeStr); // timeout for cache in seconds
-          refreshTime = refreshTime * 1000;             // timeout for cache now in milliseconds
+        if ((null != pollingIntervalStr) && (pollingIntervalStr.trim().length() > 0)) {
+          pollingInterval = Strings.convertPollingIntervalString(pollingIntervalStr);
+        } else {
+          throw new NoSuchCommandException("Unable to create OneWire command, no pollingInterval given");
+        }
       }
 
       catch (NumberFormatException e)
       {
-          logger.warn("Invalid refresh time specified (" + refreshTimeStr + "); using default value = 0");
+        throw new NoSuchCommandException("Unable to create OneWire command, invalid pollingInterval specified!");
       }
 
       if (null == hostname || null == deviceAddress || null == filename)
       {
-          logger.warn("Unable to create OneWireCommand, missing configuration parameter(s)");
-          return null;
+        throw new NoSuchCommandException("Unable to create OneWireCommand, missing configuration parameter(s)");
       }
 
       logger.debug("OneWire Command created successfully");
-
-      return new OneWireCommand(hostname, port, deviceAddress, filename, refreshTime);
+      
+      return new OneWireCommand(hostname, port, deviceAddress, filename, pollingInterval);
   }
 }
