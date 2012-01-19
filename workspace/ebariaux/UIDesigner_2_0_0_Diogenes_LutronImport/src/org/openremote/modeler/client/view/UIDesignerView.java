@@ -19,48 +19,21 @@
 */
 package org.openremote.modeler.client.view;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.PropertyEditEvent;
-import org.openremote.modeler.client.model.AutoSaveResponse;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.UtilsProxy;
-import org.openremote.modeler.client.rpc.AsyncServiceFactory;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.PanelsAndMaxOid;
-import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
-import org.openremote.modeler.domain.Group;
-import org.openremote.modeler.domain.GroupRef;
-import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.ScreenPair;
-import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.InfoConfig;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 
 /**
  * The class is for initializing the ui designer view.
@@ -70,14 +43,9 @@ import com.google.gwt.user.client.Window;
  * panel in the east.
  */
 public class UIDesignerView extends TabItem {
-
+  
    /** The screen panel is for DND widget in it. */
    private ScreenPanel screenPanel = new ScreenPanel();
-
-   /** The auto_save_interval millisecond. */
-   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
-
-   private Timer timer;
 
    private ProfilePanel profilePanel = null;
    
@@ -90,149 +58,13 @@ public class UIDesignerView extends TabItem {
     */
    public UIDesignerView() {
       super();
+      
       setText("UI Designer");
 
-      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncSuccessCallback <String>() {
-         public void onFailure(Throwable caught) {
-            Info.display("Error", "falid to get account path.");
-            super.checkTimeout(caught);
-         }
-         public void onSuccess(String result) {
-            Cookies.setCookie(Constants.CURRETN_RESOURCE_PATH, result);
-         }
-         
-      });
       setLayout(new BorderLayout());
       profilePanel = createWest();
       createCenter();
       createEast();
-      prepareData();
-      createAutoSaveTimer();
-   }
-
-   /**
-    * Creates the auto save timer.
-    */
-   private void createAutoSaveTimer() {
-      timer = new Timer() {
-         @Override
-         public void run() {
-            autoSaveUiDesignerLayout();
-         }
-      };
-      timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
-   }
-
-   /**
-    * Auto save ui designer layout json.
-    */
-   public void autoSaveUiDesignerLayout() {
-      if (profilePanel.isInitialized()) {
-         UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
-               new AsyncSuccessCallback<AutoSaveResponse>() {
-                  @Override
-                  public void onSuccess(AutoSaveResponse result) {
-                     if (result != null && result.isUpdated()) {
-                        Info.display("Info", "UI designer layout saved at "
-                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                     }
-                     Window.setStatus("Auto-Saving: UI designer layout saved at: "
-                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                  }
-
-                  @Override
-                  public void onFailure(Throwable caught) {
-                     timer.cancel();
-                     boolean timeout = super.checkTimeout(caught);
-                     if (!timeout) {
-                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
-                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-                     }
-                     Window.setStatus("Failed to save UI designer layout at: "
-                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                  }
-               });
-         Window.setStatus("Saving ....");
-      } else {
-         Window.setStatus("Auto-Saving: Unable to save UI designer because panel list has not been initialized. ");
-      }
-   }
-
-   /**
-    * Save ui designer layout, if the template panel is expanded, save its data, else save the profile panel's data.
-    */
-   public void saveUiDesignerLayout() {
-      if (templatePanel != null && templatePanel.isExpanded()) {
-         templatePanel.saveTemplateUpdates();
-      } else {
-         if (profilePanel.isInitialized()) {
-            UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
-                  new AsyncSuccessCallback<AutoSaveResponse>() {
-                     @Override
-                     public void onSuccess(AutoSaveResponse result) {
-                        if (result != null && result.isUpdated()) {
-                           Info.display("Info", "UI designer layout saved at "
-                                 + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                        }
-                        Window.setStatus("UI designer layout saved at: "
-                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                     }
-   
-                     @Override
-                     public void onFailure(Throwable caught) {
-                        timer.cancel();
-                        boolean timeout = super.checkTimeout(caught);
-                        if (!timeout) {
-                           Info.display(new InfoConfig("Error", caught.getMessage() + " "
-                                 + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-                        }
-                        Window.setStatus("Failed to save UI designer layout at: "
-                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-   
-                     }
-   
-                  });
-            Window.setStatus("Saving ....");
-         } else {
-            Window.setStatus("Unable to save UI designer because panel list has not been initialized. ");
-         }
-      }
-   }
-
-   /**
-    * Restore ui designer layout and datas from server.
-    */
-   public void restore() {
-      UtilsProxy.restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
-         @Override
-         public void onSuccess(PanelsAndMaxOid panelsAndMaxOid) {
-            BeanModelDataBase.panelTable.clear();
-            BeanModelDataBase.groupTable.clear();
-            BeanModelDataBase.screenTable.clear();
-            Collection<Panel> panels = panelsAndMaxOid.getPanels();
-            long maxOid = panelsAndMaxOid.getMaxOid();
-
-            for (Panel panel : panels) {
-               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-               for (GroupRef groupRef : panel.getGroupRefs()) {
-                  Group group = groupRef.getGroup();
-                  BeanModelDataBase.groupTable.insert(group.getBeanModel());
-                  for (ScreenPairRef screenRef : group.getScreenRefs()) {
-                     ScreenPair screen = screenRef.getScreen();
-                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-                  }
-               }
-            }
-            IDUtil.setCurrentID(maxOid);
-            refreshPanelTree();
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "UI designer restore failed: " + caught.getMessage(), null);
-            super.checkTimeout(caught);
-         }
-      });
    }
 
    /**
@@ -275,7 +107,7 @@ public class UIDesignerView extends TabItem {
    /**
     * Refresh the profile panel tree.
     */
-   private void refreshPanelTree() {
+   public void refreshPanelTree() {
       if (profilePanel != null) {
          profilePanel.layout();
       }
@@ -289,13 +121,6 @@ public class UIDesignerView extends TabItem {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0, 2, 0, 2));
       add(screenPanel, centerData);
-   }
-
-   /**
-    * Load the touchPanels from server.
-    */
-   private void prepareData() {
-      TouchPanels.load();
    }
 
    /**
@@ -324,16 +149,14 @@ public class UIDesignerView extends TabItem {
       return widgetAndPropertyContainer;
    }
 
-   /**
-    * Gets the all panels from panelTable.
-    * 
-    * @return the all panels
-    */
-   List<Panel> getAllPanels() {
-      List<Panel> panelList = new ArrayList<Panel>();
-      for (BeanModel panelBeanModel : BeanModelDataBase.panelTable.loadAll()) {
-         panelList.add((Panel) panelBeanModel.getBean());
-      }
-      return panelList;
-   }
+   // TODO EBR : This might be temporary, check what the presenter really needs access to / how to make public
+   
+  public TemplatePanel getTemplatePanel() {
+    return templatePanel;
+  } 
+  
+  public ProfilePanel getProfilePanel() {
+    return profilePanel;
+  }
+
 }
