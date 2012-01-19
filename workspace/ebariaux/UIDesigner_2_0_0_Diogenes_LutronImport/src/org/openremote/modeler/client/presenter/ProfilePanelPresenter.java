@@ -19,8 +19,8 @@
 */
 package org.openremote.modeler.client.presenter;
 
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.ScreenSelectedEvent;
+import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
@@ -65,9 +65,15 @@ public class ProfilePanelPresenter {
           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
           if (pe instanceof ScreenPropertyEditable) {
             // TODO EBR : check why this is needed ?
+            // Seems this is because the ScreenPropertyEditForm will enable / disable / create tabs 
+            // based on the landscape/portrait values selected for the screen
+            // It does this directly on the ScreenTab (which is the main view in ScreenPanel)
+            // Should be moved so that ScreenPanelPresenter listen for changes on model and
+            // adapts the tabs appropriately
             ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
           }
-          ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(pe));
+          
+          eventBus.fireEvent(new UIElementSelectedEvent(pe));
         }
       };
     });    
