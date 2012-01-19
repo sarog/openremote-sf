@@ -92,6 +92,7 @@ public class ProfilePanel extends ContentPanel {
    private SelectionServiceExt<BeanModel> selectionService;
    private ScreenPanel screenPanel = null;
    private boolean initialized = false;
+   
    /**
     * Instantiates a new profile panel.
     */
@@ -766,12 +767,9 @@ public class ProfilePanel extends ContentPanel {
       });
       return configTabbarItem;
    }
+
    public TreePanel<BeanModel> getPanelTree() {
       return panelTree;
-   }
-
-   public void setPanelTree(TreePanel<BeanModel> panelTree) {
-      this.panelTree = panelTree;
    }
 
    /**
