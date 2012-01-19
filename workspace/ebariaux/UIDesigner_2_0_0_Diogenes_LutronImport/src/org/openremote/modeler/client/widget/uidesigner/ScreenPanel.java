@@ -27,7 +27,6 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.domain.ScreenPair;
-import org.openremote.modeler.domain.ScreenPair.OrientationType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -35,7 +34,6 @@ import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ContainerEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
