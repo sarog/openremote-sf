@@ -85,12 +85,7 @@ public class UIDesignerView extends TabItem {
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
       ProfilePanel result = new ProfilePanel(screenPanel);
-      result.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
-         public void handleEvent(PropertyEditEvent be) {
-            propertyPanel.setPropertyForm(be.getPropertyEditable());
-         }
-         
-      });
+
       templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
