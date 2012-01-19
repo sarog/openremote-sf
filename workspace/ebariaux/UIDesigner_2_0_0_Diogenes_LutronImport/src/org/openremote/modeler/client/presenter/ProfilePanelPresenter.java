@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -20,13 +20,12 @@
 package org.openremote.modeler.client.presenter;
 
 import org.openremote.modeler.client.event.PropertyEditEvent;
+import org.openremote.modeler.client.event.ScreenSelectedEvent;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
-import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -56,27 +55,10 @@ public class ProfilePanelPresenter {
     
     panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
       public void handleEvent(TreePanelEvent<ModelData> be) {
+        
         BeanModel beanModel = panelTree.getSelectionModel().getSelectedItem();
         if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
-          ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
-          screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-          screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
-          ScreenTab screenTabItem = screenPanel.getScreenItem();
-          if (screenTabItem != null) {
-            if (screen == screenTabItem.getScreenPair()) {
-              screenTabItem.updateTouchPanel();
-              screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-            } else {
-              screenTabItem = new ScreenTab(screen);
-              screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-              screenPanel.setScreenItem(screenTabItem);
-            }
-          } else {
-            screenTabItem = new ScreenTab(screen);
-            screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-            screenPanel.setScreenItem(screenTabItem);
-          }
-          screenTabItem.updateScreenIndicator();
+          eventBus.fireEvent(new ScreenSelectedEvent((ScreenPairRef) beanModel.getBean()));
         }
 
         if (beanModel != null) {
@@ -86,7 +68,7 @@ public class ProfilePanelPresenter {
             ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
           }
           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(pe));
-        }          
+        }
       };
     });    
   }

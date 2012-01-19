@@ -19,7 +19,12 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import org.openremote.modeler.client.event.ScreenSelectedEvent;
+import org.openremote.modeler.client.event.ScreenSelectedEventHandler;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.google.gwt.event.shared.HandlerManager;
 
@@ -32,6 +37,39 @@ public class ScreenPanelPresenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
+    
+    bind();
   }
 
+  private void bind() {
+    eventBus.addHandler(ScreenSelectedEvent.TYPE, new ScreenSelectedEventHandler() {
+      @Override
+      public void onScreenSelected(ScreenSelectedEvent event) {
+        screenSelected(event.getSelectedScreenPair());
+      }
+    });
+  }
+  
+  private void screenSelected(ScreenPairRef screenPairRef) {
+    ScreenPair screen = screenPairRef.getScreen();
+    screen.setTouchPanelDefinition(screenPairRef.getTouchPanelDefinition());
+    screen.setParentGroup(screenPairRef.getGroup());
+    ScreenTab screenTabItem = this.view.getScreenItem();
+    if (screenTabItem != null) {
+      if (screen == screenTabItem.getScreenPair()) {
+        screenTabItem.updateTouchPanel();
+        screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
+      } else {
+        screenTabItem = new ScreenTab(screen);
+        screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
+        this.view.setScreenItem(screenTabItem);
+      }
+    } else {
+      screenTabItem = new ScreenTab(screen);
+      screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
+      this.view.setScreenItem(screenTabItem);
+    }
+    screenTabItem.updateScreenIndicator();
+  }
+  
 }
