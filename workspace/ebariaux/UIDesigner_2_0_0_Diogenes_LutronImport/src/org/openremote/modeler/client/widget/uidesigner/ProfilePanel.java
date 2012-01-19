@@ -45,6 +45,7 @@ import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
@@ -170,8 +171,12 @@ public class ProfilePanel extends ContentPanel {
           }
           
           if (beanModel != null) {
-             panelTree.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
-                   .getPropertyEditable(beanModel, panelTree)));
+             PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
+             if (pe instanceof ScreenPropertyEditable) {
+               // TODO EBR : check why this is needed ?
+                ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
+             }
+             ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(pe));
           }          
         };
     });
@@ -191,17 +196,7 @@ public class ProfilePanel extends ContentPanel {
                   editSelectedModel();
                }
                
-            });
-            
-            panelTree.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
-               public void handleEvent(PropertyEditEvent be) {
-                  if (be.getPropertyEditable() instanceof ScreenPropertyEditable) {
-                     ((ScreenPropertyEditable)be.getPropertyEditable()).setScreenTab(screenPanel.getScreenItem());
-                  }
-                  ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,be);
-               }
-               
-            });
+            });            
          }
       };
       // overflow-auto style is for IE hack.
