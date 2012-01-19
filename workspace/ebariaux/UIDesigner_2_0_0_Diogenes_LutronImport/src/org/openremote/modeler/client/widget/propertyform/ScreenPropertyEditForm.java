@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
@@ -42,14 +41,12 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  */
 public class ScreenPropertyEditForm extends PropertyForm {
    private ScreenPropertyEditable editor = null;
-   private ScreenTab screenTab = null;
    private ScreenPair screenPair = null;
-   public ScreenPropertyEditForm(ScreenPropertyEditable editor, ScreenPair screenPair, ScreenTab screenTab) {
+   public ScreenPropertyEditForm(ScreenPropertyEditable editor, ScreenPair screenPair) {
       super(editor);
       setFieldWidth(130);
       this.editor = editor;
       this.screenPair = screenPair;
-      this.screenTab = screenTab;
       addFields();
       show();
    }
