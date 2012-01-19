@@ -57,6 +57,7 @@ import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
@@ -119,6 +120,23 @@ public class ScreenCanvas extends ComponentContainer {
             createDragSource(this, componentContainer);
          }
       }
+      
+      
+      new KeyNav<ComponentEvent>() {
+        public void onRight(ComponentEvent ce) {
+          
+          Info.display("INFO", "Right key event");
+          /*
+          for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+            if (cc instanceof AbsoluteLayoutContainer) {
+              Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+              absolute.setLeft(absolute.getLeft() + 1);
+            }
+               
+          }*/
+        };
+      }.bind(this);      
+      
       layout();
 
       addDropTargetDNDListener(screen, dropTarget);
@@ -137,6 +155,7 @@ public class ScreenCanvas extends ComponentContainer {
          add(tabbarContainer);
       }
       sinkEvents(Event.ONMOUSEDOWN);
+      sinkEvents(Event.ONKEYDOWN);
    }
 
    public void updateGround() {
@@ -568,6 +587,26 @@ public class ScreenCanvas extends ComponentContainer {
             super.onBackspace(ce);
             this.onDelete(ce);
          }
+         
+         public void onRight(ComponentEvent ce) {
+           
+           Info.display("INFO", "Absolute Right key event");
+
+           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+             if (cc instanceof AbsoluteLayoutContainer) {
+               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+               Info.display("INFO", "Absolute position is " + Integer.toString(absolute.getLeft()));
+               absolute.setLeft(absolute.getLeft() + 1);
+               // TODO - EBR : Model is updated but this is not reflected anywhere
+               // -> implement a correct model / view decoupling and bus communication first
+               
+               
+               // Post event from here for now, this should move out of the view
+             }
+                
+           }
+         };
+
          
       }.bind(controlContainer);
       absolute.setBelongsTo(controlContainer);
