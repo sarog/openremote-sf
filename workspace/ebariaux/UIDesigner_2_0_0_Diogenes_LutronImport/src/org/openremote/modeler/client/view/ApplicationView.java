@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
@@ -97,6 +98,7 @@ public class ApplicationView implements View {
    
    /** The ui designer view. */
    private UIDesignerView uiDesignerView;
+   private UIDesignerPresenter uiDesignerPresenter;
 
    private Button saveButton;
    
@@ -285,7 +287,7 @@ public class ApplicationView implements View {
       saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            uiDesignerView.saveUiDesignerLayout();
+            uiDesignerPresenter.saveUiDesignerLayout();
          }
       });
       
@@ -300,7 +302,7 @@ public class ApplicationView implements View {
                return;
             }
             viewport.mask("Exporting, please wait.");
-            UtilsProxy.exportFiles(IDUtil.currentID(), uiDesignerView.getAllPanels(),
+            UtilsProxy.exportFiles(IDUtil.currentID(), uiDesignerPresenter.getAllPanels(),
                   new AsyncSuccessCallback<String>() {
                      @Override
                      public void onSuccess(String exportURL) {
@@ -387,6 +389,7 @@ public class ApplicationView implements View {
       if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
          this.buildingModelerView = new BuildingModelerView(eventBus);
          this.uiDesignerView = new UIDesignerView();
+         this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
          if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
             modelerContainer.add(uiDesignerView);
          } else {
@@ -396,7 +399,8 @@ public class ApplicationView implements View {
          this.buildingModelerView = new BuildingModelerView(eventBus);
          modelerContainer.add(buildingModelerView);
       } else if(roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
-         this.uiDesignerView = new UIDesignerView();
+        this.uiDesignerView = new UIDesignerView();
+        this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
          modelerContainer.add(uiDesignerView);
       }
       
