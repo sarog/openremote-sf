@@ -755,9 +755,4 @@ public class ProfilePanel extends ContentPanel {
       return initialized;
    }
    
-   // TODO EBR : added for now because the ProfilePanelPresenter still needs it for event handling. TO BE REMOVED
-   public ScreenPanel getScreenPanel() {
-     return screenPanel;
-   }
-   
 }

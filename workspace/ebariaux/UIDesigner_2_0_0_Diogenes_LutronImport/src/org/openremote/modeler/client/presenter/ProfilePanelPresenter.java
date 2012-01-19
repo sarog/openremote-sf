@@ -51,7 +51,6 @@ public class ProfilePanelPresenter {
 
   private void bind() {
     final TreePanel<BeanModel> panelTree = this.view.getPanelTree();
-    final ScreenPanel screenPanel = this.view.getScreenPanel();
     
     panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
       public void handleEvent(TreePanelEvent<ModelData> be) {
@@ -62,16 +61,16 @@ public class ProfilePanelPresenter {
         }
 
         if (beanModel != null) {
+          
+          // TODO EBR : in next call, should get rid of panelTree param
+          // this will allow beanModel.getBean in event
+          // and move creation of PropertyEditable to PropertyPanelPresenter
+          // then above event is not required, ScreenPanelPresenter can listen on UIElementSelectedEvent
+          // and act only if bean in ScreenPairRef
+          // Might not be a bad thing that the 2 different events are fired, limit the
+          // amount of events the ScreenPanelPresenter will see
+          
           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
-          if (pe instanceof ScreenPropertyEditable) {
-            // TODO EBR : check why this is needed ?
-            // Seems this is because the ScreenPropertyEditForm will enable / disable / create tabs 
-            // based on the landscape/portrait values selected for the screen
-            // It does this directly on the ScreenTab (which is the main view in ScreenPanel)
-            // Should be moved so that ScreenPanelPresenter listen for changes on model and
-            // adapts the tabs appropriately
-            ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
-          }
           
           eventBus.fireEvent(new UIElementSelectedEvent(pe));
         }
