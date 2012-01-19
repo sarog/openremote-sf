@@ -19,8 +19,22 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import org.openremote.modeler.client.event.PropertyEditEvent;
+import org.openremote.modeler.client.utils.PropertyEditable;
+import org.openremote.modeler.client.utils.PropertyEditableFactory;
+import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.TreePanelEvent;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class ProfilePanelPresenter {
@@ -32,6 +46,48 @@ public class ProfilePanelPresenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
+    
+    bind();
   }
 
+  private void bind() {
+    final TreePanel<BeanModel> panelTree = this.view.getPanelTree();
+    final ScreenPanel screenPanel = this.view.getScreenPanel();
+    
+    panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
+      public void handleEvent(TreePanelEvent<ModelData> be) {
+        BeanModel beanModel = panelTree.getSelectionModel().getSelectedItem();
+        if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
+          ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
+          screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
+          screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
+          ScreenTab screenTabItem = screenPanel.getScreenItem();
+          if (screenTabItem != null) {
+            if (screen == screenTabItem.getScreenPair()) {
+              screenTabItem.updateTouchPanel();
+              screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+            } else {
+              screenTabItem = new ScreenTab(screen);
+              screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+              screenPanel.setScreenItem(screenTabItem);
+            }
+          } else {
+            screenTabItem = new ScreenTab(screen);
+            screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+            screenPanel.setScreenItem(screenTabItem);
+          }
+          screenTabItem.updateScreenIndicator();
+        }
+
+        if (beanModel != null) {
+          PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
+          if (pe instanceof ScreenPropertyEditable) {
+            // TODO EBR : check why this is needed ?
+            ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
+          }
+          ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(pe));
+        }          
+      };
+    });    
+  }
 }

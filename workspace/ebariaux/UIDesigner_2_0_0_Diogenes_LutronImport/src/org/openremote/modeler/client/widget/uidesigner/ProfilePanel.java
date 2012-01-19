@@ -44,11 +44,9 @@ import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
@@ -145,42 +143,6 @@ public class ProfilePanel extends ContentPanel {
    private void createPanelTree() {
       panelTree = TreePanelBuilder.buildPanelTree();
 
-      panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
-        public void handleEvent(TreePanelEvent<ModelData> be) {
-          BeanModel beanModel = panelTree.getSelectionModel().getSelectedItem();
-          if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
-            ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
-            screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-            screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
-            ScreenTab screenTabItem = screenPanel.getScreenItem();
-            if (screenTabItem != null) {
-              if (screen == screenTabItem.getScreenPair()) {
-                screenTabItem.updateTouchPanel();
-                screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-              } else {
-                screenTabItem = new ScreenTab(screen);
-                screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                screenPanel.setScreenItem(screenTabItem);
-              }
-            } else {
-              screenTabItem = new ScreenTab(screen);
-              screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-              screenPanel.setScreenItem(screenTabItem);
-            }
-            screenTabItem.updateScreenIndicator();
-          }
-
-          if (beanModel != null) {
-            PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
-            if (pe instanceof ScreenPropertyEditable) {
-              // TODO EBR : check why this is needed ?
-              ((ScreenPropertyEditable)pe).setScreenTab(screenPanel.getScreenItem());
-            }
-            ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(pe));
-          }          
-        };
-      });
-      
       panelTree.addListener(Events.OnDoubleClick, new Listener<TreePanelEvent<ModelData>>() {
         @Override
         public void handleEvent(TreePanelEvent<ModelData> be) {
@@ -208,6 +170,7 @@ public class ProfilePanel extends ContentPanel {
 
    }
 
+   // TODO EBR : this should move to presenter
    private void initTreeWithAutoSavedPanels() {
       UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
          @Override
@@ -791,4 +754,10 @@ public class ProfilePanel extends ContentPanel {
    public boolean isInitialized() {
       return initialized;
    }
+   
+   // TODO EBR : added for now because the ProfilePanelPresenter still needs it for event handling. TO BE REMOVED
+   public ScreenPanel getScreenPanel() {
+     return screenPanel;
+   }
+   
 }
