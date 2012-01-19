@@ -82,7 +82,7 @@ public class ScreenPropertyEditable implements PropertyEditable {
       return new ScreenPropertyEditForm(this, screenPairRef.getScreen(), screenTab);
    }
 
-   private void updateScreen() {
+   public void updateScreen() {
       profileTree.getStore().update(screenPairRef.getBeanModel());
       BeanModelDataBase.screenTable.update(screen.getBeanModel());
    }
