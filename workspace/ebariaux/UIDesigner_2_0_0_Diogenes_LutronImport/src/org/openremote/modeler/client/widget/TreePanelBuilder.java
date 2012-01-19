@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
@@ -52,13 +51,10 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
-import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
+import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
-import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.ConfigCategory;
@@ -68,7 +64,6 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -454,7 +449,7 @@ public class TreePanelBuilder {
       return widgetTree;
    }
 
-   public static TreePanel<BeanModel> buildPanelTree(final ScreenPanel screenPanel) {
+   public static TreePanel<BeanModel> buildPanelTree() {
       if (panelTreeStore == null) {
          panelTreeStore = new TreeStore<BeanModel>();
       }

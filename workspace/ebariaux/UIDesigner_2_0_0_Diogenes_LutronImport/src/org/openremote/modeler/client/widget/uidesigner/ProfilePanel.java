@@ -143,7 +143,7 @@ public class ProfilePanel extends ContentPanel {
     * Creates the screen tree.
     */
    private void createPanelTree() {
-      panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
+      panelTree = TreePanelBuilder.buildPanelTree();
 
       panelTree.addListener(Events.OnClick, new Listener<TreePanelEvent<ModelData>>() {
         public void handleEvent(TreePanelEvent<ModelData> be) {
