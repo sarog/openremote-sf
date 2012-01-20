@@ -38,10 +38,9 @@ public class Range extends Event<Integer>
   public Range(int sourceID, String sourceName, Integer value, Integer min, Integer max)
   {
     super(sourceID, sourceName);
-
-    this.rangeValue = value;
     this.min = min;
     this.max = max;
+    setValue(value);
   }
 
   public Integer getMinValue()
