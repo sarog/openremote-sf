@@ -55,7 +55,6 @@ public class ScreenPanel extends LayoutContainer {
       setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
       addListeners();
-      addInsertListener();
    }
 
    /**
@@ -165,23 +164,6 @@ public class ScreenPanel extends LayoutContainer {
          changeListenerMap.put(screenTab, changeListener);
       }
       return changeListener;
-   }
-   
-   /**
-    * Adds the insert listener.
-    */
-   private void addInsertListener() {
-      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
-         public void modelChanged(ChangeEvent event) {
-            if (event.getType() == BeanModelTable.ADD) {
-               BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof ScreenPair) {
-                  setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
-               }
-            }
-         }
-
-      });
    }
    
    /**
