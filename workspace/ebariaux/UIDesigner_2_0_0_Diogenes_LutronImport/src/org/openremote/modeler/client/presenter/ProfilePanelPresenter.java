@@ -157,7 +157,11 @@ public class ProfilePanelPresenter {
               Panel panel = be.<Panel> getData();
               panelTree.getStore().update(panel.getBeanModel());
               Info.display("Info", "Edit panel " + panel.getName() + " success.");
-              ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
+  
+              PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(panelBeanModel, panelTree);              
+              eventBus.fireEvent(new UIElementSelectedEvent(pe));
+              
+//              ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
            }
         });
      }
@@ -185,7 +189,11 @@ public class ProfilePanelPresenter {
            panelTree.getSelectionModel().select(groupRefModel, false);
            BeanModelDataBase.screenTable.clearUnuseData();
            Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
-           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
+           
+           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(groupRefBeanModel, panelTree);           
+           eventBus.fireEvent(new UIElementSelectedEvent(pe));
+
+//           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
         }
      });
   }
@@ -201,7 +209,11 @@ public class ProfilePanelPresenter {
            panelTree.getStore().update(screenRef.getBeanModel());
            BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
            Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
-           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
+           
+           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(screenRefBeanModel, panelTree);           
+           eventBus.fireEvent(new UIElementSelectedEvent(pe));
+
+//           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
         }
         
      });
