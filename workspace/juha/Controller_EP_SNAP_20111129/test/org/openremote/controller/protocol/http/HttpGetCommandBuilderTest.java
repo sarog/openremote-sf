@@ -41,6 +41,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
@@ -348,13 +349,11 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadRangeStatus() throws Exception
   {
      EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/50", "1m");
-     Sensor s2 = new RangeSensor("range", 3, cache, cmd, 0, 100);
+     Sensor s2 = new RangeSensor("range1", 3, cache, cmd, 0, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(3);
      Assert.assertTrue(returnValue.equals("50"));
   }
-
-
 
   /**
    * Basic read() test on 'RANGE' type of sensor.
@@ -362,15 +361,24 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadRangeStatusOutOfLowerBounds() throws Exception
   {
      EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/10", "1m");
-     Sensor s2 = new RangeSensor("range", 4, cache, cmd, 50, 100);
+     Sensor s2 = new RangeSensor("range2", 4, cache, cmd, 50, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(4);
      Assert.assertTrue(returnValue.equals("50"));
   }
 
-
-  // Distinct Sensor State Mapping ----------------------------------------------------------------
-
+  /**
+   * Basic read() test on 'RANGE' type of sensor.
+   */
+  @Test public void testReadRangeStatusOutOfUpperBounds() throws Exception
+  {
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/200", "1m");
+     Sensor s2 = new RangeSensor("range3", 5, cache, cmd, 50, 100);
+     s2.start();
+     String returnValue = getSensorValueFromCache(5);
+     Assert.assertTrue(returnValue.equals("100"));
+  }
+  
   /**
    * Test basic 'CUSTOM' sensor type where return values are mapped to specific distinct state
    * values.
@@ -380,14 +388,63 @@ public class HttpGetCommandBuilderTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("this_is_on", "111");
     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/this_is_on", "1m");
-    Sensor s2 = new StateSensor("state", 5, cache, cmd, states);
+    Sensor s2 = new StateSensor("state1", 6, cache, cmd, states);
     s2.start();
-    String returnValue = getSensorValueFromCache(5);
+    String returnValue = getSensorValueFromCache(6);
     Assert.assertTrue(returnValue.equals("111"));
   }
 
+  /**
+   * Test basic 'CUSTOM' sensor type where return values are mapped to specific distinct state
+   * values.
+   */
+  @Test public void testDistinctStateMappingNoMatch() throws Exception
+  {
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addStateMapping("this_is_on", "111");
+    EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/no_match", "1m");
+    Sensor s2 = new StateSensor("state2", 7, cache, cmd, states);
+    s2.start();
+    String returnValue = getSensorValueFromCache(7);
+    Assert.assertTrue(returnValue.equals("N/A"));
+  }
 
-
+  /**
+   * Basic read() test on 'LEVEL' type of sensor.
+   */
+  @Test public void testReadLevelStatus() throws Exception
+  {
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/20", "1m");
+     Sensor s2 = new LevelSensor("level1", 8, cache, cmd);
+     s2.start();
+     String returnValue = getSensorValueFromCache(8);
+     Assert.assertTrue(returnValue.equals("20"));
+  }
+  
+  /**
+   * Basic read() test on 'LEVEL' type of sensor.
+   */
+  @Test public void testReadLevelStatusOutOfLowerBounds() throws Exception
+  {
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/-10", "1m");
+     Sensor s2 = new LevelSensor("level2", 9, cache, cmd);
+     s2.start();
+     String returnValue = getSensorValueFromCache(9);
+     Assert.assertTrue(returnValue.equals("0"));
+  }
+  
+  /**
+   * Basic read() test on 'LEVEL' type of sensor.
+   */
+  @Test public void testReadLevelStatusOutOfUpperBounds() throws Exception
+  {
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/120", "1m");
+     Sensor s2 = new LevelSensor("level3", 10, cache, cmd);
+     s2.start();
+     String returnValue = getSensorValueFromCache(10);
+     Assert.assertTrue(returnValue.equals("100"));
+  }
+  
   // Helpers --------------------------------------------------------------------------------------
 
 
