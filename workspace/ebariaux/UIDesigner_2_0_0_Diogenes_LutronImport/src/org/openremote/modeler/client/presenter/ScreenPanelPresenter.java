@@ -19,13 +19,22 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ScreenSelectedEvent;
 import org.openremote.modeler.client.event.ScreenSelectedEventHandler;
+import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
+import org.openremote.modeler.client.event.ScreenTableLoadedEventHandler;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ChangeEvent;
+import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class ScreenPanelPresenter {
@@ -46,6 +55,25 @@ public class ScreenPanelPresenter {
       @Override
       public void onScreenSelected(ScreenSelectedEvent event) {
         screenSelected(event.getSelectedScreenPair());
+      }
+    });
+    
+    eventBus.addHandler(ScreenTableLoadedEvent.TYPE, new ScreenTableLoadedEventHandler() {
+      @Override
+      public void onScreenTableLoaded(ScreenTableLoadedEvent event) {
+        BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
+          public void modelChanged(ChangeEvent event) {
+            if (event.getType() == BeanModelTable.ADD) {
+              BeanModel beanModel = (BeanModel) event.getItem();
+              if (beanModel.getBean() instanceof ScreenPair) {
+
+                Info.display("INFO", "Selecting the newly inserted screen");
+
+                ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
+              }
+            }
+          }
+        });
       }
     });
   }
