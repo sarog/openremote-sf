@@ -135,42 +135,6 @@ public class UIDesignerPresenter {
   }
 
   /**
-   * Restore ui designer layout and datas from server.
-   */
-  public void restore() {
-    UtilsProxy.restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
-      @Override
-      public void onSuccess(PanelsAndMaxOid panelsAndMaxOid) {
-        BeanModelDataBase.panelTable.clear();
-        BeanModelDataBase.groupTable.clear();
-        BeanModelDataBase.screenTable.clear();
-        Collection<Panel> panels = panelsAndMaxOid.getPanels();
-        long maxOid = panelsAndMaxOid.getMaxOid();
-
-        for (Panel panel : panels) {
-          BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-          for (GroupRef groupRef : panel.getGroupRefs()) {
-            Group group = groupRef.getGroup();
-            BeanModelDataBase.groupTable.insert(group.getBeanModel());
-            for (ScreenPairRef screenRef : group.getScreenRefs()) {
-              ScreenPair screen = screenRef.getScreen();
-              BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-            }
-          }
-        }
-        IDUtil.setCurrentID(maxOid);
-        view.refreshPanelTree();
-      }
-
-      @Override
-      public void onFailure(Throwable caught) {
-        MessageBox.alert("Error", "UI designer restore failed: " + caught.getMessage(), null);
-        super.checkTimeout(caught);
-      }
-    });
-  }
-
-  /**
    * Save ui designer layout, if the template panel is expanded, save its data, else save the profile panel's data.
    */
   public void saveUiDesignerLayout() {
