@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -39,7 +39,6 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -56,8 +55,6 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -148,7 +145,6 @@ public class ProfilePanel extends ContentPanel {
 //            addTreeStoreEventListener();
             new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
-            initTreeWithAutoSavedPanels();
          }
       };
       // overflow-auto style is for IE hack.
@@ -157,89 +153,6 @@ public class ProfilePanel extends ContentPanel {
       treeContainer.setBorders(false);
       add(treeContainer);
 
-   }
-
-   // TODO EBR : this should move to presenter
-   private void initTreeWithAutoSavedPanels() {
-      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
-         @Override
-         public void onSuccess(Collection<Panel> panels) {
-            if (panels.size() > 0) {
-               initModelDataBase(panels);
-               panelTree.getStore().removeAll();
-               new PanelTreeStoreChangeListener(panelTree);
-               for (Panel panel : panels) {
-                  BeanModel panelBeanModel = panel.getBeanModel();
-                  panelTree.getStore().add(panelBeanModel, false);
-                  for (GroupRef groupRef : panel.getGroupRefs()) {
-                     panelTree.getStore().add(panelBeanModel, groupRef.getBeanModel(), false);
-                     for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-                        panelTree.getStore().add(groupRef.getBeanModel(), screenRef.getBeanModel(), false);
-                     }
-                  }
-               }
-               panelTree.expandAll();
-               BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
-                  public void modelChanged(ChangeEvent event) {
-                     if (event.getType() == BeanModelTable.ADD) {
-                        BeanModel beanModel = (BeanModel) event.getItem();
-                        if (beanModel.getBean() instanceof ScreenPair) {
-                           screenPanel.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
-                        }
-                     }
-                  }
-
-               });
-            } else {
-               panelTree.unmask();
-            }
-            UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
-               @Override
-               public void onSuccess(Long maxID) {
-                  if (maxID > 0) {              // set the layout component's max id after refresh page.
-                     IDUtil.setCurrentID(maxID.longValue());
-                  }
-                  initialized = true;
-               }
-               
-            });
-         }
-         @Override
-         public void onFailure(Throwable caught) {
-            if (caught instanceof UIRestoreException) {
-               initialized = true;
-            }
-            panelTree.unmask();
-            super.onFailure(caught);
-            super.checkTimeout(caught);
-         }
-
-         private void initModelDataBase(Collection<Panel> panels) {
-            BeanModelDataBase.panelTable.clear();
-            BeanModelDataBase.groupTable.clear();
-            BeanModelDataBase.screenTable.clear();
-            Set<Group> groups = new LinkedHashSet<Group>();
-            Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
-            for (Panel panel : panels) {
-               List<GroupRef> groupRefs = panel.getGroupRefs();
-               for (GroupRef groupRef : groupRefs) {
-                  groups.add(groupRef.getGroup());
-               }
-               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-            }
-
-            for (Group group : groups) {
-               List<ScreenPairRef> screenRefs = group.getScreenRefs();
-               for (ScreenPairRef screenRef : screenRefs) {
-                  screens.add(screenRef.getScreen());
-                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
-               }
-               BeanModelDataBase.groupTable.insert(group.getBeanModel());
-            }
-            
-         }
-      });
-      
    }
    
    /**
@@ -643,7 +556,11 @@ public class ProfilePanel extends ContentPanel {
      return editButton;
    }
    
-   public boolean isInitialized() {
+   public void setInitialized(boolean initialized) {
+    this.initialized = initialized;
+  }
+
+  public boolean isInitialized() {
       return initialized;
    }
    
