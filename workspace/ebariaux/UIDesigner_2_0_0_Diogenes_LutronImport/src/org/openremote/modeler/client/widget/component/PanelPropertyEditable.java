@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.PanelPropertyEditForm;
@@ -73,7 +74,7 @@ public class PanelPropertyEditable implements PropertyEditable {
    }
 
    private void updatePanel() {
-      this.profileTree.getStore().update(panel.getBeanModel());
+     eventBus.fireEvent(new UIElementEditedEvent(panel.getBeanModel()));     
       BeanModelDataBase.panelTable.update(panel.getBeanModel());
    }
 

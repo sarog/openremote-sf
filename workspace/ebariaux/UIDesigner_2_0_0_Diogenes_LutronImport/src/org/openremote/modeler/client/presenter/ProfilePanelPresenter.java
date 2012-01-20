@@ -20,9 +20,10 @@
 package org.openremote.modeler.client.presenter;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.ScreenSelectedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
@@ -102,6 +103,18 @@ public class ProfilePanelPresenter {
        public void componentSelected(ButtonEvent ce) {
           editSelectedModel();
        }
+    });
+    
+    // TODO EBR : seems not required for screen but required for panel / group
+    // investigate what triggers the update for screen
+    eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
+      @Override
+      public void onElementEdited(UIElementEditedEvent event) {
+        Object bean = event.getElement().getBean();
+        if (bean instanceof Panel || bean instanceof GroupRef || bean instanceof ScreenPairRef) {
+          panelTree.getStore().update(event.getElement());
+        }
+      }
     });
   }
   
