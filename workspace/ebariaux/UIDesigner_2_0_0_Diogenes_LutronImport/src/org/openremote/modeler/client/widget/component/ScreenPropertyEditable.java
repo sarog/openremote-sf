@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
@@ -79,8 +80,8 @@ public class ScreenPropertyEditable implements PropertyEditable {
    }
 
    public void updateScreen() {
-      profileTree.getStore().update(screenPairRef.getBeanModel());
-      BeanModelDataBase.screenTable.update(screen.getBeanModel());
+     eventBus.fireEvent(new UIElementEditedEvent(screenPairRef.getBeanModel()));     
+     BeanModelDataBase.screenTable.update(screen.getBeanModel());
    }
 
    @Override

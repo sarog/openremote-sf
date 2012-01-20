@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
@@ -79,7 +80,7 @@ public class GroupPropertyEditable implements PropertyEditable {
    }
 
    private void updateGroup() {
-      profileTree.getStore().update(groupRef.getBeanModel());
+     eventBus.fireEvent(new UIElementEditedEvent(groupRef.getBeanModel()));     
       BeanModelDataBase.groupTable.update(group.getBeanModel());
    }
 
