@@ -61,7 +61,7 @@ public class ScreenPanelPresenter {
     eventBus.addHandler(ScreenTableLoadedEvent.TYPE, new ScreenTableLoadedEventHandler() {
       @Override
       public void onScreenTableLoaded(ScreenTableLoadedEvent event) {
-        BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
+        BeanModelDataBase.screenTable.setInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
           public void modelChanged(ChangeEvent event) {
             if (event.getType() == BeanModelTable.ADD) {
               BeanModel beanModel = (BeanModel) event.getItem();
