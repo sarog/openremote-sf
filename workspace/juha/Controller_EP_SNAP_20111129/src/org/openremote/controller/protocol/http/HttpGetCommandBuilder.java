@@ -25,6 +25,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -93,7 +94,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
 
       if (STR_ATTRIBUTE_NAME_URL.equals(elementName))
       {
-        urlAsString = elementValue;
+        urlAsString = CommandUtil.parseStringWithParam(element, elementValue);
         logger.debug("HttpGetCommand: url = " + urlAsString);
       } else if (STR_ATTRIBUTE_NAME_USERNAME.equals(elementName))
       {
