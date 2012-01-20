@@ -27,8 +27,6 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
 /**
@@ -43,19 +41,15 @@ public class GroupPropertyEditable implements PropertyEditable {
 
    private Group group = null;
    private GroupRef groupRef = null;
-   
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
 
    private HandlerManager eventBus;
    
    public GroupPropertyEditable() {
    }
 
-   public GroupPropertyEditable(GroupRef groupRef, HandlerManager eventBus, TreePanel<BeanModel> profileTree) {
+   public GroupPropertyEditable(GroupRef groupRef, HandlerManager eventBus) {
       this.groupRef = groupRef;
       this.group = groupRef.getGroup();
-      this.profileTree = profileTree;
       this.eventBus = eventBus;
    }
 

@@ -27,8 +27,6 @@ import org.openremote.modeler.client.widget.propertyform.ScreenPropertyEditForm;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
 /**
@@ -44,18 +42,14 @@ public class ScreenPropertyEditable implements PropertyEditable {
    private ScreenPair screen = null;
    private ScreenPairRef screenPairRef = null;
 
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
-   
    private HandlerManager eventBus;
 
    public ScreenPropertyEditable() {
    }
 
-   public ScreenPropertyEditable(ScreenPairRef screenPairRef, HandlerManager eventBus, TreePanel<BeanModel> profileTree) {
+   public ScreenPropertyEditable(ScreenPairRef screenPairRef, HandlerManager eventBus) {
       this.screenPairRef = screenPairRef;
       this.screen = screenPairRef.getScreen();
-      this.profileTree = profileTree;
       this.eventBus = eventBus;
    }
 
