@@ -64,6 +64,7 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
    @Override
    public void setPosition(int left, int top) {
       super.setPosition(left, top);
+      // TODO: this should not be here, modifying to underlying model should not be done from visual object
       absolute.setPosition(left, top);
       AbsoluteBoundsListenerManager.getInstance().notifyAbsoluteBoundsListener(this,
             new ORBounds(left, top, absolute.getWidth(), absolute.getHeight()));
