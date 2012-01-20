@@ -19,18 +19,33 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.ScreenSelectedEvent;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
+import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
+import org.openremote.modeler.client.widget.uidesigner.CustomPanelWindow;
+import org.openremote.modeler.client.widget.uidesigner.GroupEditWindow;
+import org.openremote.modeler.client.widget.uidesigner.PanelWindow;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
@@ -73,6 +88,123 @@ public class ProfilePanelPresenter {
           eventBus.fireEvent(new UIElementSelectedEvent(pe));
         }
       };
-    });    
+    });
+    
+    panelTree.addListener(Events.OnDoubleClick, new Listener<TreePanelEvent<ModelData>>() {
+      @Override
+      public void handleEvent(TreePanelEvent<ModelData> be) {
+        editSelectedModel();
+      }        
+    });
+    
+    this.view.getEditButton().addSelectionListener(new SelectionListener<ButtonEvent>() {
+       @Override
+       public void componentSelected(ButtonEvent ce) {
+          editSelectedModel();
+       }
+    });
   }
+  
+  /**
+   * 
+   */
+  private void editSelectedModel() {
+     BeanModel selectedModel = this.view.getPanelTree().getSelectionModel().getSelectedItem();
+     if (selectedModel != null) {
+        if (selectedModel.getBean() instanceof Panel) {
+           editPanel(selectedModel);
+        } else if (selectedModel.getBean() instanceof GroupRef) {
+           editGroup(selectedModel);
+        } else if (selectedModel.getBean() instanceof ScreenPairRef) {
+           editScreen(selectedModel);
+        }
+     }
+  }
+  
+  /**
+   * Edits the group.
+   * 
+   * @param panelBeanModel
+   *           the group bean model
+   */
+  private void editPanel(final BeanModel panelBeanModel) {
+    final TreePanel<BeanModel> panelTree = this.view.getPanelTree();
+     Panel panel = panelBeanModel.getBean();
+     if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
+        final CustomPanelWindow editCustomPanelWindow = new CustomPanelWindow(panel);
+        editCustomPanelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+           @Override
+           public void afterSubmit(SubmitEvent be) {
+              editCustomPanelWindow.hide();
+              Panel panel = be.<Panel> getData();
+              panelTree.getStore().update(panel.getBeanModel());
+              for (GroupRef groupRef : panel.getGroupRefs()) {
+                 for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
+                    ScreenPair screenPair = screenRef.getScreen();
+                    screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
+                    BeanModelDataBase.screenTable.update(screenPair.getBeanModel());
+                 }
+              }
+              Info.display("Info", "Edit panel " + panel.getName() + " success.");
+           }
+        });
+     } else {
+        final PanelWindow panelWindow = new PanelWindow(panelBeanModel);
+        panelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+           @Override
+           public void afterSubmit(SubmitEvent be) {
+              panelWindow.hide();
+              Panel panel = be.<Panel> getData();
+              panelTree.getStore().update(panel.getBeanModel());
+              Info.display("Info", "Edit panel " + panel.getName() + " success.");
+              ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
+           }
+        });
+     }
+  }
+  
+  private void editGroup(final BeanModel groupRefBeanModel) {
+    final TreePanel<BeanModel> panelTree = this.view.getPanelTree();
+     final GroupEditWindow groupEditWindow = new GroupEditWindow(groupRefBeanModel);
+     groupEditWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+        @Override
+        public void afterSubmit(SubmitEvent be) {
+           groupEditWindow.hide();
+           BeanModel groupRefModel = be.getData();
+           GroupRef groupRef = groupRefModel.getBean();
+           panelTree.getStore().removeAll(groupRefModel);
+           for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
+              if (screenRef.getScreen().getRefCount() > 1) {
+                 BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+              }
+              panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
+           }
+           panelTree.getStore().update(groupRefModel);
+           BeanModelDataBase.groupTable.update(groupRef.getGroup().getBeanModel());
+           panelTree.setExpanded(groupRefModel, true);
+           panelTree.getSelectionModel().select(groupRefModel, false);
+           BeanModelDataBase.screenTable.clearUnuseData();
+           Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
+           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
+        }
+     });
+  }
+
+  private void editScreen(final BeanModel screenRefBeanModel) {
+    final TreePanel<BeanModel> panelTree = this.view.getPanelTree();
+     final ScreenWindow screenWizard = new ScreenWindow(screenRefBeanModel, ScreenWindow.Operation.EDIT);
+     screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+        @Override
+        public void afterSubmit(SubmitEvent be) {
+           screenWizard.hide();
+           ScreenPairRef screenRef = be.<ScreenPairRef> getData();
+           panelTree.getStore().update(screenRef.getBeanModel());
+           BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+           Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
+           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
+        }
+        
+     });
+  }
+
 }
