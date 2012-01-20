@@ -41,7 +41,17 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.sensor.StateSensor.DistinctStates;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.ReadCommand;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.Strings;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 
@@ -92,7 +102,8 @@ public class HttpGetCommandBuilderTest
    */
   private Server httpServer;
 
-
+  /* share the same cache across all sensor tests */
+  private StatusCache cache = null;
 
   // Test Setup and Tear Down ---------------------------------------------------------------------
 
@@ -107,6 +118,11 @@ public class HttpGetCommandBuilderTest
     httpServer = new Server(HTTP_SERVER_PORT);
     httpServer.setHandler(new HttpServerResponse());
     httpServer.start();
+    
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain echain = new EventProcessorChain();
+
+    cache = new StatusCache(cst, echain);
   }
 
   /**
@@ -175,7 +191,7 @@ public class HttpGetCommandBuilderTest
     final String parameterizedURL = "http://www.openremote.org/command?param=${param}&another=${param}";
     final String finalURL = "http://www.openremote.org/command?param=10000&another=10000";
 
-    Command cmd = getHttpCommand(parameterizedURL, "10000");
+    Command cmd = getHttpCommand(parameterizedURL, "10000", null);
 
     Assert.assertTrue(cmd instanceof HttpGetCommand);
 
@@ -200,7 +216,7 @@ public class HttpGetCommandBuilderTest
     final String parameterizedURL = "http://www.openremote.org/command?param=${param}&another=foo";
     final String finalURL = "http://www.openremote.org/command?param=XXX&another=foo";
 
-    Command cmd = getHttpCommand(parameterizedURL, "XXX");
+    Command cmd = getHttpCommand(parameterizedURL, "XXX", null);
 
     Assert.assertTrue(cmd instanceof HttpGetCommand);
 
@@ -216,20 +232,6 @@ public class HttpGetCommandBuilderTest
 
 
   // API Execution Tests --------------------------------------------------------------------------
-
-
-  /**
-   * Test implementation behavior when null args are given to HTTP read command.
-   */
-  @Test public void testReadValueWithNullSensorType()
-  {
-    String URL = HTTP_SERVER_URL + "/response/abc";
-
-    StatusCommand command = (StatusCommand) getHttpCommand(URL);
-
-    Assert.assertTrue("abc".equals(command.read(null, null)));
-  }
-
 
   /**
    * Test send() implementation against an arbitrary URL.
@@ -305,574 +307,66 @@ public class HttpGetCommandBuilderTest
 
 
 
-  // Read SWITCH Sensor Related Tests -------------------------------------------------------------
+  // Read Sensor Related Tests -------------------------------------------------------------
 
+  /**
+   * Test EventListener pollingInterval 
+   */
+  @Test public void testPollingInterval()
+  {
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
+     Assert.assertEquals(1*60*1000, ((HttpGetCommand)cmd).getPollingInterval().intValue());
+  }
 
   /**
    * Test read() implementation against 'SWITCH' sensor type.
    */
-  @Test public void testReadSwitchStatus()
+  @Test public void tesSwitchOnStatus() throws Exception
   {
-    StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on");
-
-    String response = cmd.read(EnumSensorType.SWITCH, null);
-
-    Assert.assertTrue("Expected response 'on', got '" + response + "'.", "on".equals(response));
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
+     Sensor s1 = new SwitchSensor("switch", 1, cache, cmd);
+     s1.start();
+     String returnValue = getSensorValueFromCache(1);
+     Assert.assertTrue(returnValue.equals("on"));
   }
-
 
   /**
-   * Even if distinct state mapping is used for a 'SWITCH' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'SWITCH' types here. A boolean switch state that maps
-   * return values to distinct 'on/off' state could be implemented as a CUSTOM sensor instead.
-   *
-   * If it is convenient to support distinct state mapping for all types of sensors, this test
-   * can be modified / removed. The mapping behavior should then be documented and implemented
-   * uniformly against all protocol implementations.
+   * Test read() implementation against 'SWITCH' sensor type.
    */
-  @Test public void testReadSwitchStatusIgnoreMapping()
+  @Test public void testSwitchOffStatus() throws Exception
   {
-    StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("foo", "on");
-
-    String response = cmd.read(EnumSensorType.SWITCH, map);
-
-    Assert.assertTrue("Expected response 'on', got '" + response + "'.", "on".equals(response));
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/off", "1m");
+     Sensor s1 = new SwitchSensor("switch", 2, cache, cmd);
+     s1.start();
+     String returnValue = getSensorValueFromCache(2);
+     Assert.assertTrue(returnValue.equals("off"));
   }
-
 
   /**
-   * Even if distinct state mapping is used for a 'SWITCH' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'SWITCH' types here. A boolean switch state that maps
-   * return values to distinct 'on/off' state could be implemented as a CUSTOM sensor instead.
-   *
-   * If it is convenient to support distinct state mapping for all types of sensors, this test
-   * can be modified / removed. The mapping behavior should then be documented and implemented
-   * uniformly against all protocol implementations.
+   * Basic read() test on 'RANGE' type of sensor.
    */
-  @Test public void testReadSwitchStatusDontMap()
+  @Test public void testReadRangeStatus() throws Exception
   {
-    StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/gaga");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("on", "gaga");
-
-    String response = cmd.read(EnumSensorType.SWITCH, map);
-
-    Assert.assertTrue(
-        "Expected response " + HttpGetCommand.UNKNOWN_STATUS + ", got '" + response + "'.",
-        HttpGetCommand.UNKNOWN_STATUS.equals(response)
-    );
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/50", "1m");
+     Sensor s2 = new RangeSensor("range", 3, cache, cmd, 0, 100);
+     s2.start();
+     String returnValue = getSensorValueFromCache(3);
+     Assert.assertTrue(returnValue.equals("50"));
   }
 
-
-
-  // Read RANGE Sensor Related Tests --------------------------------------------------------------
 
 
   /**
    * Basic read() test on 'RANGE' type of sensor.
    */
-  @Test public void testReadRangeStatus()
+  @Test public void testReadRangeStatusOutOfLowerBounds() throws Exception
   {
-    StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    String response = cmd.read(EnumSensorType.RANGE, null);
-
-    Assert.assertTrue("1".equals(response));
+     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/10", "1m");
+     Sensor s2 = new RangeSensor("range", 4, cache, cmd, 50, 100);
+     s2.start();
+     String returnValue = getSensorValueFromCache(4);
+     Assert.assertTrue(returnValue.equals("50"));
   }
-
-
-  /**
-   * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
-   * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
-   * and max values.
-   */
-  @Test public void testReadRangeStatusMaxLimit()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/" + Integer.MAX_VALUE);
-
-    String response = command.read(EnumSensorType.RANGE, null);
-
-    Assert.assertTrue(Integer.toString(Integer.MAX_VALUE).equals(response));
-  }
-
-
-
-  /**
-   * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
-   * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
-   * and max values.
-   */
-  @Test public void testReadRangeStatusMinLimit()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/" + Integer.MIN_VALUE);
-
-    String response = command.read(EnumSensorType.RANGE, null);
-
-    Assert.assertTrue(Integer.toString(Integer.MIN_VALUE).equals(response));
-  }
-
-
-  /**
-   * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
-   * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
-   * and max values. <p>
-   *
-   * Values crossing the upper bounds should be reduced to fit within the Java integer value bounds.
-   */
-  @Test public void testReadRangeStatusOutOfUpperBounds()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
-
-    String response = command.read(EnumSensorType.RANGE, null);
-
-    Assert.assertTrue(
-        "Was expecting range to be bound to max value " + Integer.MAX_VALUE +
-        ", got '" + response + "' instead.",
-        Integer.toString(Integer.MAX_VALUE).equals(response));
-  }
-
-
-  /**
-   * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
-   * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
-   * and max values. <p>
-   *
-   * Values crossing the lower bounds should be reduced to fit within the Java integer value bounds.
-   */
-  @Test public void testReadRangeStatusOutOfLowerBounds()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
-
-    String response = command.read(EnumSensorType.RANGE, null);
-
-    Assert.assertTrue(
-        "Was expecting range to be bound to min value " + Integer.MIN_VALUE +
-        ", got '" + response + "' instead.",
-        Integer.toString(Integer.MIN_VALUE).equals(response));
-  }
-
-
-  /**
-   * Even if distinct state mapping is used for a 'RANGE' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'RANGE' types here. While a small range sensor could map
-   * each of its distinct states to other return values, this could be implemented as a CUSTOM
-   * sensor instead. <p>
-   *
-   * If it is convenient to support distinct state mapping for RANGE sensors where particular
-   * values in the range should have distinct mappings, this test can be modified / removed.
-   * The mapping behavior should then be documented and implemented uniformly against all protocol
-   * implementations.
-   */
-  @Test public void testReadRangeStatusIgnoreMapping()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("foo", "1");
-
-    String response = command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue("1".equals(response));
-  }
-
-
-  /**
-   * Even if distinct state mapping is used for a 'RANGE' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'RANGE' types here. While a small range sensor could map
-   * each of its distinct states to other return values, this could be implemented as a CUSTOM
-   * sensor instead. <p>
-   *
-   * If it is convenient to support distinct state mapping for RANGE sensors where particular
-   * values in the range should have distinct mappings, this test can be modified / removed.
-   * The mapping behavior should then be documented and implemented uniformly against all protocol
-   * implementations.
-   */
-  @Test public void testReadRangeStatusDoNotMap()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/bar");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("1", "bar");
-
-    String response = command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expecting " + HttpGetCommand.UNKNOWN_STATUS + " response, got '" + response + " instead.",
-        HttpGetCommand.UNKNOWN_STATUS.equals(response)
-    );
-  }
-
-
-  /**
-   * When an upper bound limit is set for a 'RANGE' sensor, the return values should be limited
-   * to those boundaries.
-   */
-  @Test public void testRangeSensorExplicitUpperBound()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/10");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MAX_STATE, "5");
-
-    map.put("4", "10");                     // this mapping should be ignored by implementation
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return max value of 5, got '" + response + "' instead.",
-        "5".equals(response)
-    );
-  }
-
-
-
-  /**
-   * When a lower bound limit is set for a 'RANGE' sensor, the return values should be limited
-   * to those boundaries.
-   */
-  @Test public void testRangeSensorExplicitLowerBound()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-10");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "-5");
-    map.put("-4", "-10");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of -5, got '" + response + "' instead.",
-        "-5".equals(response)
-    );
-  }
-
-
-  /**
-   * Test the behavior of a misconfigured RANGE sensor where boundaries have been configured
-   * to exclude all possible values. <p>
-   *
-   * The behavior enforced here for such a misconfiguration is that the minimum boundary value
-   * should be returned.
-   */
-  @Test public void testRangeSensorCrossBoundaries()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-
-    map.put(Sensor.RANGE_MIN_STATE, "10");    // minimum is larger than maximum
-    map.put(Sensor.RANGE_MAX_STATE, "0");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of 10, got '" + response + "' instead.",
-        "10".equals(response)
-    );
-  }
-
-
-  /**
-   * Test RANGE sensor behavior when boundaries are configured as equal, making only one value
-   * a valid return value.
-   */
-  @Test public void testRangeSensorEqualBoundaries()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "1");
-    map.put(Sensor.RANGE_MAX_STATE, "1");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of 1, got '" + response + "' instead.",
-        "1".equals(response)
-    );
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/10");
-
-    response = command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of 1, got '" + response + "' instead.",
-        "1".equals(response)
-    );
-
-  }
-
-
-  /**
-   * Test a range sensor misconfiguration behavior when ranges have been set above the Java integer
-   * max value. Enforcing here for the implementation to defensively default to Integer MAX value.
-   */
-  @Test public void testRangeSensorOverflowMaxBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "1");
-    map.put(Sensor.RANGE_MAX_STATE, "2147483648");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return max value of 2147483647, got '" + response + "' instead.",
-        "2147483647".equals(response)
-    );
-  }
-
-
-  /**
-   * Test a range sensor misconfiguration behavior when range has been set below the Java integer
-   * minimum value. Enforcing the implementation to defensively default to Integer MIN value.
-   */
-  @Test public void testRangeSensorOverflowMinBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "-2147483649");
-    map.put(Sensor.RANGE_MAX_STATE, "1");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of -2147483648, got '" + response + "' instead.",
-        "-2147483648".equals(response)
-    );
-  }
-
-
-  /**
-   * Test behavior against incorrect API use (internal implementation), if range minimum value
-   * has been set to unparseable number.
-   */
-  @Test public void testRangeSensorInvalidMinBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "foo");
-    map.put(Sensor.RANGE_MAX_STATE, "1");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return min value of -2147483648, got '" + response + "' instead.",
-        "-2147483648".equals(response)
-    );
-  }
-
-
-  /**
-   * Test behavior against incorrect API use (internal implementation), if range max value is
-   * set to unpaseable number.
-   */
-  @Test public void testRangeSensorInvalidMaxBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MIN_STATE, "0");
-    map.put(Sensor.RANGE_MAX_STATE, "bar");
-
-    String response =  command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected range bound to return max value of 2147483647, got '" + response + "' instead.",
-        "2147483647".equals(response)
-    );
-  }
-
-
-  // Read LEVEL Sensor Tests ----------------------------------------------------------------------
-
-
-  /**
-   * Basic read() test on 'LEVEL' sensor type.
-   */
-  @Test public void testReadLevelStatus()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    String response = command.read(EnumSensorType.LEVEL, null);
-
-    Assert.assertTrue("1".equals(response));
-  }
-
-
-  /**
-   * Test LEVEL sensor behavior when return value is above LEVEL implicit range of [0-100]. <p>
-   *
-   * Value is expected to be truncated within the LEVEL range.
-   */
-  @Test public void testLevelOverMaxBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/101");
-
-    String response = command.read(EnumSensorType.LEVEL, null);
-
-    Assert.assertTrue(
-        "Expected level over max boundary to return 100, got '" + response + "' instead.",
-        "100".equals(response)
-    );
-  }
-
-
-  /**
-   * Test LEVEL sensor behavior when return value is below LEVEL implicit range of [0-100]. <p>
-   *
-   * Value is expected to be truncated within the LEVEL range.
-   */
-  @Test public void testLevelBelowMinBoundary()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-1");
-
-    String response = command.read(EnumSensorType.LEVEL, null);
-
-    Assert.assertTrue(
-        "Expected level below min boundary to return 0, got '" + response + "' instead.",
-        "0".equals(response)
-    );
-  }
-
-
-  /**
-   * Test LEVEL sensor behavior when explicit ranges have been configured. These ought to be
-   * ignored since LEVEL sensor has always a range of [0-100].
-   */
-  @Test public void testReadLevelStatusIgnoreRange()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/100");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put(Sensor.RANGE_MAX_STATE, "35");
-    map.put(Sensor.RANGE_MIN_STATE, "-10");
-
-    String response = command.read(EnumSensorType.LEVEL, map);
-
-    Assert.assertTrue(
-        "Expected response '100', got '" + response + "' instead.",
-        "100".equals(response)
-    );
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/0");
-
-    response = command.read(EnumSensorType.LEVEL, map);
-
-    Assert.assertTrue(
-        "Expected response '0', got '" + response + "' instead.",
-        "0".equals(response)
-    );
-
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/101");
-
-    response = command.read(EnumSensorType.LEVEL, map);
-
-    Assert.assertTrue(
-        "Expected response '100' to over boundary value, got '" + response + "' instead.",
-        "100".equals(response)
-    );
-
-
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/-1");
-
-    response = command.read(EnumSensorType.LEVEL, map);
-
-    Assert.assertTrue(
-        "Expected response '0' to below boundary value, got '" + response + "' instead.",
-        "0".equals(response)
-    );
-  }
-
-
-  /**
-   * Even if distinct state mapping is used for a 'LEVEL' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'LEVEL' types here. While a level sensor could map
-   * each of its distinct states to other return values, this could be implemented as a CUSTOM
-   * sensor instead. <p>
-   *
-   * If it is convenient to support distinct state mapping for LEVEL sensors where particular
-   * values in the range should have distinct mappings, this test can be modified / removed.
-   * The mapping behavior should then be documented and implemented uniformly against all protocol
-   * implementations.
-   */
-  @Test public void testReadLevelStatusIgnoreMapping()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("foo", "1");
-
-    String response = command.read(EnumSensorType.LEVEL, map);
-
-    Assert.assertTrue("1".equals(response));
-  }
-
-
-  /**
-   * Even if distinct state mapping is used for a 'LEVEL' sensor, ignore it for now. <p>
-   *
-   * Since distinct state mapping behavior is only defined for 'CUSTOM' type of sensors,
-   * enforcing that it is ignored for 'LEVEL' types here. While a level sensor could map
-   * each of its distinct states to other return values, this could be implemented as a CUSTOM
-   * sensor instead. <p>
-   *
-   * If it is convenient to support distinct state mapping for LEVEL sensors where particular
-   * values in the range should have distinct mappings, this test can be modified / removed.
-   * The mapping behavior should then be documented and implemented uniformly against all protocol
-   * implementations.
-   */
-  @Test public void testReadLevelStatusDoNotMap()
-  {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/bar");
-
-    HashMap<String, String> map = new HashMap<String, String>(3);
-    map.put("1", "bar");
-
-    String response = command.read(EnumSensorType.RANGE, map);
-
-    Assert.assertTrue(
-        "Expected " + HttpGetCommand.UNKNOWN_STATUS + ", got '" + response + "' instead.",
-        HttpGetCommand.UNKNOWN_STATUS.equals(response)
-    );
-  }
-
-
-
-
-
-//  @Test public void testReadColorStatus() throws Exception
-//  {
-//    //TODO not clear what color really is.
-//    httpServer.setHandler(new Handler("#000000"));
-//    httpServer.start();
-//
-//    StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL);
-//
-//    Assert.assertEquals("#000000", cmd.read(EnumSensorType.COLOR, null));
-//  //      Assert.assertEquals("black", cmd.read(EnumSensorType.COLOR, null));
-//
-//  }
-
 
 
   // Distinct Sensor State Mapping ----------------------------------------------------------------
@@ -881,42 +375,15 @@ public class HttpGetCommandBuilderTest
    * Test basic 'CUSTOM' sensor type where return values are mapped to specific distinct state
    * values.
    */
-  @Test public void testDistinctStateMapping()
+  @Test public void testDistinctStateMapping() throws Exception
   {
-    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/return_value_on");
-
-    HashMap<String, String> map = new HashMap<String, String>();
-    map.put("dim0", "light1_dim0");
-    map.put("dim30", "light1_dim30");
-    map.put("dim50", "light1_dim50");
-    map.put("dim70", "light1_dim70");
-    map.put("dim100", "light1_dim100");
-    map.put("on", "return_value_on");
-    map.put("off", "light1_off");
-
-    String response = command.read(EnumSensorType.CUSTOM, map);
-
-    Assert.assertTrue("on".equals(response));
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/light1_off");
-
-    response = command.read(EnumSensorType.CUSTOM, map);
-
-    Assert.assertTrue("off".equals(response));
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/light1_dim0");
-
-    response = command.read(EnumSensorType.CUSTOM, map);
-
-    Assert.assertTrue("dim0".equals(response));
-
-
-    command = (StatusCommand)getHttpCommand(HTTP_SERVER_URL + "/response/no_mapping");
-
-    response = command.read(EnumSensorType.CUSTOM, map);
-
-    Assert.assertTrue("no_mapping".equals(response));
-
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addStateMapping("this_is_on", "111");
+    EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/this_is_on", "1m");
+    Sensor s2 = new StateSensor("state", 5, cache, cmd, states);
+    s2.start();
+    String returnValue = getSensorValueFromCache(5);
+    Assert.assertTrue(returnValue.equals("111"));
   }
 
 
@@ -926,15 +393,20 @@ public class HttpGetCommandBuilderTest
 
   private Command getParameterizedHttpCommand(String url, int paramValue)
   {
-    return getHttpCommand(url + "${param}", "" + paramValue);
+    return getHttpCommand(url + "${param}", "" + paramValue, null);
   }
 
   private Command getHttpCommand(String url)
   {
-    return getHttpCommand(url, null);
+    return getHttpCommand(url, null, null);
+  }
+  
+  private Command getHttpCommand(String url, String interval)
+  {
+    return getHttpCommand(url, null, interval);
   }
 
-  private Command getHttpCommand(String url, String paramValue)
+  private Command getHttpCommand(String url, String paramValue, String interval)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -953,13 +425,27 @@ public class HttpGetCommandBuilderTest
     propUrl.setAttribute("name", "url");
     propUrl.setAttribute("value", url);
 
+    if (interval != null) {
+      Element propInterval = new Element("property");
+      propInterval.setAttribute("name", "pollingInterval");
+      propInterval.setAttribute("value", interval);
+      ele.addContent(propInterval);
+    }
+    
     ele.addContent(propName);
     ele.addContent(propUrl);
 
     return builder.build(ele);
   }
 
+  private String getSensorValueFromCache(int sensorID) throws Exception
+  {
+    // sleep here to give the polling mechanism enough time to push the event value to cache...
 
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+
+    return cache.queryStatus(sensorID);
+  }
 
   // Nested Classes -------------------------------------------------------------------------------
 
