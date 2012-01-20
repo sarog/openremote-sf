@@ -21,6 +21,7 @@ package org.openremote.modeler.client.presenter;
 
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
+import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
 import com.google.gwt.event.shared.HandlerManager;
@@ -41,7 +42,7 @@ public class PropertyPanelPresenter {
     eventBus.addHandler(UIElementSelectedEvent.TYPE, new UIElementSelectedEventHandler() {
       @Override
       public void onElementSelected(UIElementSelectedEvent event) {
-        PropertyPanelPresenter.this.view.setPropertyForm(event.getElement());
+        PropertyPanelPresenter.this.view.setPropertyForm(PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus));
       }
     });
   }

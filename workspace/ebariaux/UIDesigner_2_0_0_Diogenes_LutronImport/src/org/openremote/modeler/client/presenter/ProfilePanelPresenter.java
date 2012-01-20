@@ -27,8 +27,6 @@ import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.PropertyEditable;
-import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.widget.uidesigner.CustomPanelWindow;
 import org.openremote.modeler.client.widget.uidesigner.GroupEditWindow;
 import org.openremote.modeler.client.widget.uidesigner.PanelWindow;
@@ -75,18 +73,12 @@ public class ProfilePanelPresenter {
         }
 
         if (beanModel != null) {
-          
-          // TODO EBR : in next call, should get rid of panelTree param
-          // this will allow beanModel.getBean in event
-          // and move creation of PropertyEditable to PropertyPanelPresenter
-          // then above event is not required, ScreenPanelPresenter can listen on UIElementSelectedEvent
+          // TODO EBR 
+          // Above event is not required, ScreenPanelPresenter can listen on UIElementSelectedEvent
           // and act only if bean in ScreenPairRef
           // Might not be a bad thing that the 2 different events are fired, limit the
           // amount of events the ScreenPanelPresenter will see
-          
-          PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, eventBus);
-          
-          eventBus.fireEvent(new UIElementSelectedEvent(pe));
+          eventBus.fireEvent(new UIElementSelectedEvent(beanModel));
         }
       };
     });
@@ -170,11 +162,7 @@ public class ProfilePanelPresenter {
               Panel panel = be.<Panel> getData();
               panelTree.getStore().update(panel.getBeanModel());
               Info.display("Info", "Edit panel " + panel.getName() + " success.");
-  
-              PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(panelBeanModel, eventBus);              
-              eventBus.fireEvent(new UIElementSelectedEvent(pe));
-              
-//              ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
+              eventBus.fireEvent(new UIElementSelectedEvent(panelBeanModel));
            }
         });
      }
@@ -202,11 +190,7 @@ public class ProfilePanelPresenter {
            panelTree.getSelectionModel().select(groupRefModel, false);
            BeanModelDataBase.screenTable.clearUnuseData();
            Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
-           
-           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(groupRefBeanModel, eventBus);           
-           eventBus.fireEvent(new UIElementSelectedEvent(pe));
-
-//           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
+           eventBus.fireEvent(new UIElementSelectedEvent(groupRefBeanModel));
         }
      });
   }
@@ -221,14 +205,9 @@ public class ProfilePanelPresenter {
            ScreenPairRef screenRef = be.<ScreenPairRef> getData();
            panelTree.getStore().update(screenRef.getBeanModel());
            BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
-           Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
-           
-           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(screenRefBeanModel, eventBus);           
-           eventBus.fireEvent(new UIElementSelectedEvent(pe));
-
-//           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
-        }
-        
+           Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");           
+           eventBus.fireEvent(new UIElementSelectedEvent(screenRefBeanModel));
+        }        
      });
   }
 

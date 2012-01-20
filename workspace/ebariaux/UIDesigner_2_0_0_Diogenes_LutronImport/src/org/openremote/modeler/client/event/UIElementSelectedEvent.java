@@ -19,23 +19,21 @@
 */
 package org.openremote.modeler.client.event;
 
-import org.openremote.modeler.client.utils.PropertyEditable;
-
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.GwtEvent;
 
 public class UIElementSelectedEvent extends GwtEvent<UIElementSelectedEventHandler> {
 
   public static Type<UIElementSelectedEventHandler> TYPE = new Type<UIElementSelectedEventHandler>();
 
-  // TODO EBR : this is temporary, type should be different, maybe BusinessEntity ?
-  private final PropertyEditable element;
+  private final BeanModel element;
   
-  public UIElementSelectedEvent(PropertyEditable element) {
+  public UIElementSelectedEvent(BeanModel element) {
     super();
     this.element = element;
   }
   
-  public PropertyEditable getElement() {
+  public BeanModel getElement() {
     return element;
   }
 
