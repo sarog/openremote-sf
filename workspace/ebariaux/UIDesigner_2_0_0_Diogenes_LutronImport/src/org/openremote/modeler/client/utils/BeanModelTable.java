@@ -108,7 +108,8 @@ public class BeanModelTable {
    public void addChangeListener(final AutoListenableTreeStore that, TreeStoreEvent<BeanModel> be) {}
 
    /**
-    * Adds the insert listener.
+    * Sets the insert listener for the given id.
+    * There can only be one listener at a time for a given id.
     * 
     * @param listener the listener
     * @param parentId the parent id
