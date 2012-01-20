@@ -570,56 +570,20 @@ public class ScreenCanvas extends ComponentContainer {
             super.onBackspace(ce);
             this.onDelete(ce);
          }
-         
+
+         // Use arrow keys for moving selection
          public void onRight(ComponentEvent ce) {
-           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-             if (cc instanceof AbsoluteLayoutContainer) {
-               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-               absolute.setLeft(absolute.getLeft() + (shiftKeyDown?10:1));
-               
-               cc.setPosition(absolute.getLeft(), absolute.getTop());
-
-               // TODO - EBR : If only model is updated, this is not reflected anywhere
-               // Updating view object directly makes it work but is tight coupling
-               // -> implement a correct model / view decoupling and bus communication first
-               // Issue is we don't have access to event bus from here
-               // -> code to post event should not be in view, view should communicate with a presenter through interface
-             }
-                
-           }
+           moveWidgetSelection((shiftKeyDown?10:1), 0);
          }
-         
          public void onLeft(ComponentEvent ce) {
-           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-             if (cc instanceof AbsoluteLayoutContainer) {
-               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-               absolute.setLeft(absolute.getLeft() - (shiftKeyDown?10:1));               
-               cc.setPosition(absolute.getLeft(), absolute.getTop());
-             }
-           }
+           moveWidgetSelection(-(shiftKeyDown?10:1), 0);
          }
-
          public void onUp(ComponentEvent ce) {
-           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-             if (cc instanceof AbsoluteLayoutContainer) {
-               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-               absolute.setTop(absolute.getTop() - (shiftKeyDown?10:1));               
-               cc.setPosition(absolute.getLeft(), absolute.getTop());
-             }
-           }
+           moveWidgetSelection(0, -(shiftKeyDown?10:1));
          }
-
          public void onDown(ComponentEvent ce) {
-           for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-             if (cc instanceof AbsoluteLayoutContainer) {
-               Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-               absolute.setTop(absolute.getTop() + (shiftKeyDown?10:1));               
-               cc.setPosition(absolute.getLeft(), absolute.getTop());
-             }
-           }
-         }
-
-         
+           moveWidgetSelection(0, (shiftKeyDown?10:1));
+         }         
       }.bind(controlContainer);
       absolute.setBelongsTo(controlContainer);
       return controlContainer;
@@ -730,6 +694,20 @@ public class ScreenCanvas extends ComponentContainer {
          public void onBackspace(ComponentEvent ce) {
             super.onBackspace(ce);
             this.onDelete(ce);
+         }
+         
+         // Use arrow keys for moving selection
+         public void onRight(ComponentEvent ce) {
+           moveWidgetSelection((shiftKeyDown?10:1), 0);
+         }
+         public void onLeft(ComponentEvent ce) {
+           moveWidgetSelection(-(shiftKeyDown?10:1), 0);
+         }
+         public void onUp(ComponentEvent ce) {
+           moveWidgetSelection(0, -(shiftKeyDown?10:1));
+         }
+         public void onDown(ComponentEvent ce) {
+           moveWidgetSelection(0, (shiftKeyDown?10:1));
          }
       }.bind(gridContainer);
 
@@ -902,4 +880,33 @@ public class ScreenCanvas extends ComponentContainer {
          }
       }
    }
+
+  private void moveWidgetSelection(int left, int top) {
+    for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+       if (cc instanceof AbsoluteLayoutContainer) {
+         Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+         absolute.setLeft(absolute.getLeft() + left);
+         absolute.setTop(absolute.getTop() + top);
+         cc.setPosition(absolute.getLeft(), absolute.getTop());
+
+         // TODO - EBR : If only model is updated, this is not reflected anywhere
+         // Updating view object directly makes it work but is tight coupling
+         // -> implement a correct model / view decoupling and bus communication first
+         // Issue is we don't have access to event bus from here
+         // -> code to post event should not be in view, view should communicate with a presenter through interface
+       } else if (cc instanceof GridLayoutContainerHandle) {        
+         // Size of grid takes into account size of some handle, need to take it into account here also
+         // TODO EBR : fix this !!! this is ugly
+         UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+         grid.setLeft(grid.getLeft() + left - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
+         grid.setTop(grid.getTop() + top - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+         
+         cc.setPosition(grid.getLeft(), grid.getTop());
+         
+         // TODO EBR : position of grid in property form fields is not properly updated
+         // should have proper notification when model is changed so that properties get updated
+       }
+          
+     }
+  }
 }
