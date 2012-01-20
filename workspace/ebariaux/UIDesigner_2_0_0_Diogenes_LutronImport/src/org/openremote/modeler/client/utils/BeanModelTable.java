@@ -113,7 +113,7 @@ public class BeanModelTable {
     * @param listener the listener
     * @param parentId the parent id
     */
-   public void addInsertListener(Long parentId, ChangeListener listener) {
+   public void setInsertListener(Long parentId, ChangeListener listener) {
       if (insertListeners.get(parentId) == null) {
          insertListeners.put(parentId, listener);
       }
