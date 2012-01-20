@@ -20,12 +20,9 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -37,8 +34,6 @@ import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.PanelTreeStoreChangeListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.UtilsProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -52,7 +47,6 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -81,15 +75,13 @@ public class ProfilePanel extends ContentPanel {
    private TreePanel<BeanModel> panelTree;
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
-   private ScreenPanel screenPanel = null;
    private boolean initialized = false;
    private Button editButton;
    
    /**
     * Instantiates a new profile panel.
     */
-   public ProfilePanel(ScreenPanel screenPanel) {
-      this.screenPanel = screenPanel;
+   public ProfilePanel() {
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Panel");
       setIcon(icon.panelIcon());
