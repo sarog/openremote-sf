@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.view;
 
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
@@ -27,7 +26,6 @@ import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
@@ -84,7 +82,7 @@ public class UIDesignerView extends TabItem {
     */
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
-      ProfilePanel result = new ProfilePanel(screenPanel);
+      ProfilePanel result = new ProfilePanel();
 
       templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
