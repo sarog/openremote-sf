@@ -40,10 +40,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.utils.Logger;
 import org.w3c.dom.Document;
 
 /**
@@ -119,10 +119,18 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     return username;
   }
 
+  public Integer getPollingInterval() {
+     return pollingInterval;
+  }
+
+  public void setPollingInterval(Integer pollingInterval) {
+     this.pollingInterval = pollingInterval;
+  }
+  
   // Implements ExecutableCommand
   // -----------------------------------------------------------------
 
-  @Override
+@Override
   public void send()
   {
     requestURL();
