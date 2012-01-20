@@ -34,7 +34,6 @@ import org.openremote.modeler.domain.ScreenPairRef;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class ScreenPanelPresenter {
@@ -66,9 +65,6 @@ public class ScreenPanelPresenter {
             if (event.getType() == BeanModelTable.ADD) {
               BeanModel beanModel = (BeanModel) event.getItem();
               if (beanModel.getBean() instanceof ScreenPair) {
-
-                Info.display("INFO", "Selecting the newly inserted screen");
-
                 ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
               }
             }
