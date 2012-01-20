@@ -26,8 +26,6 @@ import org.openremote.modeler.client.widget.propertyform.PanelPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Panel;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
 /**
@@ -39,17 +37,13 @@ public class PanelPropertyEditable implements PropertyEditable {
 
    private Panel panel = null;
    
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
-   
    private HandlerManager eventBus;
 
    public PanelPropertyEditable() {
    }
 
-   public PanelPropertyEditable(Panel panel, HandlerManager eventBus, TreePanel<BeanModel> profileTree) {
+   public PanelPropertyEditable(Panel panel, HandlerManager eventBus) {
       this.panel = panel;
-      this.profileTree = profileTree;
       this.eventBus = eventBus;
    }
 
