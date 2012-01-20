@@ -83,7 +83,7 @@ public class ProfilePanelPresenter {
           // Might not be a bad thing that the 2 different events are fired, limit the
           // amount of events the ScreenPanelPresenter will see
           
-          PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, panelTree);
+          PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(beanModel, eventBus, panelTree);
           
           eventBus.fireEvent(new UIElementSelectedEvent(pe));
         }
@@ -158,7 +158,7 @@ public class ProfilePanelPresenter {
               panelTree.getStore().update(panel.getBeanModel());
               Info.display("Info", "Edit panel " + panel.getName() + " success.");
   
-              PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(panelBeanModel, panelTree);              
+              PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(panelBeanModel, eventBus, panelTree);              
               eventBus.fireEvent(new UIElementSelectedEvent(pe));
               
 //              ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
@@ -190,7 +190,7 @@ public class ProfilePanelPresenter {
            BeanModelDataBase.screenTable.clearUnuseData();
            Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
            
-           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(groupRefBeanModel, panelTree);           
+           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(groupRefBeanModel, eventBus, panelTree);           
            eventBus.fireEvent(new UIElementSelectedEvent(pe));
 
 //           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
@@ -210,7 +210,7 @@ public class ProfilePanelPresenter {
            BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
            Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
            
-           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(screenRefBeanModel, panelTree);           
+           PropertyEditable pe = PropertyEditableFactory.getPropertyEditable(screenRefBeanModel, eventBus, panelTree);           
            eventBus.fireEvent(new UIElementSelectedEvent(pe));
 
 //           ProfilePanelPresenter.this.view.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
