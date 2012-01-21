@@ -51,8 +51,10 @@ public interface BeehiveService <T, U>
 
   final static String BEEHIVE_SERVICE_LOG_CATEGORY =
       "OpenRemote.Designer.BeehiveService";
+  
   final static String BEEHIVE_NETWORK_PERF_LOG_CATEGORY =
       BEEHIVE_SERVICE_LOG_CATEGORY + ".Performance.Network";
+
   final static String BEEHIVE_DOWNLOAD_PERF_LOG_CATEGORY =
       BEEHIVE_NETWORK_PERF_LOG_CATEGORY + ".Download";
 
@@ -108,6 +110,17 @@ public interface BeehiveService <T, U>
     ServerException(String msg)
     {
       super(msg);
+    }
+
+    /**
+     * Constructs a new exception with a parameterized message.
+     *
+     * @param msg       exception message
+     * @param params    message parameters
+     */
+    ServerException(String msg, Object... params)
+    {
+      super(msg, params);
     }
   }
 
