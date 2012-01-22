@@ -733,7 +733,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
 		if (panelService.isInitialized()) {
-			if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation())) {
+			if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation()) || (!BrowserUtils.isMobile && isFullscreen)) {
 				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
 				if (inverseScreen != null) {
 					loadDisplay(inverseScreen, true, null);
