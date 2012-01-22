@@ -70,7 +70,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 			consoleContainer = new AbsolutePanel();
 			consoleContainer.setWidth("3000px");
 			consoleContainer.setHeight("3000px");
-
 			RootPanel.get().add(consoleContainer, 0, 0);
 			
 			updateWindowInfo();
@@ -98,10 +97,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 			
 			updateWindowInfo();
 			
-			if (!windowOrientation.equalsIgnoreCase(oldOrientation)) {
-				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(getWindowOrientation(), getWindowWidth(), getWindowHeight()));
-			}
-			
 			if ((oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowWidth || oldHeight != windowHeight)) || (!oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowHeight || oldHeight != windowWidth))) {
 				Window.scrollTo(0, 1);
 				int height = windowHeight;
@@ -114,6 +109,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 					}
 				}
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new WindowResizeEvent(getWindowWidth(), getWindowHeight()));
+			}
+			
+			if (!windowOrientation.equalsIgnoreCase(oldOrientation)) {
+				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(getWindowOrientation(), getWindowWidth(), getWindowHeight()));
 			}
 		}
 		
@@ -145,8 +144,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 			
 		   // If Apple device then check if loaded from bookmark
 			if (!isBookmarked()) {
-				// TODO: Handle bookmark warning
-				Window.alert("NOT BOOKMARKED!");
+				Window.alert("Please add this page to your Home Screen to view in fullscreen!");
 			}
 		}
 		

@@ -64,25 +64,30 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		if (this.width == width && this.height == height) {
 			return;
 		}
+		this.width = width;
+		this.height = height;
+		
+		// Resize the display wrapper
+		setWidth(width + "px");
+		setHeight(height + "px");
+		
+		
 		if (getOrientation().equalsIgnoreCase("portrait")) {
-			this.width = width;
-			this.height = height;
-			setWidth(width + "px");
-			setHeight(height + "px");
 			display.setWidth(width + "px");
 			display.setHeight(height + "px");
 		} else {
-			this.width = height;
-			this.height = width;
-			setWidth(height + "px");
-			setHeight(width + "px");
 			display.setWidth(height + "px");
 			display.setHeight(width + "px");
 		}
 		
+		// Update display position and Screen indicator position
+		setDisplayPosition();
+		updateScreenIndicator();
+		
 		// Resize the screen view and tab bar
 		updateScreenView();
 		updateTabBar();
+		
 	}
 	
 	/**
@@ -101,16 +106,10 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		int width = getWidth();
 		int height = getHeight();
 		
-		if ("portrait".equals(orientation)) {
-			((AbsolutePanel)getWidget()).setWidgetPosition(display,0,0);
-		   display.setStylePrimaryName("portraitDisplay");
-		} else {
-			((AbsolutePanel)getWidget()).setWidgetPosition(display, (height/2)-(width/2), (width/2)-(height/2));
-			display.setStylePrimaryName("landscapeDisplay");
-		}
-		
 	   display.setWidth(width + "px");
 	   display.setHeight(height + "px");
+	   
+	   setDisplayPosition();
 	}
 	
 	public String getOrientation() {
@@ -143,6 +142,22 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 			value = this.width;
 		}
 		return value;
+	}
+	
+	private void setDisplayPosition() {
+		if (currentOrientation.equals("portrait")) {
+			((AbsolutePanel)getWidget()).setWidgetPosition(display,0,0);
+		   display.setStylePrimaryName("portraitDisplay");
+		} else {
+			int left = ((width/2)-(height/2));
+			int top = -((width/2) - (height/2));
+			if (!BrowserUtils.isCssDodgy) {
+				((AbsolutePanel)getWidget()).setWidgetPosition(display, left, top);
+			} else {
+				((AbsolutePanel)getWidget()).setWidgetPosition(display, 0, 0);
+			}
+			display.setStylePrimaryName("landscapeDisplay");
+		}
 	}
 	
 	/**
@@ -277,6 +292,12 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		if (currentScreen != null) {
 			currentScreen.onRefresh(getWidth(), getHeight());
 			display.setWidgetPosition(currentScreen, 0, 0);
+		}
+	}
+	
+	private void updateScreenIndicator() {
+		if (currentScreenIndicator != null) {
+			display.setWidgetPosition(currentScreenIndicator, (int)Math.round((((double)getWidth() - currentScreenIndicator.getWidth())/2)), getHeight() - 55);
 		}
 	}
 	
