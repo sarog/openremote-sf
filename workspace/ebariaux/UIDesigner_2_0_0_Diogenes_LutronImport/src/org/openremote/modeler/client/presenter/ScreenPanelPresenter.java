@@ -36,7 +36,7 @@ import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.google.gwt.event.shared.HandlerManager;
 
-public class ScreenPanelPresenter {
+public class ScreenPanelPresenter implements Presenter {
 
   private HandlerManager eventBus;
   private ScreenPanel view;

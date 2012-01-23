@@ -19,19 +19,11 @@
 */
 package org.openremote.modeler.client.presenter;
 
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
-
-import com.google.gwt.event.shared.HandlerManager;
-
-public class TemplatePanelPresenter implements Presenter {
-
-  private HandlerManager eventBus;
-  private TemplatePanel view;
-  
-  public TemplatePanelPresenter(HandlerManager eventBus, TemplatePanel view) {
-    super();
-    this.eventBus = eventBus;
-    this.view = view;
-  }
+/**
+ * Marker interface for all presenter classes used to implement MVP pattern.
+ * 
+ * @author eric@openremote.org
+ */
+public interface Presenter {
 
 }

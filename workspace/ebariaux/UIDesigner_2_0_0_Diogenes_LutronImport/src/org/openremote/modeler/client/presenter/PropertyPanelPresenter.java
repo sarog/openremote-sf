@@ -26,7 +26,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
 import com.google.gwt.event.shared.HandlerManager;
 
-public class PropertyPanelPresenter {
+public class PropertyPanelPresenter implements Presenter {
 
   private HandlerManager eventBus;
   private PropertyPanel view;

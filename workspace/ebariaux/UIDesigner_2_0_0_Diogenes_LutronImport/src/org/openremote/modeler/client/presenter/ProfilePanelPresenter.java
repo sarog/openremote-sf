@@ -60,7 +60,7 @@ import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 
-public class ProfilePanelPresenter {
+public class ProfilePanelPresenter implements Presenter {
   
   private HandlerManager eventBus;
   private ProfilePanel view;
