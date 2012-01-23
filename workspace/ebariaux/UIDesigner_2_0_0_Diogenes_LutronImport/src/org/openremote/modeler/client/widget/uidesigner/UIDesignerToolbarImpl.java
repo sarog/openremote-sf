@@ -49,13 +49,11 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
   final IconResources resources = IconResources.INSTANCE;
   
   @UiField
-  PushButton leftAlignButton;
-  
+  PushButton horizontalLeftAlignButton;
   @UiField
-  PushButton middleAlignButton;
-  
+  PushButton horizontalCenterAlignButton;
   @UiField
-  PushButton rightAlignButton;
+  PushButton horizontalRightAlignButton;
   
   @UiField
   PushButton verticalTopAlignButton;
@@ -69,24 +67,24 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
     initWidget(uiBinder.createAndBindUi(this));
   }
 
-  @UiHandler("leftAlignButton")
+  @UiHandler("horizontalLeftAlignButton")
   void onLeftAlignClick(ClickEvent e) {
     if (presenter != null) {
-      presenter.onLeftAlignButtonClicked();
+      presenter.onHorizontalLeftAlignButtonClicked();
     }
   }
   
-  @UiHandler("middleAlignButton")
+  @UiHandler("horizontalCenterAlignButton")
   void onMiddleAlignClicked(ClickEvent e) {
     if (presenter != null) {
-      presenter.onMiddleAlignButtonClicked();
+      presenter.onHorizontalCenterAlignButtonClicked();
     }
   }
 
-  @UiHandler("rightAlignButton")
+  @UiHandler("horizontalRightAlignButton")
   void onRightAlignClicked(ClickEvent e) {
     if (presenter != null) {
-      presenter.onRightAlignButtonClicked();
+      presenter.onHorizontalRightAlignButtonClicked();
     }
   }
 

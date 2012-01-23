@@ -10,17 +10,17 @@
 	<ui:with field='resources'
 		type='org.openremote.modeler.client.icon.IconResources' />
 	<g:FlowPanel>
-		<g:PushButton ui:field="leftAlignButton" width="32px"
+		<g:PushButton ui:field="horizontalLeftAlignButton" width="32px"
 			addStyleNames='{style.toolbarButtons}'>
 			<g:upFace image='{resources.horizontalLeftAlignIcon}' />
 			<g:downFace image='{resources.horizontalLeftAlignIcon}' />
 		</g:PushButton>
-		<g:PushButton ui:field="middleAlignButton" width="32px"
+		<g:PushButton ui:field="horizontalCenterAlignButton" width="32px"
 			addStyleNames='{style.toolbarButtons}'>
 			<g:upFace image='{resources.horizontalCenterAlignIcon}' />
 			<g:downFace image='{resources.horizontalCenterAlignIcon}' />
 		</g:PushButton>
-    <g:PushButton ui:field="rightAlignButton" width="32px"
+    <g:PushButton ui:field="horizontalRightAlignButton" width="32px"
       addStyleNames='{style.toolbarButtons}'>
       <g:upFace image='{resources.horizontalRightAlignIcon}' />
       <g:downFace image='{resources.horizontalRightAlignIcon}' />
