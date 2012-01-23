@@ -2,10 +2,28 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
+		.toolbarButtons {
+			float: left;
+			margin: 0px 4px 0px 4px;
+		}
 	</ui:style>
-	<g:HTMLPanel>
-    <g:Button ui:field="leftAlignButton">left</g:Button>
-    <g:Button ui:field="middleAlignButton">middle</g:Button>
-    <g:Button ui:field="rightAlignButton">right</g:Button>
-	</g:HTMLPanel>
+	<ui:with field='resources'
+		type='org.openremote.modeler.client.icon.IconResources' />
+	<g:FlowPanel>
+		<g:PushButton ui:field="leftAlignButton" width="32px"
+			addStyleNames='{style.toolbarButtons}'>
+			<g:upFace image='{resources.horizontalLeftAlignIcon}' />
+			<g:downFace image='{resources.horizontalLeftAlignIcon}' />
+		</g:PushButton>
+		<g:PushButton ui:field="middleAlignButton" width="32px"
+			addStyleNames='{style.toolbarButtons}'>
+			<g:upFace image='{resources.horizontalCenterAlignIcon}' />
+			<g:downFace image='{resources.horizontalCenterAlignIcon}' />
+		</g:PushButton>
+		<g:PushButton ui:field="rightAlignButton" width="32px"
+			addStyleNames='{style.toolbarButtons}'>
+			<g:upFace image='{resources.horizontalRightAlignIcon}' />
+			<g:downFace image='{resources.horizontalRightAlignIcon}' />
+		</g:PushButton>
+	</g:FlowPanel>
 </ui:UiBinder> 

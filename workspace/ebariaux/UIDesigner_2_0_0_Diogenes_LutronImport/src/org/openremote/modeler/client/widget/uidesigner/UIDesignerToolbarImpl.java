@@ -19,15 +19,16 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.icon.IconResources;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
 public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolbar {
@@ -44,14 +45,17 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
 
   private Presenter presenter;
   
-  @UiField
-  Button leftAlignButton;
+  @UiField(provided=true)
+  final IconResources resources = IconResources.INSTANCE;
   
   @UiField
-  Button middleAlignButton;
+  PushButton leftAlignButton;
   
   @UiField
-  Button rightAlignButton;
+  PushButton middleAlignButton;
+  
+  @UiField
+  PushButton rightAlignButton;
 
   public UIDesignerToolbarImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
