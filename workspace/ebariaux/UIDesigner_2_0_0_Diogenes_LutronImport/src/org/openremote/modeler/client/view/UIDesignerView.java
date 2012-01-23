@@ -122,7 +122,7 @@ public class UIDesignerView extends TabItem {
       add(centerContainer, centerData);      
       centerContainer.add(screenPanel, centerData);
       
-      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 30);
+      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 42);
       northData.setMargins(new Margins(2, 2, 2, 2));
       toolbar = new UIDesignerToolbarImpl();
       centerContainer.add(toolbar, northData);
