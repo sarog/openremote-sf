@@ -36,4 +36,13 @@ public interface IconResources extends ClientBundle {
   @Source("HorizontalRightAlignIcon.png")
   ImageResource horizontalRightAlignIcon();
 
+  @Source("VerticalTopAlignIcon.png")
+  ImageResource verticalTopAlignIcon();
+
+  @Source("VerticalCenterAlignIcon.png")
+  ImageResource verticalCenterAlignIcon();
+
+  @Source("VerticalBottomAlignIcon.png")
+  ImageResource verticalBottomAlignIcon();
+
 }

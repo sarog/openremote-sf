@@ -20,10 +20,25 @@
 			<g:upFace image='{resources.horizontalCenterAlignIcon}' />
 			<g:downFace image='{resources.horizontalCenterAlignIcon}' />
 		</g:PushButton>
-		<g:PushButton ui:field="rightAlignButton" width="32px"
-			addStyleNames='{style.toolbarButtons}'>
-			<g:upFace image='{resources.horizontalRightAlignIcon}' />
-			<g:downFace image='{resources.horizontalRightAlignIcon}' />
-		</g:PushButton>
+    <g:PushButton ui:field="rightAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.horizontalRightAlignIcon}' />
+      <g:downFace image='{resources.horizontalRightAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalTopAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalTopAlignIcon}' />
+      <g:downFace image='{resources.verticalTopAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalCenterAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalCenterAlignIcon}' />
+      <g:downFace image='{resources.verticalCenterAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalBottomAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalBottomAlignIcon}' />
+      <g:downFace image='{resources.verticalBottomAlignIcon}' />
+    </g:PushButton>
 	</g:FlowPanel>
 </ui:UiBinder> 
