@@ -33,12 +33,19 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.client.utils.TouchPanels;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.view.UIDesignerView;
+import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
+import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -50,7 +57,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
-public class UIDesignerPresenter implements Presenter {
+public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Presenter {
 
   private HandlerManager eventBus;
   private UIDesignerView view;
@@ -69,6 +76,7 @@ public class UIDesignerPresenter implements Presenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
+    this.view.getToolbar().setPresenter(this);
     
     this.profilePanelPresenter = new ProfilePanelPresenter(eventBus, view.getProfilePanel());
     this.templatePanelPresenter = new TemplatePanelPresenter(eventBus, view.getTemplatePanel());
@@ -194,5 +202,119 @@ public class UIDesignerPresenter implements Presenter {
     }
     return panelList;
   }
-
+  
+  // TODO EBR : see if possible to implement those function without code copy/paste
+  // Maybe Visitor (+ Command) pattern
+  
+  public void onLeftAlignButtonClicked() {
+    int leftPosition = 0;
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+      if (firstComponent instanceof AbsoluteLayoutContainer) {
+        leftPosition = ((AbsoluteLayoutContainer)firstComponent).getAbsolute().getLeft();
+      } else if (firstComponent instanceof GridLayoutContainerHandle) {
+        leftPosition = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid().getLeft();
+      }
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setLeft(leftPosition);
+          cc.setPosition(absolute.getLeft(), absolute.getTop());
+  
+          // TODO - EBR : If only model is updated, this is not reflected anywhere
+          // Updating view object directly makes it work but is tight coupling
+          // -> implement a correct model / view decoupling and bus communication first
+          // Issue is we don't have access to event bus from here
+          // -> code to post event should not be in view, view should communicate with a presenter through interface
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          // Size of grid takes into account size of some handle, need to take it into account here also
+          // TODO EBR : fix this !!! this is ugly
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setLeft(leftPosition - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
+          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          cc.setPosition(grid.getLeft(), grid.getTop());
+          
+          // TODO EBR : position of grid in property form fields is not properly updated
+          // should have proper notification when model is changed so that properties get updated
+        }
+      }
+    }
+  }
+  
+  public void onMiddleAlignButtonClicked() {
+    int middlePosition = 0;
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+      if (firstComponent instanceof AbsoluteLayoutContainer) {
+        Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute(); 
+        middlePosition = absolute.getLeft() + absolute.getWidth() / 2;
+      } else if (firstComponent instanceof GridLayoutContainerHandle) {
+        UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
+        middlePosition = grid.getLeft() + grid.getWidth() / 2;
+      }
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setLeft(middlePosition - absolute.getWidth() / 2);
+          cc.setPosition(absolute.getLeft(), absolute.getTop());
+  
+          // TODO - EBR : If only model is updated, this is not reflected anywhere
+          // Updating view object directly makes it work but is tight coupling
+          // -> implement a correct model / view decoupling and bus communication first
+          // Issue is we don't have access to event bus from here
+          // -> code to post event should not be in view, view should communicate with a presenter through interface
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          // Size of grid takes into account size of some handle, need to take it into account here also
+          // TODO EBR : fix this !!! this is ugly
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setLeft(middlePosition - (grid.getWidth() / 2) - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
+          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          
+          cc.setPosition(grid.getLeft(), grid.getTop());
+          
+          // TODO EBR : position of grid in property form fields is not properly updated
+          // should have proper notification when model is changed so that properties get updated
+        }
+      }
+    }
+  }
+  
+  public void onRightAlignButtonClicked() {
+    int rightPosition = 0;
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+      if (firstComponent instanceof AbsoluteLayoutContainer) {
+        Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute(); 
+        rightPosition = absolute.getLeft() + absolute.getWidth();
+      } else if (firstComponent instanceof GridLayoutContainerHandle) {
+        UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
+        rightPosition = grid.getLeft() + grid.getWidth();
+      }
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setLeft(rightPosition - absolute.getWidth());
+          cc.setPosition(absolute.getLeft(), absolute.getTop());
+  
+          // TODO - EBR : If only model is updated, this is not reflected anywhere
+          // Updating view object directly makes it work but is tight coupling
+          // -> implement a correct model / view decoupling and bus communication first
+          // Issue is we don't have access to event bus from here
+          // -> code to post event should not be in view, view should communicate with a presenter through interface
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          // Size of grid takes into account size of some handle, need to take it into account here also
+          // TODO EBR : fix this !!! this is ugly
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setLeft(rightPosition - grid.getWidth() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
+          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          
+          cc.setPosition(grid.getLeft(), grid.getTop());
+          
+          // TODO EBR : position of grid in property form fields is not properly updated
+          // should have proper notification when model is changed so that properties get updated
+        }
+      }
+    }
+  }
+  
 }
