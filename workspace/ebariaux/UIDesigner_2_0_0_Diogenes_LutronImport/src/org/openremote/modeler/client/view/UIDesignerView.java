@@ -24,6 +24,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
+import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbarImpl;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
@@ -53,7 +54,7 @@ public class UIDesignerView extends TabItem {
    
    private PropertyPanel propertyPanel = null;
    
-   private UIDesignerToolbar toolbar;
+   private UIDesignerToolbarImpl toolbar;
    
    /**
     * Instantiates a new uI designer view.
@@ -123,7 +124,7 @@ public class UIDesignerView extends TabItem {
       
       BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 30);
       northData.setMargins(new Margins(2, 2, 2, 2));
-      toolbar = new UIDesignerToolbar();
+      toolbar = new UIDesignerToolbarImpl();
       centerContainer.add(toolbar, northData);
    }
 
@@ -174,5 +175,4 @@ public class UIDesignerView extends TabItem {
   public UIDesignerToolbar getToolbar() {
     return toolbar;
   }
-  
 }
