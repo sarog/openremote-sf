@@ -27,6 +27,10 @@ public interface UIDesignerToolbar {
     void onMiddleAlignButtonClicked();
     void onRightAlignButtonClicked();
     
+    void onVerticalTopAlignButtonClicked();
+    void onVerticalCenterAlignButtonClicked();
+    void onVerticalBottomAlignButtonClicked();
+    
   }
   
   void setPresenter(Presenter presenter);

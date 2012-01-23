@@ -56,6 +56,14 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
   
   @UiField
   PushButton rightAlignButton;
+  
+  @UiField
+  PushButton verticalTopAlignButton;
+  @UiField
+  PushButton verticalCenterAlignButton;
+  @UiField
+  PushButton verticalBottomAlignButton;
+  
 
   public UIDesignerToolbarImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
@@ -79,6 +87,27 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
   void onRightAlignClicked(ClickEvent e) {
     if (presenter != null) {
       presenter.onRightAlignButtonClicked();
+    }
+  }
+
+  @UiHandler("verticalTopAlignButton")
+  void onVerticalTopAlignClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onVerticalTopAlignButtonClicked();
+    }
+  }
+  
+  @UiHandler("verticalCenterAlignButton")
+  void onVerticalCenterAlignClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onVerticalCenterAlignButtonClicked();
+    }
+  }
+  
+  @UiHandler("verticalBottomAlignButton")
+  void onVerticalBottomAlignClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onVerticalBottomAlignButtonClicked();
     }
   }
 
