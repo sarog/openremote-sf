@@ -22,14 +22,21 @@ package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
+import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.logging.AdministratorAlert;
 
 import flexjson.JSON;
 
@@ -47,7 +54,22 @@ public class Panel extends BusinessEntity
   private static final long serialVersionUID = 6122936524433692761L;
 
 
+
   // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Log category for panel domain objects.
+   */
+  private final static LogFacade domainLog =
+      LogFacade.getInstance(LogFacade.Category.PANEL_MODEL);
+
+  /**
+   * Specialized log category for errors serious enough that administrators/developers should
+   * be notified if they occur.
+   */
+  private final static AdministratorAlert admin =
+      AdministratorAlert.getInstance(LogFacade.Category.PANEL_ADMIN_ALERT);
+
 
   private static int defaultNameIndex = 1;
 
@@ -60,6 +82,268 @@ public class Panel extends BusinessEntity
   {
      return "panel" + defaultNameIndex;
   }
+
+
+  /**
+   * TODO :
+   *
+   *   This implementation has been moved back to the domain package hierarchy from
+   *   ResourceServiceImpl.java (where it didn't belong). This should help constraining
+   *   excessive API dependencies and API details spreading to other classes that was
+   *   completely unnecessary.
+   *
+   *   This should still not be a static class method but an instance implementation.
+   *   However, not introducing it yet at instance level due to the very fragile Java
+   *   serialization based state caching format -- to reduce potential disruptions will
+   *   leave further refactorings unless and until a more robust state serialization
+   *   is in place (e.g. XML stream) or the serialization binary format has been
+   *   sufficiently covered in test suite.
+   *
+   *   Further, the additional processing of groups and screen pairs should be pushed
+   *   down to their respective domain classes.
+   *
+   * @param panel   the panel which images are returned (including all component images)
+   *
+   * @return    a set of filenames (not including their account specific file paths in
+   *            local cache) that identify the store images on the design
+   */
+  public static Set<String> getAllImageNames(Panel panel)
+  {
+    Set<String> imageNames = new HashSet<String>();
+
+    // All images of a panel-wide tab bar items...
+
+    if (panel.getTabbar() != null)
+    {
+      imageNames.addAll(getTabbarImageNames(panel.getTabbar()));
+    }
+
+    // All images related to a custom panel definition...
+
+    if (Constants.CUSTOM_PANEL.equals(panel.getType()))
+    {
+      imageNames.addAll(getCustomPanelImages(panel));
+    }
+
+
+    List<GroupRef> groupRefs = panel.getGroupRefs();
+
+    if (groupRefs == null)
+    {
+      domainLog.warn("Panel ''{0}'' has no groups.", panel.getDisplayName());
+
+      return imageNames;
+    }
+
+
+    // Iterate through all the groups in a panel...
+
+    for (GroupRef groupRef : groupRefs)
+    {
+      Group group = groupRef.getGroup();
+
+
+      // If has a group specific tab bar definition, get all tab bar item images...
+
+      if (group.getTabbar() != null)
+      {
+        imageNames.addAll(getTabbarImageNames(group.getTabbar()));
+      }
+
+      List<ScreenPairRef> screenPairRefs = group.getScreenRefs();
+
+      if (screenPairRefs == null)
+      {
+        domainLog.debug("Panel ''{0}'' has no screens defined.", panel.getDisplayName());
+
+        continue;
+      }
+
+
+      // Iterate through all screens within a group...
+
+      for (ScreenPairRef screenPairRef : screenPairRefs)
+      {
+        ScreenPair screenPair = screenPairRef.getScreen();
+
+        if (ScreenPair.OrientationType.PORTRAIT.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getPortraitScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+            imageNames.add(source.getImageFileName());
+
+            domainLog.debug(
+                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' (PORTRAIT) " +
+                "image ''{3}'' to image collection.",
+                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
+                source.getImageFileName()
+            );
+          }
+        }
+
+        else if (ScreenPair.OrientationType.LANDSCAPE.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getLandscapeScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+            imageNames.add(source.getImageFileName());
+
+            domainLog.debug(
+                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' (LANDSCAPE) " +
+                "image ''{3}'' to image collection.",
+                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
+                source.getImageFileName()
+            );
+          }
+        }
+
+        else if (ScreenPair.OrientationType.BOTH.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getPortraitScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+            imageNames.add(source.getImageFileName());
+
+            domainLog.debug(
+                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' image ''{3}'' " +
+                "to image collection.",
+                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
+                source.getImageFileName()
+            );
+          }
+
+          sources = screenPair.getLandscapeScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+            imageNames.add(source.getImageFileName());
+
+            domainLog.debug(
+                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' image ''{3}'' " +
+                "to image collection.",
+                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
+                source.getImageFileName()
+            );
+          }
+        }
+      }
+    }
+
+    return imageNames;
+  }
+
+
+  /**
+   * TODO :
+   *
+   *   should be part of TabBar API -- see comments above why not refactored the move yet
+   */
+  private static Collection<String> getTabbarImageNames(UITabbar tabbar)
+  {
+    Collection<String> imageNames = new HashSet<String>(5);
+
+    if (tabbar == null)
+    {
+      domainLog.debug("Got null tab bar, no additional images added.");
+
+      return imageNames;
+    }
+
+    List<UITabbarItem> items = tabbar.getTabbarItems();
+
+    if (items == null)
+    {
+      domainLog.warn("TabBar.getItems() should return an empty list, not null");
+
+      return imageNames;
+    }
+
+    for (UITabbarItem item : items)
+    {
+      ImageSource image = item.getImage();
+
+      if (image != null && !image.isEmpty())
+      {
+        imageNames.add(image.getImageFileName());
+
+        domainLog.debug("Added tab bar image ''{0}'' to image collection.", image.getImageFileName());
+      }
+    }
+
+    return imageNames;
+  }
+
+
+  /**
+   * TODO :
+   *
+   *   should be part of TouchPanel API -- see comments why not refactored the move yet
+   */
+  private static Collection<String> getCustomPanelImages(Panel panel)
+  {
+    Collection<String> imageNames = new HashSet<String>(2);
+
+    if (panel == null)
+    {
+      return imageNames;
+    }
+
+    // TODO :
+    //   Wrapping this into try-catch block because the domain model looks so poorly written
+    //   with regards to uninitialized variables and potential NPE's and it's too much trouble
+    //   to guard against them all -- the domain model needs a thorough rewrite and testing.
+    
+    try
+    {
+      String vBgImage = panel.getTouchPanelDefinition().getBgImage();
+      String hBgImage = panel.getTouchPanelDefinition().getHorizontalDefinition().getBgImage();
+      String tbImage  = panel.getTouchPanelDefinition().getTabbarDefinition().getBackground()
+                             .getImageFileName();
+
+      if (vBgImage != null && !vBgImage.isEmpty())
+      {
+        imageNames.add(vBgImage);
+
+        domainLog.debug(
+            "Added custom panel (Panel = ''{0}'') vertical background image ''{1}'' " +
+            "to image collection.", panel.getDisplayName(), vBgImage
+        );
+      }
+
+      if (hBgImage != null && !hBgImage.isEmpty())
+      {
+        imageNames.add(hBgImage);
+
+        domainLog.debug(
+            "Added custom panel (Panel = ''{0}'') horizontal background image ''{1}'' " +
+            "to image collection.", panel.getDisplayName(), hBgImage
+        );
+      }
+
+      if (tbImage != null && !tbImage.isEmpty() &&
+          !TouchPanelTabbarDefinition.IPHONE_TABBAR_BACKGROUND.endsWith(tbImage))
+      {
+        imageNames.add(tbImage);
+
+        domainLog.debug(
+            "Added custom panel (Panel = ''{0}'') tab bar image ''{1}'' " +
+            "to image collection.", panel.getDisplayName(), tbImage
+        );
+      }
+    }
+
+    catch (Throwable t)
+    {
+      admin.alert("Error in Designer domain API usage : {0}", t, t.getMessage());
+    }
+
+    return imageNames;
+  }
+
 
 
   // Instance Fields ------------------------------------------------------------------------------
