@@ -50,7 +50,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
-public class UIDesignerPresenter {
+public class UIDesignerPresenter implements Presenter {
 
   private HandlerManager eventBus;
   private UIDesignerView view;
