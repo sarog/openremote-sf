@@ -23,11 +23,13 @@ import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -51,20 +53,20 @@ public class UIDesignerView extends TabItem {
    
    private PropertyPanel propertyPanel = null;
    
+   private UIDesignerToolbar toolbar;
+   
    /**
     * Instantiates a new uI designer view.
     */
    public UIDesignerView() {
       super();
-      
       setText("UI Designer");
-
       setLayout(new BorderLayout());
       profilePanel = createWest();
       createCenter();
       createEast();
    }
-
+   
    /**
     * Creates the east part of the view.
     * It includes widget and property panels.
@@ -113,7 +115,16 @@ public class UIDesignerView extends TabItem {
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setMargins(new Margins(0, 2, 0, 2));
-      add(screenPanel, centerData);
+      
+      LayoutContainer centerContainer = new LayoutContainer();
+      centerContainer.setLayout(new BorderLayout());
+      add(centerContainer, centerData);      
+      centerContainer.add(screenPanel, centerData);
+      
+      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 30);
+      northData.setMargins(new Margins(2, 2, 2, 2));
+      toolbar = new UIDesignerToolbar();
+      centerContainer.add(toolbar, northData);
    }
 
    /**
@@ -159,4 +170,9 @@ public class UIDesignerView extends TabItem {
   public PropertyPanel getPropertyPanel() {
     return propertyPanel;
   }
+
+  public UIDesignerToolbar getToolbar() {
+    return toolbar;
+  }
+  
 }
