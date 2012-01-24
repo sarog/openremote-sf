@@ -81,7 +81,7 @@ public class ScreenPanelPresenter implements Presenter {
         if (event.getTemplate() != null) {
           view.setScreenItem(new ScreenTab(event.getTemplate().getScreen()));
         } else {
-//          templateEditPanel(editTabItem);// TODO EBR : this is not done anymore, but was it really required, below call should be enough
+//          templateEditPanel.remove(editTabItem);// TODO EBR : this is not done anymore, but was it really required, below call should be enough
           view.closeCurrentScreenTab();
         }
       }
