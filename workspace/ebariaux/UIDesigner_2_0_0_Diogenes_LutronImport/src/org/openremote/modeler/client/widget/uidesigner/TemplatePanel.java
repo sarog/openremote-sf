@@ -97,18 +97,17 @@ public class TemplatePanel extends ContentPanel {
     */
    private void createMenu() {
       ToolBar toolBar = new ToolBar();
-      List<Button> menuButtons = new ArrayList<Button>();
       toolBar.add(createNewTemplateMenuItem());
 
       Button editBtn = createEditTemplateMenuItem();
       editBtn.setEnabled(false);
       
       Button deleteBtn = createDeleteBtn();
+      deleteBtn.setEnabled(false); 
       
       List<Button> editDelBtns = new ArrayList<Button>();
       editDelBtns.add(editBtn);
       editDelBtns.add(deleteBtn);
-      deleteBtn.setEnabled(false); 
       
       selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
          @Override
@@ -123,7 +122,6 @@ public class TemplatePanel extends ContentPanel {
       
       toolBar.add(editBtn);
       toolBar.add(deleteBtn);
-      menuButtons.add(deleteBtn);
       setTopComponent(toolBar);
    }
 
