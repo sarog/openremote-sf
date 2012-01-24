@@ -21,10 +21,13 @@ package org.openremote.modeler.client.presenter;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.event.TemplateSelectedEvent;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.ScreenPair;
@@ -34,6 +37,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
@@ -107,10 +111,44 @@ public class TemplatePanelPresenter implements Presenter {
       }
    });
 
-    
-    
-    
-    
+    this.view.getEditButton().addSelectionListener(new SelectionListener<ButtonEvent>() {
+      final TreePanel<BeanModel> templateTree = view.getTemplateTree();
+      public void componentSelected(ButtonEvent ce) {
+        BeanModel selectedBean = templateTree.getSelectionModel().getSelectedItem();
+        if( selectedBean == null || !(selectedBean.getBean() instanceof Template)) {
+          MessageBox.alert("Warn","A template must be selected!",null);
+          return;
+        }
+        //remember the share type information before being updated. 
+
+        final BeanModel privateTemplateTopNode = templateTree.getStore().getChild(0);
+        final BeanModel publicTemplateTopNode = templateTree.getStore().getChild(1);
+        final Template template = selectedBean.getBean();
+        final boolean shareType = template.isShared();
+
+        final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(template);
+
+        templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+          @Override
+          public void afterSubmit(SubmitEvent be) {
+            Template t = be.getData();
+            template.setContent(t.getContent());
+            template.setScreen(t.getScreen());
+            template.setKeywords(t.getKeywords());
+            template.setShared(t.isShared());
+            if (t.isShared() == shareType) {
+              templateTree.getStore().update(template.getBeanModel());
+            } else {
+              templateTree.getStore().remove(template.getBeanModel());
+              BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
+              templateTree.getStore().add(parentNode, template.getBeanModel(),false);
+            }
+            eventBus.fireEvent(new TemplateSelectedEvent(template));
+            view.setEditTabItem(new ScreenTab(template.getScreen())); // TODO : review this, eventually get rid of             
+          }
+        });
+      }
+    }); 
   }
 
   // TODO EBR : method moved from TemplatePanel was synchronized. Is this required here?
