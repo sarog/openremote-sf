@@ -365,7 +365,6 @@ public class TemplatePanel extends ContentPanel {
          unmask();
          editTabItem = new ScreenTab(templateInEditing.getScreen());
          templateEditPanel.setScreenItem(editTabItem);
-         templateInEditing.setScreen(templateInEditing.getScreen());
          TemplatePanel.this.templateInEditing = templateInEditing;
          return;
       }
@@ -398,5 +397,8 @@ public class TemplatePanel extends ContentPanel {
      super.onExpand();
    }
 
+  public SelectionServiceExt<BeanModel> getSelectionService() {
+    return selectionService;
+  }
 
 }
