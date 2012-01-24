@@ -101,9 +101,6 @@ public class GridCellContainer extends ComponentContainer {
       }
    }
    
-   public void setName(String name) {
-      screenComponent.setName(name);
-   }
    @Override
    public PropertyForm getPropertiesForm() {
      return this.screenComponent.getPropertiesForm();

@@ -75,12 +75,6 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    public String getName() {
       return "gridContainer";
    }
-
-   @Override
-   public void setName(String name) {
-      // TODO Auto-generated method stub
-      
-   }
    
    public void update() {
       UIGrid grid = gridlayoutContainer.getGrid();

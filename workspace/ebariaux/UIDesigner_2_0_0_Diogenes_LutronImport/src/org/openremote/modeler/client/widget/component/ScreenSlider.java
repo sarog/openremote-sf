@@ -84,10 +84,6 @@ public class ScreenSlider extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-   }
-
-   @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
    }
