@@ -10,6 +10,10 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 public interface TemplatePanel {
 
+  public interface Presenter {
+    void onTemplateClicked(Template template);
+  }
+  
   TreePanel<BeanModel> getTemplateTree();
   SelectionServiceExt<BeanModel> getSelectionService();
 
@@ -25,4 +29,5 @@ public interface TemplatePanel {
   El mask(String message);
   void unmask();
 
+  void setPresenter(Presenter presenter);
 }

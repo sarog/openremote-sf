@@ -44,7 +44,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class TemplatePanelPresenter implements Presenter {
+public class TemplatePanelPresenter implements Presenter, org.openremote.modeler.client.widget.uidesigner.TemplatePanel.Presenter {
 
   private HandlerManager eventBus;
   private TemplatePanel view;
@@ -53,6 +53,7 @@ public class TemplatePanelPresenter implements Presenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
+    view.setPresenter(this);
     bind();
   }
 
@@ -149,6 +150,10 @@ public class TemplatePanelPresenter implements Presenter {
         });
       }
     }); 
+  }
+  
+  public void onTemplateClicked(Template template) {
+    eventBus.fireEvent(new TemplateSelectedEvent(template));
   }
 
   // TODO EBR : method moved from TemplatePanel was synchronized. Is this required here?

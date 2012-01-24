@@ -59,6 +59,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
   
+  private Presenter presenter;
+  
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
    private LayoutContainer treeContainer;
@@ -282,13 +284,13 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
     return templateTree;
   }
 
-  public void templateClicked() {
-    /*                
-    Template template = beanModel.getBean();
-    // if (! template.equals(templatePanel.getTemplateInEditing())) {
-    templatePanel.setTemplateInEditing(template);
-    // }
-     */
-    // TODO EBR : this should fire a TemplateSelectedEvent on the event bus -> must know presenter
+  public void setPresenter(Presenter presenter) {
+    this.presenter = presenter;
+  }
+
+  public void templateClicked(Template template) {
+    if (presenter != null) {
+      presenter.onTemplateClicked(template);
+    }
   }
 }
