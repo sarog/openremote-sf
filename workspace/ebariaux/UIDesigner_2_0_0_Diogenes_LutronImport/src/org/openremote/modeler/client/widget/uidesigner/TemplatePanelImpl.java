@@ -57,7 +57,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplatePanelImpl extends ContentPanel {
+public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
+  
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
    private LayoutContainer treeContainer;
