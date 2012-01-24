@@ -192,7 +192,6 @@ public class GridLayoutContainer extends ComponentContainer {
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             cellContainer.setPosition(cellWidth * cell.getPosX() + cell.getPosX() + 1, cellHeight * cell.getPosY()
                   + cell.getPosY() + 1);
-            cellContainer.setName(cell.getUiComponent().getName());
             cellContainer.setCellSpan(cell.getColspan(), cell.getRowspan());
             add(cellContainer);
             cellContainer.fillArea(btnInArea);
