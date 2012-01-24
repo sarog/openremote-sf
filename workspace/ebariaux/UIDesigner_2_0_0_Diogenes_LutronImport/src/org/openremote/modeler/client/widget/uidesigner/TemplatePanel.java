@@ -180,9 +180,9 @@ public class TemplatePanel extends ContentPanel {
    }
 
    private Button createEditTemplateMenuItem() {
-      Button editTempalteMenuItem = new Button("Edit");
-      editTempalteMenuItem.setIcon(icon.edit());
-      editTempalteMenuItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      Button editTemplateMenuItem = new Button("Edit");
+      editTemplateMenuItem.setIcon(icon.edit());
+      editTemplateMenuItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             BeanModel selectedBean= templateTree.getSelectionModel().getSelectedItem();
             if( selectedBean == null || !(selectedBean.getBean() instanceof Template)) {
@@ -223,7 +223,7 @@ public class TemplatePanel extends ContentPanel {
 
          }
       });
-      return editTempalteMenuItem;
+      return editTemplateMenuItem;
    }
    private Button createNewTemplateMenuItem() {
       Button newTemplateMenuItem = new Button("New");
