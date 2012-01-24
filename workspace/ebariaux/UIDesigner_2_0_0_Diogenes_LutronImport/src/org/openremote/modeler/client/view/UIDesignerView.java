@@ -22,7 +22,7 @@ package org.openremote.modeler.client.view;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbarImpl;
 import org.openremote.modeler.client.widget.uidesigner.WidgetPanel;
@@ -50,7 +50,7 @@ public class UIDesignerView extends TabItem {
 
    private ProfilePanel profilePanel = null;
    
-   private TemplatePanel templatePanel = null;
+   private TemplatePanelImpl templatePanel = null;
    
    private PropertyPanel propertyPanel = null;
    
@@ -87,7 +87,7 @@ public class UIDesignerView extends TabItem {
       ContentPanel west = new ContentPanel();
       ProfilePanel result = new ProfilePanel();
 
-      templatePanel = new TemplatePanel(screenPanel);
+      templatePanel = new TemplatePanelImpl(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       west.setLayout(new AccordionLayout());
@@ -156,7 +156,7 @@ public class UIDesignerView extends TabItem {
 
    // TODO EBR : This might be temporary, check what the presenter really needs access to / how to make public
    
-  public TemplatePanel getTemplatePanel() {
+  public TemplatePanelImpl getTemplatePanel() {
     return templatePanel;
   } 
   

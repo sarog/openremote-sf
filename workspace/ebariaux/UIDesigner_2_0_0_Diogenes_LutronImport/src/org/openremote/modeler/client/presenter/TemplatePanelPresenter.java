@@ -29,7 +29,7 @@ import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
@@ -47,9 +47,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class TemplatePanelPresenter implements Presenter {
 
   private HandlerManager eventBus;
-  private TemplatePanel view;
+  private TemplatePanelImpl view;
   
-  public TemplatePanelPresenter(HandlerManager eventBus, TemplatePanel view) {
+  public TemplatePanelPresenter(HandlerManager eventBus, TemplatePanelImpl view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

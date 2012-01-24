@@ -57,7 +57,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplatePanel extends ContentPanel {
+public class TemplatePanelImpl extends ContentPanel {
    private TreePanel<BeanModel> templateTree = TreePanelBuilder.buildTemplateTree(this);
    
    private LayoutContainer treeContainer;
@@ -79,7 +79,7 @@ public class TemplatePanel extends ContentPanel {
    private Button deleteButton;
    private Button editButton;
    
-   public TemplatePanel(ScreenPanel templateEditPanel) {
+   public TemplatePanelImpl(ScreenPanel templateEditPanel) {
       this.templateEditPanel = templateEditPanel;
       selectionService = new SelectionServiceExt<BeanModel>();
       setExpanded(false);
