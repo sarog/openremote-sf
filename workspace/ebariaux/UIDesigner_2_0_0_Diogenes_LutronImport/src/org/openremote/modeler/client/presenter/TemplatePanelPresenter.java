@@ -22,17 +22,21 @@ package org.openremote.modeler.client.presenter;
 import java.util.List;
 
 import org.openremote.modeler.client.event.TemplateSelectedEvent;
+import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.proxy.TemplateProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -62,6 +66,51 @@ public class TemplatePanelPresenter implements Presenter {
         }
       }      
     });
+    
+    this.view.getDeleteButton().addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
+      final TreePanel<BeanModel> templateTree = view.getTemplateTree();
+      @Override
+      public void onDelete(ButtonEvent ce) {
+         List<BeanModel> templateBeanModels = templateTree.getSelectionModel().getSelectedItems();
+         if (templateBeanModels == null || templateBeanModels.size() == 0) {
+            MessageBox.alert("Error", "Please select a template.", null);
+            ce.cancelBubble();
+         } else {
+            for (final BeanModel templateBeanModel : templateBeanModels) {
+               Template template = templateBeanModel.getBean();
+               Long oid = template.getOid();
+               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
+                  @Override
+                  public void onSuccess(Boolean success) {
+                     if (success) {
+                       view.setTemplateInEditing(null);
+
+                        templateTree.getStore().remove(templateBeanModel);
+                        if (view.getEditTabItem() != null) {
+                          eventBus.fireEvent(new TemplateSelectedEvent(null));
+                          view.setEditTabItem(null);
+                        }
+                        Info.display("Delete Template", "Template deleted successfully.");
+                     }
+                  }
+
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     MessageBox.alert("Error", "Failed to delete template :\"" + caught.getMessage() + "\"", null);
+                     super.checkTimeout(caught);
+                  }
+
+               });
+
+            }
+         }
+      }
+   });
+
+    
+    
+    
+    
   }
 
   // TODO EBR : method moved from TemplatePanel was synchronized. Is this required here?

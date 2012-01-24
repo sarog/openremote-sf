@@ -80,6 +80,8 @@ public class TemplatePanel extends ContentPanel {
    
    private SelectionServiceExt<BeanModel> selectionService;
    
+   private Button deleteButton;
+   
    public TemplatePanel(ScreenPanel templateEditPanel) {
       this.templateEditPanel = templateEditPanel;
       selectionService = new SelectionServiceExt<BeanModel>();
@@ -102,12 +104,12 @@ public class TemplatePanel extends ContentPanel {
       Button editBtn = createEditTemplateMenuItem();
       editBtn.setEnabled(false);
       
-      Button deleteBtn = createDeleteBtn();
-      deleteBtn.setEnabled(false); 
+      deleteButton = createDeleteBtn();
+      deleteButton.setEnabled(false); 
       
       List<Button> editDelBtns = new ArrayList<Button>();
       editDelBtns.add(editBtn);
-      editDelBtns.add(deleteBtn);
+      editDelBtns.add(deleteButton);
       
       selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
          @Override
@@ -121,7 +123,7 @@ public class TemplatePanel extends ContentPanel {
       });
       
       toolBar.add(editBtn);
-      toolBar.add(deleteBtn);
+      toolBar.add(deleteButton);
       setTopComponent(toolBar);
    }
 
@@ -134,46 +136,6 @@ public class TemplatePanel extends ContentPanel {
    private Button createDeleteBtn() {
       Button deleteBtn = new Button("Delete");
       deleteBtn.setIcon(icon.delete());
-
-      deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
-         @Override
-         public void onDelete(ButtonEvent ce) {
-            List<BeanModel> templateBeanModels = templateTree.getSelectionModel().getSelectedItems();
-            if (templateBeanModels == null || templateBeanModels.size() == 0) {
-               MessageBox.alert("Error", "Please select a template.", null);
-               ce.cancelBubble();
-            } else {
-               for (final BeanModel templateBeanModel : templateBeanModels) {
-                  Template template = templateBeanModel.getBean();
-                  Long oid = template.getOid();
-                  TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
-                     @Override
-                     public void onSuccess(Boolean success) {
-                        if (success) {
-                           templateInEditing = null;
-                           templateTree.getStore().remove(templateBeanModel);
-                           if (editTabItem != null) {
-                              templateEditPanel.remove(editTabItem);
-                              templateEditPanel.closeCurrentScreenTab();
-                              editTabItem = null;
-                              templateEditPanel.layout();
-                           }
-                           Info.display("Delete Template", "Template deleted successfully.");
-                        }
-                     }
-
-                     @Override
-                     public void onFailure(Throwable caught) {
-                        MessageBox.alert("Error", "Failed to delete template :\"" + caught.getMessage() + "\"", null);
-                        super.checkTimeout(caught);
-                     }
-
-                  });
-
-               }
-            }
-         }
-      });
       return deleteBtn;
    }
 
@@ -348,6 +310,14 @@ public class TemplatePanel extends ContentPanel {
 
   public SelectionServiceExt<BeanModel> getSelectionService() {
     return selectionService;
+  }
+
+  public Button getDeleteButton() {
+    return deleteButton;
+  }
+
+  public TreePanel<BeanModel> getTemplateTree() {
+    return templateTree;
   }
 
 }
