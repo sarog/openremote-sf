@@ -24,6 +24,8 @@ import org.openremote.modeler.client.event.ScreenSelectedEvent;
 import org.openremote.modeler.client.event.ScreenSelectedEventHandler;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEventHandler;
+import org.openremote.modeler.client.event.TemplateSelectedEvent;
+import org.openremote.modeler.client.event.TemplateSelectedEventHandler;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
@@ -70,6 +72,13 @@ public class ScreenPanelPresenter implements Presenter {
             }
           }
         });
+      }
+    });
+    
+    eventBus.addHandler(TemplateSelectedEvent.TYPE, new TemplateSelectedEventHandler() {
+      @Override
+      public void onTemplateSelected(TemplateSelectedEvent event) {
+        view.setScreenItem(new ScreenTab(event.getTemplate().getScreen()));        
       }
     });
   }

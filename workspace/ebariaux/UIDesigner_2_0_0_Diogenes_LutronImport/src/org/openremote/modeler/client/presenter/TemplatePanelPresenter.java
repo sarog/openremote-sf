@@ -21,13 +21,20 @@ package org.openremote.modeler.client.presenter;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.TemplateSelectedEvent;
+import org.openremote.modeler.client.proxy.TemplateProxy;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TemplatePanelPresenter implements Presenter {
 
@@ -50,10 +57,80 @@ public class TemplatePanelPresenter implements Presenter {
           BeanModel selectModel = selection.get(0);
           if (selectModel.getBean() instanceof Template) {
             Template template = selectModel.getBean();
-            view.setTemplateInEditing(template);
+            TemplatePanelPresenter.this.setTemplateInEditing(template);
           }
         }
       }      
     });
   }
-}
+
+  // TODO EBR : method moved from TemplatePanel was synchronized. Is this required here?
+  public synchronized void setTemplateInEditing(final Template templateInEditing) {
+    if (templateInEditing != null && view.getTemplateInEditing() != null ) {
+       if (templateInEditing.getOid() == view.getTemplateInEditing().getOid()) return;
+    }
+    if (view.getTemplateInEditing() != null) {
+       // 1, save previous template.
+       view.mask("Saving previous template.....");
+       TemplateProxy.updateTemplate(view.getTemplateInEditing(), new AsyncCallback<Template>() {
+
+          @Override
+          public void onFailure(Throwable caught) {
+             view.unmask();
+             Info.display("Error", "Update template: " + view.getTemplateInEditing().getName() + " failed");
+             buildScreen(templateInEditing);
+          }
+
+          @Override
+          public void onSuccess(Template result) {
+             // 2, make sure the content for the previous template be updated. 
+             if (result.getOid() == view.getTemplateInEditing().getOid()){
+                view.getTemplateInEditing().setContent(result.getContent());
+                Info.display("Success", "Save template " + view.getTemplateInEditing().getName() + " successfully !");
+             }
+             view.mask("Building screen and downloading resources ...");
+             // 3, edit another template.
+             buildScreen(templateInEditing);
+          }
+
+          
+       });
+    } else {
+       view.mask("Building screen and downloading resources ...");
+       view.setTemplateInEditing(templateInEditing);
+       buildScreen(templateInEditing);
+    }
+ }
+ 
+ private void buildScreen(final Template templateInEditing) {
+    if (templateInEditing.getScreen() != null) {
+       view.unmask();
+       view.setEditTabItem(new ScreenTab(templateInEditing.getScreen()));
+       // TODO EBR : this instance of ScreenTab will not be equal to the one created in the event handler by the ScreenPanelPresenter
+       // This might cause a glitch in some existing code (see TemplatePanel.saveTemplateUpdates)
+       // but this should be get rid of anyway in a next iteration
+       view.setTemplateInEditing(templateInEditing);
+       eventBus.fireEvent(new TemplateSelectedEvent(templateInEditing));
+       return;
+    }
+    
+    TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<ScreenPair>() {
+
+       @Override
+       public void onFailure(Throwable caught) {
+          MessageBox.alert("Error", "Failed to preview Template: " + templateInEditing.getName(), null);
+          view.unmask();
+       }
+
+       @Override
+       public void onSuccess(ScreenPair screen) {
+          view.unmask();
+          view.setEditTabItem(new ScreenTab(screen));
+          templateInEditing.setScreen(screen);
+          view.setTemplateInEditing(templateInEditing);
+          eventBus.fireEvent(new TemplateSelectedEvent(templateInEditing));
+       }
+
+    });
+ }
+ }
