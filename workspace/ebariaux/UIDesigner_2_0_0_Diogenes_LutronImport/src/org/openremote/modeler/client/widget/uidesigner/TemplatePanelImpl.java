@@ -229,13 +229,6 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
                if (result != null && result.getOid() == templateInEditing.getOid()) {
                   templateInEditing.setContent(result.getContent());
                   Info.display("Success", "Save template " + templateInEditing.getName()+" successfully !");
-                  // stop auto-saving when the template preview tab has been closed. 
-                  
-                  // TODO EBR : this test might now actually fail because editTabItem instance in ScreenPanel is not same as here
-                  // This code should anyway be changed, should be possible to base it on template selection, not fact it's displayed in ScreenPanel 
-                  if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
-                     templateInEditing = null;
-                  }
                }
                
             }

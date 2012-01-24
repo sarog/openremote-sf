@@ -21,8 +21,11 @@ package org.openremote.modeler.client.presenter;
 
 import java.util.List;
 
+import org.openremote.modeler.client.event.ScreenSelectedEvent;
+import org.openremote.modeler.client.event.ScreenSelectedEventHandler;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.event.TemplateSelectedEvent;
+import org.openremote.modeler.client.event.TemplateSelectedEventHandler;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.TemplateProxy;
@@ -70,6 +73,24 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
           }
         }
       }      
+    });
+   
+    // Listen to template selection event just to know when no template is selected anymore
+    // If template is selected, above code is called or setTemplateInEditing method is called
+    eventBus.addHandler(TemplateSelectedEvent.TYPE, new TemplateSelectedEventHandler() {
+      @Override
+      public void onTemplateSelected(TemplateSelectedEvent event) {
+        if (event.getTemplate() == null) {
+          view.setTemplateInEditing(null);
+        }
+      }
+    });
+    // When a screen is selected, consider we're not editing any template
+    eventBus.addHandler(ScreenSelectedEvent.TYPE, new ScreenSelectedEventHandler() {
+      @Override
+      public void onScreenSelected(ScreenSelectedEvent event) {
+        view.setTemplateInEditing(null);
+      }
     });
     
     this.view.getDeleteButton().addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
