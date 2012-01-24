@@ -229,6 +229,10 @@ public class ZoneData {
          }
       }
    }
+
+   public void removeSensor(RussCmdEnum command, Sensor sensor) {
+      this.linkedSensors.remove(command);
+   }
    
    
    

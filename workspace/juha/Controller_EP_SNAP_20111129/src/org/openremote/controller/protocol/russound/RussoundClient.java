@@ -217,6 +217,13 @@ public class RussoundClient extends Thread {
       }
    }
    
+   public void removeSensor(String controller, String zone, RussCmdEnum command, Sensor sensor) {
+      String mapKey = controller+","+zone;
+      if (zonesWithSensors.get(mapKey) != null) {
+         zonesWithSensors.get(mapKey).removeSensor(command, sensor);
+      }
+   }
+   
    public void setAllOnOffPower(int power) {
       String setAllOnOffRequest = "F0 7E 00 7F 00 00 kk 05 02 02 00 00 F1 22 00 xx 00 00 00 01 00 F7";
       int[] data = hexStringToByteArray(setAllOnOffRequest.replaceAll(" ", "").toLowerCase());
@@ -386,4 +393,6 @@ public class RussoundClient extends Thread {
       data[data.length - 2] = russChecksum(data);
       sendData(data);  //request zone status
    }
+
+
 }
