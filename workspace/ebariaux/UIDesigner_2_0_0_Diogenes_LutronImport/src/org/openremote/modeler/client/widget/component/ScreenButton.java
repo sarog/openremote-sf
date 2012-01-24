@@ -84,12 +84,6 @@ public class ScreenButton extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-      uiButton.setName(name);
-      adjustTextLength();
-   }
-
-   @Override
    public String getName() {
       return uiButton.getName();
    }
@@ -124,7 +118,7 @@ public class ScreenButton extends ScreenComponent {
     * @param length
     *           the length
     */
-   private void adjustTextLength() {
+   public void adjustTextLength() {
       adjustTextLength(getWidth());
    }
 

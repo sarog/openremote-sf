@@ -80,7 +80,11 @@ public class ButtonPropertyForm extends PropertyForm {
            // TODO - EBR : Setting the name on the screen button (displayed widget) so that the setter will modify
            // the UIButton (object model) as a side effect is bad design.
            // Call here should only change model and other visual representations should update because they listen to changes on the bus.
-            screenButton.setName(name.getValue());
+//            screenButton.setName(name.getValue());
+            
+            
+            uiButton.setName(name.getValue());
+            screenButton.adjustTextLength();
          }
       });
       

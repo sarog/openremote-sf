@@ -74,11 +74,6 @@ public class ScreenSwitch extends ScreenComponent {
       return new SwitchPropertyForm(this, uiSwitch);
    }
 
-   @Override
-   public void setName(String name) {
-      center.setText(name);
-   }
-
    public void setIcon(String icon) {
       image.setUrl(icon);
       switchTable.removeStyleName("screen-btn-cont");
