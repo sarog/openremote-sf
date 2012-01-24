@@ -67,8 +67,6 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
    
    private Template templateInEditing = null;
    
-   private ScreenTab editTabItem = null;
-   
    private static final int AUTO_SAVE_INTERVAL_MS = 30000;
 
    private Timer timer;
@@ -242,14 +240,6 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
      this.templateInEditing = templateInEditing;
    }
    
-  public ScreenTab getEditTabItem() {
-    return editTabItem;
-  }
-
-  public void setEditTabItem(ScreenTab editTabItem) {
-    this.editTabItem = editTabItem;
-  }
-
   @Override
    protected void onExpand() {
       if (treeContainer == null) {
