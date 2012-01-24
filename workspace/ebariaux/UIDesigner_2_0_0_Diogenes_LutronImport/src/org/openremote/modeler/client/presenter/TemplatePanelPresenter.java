@@ -31,7 +31,6 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
@@ -109,12 +108,11 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
                   @Override
                   public void onSuccess(Boolean success) {
                      if (success) {
-                       view.setTemplateInEditing(null);
-
                         templateTree.getStore().remove(templateBeanModel);
-                        if (view.getEditTabItem() != null) {
+                        // Ensures a screen does not disappear if it was displayed in ScreenPanel
+                        if (view.getTemplateInEditing() != null) {
                           eventBus.fireEvent(new TemplateSelectedEvent(null));
-                          view.setEditTabItem(null);
+                          view.setTemplateInEditing(null);
                         }
                         Info.display("Delete Template", "Template deleted successfully.");
                      }
@@ -166,7 +164,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
               templateTree.getStore().add(parentNode, template.getBeanModel(),false);
             }
             eventBus.fireEvent(new TemplateSelectedEvent(template));
-            view.setEditTabItem(new ScreenTab(template.getScreen())); // TODO : review this, eventually get rid of             
           }
         });
       }
@@ -204,7 +201,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
        });
     } else {
        view.mask("Building screen and downloading resources ...");
-       view.setTemplateInEditing(templateInEditing);
        buildScreen(templateInEditing);
     }
  }
@@ -212,10 +208,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
  private void buildScreen(final Template templateInEditing) {
     if (templateInEditing.getScreen() != null) {
        view.unmask();
-       view.setEditTabItem(new ScreenTab(templateInEditing.getScreen()));
-       // TODO EBR : this instance of ScreenTab will not be equal to the one created in the event handler by the ScreenPanelPresenter
-       // This might cause a glitch in some existing code (see TemplatePanel.saveTemplateUpdates)
-       // but this should be get rid of anyway in a next iteration
        view.setTemplateInEditing(templateInEditing);
        eventBus.fireEvent(new TemplateSelectedEvent(templateInEditing));
        return;
@@ -232,7 +224,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
        @Override
        public void onSuccess(ScreenPair screen) {
           view.unmask();
-          view.setEditTabItem(new ScreenTab(screen));
           templateInEditing.setScreen(screen);
           view.setTemplateInEditing(templateInEditing);
           eventBus.fireEvent(new TemplateSelectedEvent(templateInEditing));

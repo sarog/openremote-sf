@@ -23,9 +23,6 @@ public interface TemplatePanel {
   Template getTemplateInEditing();
   void setTemplateInEditing(Template templateInEditing);
 
-  ScreenTab getEditTabItem();
-  void setEditTabItem(ScreenTab editTabItem);
-  
   El mask(String message);
   void unmask();
 
