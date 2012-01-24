@@ -11,7 +11,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 public interface TemplatePanel {
 
   public interface Presenter {
-    void onTemplateClicked(Template template);
+    void setTemplateInEditing(Template template);
   }
   
   TreePanel<BeanModel> getTemplateTree();

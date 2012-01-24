@@ -290,7 +290,7 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
 
   public void templateClicked(Template template) {
     if (presenter != null) {
-      presenter.onTemplateClicked(template);
+      presenter.setTemplateInEditing(template);
     }
   }
 }
