@@ -55,7 +55,7 @@ import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertList
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
@@ -564,7 +564,7 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel) {
+   public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanelImpl templatePanel) {
 
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
       privateTemplatesBean.setDisplayName("My private templates");
