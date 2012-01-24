@@ -213,6 +213,8 @@ public class TemplatePanel extends ContentPanel {
                      BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
                      templateTree.getStore().add(parentNode, template.getBeanModel(),false);
                   }
+                  
+                  Info.display("INFO", "Will select a screen tab");
                   editTabItem = new ScreenTab(template.getScreen());
                   templateEditPanel.setScreenItem(editTabItem);
                }
@@ -308,6 +310,9 @@ public class TemplatePanel extends ContentPanel {
                   templateInEditing.setContent(result.getContent());
                   Info.display("Success", "Save template " + templateInEditing.getName()+" successfully !");
                   // stop auto-saving when the template preview tab has been closed. 
+                  
+                  // TODO EBR : this test might now actually fail because editTabItem instance in ScreenPanel is not same as here
+                  // This code should anyway be changed, should be possible to base it on template selection, not fact it's displayed in ScreenPanel 
                   if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
                      templateInEditing = null;
                   }
@@ -323,73 +328,19 @@ public class TemplatePanel extends ContentPanel {
       return templateInEditing;
    }
 
-   public synchronized void  setTemplateInEditing(final Template templateInEditing) {
-      if (templateInEditing != null && this.templateInEditing != null ) {
-         if (templateInEditing.getOid() == this.templateInEditing.getOid()) return;
-      }
-      if (this.templateInEditing != null) {
-         // 1, save previous template.
-         mask("Saving previous template.....");
-         TemplateProxy.updateTemplate(this.templateInEditing, new AsyncCallback<Template>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
-               unmask();
-               Info.display("Error", "Update template: " + TemplatePanel.this.templateInEditing.getName() + " failed");
-               buildScreen(templateInEditing);
-            }
-
-            @Override
-            public void onSuccess(Template result) {
-               // 2, make sure the content for the previous template be updated. 
-               if (result.getOid() == TemplatePanel.this.templateInEditing.getOid()){
-                  TemplatePanel.this.templateInEditing.setContent(result.getContent());
-                  Info.display("Success", "Save template " + TemplatePanel.this.templateInEditing.getName() + " successfully !");
-               }
-               mask("Building screen and downloading resources ...");
-               // 3, edit another template.
-               buildScreen(templateInEditing);
-            }
-
-            
-         });
-      } else {
-         mask("Building screen and downloading resources ...");
-         this.templateInEditing = templateInEditing;
-         buildScreen(templateInEditing);
-      }
+  public void setTemplateInEditing(Template templateInEditing) {
+     this.templateInEditing = templateInEditing;
    }
    
-   private void buildScreen(final Template templateInEditing) {
-      if (templateInEditing.getScreen() != null) {
-         unmask();
-         editTabItem = new ScreenTab(templateInEditing.getScreen());
-         templateEditPanel.setScreenItem(editTabItem);
-         TemplatePanel.this.templateInEditing = templateInEditing;
-         return;
-      }
-      
-      TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<ScreenPair>() {
+  public ScreenTab getEditTabItem() {
+    return editTabItem;
+  }
 
-         @Override
-         public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "Failed to preview Template: " + templateInEditing.getName(), null);
-            unmask();
-         }
+  public void setEditTabItem(ScreenTab editTabItem) {
+    this.editTabItem = editTabItem;
+  }
 
-         @Override
-         public void onSuccess(ScreenPair screen) {
-            unmask();
-            editTabItem = new ScreenTab(screen);
-            templateEditPanel.setScreenItem(editTabItem);
-            templateInEditing.setScreen(screen);
-            TemplatePanel.this.templateInEditing = templateInEditing;
-         }
-
-      });
-   }
-   
-   @Override
+  @Override
    protected void onExpand() {
       if (treeContainer == null) {
         createTreeContainer();
