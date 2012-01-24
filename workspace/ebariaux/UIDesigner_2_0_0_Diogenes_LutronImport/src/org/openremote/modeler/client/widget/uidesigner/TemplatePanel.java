@@ -81,6 +81,7 @@ public class TemplatePanel extends ContentPanel {
    private SelectionServiceExt<BeanModel> selectionService;
    
    private Button deleteButton;
+   private Button editButton;
    
    public TemplatePanel(ScreenPanel templateEditPanel) {
       this.templateEditPanel = templateEditPanel;
@@ -101,14 +102,14 @@ public class TemplatePanel extends ContentPanel {
       ToolBar toolBar = new ToolBar();
       toolBar.add(createNewTemplateMenuItem());
 
-      Button editBtn = createEditTemplateMenuItem();
-      editBtn.setEnabled(false);
+      editButton = createEditTemplateMenuItem();
+      editButton.setEnabled(false);
       
       deleteButton = createDeleteBtn();
       deleteButton.setEnabled(false); 
       
       List<Button> editDelBtns = new ArrayList<Button>();
-      editDelBtns.add(editBtn);
+      editDelBtns.add(editButton);
       editDelBtns.add(deleteButton);
       
       selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
@@ -122,7 +123,7 @@ public class TemplatePanel extends ContentPanel {
          }
       });
       
-      toolBar.add(editBtn);
+      toolBar.add(editButton);
       toolBar.add(deleteButton);
       setTopComponent(toolBar);
    }
@@ -142,49 +143,9 @@ public class TemplatePanel extends ContentPanel {
    private Button createEditTemplateMenuItem() {
       Button editTemplateMenuItem = new Button("Edit");
       editTemplateMenuItem.setIcon(icon.edit());
-      editTemplateMenuItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            BeanModel selectedBean= templateTree.getSelectionModel().getSelectedItem();
-            if( selectedBean == null || !(selectedBean.getBean() instanceof Template)) {
-               MessageBox.alert("Warn","A template must be selected!",null);
-               return;
-            }
-            //remember the share type information before being updated. 
-            
-            final BeanModel privateTemplateTopNode = templateTree.getStore().getChild(0);
-            final BeanModel publicTemplateTopNode = templateTree.getStore().getChild(1);
-            final Template template = selectedBean.getBean();
-            final boolean shareType = template.isShared();
-            
-            final TemplateCreateWindow templateCreateWindow = new TemplateCreateWindow(template);
-            
-            templateCreateWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  Template t = be.getData();
-                  template.setContent(t.getContent());
-                  template.setScreen(t.getScreen());
-                  template.setKeywords(t.getKeywords());
-                  template.setShared(t.isShared());
-                  if (t.isShared() == shareType) {
-                     templateTree.getStore().update(template.getBeanModel());
-                  } else {
-                     templateTree.getStore().remove(template.getBeanModel());
-                     BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
-                     templateTree.getStore().add(parentNode, template.getBeanModel(),false);
-                  }
-                  
-                  Info.display("INFO", "Will select a screen tab");
-                  editTabItem = new ScreenTab(template.getScreen());
-                  templateEditPanel.setScreenItem(editTabItem);
-               }
-
-            });
-
-         }
-      });
       return editTemplateMenuItem;
    }
+   
    private Button createNewTemplateMenuItem() {
       Button newTemplateMenuItem = new Button("New");
       newTemplateMenuItem.setIcon(icon.add());
@@ -314,6 +275,10 @@ public class TemplatePanel extends ContentPanel {
 
   public Button getDeleteButton() {
     return deleteButton;
+  }
+
+  public Button getEditButton() {
+    return editButton;
   }
 
   public TreePanel<BeanModel> getTemplateTree() {
