@@ -19,8 +19,14 @@
 */
 package org.openremote.modeler.client.presenter;
 
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import java.util.List;
 
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.domain.Template;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class TemplatePanelPresenter implements Presenter {
@@ -32,6 +38,22 @@ public class TemplatePanelPresenter implements Presenter {
     super();
     this.eventBus = eventBus;
     this.view = view;
+    bind();
   }
 
+  private void bind() {
+    this.view.getSelectionService().addListener(new SelectionChangedListener<BeanModel>() {
+      @Override
+      public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+        List<BeanModel> selection = se.getSelection();
+        if (selection.size() == 1) {
+          BeanModel selectModel = selection.get(0);
+          if (selectModel.getBean() instanceof Template) {
+            Template template = selectModel.getBean();
+            view.setTemplateInEditing(template);
+          }
+        }
+      }      
+    });
+  }
 }
