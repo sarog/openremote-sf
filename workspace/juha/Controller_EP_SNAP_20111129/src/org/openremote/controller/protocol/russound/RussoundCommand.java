@@ -150,7 +150,7 @@ public class RussoundCommand implements EventListener, ExecutableCommand {
 
    @Override
    public void stop(Sensor sensor) {
-      //TODO
+      commClient.removeSensor(controller, zone, command, sensor);
    }
 
 }
