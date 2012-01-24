@@ -151,10 +151,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
       }
     }); 
   }
-  
-  public void onTemplateClicked(Template template) {
-    eventBus.fireEvent(new TemplateSelectedEvent(template));
-  }
 
   // TODO EBR : method moved from TemplatePanel was synchronized. Is this required here?
   public synchronized void setTemplateInEditing(final Template templateInEditing) {
@@ -184,8 +180,6 @@ public class TemplatePanelPresenter implements Presenter, org.openremote.modeler
              // 3, edit another template.
              buildScreen(templateInEditing);
           }
-
-          
        });
     } else {
        view.mask("Building screen and downloading resources ...");
