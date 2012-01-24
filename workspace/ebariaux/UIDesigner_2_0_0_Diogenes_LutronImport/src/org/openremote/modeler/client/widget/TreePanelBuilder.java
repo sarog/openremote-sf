@@ -622,7 +622,23 @@ public class TreePanelBuilder {
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
       //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
-      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore);
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
+        @Override
+        public void onBrowserEvent(Event event) {
+           super.onBrowserEvent(event);
+           if (event.getTypeInt() == Event.ONCLICK) {
+              BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+              if (beanModel != null && beanModel.getBean() instanceof Template) {
+                // When template is already selected in tree, user then goes on to select a screen,
+                // comes back to templates and clicks on a template to display it
+                // If template still selected, no selection event -> must "simulate" one
+                // This call will eventually fire on event on the event bus
+                templatePanel.templateClicked();
+              }
+           }
+        }
+     };
+
 
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
