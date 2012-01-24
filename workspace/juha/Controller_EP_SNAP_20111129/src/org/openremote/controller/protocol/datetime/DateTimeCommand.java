@@ -59,6 +59,9 @@ public class DateTimeCommand implements EventListener, Runnable {
    
    private Thread pollingThread;
    private Sensor sensor;
+   
+   /** Boolean to indicate if polling thread should run */
+   boolean doPoll = false;
 
 
    // Implements StatusCommand ---------------------------------------------------------------------
@@ -157,15 +160,14 @@ public class DateTimeCommand implements EventListener, Runnable {
 
    @Override
    public void stop(Sensor sensor) {
-      pollingThread.stop();
-      
+      this.doPoll = false;
    }
 
    @Override
    public void run() {
       logger.debug("Sensor thread started for sensor: " + sensor);
-      boolean doPoll = true;
-      while (doPoll) {
+      this.doPoll = true;
+      while (this.doPoll) {
          String readValue = this.calculateData();
          if (!"N/A".equals(readValue)) {
             sensor.update(readValue);
@@ -173,12 +175,11 @@ public class DateTimeCommand implements EventListener, Runnable {
          try {
             Thread.sleep(1000); // We recalculate every second
          } catch (InterruptedException e) {
-            doPoll = false;
+            this.doPoll = false;
             pollingThread.interrupt();
          }
       }
       logger.debug("*** Out of run method: " + sensor);
-
    }
 
    public TimeZone getTimezone() {
