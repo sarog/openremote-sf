@@ -87,7 +87,7 @@ public class UIDesignerView extends TabItem {
       ContentPanel west = new ContentPanel();
       ProfilePanel result = new ProfilePanel();
 
-      templatePanel = new TemplatePanelImpl(screenPanel);
+      templatePanel = new TemplatePanelImpl();
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       west.setLayout(new AccordionLayout());

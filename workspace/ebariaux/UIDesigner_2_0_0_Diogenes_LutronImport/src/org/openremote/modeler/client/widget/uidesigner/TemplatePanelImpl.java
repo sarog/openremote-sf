@@ -65,8 +65,6 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
    
    private LayoutContainer treeContainer;
    
-   private ScreenPanel templateEditPanel = null;
-   
    private Template templateInEditing = null;
    
    private ScreenTab editTabItem = null;
@@ -82,8 +80,7 @@ public class TemplatePanelImpl extends ContentPanel implements TemplatePanel {
    private Button deleteButton;
    private Button editButton;
    
-   public TemplatePanelImpl(ScreenPanel templateEditPanel) {
-      this.templateEditPanel = templateEditPanel;
+   public TemplatePanelImpl() {
       selectionService = new SelectionServiceExt<BeanModel>();
       setExpanded(false);
       setHeading("Template");
