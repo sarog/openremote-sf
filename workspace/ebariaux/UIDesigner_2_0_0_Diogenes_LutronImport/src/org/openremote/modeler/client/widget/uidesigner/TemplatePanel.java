@@ -26,15 +26,12 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.TemplateProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.client.widget.buildingmodeler.TemplateCreateWindow;
-import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -44,7 +41,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
@@ -285,4 +281,13 @@ public class TemplatePanel extends ContentPanel {
     return templateTree;
   }
 
+  public void templateClicked() {
+    /*                
+    Template template = beanModel.getBean();
+    // if (! template.equals(templatePanel.getTemplateInEditing())) {
+    templatePanel.setTemplateInEditing(template);
+    // }
+     */
+    // TODO EBR : this should fire a TemplateSelectedEvent on the event bus -> must know presenter
+  }
 }
