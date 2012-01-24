@@ -633,7 +633,7 @@ public class TreePanelBuilder {
                 // comes back to templates and clicks on a template to display it
                 // If template still selected, no selection event -> must "simulate" one
                 // This call will eventually fire on event on the event bus
-                templatePanel.templateClicked();
+                templatePanel.templateClicked((Template)beanModel.getBean());
               }
            }
         }
