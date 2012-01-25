@@ -30,7 +30,7 @@ import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
-import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanelImpl;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
@@ -43,9 +43,9 @@ import com.google.gwt.event.shared.HandlerManager;
 public class ScreenPanelPresenter implements Presenter {
 
   private HandlerManager eventBus;
-  private ScreenPanel view;
+  private ScreenPanelImpl view;
   
-  public ScreenPanelPresenter(HandlerManager eventBus, ScreenPanel view) {
+  public ScreenPanelPresenter(HandlerManager eventBus, ScreenPanelImpl view) {
     super();
     this.eventBus = eventBus;
     this.view = view;
