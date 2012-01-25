@@ -44,7 +44,6 @@ import org.openremote.modeler.domain.component.UIGrid;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
