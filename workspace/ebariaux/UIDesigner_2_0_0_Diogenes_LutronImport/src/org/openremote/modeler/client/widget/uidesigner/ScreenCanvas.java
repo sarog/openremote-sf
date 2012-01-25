@@ -898,10 +898,10 @@ public class ScreenCanvas extends ComponentContainer {
          // Size of grid takes into account size of some handle, need to take it into account here also
          // TODO EBR : fix this !!! this is ugly
          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-         grid.setLeft(grid.getLeft() + left - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-         grid.setTop(grid.getTop() + top - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+         grid.setLeft(grid.getLeft() + left);
+         grid.setTop(grid.getTop() + top);
          
-         cc.setPosition(grid.getLeft(), grid.getTop());
+         cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
          
          // TODO EBR : position of grid in property form fields is not properly updated
          // should have proper notification when model is changed so that properties get updated
