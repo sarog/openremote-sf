@@ -25,9 +25,9 @@ import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
@@ -36,7 +36,8 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 public class PropertyPanel extends ContentPanel {
 
    private ComponentContainer currentLayoutContainer;
-   private FormPanel currentPropertyForm;
+   private PropertyForm currentPropertyForm;
+   
    public PropertyPanel() {
       setBorders(false);
       setFooter(false);
