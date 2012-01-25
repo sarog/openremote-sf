@@ -150,27 +150,14 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
          absolute.setLeft(absolute.getLeft() + left);
          absolute.setTop(absolute.getTop() + top);
-         cc.setPosition(absolute.getLeft(), absolute.getTop());
-
-         // TODO - EBR : If only model is updated, this is not reflected anywhere
-         // Updating view object directly makes it work but is tight coupling
-         // -> implement a correct model / view decoupling and bus communication first
-         // Issue is we don't have access to event bus from here
-         // -> code to post event should not be in view, view should communicate with a presenter through interface
+         eventBus.fireEvent(new UIElementEditedEvent(absolute));
        } else if (cc instanceof GridLayoutContainerHandle) {        
          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
          grid.setLeft(grid.getLeft() + left);
          grid.setTop(grid.getTop() + top);
-         
-         // Container position has handle, need to take into account when re-positioning
-         cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-         
-         // TODO EBR : position of grid in property form fields is not properly updated
-         // should have proper notification when model is changed so that properties get updated
-       }
-          
+         eventBus.fireEvent(new UIElementEditedEvent(grid));
+       }          
      }
   }
-
   
 }
