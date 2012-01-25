@@ -74,7 +74,7 @@ public class ScreenPropertyEditable implements PropertyEditable {
    }
 
    public void updateScreen() {
-     eventBus.fireEvent(new UIElementEditedEvent(screenPairRef.getBeanModel()));     
+     eventBus.fireEvent(new UIElementEditedEvent(screenPairRef));     
      BeanModelDataBase.screenTable.update(screen.getBeanModel());
    }
 

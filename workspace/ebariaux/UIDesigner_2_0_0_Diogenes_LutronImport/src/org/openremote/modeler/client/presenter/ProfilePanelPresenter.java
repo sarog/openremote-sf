@@ -42,6 +42,7 @@ import org.openremote.modeler.client.widget.uidesigner.GroupEditWindow;
 import org.openremote.modeler.client.widget.uidesigner.PanelWindow;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -120,9 +121,9 @@ public class ProfilePanelPresenter implements Presenter {
     eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
       @Override
       public void onElementEdited(UIElementEditedEvent event) {
-        Object bean = event.getElement().getBean();
+        BusinessEntity bean = event.getElement();
         if (bean instanceof Panel || bean instanceof GroupRef || bean instanceof ScreenPairRef) {
-          panelTree.getStore().update(event.getElement());
+          panelTree.getStore().update(bean.getBeanModel());
         }
       }
     });

@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.event;
 
+import org.openremote.modeler.domain.BusinessEntity;
+
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -26,14 +28,14 @@ public class UIElementEditedEvent extends GwtEvent<UIElementEditedEventHandler> 
 
   public static Type<UIElementEditedEventHandler> TYPE = new Type<UIElementEditedEventHandler>();
 
-  private final BeanModel element;
+  private final BusinessEntity element;
   
-  public UIElementEditedEvent(BeanModel element) {
+  public UIElementEditedEvent(BusinessEntity element) {
     super();
     this.element = element;
   }
   
-  public BeanModel getElement() {
+  public BusinessEntity getElement() {
     return element;
   }
 

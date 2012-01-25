@@ -242,12 +242,15 @@ public class ButtonPropertyForm extends PropertyForm {
       add(navigateSet);
       
    }
+
    /**
     * @param screenButton
     * @param imageSource
     * @return
     */
    private IconPreviewWidget createIconPreviewWidget(final ScreenButton screenButton, final ImageSource imageSource) {
+     // TODO EBR : UIButton should be passed instead of ScreenButton, but UIButton does not have width/height
+     // The Absolute it is part of has or it can compute it via Cell/Grid
       IconPreviewWidget previewWidget = new IconPreviewWidget(screenButton.getWidth(), screenButton.getHeight());
       previewWidget.setText(screenButton.getName());
       if (imageSource != null) {
