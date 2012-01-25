@@ -345,5 +345,107 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
       }
     }
   }
+
+  @Override
+  public void onSameSizeButtonClicked() {
+    int referenceWidth = 0, referenceHeight = 0;
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+      if (firstComponent instanceof AbsoluteLayoutContainer) {
+        Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute();
+        referenceWidth = absolute.getWidth();
+        referenceHeight = absolute.getHeight();
+      } else if (firstComponent instanceof GridLayoutContainerHandle) {
+        UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
+        referenceWidth = grid.getWidth();
+        referenceHeight = grid.getHeight();
+      }
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setWidth(referenceWidth);
+          absolute.setHeight(referenceHeight);
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setWidth(referenceWidth);
+          grid.setHeight(referenceHeight);
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
+        }
+      }
+    }
+  }
+
+  @Override
+  public void onHorizontalSpreadButtonClicked() {
+    
+    // TODO Implement
+
+    
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      int leftBorder = Integer.MAX_VALUE, rightBorder = 0;
+      int numberOfElements = 0;
+
+      // On first iteration, search for left and right margin of the area we need to spread over
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          if (absolute.getLeft() < leftBorder) {
+            leftBorder = absolute.getLeft();
+          }
+          if (absolute.getLeft() + absolute.getWidth() > rightBorder) {
+            rightBorder = absolute.getLeft() + absolute.getWidth();
+          }
+          numberOfElements++;
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          if (grid.getLeft() < leftBorder) {
+            leftBorder = grid.getLeft();
+          }
+          if (grid.getLeft() + grid.getWidth() > rightBorder) {
+            rightBorder = grid.getLeft() + grid.getWidth();
+          }
+          numberOfElements++;
+        }
+      }
+/*
+      
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setLeft(leftPosition);
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setLeft(leftPosition);
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
+        }
+      }
+      */
+    }
+    
+  }
+
+  @Override
+  public void onVerticalSpreadButtonClicked() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onHorizontalCenterButtonClicked() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onVerticalCenterButtonClicked() {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  
+  
+  
   
 }

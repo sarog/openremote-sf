@@ -859,11 +859,15 @@ public class ScreenCanvas extends ComponentContainer {
       
       Absolute absolute = ((Absolute)element); 
       absolute.getBelongsTo().setPosition(absolute.getLeft(), absolute.getTop());
+      absolute.getBelongsTo().setSize(absolute.getWidth(), absolute.getHeight());
     } else if (element instanceof UIGrid) {
       UIGrid grid = ((UIGrid)element);
       GridLayoutContainerHandle screenGrid = modelToScreenComponentsMapping.get(grid);
       // Container position has handle, need to take into account when re-positioning
       screenGrid.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+      
+      // TODO : should I add DEFAULT_HANDLE sizes -> seems not but anyway, it's resizing the container, not the grid itself
+      screenGrid.setSize(grid.getWidth() + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getHeight() + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
     }    
   }
 
