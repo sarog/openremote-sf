@@ -57,7 +57,7 @@ public class PropertyPanel extends ContentPanel {
    /**
     * Update the panel's content follow with different component.
     */
-   private void update(List<ComponentContainer> components) {
+   public void update(List<ComponentContainer> components) {
       if (components.isEmpty()) {
          removePropertiesForm();
          setHeading("Properties");
