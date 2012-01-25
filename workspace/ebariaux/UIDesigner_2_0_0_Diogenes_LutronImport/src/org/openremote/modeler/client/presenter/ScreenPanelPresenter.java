@@ -26,6 +26,8 @@ import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEventHandler;
 import org.openremote.modeler.client.event.TemplateSelectedEvent;
 import org.openremote.modeler.client.event.TemplateSelectedEventHandler;
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
@@ -84,6 +86,13 @@ public class ScreenPanelPresenter implements Presenter {
 //          templateEditPanel.remove(editTabItem);// TODO EBR : this is not done anymore, but was it really required, below call should be enough
           view.closeCurrentScreenTab();
         }
+      }
+    });
+    
+    eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
+      @Override
+      public void onElementEdited(UIElementEditedEvent event) {
+        view.onUIElementEdited(event.getElement());
       }
     });
   }
