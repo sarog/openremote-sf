@@ -895,12 +895,11 @@ public class ScreenCanvas extends ComponentContainer {
          // Issue is we don't have access to event bus from here
          // -> code to post event should not be in view, view should communicate with a presenter through interface
        } else if (cc instanceof GridLayoutContainerHandle) {        
-         // Size of grid takes into account size of some handle, need to take it into account here also
-         // TODO EBR : fix this !!! this is ugly
          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
          grid.setLeft(grid.getLeft() + left);
          grid.setTop(grid.getTop() + top);
          
+         // Container position has handle, need to take into account when re-positioning
          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
          
          // TODO EBR : position of grid in property form fields is not properly updated
