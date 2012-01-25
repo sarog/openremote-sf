@@ -26,10 +26,8 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.ScreenPair;
-import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
