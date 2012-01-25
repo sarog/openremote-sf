@@ -220,10 +220,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
         } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(leftPosition);
+
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -255,12 +255,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // -> implement a correct model / view decoupling and bus communication first
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
-        } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
+        } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(middlePosition - (grid.getWidth() / 2));
           
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -292,12 +291,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // -> implement a correct model / view decoupling and bus communication first
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
-        } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
+        } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(rightPosition - grid.getWidth());
           
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -327,11 +325,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // -> implement a correct model / view decoupling and bus communication first
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
-        } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
+        } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(topPosition);
+
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -364,10 +362,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
         } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(middlePosition - (grid.getHeight() / 2));
+
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -400,10 +398,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Issue is we don't have access to event bus from here
           // -> code to post event should not be in view, view should communicate with a presenter through interface
         } else if (cc instanceof GridLayoutContainerHandle) {        
-          // Size of grid takes into account size of some handle, need to take it into account here also
-          // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(bottomPosition - grid.getHeight());
+
+          // Container position has handle, need to take into account when re-positioning
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
