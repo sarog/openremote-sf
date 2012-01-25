@@ -68,7 +68,7 @@ public class PanelPropertyEditable implements PropertyEditable {
    }
 
    private void updatePanel() {
-     eventBus.fireEvent(new UIElementEditedEvent(panel.getBeanModel()));     
+     eventBus.fireEvent(new UIElementEditedEvent(panel));     
       BeanModelDataBase.panelTable.update(panel.getBeanModel());
    }
 

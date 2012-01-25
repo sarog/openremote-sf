@@ -74,7 +74,7 @@ public class GroupPropertyEditable implements PropertyEditable {
    }
 
    private void updateGroup() {
-     eventBus.fireEvent(new UIElementEditedEvent(groupRef.getBeanModel()));     
+     eventBus.fireEvent(new UIElementEditedEvent(groupRef));     
       BeanModelDataBase.groupTable.update(group.getBeanModel());
    }
 
