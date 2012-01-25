@@ -20,6 +20,8 @@
 package org.openremote.modeler.client.presenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +41,9 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.PositionableAndSizable;
 import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -378,13 +382,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onHorizontalSpreadButtonClicked() {
-    
-    // TODO Implement
-
-    
     if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      int leftBorder = Integer.MAX_VALUE, rightBorder = 0;
-      int numberOfElements = 0;
+      PositionableAndSizable leftMost = null, rightMost = null;
+      int leftBorder = Integer.MAX_VALUE, rightBorder = 0, totalWidth = 0;
+      List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
 
       // On first iteration, search for left and right margin of the area we need to spread over
       for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
@@ -392,38 +393,64 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           if (absolute.getLeft() < leftBorder) {
             leftBorder = absolute.getLeft();
+            leftMost = absolute;
           }
           if (absolute.getLeft() + absolute.getWidth() > rightBorder) {
             rightBorder = absolute.getLeft() + absolute.getWidth();
+            rightMost = absolute;
           }
-          numberOfElements++;
+          totalWidth += absolute.getWidth();
+          elementsToProcess.add(absolute);
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           if (grid.getLeft() < leftBorder) {
             leftBorder = grid.getLeft();
+            leftMost = grid;
           }
           if (grid.getLeft() + grid.getWidth() > rightBorder) {
             rightBorder = grid.getLeft() + grid.getWidth();
+            rightMost = grid;
           }
-          numberOfElements++;
+          totalWidth += grid.getWidth();
+          elementsToProcess.add(grid);
         }
       }
-/*
+
+      // Don't move the border elements
+      elementsToProcess.remove(leftMost);
+      elementsToProcess.remove(rightMost);
       
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-        if (cc instanceof AbsoluteLayoutContainer) {
-          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-          absolute.setLeft(leftPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
-        } else if (cc instanceof GridLayoutContainerHandle) {        
-          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(leftPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+      // Sort elements from left to right position
+      Collections.sort(elementsToProcess, new Comparator<PositionableAndSizable>() {
+        @Override
+        public int compare(PositionableAndSizable o1, PositionableAndSizable o2) {
+          return o1.getLeft() - o2.getLeft();
+        }        
+      });
+      
+      if (totalWidth < rightBorder - leftBorder) {
+        // There is enough space to fit all elements, use constant spacing between elements
+
+        float spacing = (float)(rightBorder - leftBorder - totalWidth) / (elementsToProcess.size() + 1);
+        float currentLeftPosition = leftMost.getLeft() + leftMost.getWidth() + spacing;
+        for (PositionableAndSizable pas : elementsToProcess) {
+          pas.setLeft((int)currentLeftPosition);
+          currentLeftPosition += pas.getWidth() + spacing;
+          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+        }
+      } else {
+        // Fallback to other algorithm, distribute all elements between left and right most one on their center axis 
+
+        // Spacing between the center axis of all elements to be moved
+        int centerSpacing = (rightBorder - leftBorder) / (elementsToProcess.size() + 1);
+        int index = 1;
+        for (PositionableAndSizable pas : elementsToProcess) {
+          pas.setLeft(leftBorder + (index * centerSpacing) - (pas.getWidth() / 2));
+          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+          index++;
         }
       }
-      */
-    }
-    
+    }    
   }
 
   @Override
@@ -443,9 +470,5 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
     // TODO Auto-generated method stub
     
   }
-  
-  
-  
-  
   
 }
