@@ -223,9 +223,9 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(leftPosition - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          grid.setLeft(leftPosition);
+          grid.setTop(grid.getTop());
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
@@ -260,10 +260,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(middlePosition - (grid.getWidth() / 2) - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          grid.setLeft(middlePosition - (grid.getWidth() / 2));
+          grid.setTop(grid.getTop());
           
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
@@ -298,10 +298,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(rightPosition - grid.getWidth() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          grid.setLeft(rightPosition - grid.getWidth());
+          grid.setTop(grid.getTop());
           
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
@@ -334,9 +334,9 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(topPosition - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          grid.setLeft(grid.getLeft());
+          grid.setTop(topPosition);
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
@@ -371,9 +371,9 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(middlePosition - (grid.getHeight() / 2) - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          grid.setLeft(grid.getLeft());
+          grid.setTop(middlePosition - (grid.getHeight() / 2));
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
@@ -408,9 +408,9 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH);
-          grid.setTop(bottomPosition - grid.getHeight() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          cc.setPosition(grid.getLeft(), grid.getTop());
+          grid.setLeft(grid.getLeft());
+          grid.setTop(bottomPosition - grid.getHeight());
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
           // should have proper notification when model is changed so that properties get updated
