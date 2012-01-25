@@ -40,5 +40,15 @@
       <g:upFace image='{resources.verticalBottomAlignIcon}' />
       <g:downFace image='{resources.verticalBottomAlignIcon}' />
     </g:PushButton>
+    <g:PushButton ui:field="sameSizeButton" width="62px"
+      addStyleNames='{style.toolbarButtons}'>Same size</g:PushButton>
+    <g:PushButton ui:field="horizontalSpreadButton" width="62px"
+      addStyleNames='{style.toolbarButtons}'>Spread H</g:PushButton>
+    <g:PushButton ui:field="verticalSpreadButton" width="62px"
+      addStyleNames='{style.toolbarButtons}'>Spread V</g:PushButton>
+    <g:PushButton ui:field="horizontalCenterButton" width="62px"
+      addStyleNames='{style.toolbarButtons}'>Center H</g:PushButton>
+    <g:PushButton ui:field="verticalCenterButton" width="62px"
+      addStyleNames='{style.toolbarButtons}'>Center V</g:PushButton>
 	</g:FlowPanel>
 </ui:UiBinder> 
