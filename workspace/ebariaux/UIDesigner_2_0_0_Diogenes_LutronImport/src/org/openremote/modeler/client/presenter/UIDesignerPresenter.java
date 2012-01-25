@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -212,22 +213,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(leftPosition);
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(leftPosition);
-
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -248,22 +238,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(middlePosition - absolute.getWidth() / 2);
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(middlePosition - (grid.getWidth() / 2));
-          
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -284,22 +263,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(rightPosition - absolute.getWidth());
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(rightPosition - grid.getWidth());
-          
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -318,22 +286,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(topPosition);
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(topPosition);
-
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -354,22 +311,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(middlePosition - (absolute.getHeight() / 2));
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(middlePosition - (grid.getHeight() / 2));
-
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -390,22 +336,11 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(bottomPosition - absolute.getHeight());
-          cc.setPosition(absolute.getLeft(), absolute.getTop());
-  
-          // TODO - EBR : If only model is updated, this is not reflected anywhere
-          // Updating view object directly makes it work but is tight coupling
-          // -> implement a correct model / view decoupling and bus communication first
-          // Issue is we don't have access to event bus from here
-          // -> code to post event should not be in view, view should communicate with a presenter through interface
+          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(bottomPosition - grid.getHeight());
-
-          // Container position has handle, need to take into account when re-positioning
-          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-          
-          // TODO EBR : position of grid in property form fields is not properly updated
-          // should have proper notification when model is changed so that properties get updated
+          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
@@ -186,4 +187,9 @@ public class ScreenTabItem extends TabItem {
          }
       }
    }
+   
+   public void onUIElementEdited(BusinessEntity element) {
+     screenCanvas.onUIElementEdited(element);
+   }
+
 }

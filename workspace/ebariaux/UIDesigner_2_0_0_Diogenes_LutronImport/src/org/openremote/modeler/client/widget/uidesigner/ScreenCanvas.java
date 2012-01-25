@@ -16,7 +16,9 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
@@ -34,6 +36,7 @@ import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Background.RelativeType;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
@@ -57,7 +60,6 @@ import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
@@ -83,6 +85,12 @@ public class ScreenCanvas extends ComponentContainer {
    
    private boolean shiftKeyDown = false;
    
+   /*
+    * We're keeping a mapping between the domain object and the object representing it on the screen.
+    * Note that for Absolute, the Absolute instance keeps a pointer to its visual object itself.
+    * Because storage uses serialization, we can't add this field for UIGrid without breaking backwards compatibility with existing stored configuration.
+    */
+   private Map<UIGrid, GridLayoutContainerHandle> modelToScreenComponentsMapping = new HashMap<UIGrid, GridLayoutContainerHandle>();
 
    /**
     * Instantiates a new screen canvas.
@@ -710,7 +718,7 @@ public class ScreenCanvas extends ComponentContainer {
            moveWidgetSelection(0, (shiftKeyDown?10:1));
          }
       }.bind(gridContainer);
-
+      modelToScreenComponentsMapping.put(grid, gridContainer);
       return gridContainer;
    }
 
@@ -908,4 +916,20 @@ public class ScreenCanvas extends ComponentContainer {
           
      }
   }
+  
+  public void onUIElementEdited(BusinessEntity element) {    
+    if (element instanceof Absolute) {
+      
+      // TODO: have methods on all elements that can update based on their model bean
+      
+      Absolute absolute = ((Absolute)element); 
+      absolute.getBelongsTo().setPosition(absolute.getLeft(), absolute.getTop());
+    } else if (element instanceof UIGrid) {
+      UIGrid grid = ((UIGrid)element);
+      GridLayoutContainerHandle screenGrid = modelToScreenComponentsMapping.get(grid);
+      // Container position has handle, need to take into account when re-positioning
+      screenGrid.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+    }    
+  }
+
 }

@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.ScreenPair;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -199,4 +200,9 @@ public class ScreenPanel extends LayoutContainer {
 //      this.removeAll();
       this.screenItem = null;
    }
+   
+   public void onUIElementEdited(BusinessEntity element) {
+     screenItem.onUIElementEdited(element);
+   }
+
 }
