@@ -6,11 +6,18 @@ public interface ScreenPanel {
   
   public interface Presenter {
     
+    void onRightKeyPressed();
+    void onLeftKeyPressed();
+    void onUpKeyPressed();
+    void onDownKeyPressed();
+    
   }
 
   ScreenTab getScreenItem();
   void setScreenItem(ScreenTab screenItem);
   void closeCurrentScreenTab();
+  boolean isShiftKeyDown();
+  
   void onUIElementEdited(BusinessEntity element);
 
   void setPresenter(Presenter presenter);
