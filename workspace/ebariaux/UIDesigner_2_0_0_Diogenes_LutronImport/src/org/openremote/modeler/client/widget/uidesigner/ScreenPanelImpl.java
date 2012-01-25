@@ -46,7 +46,7 @@ import com.google.gwt.user.client.Event;
 /**
  * The panel stores the screenTab. It can change the screenTab according to the select screenPair changed.
  */
-public class ScreenPanelImpl extends LayoutContainer {
+public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
 
    /** The change listener map. */
    private Map<ScreenTab, ChangeListener> changeListenerMap = null;
@@ -55,6 +55,8 @@ public class ScreenPanelImpl extends LayoutContainer {
    private ScreenTab screenItem = null;
    
    private boolean shiftKeyDown = false;
+   
+   private Presenter presenter;
    
    /**
     * Instantiates a new screen panel.
@@ -277,5 +279,9 @@ public class ScreenPanelImpl extends LayoutContainer {
            
       }
    }
+
+  public void setPresenter(Presenter presenter) {
+    this.presenter = presenter;
+  }
    
 }
