@@ -26,17 +26,22 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.ContainerEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.google.gwt.user.client.Event;
 
 /**
  * The panel stores the screenTab. It can change the screenTab according to the select screenPair changed.
@@ -49,6 +54,8 @@ public class ScreenPanel extends LayoutContainer {
    /** The screen item. */
    private ScreenTab screenItem = null;
    
+   private boolean shiftKeyDown = false;
+   
    /**
     * Instantiates a new screen panel.
     */
@@ -56,8 +63,44 @@ public class ScreenPanel extends LayoutContainer {
       setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
       addListeners();
+      
+      new KeyNav<ComponentEvent>() {
+        
+        // Use arrow keys for moving selection
+        public void onRight(ComponentEvent ce) {
+          moveWidgetSelection((shiftKeyDown?10:1), 0);
+        }
+        public void onLeft(ComponentEvent ce) {
+          moveWidgetSelection(-(shiftKeyDown?10:1), 0);
+        }
+        public void onUp(ComponentEvent ce) {
+          moveWidgetSelection(0, -(shiftKeyDown?10:1));
+        }
+        public void onDown(ComponentEvent ce) {
+          moveWidgetSelection(0, (shiftKeyDown?10:1));
+        }         
+        
+      }.bind(this);
+      
+      sinkEvents(Event.ONKEYDOWN);
+      sinkEvents(Event.ONKEYUP);
    }
 
+   @Override
+   public void onComponentEvent(ComponentEvent ce) {
+     if (ce.getEventTypeInt() == Event.ONKEYDOWN) {
+        if (ce.getKeyCode() == 16) {
+          shiftKeyDown = true;
+        }
+      } else if (ce.getEventTypeInt() == Event.ONKEYUP) {
+        if (ce.getKeyCode() == 16) {
+          shiftKeyDown = false;
+        }
+      }
+
+      super.onComponentEvent(ce);
+   }
+   
    /**
     * Adds the listeners.
     */
@@ -205,4 +248,34 @@ public class ScreenPanel extends LayoutContainer {
      screenItem.onUIElementEdited(element);
    }
 
+   
+   // TODO EBR : move this to Presenter
+   private void moveWidgetSelection(int left, int top) {
+     for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          absolute.setLeft(absolute.getLeft() + left);
+          absolute.setTop(absolute.getTop() + top);
+          cc.setPosition(absolute.getLeft(), absolute.getTop());
+
+          // TODO - EBR : If only model is updated, this is not reflected anywhere
+          // Updating view object directly makes it work but is tight coupling
+          // -> implement a correct model / view decoupling and bus communication first
+          // Issue is we don't have access to event bus from here
+          // -> code to post event should not be in view, view should communicate with a presenter through interface
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          grid.setLeft(grid.getLeft() + left);
+          grid.setTop(grid.getTop() + top);
+          
+          // Container position has handle, need to take into account when re-positioning
+          cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+          
+          // TODO EBR : position of grid in property form fields is not properly updated
+          // should have proper notification when model is changed so that properties get updated
+        }
+           
+      }
+   }
+   
 }
