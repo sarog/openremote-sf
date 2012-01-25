@@ -224,7 +224,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(leftPosition);
-          grid.setTop(grid.getTop());
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
           // TODO EBR : position of grid in property form fields is not properly updated
@@ -261,7 +260,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(middlePosition - (grid.getWidth() / 2));
-          grid.setTop(grid.getTop());
           
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
@@ -299,7 +297,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(rightPosition - grid.getWidth());
-          grid.setTop(grid.getTop());
           
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
@@ -334,7 +331,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft());
           grid.setTop(topPosition);
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
@@ -371,7 +367,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft());
           grid.setTop(middlePosition - (grid.getHeight() / 2));
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
@@ -408,7 +403,6 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           // Size of grid takes into account size of some handle, need to take it into account here also
           // TODO EBR : fix this !!! this is ugly
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-          grid.setLeft(grid.getLeft());
           grid.setTop(bottomPosition - grid.getHeight());
           cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
           
