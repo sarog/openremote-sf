@@ -147,6 +147,8 @@ public class ScreenCanvas extends ComponentContainer {
          add(tabbarContainer);
       }
       sinkEvents(Event.ONMOUSEDOWN);
+      sinkEvents(Event.ONKEYDOWN);
+      sinkEvents(Event.ONKEYUP);
    }
 
    public void updateGround() {
@@ -510,26 +512,20 @@ public class ScreenCanvas extends ComponentContainer {
                } else if (screenControl instanceof ScreenImage) {
                   ((ScreenImage) screenControl).onStateChange();
                }
+               // TODO EBR : seems cancelBubble is required here for selection to happen, check why
+               ce.cancelBubble();
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP) {
                if (screenControl instanceof ScreenButton) {
                   ((ScreenButton) screenControl).setDefaultImage();
                }
+               ce.cancelBubble();
             } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
                WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
+               ce.cancelBubble();
             } 
-            
-            // TODO - EBR: check this is the correct place for this. Should be at higher level / global
-            else if (ce.getEventTypeInt() == Event.ONKEYDOWN) {
-              if (ce.getKeyCode() == 16) {
-                shiftKeyDown = true;
-              }
-            } else if (ce.getEventTypeInt() == Event.ONKEYUP) {
-              if (ce.getKeyCode() == 16) {
-                shiftKeyDown = false;
-              }
-            }
 
-            ce.cancelBubble();
+            // TODO: only cancelBubble specific events, see above
+//            ce.cancelBubble();
             super.onComponentEvent(ce);
          }
 
@@ -542,9 +538,6 @@ public class ScreenCanvas extends ComponentContainer {
       };
       controlContainer.sinkEvents(Event.ONMOUSEUP);
       controlContainer.sinkEvents(Event.ONDBLCLICK);
-      // TODO - EBR : Is this correct, seems required
-      controlContainer.sinkEvents(Event.ONKEYUP);
-      controlContainer.sinkEvents(Event.ONKEYDOWN);
       
       controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
@@ -578,20 +571,6 @@ public class ScreenCanvas extends ComponentContainer {
             super.onBackspace(ce);
             this.onDelete(ce);
          }
-
-         // Use arrow keys for moving selection
-         public void onRight(ComponentEvent ce) {
-           moveWidgetSelection((shiftKeyDown?10:1), 0);
-         }
-         public void onLeft(ComponentEvent ce) {
-           moveWidgetSelection(-(shiftKeyDown?10:1), 0);
-         }
-         public void onUp(ComponentEvent ce) {
-           moveWidgetSelection(0, -(shiftKeyDown?10:1));
-         }
-         public void onDown(ComponentEvent ce) {
-           moveWidgetSelection(0, (shiftKeyDown?10:1));
-         }         
       }.bind(controlContainer);
       absolute.setBelongsTo(controlContainer);
       return controlContainer;
@@ -640,22 +619,13 @@ public class ScreenCanvas extends ComponentContainer {
               } else {
                 WidgetSelectionUtil.setSelectWidget(this);
               }
+              event.stopPropagation();
             } else if (event.getTypeInt() == Event.ONDBLCLICK) {
                WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
-            }
-            
-            // TODO - EBR: check this is the correct place for this. Should be at higher level / global
-            else if (event.getTypeInt() == Event.ONKEYDOWN) {
-              if (event.getKeyCode() == 16) {
-                shiftKeyDown = true;
-              }
-            } else if (event.getTypeInt() == Event.ONKEYUP) {
-              if (event.getKeyCode() == 16) {
-                shiftKeyDown = false;
-              }
+               event.stopPropagation();
             }
 
-            event.stopPropagation();
+//            event.stopPropagation();
             super.onBrowserEvent(event);
          }
 
@@ -667,10 +637,7 @@ public class ScreenCanvas extends ComponentContainer {
 
       };
       gridContainer.sinkEvents(Event.ONDBLCLICK);
-      // TODO - EBR : Is this correct, seems required
-      gridContainer.sinkEvents(Event.ONKEYUP);
-      gridContainer.sinkEvents(Event.ONKEYDOWN);
-
+      
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeGrid(grid);
@@ -702,21 +669,7 @@ public class ScreenCanvas extends ComponentContainer {
          public void onBackspace(ComponentEvent ce) {
             super.onBackspace(ce);
             this.onDelete(ce);
-         }
-         
-         // Use arrow keys for moving selection
-         public void onRight(ComponentEvent ce) {
-           moveWidgetSelection((shiftKeyDown?10:1), 0);
-         }
-         public void onLeft(ComponentEvent ce) {
-           moveWidgetSelection(-(shiftKeyDown?10:1), 0);
-         }
-         public void onUp(ComponentEvent ce) {
-           moveWidgetSelection(0, -(shiftKeyDown?10:1));
-         }
-         public void onDown(ComponentEvent ce) {
-           moveWidgetSelection(0, (shiftKeyDown?10:1));
-         }
+         }         
       }.bind(gridContainer);
       modelToScreenComponentsMapping.put(grid, gridContainer);
       return gridContainer;
@@ -775,8 +728,18 @@ public class ScreenCanvas extends ComponentContainer {
    public void onBrowserEvent(Event event) {
       if (event.getTypeInt() == Event.ONMOUSEDOWN) {
          WidgetSelectionUtil.setSelectWidget(this);
+         event.stopPropagation();
+      } else if (event.getTypeInt() == Event.ONKEYDOWN) {
+        if (event.getKeyCode() == 16) {
+          shiftKeyDown = true;
+        }
+      } else if (event.getTypeInt() == Event.ONKEYUP) {
+        if (event.getKeyCode() == 16) {
+          shiftKeyDown = false;
+        }
       }
-      event.stopPropagation();
+
+//      event.stopPropagation();
       super.onBrowserEvent(event);
    }
 
@@ -889,34 +852,6 @@ public class ScreenCanvas extends ComponentContainer {
       }
    }
 
-  private void moveWidgetSelection(int left, int top) {
-    for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
-       if (cc instanceof AbsoluteLayoutContainer) {
-         Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-         absolute.setLeft(absolute.getLeft() + left);
-         absolute.setTop(absolute.getTop() + top);
-         cc.setPosition(absolute.getLeft(), absolute.getTop());
-
-         // TODO - EBR : If only model is updated, this is not reflected anywhere
-         // Updating view object directly makes it work but is tight coupling
-         // -> implement a correct model / view decoupling and bus communication first
-         // Issue is we don't have access to event bus from here
-         // -> code to post event should not be in view, view should communicate with a presenter through interface
-       } else if (cc instanceof GridLayoutContainerHandle) {        
-         UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-         grid.setLeft(grid.getLeft() + left);
-         grid.setTop(grid.getTop() + top);
-         
-         // Container position has handle, need to take into account when re-positioning
-         cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-         
-         // TODO EBR : position of grid in property form fields is not properly updated
-         // should have proper notification when model is changed so that properties get updated
-       }
-          
-     }
-  }
-  
   public void onUIElementEdited(BusinessEntity element) {    
     if (element instanceof Absolute) {
       
