@@ -30,14 +30,21 @@ import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.google.gwt.event.shared.HandlerManager;
 
 public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
@@ -119,5 +126,51 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
     }
     screenTabItem.updateScreenIndicator();
   }
+  
+  // Use arrow keys for moving selection
+  public void onRightKeyPressed() {
+    moveWidgetSelection((view.isShiftKeyDown()?10:1), 0);
+  }
+  
+  public void onLeftKeyPressed() {
+    moveWidgetSelection(-(view.isShiftKeyDown()?10:1), 0);
+  }
+  
+  public void onUpKeyPressed() {
+    moveWidgetSelection(0, -(view.isShiftKeyDown()?10:1));
+  }
+  
+  public void onDownKeyPressed() {
+    moveWidgetSelection(0, (view.isShiftKeyDown()?10:1));
+  }         
+
+  private void moveWidgetSelection(int left, int top) {
+    for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+       if (cc instanceof AbsoluteLayoutContainer) {
+         Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+         absolute.setLeft(absolute.getLeft() + left);
+         absolute.setTop(absolute.getTop() + top);
+         cc.setPosition(absolute.getLeft(), absolute.getTop());
+
+         // TODO - EBR : If only model is updated, this is not reflected anywhere
+         // Updating view object directly makes it work but is tight coupling
+         // -> implement a correct model / view decoupling and bus communication first
+         // Issue is we don't have access to event bus from here
+         // -> code to post event should not be in view, view should communicate with a presenter through interface
+       } else if (cc instanceof GridLayoutContainerHandle) {        
+         UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+         grid.setLeft(grid.getLeft() + left);
+         grid.setTop(grid.getTop() + top);
+         
+         // Container position has handle, need to take into account when re-positioning
+         cc.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+         
+         // TODO EBR : position of grid in property form fields is not properly updated
+         // should have proper notification when model is changed so that properties get updated
+       }
+          
+     }
+  }
+
   
 }
