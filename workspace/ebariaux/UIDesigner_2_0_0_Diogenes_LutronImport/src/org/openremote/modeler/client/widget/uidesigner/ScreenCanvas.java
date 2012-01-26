@@ -499,7 +499,12 @@ public class ScreenCanvas extends ComponentContainer {
          public void onComponentEvent(ComponentEvent ce) {
             if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
               if (shiftKeyDown) {
-                WidgetSelectionUtil.toggleSelectWidget(this); 
+                // If it's the screen canvas that is selected, just select this new element
+                if (WidgetSelectionUtil.getSelectedWidgets().size() == 1 && WidgetSelectionUtil.getSelectedWidgets().get(0) instanceof ScreenCanvas) {
+                  WidgetSelectionUtil.setSelectWidget(this);
+                } else {
+                  WidgetSelectionUtil.toggleSelectWidget(this);
+                }
               } else {
                 WidgetSelectionUtil.setSelectWidget(this);
               }
@@ -615,7 +620,12 @@ public class ScreenCanvas extends ComponentContainer {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
               if (shiftKeyDown) {
-                WidgetSelectionUtil.toggleSelectWidget(this); 
+                // If it's the screen canvas that is selected, just select this new element
+                if (WidgetSelectionUtil.getSelectedWidgets().size() == 1 && WidgetSelectionUtil.getSelectedWidgets().get(0) instanceof ScreenCanvas) {
+                  WidgetSelectionUtil.setSelectWidget(this);
+                } else {
+                  WidgetSelectionUtil.toggleSelectWidget(this);
+                }
               } else {
                 WidgetSelectionUtil.setSelectWidget(this);
               }
