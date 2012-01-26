@@ -39,6 +39,7 @@ import org.openremote.modeler.client.view.UIDesignerView;
 import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
+import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.BusinessEntity;
@@ -455,14 +456,114 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onVerticalSpreadButtonClicked() {
-    // TODO Auto-generated method stub
-    
+    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      PositionableAndSizable topMost = null, bottomMost = null;
+      int topBorder = Integer.MAX_VALUE, bottomBorder = 0, totalHeight = 0;
+      List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
+
+      // On first iteration, search for top and bottom margin of the area we need to spread over
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          if (absolute.getTop() < topBorder) {
+            topBorder = absolute.getTop();
+            topMost = absolute;
+          }
+          if (absolute.getTop() + absolute.getHeight() > bottomBorder) {
+            bottomBorder = absolute.getTop() + absolute.getHeight();
+            bottomMost = absolute;
+          }
+          totalHeight += absolute.getHeight();
+          elementsToProcess.add(absolute);
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          if (grid.getTop() < topBorder) {
+            topBorder = grid.getTop();
+            topMost = grid;
+          }
+          if (grid.getTop() + grid.getHeight() > bottomBorder) {
+            bottomBorder = grid.getTop() + grid.getHeight();
+            bottomMost = grid;
+          }
+          totalHeight += grid.getHeight();
+          elementsToProcess.add(grid);
+        }
+      }
+
+      // Don't move the border elements
+      elementsToProcess.remove(topMost);
+      elementsToProcess.remove(bottomMost);
+      
+      // Sort elements from top to bottom position
+      Collections.sort(elementsToProcess, new Comparator<PositionableAndSizable>() {
+        @Override
+        public int compare(PositionableAndSizable o1, PositionableAndSizable o2) {
+          return o1.getTop() - o2.getTop();
+        }        
+      });
+      
+      if (totalHeight < bottomBorder - topBorder) {
+        // There is enough space to fit all elements, use constant spacing between elements
+
+        float spacing = (float)(bottomBorder - topBorder - totalHeight) / (elementsToProcess.size() + 1);
+        float currentTopPosition = topMost.getTop() + topMost.getHeight() + spacing;
+        for (PositionableAndSizable pas : elementsToProcess) {
+          pas.setTop((int)currentTopPosition);
+          currentTopPosition += pas.getHeight() + spacing;
+          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+        }
+      } else {
+        // Fallback to other algorithm, distribute all elements between left and right most one on their center axis 
+
+        // Spacing between the center axis of all elements to be moved
+        int centerSpacing = (bottomBorder - topBorder) / (elementsToProcess.size() + 1);
+        int index = 1;
+        for (PositionableAndSizable pas : elementsToProcess) {
+          pas.setTop(topBorder + (index * centerSpacing) - (pas.getHeight() / 2));
+          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+          index++;
+        }
+      }
+    }    
   }
 
   @Override
   public void onHorizontalCenterButtonClicked() {
-    // TODO Auto-generated method stub
-    
+    if (!WidgetSelectionUtil.getSelectedWidgets().isEmpty()) {
+      int leftBorder = Integer.MAX_VALUE, rightBorder = 0, totalWidth = 0;
+      List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
+
+      // On first iteration, search for left and right margin of the area we need to spread over
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          if (absolute.getLeft() < leftBorder) {
+            leftBorder = absolute.getLeft();
+          }
+          if (absolute.getLeft() + absolute.getWidth() > rightBorder) {
+            rightBorder = absolute.getLeft() + absolute.getWidth();
+          }
+          totalWidth += absolute.getWidth();
+          elementsToProcess.add(absolute);
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          if (grid.getLeft() < leftBorder) {
+            leftBorder = grid.getLeft();
+          }
+          if (grid.getLeft() + grid.getWidth() > rightBorder) {
+            rightBorder = grid.getLeft() + grid.getWidth();
+          }
+          totalWidth += grid.getWidth();
+          elementsToProcess.add(grid);
+        }
+      }
+      int totalMargin = ((ScreenTabItem)this.view.getScreenPanel().getScreenItem().getSelectedItem()).getScreen().getTouchPanelDefinition().getCanvas().getWidth() - (rightBorder - leftBorder);
+      int offset = (totalMargin / 2) - leftBorder;
+      for (PositionableAndSizable pas : elementsToProcess) {
+        pas.setLeft(pas.getLeft() + offset);
+        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+      }
+    }    
   }
 
   @Override
