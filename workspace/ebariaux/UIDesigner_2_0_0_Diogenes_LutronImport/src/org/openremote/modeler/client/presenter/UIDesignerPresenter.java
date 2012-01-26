@@ -45,7 +45,9 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.PositionableAndSizable;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -568,8 +570,48 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onVerticalCenterButtonClicked() {
-    // TODO Auto-generated method stub
-    
+    if (!WidgetSelectionUtil.getSelectedWidgets().isEmpty()) {
+      int topBorder = Integer.MAX_VALUE, bottomBorder = 0, totalHeight = 0;
+      List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
+
+      // On first iteration, search for left and right margin of the area we need to spread over
+      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+        if (cc instanceof AbsoluteLayoutContainer) {
+          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+          if (absolute.getTop() < topBorder) {
+            topBorder = absolute.getTop();
+          }
+          if (absolute.getTop() + absolute.getHeight() > bottomBorder) {
+            bottomBorder = absolute.getTop() + absolute.getHeight();
+          }
+          totalHeight += absolute.getHeight();
+          elementsToProcess.add(absolute);
+        } else if (cc instanceof GridLayoutContainerHandle) {        
+          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+          if (grid.getTop() < topBorder) {
+            topBorder = grid.getTop();
+          }
+          if (grid.getTop() + grid.getHeight() > bottomBorder) {
+            bottomBorder = grid.getTop() + grid.getHeight();
+          }
+          totalHeight += grid.getHeight();
+          elementsToProcess.add(grid);
+        }
+      }
+      
+      Screen screen = ((ScreenTabItem)this.view.getScreenPanel().getScreenItem().getSelectedItem()).getScreen();
+      // TODO: take tabbar info account
+      //      Info.display("INFO", "Has tab bar " + screen.isHasTabbar()); // Always returning false ????
+      
+      int totalMargin = screen.getTouchPanelDefinition().getCanvas().getHeight()
+                          - (screen.isHasTabbar()?screen.getTouchPanelDefinition().getTabbarDefinition().getHeight():0)
+                          - (bottomBorder - topBorder);      
+      int offset = (totalMargin / 2) - topBorder;
+      for (PositionableAndSizable pas : elementsToProcess) {
+        pas.setTop(pas.getTop() + offset);
+        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+      }
+    }    
   }
   
 }
