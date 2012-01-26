@@ -36,6 +36,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -652,10 +653,11 @@ public class ResourceServiceImpl implements ResourceService {
       Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
       configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
+      Collection<ControllerConfig> configsWithoutRules = new Vector<ControllerConfig>();
       for (ControllerConfig controllerConfig : configs)
       {
-        if (controllerConfig.getName().equals("rules.editor")) {
-          configs.remove(controllerConfig);
+        if (!controllerConfig.getName().equals("rules.editor")) {
+          configsWithoutRules.add(controllerConfig);
         }
       }
 
@@ -672,7 +674,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("labels", uiLabels);
       context.put("images", uiImages);
       context.put("maxId", maxId);
-      context.put("configs", configs);
+      context.put("configs", configsWithoutRules);
       context.put("stringUtils", StringUtils.class);
 
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
