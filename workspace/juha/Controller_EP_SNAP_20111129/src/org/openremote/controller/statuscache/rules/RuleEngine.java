@@ -425,11 +425,11 @@ public class RuleEngine extends EventProcessor
     {
       try
       {
-        Resource resource = ResourceFactory.newFileResource(file);
-
-        ruleDefinitions.put(resource, file);
-
-        initLog.debug("Adding Rule ''{0}''...", file.getName());
+        if (file.length() >0) {
+          Resource resource = ResourceFactory.newFileResource(file);
+          ruleDefinitions.put(resource, file);
+          initLog.debug("Adding Rule ''{0}''...", file.getName());
+        }
       }
 
       catch (Throwable t)
