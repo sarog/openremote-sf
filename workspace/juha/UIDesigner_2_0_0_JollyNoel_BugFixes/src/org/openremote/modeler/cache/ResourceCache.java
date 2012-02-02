@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.exception.ConfigurationException;
+import org.openremote.modeler.exception.NetworkException;
 
 /**
  * Interface to define designer resource cache -- for storing images and other artifacts
@@ -68,4 +69,28 @@ public interface ResourceCache
    */
   InputStream getExportArchiveInputStream(Set<Panel> panels)
       throws CacheOperationException, ConfigurationException;
+
+  /**
+   * Updates the resource cache state from the Beehive server.
+   *
+   * @throws CacheOperationException
+   *            If there's an error that is specific to the particular resource cache
+   *            implementation. Resource cache implementations may subclass this exception
+   *            type for more specific error handling. The errors may also be specific
+   *            just to a single account rather than to the entire Designer application.
+   *
+   * @throws NetworkException
+   *            If any errors occur with the network connection to Beehive server. It may be
+   *            possible to recover from network exceptions by retrying the operation.
+   *            Note that the exception class provides a severity level which indicates the
+   *            severity of the network error and the likelyhood it can be recovered from.
+   *
+   * @throws ConfigurationException
+   *            If there's a misconfiguration of the designer that prevents the cache
+   *            from operating correctly. Usually this type of exception indicates an issue
+   *            that requires re-deployment of the designer application and is likely to
+   *            impact multiple accounts.
+   */
+  void update()
+      throws CacheOperationException, NetworkException, ConfigurationException;
 }
