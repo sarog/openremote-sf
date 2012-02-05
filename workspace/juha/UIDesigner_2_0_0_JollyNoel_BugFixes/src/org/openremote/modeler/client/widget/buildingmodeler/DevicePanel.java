@@ -266,6 +266,7 @@ public class DevicePanel extends ContentPanel {
       
       Menu newMenu = new Menu();
       newMenu.add(createNewDeviceMenuItem());
+      newMenu.add(createNewRussoundDeviceMenuItem());
       final MenuItem newCommandMemuItem = createNewCommandMenu();
       final MenuItem importCommandMemuItem = createImportMenuItem();
       final MenuItem newSensorMenuItem = createNewSensorMenu();
@@ -352,6 +353,27 @@ public class DevicePanel extends ContentPanel {
       });
       return newDeviceItem;
    }
+   
+   private MenuItem createNewRussoundDeviceMenuItem() {
+     MenuItem newDeviceItem = new MenuItem("New Russound Device");
+     //newDeviceItem.ensureDebugId(DebugId.NEW_DEVICE_MENU_ITEM);
+     newDeviceItem.setIcon(icon.device());
+     newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+        public void componentSelected(MenuEvent ce) {
+           final RussoundWizardWindow deviceWindow = new RussoundWizardWindow();
+           deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 deviceWindow.hide();
+                 List<BeanModel> deviceModels = be.getData();
+                 tree.getStore().add(deviceModels, true);
+                 Info.display("Info", "Added " + deviceModels.size() + " Russound zone devices successfully.");
+              }
+           });
+        }
+     });
+     return newDeviceItem;
+  }
    
    /**
     * Creates the new command menu.

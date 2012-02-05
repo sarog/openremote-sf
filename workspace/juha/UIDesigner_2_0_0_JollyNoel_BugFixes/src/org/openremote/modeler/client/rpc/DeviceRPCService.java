@@ -19,11 +19,13 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -41,6 +43,7 @@ public interface DeviceRPCService extends RemoteService {
     * @return the device
     */
    Device saveDevice(Device device);
+   ArrayList<Device> saveDevices(ArrayList<Device> device);
    
    /**
     * Update device.
@@ -83,4 +86,5 @@ public interface DeviceRPCService extends RemoteService {
    List<Device> loadAll(Account account);
    
    Account getAccount();
+   
 }
