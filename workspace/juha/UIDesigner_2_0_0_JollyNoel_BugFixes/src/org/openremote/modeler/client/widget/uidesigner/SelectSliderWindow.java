@@ -19,9 +19,10 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.dto.SliderDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.client.utils.SliderBeanModelTable;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -69,8 +70,8 @@ public class SelectSliderWindow extends Dialog {
       // overflow-auto style is for IE hack.
       sliderListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();
-      store.add(BeanModelDataBase.sliderTable.loadAll());
+      ListStore<BeanModel> store = new ListStore<BeanModel>();      
+      store.add(((SliderBeanModelTable)BeanModelDataBase.sliderTable).loadAllAsDTOs());
       sliderList.setStore(store);
       sliderList.setDisplayProperty("displayName");
       sliderList.setStyleAttribute("overflow", "auto");
@@ -87,15 +88,15 @@ public class SelectSliderWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSliderModel = se.getSelectedItem();
             if (selectedSliderModel != null) {
-               Slider slider = selectedSliderModel.getBean();
+               SliderDTO slider = selectedSliderModel.getBean();
                String sliderInfo = "<p><b>Slider info</b></p>";
-               if (slider.getSetValueCmd() != null){
-                  sliderInfo = sliderInfo + "<p>Command: " + slider.getSetValueCmd().getDisplayName() + "</p>";
+               if (slider.getCommandName() != null){
+                  sliderInfo = sliderInfo + "<p>Command: " + slider.getCommandName() + "</p>";
                }
-               if (slider.getSliderSensorRef() != null) {
-                  sliderInfo = sliderInfo + "<p>Sensor: " + slider.getSliderSensorRef().getDisplayName() + "</p>";
+               if (slider.getSensorName() != null) {
+                  sliderInfo = sliderInfo + "<p>Sensor: " + slider.getSensorName() + "</p>";
                }
-               sliderInfo = sliderInfo + "<p>Device: " + slider.getDevice().getDisplayName() + "</p>";
+               sliderInfo = sliderInfo + "<p>Device: " + slider.getDeviceName() + "</p>";
                sliderInfoHtml.setHtml(sliderInfo);
             }
          }
@@ -112,7 +113,7 @@ public class SelectSliderWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a slider.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof Slider) {
+                  if (beanModel.getBean() instanceof SliderDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a slider.", null);
@@ -123,6 +124,5 @@ public class SelectSliderWindow extends Dialog {
          }
       }); 
    }
-
-
+   
 }

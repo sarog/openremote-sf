@@ -19,8 +19,10 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.dto.SwitchDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.utils.SwitchBeanModelTable;
 import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -70,7 +72,7 @@ public class SelectSwitchWindow extends Dialog {
       switchListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
-      store.add(BeanModelDataBase.switchTable.loadAll());
+      store.add(((SwitchBeanModelTable)BeanModelDataBase.switchTable).loadAllAsDTOs());
       switchList.setStore(store);
       switchList.setDisplayProperty("displayName");
       switchList.setStyleAttribute("overflow", "auto");
@@ -87,18 +89,18 @@ public class SelectSwitchWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSwitchModel = se.getSelectedItem();
             if (selectedSwitchModel != null) {
-               Switch switchToggle = selectedSwitchModel.getBean();
+               SwitchDTO switchToggle = selectedSwitchModel.getBean();
                String switchInfo = "<p><b>Switch info</b></p>";
-               if (switchToggle.getSwitchCommandOnRef() != null){
-                  switchInfo = switchInfo + "<p>On: " + switchToggle.getSwitchCommandOnRef().getDisplayName() + "</p>";
+               if (switchToggle.getOnCommandName() != null){
+                  switchInfo = switchInfo + "<p>On: " + switchToggle.getOnCommandName() + "</p>";
                }
-               if (switchToggle.getSwitchCommandOffRef() != null) {
-                  switchInfo = switchInfo + "<p>Off: " + switchToggle.getSwitchCommandOffRef().getDisplayName() + "</p>";
+               if (switchToggle.getOffCommandName() != null) {
+                  switchInfo = switchInfo + "<p>Off: " + switchToggle.getOffCommandName() + "</p>";
                }
-               if (switchToggle.getSwitchSensorRef() != null) {
-                  switchInfo = switchInfo + "<p>Sensor: " + switchToggle.getSwitchSensorRef().getDisplayName() + "</p>";
+               if (switchToggle.getSensorName() != null) {
+                  switchInfo = switchInfo + "<p>Sensor: " + switchToggle.getSensorName() + "</p>";
                }
-               switchInfo = switchInfo + "<p>Device: " + switchToggle.getDevice().getDisplayName() + "</p>";
+               switchInfo = switchInfo + "<p>Device: " + switchToggle.getDeviceName() + "</p>";
                switchInfoHtml.setHtml(switchInfo);
             }
          }
@@ -114,7 +116,7 @@ public class SelectSwitchWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a switch.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof Switch) {
+                  if (beanModel.getBean() instanceof SwitchDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a switch.", null);
