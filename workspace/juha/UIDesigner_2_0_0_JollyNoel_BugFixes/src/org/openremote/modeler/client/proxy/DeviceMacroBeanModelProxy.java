@@ -31,6 +31,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -133,7 +134,8 @@ public class DeviceMacroBeanModelProxy {
          macroItemIterator.remove();
       }
       deviceMacro.getDeviceMacroItems().addAll(getMacroItems(items, deviceMacro));
-      AsyncServiceFactory.getDeviceMacroServiceAsync().updateDeviceMacro(deviceMacro,
+      
+      AsyncServiceFactory.getDeviceMacroServiceAsync().updateDeviceMacro(deviceMacro, deviceMacro.getDeviceMacroItems(),
             new AsyncSuccessCallback<DeviceMacro>() {
                @Override
                public void onSuccess(DeviceMacro result) {
