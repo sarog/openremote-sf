@@ -93,4 +93,18 @@ public interface ResourceCache
    */
   void update()
       throws CacheOperationException, NetworkException, ConfigurationException;
+
+  /**
+   * Indicates if the resource cache contains any resource artifacts for the associated account.
+   *
+   * @return    true if the resource cache contains resource artifacts, false otherwise
+   *
+   * @throws ConfigurationException
+   *            If there's a misconfiguration of the designer that prevents the cache
+   *            from operating correctly. Usually this type of exception indicates an issue
+   *            that requires re-deployment of the designer application and is likely to
+   *            impact multiple accounts.
+   */
+  boolean hasState()
+      throws ConfigurationException;
 }
