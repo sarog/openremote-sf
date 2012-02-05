@@ -54,10 +54,11 @@ public interface DeviceMacroRPCServiceAsync {
      * Update device macro.
      * 
      * @param deviceMacro the device macro
+     * @param items the device macro items to use to update the macro
      * @param async the async
      * 
      */
-    void updateDeviceMacro(DeviceMacro deviceMacro, AsyncCallback<DeviceMacro> async);
+    void updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items, AsyncCallback<DeviceMacro> async);
 
     /**
      * Delete device macro.
