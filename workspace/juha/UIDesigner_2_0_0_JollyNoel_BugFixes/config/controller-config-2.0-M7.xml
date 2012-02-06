@@ -247,4 +247,32 @@ If it's true, controller will auto-detect its groupmembers with multicast.
    			</hint>
 		</config>
 	</category>
+
+
+  <!--
+   |
+   |  TODO : TEMPORARY
+   |
+   |    This category entry here is temporarily (and is in fact never used by controller or
+   |    included in the controller.xml configuration section). It should be eventually
+   |    removed - rules should be stand-alone artifacts to the controller (and multiple
+   |    rules supported), not a controller configuration element.
+   |
+   +-->
+	<category name="rules">
+		<description>
+   			<![CDATA[
+   				Configuration for the rules engine.
+				This is a special configuration where the content of the rules text area is written as a rules file
+				to the controller's rules folder. The filename is always 'modeler_rules.drl' 
+   			]]>
+   		</description>
+		<config name="rules.editor" value="">
+			<hint>
+   				<![CDATA[
+   					Content for the modeler_rules.drl file. This has to be a valid Drools .drl file syntax.
+   				]]>
+   			</hint>
+		</config>
+	</category>
 </configs>
