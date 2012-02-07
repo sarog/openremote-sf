@@ -60,6 +60,7 @@ import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
@@ -395,6 +396,8 @@ public class ScreenCanvas extends ComponentContainer {
                      resizable.setMinHeight(10);
                      resizable.setMinWidth(10);
                   }
+                  
+                  // TODO EBR : OK, dragged from "papette" to screen, not grid
                   canvas.add(componentContainer);
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
