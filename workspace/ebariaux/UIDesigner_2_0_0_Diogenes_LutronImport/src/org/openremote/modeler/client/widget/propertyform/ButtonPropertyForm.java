@@ -38,8 +38,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
-import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
+import org.openremote.modeler.domain.component.UIButton;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -49,6 +49,7 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
@@ -82,8 +83,8 @@ public class ButtonPropertyForm extends PropertyForm {
            // Call here should only change model and other visual representations should update because they listen to changes on the bus.
 //            screenButton.setName(name.getValue());
             
-            
-            uiButton.setName(name.getValue());
+            String buttonName = name.getValue();
+            uiButton.setName((buttonName != null)?buttonName:""); // Do not use null as button name, see MODELER-270
             screenButton.adjustTextLength();
          }
       });
