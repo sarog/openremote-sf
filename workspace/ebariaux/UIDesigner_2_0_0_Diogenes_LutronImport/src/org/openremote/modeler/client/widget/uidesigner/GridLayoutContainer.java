@@ -117,7 +117,22 @@ public class GridLayoutContainer extends ComponentContainer {
       refreshGrid();
    }
 
+   private void resizeBtnInArea() {
+     boolean newArray[][] = new boolean[grid.getColumnCount()][grid.getRowCount()];
+     for (int i = 0; i < newArray.length; i++) {
+       for (int j = 0; j < newArray[i].length; j++) {
+         if (i < btnInArea.length && j < btnInArea[i].length) {
+           newArray[i][j] = btnInArea[i][j];
+         } else {
+           newArray[i][j] = false;
+         }
+       }
+     }     
+     btnInArea = newArray;
+   }
+   
    public void refreshGrid() {
+    resizeBtnInArea();     
       for (int i = cellContainers.size() - 1; i >= 0; i--) {
          cellContainers.get(i).removeFromParent();
          cellContainers.remove(i);
