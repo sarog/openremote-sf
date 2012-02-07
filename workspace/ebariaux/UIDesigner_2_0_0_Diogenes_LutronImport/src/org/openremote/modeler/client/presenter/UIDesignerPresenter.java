@@ -47,12 +47,11 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.PositionableAndSizable;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
-import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.InfoConfig;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
@@ -60,7 +59,7 @@ import com.google.gwt.user.client.Window;
 
 public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   private UIDesignerView view;
   
   private ProfilePanelPresenter profilePanelPresenter;
@@ -73,7 +72,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   private Timer timer;
 
-  public UIDesignerPresenter(HandlerManager eventBus, UIDesignerView view) {
+  public UIDesignerPresenter(EventBus eventBus, UIDesignerView view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

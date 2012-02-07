@@ -27,14 +27,14 @@ import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 public class PropertyPanelPresenter implements Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   private PropertyPanel view;
   
-  public PropertyPanelPresenter(HandlerManager eventBus, PropertyPanel view) {
+  public PropertyPanelPresenter(EventBus eventBus, PropertyPanel view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

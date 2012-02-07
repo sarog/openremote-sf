@@ -44,14 +44,14 @@ import org.openremote.modeler.domain.component.UIGrid;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   private ScreenPanel view;
   
-  public ScreenPanelPresenter(HandlerManager eventBus, ScreenPanel view) {
+  public ScreenPanelPresenter(EventBus eventBus, ScreenPanel view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

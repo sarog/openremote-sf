@@ -63,7 +63,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -81,7 +81,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class ApplicationView implements View {
 
   /** Event bus used for communication throughout application */
-  private HandlerManager eventBus;
+  private EventBus eventBus;
 
    /** The viewport. */
    private Viewport viewport;
@@ -104,7 +104,7 @@ public class ApplicationView implements View {
    
    private Button exportButton;
    
-   public ApplicationView(HandlerManager eventBus) {
+   public ApplicationView(EventBus eventBus) {
     super();
     this.eventBus = eventBus;
   }
