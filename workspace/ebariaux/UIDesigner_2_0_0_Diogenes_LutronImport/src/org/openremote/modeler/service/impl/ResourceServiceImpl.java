@@ -444,10 +444,12 @@ public class ResourceServiceImpl implements ResourceService {
       StringBuffer sectionIdsSB = new StringBuffer();
       int i = 0;
       for (String sectionId : sectionIds) {
+        if (sectionId != null) {
          sectionIdsSB.append(sectionId);
          if (i < sectionIds.size() - 1) {
             sectionIdsSB.append(",");
          }
+        }
          i++;
       }
       return sectionIdsSB.toString();
