@@ -160,4 +160,48 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
     this.presenter = presenter;
   }
 
+  public PushButton getHorizontalLeftAlignButton() {
+    return horizontalLeftAlignButton;
+  }
+
+  public PushButton getHorizontalCenterAlignButton() {
+    return horizontalCenterAlignButton;
+  }
+
+  public PushButton getHorizontalRightAlignButton() {
+    return horizontalRightAlignButton;
+  }
+
+  public PushButton getVerticalTopAlignButton() {
+    return verticalTopAlignButton;
+  }
+
+  public PushButton getVerticalCenterAlignButton() {
+    return verticalCenterAlignButton;
+  }
+
+  public PushButton getVerticalBottomAlignButton() {
+    return verticalBottomAlignButton;
+  }
+
+  public PushButton getSameSizeButton() {
+    return sameSizeButton;
+  }
+
+  public PushButton getHorizontalSpreadButton() {
+    return horizontalSpreadButton;
+  }
+
+  public PushButton getVerticalSpreadButton() {
+    return verticalSpreadButton;
+  }
+
+  public PushButton getHorizontalCenterButton() {
+    return horizontalCenterButton;
+  }
+
+  public PushButton getVerticalCenterButton() {
+    return verticalCenterButton;
+  }
+
 }

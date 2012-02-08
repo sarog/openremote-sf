@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
+import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.model.AutoSaveResponse;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -99,8 +101,30 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
     prepareData();
     createAutoSaveTimer();
+    
+    bind();
   }
 
+  private void bind() {
+    eventBus.addHandler(WidgetSelectedEvent.TYPE, new WidgetSelectedEventHandler() {
+      @Override
+      public void onSelectionChanged(WidgetSelectedEvent event) {
+        // Enable/disable toolbar buttons based on selection
+        int numSelectedWidgets = (event.getSelectedWidgets() != null)?event.getSelectedWidgets().size():0;        
+        view.getToolbar().getHorizontalLeftAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getHorizontalCenterAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getHorizontalRightAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getVerticalTopAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getVerticalCenterAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getVerticalBottomAlignButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getSameSizeButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getHorizontalSpreadButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getVerticalSpreadButton().setEnabled(numSelectedWidgets >= 2);
+        view.getToolbar().getHorizontalCenterButton().setEnabled(numSelectedWidgets >= 1);
+        view.getToolbar().getVerticalCenterButton().setEnabled(numSelectedWidgets >= 1);
+      }
+    });
+  }
   /**
    * Creates the auto save timer.
    */
