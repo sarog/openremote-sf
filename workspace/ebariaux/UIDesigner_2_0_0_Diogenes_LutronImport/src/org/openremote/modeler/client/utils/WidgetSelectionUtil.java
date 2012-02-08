@@ -23,19 +23,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The SelectedWidgetContainer for store selected widget and fire widgetSelectChange event.
  */
 public class WidgetSelectionUtil {
 
+  private EventBus eventBus;
+  
    private List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
    
    private WidgetSelectChangeListener widgetSelectChangeListener;
    
-   public void setChangeListener(WidgetSelectChangeListener listener) {
+   public WidgetSelectionUtil(EventBus eventBus) {
+    super();
+    this.eventBus = eventBus;
+  }
+
+  public void setChangeListener(WidgetSelectChangeListener listener) {
       widgetSelectChangeListener = listener;
    }
    
@@ -58,6 +68,8 @@ public class WidgetSelectionUtil {
 
       // TODO - EBR : this should go through the event bus, not via a direct dependency
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
+      
+      eventBus.fireEvent(new WidgetSelectedEvent(selectedWidgets));
    }
 
    public void toggleSelectWidget(ComponentContainer selectedWidget) {
