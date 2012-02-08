@@ -26,6 +26,7 @@ import java.util.Map;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
@@ -58,8 +59,8 @@ public class LabelPropertyForm extends PropertyForm {
    private FieldSet statesPanel; 
    
    
-   public LabelPropertyForm(ScreenLabel screenLabel) {
-      super(screenLabel);
+   public LabelPropertyForm(ScreenLabel screenLabel, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenLabel, widgetSelectionUtil);
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();

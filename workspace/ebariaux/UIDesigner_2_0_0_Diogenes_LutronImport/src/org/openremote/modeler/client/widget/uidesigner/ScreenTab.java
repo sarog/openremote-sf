@@ -41,20 +41,20 @@ public class ScreenTab extends TabPanel {
    
    private ScreenPair screenPair;
    
-   public ScreenTab(ScreenPair screenPair) {
+   public ScreenTab(ScreenPair screenPair, final WidgetSelectionUtil widgetSelectionUtil) {
       setTabPosition(TabPosition.BOTTOM);
       this.screenPair = screenPair;
       if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getPortraitScreen()));
+         add(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil));
       } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+         add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
       } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getPortraitScreen()));
-         add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+         add(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil));
+         add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
       }
       this.addListener(Events.Select, new Listener<TabPanelEvent>(){
          public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.resetSelection();
+            widgetSelectionUtil.resetSelection();
          }
          
       });

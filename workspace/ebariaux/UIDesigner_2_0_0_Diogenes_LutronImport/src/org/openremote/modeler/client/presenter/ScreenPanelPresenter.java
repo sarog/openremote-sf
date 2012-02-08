@@ -49,11 +49,13 @@ import com.google.gwt.event.shared.EventBus;
 public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
 
   private EventBus eventBus;
+  private WidgetSelectionUtil widgetSelectionUtil;
   private ScreenPanel view;
   
-  public ScreenPanelPresenter(EventBus eventBus, ScreenPanel view) {
+  public ScreenPanelPresenter(EventBus eventBus, WidgetSelectionUtil widgetSelectionUtil, ScreenPanel view) {
     super();
     this.eventBus = eventBus;
+    this.widgetSelectionUtil = widgetSelectionUtil;
     this.view = view;
     view.setPresenter(this);
     
@@ -76,7 +78,7 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
             if (event.getType() == BeanModelTable.ADD) {
               BeanModel beanModel = (BeanModel) event.getItem();
               if (beanModel.getBean() instanceof ScreenPair) {
-                ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
+                ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean(), widgetSelectionUtil));
               }
             }
           }
@@ -88,7 +90,7 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
       @Override
       public void onTemplateSelected(TemplateSelectedEvent event) {
         if (event.getTemplate() != null) {
-          view.setScreenItem(new ScreenTab(event.getTemplate().getScreen()));
+          view.setScreenItem(new ScreenTab(event.getTemplate().getScreen(), widgetSelectionUtil));
         } else {
 //          templateEditPanel.remove(editTabItem);// TODO EBR : this is not done anymore, but was it really required, below call should be enough
           view.closeCurrentScreenTab();
@@ -114,12 +116,12 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
         screenTabItem.updateTouchPanel();
         screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
       } else {
-        screenTabItem = new ScreenTab(screen);
+        screenTabItem = new ScreenTab(screen, widgetSelectionUtil);
         screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
         this.view.setScreenItem(screenTabItem);
       }
     } else {
-      screenTabItem = new ScreenTab(screen);
+      screenTabItem = new ScreenTab(screen, widgetSelectionUtil);
       screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
       this.view.setScreenItem(screenTabItem);
     }
@@ -144,7 +146,7 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
   }         
 
   private void moveWidgetSelection(int left, int top) {
-    for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+    for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
        if (cc instanceof AbsoluteLayoutContainer) {
          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
          absolute.setLeft(absolute.getLeft() + left);

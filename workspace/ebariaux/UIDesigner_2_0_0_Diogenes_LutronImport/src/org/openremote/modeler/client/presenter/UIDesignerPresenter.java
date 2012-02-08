@@ -66,22 +66,24 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   private TemplatePanelPresenter templatePanelPresenter;
   private ScreenPanelPresenter screenPanelPresenter;
   private PropertyPanelPresenter propertyPanelPresenter;
+  private WidgetSelectionUtil widgetSelectionUtil;
 
   /** The auto_save_interval millisecond. */
   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
 
   private Timer timer;
 
-  public UIDesignerPresenter(EventBus eventBus, UIDesignerView view) {
+  public UIDesignerPresenter(EventBus eventBus, UIDesignerView view, WidgetSelectionUtil widgetSelectionUtil) {
     super();
+    this.widgetSelectionUtil = widgetSelectionUtil;
     this.eventBus = eventBus;
     this.view = view;
     this.view.getToolbar().setPresenter(this);
     
     this.profilePanelPresenter = new ProfilePanelPresenter(eventBus, view.getProfilePanel());
     this.templatePanelPresenter = new TemplatePanelPresenter(eventBus, view.getTemplatePanel());
-    this.screenPanelPresenter = new ScreenPanelPresenter(eventBus, view.getScreenPanel());
-    this.propertyPanelPresenter = new PropertyPanelPresenter(eventBus, view.getPropertyPanel());
+    this.screenPanelPresenter = new ScreenPanelPresenter(eventBus, widgetSelectionUtil, view.getScreenPanel());
+    this.propertyPanelPresenter = new PropertyPanelPresenter(eventBus, widgetSelectionUtil, view.getPropertyPanel());
     
     AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncSuccessCallback<String>() {
       public void onFailure(Throwable caught) {
@@ -208,14 +210,14 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   
   public void onHorizontalLeftAlignButtonClicked() {
     int leftPosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         leftPosition = ((AbsoluteLayoutContainer)firstComponent).getAbsolute().getLeft();
       } else if (firstComponent instanceof GridLayoutContainerHandle) {
         leftPosition = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid().getLeft();
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(leftPosition);
@@ -231,8 +233,8 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   
   public void onHorizontalCenterAlignButtonClicked() {
     int middlePosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute(); 
         middlePosition = absolute.getLeft() + absolute.getWidth() / 2;
@@ -240,7 +242,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
         middlePosition = grid.getLeft() + grid.getWidth() / 2;
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(middlePosition - absolute.getWidth() / 2);
@@ -256,8 +258,8 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   
   public void onHorizontalRightAlignButtonClicked() {
     int rightPosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute(); 
         rightPosition = absolute.getLeft() + absolute.getWidth();
@@ -265,7 +267,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
         rightPosition = grid.getLeft() + grid.getWidth();
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(rightPosition - absolute.getWidth());
@@ -281,14 +283,14 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   
   public void onVerticalTopAlignButtonClicked() {
     int topPosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         topPosition = ((AbsoluteLayoutContainer)firstComponent).getAbsolute().getTop();
       } else if (firstComponent instanceof GridLayoutContainerHandle) {
         topPosition = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid().getTop();
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(topPosition);
@@ -304,8 +306,8 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   
   public void onVerticalCenterAlignButtonClicked() {
     int middlePosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute();
         middlePosition = absolute.getTop() + (absolute.getHeight() / 2);
@@ -313,7 +315,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
         middlePosition = grid.getTop() + (grid.getHeight() / 2);
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(middlePosition - (absolute.getHeight() / 2));
@@ -329,8 +331,8 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   public void onVerticalBottomAlignButtonClicked() {
     int bottomPosition = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute();
         bottomPosition = absolute.getTop() + absolute.getHeight();
@@ -338,7 +340,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         UIGrid grid = ((GridLayoutContainerHandle)firstComponent).getGridlayoutContainer().getGrid();
         bottomPosition = grid.getTop() + grid.getHeight();
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(bottomPosition - absolute.getHeight());
@@ -355,8 +357,8 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   @Override
   public void onSameSizeButtonClicked() {
     int referenceWidth = 0, referenceHeight = 0;
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
-      ComponentContainer firstComponent = WidgetSelectionUtil.getSelectedWidgets().get(0);
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
+      ComponentContainer firstComponent = widgetSelectionUtil.getSelectedWidgets().get(0);
       if (firstComponent instanceof AbsoluteLayoutContainer) {
         Absolute absolute = ((AbsoluteLayoutContainer)firstComponent).getAbsolute();
         referenceWidth = absolute.getWidth();
@@ -366,7 +368,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         referenceWidth = grid.getWidth();
         referenceHeight = grid.getHeight();
       }
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setWidth(referenceWidth);
@@ -384,13 +386,13 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onHorizontalSpreadButtonClicked() {
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
       PositionableAndSizable leftMost = null, rightMost = null;
       int leftBorder = Integer.MAX_VALUE, rightBorder = 0, totalWidth = 0;
       List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
 
       // On first iteration, search for left and right margin of the area we need to spread over
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           if (absolute.getLeft() < leftBorder) {
@@ -457,13 +459,13 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onVerticalSpreadButtonClicked() {
-    if (WidgetSelectionUtil.getSelectedWidgets().size() > 1) {
+    if (widgetSelectionUtil.getSelectedWidgets().size() > 1) {
       PositionableAndSizable topMost = null, bottomMost = null;
       int topBorder = Integer.MAX_VALUE, bottomBorder = 0, totalHeight = 0;
       List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
 
       // On first iteration, search for top and bottom margin of the area we need to spread over
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           if (absolute.getTop() < topBorder) {
@@ -530,12 +532,12 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onHorizontalCenterButtonClicked() {
-    if (!WidgetSelectionUtil.getSelectedWidgets().isEmpty()) {
+    if (!widgetSelectionUtil.getSelectedWidgets().isEmpty()) {
       int leftBorder = Integer.MAX_VALUE, rightBorder = 0, totalWidth = 0;
       List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
 
       // On first iteration, search for left and right margin of the area we need to spread over
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           if (absolute.getLeft() < leftBorder) {
@@ -569,12 +571,12 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
 
   @Override
   public void onVerticalCenterButtonClicked() {
-    if (!WidgetSelectionUtil.getSelectedWidgets().isEmpty()) {
+    if (!widgetSelectionUtil.getSelectedWidgets().isEmpty()) {
       int topBorder = Integer.MAX_VALUE, bottomBorder = 0, totalHeight = 0;
       List<PositionableAndSizable> elementsToProcess = new ArrayList<PositionableAndSizable>();
 
       // On first iteration, search for left and right margin of the area we need to spread over
-      for (ComponentContainer cc : WidgetSelectionUtil.getSelectedWidgets()) {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           if (absolute.getTop() < topBorder) {

@@ -32,11 +32,13 @@ import com.google.gwt.event.shared.EventBus;
 public class PropertyPanelPresenter implements Presenter {
 
   private EventBus eventBus;
+  private WidgetSelectionUtil widgetSelectionUtil;
   private PropertyPanel view;
   
-  public PropertyPanelPresenter(EventBus eventBus, PropertyPanel view) {
+  public PropertyPanelPresenter(EventBus eventBus, WidgetSelectionUtil widgetSelectionUtil, PropertyPanel view) {
     super();
     this.eventBus = eventBus;
+    this.widgetSelectionUtil = widgetSelectionUtil;
     this.view = view;
     bind();
   }
@@ -53,7 +55,7 @@ public class PropertyPanelPresenter implements Presenter {
       @Override
       public void onElementEdited(UIElementEditedEvent event) {
         // TODO EBR - this is just a quick fix, need to review
-        view.update(WidgetSelectionUtil.getSelectedWidgets());
+        view.update(widgetSelectionUtil.getSelectedWidgets());
       }
     });
   }

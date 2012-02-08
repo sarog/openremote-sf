@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -53,8 +54,8 @@ public class ScreenLabel extends ScreenComponent {
    
    private List<String> states = new ArrayList<String>();
    
-   public ScreenLabel(ScreenCanvas canvas, UILabel uiLabel) {
-      super(canvas);
+   public ScreenLabel(ScreenCanvas canvas, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.uiLabel = uiLabel;
       center.setText(uiLabel.getText());
       initial();
@@ -105,7 +106,7 @@ public class ScreenLabel extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new LabelPropertyForm(this);
+      return new LabelPropertyForm(this, widgetSelectionUtil);
    }
 
    @Override

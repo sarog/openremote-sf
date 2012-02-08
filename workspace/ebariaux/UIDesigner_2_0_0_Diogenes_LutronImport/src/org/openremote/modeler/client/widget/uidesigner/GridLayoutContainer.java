@@ -77,8 +77,8 @@ public class GridLayoutContainer extends ComponentContainer {
    private List<GridCellContainer> cellContainers = new ArrayList<GridCellContainer>();
    private int cellWidth = 0;
    private int cellHeight = 0;
-   public GridLayoutContainer(ScreenCanvas screenCanvas, UIGrid grid) {
-      super(screenCanvas);
+   public GridLayoutContainer(ScreenCanvas screenCanvas, UIGrid grid, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
       this.grid = grid;
       btnInArea = new boolean[grid.getColumnCount()][grid.getRowCount()];
       addStyleName("absolute");
@@ -154,7 +154,7 @@ public class GridLayoutContainer extends ComponentContainer {
          public void dragDrop(DNDEvent e) {
             LayoutContainer targetCell = (LayoutContainer) e.getDropTarget().getComponent();
             Point targetPosition = (Point) targetCell.getData(POSITION);
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this);
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this, widgetSelectionUtil);
             Object data = e.getData();
             if (data instanceof AbsoluteLayoutContainer) {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
@@ -178,7 +178,7 @@ public class GridLayoutContainer extends ComponentContainer {
                return;
             }
             cellContainer.fillArea(btnInArea);
-            WidgetSelectionUtil.setSelectWidget(cellContainer);
+            widgetSelectionUtil.setSelectWidget(cellContainer);
             makeCellContainerResizable(cellWidth, cellHeight, cellContainer);
             layout();
             cellContainers.add(cellContainer);
@@ -226,12 +226,12 @@ public class GridLayoutContainer extends ComponentContainer {
     * 
     */
    private GridCellContainer createCellContainer(final UIGrid grid, Cell cell, int cellWidth, int cellHeight) {
-      final ScreenComponent screenComponent = ScreenComponent.build(this.getScreenCanvas(), cell.getUiComponent());
-      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, screenComponent, this) {
+      final ScreenComponent screenComponent = ScreenComponent.build(this.getScreenCanvas(), widgetSelectionUtil, cell.getUiComponent());
+      final GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), cell, screenComponent, this, widgetSelectionUtil) {
          @Override
          public void onComponentEvent(ComponentEvent ce) {
             if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-               WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
+               widgetSelectionUtil.setSelectWidget((GridCellContainer) this);
                if (screenComponent instanceof ScreenButton) {
                   ((ScreenButton)screenComponent).setPressedImage();
                } else if (screenComponent instanceof ScreenSwitch) {
@@ -246,7 +246,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenButton)screenComponent).setDefaultImage();
                }
             } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
-               WidgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
+               widgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
@@ -275,7 +275,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      grid.removeCell(cellContainer.getCell());
                      cellContainer.removeFromParent();
-                     WidgetSelectionUtil.resetSelection();
+                     widgetSelectionUtil.resetSelection();
                   }
                }
             });
@@ -294,11 +294,11 @@ public class GridLayoutContainer extends ComponentContainer {
    private GridCellContainer cloneCellContainer(GridCellContainer container) {
       final Cell cell = container.getCell();
       final ScreenComponent screenComponent = container.getScreenComponent();
-      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenComponent(), this) {
+      final GridCellContainer cellContainer =  new GridCellContainer(getScreenCanvas(), cell, container.getScreenComponent(), this, widgetSelectionUtil) {
          @Override
          public void onComponentEvent(ComponentEvent ce) {
             if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-               WidgetSelectionUtil.setSelectWidget((GridCellContainer) this);
+               widgetSelectionUtil.setSelectWidget((GridCellContainer) this);
                if (screenComponent instanceof ScreenButton) {
                   ((ScreenButton)screenComponent).setPressedImage();
                } else if (screenComponent instanceof ScreenSwitch) {
@@ -313,7 +313,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenButton)screenComponent).setDefaultImage();
                }
             } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
-               WidgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
+               widgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
@@ -342,7 +342,7 @@ public class GridLayoutContainer extends ComponentContainer {
                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                        grid.removeCell(cellContainer.getCell());
                        cellContainer.removeFromParent();
-                       WidgetSelectionUtil.resetSelection();
+                       widgetSelectionUtil.resetSelection();
                     }
                 }
             });
@@ -470,7 +470,7 @@ public class GridLayoutContainer extends ComponentContainer {
 
          @Override
          public void dragDrop(DNDEvent e) {
-            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this);
+            GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this, widgetSelectionUtil);
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
                GridCellContainer container = (GridCellContainer) data;
@@ -616,13 +616,13 @@ public class GridLayoutContainer extends ComponentContainer {
    public void addGridCellContainer(GridCellContainer cellContainer) {
       GridCellBounds recorder = cellContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
       GridCellContainer container = cloneCellContainer(cellContainer);
-      container.setScreenComponent(ScreenComponent.build(getScreenCanvas(), cellContainer.getCell().getUiComponent()));
+      container.setScreenComponent(ScreenComponent.build(getScreenCanvas(), widgetSelectionUtil, cellContainer.getCell().getUiComponent()));
       container.setBounds(recorder.getBounds());
       container.layout();
       add(container);
       createDragSource(container);
       container.fillArea(btnInArea);
-      WidgetSelectionUtil.setSelectWidget(container);
+      widgetSelectionUtil.setSelectWidget(container);
       makeCellContainerResizable(cellWidth, cellHeight, container);
       layout();
    }

@@ -31,22 +31,19 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
  */
 public class WidgetSelectionUtil {
 
-   private WidgetSelectionUtil() {
-   }
+   private List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
    
-   private static List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
+   private WidgetSelectChangeListener widgetSelectChangeListener;
    
-   private static WidgetSelectChangeListener widgetSelectChangeListener;
-   
-   public static void setChangeListener(WidgetSelectChangeListener listener) {
+   public void setChangeListener(WidgetSelectChangeListener listener) {
       widgetSelectChangeListener = listener;
    }
    
-   public static void resetSelection() {
+   public void resetSelection() {
      setSelectWidget(null);
    }
    
-   public static void setSelectWidget(ComponentContainer selectedWidget) {
+   public void setSelectWidget(ComponentContainer selectedWidget) {
      for (ComponentContainer widget : selectedWidgets) {
        widget.removeStyleName("button-border");
      }
@@ -63,7 +60,7 @@ public class WidgetSelectionUtil {
       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
    }
 
-   public static void toggleSelectWidget(ComponentContainer selectedWidget) {
+   public void toggleSelectWidget(ComponentContainer selectedWidget) {
      if (selectedWidget != null) {
        if (selectedWidgets.contains(selectedWidget)) {
          selectedWidget.removeStyleName("button-border");
@@ -78,11 +75,11 @@ public class WidgetSelectionUtil {
      }
    }
    
-   public static List<ComponentContainer> getSelectedWidgets() {
+   public List<ComponentContainer> getSelectedWidgets() {
     return selectedWidgets;
   }
 
-  private static void selectWidget(ComponentContainer selectedWidget) {
+  private void selectWidget(ComponentContainer selectedWidget) {
      selectedWidget.addStyleName("button-border");
       
       // add tab index and focus it, for catch keyboard "delete" event in Firefox.
