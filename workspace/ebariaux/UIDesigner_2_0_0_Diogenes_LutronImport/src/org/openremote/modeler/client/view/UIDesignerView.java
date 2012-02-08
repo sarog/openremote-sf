@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanelImpl;
@@ -46,7 +47,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 public class UIDesignerView extends TabItem {
   
    /** The screen panel is for DND widget in it. */
-   private ScreenPanelImpl screenPanel = new ScreenPanelImpl();
+   private ScreenPanelImpl screenPanel;
 
    private ProfilePanel profilePanel = null;
    
@@ -56,11 +57,15 @@ public class UIDesignerView extends TabItem {
    
    private UIDesignerToolbarImpl toolbar;
    
+   private WidgetSelectionUtil widgetSelectionUtil;
+   
    /**
     * Instantiates a new uI designer view.
     */
-   public UIDesignerView() {
+   public UIDesignerView(WidgetSelectionUtil widgetSelectionUtil) {
       super();
+      this.widgetSelectionUtil = widgetSelectionUtil;
+      screenPanel = new ScreenPanelImpl(widgetSelectionUtil);
       setText("UI Designer");
       setLayout(new BorderLayout());
       profilePanel = createWest();
@@ -144,7 +149,7 @@ public class UIDesignerView extends TabItem {
       widgetPanel.setSize("100%", "50%");
       widgetAndPropertyContainer.add(widgetPanel, northData);
 
-      propertyPanel = new PropertyPanel();
+      propertyPanel = new PropertyPanel(widgetSelectionUtil);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setSplit(true);
       centerData.setMargins(new Margins(2));

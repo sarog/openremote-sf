@@ -49,8 +49,8 @@ public class TabbarItemPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;
    private ScreenTabbarItem screenTabbarItem = null;
    
-   public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem) {
-      super(screenTabbarItem);
+   public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenTabbarItem, widgetSelectionUtil);
       this.screenTabbarItem = screenTabbarItem;
       addFields();
       addSubmitListenersToForm();
@@ -83,7 +83,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
             if (screenTabbarItem.getImageSource().getSrc() != null) {
                screenTabbarItem.removeImage();
 //               WidgetSelectionUtil.setSelectWidget(null);
-               WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
+               widgetSelectionUtil.setSelectWidget(screenTabbarItem);
             }
          }
          

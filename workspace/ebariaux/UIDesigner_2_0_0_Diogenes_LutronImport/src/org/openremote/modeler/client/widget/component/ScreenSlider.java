@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SliderPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -46,13 +47,13 @@ public class ScreenSlider extends ScreenComponent {
    protected LayoutContainer maxTrackImage = new LayoutContainer();
    protected LayoutContainer maxImage = new LayoutContainer();
 
-   public ScreenSlider(ScreenCanvas screenCanvas) {
-      super(screenCanvas);
+   public ScreenSlider(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
       setLayout(new FlowLayout());
    }
 
-   public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider) {
-      this(screenCanvas);
+   public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider, WidgetSelectionUtil widgetSelectionUtil) {
+      this(screenCanvas, widgetSelectionUtil);
       this.uiSlider = uiSlider;
       
       if(uiSlider.isVertical()) {
@@ -90,7 +91,7 @@ public class ScreenSlider extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new SliderPropertyForm(this);
+      return new SliderPropertyForm(this, widgetSelectionUtil);
    }
 
    public void setMinImage(String imageURL) {

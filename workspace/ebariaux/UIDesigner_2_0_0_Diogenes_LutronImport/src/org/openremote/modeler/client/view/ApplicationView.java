@@ -35,6 +35,7 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Role;
@@ -386,10 +387,11 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
+      WidgetSelectionUtil widgetSelectionUtil = new WidgetSelectionUtil();
       if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
          this.buildingModelerView = new BuildingModelerView(eventBus);
-         this.uiDesignerView = new UIDesignerView();
-         this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
+         this.uiDesignerView = new UIDesignerView(widgetSelectionUtil);
+         this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView, widgetSelectionUtil);
          if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
             modelerContainer.add(uiDesignerView);
          } else {
@@ -399,8 +401,8 @@ public class ApplicationView implements View {
          this.buildingModelerView = new BuildingModelerView(eventBus);
          modelerContainer.add(buildingModelerView);
       } else if(roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
-        this.uiDesignerView = new UIDesignerView();
-        this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
+        this.uiDesignerView = new UIDesignerView(widgetSelectionUtil);
+        this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView, widgetSelectionUtil);
          modelerContainer.add(uiDesignerView);
       }
       

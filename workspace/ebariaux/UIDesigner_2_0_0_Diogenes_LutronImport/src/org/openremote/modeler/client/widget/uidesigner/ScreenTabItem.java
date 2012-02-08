@@ -19,6 +19,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Group;
@@ -46,6 +47,8 @@ public class ScreenTabItem extends TabItem {
    
    private ScreenCanvas screenCanvas;
    private LayoutContainer dropTarget;
+   
+   private WidgetSelectionUtil widgetSelectionUtil;
 
    /**
     * Instantiates a new screen panel.
@@ -53,8 +56,9 @@ public class ScreenTabItem extends TabItem {
     * @param screen
     *           the s
     */
-   public ScreenTabItem(Screen screen) {
+   public ScreenTabItem(Screen screen, WidgetSelectionUtil widgetSelectionUtil) {
       this.screen = screen;
+      this.widgetSelectionUtil = widgetSelectionUtil;
       if (screen.isLandscape()) {
          setText(Constants.LANDSCAPE);
          setItemId(Constants.LANDSCAPE);
@@ -73,7 +77,7 @@ public class ScreenTabItem extends TabItem {
     * Adds the screen container.
     */
    private void addScreenContainer() {
-      screenContainer = new ComponentContainer(){ 
+      screenContainer = new ComponentContainer(widgetSelectionUtil){ 
          @Override
          public void onComponentEvent(ComponentEvent ce) {
             super.onComponentEvent(ce);
@@ -86,7 +90,7 @@ public class ScreenTabItem extends TabItem {
       screenContainer.sinkEvents(Event.ONMOUSEDOWN);
       dropTarget = new LayoutContainer();
       dropTarget.setStyleAttribute("padding", "5px");
-      screenCanvas = new ScreenCanvas(screen, dropTarget);
+      screenCanvas = new ScreenCanvas(screen, dropTarget, widgetSelectionUtil);
       dropTarget.add(screenCanvas);
       updateTouchPanel();
       initTabbarForScreenCanvas();
@@ -141,9 +145,9 @@ public class ScreenTabItem extends TabItem {
          Panel groupPanel = screenGroup.getParentPanel();
          ScreenTabbar tabbar = null;
          if (screenGroup.getTabbar() != null) {
-            tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+            tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar(), widgetSelectionUtil);
          } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
-            tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+            tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar(), widgetSelectionUtil);
             tabbar.setToPanel();
          }
          
@@ -162,9 +166,9 @@ public class ScreenTabItem extends TabItem {
             Panel groupPanel = screenGroup.getParentPanel();
             ScreenTabbar tabbar = null;
             if (screenGroup.getTabbar() != null) {
-               tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar());
+               tabbar = new ScreenTabbar(screenCanvas,screenGroup.getTabbar(), widgetSelectionUtil);
             } else if (groupPanel != null && groupPanel.getTabbar()!= null) {
-               tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar());
+               tabbar = new ScreenTabbar(screenCanvas,groupPanel.getTabbar(), widgetSelectionUtil);
                tabbar.setToPanel();
             }
             

@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
@@ -42,8 +43,8 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
  */
 public class SwitchPropertyForm extends PropertyForm {
 
-   public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch) {
-      super(screenSwitch);
+   public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenSwitch, widgetSelectionUtil);
       setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
       super.addDeleteButton();

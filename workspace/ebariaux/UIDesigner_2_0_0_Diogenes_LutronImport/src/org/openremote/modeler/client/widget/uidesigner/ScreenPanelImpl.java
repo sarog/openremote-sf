@@ -56,10 +56,13 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
    
    private Presenter presenter;
    
+   private WidgetSelectionUtil widgetSelectionUtil;
+   
    /**
     * Instantiates a new screen panel.
     */
-   public ScreenPanelImpl() {
+   public ScreenPanelImpl(WidgetSelectionUtil widgetSelectionUtil) {
+     this.widgetSelectionUtil = widgetSelectionUtil;
       setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
       addListeners();
@@ -116,13 +119,13 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
       addListener(Events.BeforeAdd, new Listener<ContainerEvent>() {
          @Override
          public void handleEvent(ContainerEvent be) {
-            WidgetSelectionUtil.resetSelection();
+            widgetSelectionUtil.resetSelection();
          }
       });
       addListener(Events.BeforeRemove, new Listener<ContainerEvent>() {
          @Override
          public void handleEvent(ContainerEvent be) {
-            WidgetSelectionUtil.resetSelection();
+            widgetSelectionUtil.resetSelection();
          }
       });
       addListener(Events.Add, new Listener<ContainerEvent>() {
@@ -171,7 +174,7 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
                        screenTab.getItemByItemId(Constants.LANDSCAPE).disable();
                      }
                      if (screenTab.getItemByItemId(Constants.PORTRAIT) == null) {
-                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil), 0);
                      } else {
                        screenTab.getItemByItemId(Constants.PORTRAIT).enable();
                      }
@@ -184,7 +187,7 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
                        screenTab.getItemByItemId(Constants.PORTRAIT).disable();
                      }
                      if (screenTab.getItemByItemId(Constants.LANDSCAPE) == null) {
-                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
                      } else {
                        screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
                      }
@@ -196,12 +199,12 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
                      if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
                        screenTab.getItemByItemId(Constants.PORTRAIT).enable();
                      } else {
-                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil), 0);
                      }
                      if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
                        screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
                      } else {
-                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
                      }
                      screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
                      break;

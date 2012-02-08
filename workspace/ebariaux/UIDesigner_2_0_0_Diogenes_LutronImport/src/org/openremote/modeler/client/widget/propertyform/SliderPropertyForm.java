@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
@@ -50,8 +51,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
-   public SliderPropertyForm(ScreenSlider screenSlider) {
-      super(screenSlider);
+   public SliderPropertyForm(ScreenSlider screenSlider, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenSlider, widgetSelectionUtil);
       this.screenSlider = screenSlider;
       setLabelWidth(100);
       addFields();

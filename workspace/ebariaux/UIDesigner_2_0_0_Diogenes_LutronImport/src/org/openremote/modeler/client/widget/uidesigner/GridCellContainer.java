@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Cell;
@@ -33,13 +34,13 @@ public class GridCellContainer extends ComponentContainer {
    
    private ScreenComponent screenComponent;
    
-   public GridCellContainer(ScreenCanvas canvas, GridLayoutContainer gridContainer) {
-      super(canvas);
+   public GridCellContainer(ScreenCanvas canvas, GridLayoutContainer gridContainer, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.gridContainer = gridContainer;
    }
    public GridCellContainer(ScreenCanvas canvas, Cell cell, ScreenComponent screenComponent,
-         GridLayoutContainer gridContainer) {
-      super(canvas);
+         GridLayoutContainer gridContainer, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.cell = cell;
       this.screenComponent = screenComponent;
       this.gridContainer = gridContainer;

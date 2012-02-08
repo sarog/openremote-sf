@@ -38,7 +38,7 @@ public class PropertyPanel extends ContentPanel {
    private ComponentContainer currentLayoutContainer;
    private PropertyForm currentPropertyForm;
    
-   public PropertyPanel() {
+   public PropertyPanel(WidgetSelectionUtil widgetSelectionUtil) {
       setBorders(false);
       setFooter(false);
       setBodyStyleName("zero-padding");
@@ -46,7 +46,7 @@ public class PropertyPanel extends ContentPanel {
       setHeading("Properties");
       setLayout(new FitLayout());
       setFrame(true);
-      WidgetSelectionUtil.setChangeListener(new WidgetSelectChangeListener() {
+      widgetSelectionUtil.setChangeListener(new WidgetSelectChangeListener() {
          @Override
          public void changeSelect(WidgetSelectChangeEvent be) {
             update(be.getSelectWidget());

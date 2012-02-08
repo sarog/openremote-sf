@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
@@ -49,7 +50,6 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
@@ -65,8 +65,8 @@ public class ButtonPropertyForm extends PropertyForm {
    private CheckBox repeat = new CheckBox();
    private NavigateFieldSet navigateSet = null;
    
-   public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
-      super(screenButton);
+   public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenButton, widgetSelectionUtil);
       addFields(screenButton, uiButton);
       super.addDeleteButton();
    }
