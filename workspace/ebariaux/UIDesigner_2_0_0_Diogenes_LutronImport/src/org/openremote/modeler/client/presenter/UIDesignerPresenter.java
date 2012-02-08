@@ -599,11 +599,10 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
       }
       
       Screen screen = ((ScreenTabItem)this.view.getScreenPanel().getScreenItem().getSelectedItem()).getScreen();
-      // TODO: take tabbar info account
-      //      Info.display("INFO", "Has tab bar " + screen.isHasTabbar()); // Always returning false ????
-      
+      boolean hasTabBar = ((this.view.getScreenPanel().getScreenItem().getScreenPair().getParentGroup().getTabbar() != null)
+                          || (this.view.getScreenPanel().getScreenItem().getScreenPair().getParentGroup().getParentPanel().getTabbar() != null));
       int totalMargin = screen.getTouchPanelDefinition().getCanvas().getHeight()
-                          - (screen.isHasTabbar()?screen.getTouchPanelDefinition().getTabbarDefinition().getHeight():0)
+                          - (hasTabBar?screen.getTouchPanelDefinition().getTabbarDefinition().getHeight():0)
                           - (bottomBorder - topBorder);      
       int offset = (totalMargin / 2) - topBorder;
       for (PositionableAndSizable pas : elementsToProcess) {
