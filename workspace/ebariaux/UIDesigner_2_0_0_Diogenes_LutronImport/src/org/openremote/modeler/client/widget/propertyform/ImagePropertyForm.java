@@ -181,7 +181,7 @@ public class ImagePropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             if (!UIImage.DEFAULT_IMAGE_URL.equals(screenImage.getUiImage().getImageSource().getSrc())){
                screenImage.setImageSource(new ImageSource(UIImage.DEFAULT_IMAGE_URL));
-               WidgetSelectionUtil.setSelectWidget(null);
+//               WidgetSelectionUtil.setSelectWidget(null);
                WidgetSelectionUtil.setSelectWidget(screenImage);
             }
          }

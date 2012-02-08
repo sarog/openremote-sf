@@ -296,7 +296,7 @@ public class ScreenPropertyForm extends PropertyForm {
             if (!"".equals(canvas.getScreen().getBackground().getImageSource().getSrc())) {
                setBackground("");
                // remove this form from property panel.
-               WidgetSelectionUtil.setSelectWidget(null);
+//               WidgetSelectionUtil.setSelectWidget(null);
                WidgetSelectionUtil.setSelectWidget(canvas);
             }
          }

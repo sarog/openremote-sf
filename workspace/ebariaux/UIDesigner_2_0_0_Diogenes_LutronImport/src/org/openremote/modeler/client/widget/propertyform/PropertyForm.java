@@ -170,7 +170,7 @@ public class PropertyForm extends FormPanel {
                            ((ComponentContainer) componentContainer.getParent()).fireEvent(
                                  WidgetDeleteEvent.WIDGETDELETE, new WidgetDeleteEvent());
                         }
-                        WidgetSelectionUtil.setSelectWidget(null);
+                        WidgetSelectionUtil.resetSelection();
                      }
                   }
                });

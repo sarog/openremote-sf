@@ -54,7 +54,7 @@ public class ScreenTab extends TabPanel {
       }
       this.addListener(Events.Select, new Listener<TabPanelEvent>(){
          public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
+            WidgetSelectionUtil.resetSelection();
          }
          
       });

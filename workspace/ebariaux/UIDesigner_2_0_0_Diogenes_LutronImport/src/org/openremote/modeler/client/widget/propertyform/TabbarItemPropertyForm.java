@@ -82,7 +82,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             if (screenTabbarItem.getImageSource().getSrc() != null) {
                screenTabbarItem.removeImage();
-               WidgetSelectionUtil.setSelectWidget(null);
+//               WidgetSelectionUtil.setSelectWidget(null);
                WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
             }
          }

@@ -42,6 +42,10 @@ public class WidgetSelectionUtil {
       widgetSelectChangeListener = listener;
    }
    
+   public static void resetSelection() {
+     setSelectWidget(null);
+   }
+   
    public static void setSelectWidget(ComponentContainer selectedWidget) {
      for (ComponentContainer widget : selectedWidgets) {
        widget.removeStyleName("button-border");
