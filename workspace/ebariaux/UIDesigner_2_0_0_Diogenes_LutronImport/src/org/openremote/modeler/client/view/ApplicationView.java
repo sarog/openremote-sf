@@ -387,7 +387,7 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
-      WidgetSelectionUtil widgetSelectionUtil = new WidgetSelectionUtil();
+      WidgetSelectionUtil widgetSelectionUtil = new WidgetSelectionUtil(eventBus);
       if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
          this.buildingModelerView = new BuildingModelerView(eventBus);
          this.uiDesignerView = new UIDesignerView(widgetSelectionUtil);
