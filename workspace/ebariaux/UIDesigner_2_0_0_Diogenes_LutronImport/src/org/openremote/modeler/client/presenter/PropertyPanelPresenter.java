@@ -23,6 +23,8 @@ import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
+import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -56,6 +58,13 @@ public class PropertyPanelPresenter implements Presenter {
       public void onElementEdited(UIElementEditedEvent event) {
         // TODO EBR - this is just a quick fix, need to review
         view.update(widgetSelectionUtil.getSelectedWidgets());
+      }
+    });
+    
+    eventBus.addHandler(WidgetSelectedEvent.TYPE, new WidgetSelectedEventHandler() {
+      @Override
+      public void onSelectionChanged(WidgetSelectedEvent event) {
+        view.update(event.getSelectedWidgets());
       }
     });
   }
