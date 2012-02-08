@@ -144,6 +144,31 @@
   			#end
   		</sensor>
   	#end
+  	#foreach($sensor in $dbSensors)
+  		<sensor id="${resouceServiceImpl.getMaxId($maxId)}" name="${sensor.getName()}" type="${sensor.getType()}">
+  			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
+  				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
+  				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer,$maxId)})
+  					<include type="command" ref="${cmd.getId()}"/>
+				#end
+				#if(${sensor.getType().toString().equals("range")})
+					<min value="${sensor.getMin()}"/>
+					<max value="${sensor.getMax()}"/>
+				#elseif(${sensor.getType().toString().equals("switch")})
+					<state name="on"/>
+					<state name="off"/>
+				#elseif(${sensor.getType().toString().equals("custom")})
+					#foreach($state in $sensor.getStates())
+						<state name="${stringUtils.escapeXml($state.getName())}" 
+						#if($state.getValue())
+						   value="${stringUtils.escapeXml($state.getValue())}" 
+						#end
+						/>
+					#end
+				#end
+  			#end
+  		</sensor>
+  	#end
   </sensors>
   ##<------------------------------------------------------------------------Commands------------------------------------------------------------------
   <commands>
