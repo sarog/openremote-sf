@@ -211,7 +211,7 @@ public class ScreenCanvas extends ComponentContainer {
                   MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                      public void handleEvent(MessageBoxEvent be) {
                         if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           WidgetSelectionUtil.setSelectWidget(null);
+                           WidgetSelectionUtil.resetSelection();
                         } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
                            cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
                            cellContainer.getGridContainer().addGridCellContainer(cellContainer);
@@ -228,7 +228,7 @@ public class ScreenCanvas extends ComponentContainer {
                               ScreenCanvas.this.getScreen()
                                     .removeGrid(gridContainer.getGridlayoutContainer().getGrid());
                               gridContainer.removeFromParent();
-                              WidgetSelectionUtil.setSelectWidget(null);
+                              WidgetSelectionUtil.resetSelection();
                            }
                         }
                      });
@@ -239,7 +239,7 @@ public class ScreenCanvas extends ComponentContainer {
                            if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                               ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
                               controlContainer.removeFromParent();
-                              WidgetSelectionUtil.setSelectWidget(null);
+                              WidgetSelectionUtil.resetSelection();
                            }
                         }
                      });
@@ -278,7 +278,7 @@ public class ScreenCanvas extends ComponentContainer {
                   MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                      public void handleEvent(MessageBoxEvent be) {
                         if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           WidgetSelectionUtil.setSelectWidget(null);
+                           WidgetSelectionUtil.resetSelection();
                         } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
                            controlContainer.getGridContainer().getGrid().addCell(controlContainer.getCell());
                            controlContainer.getGridContainer().addGridCellContainer(controlContainer);
@@ -309,7 +309,7 @@ public class ScreenCanvas extends ComponentContainer {
                               ScreenCanvas.this.getScreen()
                                     .removeGrid(gridContainer.getGridlayoutContainer().getGrid());
                               gridContainer.removeFromParent();
-                              WidgetSelectionUtil.setSelectWidget(null);
+                              WidgetSelectionUtil.resetSelection();
                            }
                         }
                      });
@@ -359,7 +359,7 @@ public class ScreenCanvas extends ComponentContainer {
                            if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                               ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
                               controlContainer.removeFromParent();
-                              WidgetSelectionUtil.setSelectWidget(null);
+                              WidgetSelectionUtil.resetSelection();
                            }
                         }
                      });
@@ -568,7 +568,7 @@ public class ScreenCanvas extends ComponentContainer {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      screen.removeAbsolute(controlContainer.getAbsolute());
                      controlContainer.removeFromParent();
-                     WidgetSelectionUtil.setSelectWidget(null);
+                     WidgetSelectionUtil.resetSelection();
                   }
                }
             });
@@ -672,7 +672,7 @@ public class ScreenCanvas extends ComponentContainer {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      ScreenCanvas.this.getScreen().removeGrid(grid);
                      gridContainer.removeFromParent();
-                     WidgetSelectionUtil.setSelectWidget(null);
+                     WidgetSelectionUtil.resetSelection();
                   }
                }
             });

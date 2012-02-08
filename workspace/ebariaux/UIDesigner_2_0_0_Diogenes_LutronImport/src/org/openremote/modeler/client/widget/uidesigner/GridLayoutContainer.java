@@ -275,7 +275,7 @@ public class GridLayoutContainer extends ComponentContainer {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                      grid.removeCell(cellContainer.getCell());
                      cellContainer.removeFromParent();
-                     WidgetSelectionUtil.setSelectWidget(null);
+                     WidgetSelectionUtil.resetSelection();
                   }
                }
             });
@@ -342,7 +342,7 @@ public class GridLayoutContainer extends ComponentContainer {
                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                        grid.removeCell(cellContainer.getCell());
                        cellContainer.removeFromParent();
-                       WidgetSelectionUtil.setSelectWidget(null);
+                       WidgetSelectionUtil.resetSelection();
                     }
                 }
             });

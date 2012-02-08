@@ -116,13 +116,13 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
       addListener(Events.BeforeAdd, new Listener<ContainerEvent>() {
          @Override
          public void handleEvent(ContainerEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
+            WidgetSelectionUtil.resetSelection();
          }
       });
       addListener(Events.BeforeRemove, new Listener<ContainerEvent>() {
          @Override
          public void handleEvent(ContainerEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
+            WidgetSelectionUtil.resetSelection();
          }
       });
       addListener(Events.Add, new Listener<ContainerEvent>() {
