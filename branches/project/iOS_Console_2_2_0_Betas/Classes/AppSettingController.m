@@ -587,6 +587,9 @@
 - (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password
 {
     ORController *orController = ((ControllerRequest *)controller.context).controller;
+    if (!orController) {
+        orController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    }
     orController.userName = username;
 	orController.password = password;
     
