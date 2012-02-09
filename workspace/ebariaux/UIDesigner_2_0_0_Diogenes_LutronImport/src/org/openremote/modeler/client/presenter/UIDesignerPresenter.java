@@ -71,7 +71,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
   private WidgetSelectionUtil widgetSelectionUtil;
 
   /** The auto_save_interval millisecond. */
-  private static final int AUTO_SAVE_INTERVAL_MS = 30000;
+  private static final int AUTO_SAVE_INTERVAL_MS = 300000;
 
   private Timer timer;
 
