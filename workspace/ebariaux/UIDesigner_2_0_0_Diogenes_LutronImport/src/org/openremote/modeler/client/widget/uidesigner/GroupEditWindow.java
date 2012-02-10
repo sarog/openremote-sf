@@ -109,7 +109,9 @@ public class GroupEditWindow extends FormWindow {
       for (BeanModel screenPairModel : screenPairModels) {
          if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
             store.add(screenPairModel);
-            screenPairListView.getSelectionModel().select(screenPairModel, true);
+            // EBR : The next call throws an exception. Not sure why, seems called too early to me
+            // In addition, seems it does not bring anything from functional point of view, selection is handled below
+            // screenPairListView.getSelectionModel().select(screenPairModel, true);
          } else if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
             otherModels.add(screenPairModel);
          }
