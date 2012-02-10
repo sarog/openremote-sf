@@ -1,0 +1,139 @@
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2012, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+package org.openremote.controller.protocol.rrdgraphurl;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.utils.Logger;
+
+/**
+ * OpenRemote rrdGraphUrl command implementation.
+ * This is a virtual command which is used to manipulate the graph url for the RRD4j grap servlet.
+ * <p>
+ * 
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ */
+public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
+
+   // Class Members --------------------------------------------------------------------------------
+
+   /**
+    * Logging. Use common log category for all related classes.
+    */
+   private final static Logger log = Logger.getLogger(RrdGraphUrlCommandBuilder.LOG_CATEGORY);
+
+   private final static Map<String, RrdGraphUrlCommand> graphUrls = new ConcurrentHashMap<String, RrdGraphUrlCommand>(
+         20);
+
+   private final static SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HH-mm");
+
+   // Instance Fields ------------------------------------------------------------------------------
+
+   private String graphName = null;
+   private String command = null;
+   private String width = null;
+   private String height = null;
+   private String start = null;
+   private String end = null;
+
+   /** The sensor which is updated */
+   private Sensor sensor;
+
+   // Constructors ---------------------------------------------------------------------------------
+
+   public RrdGraphUrlCommand(String graphName, String command, String width, String height, String start, String end) {
+      this.graphName = graphName;
+      this.command = command;
+      this.width = width;
+      this.height = height;
+      this.start = start;
+      this.end = end;
+   }
+
+   // Implements ExecutableCommand -----------------------------------------------------------------
+   @Override
+   public void send() {
+      RrdGraphUrlCommand tmp = RrdGraphUrlCommand.graphUrls.get(graphName);
+      try {
+         GregorianCalendar startOld = new GregorianCalendar();
+         GregorianCalendar endOld = new GregorianCalendar();
+         startOld.setTime(df.parse(tmp.start));
+         endOld.setTime(df.parse(tmp.end));
+         if (command.equalsIgnoreCase("startMinus1Day")) {
+            startOld.add(Calendar.DAY_OF_MONTH, -1);
+         } else if (command.equalsIgnoreCase("startMinus1Hour")) {
+            startOld.add(Calendar.HOUR_OF_DAY, -1);
+         } else if (command.equalsIgnoreCase("startMinus1Month")) {
+            startOld.add(Calendar.MONTH, -1);
+         } else if (command.equalsIgnoreCase("endMinus1Hour")) {
+            endOld.add(Calendar.HOUR_OF_DAY, -1);
+         } else if (command.equalsIgnoreCase("endMinus1Day")) {
+            endOld.add(Calendar.DAY_OF_MONTH, -1);
+         } else if (command.equalsIgnoreCase("endMinus1Month")) {
+            endOld.add(Calendar.MONTH, -1);
+         } else if (command.equalsIgnoreCase("startPlus1Day")) {
+            startOld.add(Calendar.DAY_OF_MONTH, 1);
+         } else if (command.equalsIgnoreCase("startPlus1Hour")) {
+            startOld.add(Calendar.HOUR_OF_DAY, 1);
+         } else if (command.equalsIgnoreCase("startPlus1Month")) {
+            startOld.add(Calendar.MONTH, 1);
+         } else if (command.equalsIgnoreCase("endPlus1Hour")) {
+            endOld.add(Calendar.HOUR_OF_DAY, 1);
+         } else if (command.equalsIgnoreCase("endPlus1Day")) {
+            endOld.add(Calendar.DAY_OF_MONTH, 1);
+         } else if (command.equalsIgnoreCase("endPlus1Month")) {
+            endOld.add(Calendar.MONTH, 1);
+         }
+         tmp.start = df.format(startOld.getTime());
+         tmp.end = df.format(endOld.getTime());
+         tmp.sensor.update(createUrl(tmp));
+      } catch (ParseException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+
+   }
+
+   // Implements EventListener -----------------------------------------------------------------
+   @Override
+   public void setSensor(Sensor sensor) {
+      this.sensor = sensor;
+      RrdGraphUrlCommand.graphUrls.put(graphName, this);
+      sensor.update(createUrl(this));
+   }
+
+   @Override
+   public void stop(Sensor sensor) {
+   }
+
+   private String createUrl(RrdGraphUrlCommand cmd) {
+      String url = "http://192.168.100.30:8080/controller/graph?name=" + cmd.graphName + 
+         "&amp;start=" + cmd.start +
+         "&amp;end=" + cmd.end +
+         "&amp;width=" + cmd.width +
+         "&amp;height=" + cmd.height;
+      return url;
+   }
+}

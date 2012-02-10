@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="config"/>
-	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" output="web/WEB-INF/classes" path="src"/>
+	<classpathentry kind="src" output="web/WEB-INF/classes" path="config"/>
+	<classpathentry kind="src" output="web/WEB-INF/classes" path="test"/>
 	<classpathentry kind="lib" path="lib/apache/commons-net/commons-net-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/compile/javax.servlet.jar"/>
-	<classpathentry kind="lib" path="lib/compile/javax.servlet.jsp.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-io-1.4.jar"/>
@@ -46,5 +44,7 @@
 	<classpathentry kind="lib" path="lib/json/json-20110113.jar"/>
 	<classpathentry kind="lib" path="lib/onewire/org.owfs.jowfsclient_0.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/sunrise/SunriseSunsetLib-bin.jar"/>
+	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/rrd4j-2.1.1/rrd4j-2.1.1.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
