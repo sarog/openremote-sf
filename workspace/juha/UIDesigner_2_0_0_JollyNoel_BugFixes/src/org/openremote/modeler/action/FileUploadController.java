@@ -87,12 +87,10 @@ public class FileUploadController extends MultiActionController {
         
         try
         {
-          if (("text/csv".equalsIgnoreCase(contentType)) || ("text/plain".equalsIgnoreCase(contentType))) {
-            addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
-          } else if ("application/octet-stream" .equalsIgnoreCase(contentType)) {
-            addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());  
+          if ("application/octet-stream" .equalsIgnoreCase(contentType) || "application/x-zip-compressed".equalsIgnoreCase(contentType)) {
+            addresses = new KnxImporter().importETS4Configuration(multipartFile.getInputStream());
           } else {
-            throw new RuntimeException("Unsupported content-type: " + contentType);
+            addresses = new KnxImporter().importETS3GroupAddressCsvExport(multipartFile.getInputStream());
           }
           data.put("records", addresses);
         } catch (Exception e)
