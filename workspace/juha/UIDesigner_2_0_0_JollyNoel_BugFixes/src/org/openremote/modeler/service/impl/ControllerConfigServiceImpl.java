@@ -63,6 +63,9 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    public Set<ControllerConfig> saveAll(Set<ControllerConfig> configs) {
       Set<ControllerConfig> cfgs = new LinkedHashSet<ControllerConfig>();
       for (ControllerConfig cfg : configs) {
+         if (cfg.getValue() == null) {
+           cfg.setValue("");
+         }
          if (cfg.getAccount() == null) {
             cfg.setAccount(userService.getAccount());
             genericDAO.save(cfg);
