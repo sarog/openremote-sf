@@ -62,6 +62,16 @@ import org.openremote.modeler.utils.FileUtilsExt;
 public class LocalFileCache implements ResourceCache
 {
 
+  // TODO Tasks:
+  //
+  //    - http://jira.openremote.org/browse/MODELER-284 -- log performance stats
+  //    - http://jira.openremote.org/browse/MODELER-285 -- push resource data integrity and
+  //                                                       durability aspects to Beehive
+  //    - http://jira.openremote.org/browse/MODELER-286 -- Beehive API returns 404 on new users
+  //    - http://jira.openremote.org/browse/MODELER-287 -- internalize ResourceService.initResources
+  //                                                       to this implementation
+  //    
+
   // Constants ------------------------------------------------------------------------------------
 
   /**
@@ -123,11 +133,6 @@ public class LocalFileCache implements ResourceCache
   private Configuration configuration;
 
   /**
-   *  Designer file path related configuration.
-   */
-  private PathConfig pathConfig;
-
-  /**
    * The account with which this cache is associated with.
    */
   private Account account;
@@ -159,13 +164,11 @@ public class LocalFileCache implements ResourceCache
   {
     this.configuration = config;
 
-    this.pathConfig = PathConfig.getInstance(config);
-
     this.account = user.getAccount();
 
     this.currentUser = user;
 
-    this.cacheFolder = new File(pathConfig.userFolder(account));
+    this.cacheFolder = new File(PathConfig.getInstance(config).userFolder(account));
   }
 
 
@@ -176,7 +179,10 @@ public class LocalFileCache implements ResourceCache
   /**
    * Creates an export zip on the local file system (in this account's cache directory)
    * and returns a readable input stream from it. The zip archive contents is created based
-   * on the current (un-versioned) in-memory object model of the designer.
+   * on the current (un-versioned) in-memory object model of the designer. <p>
+   *
+   * This input stream can be used where the designer resources are expected as a zipped
+   * archive bundle (Beehive API calls, configuration export functions, etc.)
    *
    * @param   panels    this account's current, in-memory object model of the designer UI,
    *                    configuration and associated artifacts
@@ -208,7 +214,7 @@ public class LocalFileCache implements ResourceCache
       );
     }
 
-    // TODO : log execution performance
+    // TODO : MODELER-284 -- log execution performance
   }
 
 
@@ -237,7 +243,8 @@ public class LocalFileCache implements ResourceCache
 
     // Backup existing cached archives.
     //
-    // TODO:
+    // TODO: MODELER-285
+    //
     //   - We are over-cautious with cached copies here (which should be throw-away copies under
     //     normal circumstances) because of the issues with state synchronization between
     //     Designer and Beehive that currently exists -- these issues are commented on the
@@ -270,7 +277,7 @@ public class LocalFileCache implements ResourceCache
 
     if (!hasCacheFolder())
     {
-      createCacheFolder();      // throws config exception
+      createCacheFolder();      
     }
 
 
@@ -297,19 +304,21 @@ public class LocalFileCache implements ResourceCache
 
     catch (Beehive30API.ArchiveNotFoundException e)
     {
-      // TODO
+      // TODO : MODELER-286
       //
-      //  - The semantics here are unclear: does 404 indicate a real error (user data has
-      //    disappeared?) or does it merely indicate a new user account (no data, return 404)?
-      //    New user account (no data) should not responed with an error (404).
-      //
-      //    Since this is unclear, not changing the semantics from the original (log but continue)
-      //    until it can be verified what 404 really means.
+      //  - Assuming 404 here always means a new user account was created which has no
+      //    saved resources yet. This is somewhat weak logic and should be updated.
 
       cacheLog.info(
-          "Failed to download Beehive archive for user {0}. Status code is 404. Will try to " +
-          "restore panels from local resource! [Is this a new user?]", currentUser.getUsername()
+          "Failed to download Beehive archive for user {0}. Status code is 404. " +
+          "Assuming a new user account.", currentUser.getUsername()
       );
+
+
+      // Stop and return with the assumption that this is a new account, nothing to update
+      // on the cache yet...
+
+      return;
     }
 
     catch (Beehive30API.ArchiveStoreException e)
@@ -360,9 +369,6 @@ public class LocalFileCache implements ResourceCache
    * Indicates if we've found any resource artifacts in the cache that would imply an existing,
    * previous cache state. This includes the presence of any backup copies. <p>
    *
-   * Only if the account's local cache directory is completely empty, will this method return
-   * false.
-   *
    * @return    true if account's cache folder holds any previously cache artifacts, false
    *            otherwise
    *
@@ -377,25 +383,12 @@ public class LocalFileCache implements ResourceCache
       return true;
     }
 
-    if (hasNewestDailyBackup())
+    else if (hasNewestDailyBackup())
     {
       return true;
     }
 
-    try
-    {
-      String[] files = cacheFolder.list();
-
-      return files.length > 0;
-    }
-
-    catch (SecurityException e)
-    {
-      throw new ConfigurationException(
-          "Security manager denied read access to ''{0}'' : {1}",
-          e, cacheFolder.getAbsolutePath(), e.getMessage()
-      );
-    }
+    return false;
   }
 
 
@@ -404,6 +397,19 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
+   * TODO : MODELER-287
+   *
+   *   - Note that this still has a functional dependency to the existing legacy
+   *     resource service implementation that exports the appropriate XML files
+   *     into the correct file cache directory first (initResource() call).
+   *
+   * TODO : MODELER-289
+   *
+   *   - This method should not be public. Once the faulty export implementation in
+   *     Designer is corrected (see Modeler-288), should become private
+   *
+   *
+   *
    * Creates an exportable zip file archive on the local file system in the configured
    * account's cache directory. <p>
    *
@@ -423,7 +429,7 @@ public class LocalFileCache implements ResourceCache
    * </ul>
    *
    *
-   * @param panels    the current, temporary and in-memory, object model state of the designer
+   * @param   panels    the current, temporary and in-memory, object model state of the designer
    *
    * @return  reference to the export archive file in the account's cache directory
    *
@@ -437,28 +443,17 @@ public class LocalFileCache implements ResourceCache
   public File createExportArchive(Set<Panel> panels) throws CacheOperationException,
                                                             ConfigurationException
   {
-    // TODO :
-    //   - Note that this still has a functional dependency to the existing legacy
-    //     resource service implementation that exports the appropriate XML files
-    //     into the correct file cache directory first (initResource() call).
-    //
-    // TODO :
-    //   - Some of the logic is still a bit convoluted due to maintaining the existing
-    //     semantics of Designer 'export zip' function which is collated with the
-    //     implementation of saving designer state to Beehive. The export implementation
-    //     logic should eventually be re-written to be more sound and simplify this
-    //     implementation somewhat.
-    
 
     // Collect all image file names (without path references to this account's
     // local cache) included in panel definitions and components in panels...
 
-    Set<String> imageNames = new HashSet<String>();
+    Set<File> imageFiles = new HashSet<File>();
 
     if (panels == null)
     {
       cacheLog.warn(
-          "getAllImageNames(panels) was called with null argument (Account : {0})", account
+          "getAllImageNames(panels) was called with null argument (Account : {0})",
+          account.getOid()
       );
     }
 
@@ -466,34 +461,40 @@ public class LocalFileCache implements ResourceCache
     {
       for (Panel panel : panels)
       {
-        imageNames.addAll(Panel.getAllImageNames(panel));
+        Set<String> imageNames = Panel.getAllImageNames(panel);
+
+        for (String imageName : imageNames)
+        {
+          imageFiles.add(new File(imageName));
+        }
       }
     }
 
-
-    // Resolve the image names from Panel object model to actual paths to files
-    // stored in this account's local cache...
-
-    Set<File> imageFiles;
-
-    try
-    {
-      imageFiles = resolveImagePaths(imageNames);
-    }
-
-    catch (FileNotFoundException e)
-    {
-      // TODO
-      //   - Preserving existing semantics of throwing an exception in case any of the image
-      //     files cannot be resolved in local cache, thus aborting the export operation.
-      //     Unclear if this is a too strict behavior. If this issue starts appearing (thus
-      //     this exception is thrown) may need to revisit the logic.
-
-      throw new CacheOperationException(
-          "Could not resolve all image paths in local file cache for account ID = {0} : {1}",
-          e, account, e.getMessage()
-      );
-    }
+//
+//    // Resolve the image names from Panel object model to actual paths to files
+//    // stored in this account's local cache...
+//
+//    Set<File> imageFiles;
+//
+//    try
+//    {
+//      imageFiles = resolveImagePaths(imageNames);
+//    }
+//
+//    catch (FileNotFoundException e)
+//    {
+//      // TODO
+//      //   - Preserving existing semantics of throwing an exception in case any of the image
+//      //     files cannot be resolved in local cache, thus aborting the export operation.
+//      //     Unclear if this is a too strict behavior. If this issue starts appearing (thus
+//      //     this exception is thrown) may need to revisit the logic.
+//
+//      throw new CacheOperationException(
+//          "Could not resolve all image paths in local file cache for account ID = {0} : {1}",
+//          e, account, e.getMessage()
+//      );
+//    }
+    
 
     // File paths to add to export/upload archive...
     //   - panel.xml
@@ -501,11 +502,13 @@ public class LocalFileCache implements ResourceCache
     //   - panels.obj
     //   - lircd.conf
     //   - image resources
+    //   - rules
 
-    File panelXMLFile = new File(pathConfig.panelXmlFilePath(account));
-    File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(account));
-    File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(account));
-    File lircdFile = new File(pathConfig.lircFilePath(account));
+    File panelXMLFile = new File("panel.xml");
+    File controllerXMLFile = new File("controller.xml");
+    File panelsObjFile = new File("panels.obj");
+    File lircdFile = new File("lircd.conf");
+    File rulesFile = new File("rules", "modeler_rules.drl");
 
 
     // Collect all the files going into the archive...
@@ -518,7 +521,23 @@ public class LocalFileCache implements ResourceCache
 
     try
     {
-      if (lircdFile.exists())
+      if (new File(cacheFolder, rulesFile.getPath()).exists())
+      {
+        exportFiles.add(rulesFile);
+      }
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager denied read access to file ''{0}'' (Account : {1}) : {2}",
+          e, rulesFile.getAbsolutePath(), account.getOid(), e.getMessage()
+      );
+    }
+
+    try
+    {
+      if (new File(cacheFolder, lircdFile.getPath()).exists())
       {
         exportFiles.add(lircdFile);
       }
@@ -528,7 +547,7 @@ public class LocalFileCache implements ResourceCache
     {
       throw new ConfigurationException(
           "Security manager denied read access to file ''{0}'' (Account : {1}) : {2}",
-          e, lircdFile, account, e.getMessage()
+          e, lircdFile, account.getOid(), e.getMessage()
       );
     }
 
@@ -588,62 +607,52 @@ public class LocalFileCache implements ResourceCache
   }
 
 
-  /**
-   * Resolves a set of image file names against the local file cache of the account associated
-   * with this cache instance.
-   *
-   * @param imageNames    set of image file names (without file paths)
-   *
-   * @return  set of file references to the local file cache of the account associated with
-   *          this cache instance
-   *
-   * @throws FileNotFoundException
-   *              If any one of the file names in the set cannot be resolved to a file
-   *              path in account's cache directory. The exception message will contain
-   *              the name of the image that failed a resolution to a local cache directory.
-   *
-   * @throws ConfigurationException
-   *              If there are any security restrictions in accessing the file paths
-   */
-  public Set<File> resolveImagePaths(Set<String> imageNames) throws FileNotFoundException,
-                                                                    ConfigurationException
-  {
-    Set<File> fileNames = new HashSet<File>();
-
-    for (String fileName : imageNames)
-    {
-      File imageFile = new File(cacheFolder, fileName);
-
-      try
-      {
-        if (imageFile.exists())
-        {
-          fileNames.add(imageFile);
-        }
-
-        else
-        {
-          cacheLog.error(
-              "Image file ''{0}'' for account ID = {1} was not found in local file resource cache.",
-              imageFile.getName(), account.getOid()
-          );
-
-          throw new FileNotFoundException(fileName); 
-        }
-      }
-
-      catch (SecurityException e)
-      {
-        throw new ConfigurationException(
-            "Security manager has denied read access to file ''{0}'' (Account : {1}) : {2}",
-            e, imageFile.getAbsolutePath(), account.getOid(), e.getMessage()
-        );
-      }
-    }
-
-    return fileNames;
-  }
-
+//  /**
+//   * TODO
+//   *
+//   * Resolves a set of image file names against the local file cache of the account associated
+//   * with this cache instance.
+//   *
+//   * @param imageNames    set of image file names (without file paths)
+//   *
+//   * @throws FileNotFoundException
+//   *              If any one of the file names in the set cannot be resolved to a file
+//   *              path in account's cache directory. The exception message will contain
+//   *              the name of the image that failed a resolution to a local cache directory.
+//   *
+//   * @throws ConfigurationException
+//   *              If there are any security restrictions in accessing the file paths
+//   */
+//  public void resolveImagePaths(Set<String> imageNames) throws FileNotFoundException,
+//                                                                    ConfigurationException
+//  {
+//    for (String fileName : imageNames)
+//    {
+//      File imageFile = new File(cacheFolder, fileName);
+//
+//      try
+//      {
+//        if (!imageFile.exists())
+//        {
+//          cacheLog.error(
+//              "Image file ''{0}'' for account ID = {1} was not found in local file resource cache.",
+//              imageFile.getName(), account.getOid()
+//          );
+//
+//          throw new FileNotFoundException(fileName);
+//        }
+//      }
+//
+//      catch (SecurityException e)
+//      {
+//        throw new ConfigurationException(
+//            "Security manager has denied read access to file ''{0}'' (Account : {1}) : {2}",
+//            e, imageFile.getAbsolutePath(), account.getOid(), e.getMessage()
+//        );
+//      }
+//    }
+//  }
+//
 
 
 
@@ -653,6 +662,125 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
+   * Constructs the local filesystem directory structure to store a cached
+   * Beehive archive associated with a given account. <p>
+   *
+   * Both the local cache directory and common subdirectories are created.
+   *
+   * @see #hasCacheFolder
+   *
+   * @throws ConfigurationException
+   *            if the creation of the directories fail for any reason
+   */
+  private void createCacheFolder() throws ConfigurationException
+  {
+    try
+    {
+      boolean success = cacheFolder.mkdirs();
+
+      if (!success)
+      {
+        throw new ConfigurationException(
+            "Unable to create required directories for ''{0}''.", cacheFolder.getAbsolutePath()
+        );
+      }
+
+      else
+      {
+        cacheLog.info(
+            "Created account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
+        );
+      }
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager has denied read/write access to local user cache in ''{0}'' : {1}",
+          e, cacheFolder.getAbsolutePath(), e.getMessage()
+      );
+    }
+
+    if (!hasBackupFolder())      // TODO : See MODELER-285
+    {
+      createBackupFolder();
+    }
+  }
+
+
+  /**
+   * Checks for the existence of local cache folder this cache implementation uses for its
+   * operations.
+   *
+   * @return true if cache directory already exists, false otherwise
+   *
+   * @throws ConfigurationException
+   *            if read access to file system has been denied
+   */
+  private boolean hasCacheFolder() throws ConfigurationException
+  {
+    try
+    {
+      return cacheFolder.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager has denied read access to local user cache in ''{0}'' : {1}",
+          e, cacheFolder.getAbsolutePath(), e.getMessage()
+      );
+    }
+  }
+
+
+  /**
+   * Returns the local filesystem path to a Beehive archive in current user's account.
+   *
+   * @return    file path where the Beehive archive is stored in cache folder for
+   *            this account
+   */
+  private File getCachedArchive()
+  {
+    return new File(cacheFolder, BEEHIVE_ARCHIVE_NAME);
+  }
+
+  /**
+   * Tests for existence of a Beehive archive in the user's cache directory (as specified
+   * by {@link #BEEHIVE_ARCHIVE_NAME} constant}.
+   *
+   * @see #getCachedArchive
+   *
+   * @return    true if Beehive archive is present in user account's cache folder, false
+   *            otherwise
+   *
+   * @throws ConfigurationException
+   *            if file read access is denied by security manager
+   */
+  private boolean hasCachedArchive() throws ConfigurationException
+  {
+    File f = getCachedArchive();
+
+    try
+    {
+      return f.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+        "Security manager has denied read access to ''{0}'' : {1}",
+        e, f.getAbsolutePath(), e.getMessage()
+      );
+    }
+  }
+
+
+
+
+  /**
+   * TODO : MODELER-285 -- this implementation should migrate to Beehive side.
+   *
    * Creates a backup of the downloaded Beehive archive in the given account's cache folder.
    * Backups are created at most once per day. Number of daily backups can be limited. Daily
    * backups may optionally be rolled to weekly or monthly backups.
@@ -763,84 +891,9 @@ public class LocalFileCache implements ResourceCache
   }
 
 
-
-
   /**
-   * Constructs the local filesystem directory structure to store a cached
-   * Beehive archive associated with a given account. <p>
+   * TODO : MODELER-285 -- migrate this implementation to Beehive side
    *
-   * Both the local cache directory and common subdirectories are created.
-   *
-   * @see #hasCacheFolder
-   *
-   * @throws ConfigurationException
-   *            if the creation of the directories fail for any reason
-   */
-  private void createCacheFolder() throws ConfigurationException
-  {
-    try
-    {
-      boolean success = cacheFolder.mkdirs();
-
-      if (!success)
-      {
-        throw new ConfigurationException(
-            "Unable to create required directories for ''{0}''.", cacheFolder.getAbsolutePath()
-        );
-      }
-
-      else
-      {
-        cacheLog.info(
-            "Created account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
-        );
-      }
-    }
-
-    catch (SecurityException e)
-    {
-      throw new ConfigurationException(
-          "Security manager has denied read/write access to local user cache in ''{0}'' : {1}",
-          e, cacheFolder.getAbsolutePath(), e.getMessage()
-      );
-    }
-
-    if (!hasBackupFolder())      // throws config exception
-    {
-      createBackupFolder();      // throws config exception
-    }
-  }
-
-
-  /**
-   * Checks for the existence of local cache folder this cache implementation uses for its
-   * operations.
-   *
-   * @return true if cache directory already exists, false otherwise
-   *
-   * @throws ConfigurationException
-   *            if read access to file system has been denied
-   */
-  private boolean hasCacheFolder() throws ConfigurationException
-  {
-    try
-    {
-      return cacheFolder.exists();
-    }
-
-    catch (SecurityException e)
-    {
-      throw new ConfigurationException(
-          "Security manager has denied read access to local user cache in ''{0}'' : {1}",
-          e, cacheFolder.getAbsolutePath(), e.getMessage()
-      );
-    }
-  }
-
-
-
-
-  /**
    * Creates a daily backup copy of the downloaded (and cached) Beehive archive for the associated
    * account. The backup is only created if the existing (if any) backup is older than one day
    * (based on file timestamps). The copy is created via a temp file in case I/O errors occur.
@@ -1067,8 +1120,9 @@ public class LocalFileCache implements ResourceCache
   }
 
 
-
   /**
+   * TODO : http://jira.openremote.org/browse/MODELER-285
+   *
    * Constructs the local filesystem backup directory for Beehive archives.
    *
    * @throws ConfigurationException
@@ -1109,6 +1163,8 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
+   * TODO : http://jira.openremote.org/browse/MODELER-285
+   *
    * Checks for the existence of cache *backup* folder.
    *
    * @return true if cache backup directory already exists, false otherwise
@@ -1136,49 +1192,8 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
-   * Returns the local filesystem path to a Beehive archive in current user's account.
+   * TODO : http://jira.openremote.org/browse/MODELER-285
    *
-   * @return    file path where the Beehive archive is stored in cache folder for
-   *            this account
-   */
-  private File getCachedArchive()
-  {
-    return new File(cacheFolder, BEEHIVE_ARCHIVE_NAME);
-  }
-
-  /**
-   * Tests for existence of a Beehive archive in the user's cache directory (as specified
-   * by {@link #BEEHIVE_ARCHIVE_NAME} constant}.
-   *
-   * @see #getCachedArchive
-   *
-   * @return    true if Beehive archive is present in user account's cache folder, false
-   *            otherwise
-   *
-   * @throws ConfigurationException
-   *            if file read access is denied by security manager
-   */
-  private boolean hasCachedArchive() throws ConfigurationException
-  {
-    File f = getCachedArchive();
-
-    try
-    {
-      return f.exists();
-    }
-
-    catch (SecurityException e)
-    {
-      throw new ConfigurationException(
-        "Security manager has denied read access to ''{0}'' : {1}",
-        e, f.getAbsolutePath(), e.getMessage()
-      );
-    }
-  }
-
-
-
-  /**
    * Returns a file path to archive backup folder of this account's local file cache.
    *
    * @return  path to a directory that can be used to store backups of downloaded
@@ -1191,6 +1206,8 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
+   * TODO : http://jira.openremote.org/browse/MODELER-285
+   *
    * Checks for the existence of a latest daily backup copy of this account's Beehive
    * archive.
    *
@@ -1223,6 +1240,8 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
+   * TODO : http://jira.openremote.org/browse/MODELER-285
+   *
    * Returns a file path to the latest daily backup of this account's Beehive archive.
    *
    * @see #hasNewestDailyBackup
@@ -1237,7 +1256,9 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
-   * Extracts a source resource archive to target path in local filesystem.
+   * Extracts a source resource archive to target path in local filesystem. Necessary
+   * subdirectories will be created according to archive structure if necessary. Existing
+   * files and directories matching the archive structure <b>will be deleted!</b>
    *
    * @param sourceArchive     file path to source archive in the local filesystem.
    * @param targetDirectory   file path to target directory where to extract the archive
@@ -1261,99 +1282,118 @@ public class LocalFileCache implements ResourceCache
 
       while ((zipEntry = archiveInput.getNextEntry()) != null)
       {
-        if (!zipEntry.isDirectory())
+        if (zipEntry.isDirectory())
         {
-          File extractFile = new File(targetDirectory, zipEntry.getName());
-          BufferedOutputStream extractOutput = null;
+          // Do nothing -- relevant subdirectories will be created when handling the node files...
 
-          try
+          continue;
+        }
+
+        File extractFile = new File(targetDirectory, zipEntry.getName());
+        BufferedOutputStream extractOutput = null;
+
+        try
+        {
+          FileUtilsExt.deleteQuietly(extractFile); // TODO : don't be quiet
+
+          // create parent directories if necessary...
+
+          if (!extractFile.getParentFile().exists())
           {
-            FileUtilsExt.deleteQuietly(extractFile); // TODO
+            boolean success = extractFile.getParentFile().mkdirs();
 
-            extractOutput = new BufferedOutputStream(new FileOutputStream(extractFile));
-
-            int len = 0, bytecount = 0;
-            byte[] buffer = new byte[4096];
-
-            while ((len = archiveInput.read(buffer)) != -1)
+            if (!success)
             {
-              try
-              {
-                extractOutput.write(buffer, 0, len);
+              throw new CacheOperationException(
+                  "Unable to create cache folder directories ''{0}''. Reason unknown.",
+                  extractFile.getParent()
+              );
+            }
+          }
 
-                bytecount += len;
-              }
+          extractOutput = new BufferedOutputStream(new FileOutputStream(extractFile));
 
-              catch (IOException e)
-              {
-                throw new CacheOperationException(
-                    "Error writing to ''{0}'' : {1}",
-                    e, extractFile.getAbsolutePath(), e.getMessage()
-                );
-              }
+          int len, bytecount = 0;
+          byte[] buffer = new byte[4096];
+
+          while ((len = archiveInput.read(buffer)) != -1)
+          {
+            try
+            {
+              extractOutput.write(buffer, 0, len);
+
+              bytecount += len;
             }
 
-            cacheLog.debug(
-                "Wrote {0} bytes to ''{1}''...", bytecount, extractFile.getAbsolutePath()
-            );
-          }
-
-          catch (SecurityException e)
-          {
-            throw new ConfigurationException(
-                "Security manager has denied access to ''{0}'' : {1}",
-                e, extractFile.getAbsolutePath(), e.getMessage()
-            );
-          }
-
-          catch (FileNotFoundException e)
-          {
-            throw new CacheOperationException(
-                "Could not create file ''{0}'' : {1}",
-                e, extractFile.getAbsolutePath(), e.getMessage()
-            );
-          }
-
-          catch (IOException e)
-          {
-            throw new CacheOperationException(
-                "Error reading zip entry ''{0}'' from ''{1}'' : {2}",
-                e, zipEntry.getName(), sourceArchive.getAbsolutePath(), e.getMessage()
-            );
-          }
-
-          finally
-          {
-            if (extractOutput != null)
+            catch (IOException e)
             {
-              try
-              {
-                extractOutput.close();
-              }
+              throw new CacheOperationException(
+                  "Error writing to ''{0}'' : {1}",
+                  e, extractFile.getAbsolutePath(), e.getMessage()
+              );
+            }
+          }
 
-              catch (Throwable t)
-              {
-                cacheLog.error(
-                    "Could not close extracted file ''{0}'' : {1}",
-                    t, extractFile.getAbsolutePath(), t.getMessage()
-                );
-              }
+          cacheLog.debug(
+              "Wrote {0} bytes to ''{1}''...", bytecount, extractFile.getAbsolutePath()
+          );
+        }
+
+        catch (SecurityException e)
+        {
+          throw new ConfigurationException(
+              "Security manager has denied access to ''{0}'' : {1}",
+              e, extractFile.getAbsolutePath(), e.getMessage()
+          );
+        }
+
+        catch (FileNotFoundException e)
+        {
+          throw new CacheOperationException(
+              "Could not create file ''{0}'' : {1}",
+              e, extractFile.getAbsolutePath(), e.getMessage()
+          );
+        }
+
+        catch (IOException e)
+        {
+          throw new CacheOperationException(
+              "Error reading zip entry ''{0}'' from ''{1}'' : {2}",
+              e, zipEntry.getName(), sourceArchive.getAbsolutePath(), e.getMessage()
+          );
+        }
+
+        finally
+        {
+          if (extractOutput != null)
+          {
+            try
+            {
+              extractOutput.close();
             }
 
-            if (archiveInput != null)
+            catch (Throwable t)
             {
-              try
-              {
-                archiveInput.closeEntry();
-              }
+              cacheLog.error(
+                  "Could not close extracted file ''{0}'' : {1}",
+                  t, extractFile.getAbsolutePath(), t.getMessage()
+              );
+            }
+          }
 
-              catch (Throwable t)
-              {
-                cacheLog.warn(
-                    "Could not close zip entry ''{0}'' in archive ''{1}'' : {2}",
-                    t, zipEntry.getName(), t.getMessage()
-                );
-              }
+          if (archiveInput != null)
+          {
+            try
+            {
+              archiveInput.closeEntry();
+            }
+
+            catch (Throwable t)
+            {
+              cacheLog.warn(
+                  "Could not close zip entry ''{0}'' in archive ''{1}'' : {2}",
+                  t, zipEntry.getName(), t.getMessage()
+              );
             }
           }
         }
@@ -1406,10 +1446,15 @@ public class LocalFileCache implements ResourceCache
 
 
   /**
-   * Compresses a set of files into a target zip archive.
+   * Compresses a set of files into a target zip archive. The file instances should be relative
+   * paths used to structure the archive into directories. The relative paths will be resolved
+   * to actual file paths in the current account's file cache.
    *
-   * @param target    target file path where the zip archive will be stored
-   * @param files     set of file paths to include in the zip archive
+   * @param target    Target file path where the zip archive will be stored.
+   * @param files     Set of <b>relative</b> file paths to include in the zip archive. The file
+   *                  paths should be set to match the expected directory structure in the final
+   *                  archive (therefore should not reflect the absolute file paths expected to
+   *                  be included in the archive).
    *
    * @throws CacheOperationException
    *            if any of the zip file operations fail
@@ -1431,27 +1476,32 @@ public class LocalFileCache implements ResourceCache
       {
         BufferedInputStream fileInput = null;
 
+        // translate the relative zip archive directory path to existing user cache absolute path...
+
+        File cachePathName = new File(cacheFolder, file.getPath());
+
         try
         {
-          if (!file.exists())
+          if (!cachePathName.exists())
           {
             throw new CacheOperationException(
                 "Expected to add file ''{0}'' to export archive ''{1}'' (Account : {2}) but it " +
                 "has gone missing (cause unknown). This can indicate implementation or deployment " +
                 "error. Aborting export operation as a safety precaution.",
-                file.getAbsolutePath(), target.getAbsolutePath(), account.getOid()
+                cachePathName.getPath(), target.getAbsolutePath(), account.getOid()
             );
           }
 
-          fileInput = new BufferedInputStream(new FileInputStream(file));
+          fileInput = new BufferedInputStream(new FileInputStream(cachePathName));
 
-          ZipEntry entry = new ZipEntry(file.getName());
-          entry.setSize(file.length());
-          entry.setTime(file.lastModified());
+          ZipEntry entry = new ZipEntry(file.getPath());
+
+          entry.setSize(cachePathName.length());
+          entry.setTime(cachePathName.lastModified());
 
           zipOutput.putNextEntry(entry);
 
-          cacheLog.debug("Added new export zip entry ''{0}''.", file.getName());
+          cacheLog.debug("Added new export zip entry ''{0}''.", file.getPath());
 
           int count, total = 0;
           int buffer = 2048;
@@ -1466,13 +1516,15 @@ public class LocalFileCache implements ResourceCache
 
           zipOutput.flush();
 
-          if (total != file.length())
+          // Sanity check...
+
+          if (total != cachePathName.length())
           {
             throw new CacheOperationException(
                 "Only wrote {0} out of {1} bytes when archiving file ''{2}'' (Account : {3}). " +
                 "This could have occured either due implementation error or file I/O error. " +
                 "Aborting archive operation to prevent a potentially corrupt export archive to " +
-                "be created.", total, file.length(), file.getAbsolutePath(), account.getOid()
+                "be created.", total, cachePathName.length(), cachePathName.getPath(), account.getOid()
             );
           }
 
@@ -1480,7 +1532,7 @@ public class LocalFileCache implements ResourceCache
           {
             cacheLog.debug(
                 "Wrote {0} out of {1} bytes to zip entry ''{2}''",
-                total, file.length(), file.getName()
+                total, cachePathName.length(), file.getPath()
             );
           }
         }
@@ -1492,7 +1544,7 @@ public class LocalFileCache implements ResourceCache
           throw new ConfigurationException(
               "Security manager has denied r/w access when attempting to read file ''{0}'' and " +
               "write it to archive ''{1}'' (Account : {2}) : {3}",
-              e, file.getAbsolutePath(), target, account.getOid(), e.getMessage()
+              e, cachePathName.getPath(), target, account.getOid(), e.getMessage()
           );
         }
 
@@ -1512,7 +1564,7 @@ public class LocalFileCache implements ResourceCache
               "Attempted to include file ''{0}'' in export archive but it has gone missing " +
               "(Account : {1}). Possible implementation error in local file cache. Aborting  " +
               "export operation as a precaution ({2})",
-              e, file.getAbsolutePath(), account.getOid(), e.getMessage()
+              e, cachePathName.getPath(), account.getOid(), e.getMessage()
           );
         }
 
@@ -1546,7 +1598,7 @@ public class LocalFileCache implements ResourceCache
               cacheLog.warn(
                   "Unable to close zip entry for file ''{0}'' in export archive ''{1}'' " +
                   "(Account : {2}) : {3}.",
-                  t, file.getAbsolutePath(), target.getAbsolutePath(), account.getOid(), t.getMessage()
+                  t, file.getPath(), target.getAbsolutePath(), account.getOid(), t.getMessage()
               );
             }
           }
@@ -1562,7 +1614,7 @@ public class LocalFileCache implements ResourceCache
             {
               cacheLog.warn(
                   "Failed to close input stream from file ''{0}'' being added " +
-                  "to export archive (Account : {1}) : {2}", t, file, account.getOid(), t.getMessage()
+                  "to export archive (Account : {1}) : {2}", t, cachePathName.getPath(), account.getOid(), t.getMessage()
               );
             }
           }
