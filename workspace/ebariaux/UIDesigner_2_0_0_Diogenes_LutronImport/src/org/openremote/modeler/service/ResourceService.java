@@ -95,4 +95,5 @@ public interface ResourceService {
    void downloadResourcesForTemplate(long templateOid); 
    
    File getTemplateResource(Template template); 
+   File getTempDirectory(String sessionId);
 }
