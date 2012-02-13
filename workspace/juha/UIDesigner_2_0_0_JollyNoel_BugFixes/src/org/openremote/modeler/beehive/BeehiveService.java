@@ -20,9 +20,12 @@
  */
 package org.openremote.modeler.beehive;
 
+import java.io.InputStream;
+
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.ConfigurationException;
+import org.openremote.modeler.cache.ResourceCache;
 
 /**
  * This interface abstracts the <b>client</b> side of the Beehive REST API. <p>
@@ -38,35 +41,18 @@ import org.openremote.modeler.exception.ConfigurationException;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface BeehiveService <T, U>
+public interface BeehiveService
 {
-
-  // Constants ------------------------------------------------------------------------------------
-
-
-  // TODO :
-  //   These are temporary constants for logging categories. A consistent logging interface
-  //   (see also DesignerUIState, UserServiceImpl, knx import) is needed but should come via
-  //   a common set of base classes between designer, beehive and controller.
-
-  final static String BEEHIVE_SERVICE_LOG_CATEGORY =
-      "OpenRemote.Designer.BeehiveService";
-  
-  final static String BEEHIVE_NETWORK_PERF_LOG_CATEGORY =
-      BEEHIVE_SERVICE_LOG_CATEGORY + ".Performance.Network";
-
-  final static String BEEHIVE_DOWNLOAD_PERF_LOG_CATEGORY =
-      BEEHIVE_NETWORK_PERF_LOG_CATEGORY + ".Download";
-
 
   /**
    * Downloads an archive containing user account artifacts stored in Beehive.
    *
-   * @param user      a reference to user whose account is accessed
-   * @param callback  a reference to callback object that can be invoked by the concrete
-   *                  implementations to communicate service state back to the caller
+   * @see org.openremote.modeler.cache.ResourceCache#openWriteStream()
    *
-   * @return reference to an object that contains the downloaded artifacts for user
+   * @param   user      a reference to user whose account is accessed
+   * @param   cache     reference to designer's local cache where the downloaded resources
+   *                    will be stored
+   *
    *
    * @throws NetworkException
    *                  If (possibly recoverable) network errors occured during the service
@@ -86,10 +72,33 @@ public interface BeehiveService <T, U>
    *                  to their implementation details.
    *
    */
-  U downloadArchive(User user, T callback) throws NetworkException, BeehiveServiceException,
-                                                  ConfigurationException;
+  void downloadResources(User user, ResourceCache cache)
+      throws NetworkException, BeehiveServiceException, ConfigurationException;
 
 
+  /**
+   * Uploads resources to user's account in Beehive.
+   *
+   * @param   input      Input stream used for reading the resource data. The concrete
+   *                     implementations of this method must specify the requirements
+   *                     for the data stream.
+   *
+   * @param currentUser  The user to authenticate in Beehive.
+   *
+   *
+   * @throws ConfigurationException
+   *                  If designer configuration error prevents the service from executing
+   *                  normally. Often a fatal error type that should be logged/notified to
+   *                  admins, configuration corrected and application re-deployed.
+   *
+   * @throws NetworkException
+   *                  If (possibly recoverable) network errors occured during the service
+   *                  operation. Network errors may be recoverable in which case this operation
+   *                  could be re-attempted. See {@link NetworkException.Severity} for an
+   *                  indication of the network error type.
+   */
+  void uploadResources(InputStream input, User currentUser)
+      throws ConfigurationException, NetworkException;
 
 
   // Nested Classes -------------------------------------------------------------------------------
@@ -119,6 +128,35 @@ public interface BeehiveService <T, U>
      * @param params    message parameters
      */
     ServerException(String msg, Object... params)
+    {
+      super(msg, params);
+    }
+  }
+
+
+  /**
+   * Exception type to indicate the expected user account did not exist on the
+   * Beehive server.
+   */
+  public static class UserNotFoundException extends BeehiveServiceException
+  {
+    /**
+     * Constructs a new exception with a given message
+     *
+     * @param msg   exception message
+     */
+    UserNotFoundException(String msg)
+    {
+      super(msg);
+    }
+
+    /**
+     * Constructs a new exception with a parameterized message.
+     *
+     * @param msg       exception message
+     * @param params    message parameters
+     */
+    UserNotFoundException(String msg, Object... params)
     {
       super(msg, params);
     }
