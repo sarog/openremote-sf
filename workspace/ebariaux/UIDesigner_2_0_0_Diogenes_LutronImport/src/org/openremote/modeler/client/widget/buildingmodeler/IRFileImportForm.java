@@ -25,7 +25,6 @@ import java.util.List;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.client.widget.RemoteJsonComboBox;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
@@ -45,6 +44,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -128,9 +128,6 @@ public class IRFileImportForm extends CommonForm {
       add(commandContainer, new RowData(1, 1));
       
       device = (Device) deviceBeanModel.getBean();
-      protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
-      protocolChooserForm.setVisible(false);
-      add(protocolChooserForm);
       
       cleanBrandComboBox();
       cleanCodeGrid();
@@ -161,9 +158,10 @@ public class IRFileImportForm extends CommonForm {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-            protocolChooserForm.setSelectedFunctions(codeGrid
-                  .getSelectionModel().getSelectedItems());
-            protocolChooserForm.show();
+           protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
+           protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
+           protocolChooserForm.setVisible(true);
+           protocolChooserForm.show();
          }
       });
       addButton(nextButton);
