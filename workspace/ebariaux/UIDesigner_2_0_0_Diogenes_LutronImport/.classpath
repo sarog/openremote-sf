@@ -8,7 +8,7 @@
 	<classpathentry kind="src" path="touchpanels"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-commons-annotations.jar"/>
-	<classpathentry kind="lib" path="lib/core/hibernate/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/core/hibernate/hibernate3.jar" sourcepath="/Users/ebr/.m2/repository/org/hibernate/hibernate/3.2.2.ga/hibernate-3.2.2.ga-sources.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-2.0.8.jar" sourcepath="E:/src/spring2.0"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/core/trove/trove.jar"/>
@@ -51,11 +51,16 @@
 	<classpathentry kind="lib" path="lib/core/apache-commons/fileupload-1.2.1/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/httpclient-3.0/commons-httpclient-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/io-1.2/commons-io.jar"/>
-	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.1/commons-lang.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/logging-1.1/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/pool-1.2/commons-pool.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt/gxt-2.2.5-gwt22.jar"/>
-	<classpathentry kind="lib" path="lib/core/gwt-dispatch/gwt-dispatch-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/gwt-dispatch/gwt-dispatch-1.2.0.jar" sourcepath="/Users/ebr/.m2/repository/net/customware/gwt/dispatch/gwt-dispatch/1.2.0/gwt-dispatch-1.2.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/core/gin/gin-1.5-post-gwt-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/persistence-api-1.0-rev-1.jar" sourcepath="/Users/ebr/.m2/repository/javax/persistence/persistence-api/1.0-rev-1/persistence-api-1.0-rev-1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/transaction-api-1.1-rev-1.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/ircodeslib-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/irfileslib-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/tinsysfwk-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

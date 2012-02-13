@@ -1294,4 +1294,19 @@ public class ResourceServiceImpl implements ResourceService {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
             + encode(userService.getCurrentUser().getUsername() + ":" + userService.getCurrentUser().getPassword()));
    }
+   
+   @Override
+   public File getTempDirectory(String sessionId) {
+
+   	File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+       if (tmpDir.exists() && tmpDir.isDirectory()) {
+          try {
+             FileUtils.deleteDirectory(tmpDir);
+          } catch (IOException e) {
+             throw new FileOperationException("Error in deleting temp dir", e);
+          }
+       }
+       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs(); 
+   	return tmpDir;
+   }
 }

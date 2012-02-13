@@ -29,6 +29,7 @@
 	<source path='auth'/>
 	<source path='selenium'/>
 	<source path="exception" />
+	<source path='irfileparser'/>
 	<source path='utils'>
 	  <include name="String*"/>
 	</source>
