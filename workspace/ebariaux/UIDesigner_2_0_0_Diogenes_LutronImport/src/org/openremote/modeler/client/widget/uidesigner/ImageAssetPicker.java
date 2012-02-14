@@ -25,7 +25,9 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class ImageAssetPicker extends DialogBox {
@@ -68,6 +70,14 @@ public class ImageAssetPicker extends DialogBox {
     };
     table.addColumn(fileNameColumn, "Name");
     table.setSelectionModel(selectionModel);
+    
+    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
+      @Override
+      public void onSelectionChange(SelectionChangeEvent event) {
+        imagePreview.setUrl(selectionModel.getSelectedObject().getUrl());
+      }
+    });
+    
     UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
       @Override
       public void onSuccess(List<GraphicalAssetDTO> result) {
@@ -81,6 +91,9 @@ public class ImageAssetPicker extends DialogBox {
 
   @UiField
   CellTable<GraphicalAssetDTO> table;
+  
+  @UiField
+  Image imagePreview;
   
   @UiField
   Button cancelButton;
