@@ -126,7 +126,7 @@ public class SliderPropertyForm extends PropertyForm {
       minImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMinImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -169,7 +169,7 @@ public class SliderPropertyForm extends PropertyForm {
       minTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMinTrackImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -212,7 +212,7 @@ public class SliderPropertyForm extends PropertyForm {
       thumbImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getThumbImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -254,7 +254,7 @@ public class SliderPropertyForm extends PropertyForm {
       maxImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMaxImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -296,7 +296,7 @@ public class SliderPropertyForm extends PropertyForm {
       maxTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMaxTrackImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {

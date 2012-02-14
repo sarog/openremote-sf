@@ -54,10 +54,7 @@ public class ImageAssetPicker extends DialogBox {
     this.listener = listener;
   }
 
-  public ImageAssetPicker(final Device device, final EventBus eventBus) {
-/*    this.eventBus = eventBus;
-    this.device = device;*/
-
+  public ImageAssetPicker(final String currentImageURL) {
     uiBinder.createAndBindUi(this);
     mainLayout.setSize("50em", "20em");
     getElement().getStyle().setZIndex(Integer.MAX_VALUE - 1); // TODO: check how we can be sure of the value to use
@@ -82,6 +79,12 @@ public class ImageAssetPicker extends DialogBox {
       @Override
       public void onSuccess(List<GraphicalAssetDTO> result) {
         table.setRowData(result);
+        for (GraphicalAssetDTO ga : result) {
+          if (ga.getUrl().equals(currentImageURL)) {
+            selectionModel.setSelected(ga, true);
+            break;
+          }
+        }
       }
     });
   }

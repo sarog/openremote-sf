@@ -161,7 +161,7 @@ public class ButtonPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
            final ImageSource image = uiButton.getImage();
            
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -215,7 +215,7 @@ public class ButtonPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
            final ImageSource image = uiButton.getPressImage();
            
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
