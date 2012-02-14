@@ -213,6 +213,23 @@ public class ButtonPropertyForm extends PropertyForm {
       pressImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           final ImageSource image = uiButton.getPressImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiButton.setPressImage(new ImageSource(imageURL));
+              }
+              pressImageField.setText(uiButton.getPressImage().getImageFileName());              
+            }
+           });
+           /*
             final ImageSource onPressImage = uiButton.getPressImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, onPressImage), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -227,6 +244,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   pressImageField.setText(uiButton.getPressImage().getImageFileName());
                }
             });
+            */
          }
       });
       pressImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
