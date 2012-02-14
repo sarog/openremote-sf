@@ -28,6 +28,7 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -89,6 +90,6 @@ public interface UtilsRPCServiceAsync {
    
    void getOnLineTestURL (AsyncCallback<String> callback);
    
-   void getUserImagesURLs(AsyncCallback<List<String>> callback);
+   void getUserImagesURLs(AsyncCallback<List<GraphicalAssetDTO>> callback);
 
 }

@@ -30,7 +30,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,11 +78,11 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.SensorOwner;
@@ -110,6 +109,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
@@ -310,7 +310,7 @@ public class ResourceServiceImpl implements ResourceService {
       return uploadFile(inputStream, file);
    }
       
-   public List<String>getUserImagesURLs() {
+   public List<GraphicalAssetDTO>getUserImagesURLs() {
      File userFolder = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()));
      String[] imageFiles = userFolder.list(new FilenameFilter() {      
        @Override
@@ -319,11 +319,11 @@ public class ResourceServiceImpl implements ResourceService {
          return (name.endsWith("png") || name.endsWith("jpg"));
        }
      });
-     List<String> urls = new ArrayList<String>();
+     List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
      for (int i = 0; i < imageFiles.length; i++) {
-       urls.add(getRelativeResourcePathByCurrentAccount(imageFiles[i]));
+       assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
      }
-     return urls;
+     return assets;
    }
 
    private File uploadFile(InputStream inputStream, File file) {

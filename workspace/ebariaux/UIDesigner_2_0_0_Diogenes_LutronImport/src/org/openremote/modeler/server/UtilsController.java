@@ -42,6 +42,7 @@ import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.XmlParser;
 
@@ -314,7 +315,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
    }
    
-   public List<String>getUserImagesURLs() {
+   public List<GraphicalAssetDTO>getUserImagesURLs() {
      return resourceService.getUserImagesURLs();
    }
 }
