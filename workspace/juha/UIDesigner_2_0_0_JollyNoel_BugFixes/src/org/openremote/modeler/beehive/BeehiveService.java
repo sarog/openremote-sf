@@ -26,6 +26,7 @@ import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.cache.ResourceCache;
+import org.openremote.modeler.cache.CacheOperationException;
 
 /**
  * This interface abstracts the <b>client</b> side of the Beehive REST API. <p>
@@ -71,9 +72,12 @@ public interface BeehiveService
    *                  should) implement more specific exception types to indicate issues specific
    *                  to their implementation details.
    *
+   * @throws CacheOperationException
+   *                  If any errors occur as part of the interaction with the resource cache.
+   *
    */
   void downloadResources(User user, ResourceCache cache)
-      throws NetworkException, BeehiveServiceException, ConfigurationException;
+      throws NetworkException, BeehiveServiceException, ConfigurationException, CacheOperationException;
 
 
   /**
@@ -128,35 +132,6 @@ public interface BeehiveService
      * @param params    message parameters
      */
     ServerException(String msg, Object... params)
-    {
-      super(msg, params);
-    }
-  }
-
-
-  /**
-   * Exception type to indicate the expected user account did not exist on the
-   * Beehive server.
-   */
-  public static class UserNotFoundException extends BeehiveServiceException
-  {
-    /**
-     * Constructs a new exception with a given message
-     *
-     * @param msg   exception message
-     */
-    UserNotFoundException(String msg)
-    {
-      super(msg);
-    }
-
-    /**
-     * Constructs a new exception with a parameterized message.
-     *
-     * @param msg       exception message
-     * @param params    message parameters
-     */
-    UserNotFoundException(String msg, Object... params)
     {
       super(msg, params);
     }
