@@ -62,7 +62,7 @@ public class SwitchPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
            final ImageSource image = uiSwitch.getOnImage();
            
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
@@ -116,7 +116,7 @@ public class SwitchPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
            final ImageSource image = uiSwitch.getOffImage();
            
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
