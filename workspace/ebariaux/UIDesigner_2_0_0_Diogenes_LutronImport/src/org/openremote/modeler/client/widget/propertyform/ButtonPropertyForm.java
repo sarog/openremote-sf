@@ -29,6 +29,8 @@ import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -157,6 +159,24 @@ public class ButtonPropertyForm extends PropertyForm {
       defaultImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           final ImageSource image = uiButton.getImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenButton.setIcon(imageURL);
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiButton.setImage(new ImageSource(imageURL));
+              }
+              defaultImageField.setText(uiButton.getImage().getImageFileName());              
+            }             
+           });
+           /*
             final ImageSource image = uiButton.getImage();
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -172,6 +192,7 @@ public class ButtonPropertyForm extends PropertyForm {
                   defaultImageField.setText(uiButton.getImage().getImageFileName());
                }
             });
+            */
          }
       });
       defaultImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {

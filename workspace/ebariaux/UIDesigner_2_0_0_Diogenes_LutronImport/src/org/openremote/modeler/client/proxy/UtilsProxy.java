@@ -146,4 +146,9 @@ public class UtilsProxy {
       }
       return true;
    }
+   
+   public static void getUserImagesURLs(AsyncCallback<List<String>> callback) {
+     AsyncServiceFactory.getUtilsRPCServiceAsync().getUserImagesURLs(callback);
+   }
+
 }
