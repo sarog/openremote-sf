@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -29,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -306,6 +308,22 @@ public class ResourceServiceImpl implements ResourceService {
       File file = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + File.separator
             + fileName);
       return uploadFile(inputStream, file);
+   }
+      
+   public List<String>getUserImagesURLs() {
+     File userFolder = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()));
+     String[] imageFiles = userFolder.list(new FilenameFilter() {      
+       @Override
+       public boolean accept(File dir, String name) {
+         // TODO: support more extensions
+         return (name.endsWith("png") || name.endsWith("jpg"));
+       }
+     });
+     List<String> urls = new ArrayList<String>();
+     for (int i = 0; i < imageFiles.length; i++) {
+       urls.add(getRelativeResourcePathByCurrentAccount(imageFiles[i]));
+     }
+     return urls;
    }
 
    private File uploadFile(InputStream inputStream, File file) {

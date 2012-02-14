@@ -70,6 +70,8 @@ public interface ResourceService {
    
    File uploadImage(InputStream inputStream, String fileName);
    
+   public List<String>getUserImagesURLs();
+
    /**
     * Gets the relative resource path.
     * 

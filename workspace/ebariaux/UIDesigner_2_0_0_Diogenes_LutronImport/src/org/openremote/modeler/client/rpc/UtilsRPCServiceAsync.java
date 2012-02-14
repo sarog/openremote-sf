@@ -88,4 +88,7 @@ public interface UtilsRPCServiceAsync {
    void getAccountPath(AsyncCallback<String> callback);
    
    void getOnLineTestURL (AsyncCallback<String> callback);
+   
+   void getUserImagesURLs(AsyncCallback<List<String>> callback);
+
 }

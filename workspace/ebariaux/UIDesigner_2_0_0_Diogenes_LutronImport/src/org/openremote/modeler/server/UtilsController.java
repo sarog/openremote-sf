@@ -313,4 +313,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public String getOnLineTestURL () {
       return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
    }
+   
+   public List<String>getUserImagesURLs() {
+     return resourceService.getUserImagesURLs();
+   }
 }

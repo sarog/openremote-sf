@@ -146,4 +146,6 @@ public interface UtilsRPCService extends RemoteService {
     * @return the on line test url
     */
    String getOnLineTestURL ();
+   
+   List<String>getUserImagesURLs();
 }
