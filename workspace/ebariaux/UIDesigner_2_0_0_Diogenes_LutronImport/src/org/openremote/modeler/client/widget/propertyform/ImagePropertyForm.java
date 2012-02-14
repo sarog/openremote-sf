@@ -31,10 +31,13 @@ import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.ComboBoxExt;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
@@ -163,7 +166,54 @@ public class ImagePropertyForm extends PropertyForm {
       return labelBox;
    }
    
-   private ImageUploadAdapterField createImageUploader() {
+   private ImageSelectAdapterField createImageUploader() {
+     final ImageSelectAdapterField imageSrcField = new ImageSelectAdapterField("Image");
+     imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+     imageSrcField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          final ImageSource image = screenImage.getUiImage().getImageSource();
+          
+          ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+          imageAssetPicker.show();
+          imageAssetPicker.center();
+          imageAssetPicker.setListener(new ImageAssetPickerListener() {
+           @Override
+           public void imagePicked(String imageURL) {             
+             screenImage.setImageSource(new ImageSource(imageURL));
+             imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+           }             
+          });
+          /*
+           final ImageSource image = uiButton.getImage();
+           ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
+           selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 String imageUrl = be.getData();
+                 screenButton.setIcon(imageUrl);
+                 if (image != null) {
+                    image.setSrc(imageUrl);
+                 } else {
+                    uiButton.setImage(new ImageSource(imageUrl));
+                 }
+                 defaultImageField.setText(uiButton.getImage().getImageFileName());
+              }
+           });
+           */
+        }
+     });
+     imageSrcField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+       public void componentSelected(ButtonEvent ce) {
+          if (!UIImage.DEFAULT_IMAGE_URL.equals(screenImage.getUiImage().getImageSource().getSrc())){
+             screenImage.setImageSource(new ImageSource(UIImage.DEFAULT_IMAGE_URL));
+             imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+//             widgetSelectionUtil.setSelectWidget(screenImage);
+          }
+       }
+    });
+     return imageSrcField;
+     /*
       final ImageUploadAdapterField imageSrcField = new ImageUploadAdapterField(null);
       imageSrcField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
@@ -189,6 +239,7 @@ public class ImagePropertyForm extends PropertyForm {
       imageSrcField.setImage(screenImage.getUiImage().getImageSource().getImageFileName());
       imageSrcField.setFieldLabel("Image");
       return imageSrcField;
+      */
    }
    
    private void addListenersToForm() {
