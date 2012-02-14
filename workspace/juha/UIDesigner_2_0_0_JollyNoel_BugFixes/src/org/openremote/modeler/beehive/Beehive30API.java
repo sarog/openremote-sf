@@ -20,20 +20,14 @@
  */
 package org.openremote.modeler.beehive;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.HttpURLConnection;
-import java.util.UUID;
-import java.util.Collection;
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
 
-import org.apache.log4j.Logger;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -42,40 +36,44 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.commons.codec.binary.Base64;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.cache.CacheWriteStream;
+import org.openremote.modeler.cache.ResourceCache;
+import org.openremote.modeler.cache.CacheOperationException;
 
 /**
  * Implements {@link BeehiveService} for Beehive 3.0 REST API. <p>
  *
- * For storing resource archives, this implementation uses a local file system.
- *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class Beehive30API implements BeehiveService <File, Void>
+public class Beehive30API implements BeehiveService
 {
 
 
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   * Logger for storing network performance stats in a specific sub-category.
+   * Logger for this Beehive client API service.
    */
-  private final static Logger downloadPerfLog = Logger.getLogger(BEEHIVE_DOWNLOAD_PERF_LOG_CATEGORY);
+  private final static LogFacade serviceLog =
+      LogFacade.getInstance(LogFacade.Category.BEEHIVE);
 
   /**
-   * Specialized logger for this service that supports multiple category-logging to MDC context
-   * loggers.
+   * Specialized logger for storing account archive download performance stats in their
+   * own sub-category.
    */
-  private BeehiveServiceLog log = new BeehiveServiceLog();
+  private final static LogFacade downloadPerfLog =
+      LogFacade.getInstance(LogFacade.Category.BEEHIVE_DOWNLOAD_PERFORMANCE);
+
 
 
 
@@ -105,9 +103,11 @@ public class Beehive30API implements BeehiveService <File, Void>
   // Implements BeehiveService --------------------------------------------------------------------
 
   /**
+   * Downloads a user artifact archive from Beehive server and stores it to a local resource
+   * cache. 
    *
-   * @param currentUser
-   * @param target
+   * @param currentUser   the user associated with the request
+   * @param cache         the cache to store the user resources to
    *
    * @throws ConfigurationException
    *              If designer configuration error prevents the service from executing
@@ -120,19 +120,13 @@ public class Beehive30API implements BeehiveService <File, Void>
    *              could be re-attempted. See {@link NetworkException.Severity} for an
    *              indication of the network error type.
    *
-   * @throws ServerException
-   *            TODO :
-   *              what looks like a Beehive implementation or deployment error -- could
-   *              be recoverable because is fundamentally a network error but may well not be
+   * @throws CacheOperationException
+   *              If there was a failure in writing the downloaded resources to cache.
    *
-   * @throws ArchiveNotFoundException
    *
-   * @throws ArchiveStoreException
-   *            TODO : file operations error on local filesystem when storing archive
    */
-  @Override public Void downloadArchive(User currentUser, File target) throws
-      ConfigurationException, NetworkException, ServerException, ArchiveNotFoundException,
-      ArchiveStoreException
+  @Override public void downloadResources(User currentUser, ResourceCache cache)
+      throws ConfigurationException, NetworkException, CacheOperationException
   {
 
     // TODO :
@@ -143,7 +137,7 @@ public class Beehive30API implements BeehiveService <File, Void>
 
     HttpClient httpClient = new DefaultHttpClient();
 
-    URI beehiveArchiveURI = null;
+    URI beehiveArchiveURI;
 
     try
     {
@@ -197,7 +191,8 @@ public class Beehive30API implements BeehiveService <File, Void>
 
     if (response == null)
     {
-      throw new ServerException(
+      throw new NetworkException(
+          NetworkException.Severity.SEVERE,
           "Beehive did not respond to HTTP GET request, URL : {0} {1}",
           beehiveArchiveURI, printUser(currentUser)
       );
@@ -207,7 +202,8 @@ public class Beehive30API implements BeehiveService <File, Void>
 
     if (statusLine == null)
     {
-      throw new ServerException(
+      throw new NetworkException(
+          NetworkException.Severity.SEVERE,
           "There was no status from Beehive to HTTP GET request, URL : {0} {1}",
           beehiveArchiveURI, printUser(currentUser)
       );
@@ -217,15 +213,6 @@ public class Beehive30API implements BeehiveService <File, Void>
 
 
     // Deal with the HTTP OK (200) case.
-    //
-    // Download the archive to a temp file first:
-    //
-    //  - This way we can keep writing the incoming bytes directly to file
-    //    system which helps with memory management (don't need to keep the
-    //    full archive in memory)
-    //  - But in case the download won't be complete, we don't want to make
-    //    the archive 'final' until we know all bytes have arrived and the
-    //    archive has been validated.
 
     if (httpResponseCode == HttpURLConnection.HTTP_OK)
     {
@@ -233,35 +220,101 @@ public class Beehive30API implements BeehiveService <File, Void>
 
       if (httpEntity == null)
       {
-        throw new ServerException(
+        throw new NetworkException(
+            NetworkException.Severity.SEVERE,
             "No content received from Beehive to HTTP GET request, URL : {0} {1}",
             beehiveArchiveURI, printUser(currentUser)
         );
       }
 
 
-      // Download to temp...
+      // Download to cache...
 
-      BufferedOutputStream tempTargetOutputStream = null;
-
-      File tempDownloadFile = new File(
-          target.getAbsolutePath() + "." + UUID.randomUUID().toString() + ".download"
-      );
-
-      log.debug("Downloading to ''{0}''", tempDownloadFile.getAbsolutePath());
+      BufferedInputStream httpInput;
 
       try
       {
-        tempTargetOutputStream = new BufferedOutputStream(new FileOutputStream(tempDownloadFile));
+        CacheWriteStream cacheStream = cache.openWriteStream();
 
-        httpEntity.writeTo(tempTargetOutputStream);
+        httpInput = new BufferedInputStream(httpEntity.getContent());
 
+        byte[] buffer = new byte[4096];
+        int bytecount = 0, len;
+        long contentLength = httpEntity.getContentLength();
+
+        try
+        {
+          while ((len = httpInput.read(buffer)) != -1)
+          {
+            try
+            {
+              cacheStream.write(buffer, 0, len);
+            }
+
+            catch (IOException e)
+            {
+              throw new CacheOperationException(
+                  "Writing archive to cache failed : {0}", e, e.getMessage()
+              );
+            }
+
+            bytecount += len;
+          }
+
+          // MUST mark complete for cache to accept the incoming archive...
+
+          cacheStream.markCompleted();
+        }
+
+        finally
+        {
+          try
+          {
+            cacheStream.close();
+          }
+
+          catch (Throwable t)
+          {
+            serviceLog.warn(
+                "Unable to close resource archive cache stream : {0}",
+                t, t.getMessage()
+            );
+          }
+
+          if (httpInput != null)
+          {
+            try
+            {
+              httpInput.close();
+            }
+
+            catch (Throwable t)
+            {
+              serviceLog.warn(
+                  "Unable to close HTTP input stream from Beehive URL ''{0}'' : {1}",
+                  t, beehiveArchiveURI, t.getMessage()
+              );
+            }
+          }
+        }
+
+        if (contentLength >= 0)
+        {
+          if (bytecount != contentLength)
+          {
+            serviceLog.warn(
+                "Expected content length was {0} bytes but wrote {1} bytes to cache stream ''{2}''.",
+                contentLength, bytecount, cacheStream
+            );
+          }
+        }
+        
 
         // Record network performance stats...
 
         long endtime = System.currentTimeMillis();
 
-        float kbytes  = ((float)tempDownloadFile.length()) / 1000;
+        float kbytes  = ((float)bytecount) / 1000;
         float seconds = ((float)(endtime - starttime)) / 1000;
         float kbpersec = kbytes / seconds;
 
@@ -275,89 +328,27 @@ public class Beehive30API implements BeehiveService <File, Void>
         );
       }
 
-      catch (FileNotFoundException e)
-      {
-        // If file cannot be created
-
-        throw new ArchiveStoreException(
-            "Cannot create file ''{0}'' : {1}",
-            e, tempDownloadFile.getAbsolutePath(), e.getMessage()
-        );
-      }
-
-      catch (SecurityException e)
-      {
-        throw new ConfigurationException(
-            "Security Manager has denied r/w access to ''{0}'' ({1}).",
-            e, tempDownloadFile.getAbsolutePath(), e.getMessage()
-        );
-      }
-
       catch (IOException e)
       {
-        throw new ArchiveStoreException(
-            "Failed to write downloaded Beehive archive to temporary file ''{0}'' : {1}",
-            e, tempDownloadFile.getAbsolutePath(), e.getMessage()
-        );
-      }
+        // HTTP request I/O error...
 
-
-      // Validate the download -- can check that we have space on the filesystem to
-      // extract the archive, that archive is not corrupt, and specific files are
-      // included in the archive.
-
-      validateArchive(tempDownloadFile);
-
-
-      // Got complete download, archive has been validated. Now make it 'final'.
-      // Move is often much faster than copy.
-
-      try
-      {
-        boolean success = tempDownloadFile.renameTo(target);
-
-        if (!success)
-        {
-          throw new ArchiveStoreException(
-              "Failed to replace existing Beehive archive ''{0}'' with ''{1}''",
-              target.getAbsolutePath(), tempDownloadFile.getAbsolutePath()
-          );
-        }
-
-        log.info(
-            "Moved ''{0}'' to ''{1}''", tempDownloadFile.getAbsolutePath(), target.getAbsolutePath()
-        );
-      }
-
-      catch (SecurityException e)
-      {
-        throw new ConfigurationException(
-            "Security manager has denied write access to ''{0}'' : {1}",
-            e, target.getAbsolutePath(), e.getMessage()
+        throw new NetworkException(
+            "Download of Beehive archive failed : {0}", e, e.getMessage()
         );
       }
     }
 
 
-    // Special case for HTTP response 404...
+    // Assuming 404 indicates a new user... quietly return, nothing to download...
+
+    // TODO : MODELER-286
 
     else if (httpResponseCode == HttpURLConnection.HTTP_NOT_FOUND)
     {
-      // TODO
-      //
-      //  - The semantics here are unclear: does 404 indicate a real error (user data has
-      //    disappeared?) or does it merely indicate a new user account (no data, return 404)?
-      //    New user account (no data) should not be responded with an error (404).
-      //
-      //    This should be verified/fixed in Beehive REST API.
+      serviceLog.info("No user data found. Return code 404. Assuming new user account...");
 
-      throw new ArchiveNotFoundException(
-          "Received HTTP NOT FOUND (404) from Beehive {0}", printUser(currentUser)
-      );
+      return;
     }
-
-
-    // Any other HTTP response code is an error...
 
     else
     {
@@ -367,6 +358,10 @@ public class Beehive30API implements BeehiveService <File, Void>
       //   This could be improved by handling more specific error codes (some are
       //   fatal, some are recoverable) such as 500 Internal Error (permanent) or
       //   307 Temporary Redirect
+      //
+      // TODO :
+      //
+      //   Should handle authentication errors in their own branch, not in this generic block
 
       throw new NetworkException(
           "Failed to download Beehive archive from URL ''{0}'' {1}, " +
@@ -375,23 +370,103 @@ public class Beehive30API implements BeehiveService <File, Void>
           beehiveArchiveURI, printUser(currentUser), httpResponseCode
       );
     }
-
-    return null;    // stands for void
-  }
-
-
-
-
-
-
-  private void validateArchive(File tempArchive)
-  {
-    // TODO
   }
 
 
   /**
-   * Adds a HTTP 1.1 Authentication header to the given HTTP request. The header
+   * Uploads resources from the given input stream to Beehive server. The Beehive REST API
+   * used assumes a zip compressed stream including all relevant resources. The input stream
+   * parameter must match these expectations. <p>
+   *
+   * The access to Beehive is authenticated using the given user's credentials.
+   *
+   * @param archive       zip compressed byte stream containing all the resources to upload
+   *                      to Beehive
+   * @param currentUser   user to authenticate in Beehive
+   *
+   *
+   * @throws ConfigurationException
+   *            If the Beehive REST URL has been incorrectly configured. Will require
+   *            reconfiguration and re-deployment of the application.
+   *
+   * @throws NetworkException
+   *            If there's an I/O error on the upload stream or the Beehive server
+   *            returns an error status
+   *
+   */
+  @Override public void uploadResources(InputStream archive, User currentUser)
+      throws ConfigurationException, NetworkException
+  {
+    final String ARCHIVE_NAME = "openremote.zip";
+
+    // TODO : must be HTTPS
+
+    Account acct = currentUser.getAccount();
+
+    HttpClient httpClient = new DefaultHttpClient();
+    HttpPost httpPost = new HttpPost();
+
+    addHTTPAuthenticationHeader(httpPost, currentUser.getUsername(), currentUser.getPassword());
+
+    String beehiveRootRestURL = config.getBeehiveRESTRootUrl();
+    String url = beehiveRootRestURL + "account/" + acct.getOid() + "/" + ARCHIVE_NAME;
+
+    try
+    {
+      httpPost.setURI(new URI(url));
+    }
+
+    catch (URISyntaxException e)
+    {
+      throw new ConfigurationException(
+          "Incorrectly configured Beehive REST URL ''{0}'' : {1}",
+          e, beehiveRootRestURL, e.getMessage()
+      );
+    }
+
+    InputStreamBody resource = new InputStreamBody(archive, ARCHIVE_NAME);
+
+    MultipartEntity entity = new MultipartEntity();
+    entity.addPart("resource", resource);
+    httpPost.setEntity(entity);
+
+    HttpResponse response;
+
+    try
+    {
+      response = httpClient.execute(httpPost);
+    }
+
+    catch (IOException e)
+    {
+      throw new NetworkException(
+          "Network I/O error while uploading resource artifacts to Beehive : {0}",
+          e, e.getMessage()
+      );
+    }
+
+    if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK)
+    {
+       throw new NetworkException(
+           "Failed to save resources to Beehive, status code: {0}",
+           response.getStatusLine().getStatusCode()
+       );
+    }
+
+    // TODO :
+    //   - should probably check other return codes explicitly here too, such as
+    //     authentication errors (which is most likely not recoverable whereas
+    //     a regular network connection glitch might well be)...
+  }
+
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+
+
+  /**
+   * Adds a HTTP 1.1 Authentication header to the given HTTP request. The header 
    * value (username and password) are base64 encoded as required by the HTTP
    * specification.
    *
@@ -443,120 +518,6 @@ public class Beehive30API implements BeehiveService <File, Void>
   }
 
 
-  // Nested Classes -------------------------------------------------------------------------------
-
-
-  private static class BeehiveServiceLog
-  {
-
-    /**
-     * Generic logger for this service implementation.
-     */
-    private final static Logger beehiveLog = Logger.getLogger(BEEHIVE_SERVICE_LOG_CATEGORY);
-      
-    private BeehiveServiceLog()
-    {
-
-    }
-
-    private void info(String msg, Object... params)
-    {
-      beehiveLog.info(format(msg, params));
-    }
-
-    private void debug(String msg, Object... params)
-    {
-      beehiveLog.debug(format(msg, params));
-    }
-
-    private String format(String msg, Object... params)
-    {
-      try
-      {
-        return MessageFormat.format(msg, params);
-      }
-
-      catch (Throwable t)
-      {
-        return msg + "  [EXCEPTION MESSAGE FORMATTING ERROR: " + t.getMessage().toUpperCase() + "]";
-      }
-    }
-  }
-
-
-  /**
-   * Service-specific exception type to indicate issues with accessing local file system to
-   * cache Beehive Archives.
-   */
-  public static class ArchiveStoreException extends BeehiveServiceException
-  {
-
-    /**
-     * Constructs a new exception with a given message
-     *
-     * @param msg   exception message
-     */
-    ArchiveStoreException(String msg)
-    {
-      super(msg);
-    }
-
-    /**
-     * Constructs a new exception with a parameterized message
-     *
-     * @param msg     exception message
-     * @param params  message parameters
-     */
-    ArchiveStoreException(String msg, Object... params)
-    {
-      super(msg, params);
-    }
-
-    /**
-     * Constructs a new exception with a given message and root cause.
-     *
-     * @param msg       exception message
-     * @param cause     root cause exception
-     */
-    ArchiveStoreException(String msg, Throwable cause)
-    {
-      super(msg, cause);
-    }
-
-    /**
-     * Constructs a new exception with a parameterized message and root cause.
-     *
-     * @param msg       exception message
-     * @param cause     root cause exception
-     * @param params    message parameters
-     */
-    ArchiveStoreException(String msg, Throwable cause, Object... params)
-    {
-      super(msg, cause, params);
-    }
-  }
-
-
-  /**
-   * TODO :
-   *
-   *   Temporary exception type to deal with 404 errors on accessing
-   *   Beehive archives on the server. See the notes on Beehive30API
-   *   implementation for details. Should be revised once the Beehive
-   *   REST API semantics have been clarified.
-   */
-  public static class ArchiveNotFoundException extends BeehiveServiceException
-  {
-    ArchiveNotFoundException(String msg)
-    {
-      super(msg);
-    }
-
-    ArchiveNotFoundException(String msg, Object... params)
-    {
-      super(msg, params);
-    }
-  }
 
 
 }
