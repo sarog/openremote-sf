@@ -27,8 +27,10 @@ import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
@@ -124,6 +126,19 @@ public class SliderPropertyForm extends PropertyForm {
       minImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenSlider.setMinImage(imageURL);
+              minImageField.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
+              screenSlider.layout();
+            }             
+           });
+
+           /*
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -134,6 +149,7 @@ public class SliderPropertyForm extends PropertyForm {
                   screenSlider.layout();
                }
             });
+            */
          }
       });
       minImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -153,6 +169,19 @@ public class SliderPropertyForm extends PropertyForm {
       minTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenSlider.setMinTrackImage(imageURL);
+              minTrackImageField.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
+              screenSlider.layout();
+            }             
+           });
+
+           /*
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinTrackImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -163,6 +192,7 @@ public class SliderPropertyForm extends PropertyForm {
                   screenSlider.layout();
                }
             });
+            */
          }
       });
       minTrackImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -182,6 +212,18 @@ public class SliderPropertyForm extends PropertyForm {
       thumbImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenSlider.setThumbImage(imageURL);
+              thumbImageField.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
+              screenSlider.layout();
+            }             
+           });
+           /*
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getThumbImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -192,6 +234,7 @@ public class SliderPropertyForm extends PropertyForm {
                   screenSlider.layout();
                }
             });
+            */
          }
       });
       thumbImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -211,6 +254,18 @@ public class SliderPropertyForm extends PropertyForm {
       maxImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenSlider.setMaxImage(imageURL);
+              maxImageField.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
+              screenSlider.layout();
+            }             
+           });
+           /*
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -221,6 +276,7 @@ public class SliderPropertyForm extends PropertyForm {
                   screenSlider.layout();
                }
             });
+            */
          }
       });
       maxImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -240,6 +296,18 @@ public class SliderPropertyForm extends PropertyForm {
       maxTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(null, null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenSlider.setMaxTrackImage(imageURL);
+              maxTrackImageField.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
+              screenSlider.layout();
+            }             
+           });
+           /*
             ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxTrackImage()), screenSlider.getWidth());
             selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
@@ -250,6 +318,7 @@ public class SliderPropertyForm extends PropertyForm {
                   screenSlider.layout();
                }
             });
+            */
          }
       });
       maxTrackImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
