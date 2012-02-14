@@ -77,7 +77,7 @@ public class ImagePropertyForm extends PropertyForm {
       super(screenImage, widgetSelectionUtil);
       this.screenImage = screenImage;
       addFields(screenImage);
-      addListenersToForm();
+//      addListenersToForm();
       createSensorStates();
       super.addDeleteButton();
    }
@@ -179,28 +179,11 @@ public class ImagePropertyForm extends PropertyForm {
           imageAssetPicker.center();
           imageAssetPicker.setListener(new ImageAssetPickerListener() {
            @Override
-           public void imagePicked(String imageURL) {             
+           public void imagePicked(String imageURL) {
              screenImage.setImageSource(new ImageSource(imageURL));
              imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
            }             
           });
-          /*
-           final ImageSource image = uiButton.getImage();
-           ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
-           selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-              @Override
-              public void afterSubmit(SubmitEvent be) {
-                 String imageUrl = be.getData();
-                 screenButton.setIcon(imageUrl);
-                 if (image != null) {
-                    image.setSrc(imageUrl);
-                 } else {
-                    uiButton.setImage(new ImageSource(imageUrl));
-                 }
-                 defaultImageField.setText(uiButton.getImage().getImageFileName());
-              }
-           });
-           */
         }
      });
      imageSrcField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -241,7 +224,7 @@ public class ImagePropertyForm extends PropertyForm {
       return imageSrcField;
       */
    }
-   
+   /*
    private void addListenersToForm() {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
@@ -273,10 +256,12 @@ public class ImagePropertyForm extends PropertyForm {
          }
       });
    }
+   */
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+      final SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
       if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
+        /*
          final ImageUploadAdapterField onImageUploadField = new ImageUploadAdapterField("switchOnImage");
          onImageUploadField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
             public void handleEvent(FieldEvent be) {
@@ -316,18 +301,105 @@ public class ImagePropertyForm extends PropertyForm {
             }
          });
          offImageUploadField.setFieldLabel("off");
-         
-         if(sensorLink!=null){
-            onImageUploadField.setImage(sensorLink.getStateValueByStateName("on"));
-            offImageUploadField.setImage(sensorLink.getStateValueByStateName("off"));
+         */
+        final ImageSelectAdapterField onImageUploadField = new ImageSelectAdapterField("on");
+        onImageUploadField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+           @Override
+           public void componentSelected(ButtonEvent ce) {
+             ImageAssetPicker imageAssetPicker = new ImageAssetPicker((sensorLink != null)?sensorLink.getStateValueByStateName("on"):null);
+             imageAssetPicker.show();
+             imageAssetPicker.center();
+             imageAssetPicker.setListener(new ImageAssetPickerListener() {
+              @Override
+              public void imagePicked(String imageURL) {
+                Map<String,String> sensorAttrMap = new HashMap<String,String>();
+                sensorAttrMap.put("name","on");
+                sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
+                SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                screenImage.clearSensorStates();
+                onImageUploadField.setText(sensorLink.getStateValueByStateName("on"));
+              }             
+             });
+           }
+        });
+        onImageUploadField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+          public void componentSelected(ButtonEvent ce) {
+            removeSensorImage("on");
+          }
+       });
+        final ImageSelectAdapterField offImageUploadField = new ImageSelectAdapterField("off");
+        offImageUploadField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+           @Override
+           public void componentSelected(ButtonEvent ce) {
+             ImageAssetPicker imageAssetPicker = new ImageAssetPicker((sensorLink != null)?sensorLink.getStateValueByStateName("off"):null);
+             imageAssetPicker.show();
+             imageAssetPicker.center();
+             imageAssetPicker.setListener(new ImageAssetPickerListener() {
+              @Override
+              public void imagePicked(String imageURL) {
+                Map<String,String> sensorAttrMap = new HashMap<String,String>();
+                sensorAttrMap.put("name","off");
+                sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
+                SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                screenImage.clearSensorStates();
+                offImageUploadField.setText(sensorLink.getStateValueByStateName("off"));
+              }             
+             });
+           }
+        });
+        offImageUploadField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+          public void componentSelected(ButtonEvent ce) {
+            removeSensorImage("off");
+          }
+       });
+        
+        // TODO EBR : refactor to avoid code duplication
+
+        if (sensorLink!=null) {
+            onImageUploadField.setText(sensorLink.getStateValueByStateName("on"));
+            offImageUploadField.setText(sensorLink.getStateValueByStateName("off"));
          }
+        
          statesPanel.add(onImageUploadField);
          statesPanel.add(offImageUploadField);
       }else if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
          List<State> states = customSensor.getStates();
          for(final State state: states){
-            final ImageUploadAdapterField imageUploaderField = new ImageUploadAdapterField(state.getName());
+           
+           final ImageSelectAdapterField imageUploaderField = new ImageSelectAdapterField(state.getName());
+           imageUploaderField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+              @Override
+              public void componentSelected(ButtonEvent ce) {
+                ImageAssetPicker imageAssetPicker = new ImageAssetPicker((sensorLink != null)?sensorLink.getStateValueByStateName(state.getName()):null);
+                imageAssetPicker.show();
+                imageAssetPicker.center();
+                imageAssetPicker.setListener(new ImageAssetPickerListener() {
+                 @Override
+                 public void imagePicked(String imageURL) {
+                   Map<String,String> sensorAttrMap = new HashMap<String,String>();
+                   sensorAttrMap.put("name", state.getName());
+                   sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
+                   SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                   sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
+                   screenImage.clearSensorStates();
+                   imageUploaderField.setText(sensorLink.getStateValueByStateName(state.getName()));
+                 }             
+                });
+              }
+           });
+           imageUploaderField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+             public void componentSelected(ButtonEvent ce) {
+               removeSensorImage(state.getName());
+             }
+          });
+           if(sensorLink!=null) {
+             imageUploaderField.setText(sensorLink.getStateValueByStateName(state.getName()));
+          }
+           /*
+           final ImageUploadAdapterField imageUploaderField = new ImageUploadAdapterField(state.getName());
             imageUploaderField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
                public void handleEvent(FieldEvent be) {
                   if (!isValid()) {
@@ -350,6 +422,7 @@ public class ImagePropertyForm extends PropertyForm {
             if(sensorLink!=null){
                imageUploaderField.setImage(sensorLink.getStateValueByStateName(state.getName()));
             }
+            */
             statesPanel.add(imageUploaderField);
             
          }

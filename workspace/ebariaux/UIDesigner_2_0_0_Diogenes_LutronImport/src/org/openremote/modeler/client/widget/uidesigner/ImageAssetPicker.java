@@ -80,7 +80,7 @@ public class ImageAssetPicker extends DialogBox {
       public void onSuccess(List<GraphicalAssetDTO> result) {
         table.setRowData(result);
         for (GraphicalAssetDTO ga : result) {
-          if (ga.getUrl().equals(currentImageURL)) {
+          if (ga.getUrl().equals(currentImageURL) || ga.getName().equals(currentImageURL)) { // TODO: testing also on image name, not nice but used for states on image widgets
             selectionModel.setSelected(ga, true);
             break;
           }
