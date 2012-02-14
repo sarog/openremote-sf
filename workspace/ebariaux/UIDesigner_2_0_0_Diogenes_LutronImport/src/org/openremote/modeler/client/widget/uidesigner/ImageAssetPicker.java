@@ -8,6 +8,7 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -34,7 +35,7 @@ public class ImageAssetPicker extends DialogBox {
   interface ImageAssetPickerUiBinder extends UiBinder<Widget, ImageAssetPicker> {
   }
   
-  private final SingleSelectionModel<String> selectionModel = new SingleSelectionModel<String>();
+  private final SingleSelectionModel<GraphicalAssetDTO> selectionModel = new SingleSelectionModel<GraphicalAssetDTO>();
 
   public interface ImageAssetPickerListener {
     void imagePicked(String imageURL);
@@ -59,17 +60,17 @@ public class ImageAssetPicker extends DialogBox {
     mainLayout.setSize("50em", "20em");
     getElement().getStyle().setZIndex(Integer.MAX_VALUE - 1); // TODO: check how we can be sure of the value to use
 
-    TextColumn<String> fileNameColumn = new TextColumn<String>() {
+    TextColumn<GraphicalAssetDTO> fileNameColumn = new TextColumn<GraphicalAssetDTO>() {
       @Override
-      public String getValue(String url) {
-        return url;
+      public String getValue(GraphicalAssetDTO asset) {
+        return asset.getName();
       }
     };
     table.addColumn(fileNameColumn, "Name");
     table.setSelectionModel(selectionModel);
-    UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<String>>() {
+    UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
       @Override
-      public void onSuccess(List<String> result) {
+      public void onSuccess(List<GraphicalAssetDTO> result) {
         table.setRowData(result);
       }
     });
@@ -79,7 +80,7 @@ public class ImageAssetPicker extends DialogBox {
   DockLayoutPanel mainLayout;
 
   @UiField
-  CellTable<String> table;
+  CellTable<GraphicalAssetDTO> table;
   
   @UiField
   Button cancelButton;
@@ -109,9 +110,9 @@ public class ImageAssetPicker extends DialogBox {
 //          String imageUrl = be.getData();
          
          // TODO: reload table data / add added file to list
-         UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<String>>() {
+         UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
            @Override
-           public void onSuccess(List<String> result) {
+           public void onSuccess(List<GraphicalAssetDTO> result) {
              table.setRowData(result);
            }
          });
@@ -129,7 +130,7 @@ public class ImageAssetPicker extends DialogBox {
   @UiHandler("okButton")
   void handleOK(ClickEvent e) {
     if (listener != null) {
-      listener.imagePicked(selectionModel.getSelectedObject());
+      listener.imagePicked(selectionModel.getSelectedObject().getUrl());
     }
     hide();
   }

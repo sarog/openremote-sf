@@ -27,6 +27,7 @@ import java.util.List;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 /**
  * The Interface ResourceService.
@@ -70,7 +71,7 @@ public interface ResourceService {
    
    File uploadImage(InputStream inputStream, String fileName);
    
-   public List<String>getUserImagesURLs();
+   public List<GraphicalAssetDTO>getUserImagesURLs();
 
    /**
     * Gets the relative resource path.
