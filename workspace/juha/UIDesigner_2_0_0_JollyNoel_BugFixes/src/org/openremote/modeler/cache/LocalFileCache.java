@@ -30,14 +30,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 
-import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.configuration.PathConfig;
@@ -59,7 +60,7 @@ import org.openremote.modeler.utils.FileUtilsExt;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class LocalFileCache implements ResourceCache
+public class LocalFileCache implements ResourceCache<File>
 {
 
   // TODO Tasks:
@@ -175,17 +176,63 @@ public class LocalFileCache implements ResourceCache
 
   // Implements ResourceCache ---------------------------------------------------------------------
 
+  /**
+   * Opens a stream for writing a zip compressed archive with user resources to this cache.
+   * Note the API requirements on {@link CacheWriteStream} use : the stream must be marked
+   * as complete by the calling client before this implementation accepts the resources.
+   *
+   * @see CacheWriteStream
+   *
+   * @return  An open stream that can be used to store a zip compressed resource archive
+   *          to this cache. The returned stream object includes an API that differs from
+   *          standard Java I/O streaming interfaces with a
+   *          {@link org.openremote.modeler.cache.CacheWriteStream#markCompleted()} which
+   *          the caller of this method must use in order for this cache implementation to
+   *          consider the stream as completed and its contents usable for storing in cache.
+   *
+   * @throws CacheOperationException
+   *            If an error occurs in creating or opening the required files in the local file
+   *            system to store the incoming resource archive stream contents.
+   *
+   * @throws ConfigurationException
+   *            If security constraints prevent access to required files in the local filesystem
+   */
+  @Override public CacheWriteStream openWriteStream()
+      throws CacheOperationException, ConfigurationException
+  {
+    File tempDownloadTarget = new File(
+        getCachedArchive().getPath() + "." + UUID.randomUUID().toString() + ".download"
+    );
+
+    cacheLog.debug("Downloading to ''{0}''", tempDownloadTarget.getAbsolutePath());
+
+    try
+    {
+      return new FileCacheWriteStream(tempDownloadTarget);
+    }
+
+    catch (FileNotFoundException e)
+    {
+      throw new CacheOperationException(
+          "Cannot open or create file ''{0}'' : {1}", e, tempDownloadTarget, e.getMessage()
+      );
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Write access to ''{0}'' has been denied : {1}", e, tempDownloadTarget, e.getMessage()
+      );
+    }
+  }
+
 
   /**
-   * Creates an export zip on the local file system (in this account's cache directory)
-   * and returns a readable input stream from it. The zip archive contents is created based
-   * on the current (un-versioned) in-memory object model of the designer. <p>
+   * Creates a zip compressed file on the local file system (in this account's cache directory)
+   * containing all user resources and returns a readable input stream from it. <p>
    *
    * This input stream can be used where the designer resources are expected as a zipped
    * archive bundle (Beehive API calls, configuration export functions, etc.)
-   *
-   * @param   panels    this account's current, in-memory object model of the designer UI,
-   *                    configuration and associated artifacts
    *
    * @return  an input stream from a zip archive in the local filesystem cache containing
    *          all account artifacts
@@ -196,10 +243,9 @@ public class LocalFileCache implements ResourceCache
    * @throws ConfigurationException
    *            if there are security restrictions on any of the file access
    */
-  @Override public InputStream getExportArchiveInputStream(Set<Panel> panels)
-      throws CacheOperationException, ConfigurationException
+  @Override public InputStream openReadStream() throws CacheOperationException, ConfigurationException
   {
-    File exportArchiveFile = createExportArchive(panels);
+    File exportArchiveFile = createExportArchive();
 
     try
     {
@@ -289,78 +335,42 @@ public class LocalFileCache implements ResourceCache
     // the download is still done to a temp file first to ensure there were no I/O errors
     // and we don't overwrite with a partially downloaded or corrupted archive.
 
-    BeehiveService<File, Void> beehive = new Beehive30API(configuration);
+    BeehiveService beehive = new Beehive30API(configuration);
 
-    // This is the existing archive file (if any) and the final target for our update...
-
-    File cachedArchive = getCachedArchive();
 
     try
     {
-      beehive.downloadArchive(currentUser, cachedArchive);
-
-      cacheLog.info("Download of ''{0}'' complete.", cachedArchive.getAbsolutePath());
-    }
-
-    catch (Beehive30API.ArchiveNotFoundException e)
-    {
-      // TODO : MODELER-286
-      //
-      //  - Assuming 404 here always means a new user account was created which has no
-      //    saved resources yet. This is somewhat weak logic and should be updated.
-
-      cacheLog.info(
-          "Failed to download Beehive archive for user {0}. Status code is 404. " +
-          "Assuming a new user account.", currentUser.getUsername()
-      );
-
-
-      // Stop and return with the assumption that this is a new account, nothing to update
-      // on the cache yet...
-
-      return;
-    }
-
-    catch (Beehive30API.ArchiveStoreException e)
-    {
-      //  Local filesystem error. Rethrow as cache ops exception (which is likely to halt
-      //  save/restore operations for this account to prevent potential corruption).
-
-      throw new CacheOperationException(
-          "Failed to download Beehive archive for {0}. Local cached copy has not been replaced. " +
-          "Error Message : {1}",
-          e, printUserAccountLog(currentUser), e.getMessage()
-      );
-    }
-
-    catch (BeehiveService.ServerException e)
-    {
-      // Beehive server exception is a degree more serious than a plain network error --
-      // it may indicate either implementation or deployment errors on Beehive server. These
-      // may not be recoverable (or do require re-deployment to resolve) as easily as
-      // less severe network errors.
-
-      throw new NetworkException(
-          NetworkException.Severity.SEVERE,
-          "Network communication error with Beehive : {0}", e, e.getMessage()
-      );
+      beehive.downloadResources(currentUser, this);
     }
 
     catch (BeehiveServiceException e)
     {
-      // Generic, unanticipated error from the service implementation...
+      // Generic, unanticipated exception type...
 
-      throw new CacheOperationException("Error in Beehive Service : {0}", e, e.getMessage());
+      throw new CacheOperationException("Download of resources failed : {0}", e, e.getMessage());
+    }
+
+
+    // If we got through download without exceptions and still have nothing in cache...
+
+    if (!hasState())
+    {
+      cacheLog.info(
+          "No user resources were downloaded from Beehive. Assuming new user account ''{0}''",
+          currentUser.getUsername()
+      );
+
+      return;
     }
 
 
     // If we made through all the error checking, we're ready to go. Unzip the archive and finish.
 
-    extract(cachedArchive, cacheFolder);
+    extract(getCachedArchive(), cacheFolder);
 
     cacheLog.info(
         "Extracted ''{0}'' to ''{1}''.",
-        cachedArchive.getAbsolutePath(), cacheFolder.getAbsolutePath()
+        getCachedArchive().getAbsolutePath(), cacheFolder.getAbsolutePath()
     );
   }
 
@@ -390,6 +400,17 @@ public class LocalFileCache implements ResourceCache
 
     return false;
   }
+  
+
+  /**
+   * TODO : See Javadoc on interface definition. This exists to support earlier API patterns.
+   */
+  @Override public void markInUseImages(Set<File> imageFiles)
+  {
+    this.imageFiles = imageFiles;
+  }
+
+  private Set<File> imageFiles;
 
 
 
@@ -429,8 +450,6 @@ public class LocalFileCache implements ResourceCache
    * </ul>
    *
    *
-   * @param   panels    the current, temporary and in-memory, object model state of the designer
-   *
    * @return  reference to the export archive file in the account's cache directory
    *
    * @throws  CacheOperationException
@@ -440,61 +459,8 @@ public class LocalFileCache implements ResourceCache
    *              if there are any security restrictions on file access
    *
    */
-  public File createExportArchive(Set<Panel> panels) throws CacheOperationException,
-                                                            ConfigurationException
+  public File createExportArchive() throws CacheOperationException, ConfigurationException
   {
-
-    // Collect all image file names (without path references to this account's
-    // local cache) included in panel definitions and components in panels...
-
-    Set<File> imageFiles = new HashSet<File>();
-
-    if (panels == null)
-    {
-      cacheLog.warn(
-          "getAllImageNames(panels) was called with null argument (Account : {0})",
-          account.getOid()
-      );
-    }
-
-    else
-    {
-      for (Panel panel : panels)
-      {
-        Set<String> imageNames = Panel.getAllImageNames(panel);
-
-        for (String imageName : imageNames)
-        {
-          imageFiles.add(new File(imageName));
-        }
-      }
-    }
-
-//
-//    // Resolve the image names from Panel object model to actual paths to files
-//    // stored in this account's local cache...
-//
-//    Set<File> imageFiles;
-//
-//    try
-//    {
-//      imageFiles = resolveImagePaths(imageNames);
-//    }
-//
-//    catch (FileNotFoundException e)
-//    {
-//      // TODO
-//      //   - Preserving existing semantics of throwing an exception in case any of the image
-//      //     files cannot be resolved in local cache, thus aborting the export operation.
-//      //     Unclear if this is a too strict behavior. If this issue starts appearing (thus
-//      //     this exception is thrown) may need to revisit the logic.
-//
-//      throw new CacheOperationException(
-//          "Could not resolve all image paths in local file cache for account ID = {0} : {1}",
-//          e, account, e.getMessage()
-//      );
-//    }
-    
 
     // File paths to add to export/upload archive...
     //   - panel.xml
@@ -514,7 +480,7 @@ public class LocalFileCache implements ResourceCache
     // Collect all the files going into the archive...
 
     Set<File> exportFiles = new HashSet<File>();
-    exportFiles.addAll(imageFiles);
+    exportFiles.addAll(this.imageFiles);
     exportFiles.add(panelXMLFile);
     exportFiles.add(controllerXMLFile);
     exportFiles.add(panelsObjFile);
@@ -607,58 +573,14 @@ public class LocalFileCache implements ResourceCache
   }
 
 
-//  /**
-//   * TODO
-//   *
-//   * Resolves a set of image file names against the local file cache of the account associated
-//   * with this cache instance.
-//   *
-//   * @param imageNames    set of image file names (without file paths)
-//   *
-//   * @throws FileNotFoundException
-//   *              If any one of the file names in the set cannot be resolved to a file
-//   *              path in account's cache directory. The exception message will contain
-//   *              the name of the image that failed a resolution to a local cache directory.
-//   *
-//   * @throws ConfigurationException
-//   *              If there are any security restrictions in accessing the file paths
-//   */
-//  public void resolveImagePaths(Set<String> imageNames) throws FileNotFoundException,
-//                                                                    ConfigurationException
-//  {
-//    for (String fileName : imageNames)
-//    {
-//      File imageFile = new File(cacheFolder, fileName);
-//
-//      try
-//      {
-//        if (!imageFile.exists())
-//        {
-//          cacheLog.error(
-//              "Image file ''{0}'' for account ID = {1} was not found in local file resource cache.",
-//              imageFile.getName(), account.getOid()
-//          );
-//
-//          throw new FileNotFoundException(fileName);
-//        }
-//      }
-//
-//      catch (SecurityException e)
-//      {
-//        throw new ConfigurationException(
-//            "Security manager has denied read access to file ''{0}'' (Account : {1}) : {2}",
-//            e, imageFile.getAbsolutePath(), account.getOid(), e.getMessage()
-//        );
-//      }
-//    }
-//  }
-//
-
-
-
-
-
   // Private Instance Methods ---------------------------------------------------------------------
+
+
+
+  private void validateArchive(File tempArchive)
+  {
+    // TODO
+  }
 
 
   /**
@@ -1074,7 +996,7 @@ public class LocalFileCache implements ResourceCache
     }
 
 
-    // TODO : validateArchive(tempBackupArchive);
+    validateArchive(tempBackupArchive);
 
 
     // Copy was ok, now move from temp to actual location...
@@ -1670,6 +1592,111 @@ public class LocalFileCache implements ResourceCache
            ")";
   }
 
+
+
+  // Inner Classes -------------------------------------------------------------------------------
+
+
+  /**
+   * Implements a file-based write stream into the cache. The after processing is used to move
+   * the downloaded archive (once marked complete and validated) from the temporary download file
+   * location to the final location in the filesystem. This should ensure we don't deal with
+   * partial downloads.
+   */
+  private class FileCacheWriteStream extends CacheWriteStream
+  {
+
+    /**
+     * Path to the temporary download location.
+     */
+    private File temp;
+
+    /**
+     * Constructs a new file based cache write stream.
+     *
+     * @param tempTarget    initial location where the downloaded bytes are stored
+     *
+     * @throws FileNotFoundException
+     *              if the temporary file target cannot be created or opened
+     *
+     * @throws SecurityException
+     *              if security manager denied access to creating or opening the temporary file
+     */
+    private FileCacheWriteStream(File tempTarget) throws FileNotFoundException, SecurityException
+    {
+      super(new BufferedOutputStream(new FileOutputStream(tempTarget)));
+
+      this.temp = tempTarget;
+    }
+
+    /**
+     * Invoked for streams that have been marked completed upon stream close. <p>
+     *
+     * Validate the download archive and move it to its final path location before continuing.
+     *
+     * @throws IOException
+     */
+    @Override protected void afterClose() throws IOException
+    {
+      // Can check that we have space on the filesystem to extract the archive, that
+      // archive is not corrupt, and specific files are included in the archive.
+
+      validateArchive(temp);
+
+
+      // Got complete download, archive has been validated. Now make it 'final'.
+      // Move is often much faster than copy.
+
+      File finalTarget = getCachedArchive();
+
+      try
+      {
+        boolean success = temp.renameTo(finalTarget);
+
+        if (!success)
+        {
+          throw new IOException(MessageFormat.format(
+              "Failed to replace existing Beehive archive ''{0}'' with ''{1}''",
+              finalTarget.getAbsolutePath(), temp.getAbsolutePath())
+          );
+        }
+
+        cacheLog.info(
+            "Moved ''{0}'' to ''{1}''", temp.getAbsolutePath(), finalTarget.getAbsolutePath()
+        );
+      }
+
+      catch (SecurityException e)
+      {
+        throw new IOException(MessageFormat.format(
+            "Security manager has denied write access to ''{0}'' : {1}",
+            e, finalTarget.getAbsolutePath(), e.getMessage())
+        );
+      }
+    }
+
+    @Override public void close()
+    {
+      try
+      {
+        super.close();
+      }
+
+      catch (Throwable t)
+      {
+        cacheLog.warn(
+            "Unable to close resource archive cache stream : {0}",
+            t, t.getMessage()
+        );
+
+      }
+    }
+
+    @Override public String toString()
+    {
+      return "Stream Target : " + temp.getAbsolutePath();
+    }
+  }
 
 }
 
