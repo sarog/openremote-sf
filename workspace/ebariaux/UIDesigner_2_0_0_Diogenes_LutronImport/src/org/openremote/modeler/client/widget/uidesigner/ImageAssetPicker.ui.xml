@@ -2,6 +2,16 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
 
+  <ui:style>
+   .imagePreviewStyle {
+      margin: 10px;
+      padding: 2px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: #999;
+    }
+  </ui:style>
+
 	<g:DialogBox autoHide="false" modal="true">
 		<g:caption>
 			<b>Image Asset Picker</b>
@@ -32,7 +42,7 @@
 							</g:ScrollPanel>
 						</g:layer>
 						<g:layer right="0%" width="60%">
-							<g:Image ui:field="imagePreview" />
+							<g:Image styleName='{style.imagePreviewStyle}' ui:field="imagePreview" />
 						</g:layer>
 					</g:LayoutPanel>
 				</g:center>
