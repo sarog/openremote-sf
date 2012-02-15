@@ -27,10 +27,10 @@
 				<g:south size="4">
 					<g:LayoutPanel>
 						<g:layer left="35%" width="6em">
-							<g:Button ui:field="cancelButton">Cancel</g:Button>
+              <g:Button ui:field="okButton">OK</g:Button>
 						</g:layer>
 						<g:layer right="35%" width="6em">
-							<g:Button ui:field="okButton">OK</g:Button>
+              <g:Button ui:field="cancelButton">Cancel</g:Button>
 						</g:layer>
 					</g:LayoutPanel>
 				</g:south>
