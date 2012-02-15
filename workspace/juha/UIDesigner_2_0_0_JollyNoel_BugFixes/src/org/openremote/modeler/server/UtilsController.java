@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.text.MessageFormat;
 
 import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
@@ -39,19 +40,29 @@ import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.exception.FileOperationException;
+import org.openremote.modeler.exception.ConfigurationException;
+import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.exception.UIRestoreException;
+import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.XmlParser;
+import org.openremote.modeler.cache.LocalFileCache;
+import org.openremote.modeler.cache.ResourceCache;
+import org.openremote.modeler.cache.CacheOperationException;
+import org.openremote.modeler.logging.LogFacade;
 
 /**
+ * TODO
+ * 
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
  * 
  * @author handy.wang
  */
 @SuppressWarnings("serial")
-public class UtilsController extends BaseGWTSpringController implements UtilsRPCService {
+public class  UtilsController extends BaseGWTSpringController implements UtilsRPCService {
    
    private static final String ROTATED_FLAG = "ROTATE";
    
@@ -71,14 +82,73 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private static final String UI_DESIGNER_LAYOUT_SCREEN_KEY = "screenList";
    
    private static final String UI_DESIGNER_LAYOUT_MAXID = "maxID";
-  
-   /**
-    * {@inheritDoc}
-    */
-   public String exportFiles(long maxId, List<Panel> panelList) {  
-      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList);
-   }
-   
+
+
+
+
+  /**
+   * TODO : MODELER-288 -- this should delegate to Beehive, not handled by designer
+   */
+  @Override public String exportFiles(long maxId, List<Panel> panelList)
+  {
+    //      return resourceService.downloadZipResource(maxId, this.getThreadLocalRequest().getSession().getId(), panelList);
+
+    LogFacade log = LogFacade.getInstance(LogFacade.Category.EXPORT);
+
+    // TODO : this call should be internalized, see MODELER-287
+    resourceService.initResources(panelList, maxId);
+
+    resourceService.saveResourcesToBeehive(panelList);
+
+    // TODO : should be injected
+    ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+
+    try
+    {
+      cache.update();
+    }
+
+    catch (ConfigurationException e)
+    {
+      String msg = MessageFormat.format(
+          "Cannot complete export operation due to a configuration error : {0}", e.getMessage()
+      );
+
+      // TODO : log and throw because unclear if these runtime exceptions to UI are logged anywhere
+      log.error(msg, e);
+
+      throw new XmlExportException(msg, e);
+    }
+
+    catch (NetworkException e)
+    {
+      String msg = MessageFormat.format(
+          "Network error prevented export operation from completing : {0}", e.getMessage()
+      );
+
+      // TODO : log and throw because unclear if these runtime exceptions to UI are logged anywhere
+      log.error(msg, e);
+
+      throw new XmlExportException(msg, e);
+    }
+
+    catch (CacheOperationException e)
+    {
+      String msg = MessageFormat.format(
+          "Resource export from local cache failed : {0}", e.getMessage()
+      );
+
+      // TODO : log and throw because unclear if these runtime exceptions to UI are logged anywhere
+      log.error(msg, e);
+
+      throw new XmlExportException(msg, e);
+    }
+
+    // TODO : should never come from cache in the first place but from Beehive
+    return resourceService.downloadZipResource(maxId, getThreadLocalRequest().getSession().getId(), panelList);
+  }
+
+
    /**
     * Gets the resource service.
     * 
