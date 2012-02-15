@@ -116,6 +116,9 @@ public class ChangeIconWindow extends Dialog {
     */
    public ChangeIconWindow(IconPreviewWidget previewWidget, int previewWidth) {
       this.previewWidget = previewWidget;
+      
+      // Make sure we "set image mode, not text", prevents display of weird image if none is set
+      previewWidget.setIcon("");      
       window = this;
       if (previewWidth > 90) {
          setMinWidth(400 + previewWidth + 16);
