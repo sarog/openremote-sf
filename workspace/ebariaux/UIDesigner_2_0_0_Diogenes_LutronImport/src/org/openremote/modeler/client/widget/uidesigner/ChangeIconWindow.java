@@ -129,7 +129,7 @@ public class ChangeIconWindow extends Dialog {
    
    private void initial() {
       setMinHeight(350);
-      setHeading("Change Icon");
+      setHeading("Add image");
       setModal(true);
       setLayout(new BorderLayout());
       setButtons(Dialog.OKCANCEL);  
@@ -160,7 +160,7 @@ public class ChangeIconWindow extends Dialog {
                   }
                   fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
-                  MessageBox.alert("Error", "Please select an image.", null);
+                 hide();
                }
             }
          }
