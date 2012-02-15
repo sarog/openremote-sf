@@ -22,14 +22,12 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
-import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
-import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISwitch;
@@ -77,23 +75,6 @@ public class SwitchPropertyForm extends PropertyForm {
               screenSwitch.setIcon(imageURL);
             }             
            });
-           /*
-            final ImageSource onImage = uiSwitch.getOnImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, onImage), screenSwitch.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageOnUrl = be.getData();
-                  if (onImage != null) {
-                     onImage.setSrc(imageOnUrl);
-                  } else {
-                     uiSwitch.setOnImage(new ImageSource(imageOnUrl));
-                  }
-                  imageONField.setText(uiSwitch.getOnImage().getImageFileName());
-                  screenSwitch.setIcon(imageOnUrl);
-               }
-            });
-            */
          }
       });
       imageONField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -130,24 +111,6 @@ public class SwitchPropertyForm extends PropertyForm {
               imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
             }             
            });
-
-           
-           /*
-            final ImageSource offImage = uiSwitch.getOffImage();
-            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, offImage), screenSwitch.getWidth());
-            selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageOffUrl = be.getData();
-                  if (offImage != null) {
-                     offImage.setSrc(imageOffUrl);
-                  } else {
-                     uiSwitch.setOffImage(new ImageSource(imageOffUrl));
-                  }
-                  imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
-               }
-            });
-            */
          }
       });
       imageOFFField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -203,20 +166,6 @@ public class SwitchPropertyForm extends PropertyForm {
       };
    }
 
-   /**
-    * @param screenSwitch
-    * @param imageSource
-    * @return
-    */
-   private IconPreviewWidget createIconPreviewWidget(ScreenSwitch screenSwitch, ImageSource imageSource) {
-      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSwitch.getWidth(), screenSwitch.getHeight());
-      previewWidget.setText("Switch");
-      if (imageSource != null) {
-         previewWidget.setIcon(imageSource.getSrc());
-      }
-      return previewWidget;
-   }
-   
    @Override
    protected void afterRender() {
       super.afterRender();
