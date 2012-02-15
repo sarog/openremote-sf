@@ -24,12 +24,16 @@ import java.util.ArrayList;
 import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
+import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -53,7 +57,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
       super(screenTabbarItem, widgetSelectionUtil);
       this.screenTabbarItem = screenTabbarItem;
       addFields();
-      addSubmitListenersToForm();
+//      addSubmitListenersToForm();
       super.addDeleteButton();
    }
    private void addFields() {
@@ -67,7 +71,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
             screenTabbarItem.setName(name.getValue());
          }
       });
-      
+      /*
       final ImageUploadAdapterField imageUploaderField = new ImageUploadAdapterField(null);
       imageUploaderField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
@@ -91,6 +95,8 @@ public class TabbarItemPropertyForm extends PropertyForm {
       imageUploaderField.setImage(screenTabbarItem.getImageSource().getSrc());
       imageUploaderField.setFieldLabel("Image Source");
       imageUploaderField.setActionToForm(this);
+      */
+      
       // initial navigate properties
       final Navigate navigate = screenTabbarItem.getNavigate();
       Group parentGroup = screenTabbarItem.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
@@ -123,11 +129,42 @@ public class TabbarItemPropertyForm extends PropertyForm {
       }
       
       add(name);
-      add(imageUploaderField);
+      add(createImageUploader());
       add(navigateSet);
       
    }
    
+   private ImageSelectAdapterField createImageUploader() {
+     final ImageSelectAdapterField imageSrcField = new ImageSelectAdapterField("Image");
+     imageSrcField.setText(screenTabbarItem.getImageSource().getImageFileName());
+     imageSrcField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          final ImageSource image = screenTabbarItem.getImageSource();
+          
+          ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+          imageAssetPicker.show();
+          imageAssetPicker.center();
+          imageAssetPicker.setListener(new ImageAssetPickerListener() {
+           @Override
+           public void imagePicked(String imageURL) {
+             screenTabbarItem.setImageSource(new ImageSource(imageURL));
+             imageSrcField.setText(screenTabbarItem.getImageSource().getImageFileName());
+           }             
+          });
+        }
+     });
+     imageSrcField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+       public void componentSelected(ButtonEvent ce) {
+         screenTabbarItem.removeImage();
+         widgetSelectionUtil.setSelectWidget(screenTabbarItem);
+         imageSrcField.removeImageText();
+       }
+    });
+     return imageSrcField;
+   }
+
+   /*
    private void addSubmitListenersToForm() {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
@@ -140,6 +177,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
          }
       });
    }
+   */
    
    @Override
    protected void afterRender() {
