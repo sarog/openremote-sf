@@ -122,7 +122,7 @@ public class ImageAssetPicker extends DialogBox {
        public void afterSubmit(SubmitEvent be) {
          final String imageUrl = be.getData();
          
-         // TODO: reload table data / add added file to list
+         // TODO: have a lighter way of updating the table than full reload
          UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
            @Override
            public void onSuccess(List<GraphicalAssetDTO> result) {
