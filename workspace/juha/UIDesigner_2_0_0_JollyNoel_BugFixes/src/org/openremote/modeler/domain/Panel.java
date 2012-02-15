@@ -57,18 +57,24 @@ public class Panel extends BusinessEntity
 
   // Class Members --------------------------------------------------------------------------------
 
-  /**
-   * Log category for panel domain objects.
-   */
-  private final static LogFacade domainLog =
-      LogFacade.getInstance(LogFacade.Category.PANEL_MODEL);
-
-  /**
-   * Specialized log category for errors serious enough that administrators/developers should
-   * be notified if they occur.
-   */
-  private final static AdministratorAlert admin =
-      AdministratorAlert.getInstance(LogFacade.Category.PANEL_ADMIN_ALERT);
+// TODO
+//   - Commenting out logging for now -- domain object is compiled to javascript and executed
+//     on client browser with its own logging environment. The log facade needs to be massaged
+//     into something that can be compiled to JS and remote logged via GWT RPC on server side.
+  
+//
+//  /**
+//   * Log category for panel domain objects.
+//   */
+//  private final static LogFacade domainLog =
+//      LogFacade.getInstance(LogFacade.Category.PANEL_MODEL);
+//
+//  /**
+//   * Specialized log category for errors serious enough that administrators/developers should
+//   * be notified if they occur.
+//   */
+//  private final static AdministratorAlert admin =
+//      AdministratorAlert.getInstance(LogFacade.Category.PANEL_ADMIN_ALERT);
 
 
   private static int defaultNameIndex = 1;
@@ -102,6 +108,13 @@ public class Panel extends BusinessEntity
    *   Further, the additional processing of groups and screen pairs should be pushed
    *   down to their respective domain classes.
    *
+   * TODO :
+   *
+   *   Ideally all images could be handled with ImageSource domain object, rather than
+   *   as a set of strings which is what's returned now. Need to review the domain object
+   *   designer to ensure ImageSources are used universally.
+   *
+   *
    * @param panel   the panel which images are returned (including all component images)
    *
    * @return    a set of filenames (not including their account specific file paths in
@@ -130,7 +143,7 @@ public class Panel extends BusinessEntity
 
     if (groupRefs == null)
     {
-      domainLog.warn("Panel ''{0}'' has no groups.", panel.getDisplayName());
+//      domainLog.warn("Panel ''{0}'' has no groups.", panel.getDisplayName());
 
       return imageNames;
     }
@@ -154,7 +167,7 @@ public class Panel extends BusinessEntity
 
       if (screenPairRefs == null)
       {
-        domainLog.debug("Panel ''{0}'' has no screens defined.", panel.getDisplayName());
+//        domainLog.debug("Panel ''{0}'' has no screens defined.", panel.getDisplayName());
 
         continue;
       }
@@ -173,13 +186,6 @@ public class Panel extends BusinessEntity
           for (ImageSource source : sources)
           {
             imageNames.add(source.getImageFileName());
-
-            domainLog.debug(
-                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' (PORTRAIT) " +
-                "image ''{3}'' to image collection.",
-                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
-                source.getImageFileName()
-            );
           }
         }
 
@@ -190,13 +196,6 @@ public class Panel extends BusinessEntity
           for (ImageSource source : sources)
           {
             imageNames.add(source.getImageFileName());
-
-            domainLog.debug(
-                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' (LANDSCAPE) " +
-                "image ''{3}'' to image collection.",
-                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
-                source.getImageFileName()
-            );
           }
         }
 
@@ -207,13 +206,6 @@ public class Panel extends BusinessEntity
           for (ImageSource source : sources)
           {
             imageNames.add(source.getImageFileName());
-
-            domainLog.debug(
-                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' image ''{3}'' " +
-                "to image collection.",
-                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
-                source.getImageFileName()
-            );
           }
 
           sources = screenPair.getLandscapeScreen().getAllImageSources();
@@ -221,13 +213,6 @@ public class Panel extends BusinessEntity
           for (ImageSource source : sources)
           {
             imageNames.add(source.getImageFileName());
-
-            domainLog.debug(
-                "Added screen (Panel = ''{0}'', Group = ''{1}'', Screen = ''{2}'' image ''{3}'' " +
-                "to image collection.",
-                panel.getDisplayName(), group.getDisplayName(), screenPair.getDisplayName(),
-                source.getImageFileName()
-            );
           }
         }
       }
@@ -248,7 +233,7 @@ public class Panel extends BusinessEntity
 
     if (tabbar == null)
     {
-      domainLog.debug("Got null tab bar, no additional images added.");
+//      domainLog.debug("Got null tab bar, no additional images added.");
 
       return imageNames;
     }
@@ -257,7 +242,7 @@ public class Panel extends BusinessEntity
 
     if (items == null)
     {
-      domainLog.warn("TabBar.getItems() should return an empty list, not null");
+//      domainLog.warn("TabBar.getItems() should return an empty list, not null");
 
       return imageNames;
     }
@@ -270,7 +255,7 @@ public class Panel extends BusinessEntity
       {
         imageNames.add(image.getImageFileName());
 
-        domainLog.debug("Added tab bar image ''{0}'' to image collection.", image.getImageFileName());
+//        domainLog.debug("Added tab bar image ''{0}'' to image collection.", image.getImageFileName());
       }
     }
 
@@ -297,8 +282,8 @@ public class Panel extends BusinessEntity
     //   with regards to uninitialized variables and potential NPE's and it's too much trouble
     //   to guard against them all -- the domain model needs a thorough rewrite and testing.
     
-    try
-    {
+//    try
+//    {
       String vBgImage = panel.getTouchPanelDefinition().getBgImage();
       String hBgImage = panel.getTouchPanelDefinition().getHorizontalDefinition().getBgImage();
       String tbImage  = panel.getTouchPanelDefinition().getTabbarDefinition().getBackground()
@@ -307,39 +292,24 @@ public class Panel extends BusinessEntity
       if (vBgImage != null && !vBgImage.isEmpty())
       {
         imageNames.add(vBgImage);
-
-        domainLog.debug(
-            "Added custom panel (Panel = ''{0}'') vertical background image ''{1}'' " +
-            "to image collection.", panel.getDisplayName(), vBgImage
-        );
       }
 
       if (hBgImage != null && !hBgImage.isEmpty())
       {
         imageNames.add(hBgImage);
-
-        domainLog.debug(
-            "Added custom panel (Panel = ''{0}'') horizontal background image ''{1}'' " +
-            "to image collection.", panel.getDisplayName(), hBgImage
-        );
       }
 
       if (tbImage != null && !tbImage.isEmpty() &&
           !TouchPanelTabbarDefinition.IPHONE_TABBAR_BACKGROUND.endsWith(tbImage))
       {
         imageNames.add(tbImage);
-
-        domainLog.debug(
-            "Added custom panel (Panel = ''{0}'') tab bar image ''{1}'' " +
-            "to image collection.", panel.getDisplayName(), tbImage
-        );
       }
-    }
-
-    catch (Throwable t)
-    {
-      admin.alert("Error in Designer domain API usage : {0}", t, t.getMessage());
-    }
+//    }
+//
+//    catch (Throwable t)
+//    {
+//      admin.alert("Error in Designer domain API usage : {0}", t, t.getMessage());
+//    }
 
     return imageNames;
   }
