@@ -333,6 +333,20 @@ public class ResourceServiceImpl implements ResourceService {
          if (!dir.exists()) {
             dir.mkdirs();
          }
+         String originalFileName = file.getName();
+         
+         // First get rid of "invalid" characters in filename
+         String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
+         originalFileName = originalFileName.replaceAll(escapedChar, "");
+         file = new File(dir.getAbsolutePath() + File.separator + originalFileName);
+         
+         // Don't replace an existing file, add "index" if required to not have a name clash
+         String extension = FilenameUtils.getExtension(originalFileName);
+         String originalNameWithoutExtension = originalFileName.replace("." + extension, ""); 
+         int index = 0;
+         while (file.exists()) {
+           file = new File(dir.getAbsolutePath() + File.separator + originalNameWithoutExtension + "." + Integer.toString(++index) + "." + extension);
+         }         
          FileUtils.touch(file);
          fileOutputStream = new FileOutputStream(file);
          IOUtils.copy(inputStream, fileOutputStream);

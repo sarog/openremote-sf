@@ -233,28 +233,16 @@ public class FileUploadController extends MultiActionController implements BeanF
         if (multipartFile.getSize() == 0 || multipartFile.getSize() > maxImageSize) {
             return;
         }
-
         File file = resourceService.uploadImage(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
-        String delimiter = "";
-        String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
-        String fileName = file.getName();
-        fileName = fileName.replaceAll(escapedChar, delimiter);
-        String extension = FilenameUtils.getExtension(fileName);
-        fileName = fileName.replace("." + extension, "");
-        fileName += System.currentTimeMillis();
-        fileName += "." + extension;
 
-        File newFile = new File(file.getParent() + File.separator + fileName);
-        file.renameTo(newFile);
-
-        if (("panelImage".equals(uploadFieldName) || "tabbarImage".equals(uploadFieldName)) && newFile.exists()) {
-            rotateBackgroud(newFile);
-            BufferedImage buff = ImageIO.read(newFile);
+        if (("panelImage".equals(uploadFieldName) || "tabbarImage".equals(uploadFieldName)) && file.exists()) {
+            rotateBackgroud(file);
+            BufferedImage buff = ImageIO.read(file);
             response.getWriter().print(
-                    "{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(newFile.getName())
+                    "{\"name\": \"" + resourceService.getRelativeResourcePathByCurrentAccount(file.getName())
                             + "\",\"width\":" + buff.getWidth() + ",\"height\":" + buff.getHeight() + "}");
         } else {
-            response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(newFile.getName()));
+            response.getWriter().print(resourceService.getRelativeResourcePathByCurrentAccount(file.getName()));
         }
     }
 
