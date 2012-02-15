@@ -315,8 +315,8 @@ public class ResourceServiceImpl implements ResourceService {
      String[] imageFiles = userFolder.list(new FilenameFilter() {      
        @Override
        public boolean accept(File dir, String name) {
-         // TODO: support more extensions
-         return (name.endsWith("png") || name.endsWith("jpg"));
+         String lowercaseName = name.toLowerCase();
+         return (lowercaseName.endsWith("png") || lowercaseName.endsWith("gif") || lowercaseName.endsWith("jpg") || lowercaseName.endsWith("jpeg"));
        }
      });
      List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
