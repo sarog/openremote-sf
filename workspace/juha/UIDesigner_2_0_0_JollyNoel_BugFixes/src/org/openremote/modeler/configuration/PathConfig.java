@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.openremote.modeler.configuration;
 
@@ -36,21 +37,18 @@ import org.openremote.modeler.domain.Account;
  */
 public class PathConfig {
    
-   /** The Constant logger. */
    private static final Logger LOGGER = Logger.getLogger(PathConfig.class);
 
-   /** The Constant myInstance. */
    private static final PathConfig myInstance = new PathConfig();
    
-   /** The Constant RESOURCEFOLDER. */
    public static final String RESOURCEFOLDER = "modeler_tmp";
    
-   /** The configuration. */
    private Configuration configuration;
    
    public static String WEBROOTPATH = "";
    
    private static String ROOTPATH = "";
+
    /**
     * Instantiates a new path config.
     */
@@ -59,8 +57,6 @@ public class PathConfig {
 
    /**
     * Gets the single instance of PathConfig.
-    * 
-    * @param configuration the configuration
     * 
     * @return single instance of PathConfig
     */
@@ -86,87 +82,110 @@ public class PathConfig {
    }
 
   
-   /**
-    * Gets panel xml path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return file absolute path
-    */
-   public String panelXmlFilePath(String sessionId) {
-      return userFolder(sessionId) + "panel.xml";
-   }
+//   /**
+//    * Gets panel xml path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return file absolute path
+//    */
+//   @Deprecated public String panelXmlFilePath(String sessionId) {
+//      return userFolder(sessionId) + "panel.xml";
+//   }
 
-   public String panelXmlFilePath(Account account) {
+  /**
+   * @deprecated This should be internalized to cache implementation. No need to expose outside
+   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
+   *             into cache impl.
+   */
+   @Deprecated public String panelXmlFilePath(Account account) {
       return userFolder(account) + "panel.xml";
    }
-   /**
-    * Gets controller xml file path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return file absolute path
-    */
-   public String controllerXmlFilePath(String sessionId) {
-      return userFolder(sessionId) + "controller.xml";
-   }
 
-   public String controllerXmlFilePath(Account account) {
+//   /**
+//    * Gets controller xml file path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return file absolute path
+//    */
+//   @Deprecated public String controllerXmlFilePath(String sessionId) {
+//      return userFolder(sessionId) + "controller.xml";
+//   }
+
+  /**
+   * @deprecated This should be internalized to cache implementation. No need to expose outside
+   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
+   *             into cache impl.
+   */
+   @Deprecated public String controllerXmlFilePath(Account account) {
       return userFolder(account) + "controller.xml";
    }
-   /**
-    * Gets panel description file path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return file absolute path
-    */
-   public String panelDescFilePath(String sessionId) {
-      return userFolder(sessionId) + "." + Constants.PANEL_DESC_FILE;
-   }
 
-   /**
-    * Lirc file path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return the string
-    */
-   public String lircFilePath(String sessionId) {
-      return userFolder(sessionId) + "lircd.conf";
-   }
-   
-   public String lircFilePath(Account account) {
+//   /**
+//    * Gets panel description file path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return file absolute path
+//    */
+//   public String panelDescFilePath(String sessionId) {
+//      return userFolder(sessionId) + "." + Constants.PANEL_DESC_FILE;
+//   }
+//
+//   /**
+//    * Lirc file path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return the string
+//    */
+//   @Deprecated public String lircFilePath(String sessionId) {
+//      return userFolder(sessionId) + "lircd.conf";
+//   }
+//
+
+  /**
+   * @deprecated This should be internalized to cache implementation. No need to expose outside
+   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
+   *             into cache impl.
+   */
+   @Deprecated public String lircFilePath(Account account) {
       return userFolder(account) + "lircd.conf";
    }
 
-   /**
-    * Gets compressed file path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return file absolute path
-    */
-   public String openremoteZipFilePath(String sessionId) {
-      return userFolder(sessionId) + "openremote." + UUID.randomUUID() + ".zip";
-   }
+//   /**
+//    * Gets compressed file path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return file absolute path
+//    */
+//   public String openremoteZipFilePath(String sessionId) {
+//      return userFolder(sessionId) + "openremote." + UUID.randomUUID() + ".zip";
+//   }
    
-   public String openremoteZipFilePath(Account account) {
+  /**
+   * @deprecated This should be internalized to cache implementation. No need to expose outside
+   *             of cache. Will go away once templates have been factored
+   *             into cache impl.
+   */
+   @Deprecated public String openremoteZipFilePath(Account account) {
 //      return userFolder(account) + "openremote." + UUID.randomUUID() + ".zip";
       return userFolder(account) + "openremote.zip";
    }
    
-   /**
-    * Dot import file path.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return the string
-    */
-   public String dotImportFilePath(String sessionId) {
-      return userFolder(sessionId) + ".import";
-   }
-   
+//   /**
+//    * Dot import file path.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return the string
+//    */
+//   public String dotImportFilePath(String sessionId) {
+//      return userFolder(sessionId) + ".import";
+//   }
+//
 
    /**
     * User folder.
@@ -182,20 +201,27 @@ public class PathConfig {
    public String userFolder(Account account) {
       return tempFolder()+account.getOid()+File.separator;
    }
-   /**
-    * Gets the zip url.
-    * 
-    * @param sessionId the session id
-    * 
-    * @return the zip url
-    */
-   public String getZipUrl(String sessionId) {
-      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + sessionId + "/";
-   }
 
-   public String getZipUrl(Account account) {
+//   /**
+//    * Gets the zip url.
+//    *
+//    * @param sessionId the session id
+//    *
+//    * @return the zip url
+//    */
+//   public String getZipUrl(String sessionId) {
+//      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + sessionId + "/";
+//   }
+
+  /**
+   * @deprecated This should not be exposed outside cache. Will go away once the export
+   *             functionality has been corrected to fetch user archive from Beehive, not from
+   *             cache.
+   */
+   @Deprecated public String getZipUrl(Account account) {
       return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + account.getOid() + "/";
    }
+
    /**
     * Gets the relative resource path.
     * 
@@ -230,19 +256,19 @@ public class PathConfig {
       this.configuration = configuration;
    }
    
-   public String getRelativeSessionFolderPath(String sessionId) {
-      return "../" + RESOURCEFOLDER + "/" + sessionId + "/";
-   }
+//   public String getRelativeSessionFolderPath(String sessionId) {
+//      return "../" + RESOURCEFOLDER + "/" + sessionId + "/";
+//   }
    
-   public String getWebRootFolder() {
+   @Deprecated public String getWebRootFolder() {
       return  WEBROOTPATH;
    }
    
-   public String getSerializedPanelsFile(Account account){
+   @Deprecated public String getSerializedPanelsFile(Account account){
       return userFolder(account)+"panels.obj";
    }
    
-   public String getControllerConfigPath(){
-      return configuration.getControllerConfigPath();
-   }
+//   public String getControllerConfigPath(){
+//      return configuration.getControllerConfigPath();
+//   }
 }
