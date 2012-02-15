@@ -57,6 +57,8 @@ public class ImageAssetPicker extends DialogBox {
   public ImageAssetPicker(final String currentImageURL) {
     uiBinder.createAndBindUi(this);
     mainLayout.setSize("50em", "20em");
+    okButton.setEnabled(false);
+    
     getElement().getStyle().setZIndex(Integer.MAX_VALUE - 1); // TODO: check how we can be sure of the value to use
 
     TextColumn<GraphicalAssetDTO> fileNameColumn = new TextColumn<GraphicalAssetDTO>() {
@@ -71,6 +73,7 @@ public class ImageAssetPicker extends DialogBox {
     selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {      
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
+        okButton.setEnabled(selectionModel.getSelectedObject() != null);
         imagePreview.setUrl(selectionModel.getSelectedObject().getUrl());
       }
     });
