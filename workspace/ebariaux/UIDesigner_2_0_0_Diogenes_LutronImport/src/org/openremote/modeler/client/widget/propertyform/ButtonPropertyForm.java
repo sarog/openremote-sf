@@ -28,7 +28,6 @@ import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
-import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -176,23 +175,6 @@ public class ButtonPropertyForm extends PropertyForm {
               defaultImageField.setText(uiButton.getImage().getImageFileName());              
             }             
            });
-           /*
-            final ImageSource image = uiButton.getImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageUrl = be.getData();
-                  screenButton.setIcon(imageUrl);
-                  if (image != null) {
-                     image.setSrc(imageUrl);
-                  } else {
-                     uiButton.setImage(new ImageSource(imageUrl));
-                  }
-                  defaultImageField.setText(uiButton.getImage().getImageFileName());
-               }
-            });
-            */
          }
       });
       defaultImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -229,22 +211,6 @@ public class ButtonPropertyForm extends PropertyForm {
               pressImageField.setText(uiButton.getPressImage().getImageFileName());              
             }
            });
-           /*
-            final ImageSource onPressImage = uiButton.getPressImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, onPressImage), screenButton.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String onPressImageUrl = be.getData();
-                  if (onPressImage != null) {
-                     onPressImage.setSrc(onPressImageUrl);
-                  } else {
-                     uiButton.setPressImage(new ImageSource(onPressImageUrl));
-                  }
-                  pressImageField.setText(uiButton.getPressImage().getImageFileName());
-               }
-            });
-            */
          }
       });
       pressImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {

@@ -23,16 +23,13 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSlider;
-import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
-import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -137,19 +134,6 @@ public class SliderPropertyForm extends PropertyForm {
               screenSlider.layout();
             }             
            });
-
-           /*
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinImage()), screenSlider.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String minImageUrl = be.getData();
-                  screenSlider.setMinImage(minImageUrl);
-                  minImageField.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
-                  screenSlider.layout();
-               }
-            });
-            */
          }
       });
       minImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -180,19 +164,6 @@ public class SliderPropertyForm extends PropertyForm {
               screenSlider.layout();
             }             
            });
-
-           /*
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMinTrackImage()), screenSlider.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String minTrackImageUrl = be.getData();
-                  screenSlider.setMinTrackImage(minTrackImageUrl);
-                  minTrackImageField.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
-                  screenSlider.layout();
-               }
-            });
-            */
          }
       });
       minTrackImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -223,18 +194,6 @@ public class SliderPropertyForm extends PropertyForm {
               screenSlider.layout();
             }             
            });
-           /*
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getThumbImage()), screenSlider.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String thumbImageUrl = be.getData();
-                  screenSlider.setThumbImage(thumbImageUrl);
-                  thumbImageField.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
-                  screenSlider.layout();
-               }
-            });
-            */
          }
       });
       thumbImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -265,18 +224,6 @@ public class SliderPropertyForm extends PropertyForm {
               screenSlider.layout();
             }             
            });
-           /*
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxImage()), screenSlider.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String maxImageUrl = be.getData();
-                  screenSlider.setMaxImage(maxImageUrl);
-                  maxImageField.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
-                  screenSlider.layout();
-               }
-            });
-            */
          }
       });
       maxImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -307,18 +254,6 @@ public class SliderPropertyForm extends PropertyForm {
               screenSlider.layout();
             }             
            });
-           /*
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSlider.getUiSlider().getMaxTrackImage()), screenSlider.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String maxTrackImageUrl = be.getData();
-                  screenSlider.setMaxTrackImage(maxTrackImageUrl);
-                  maxTrackImageField.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
-                  screenSlider.layout();
-               }
-            });
-            */
          }
       });
       maxTrackImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -341,20 +276,6 @@ public class SliderPropertyForm extends PropertyForm {
       add(thumbImageField);
       add(maxTrackImageField);
       add(maxImageField);
-   }
-
-   /**
-    * @param imageSource
-    * @return IconPreviewWidget
-    */
-   private IconPreviewWidget createIconPreviewWidget(ImageSource imageSource) {
-      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSlider.getWidth(), screenSlider.getHeight());
-      if (imageSource != null) {
-         previewWidget.setIcon(imageSource.getSrc());
-      } else {
-         previewWidget.setIcon(null);
-      }
-      return previewWidget;
    }
    
    @Override

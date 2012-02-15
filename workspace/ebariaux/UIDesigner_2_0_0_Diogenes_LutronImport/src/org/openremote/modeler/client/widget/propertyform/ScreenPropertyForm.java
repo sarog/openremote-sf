@@ -26,22 +26,19 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
-import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.uidesigner.GestureWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
-import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.domain.Background;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Screen;
-import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
-import org.openremote.modeler.domain.component.UIImage;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -49,7 +46,6 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
-import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
@@ -59,11 +55,11 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.ColumnLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
@@ -94,6 +90,7 @@ public class ScreenPropertyForm extends PropertyForm {
       this.canvas = canvas;
       createFields();
    }
+   
    @SuppressWarnings("unchecked")
    private void createFields() {
       
@@ -123,8 +120,6 @@ public class ScreenPropertyForm extends PropertyForm {
       this.add(whetherFillScreen);
       this.add(positionSet);
       this.add(createGestureField());
-      
-//      addListenersToForm(whetherFillScreen);
    }
 
    private TextField<String> createTopSetField() {
@@ -299,9 +294,6 @@ public class ScreenPropertyForm extends PropertyForm {
            public void imagePicked(String imageURL) {
              setBackground(imageURL);
              backgroundField.setText(canvas.getScreen().getBackground().getImageSource().getImageFileName());
-
-//             backgroundField.setText(imageURL.substring(imageURL.lastIndexOf("/")+1));
-
              whetherFillScreen.show();
            }             
           });
@@ -315,51 +307,7 @@ public class ScreenPropertyForm extends PropertyForm {
        }
     });
      return backgroundField;
-
-     /*
-      final ImageUploadAdapterField backgroundField = new ImageUploadAdapterField(null);
-      backgroundField.addUploadListener(Events.OnChange, new Listener<FieldEvent>() {
-         public void handleEvent(FieldEvent be) {
-            if (!isValid()) {
-               return;
-            }
-            submit();
-            canvas.mask("Uploading image...");
-         }
-      });
-      
-      backgroundField.addDeleteListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            if (!"".equals(canvas.getScreen().getBackground().getImageSource().getSrc())) {
-               setBackground("");
-               // remove this form from property panel.
-//               WidgetSelectionUtil.setSelectWidget(null);
-               widgetSelectionUtil.setSelectWidget(canvas);
-            }
-         }
-         
-      });
-      backgroundField.setImage(canvas.getScreen().getBackground().getImageSource().getSrc());
-      backgroundField.setFieldLabel("Background");
-      backgroundField.setActionToForm(ScreenPropertyForm.this);
-      return backgroundField;
-      */
    }
-   /*
-   private void addListenersToForm(final RadioGroup whetherFillScreen) {
-      addListener(Events.Submit, new Listener<FormEvent>() {
-         @Override
-         public void handleEvent(FormEvent be) {
-            String backgroundImgURL = ImageSourceValidator.validate(be.getResultHtml());
-            boolean success = !"".equals(backgroundImgURL);
-            if (success) {
-               setBackground(backgroundImgURL);
-               whetherFillScreen.show();
-            }
-         }
-      });
-   }
-   */
 
    private void setBackground(String backgroundImgURL) {
       Screen screen = canvas.getScreen();
