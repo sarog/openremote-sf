@@ -109,7 +109,7 @@ public class LocalFileCache implements ResourceCache<File>
    * Admin alert notifications for critical errors in this implementation.
    */
   private final static AdministratorAlert admin =
-      AdministratorAlert.getInstance(AdministratorAlert.Type.LOCAL_FILE_CACHE);
+      AdministratorAlert.getInstance(AdministratorAlert.Type.RESOURCE_CACHE);
 
   /**
    * Class-wide safety valve on backup file generation. If any errors are detected, halt backups
