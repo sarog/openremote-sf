@@ -151,5 +151,9 @@ public class UtilsProxy {
    public static void getUserImagesURLs(AsyncCallback<List<GraphicalAssetDTO>> callback) {
      AsyncServiceFactory.getUtilsRPCServiceAsync().getUserImagesURLs(callback);
    }
+   
+   public static void deleteImage(String imageName, AsyncCallback<Void> callback) {
+     AsyncServiceFactory.getUtilsRPCServiceAsync().deleteImage(imageName, callback);
+   }
 
 }

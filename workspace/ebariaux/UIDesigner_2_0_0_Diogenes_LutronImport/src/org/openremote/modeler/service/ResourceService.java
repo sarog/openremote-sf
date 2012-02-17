@@ -99,4 +99,6 @@ public interface ResourceService {
    
    File getTemplateResource(Template template); 
    File getTempDirectory(String sessionId);
+   
+   void deleteImage(String imageName);
 }

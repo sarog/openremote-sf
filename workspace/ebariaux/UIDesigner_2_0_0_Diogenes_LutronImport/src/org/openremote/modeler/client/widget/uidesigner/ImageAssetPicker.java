@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.collections.ComparatorUtils;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.IconResources;
 import org.openremote.modeler.client.listener.SubmitListener;
@@ -40,6 +39,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -107,19 +107,31 @@ public class ImageAssetPicker extends DialogBox {
     };
     column.setFieldUpdater(new FieldUpdater<GraphicalAssetDTO, String>() {
       @Override
-      public void update(int index, GraphicalAssetDTO object, String value) {        
-        // TODO: manage selection correctly
-        
+      public void update(int index, final GraphicalAssetDTO object, String value) {        
         if (isImageInUse(object.getName())) {
           // TODO : display proper alert
           Info.display("INFO", "Delete not allowed");
         } else {
-          // TODO: call server to delete, then refresh
+          
+          UtilsProxy.deleteImage(object.getName(), new AsyncCallback<Void>() {
+
+            @Override
+            public void onSuccess(Void result) {
+              assets.remove(object);
+              if (selectionModel.getSelectedObject() != null) {
+                selectionModel.setSelected(selectionModel.getSelectedObject(), false);
+                imagePreview.setVisible(false);
+              }
+              table.setRowData(assets);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+              // TODO
+            }
+            
+          });
         }
-        
-        // TODO : should delete file if not in use, then reload table
-        // Should reset selection after update or have no selection if previous selection is deleted file
-        // ! Selection has already changed when this method is called
       }
     });
     table.addColumn(column);
@@ -138,6 +150,7 @@ public class ImageAssetPicker extends DialogBox {
       public void onSelectionChange(SelectionChangeEvent event) {
         okButton.setEnabled(selectionModel.getSelectedObject() != null);
         imagePreview.setUrl(selectionModel.getSelectedObject().getUrl());
+        imagePreview.setVisible(true);
       }
     });
     
@@ -220,7 +233,6 @@ public class ImageAssetPicker extends DialogBox {
   }
   
   private boolean isImageInUse(String imageName) {
-    Info.display("INFO", "Image >" + imageName + "<");
     for (BeanModel panelBeanModel : BeanModelDataBase.panelTable.loadAll()) {
       Panel p = panelBeanModel.getBean();
       for (Group g : p.getGroups()) {

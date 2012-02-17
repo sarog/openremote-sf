@@ -149,4 +149,6 @@ public interface UtilsRPCService extends RemoteService {
    String getOnLineTestURL ();
    
    List<GraphicalAssetDTO>getUserImagesURLs();
+   
+   void deleteImage(String imageName);
 }

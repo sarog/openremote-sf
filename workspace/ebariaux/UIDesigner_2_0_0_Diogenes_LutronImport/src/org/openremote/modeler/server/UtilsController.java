@@ -318,4 +318,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public List<GraphicalAssetDTO>getUserImagesURLs() {
      return resourceService.getUserImagesURLs();
    }
+   
+   public void deleteImage(String imageName) {
+     resourceService.deleteImage(imageName);
+   }
 }
