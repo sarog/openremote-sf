@@ -1,8 +1,11 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.collections.ComparatorUtils;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.IconResources;
 import org.openremote.modeler.client.listener.SubmitListener;
@@ -53,8 +56,6 @@ public class ImageAssetPicker extends DialogBox {
   interface ImageAssetPickerUiBinder extends UiBinder<Widget, ImageAssetPicker> {
   }
   
-  private final SingleSelectionModel<GraphicalAssetDTO> selectionModel = new SingleSelectionModel<GraphicalAssetDTO>();
-  
   public interface ImageAssetPickerListener {
     void imagePicked(String imageURL);
   }
@@ -64,6 +65,10 @@ public class ImageAssetPicker extends DialogBox {
     return this;
   }
 
+  private final SingleSelectionModel<GraphicalAssetDTO> selectionModel = new SingleSelectionModel<GraphicalAssetDTO>();
+  
+  private List<GraphicalAssetDTO> assets;
+  
   private ImageAssetPickerListener listener;
   
   public void setListener(ImageAssetPickerListener listener) {
@@ -102,9 +107,7 @@ public class ImageAssetPicker extends DialogBox {
     };
     column.setFieldUpdater(new FieldUpdater<GraphicalAssetDTO, String>() {
       @Override
-      public void update(int index, GraphicalAssetDTO object, String value) {
-        Info.display("INFO", "Button clicked");
-        
+      public void update(int index, GraphicalAssetDTO object, String value) {        
         // TODO: manage selection correctly
         
         if (isImageInUse(object.getName())) {
@@ -117,9 +120,6 @@ public class ImageAssetPicker extends DialogBox {
         // TODO : should delete file if not in use, then reload table
         // Should reset selection after update or have no selection if previous selection is deleted file
         // ! Selection has already changed when this method is called
-        //        Info.display("INFO", "Should delete image");
-        // GraphicalAssetDTO sel = selectionModel.getSelectedObject();
-        //Info.display("INFO", "Selected file is " + ((sel != null)?sel.getName():"NONE"));
       }
     });
     table.addColumn(column);
@@ -144,6 +144,8 @@ public class ImageAssetPicker extends DialogBox {
     UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
       @Override
       public void onSuccess(List<GraphicalAssetDTO> result) {
+        assets = result;
+        sortAssets();
         table.setRowData(result);
         selectImage(currentImageURL, result);
       }
@@ -186,16 +188,10 @@ public class ImageAssetPicker extends DialogBox {
        @Override
        public void afterSubmit(SubmitEvent be) {
          final String imageUrl = be.getData();
-         
-         // TODO: have a lighter way of updating the table than full reload
-         UtilsProxy.getUserImagesURLs(new AsyncSuccessCallback<List<GraphicalAssetDTO>>() {
-           @Override
-           public void onSuccess(List<GraphicalAssetDTO> result) {
-             table.setRowData(result);
-             selectImage(imageUrl, result);
-           }
-         });
-
+         assets.add(new GraphicalAssetDTO(imageUrl.substring(imageUrl.lastIndexOf("/") + 1), imageUrl));
+         sortAssets();
+         table.setRowData(assets);
+         selectImage(imageUrl, assets);
        }
     });
 
@@ -268,5 +264,14 @@ public class ImageAssetPicker extends DialogBox {
       }
     }
     return false;
+  }
+  
+  private void sortAssets() {
+    Collections.sort(assets, new Comparator<GraphicalAssetDTO>() {
+      @Override
+      public int compare(GraphicalAssetDTO o1, GraphicalAssetDTO o2) {
+        return o1.getName().compareToIgnoreCase(o2.getName());
+      }           
+     });
   }
 }
