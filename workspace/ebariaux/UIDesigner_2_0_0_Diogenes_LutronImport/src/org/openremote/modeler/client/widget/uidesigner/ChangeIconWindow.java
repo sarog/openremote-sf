@@ -148,7 +148,6 @@ public class ChangeIconWindow extends Dialog {
                if (imageURL != null) {
                   if (imageURL.startsWith("http")) {
                      UtilsProxy.downLoadImage(imageURL, new AsyncCallback<String> () {
-
                         @Override
                         public void onFailure(Throwable caught) {
                           Info.display("Error","Failed to download image from: " + imageURL);
@@ -157,11 +156,11 @@ public class ChangeIconWindow extends Dialog {
                         @Override
                         public void onSuccess(String result) {
                            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
-                        }
-                        
+                        }                        
                      });
+                  } else {
+                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                   }
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
                  hide();
                }
