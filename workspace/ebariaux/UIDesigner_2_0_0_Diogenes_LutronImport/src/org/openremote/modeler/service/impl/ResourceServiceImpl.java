@@ -1343,4 +1343,15 @@ public class ResourceServiceImpl implements ResourceService {
        new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs(); 
    	return tmpDir;
    }
+   
+   public void deleteImage(String imageName) {
+     
+     // TODO: make it fail to test UI reporting
+     
+     File image = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + imageName);
+     if (!image.delete()) {
+       // TODO: handle correctly
+       throw new RuntimeException("Could not delete file");
+     }
+   }
 }
