@@ -320,8 +320,10 @@ public class ResourceServiceImpl implements ResourceService {
        }
      });
      List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
-     for (int i = 0; i < imageFiles.length; i++) {
-       assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
+     if (imageFiles != null) { // Seems we sometimes get a null (got it when tomcat was still starting)
+       for (int i = 0; i < imageFiles.length; i++) {
+         assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
+       }
      }
      return assets;
    }

@@ -59,4 +59,7 @@ public interface IconResources extends ClientBundle {
 
   @Source("VerticalCenterIcon.png")
   ImageResource verticalCenterIcon();
+  
+  @Source("delete.png")
+  ImageResource delete();
 }
