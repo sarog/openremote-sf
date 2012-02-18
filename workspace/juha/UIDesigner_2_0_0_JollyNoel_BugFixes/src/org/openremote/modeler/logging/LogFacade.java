@@ -133,6 +133,31 @@ public class LogFacade
     // TODO
     BEEHIVE_DOWNLOAD_PERFORMANCE(BEEHIVE_DOWNLOAD_PERF_LOG_CATEGORY, "Beehive Download Performace"),
 
+
+
+    // Service Facade Implementation Log Categories -----------------------------------------------
+
+    /**
+     * Generic log category for all Designer server-side service implementations
+     * (org.openremote.modeler.service.* package). <p>
+     *
+     * Specific service implementations should use this category as their parent logging category.
+     * <p>
+     * The canonical log category name is defined in {@link LogFacade#SERVICE_LOG_CATEGORY}.
+     */
+    SERVICE(SERVICE_LOG_CATEGORY, "Designer Server-Side Service Implementations Log Category"),
+
+    /**
+     * Log category for designer resource service
+     * ({@link org.openremote.modeler.service.ResourceService). <p>
+     *
+     * This is a child category of {@link #SERVICE}.
+     *
+     * The canonical log category name is defined {@link LogFacade#RESOURCE_SERVICE_LOG_CATEGORY}.
+     */
+    RESOURCE_SERVICE(RESOURCE_SERVICE_LOG_CATEGORY, "Designer Resource Service Log Category"),
+
+    
     // TODO
     EXPORT(EXPORT_LOG_CATEGORY, "Resource Export Log Category"),
     
@@ -281,6 +306,27 @@ public class LogFacade
    */
   public final static String BEEHIVE_DOWNLOAD_PERF_LOG_CATEGORY =
       BEEHIVE_NETWORK_PERF_LOG_CATEGORY + ".Download";
+
+
+  /**
+   * Canonical log hierarchy name for generic service logging category
+   * (org.openremote.modeler.service.* implementations). Specific service implementations should
+   * use this category as their parent log category.
+   *
+   * @see LogFacade.Category#SERVICE
+   */
+  public final static String SERVICE_LOG_CATEGORY = ROOT_LOG_CATEGORY + ".Service";
+
+  /**
+   * Canonical log hierarchy name for resource service implementation in
+   * {@link org.openremote.modeler.service.impl.ResourceServiceImpl}. <p>
+   *
+   * This is a child category of {@link LogFacade.Category#SERVICE}.
+   *
+   * @see LogFacade.Category#RESOURCE_SERVICE
+   */
+  public final static String RESOURCE_SERVICE_LOG_CATEGORY =
+      SERVICE_LOG_CATEGORY + ".ResourceService";
 
 
   // TODO
