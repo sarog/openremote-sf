@@ -405,7 +405,7 @@ class DesignerState
 
     catch (CacheOperationException e)
     {
-      //   Critical error caused by unanticipated runtime I/O errors
+      // Critical error caused by unanticipated runtime I/O errors
 
       haltAccount(
           MessageFormat.format(
@@ -420,6 +420,26 @@ class DesignerState
               "your designs or configuration during this period, as these changes may get lost. " +
               "For further assistance, contact support. (Error Message : {0})", e.getMessage()
           ), e
+      );
+    }
+
+    catch (Throwable t)
+    {
+      // Catch-all for implementation errors
+
+      haltAccount(
+          MessageFormat.format(
+              "IMPLEMENTATION ERROR : {0} ({1}).", t.getMessage(), printUserAccountLog(user)
+          ),
+
+          MessageFormat.format(
+              "There was an implementation error in Designer while restoring your account data. " +
+              "The system administrators have been notified of this issue. To prevent potential " +
+              "damage to your data, further modifications have been disabled until the admins " +
+              "have cleared the issue. Do not make changes to your designs or configuration " +
+              "during this period, as these changes may get lost. For further assistance, " +
+              "please contact support. (Error Message : {0})", t.getMessage()
+          ), t
       );
     }
 
@@ -537,6 +557,19 @@ class DesignerState
           "Unable to save your data due to Designer configuration error. " +
           "Administrators have been notified of this issue. For further assistance, " +
           "please contact support. (Error : " + e.getMessage() + ")", e
+      );
+    }
+
+    catch (Throwable t)
+    {
+      // Catch-all for implementation errors...
+
+      admin.alert("IMPLEMENTATION ERROR : {0}", t, t.getMessage());
+
+      throw new UIRestoreException(
+          "Save failed due to Designer implementation error. Administrators have been notified " +
+          "of this issue. For further assistance, please contact support. Error : " +
+          t.getMessage(), t
       );
     }
   }
