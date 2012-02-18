@@ -1,28 +1,30 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -36,14 +38,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -53,7 +50,6 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
-import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.openremote.modeler.client.Configuration;
@@ -81,6 +77,7 @@ import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -93,22 +90,18 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.domain.component.UITabbar;
-import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
-import org.openremote.modeler.exception.ResourceFileLostException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
-import org.openremote.modeler.exception.XmlParserException;
+import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -116,231 +109,280 @@ import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
+import org.openremote.modeler.cache.LocalFileCache;
+import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.logging.AdministratorAlert;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
- * The Class ResourceServiceImpl.
+ * TODO
  * 
  * @author Allen, Handy, Javen
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  * 
  */
-public class ResourceServiceImpl implements ResourceService {
+public class ResourceServiceImpl implements ResourceService
+{
 
-   public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
-   public static final String CONTROLLER_XML_TEMPLATE = "controllerXML.vm";
+  public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
+  public static final String CONTROLLER_XML_TEMPLATE = "controllerXML.vm";
 
-   /** The Constant logger. */
-   private static final Logger LOGGER = Logger.getLogger(ResourceServiceImpl.class);
+  private final static LogFacade serviceLog =
+      LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
-   /** The configuration. */
-   private Configuration configuration;
+  //private static final Logger _LOGGER = Logger.getLogger(ResourceServiceImpl.class);
 
-   /** The device command service. */
-   private DeviceCommandService deviceCommandService;
 
-   /** The event id. */
-   // private long eventId;
-   /** The device macro service. */
-   private DeviceMacroService deviceMacroService;
+  private Configuration configuration;
 
-   private VelocityEngine velocity;
+  private DeviceCommandService deviceCommandService;
 
-   private UserService userService;
+  private DeviceMacroService deviceMacroService;
 
-   private ControllerConfigService controllerConfigService = null;
+  private VelocityEngine velocity;
 
-   /**
-    * {@inheritDoc}
-    */
-   public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels) {
-      initResources(panels, maxOid);
+  private UserService userService;
+
+  private ControllerConfigService controllerConfigService = null;
+
+
+
+  //
+  // TODO : this implementation should go away with MODELER-288
+  //
+  @Override public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels)
+  {
+    initResources(panels, maxOid);
+
+    try
+    {
+      Set<String> imageNames = new HashSet<String>();
+      Set<File> imageFiles = new HashSet<File>();
+
+      for (Panel panel : panels)
+      {
+        imageNames.addAll(Panel.getAllImageNames(panel));
+      }
+
+      for (String name : imageNames)
+      {
+        imageFiles.add(new File(name));
+      }
+
+      LocalFileCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+
+      cache.markInUseImages(imageFiles);
+
+      File zipFile = cache.createExportArchive();
+
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File zipFile = this.getExportResource(panels);
-      if (zipFile == null) {
-         throw new XmlExportException("Failed to export! User folder is empty!");
-      }
+
       return pathConfig.getZipUrl(userService.getAccount()) + zipFile.getName();
+    }
 
+    catch (Throwable t)
+    {
+      serviceLog.error("Cannot export account resources : {0}", t, t.getMessage());
+
+      throw new XmlExportException("Export failed : " + t.getMessage(), t);
+    }
+  }
+
+
+  /**
+   * TODO
+   *
+   * Builds the lirc rest url.
+   */
+  private URL buildLircRESTUrl(String restAPIUrl, String ids)
+  {
+    URL lircUrl;
+
+    try
+    {
+      lircUrl = new URL(restAPIUrl + "?ids=" + ids);
+    }
+
+    catch (MalformedURLException e)
+    {
+      // TODO : don't throw runtime exceptions
+      throw new IllegalArgumentException("Lirc file url is invalid", e);
+    }
+
+    return lircUrl;
+  }
+
+   @Deprecated @Override public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
+//      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+//      if (tmpDir.exists() && tmpDir.isDirectory()) {
+//         try {
+//            FileUtils.deleteDirectory(tmpDir);
+//         } catch (IOException e) {
+//            throw new FileOperationException("Error in deleting temp dir", e);
+//         }
+//      }
+//      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
+//      String dotImportFileContent = "";
+//      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+//      ZipEntry zipEntry;
+//      FileOutputStream fileOutputStream = null;
+//      try {
+//         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+//            if (!zipEntry.isDirectory()) {
+//               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
+//                  dotImportFileContent = IOUtils.toString(zipInputStream);
+//               }
+//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
+//                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
+//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
+//                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
+//               }
+//
+//               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
+//                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
+//                  FileUtils.touch(file);
+//
+//                  fileOutputStream = new FileOutputStream(file);
+//                  int b;
+//                  while ((b = zipInputStream.read()) != -1) {
+//                     fileOutputStream.write(b);
+//                  }
+//                  fileOutputStream.close();
+//               }
+//            }
+//
+//         }
+//      } catch (IOException e) {
+//         throw new FileOperationException("Error in reading import file from zip", e);
+//      } finally {
+//         try {
+//            zipInputStream.closeEntry();
+//            if (fileOutputStream != null) {
+//               fileOutputStream.close();
+//            }
+//         } catch (IOException e) {
+//            LOGGER.warn("Failed to close import file resources", e);
+//         }
+//
+//      }
+//      return dotImportFileContent;
+     return "";
    }
 
-   /**
-    * Replace url.
-    * 
-    * @param activities
-    *           the activities
-    * @param sessionId
-    *           the user id
-    */
-   private File compressFilesToZip(File[] files, String zipFilePath, List<String> ignoreExtentions) {
-      List<File> compressedfiles = new ArrayList<File>();
-      for (File file : files) {
+//   /**
+//    * Check xml.
+//    *
+//    * @param zipInputStream
+//    *           the zip input stream
+//    * @param zipEntry
+//    *           the zip entry
+//    * @param xmlName
+//    *           the xml name
+//    *
+//    * @return true, if successful
+//    *
+//    * @throws IOException
+//    *            Signals that an I/O exception has occurred.
+//    */
+//   private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
+//      if (zipEntry.getName().equals(xmlName + ".xml")) {
+//         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getPanelXsdPath() : configuration
+//               .getControllerXsdPath();
+//         String xsdPath = getClass().getResource(xsdRelativePath).getPath();
+//         if (!XmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
+//            return false;
+//         }
+//      }
+//      return true;
+//   }
 
-         if (file == null || ignoreExtentions.contains(FilenameUtils.getExtension(file.getName()))) {
-            continue;
-         }
-         compressedfiles.add(file);
+
+  /**
+   * TODO
+   *
+   * @deprecated looks unused
+   */
+  @Deprecated public File uploadImage(InputStream inputStream, String fileName, String sessionId)
+  {
+    File file = new File(
+        PathConfig.getInstance(configuration).userFolder(sessionId) +
+        File.separator + fileName
+    );
+
+    return uploadFile(inputStream, file);
+  }
+
+  //
+  //  TODO :
+  //
+  //    - restrict file sizes
+  //    - work through resource cache interface
+  //    - restrict file names
+  //    - should be a direct call to Beehive
+  //
+  public File uploadImage(InputStream inputStream, String fileName)
+  {
+    File file = new File(
+        PathConfig.getInstance(configuration).userFolder(userService.getAccount()) +
+        File.separator + fileName
+    );
+
+    return uploadFile(inputStream, file);
+  }
+
+
+  //
+  //  TODO :
+  //
+  //    - error handling on file I/O
+  //    - work through resource cache interface
+  //
+  private File uploadFile(InputStream inputStream, File file)
+  {
+    FileOutputStream fileOutputStream = null;
+
+    try
+    {
+      File dir = file.getParentFile();
+
+      if (!dir.exists())
+      {
+        dir.mkdirs();     // TODO : need to check success
       }
 
-      File zipFile = new File(zipFilePath);
-      FileUtilsExt.deleteQuietly(zipFile);
-      ZipUtils.compress(zipFile.getAbsolutePath(), compressedfiles);
-      return zipFile;
-   }
+      FileUtils.touch(file);
+
+      fileOutputStream = new FileOutputStream(file);
+      IOUtils.copy(inputStream, fileOutputStream);
+    }
+
+    catch (IOException e)
+    {
+      throw new FileOperationException("Failed to save uploaded image", e);
+    }
+
+    finally
+    {
+      try
+      {
+        if (fileOutputStream != null)
+        {
+          fileOutputStream.close();
+        }
+      }
+
+      catch (IOException e)
+      {
+        serviceLog.warn("Failed to close resources on uploaded file", e);
+      }
+    }
+
+    return file;
+  }
+
 
    /**
-    * Builds the lirc rest url.
-    * 
-    * @param restAPIUrl
-    *           the rESTAPI url
-    * @param ids
-    *           the ids
-    * 
-    * @return the uRL
-    */
-   private URL buildLircRESTUrl(String restAPIUrl, String ids) {
-      URL lircUrl;
-      try {
-         lircUrl = new URL(restAPIUrl + "?ids=" + ids);
-      } catch (MalformedURLException e) {
-         throw new IllegalArgumentException("Lirc file url is invalid", e);
-      }
-      return lircUrl;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
-      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-      if (tmpDir.exists() && tmpDir.isDirectory()) {
-         try {
-            FileUtils.deleteDirectory(tmpDir);
-         } catch (IOException e) {
-            throw new FileOperationException("Error in deleting temp dir", e);
-         }
-      }
-      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
-      String dotImportFileContent = "";
-      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-      ZipEntry zipEntry;
-      FileOutputStream fileOutputStream = null;
-      try {
-         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (!zipEntry.isDirectory()) {
-               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-                  dotImportFileContent = IOUtils.toString(zipInputStream);
-               }
-               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
-               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
-               }
-
-               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-                  FileUtils.touch(file);
-
-                  fileOutputStream = new FileOutputStream(file);
-                  int b;
-                  while ((b = zipInputStream.read()) != -1) {
-                     fileOutputStream.write(b);
-                  }
-                  fileOutputStream.close();
-               }
-            }
-
-         }
-      } catch (IOException e) {
-         throw new FileOperationException("Error in reading import file from zip", e);
-      } finally {
-         try {
-            zipInputStream.closeEntry();
-            if (fileOutputStream != null) {
-               fileOutputStream.close();
-            }
-         } catch (IOException e) {
-            LOGGER.warn("Failed to close import file resources", e);
-         }
-
-      }
-      return dotImportFileContent;
-   }
-
-   /**
-    * Check xml.
-    * 
-    * @param zipInputStream
-    *           the zip input stream
-    * @param zipEntry
-    *           the zip entry
-    * @param xmlName
-    *           the xml name
-    * 
-    * @return true, if successful
-    * 
-    * @throws IOException
-    *            Signals that an I/O exception has occurred.
-    */
-   private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
-      if (zipEntry.getName().equals(xmlName + ".xml")) {
-         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getPanelXsdPath() : configuration
-               .getControllerXsdPath();
-         String xsdPath = getClass().getResource(xsdRelativePath).getPath();
-         if (!XmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
-            return false;
-         }
-      }
-      return true;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public File uploadImage(InputStream inputStream, String fileName, String sessionId) {
-      File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + File.separator + fileName);
-      return uploadFile(inputStream, file);
-   }
-
-   public File uploadImage(InputStream inputStream, String fileName) {
-      File file = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + File.separator
-            + fileName);
-      return uploadFile(inputStream, file);
-   }
-
-   private File uploadFile(InputStream inputStream, File file) {
-      FileOutputStream fileOutputStream = null;
-      try {
-         File dir = file.getParentFile();
-         if (!dir.exists()) {
-            dir.mkdirs();
-         }
-         FileUtils.touch(file);
-         fileOutputStream = new FileOutputStream(file);
-         IOUtils.copy(inputStream, fileOutputStream);
-      } catch (IOException e) {
-         throw new FileOperationException("Failed to save uploaded image", e);
-      } finally {
-         try {
-            if (fileOutputStream != null) {
-               fileOutputStream.close();
-            }
-         } catch (IOException e) {
-            LOGGER.warn("Failed to close resources on uploaded file", e);
-         }
-
-      }
-      return file;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#getControllerXmlContent(java.util.List)
-    */
-
-   /**
-    * Gets the controller xml segment content.
+    * TODO
     * 
     * @param command
     *           the device command item
@@ -375,22 +417,18 @@ public class ResourceServiceImpl implements ResourceService {
          } else if (command instanceof CommandRefItem) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
                   .getOid());
+            protocolEventContainer.removeDeviceCommand(deviceCommand);
             addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
          } else {
             return new ArrayList<Command>();
          }
       } catch (Exception e) {
-         LOGGER.warn("Some components referenced a removed object:  " + e.getMessage());
+         serviceLog.warn("Some components referenced a removed object:  " + e.getMessage());
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;
    }
 
-   /**
-    * @param protocolEventContainer
-    * @param oneUIButtonEventList
-    * @param deviceCommand
-    */
    private void addDeviceCommandEvent(ProtocolCommandContainer protocolEventContainer,
          List<Command> oneUIButtonEventList, DeviceCommand deviceCommand, MaxId maxId) {
       String protocolType = deviceCommand.getProtocol().getType();
@@ -407,11 +445,7 @@ public class ResourceServiceImpl implements ResourceService {
       oneUIButtonEventList.add(uiButtonEvent);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.openremote.modeler.service.ResourceService#getSectionIds()
-    */
+
    /**
     * Gets the section ids.
     * 
@@ -453,10 +487,6 @@ public class ResourceServiceImpl implements ResourceService {
       return sectionIdsSB.toString();
    }
 
-   /**
-    * @param sectionIds
-    * @param command
-    */
    private void addSectionIds(Set<String> sectionIds, UICommand command) {
       if (command instanceof DeviceMacroItem) {
          sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
@@ -488,74 +518,61 @@ public class ResourceServiceImpl implements ResourceService {
             }
          }
       } catch (Exception e) {
-         LOGGER.warn("Some components referenced a removed DeviceMacro!");
+         serviceLog.warn("Some components referenced a removed DeviceMacro!");
       }
       return deviceMacroRefSectionIds;
    }
 
-   /**
-    * Gets the configuration.
-    * 
-    * @return the configuration
-    */
-   public Configuration getConfiguration() {
-      return configuration;
-   }
 
-   /**
-    * Sets the configuration.
-    * 
-    * @param configuration
-    *           the new configuration
-    */
-   public void setConfiguration(Configuration configuration) {
-      this.configuration = configuration;
-   }
 
-   /**
-    * Gets the device command service.
-    * 
-    * @return the device command service
-    */
-   public DeviceCommandService getDeviceCommandService() {
-      return deviceCommandService;
-   }
+  public Configuration getConfiguration()
+  {
+    return configuration;
+  }
 
-   /**
-    * Sets the device command service.
-    * 
-    * @param deviceCommandService
-    *           the new device command service
-    */
-   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-      this.deviceCommandService = deviceCommandService;
-   }
+  public void setConfiguration(Configuration configuration)
+  {
+    this.configuration = configuration;
+  }
 
-   /**
-    * Sets the device macro service.
-    * 
-    * @param deviceMacroService
-    *           the new device macro service
-    */
-   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
-      this.deviceMacroService = deviceMacroService;
-   }
+  public DeviceCommandService getDeviceCommandService()
+  {
+    return deviceCommandService;
+  }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String getRelativeResourcePath(String sessionId, String fileName) {
-      return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
-   }
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService)
+  {
+    this.deviceCommandService = deviceCommandService;
+  }
 
-   public void setControllerConfigService(ControllerConfigService controllerConfigService) {
-      this.controllerConfigService = controllerConfigService;
-   }
+  public void setDeviceMacroService(DeviceMacroService deviceMacroService)
+  {
+    this.deviceMacroService = deviceMacroService;
+  }
 
-   @Override
-   public String getRelativeResourcePathByCurrentAccount(String fileName) {
-      return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, userService.getAccount());
-   }
+  /**
+   * @deprecated looks unused
+   */
+  @Deprecated public String getRelativeResourcePath(String sessionId, String fileName)
+  {
+    return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, sessionId);
+  }
+
+  public void setControllerConfigService(ControllerConfigService controllerConfigService)
+  {
+    this.controllerConfigService = controllerConfigService;
+  }
+
+  //
+  //  TODO :
+  //
+  //   - most likely should be internalized to resource cache implementation
+  //
+  @Override public String getRelativeResourcePathByCurrentAccount(String fileName)
+  {
+    return PathConfig.getInstance(configuration).getRelativeResourcePath(fileName, userService.getAccount());
+  }
+
 
    @Override
    public String getPanelsJson(Collection<Panel> panels) {
@@ -574,7 +591,7 @@ public class ResourceServiceImpl implements ResourceService {
          String[] excludePropertyNames = { "panelName", "*.displayName", "*.panelXml" };
          return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
-         LOGGER.error(e);
+         serviceLog.error(e.getMessage(), e);
          return "";
       }
    }
@@ -613,8 +630,24 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @SuppressWarnings("unchecked")
-   public String getControllerXML(Collection<Screen> screens, long maxOid) {
+   public String getControllerXML(Collection<Screen> screens, long maxOid)
+   {
 
+     // PATCH R3181 BEGIN ---8<-----
+     /*
+      * Get all sensors and commands from database.
+      */
+     List<Sensor> dbSensors = userService.getAccount().getSensors();
+     List<Device> allDevices = userService.getAccount().getDevices();
+     List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
+
+     for (Device device : allDevices)
+     {
+        allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
+     }
+     // PATCH R3181 END ---->8-----
+
+     
       /*
        * store the max oid
        */
@@ -627,8 +660,11 @@ public class ResourceServiceImpl implements ResourceService {
       initUIComponentBox(screens, uiComponentBox);
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
+      eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
-      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId);
+
+      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
+
       Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
@@ -640,6 +676,26 @@ public class ResourceServiceImpl implements ResourceService {
       configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
 
+      // TODO :  BEGIN HACK (TO BE REMOVED)
+      //
+      //   - the following removes the rules.editor configuration section from the controller.xml
+      //     <config> section. The rules should not be defined in terms of controller configuration
+      //     in the designer but as artifacts, similar to images (and multiple rule files should
+      //     be supported).
+
+      for (ControllerConfig controllerConfig : configs)
+      {
+        if (controllerConfig.getName().equals("rules.editor"))
+        {
+          configs.remove(controllerConfig);
+
+          break;      // this fixes a concurrent modification error in this hack..
+        }
+      }
+
+      // TODO : END HACK -------------------
+     
+
       context.put("switchs", switchs);
       context.put("buttons", buttons);
       context.put("screens", screens);
@@ -647,6 +703,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("resouceServiceImpl", this);
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
+      context.put("dbSensors", dbSensors);
       context.put("gestures", gestures);
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
@@ -658,6 +715,39 @@ public class ResourceServiceImpl implements ResourceService {
       return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
    }
 
+  //
+  // TODO: should be removed
+  //
+  //   - rules should not be defined in terms of controller configuration
+  //     in the designer but as artifacts, similar to images (and multiple rule files should
+  //     be supported).
+  //
+  private String getRulesFileContent()
+  {
+    Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+
+    configs.removeAll(controllerConfigService.listAllexpiredConfigs());
+    configs.addAll(controllerConfigService.listAllMissingConfigs());
+
+    String result = "";
+
+    for (ControllerConfig controllerConfig : configs)
+    {
+      if (controllerConfig.getName().equals("rules.editor"))
+      {
+        result = controllerConfig.getValue();
+      }
+    }
+
+    return result;
+  }
+
+
+   //
+   //  TODO :
+   //
+   //   - should be internalized as part of MODELER-287
+   //
    private void initGroupsAndScreens(Collection<Panel> panels, Set<Group> groups, Set<Screen> screens) {
       for (Panel panel : panels) {
          List<GroupRef> groupRefs = panel.getGroupRefs();
@@ -683,7 +773,10 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId) {
+
+   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId,
+                                                    List<Sensor> dbSensors)
+   {
       Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
       Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
@@ -699,6 +792,25 @@ public class ResourceServiceImpl implements ResourceService {
             }
          }
       }
+
+
+      // PATCH R3181 BEGIN ---8<------
+      List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
+
+      for (Sensor dbSensor : dbSensors)
+      {
+        for (Sensor clientSensor : sensorWithoutDuplicate)
+        {
+          if (dbSensor.getOid() == clientSensor.getOid())
+          {
+            duplicateDBSensors.add(dbSensor);
+          }
+        }
+      }
+
+      dbSensors.removeAll(duplicateDBSensors);
+      // PATCH R3181 END --->8-------
+
 
       /*
        * reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
@@ -750,8 +862,13 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   @Override
-   public void initResources(Collection<Panel> panels, long maxOid) {
+
+   //
+   // TODO :
+   //
+   //  - should be internalized to resource cache as part of MODELER-287
+   //
+   @Override public void initResources(Collection<Panel> panels, long maxOid) {
       // 1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as
       // device command, sensor ...)
       // the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a
@@ -769,7 +886,8 @@ public class ResourceServiceImpl implements ResourceService {
       String controllerXmlContent = getControllerXML(screens, maxOid);
       String panelXmlContent = getPanelXML(panels);
       String sectionIds = getSectionIds(screens);
-
+      String rulesFileContent = getRulesFileContent();
+     
       // replaceUrl(screens, sessionId);
       // String activitiesJson = getActivitiesJson(activities);
 
@@ -793,8 +911,10 @@ public class ResourceServiceImpl implements ResourceService {
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
       File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
-      // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
+      File rulesDir = new File(pathConfig.userFolder(userService.getAccount()), "rules");
+      File rulesFile = new File(rulesDir, "modeler_rules.drl");
+     
       /*
        * validate and output panel.xml.
        */
@@ -809,12 +929,12 @@ public class ResourceServiceImpl implements ResourceService {
          FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);
-         // FileUtilsExt.deleteQuietly(dotImport);
+         FileUtilsExt.deleteQuietly(rulesFile);
 
          FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
          FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-         // FileUtilsExt.writeStringToFile(dotImport, activitiesJson);
-
+         FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
+        
          if (sectionIds != null && !sectionIds.equals("")) {
             FileUtils
                   .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
@@ -823,7 +943,7 @@ public class ResourceServiceImpl implements ResourceService {
             boolean success = lircdFile.delete();
 
             if (!success) {
-               LOGGER.error("Failed to delete '" + lircdFile + "'.");
+               serviceLog.error("Failed to delete '" + lircdFile + "'.");
             }
 
          }
@@ -833,6 +953,12 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
+
+   //
+   //   TODO :
+   //
+   //     - should be internalized as part of resource cache implementation, see MODELER-287
+   //
    private void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
@@ -846,90 +972,77 @@ public class ResourceServiceImpl implements ResourceService {
          oos.writeObject(panels);
          oos.writeLong(maxOid);
       } catch (FileNotFoundException e) {
-         LOGGER.error(e.getMessage(), e);
+         serviceLog.error(e.getMessage(), e);
       } catch (IOException e) {
-         LOGGER.error(e.getMessage(), e);
+         serviceLog.error(e.getMessage(), e);
       } finally {
          try {
             if (oos != null) {
                oos.close();
             }
          } catch (IOException e) {
-            LOGGER.warn("Unable to close output stream to '" + panelsObjFile + "'.");
+            serviceLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
          }
       }
    }
 
-   public PanelsAndMaxOid restore() {
-      // First, try to down openremote.zip from beehive.
-      try {
-         downloadOpenRemoteZip();
-      } catch (IOException e) {
-         LOGGER.error("Beehive no available !" + e.getMessage());
-      }
-      // Restore panels and max oid.
 
-      return restorePanelsAndMaxOid();
-   }
+  /**
+   * This implementation has been moved and delegates to {@link DesignerState#restore}.
+   */
+  @Override @Deprecated public PanelsAndMaxOid restore()
+  {
+    try
+    {
+      DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+      state.restore();
 
-   @SuppressWarnings("unchecked")
-   private PanelsAndMaxOid restorePanelsAndMaxOid() {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-      if (!panelsObjFile.exists()) {
-         return new PanelsAndMaxOid(new ArrayList<Panel>(), 0L);
-      }
-      ObjectInputStream ois = null;
-      try {
-         ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
-         Collection<Panel> panels = (Collection<Panel>) ois.readObject();
-         long maxOid = ois.readLong();
-         return new PanelsAndMaxOid(panels, maxOid);
-      } catch (Exception e) {
-         throw new UIRestoreException("UIDesigner restore failed, incompatible data can not be restore to panels. ", e);
-      } finally {
-         try {
-            if (ois != null) {
-               ois.close();
-            }
-         } catch (IOException ioException) {
-            LOGGER.warn("Failed to close input stream from '" + panelsObjFile + "': " + ioException.getMessage(),
-                  ioException);
-         }
-      }
-   }
+      return state.transformToPanelsAndMaxOid();
+    }
 
-   @SuppressWarnings("all")
-   public void saveResourcesToBeehive(Collection<Panel> panels) {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      HttpClient httpClient = new DefaultHttpClient();
-      HttpPost httpPost = new HttpPost();
-      String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
-      this.addAuthentication(httpPost);
+    catch (NetworkException e)
+    {
+      serviceLog.error(
+          "Could not restore designer state due to network error : {0}", e, e.getMessage()
+      );
 
-      String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/openremote.zip";
+      // TODO :
+      //   - could check network exception severity, and retry a few times in case of a
+      //     network glitch, not a serious error
+      //   - log and throw here since unclear if the runtime exceptions to client are
+      //     logged anywhere
 
-      try {
-         httpPost.setURI(new URI(url));
-         FileBody resource = new FileBody(getExportResource(panels));
-         MultipartEntity entity = new MultipartEntity();
-         entity.addPart("resource", resource);
-         httpPost.setEntity(entity);
-         HttpResponse response = httpClient.execute(httpPost);
+      throw new UIRestoreException(
+          "Could not restore account data to Designer due to a network error. You can try " +
+          "again later. If the problem persists, please contact support. Error : " +
+          e.getMessage(), e
+      );
+    }
+  }
 
-         if (200 != response.getStatusLine().getStatusCode()) {
-            throw new BeehiveNotAvailableException("Failed to save resource to Beehive, status code: "
-                  + response.getStatusLine().getStatusCode());
-         }
-      } catch (NullPointerException e) {
-         LOGGER.warn("There no resource to upload to beehive at this time. ");
-      } catch (IOException e) {
-         throw new BeehiveNotAvailableException(e.getMessage(), e);
-      } catch (URISyntaxException e) {
-         throw new IllegalRestUrlException("Invalid Rest URL: " + url + " to save modeler resource to beehive! ", e);
-      }
-   }
 
+  /**
+   * This implementation has been moved and delegates to {@link DesignerState#save}.
+   */
+  @Override @Deprecated public void saveResourcesToBeehive(Collection<Panel> panels)
+  {
+    // Create a set of panels to eliminate potential duplicate instances...
+
+    HashSet<Panel> panelSet = new HashSet<Panel>();
+    panelSet.addAll(panels);
+
+    // Delegate implementation to DesignerState...
+
+    DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+    state.save(panelSet);
+  }
+
+
+   //
+   //   TODO :
+   //
+   //    - should migrate to resource cache API
+   //
    public void saveTemplateResourcesToBeehive(Template template) {
       boolean share = template.getShareTo() == Template.PUBLIC;
       HttpClient httpClient = new DefaultHttpClient();
@@ -944,9 +1057,9 @@ public class ResourceServiceImpl implements ResourceService {
       }
       try {
          httpPost.setURI(new URI(url));
-         File templateZip = getTemplateZipResource(template);
+         File templateZip = getTemplateResource(template);
          if (templateZip == null) {
-            LOGGER.warn("There are no template resources for template \"" + template.getName()
+            serviceLog.warn("There are no template resources for template \"" + template.getName()
                   + "\"to save to beehive!");
             return;
          }
@@ -964,7 +1077,7 @@ public class ResourceServiceImpl implements ResourceService {
                   + response.getStatusLine().getStatusCode());
          }
       } catch (NullPointerException e) {
-         LOGGER.warn("There are no template resources for template \"" + template.getName() + "\"to save to beehive!");
+         serviceLog.warn("There are no template resources for template \"" + template.getName() + "\"to save to beehive!");
       } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
       } catch (URISyntaxException e) {
@@ -972,15 +1085,26 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   @Override
-   public boolean canRestore() {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-      return panelsObjFile.exists();
-   }
 
-   @Override
-   public void downloadResourcesForTemplate(long templateOid) {
+  //
+  // TODO :
+  //
+  //   - should migrate to ResourceCache interface
+  //
+  @Override public boolean canRestore()
+  {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
+
+    return panelsObjFile.exists();
+  }
+
+   //
+   // TODO :
+   //
+   //  - should migrate to ResourceCache interface
+   //
+   @Override public void downloadResourcesForTemplate(long templateOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
@@ -1015,7 +1139,7 @@ public class ResourceServiceImpl implements ResourceService {
             ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
             FileUtilsExt.deleteQuietly(outPut);
          } else if (404 == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("There are no resources for this template, ID:" + templateOid);
+            serviceLog.warn("There are no resources for this template, ID:" + templateOid);
             return;
          } else {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
@@ -1029,7 +1153,7 @@ public class ResourceServiceImpl implements ResourceService {
             try {
                inputStream.close();
             } catch (IOException ioException) {
-               LOGGER.warn("Failed to close input stream from '" + httpGet.getURI() + "': " + ioException.getMessage(),
+               serviceLog.warn("Failed to close input stream from '" + httpGet.getURI() + "': " + ioException.getMessage(),
                      ioException);
             }
          }
@@ -1038,245 +1162,139 @@ public class ResourceServiceImpl implements ResourceService {
             try {
                fos.close();
             } catch (IOException ioException) {
-               LOGGER.warn("Failed to close file output stream to user's template.zip file: "
+               serviceLog.warn("Failed to close file output stream to user's template.zip file: "
                      + ioException.getMessage(), ioException);
             }
          }
       }
    }
 
-   private void downloadOpenRemoteZip() throws IOException {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      HttpClient httpClient = new DefaultHttpClient();
-      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
-            + userService.getCurrentUser().getUsername() + "/openremote.zip");
 
-      LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
+  //
+  // TODO :
+  //
+  //   - should be migrated as part of the cache implementation
+  //
+  @Override public File getTemplateResource(Template template)
+  {
+    ScreenPair sp = template.getScreen();
+    Collection<ImageSource> images = sp.getAllImageSources();
 
-      InputStream inputStream = null;
-      FileOutputStream fos = null;
+    HashSet<String> filenames = new HashSet<String>();
 
-      try {
-         this.addAuthentication(httpGet);
-         HttpResponse response = httpClient.execute(httpGet);
+    for (ImageSource source : images)
+    {
+      filenames.add(source.getImageFileName());
+    }
 
-         if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip for user " + userService.getCurrentUser().getUsername()
-                  + " from Beehive. Status code is 404. Will try to restore panels from local resource! ");
-            return;
-         }
+    Set<File> templateRelatedFiles = new HashSet<File>();
 
-         if (200 == response.getStatusLine().getStatusCode()) {
-            inputStream = response.getEntity().getContent();
-            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
 
-            if (!userFolder.exists()) {
-               boolean success = userFolder.mkdirs();
-               if (!success) {
-                  throw new FileOperationException("Failed to create the required directories for path '" + userFolder
-                        + "'.");
-               }
-            }
-            File outPut = new File(userFolder, "openremote.zip");
-            FileUtilsExt.deleteQuietly(outPut);
-            fos = new FileOutputStream(outPut);
-            byte[] buffer = new byte[1024];
-            int len = 0;
+    for (String name : filenames)
+    {
+      templateRelatedFiles.add(
+          new File(pathConfig.userFolder(userService.getCurrentUser().getAccount()), name)
+      );
+    }
 
-            while ((len = inputStream.read(buffer)) != -1) {
-               fos.write(buffer, 0, len);
-            }
+    if (templateRelatedFiles.size() == 0)
+    {
+      return null;
+    }
 
-            fos.flush();
-            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
-            FileUtilsExt.deleteQuietly(outPut);
-         } else {
-            throw new BeehiveNotAvailableException("Failed to download resources, status code: "
-                  + response.getStatusLine().getStatusCode());
-         }
-      } finally {
-         if (inputStream != null) {
-            try {
-               inputStream.close();
-            } catch (IOException ioException) {
-               LOGGER.warn("Failed to close input stream from " + httpGet.getURI() + " (" + ioException.getMessage()
-                     + ")", ioException);
-            }
-         }
-         if (fos != null) {
-            try {
-               fos.close();
-            } catch (IOException ioException) {
-               LOGGER.warn("Failed to close output stream to user's openremote.zip file: " + ioException.getMessage());
-            }
-         }
+
+    // File zipFile = new File(pathConfig.openremoteZipFilePath(userService.getAccount()));
+    // FileUtilsExt.deleteQuietly(zipFile);
+
+    File userDir = new File(pathConfig.userFolder(userService.getAccount()));
+    File templateDir = new File(userDir, "template");
+
+    if (!templateDir.exists())
+    {
+      boolean success = templateDir.mkdirs();
+
+      if (!success)
+      {
+        serviceLog.error("Could not create template dir ''{0}''", templateDir.getAbsolutePath());
       }
-   }
+    }
 
-   @Override
-   public File getTemplateResource(Template template) {
-      return this.getTemplateZipResource(template);
-   }
+    File templateFile = new File(templateDir, "openremote.zip");
 
-   private File getResourceZipFile(List<String> ignoreExtentions, Collection<File> compresseFiles) {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
-      File[] filesInAccountFolder = userFolder.listFiles();
-      if (filesInAccountFolder == null || filesInAccountFolder.length == 0) {
-         return null;
-      }
+    ZipUtils.compress(templateFile.getAbsolutePath(), new ArrayList<File>(templateRelatedFiles));
 
-      File[] filesInZip = null;
-      if (compresseFiles != null && compresseFiles.size() > 0) {
-         filesInZip = new File[compresseFiles.size()];
-      } else {
-         filesInZip = new File[1];
-      }
-      int i = 0;
-      for (File file : compresseFiles) {
-         if (file.exists()) {
-            filesInZip[i++] = file;
-         } else {
-            throw new ResourceFileLostException("File '" + file.getName() + "' is lost! ");
-         }
-      }
-      return compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
-            ignoreExtentions);
+    return templateFile;
+  }
 
-   }
 
-   private File getTemplateZipResource(Template template) {
-      List<String> ignoreExtentions = new ArrayList<String>();
-      ignoreExtentions.add("zip");
-      ignoreExtentions.add("xml");
-      ScreenPair sp = template.getScreen();
-      Collection<ImageSource> images = sp.getAllImageSources();
-      Collection<File> templateRelatedFiles = getAllImageFiles(images);
-      if (templateRelatedFiles.size() == 0) return null;
-      return getResourceZipFile(ignoreExtentions, templateRelatedFiles);
-   }
+  /**
+   * This method is calling by controllerXML.vm, to export sensors which from database.
+   */
+  public Long getMaxId(MaxId maxId)
+  {
+    // Part of patch R3181 -- include all components in controller.xml even if
+    // not bound to UI components
 
-   private File getExportResource(Collection<Panel> panels) {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      List<String> ignoreExtentions = new ArrayList<String>();
-      Collection<ImageSource> images = getAllImageSources(panels);
-      Collection<File> imageFiles = getAllImageFiles(images);
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+    return maxId.maxId();
+  }
 
-      Collection<File> exportFile = new HashSet<File>();
-      exportFile.addAll(imageFiles);
-      exportFile.add(panelXMLFile);
-      exportFile.add(controllerXMLFile);
-      exportFile.add(panelsObjFile);
+  /**
+   * Adds the data base commands into protocolEventContainer.
+   */
+  public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId)
+  {
+    // Part of patch R3181 -- include all components in controller.xml even if
+    // not bound to UI components
 
-      if (lircdFile.exists()) {
-         exportFile.add(lircdFile);
+    List<DeviceCommand> dbDeviceCommands = protocolEventContainer.getAllDBDeviceCommands();
+
+    for (DeviceCommand deviceCommand : dbDeviceCommands)
+    {
+      String protocolType = deviceCommand.getProtocol().getType();
+      List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
+
+      Command uiButtonEvent = new Command();
+      uiButtonEvent.setId(maxId.maxId());
+      uiButtonEvent.setProtocolDisplayName(protocolType);
+
+      for (ProtocolAttr protocolAttr : protocolAttrs)
+      {
+        uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
       }
 
-      ignoreExtentions.add("zip");
-      return getResourceZipFile(ignoreExtentions, exportFile);
-   }
+      uiButtonEvent.setLabel(deviceCommand.getName());
+      protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+    }
+  }
+  
 
-   private String encode(String namePassword) {
-      if (namePassword == null) return null;
-      return new String(Base64.encodeBase64(namePassword.getBytes()));
-   }
 
-   private Set<File> getAllImageFiles(Collection<ImageSource> images) {
-      Set<File> files = new HashSet<File>();
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
 
-      for (ImageSource image : images) {
-         String fileName = image.getImageFileName();
-         File imageFile = new File(userFolder, fileName);
-         if (imageFile.exists()) {
-            files.add(imageFile);
-         } else {
-            throw new ResourceFileLostException("File '" + imageFile.getName() + "' is lost!");
-         }
-      }
-      return files;
-   }
 
-   private Set<ImageSource> getAllImageSources(Collection<Panel> panels) {
-      Set<ImageSource> imageSources = new HashSet<ImageSource>();
-      if (panels != null & panels.size() > 0) {
-         for (Panel panel : panels) {
-            List<GroupRef> groupRefs = panel.getGroupRefs();
-            if (groupRefs != null && groupRefs.size() > 0) {
-               for (GroupRef groupRef : groupRefs) {
-                  Group group = groupRef.getGroup();
-                  if (group.getTabbar() != null) {
-                     imageSources.addAll(getImageSourcesFromTabbar(group.getTabbar()));
-                  }
-                  List<ScreenPairRef> screenPairRefs = group.getScreenRefs();
-                  if (screenPairRefs != null && screenPairRefs.size() > 0) {
-                     for (ScreenPairRef screenPairRef : screenPairRefs) {
-                        ScreenPair screenPair = screenPairRef.getScreen();
-                        if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
-                        } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
-                        } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
-                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
-                        }
-                     }
-                  }
-               }
-            }
-            if (panel.getTabbar() != null) {
-               imageSources.addAll(getImageSourcesFromTabbar(panel.getTabbar()));
-            }
-            if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
-               imageSources.addAll(getCustomPanelImages(panel));
-            }
-         }
-      }
-      return imageSources;
-   }
+  @Deprecated private void addAuthentication(AbstractHttpMessage httpMessage)
+  {
+    httpMessage.setHeader(
+        Constants.HTTP_BASIC_AUTH_HEADER_NAME,
+        Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX +
+            encode(userService.getCurrentUser().getUsername() + ":" +
+            userService.getCurrentUser().getPassword())
+    );
+  }
 
-   private Collection<ImageSource> getImageSourcesFromTabbar(UITabbar uiTabbar) {
-      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
-      if (uiTabbar != null) {
-         List<UITabbarItem> uiTabbarItems = uiTabbar.getTabbarItems();
-         if (uiTabbarItems != null && uiTabbarItems.size() > 0) {
-            for (UITabbarItem item : uiTabbarItems) {
-               ImageSource image = item.getImage();
-               if (image != null && !image.isEmpty()) {
-                  imageSources.add(image);
-               }
-            }
-         }
-      }
-      return imageSources;
-   }
+  private String encode(String namePassword)
+  {
+    if (namePassword == null)
+    {
+      return null;
+    }
 
-   private Collection<ImageSource> getCustomPanelImages(Panel panel) {
-      Collection<ImageSource> images = new ArrayList<ImageSource>(2);
-      if (panel != null) {
-         ImageSource vBImage = new ImageSource(panel.getTouchPanelDefinition().getBgImage());
-         ImageSource hBgImage = new ImageSource(panel.getTouchPanelDefinition().getHorizontalDefinition().getBgImage());
-         ImageSource tbImage = panel.getTouchPanelDefinition().getTabbarDefinition().getBackground();
-         if (!vBImage.isEmpty()) {
-            images.add(vBImage);
-         }
-         if (!hBgImage.isEmpty()) {
-            images.add(hBgImage);
-         }
-         if (tbImage != null && !tbImage.isEmpty()
-               && !TouchPanelTabbarDefinition.IPHONE_TABBAR_BACKGROUND.equals(tbImage.getSrc())) {
-            images.add(tbImage);
-         }
-      }
-      return images;
-   }
+    return new String(Base64.encodeBase64(namePassword.getBytes()));
+  }
 
-   static class MaxId {
+
+
+  static class MaxId {
       Long maxId = 0L;
 
       public MaxId(Long maxId) {
@@ -1288,8 +1306,4 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private void addAuthentication(AbstractHttpMessage httpMessage) {
-      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getCurrentUser().getUsername() + ":" + userService.getCurrentUser().getPassword()));
-   }
 }
