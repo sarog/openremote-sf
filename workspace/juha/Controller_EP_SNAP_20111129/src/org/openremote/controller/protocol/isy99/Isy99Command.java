@@ -20,27 +20,21 @@
  */
 package org.openremote.controller.protocol.isy99;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
@@ -48,23 +42,19 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-// Will put back later 
-//import org.openremote.controller.Isy99Config;
 
 /**
- * OpenRemote isy99 command implementation.  <p>
+ * OpenRemote protocol implementation for the Universal Devices ISY-99 HTTP-to-Insteon Bridge
  *
- * Maintains a isy99-machine-wide state for each address.<p>  
- * TODO <p>
- * Parse the dot.properties file. 
- * 
- * @author <a href="mailto:"></a>
+ * See http://www.universal-devices.com/mwiki/index.php?title=ISY-99i_Series_INSTEON:REST_Interface
+ * for documentation of the REST API for the ISY-99.
+ *
+ * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch</a>
+ * @author <a href="mailto:aball@osintegrators.com">Andrew D. Ball</a>
  */
 public class Isy99Command implements ExecutableCommand, StatusCommand
 {
 
-  // hostname, username, and password from properties file
-  
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -72,116 +62,111 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
    */
   private final static Logger log = Logger.getLogger(Isy99CommandBuilder.ISY99_LOG_CATEGORY);
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Name of the command for both turning on a switch (if no parameter is given)
+   * and adjusting the level of a dimmer in the ISY-99 REST interface.
+   */
+  public final static String ISY99_ON_COMMAND = "DON";
+
+  /**
+   * Name of the command for turning off a switch in the ISY-99 REST interface.
+   */
+  public final static String ISY99_OFF_COMMAND = "DOF";
+
+  /**
+   * The maximum level that the ISY-99 will report for dimmers.
+   */
+  public final static int ISY99_MAX_DIMMER_VALUE = 255;
+  
   // Instance Fields ------------------------------------------------------------------------------
-  
-//  private Isy99Config isy99Config;
 
-  
-
-  
-  private String host ;
-  //= "192.168.41.12"; // TODO get from config.properties
-  private String userName ;
-  //= "admin"; // TODO get from config.properties
-  private String password ; 
-  //= "admin"; // TODO get from config.properties
-  
-  /**
-   * The address for this particular 'command' instance.
-   */
-  private String address = null;
-
-  /**
-   * The command string for this particular 'command' instance.
-   */
-  private String command = null;
-
-  private String commandParam = null;
+  private String host;
+  private String username;
+  private String password;
+  private String address;
+  private String command;
+  private String commandParam;
 
   // Constructors ---------------------------------------------------------------------------------
-  //Isy99Command( hostAsStr, userNameAsStr,passwordAsStr, addressAsStr, commandAsStr);
-  public Isy99Command(String host,String userName ,String password, String address, String command)
+
+  public Isy99Command(String host, String username, String password, String address, String command)
   {
-   
-     this.host     = host;
-     this.userName = userName; 
-     this.password = password;  
-     this.address = address;
-     this.command = command;
-     
-     log.info("Got isy99 config");
-     log.info("Host >" + this.host + "<");
-     log.info("UserName >" + this.userName + "<");
-     log.info("Password >" + this.password + "<");
-     log.info("Switch Address >" + this.address + "<");  
-     log.info("Switch Command >" + this.command + "<");  
-          
-     
-   
-  }
-//TODO this needs to be tested 
- // Called from the Isy99CommandBuilder
-  public Isy99Command(String host,String userName ,String password, String address, String command, String commandParam)
-  {
-    this(host,userName ,password,  address, command); 
-    this.commandParam = commandParam;
-    log.info("Got isy99 config-commandParmam");
-    log.info("Host >" + this.host + "<");
-    log.info("UserName >" + this.userName + "<");
-    log.info("Password >" + this.password + "<");
-    log.info("Switch Address >" + this.address + "<");  
-    log.info("Switch Command >" + this.command + "<");  
-    log.info("Switch CommandParam >" + this.commandParam + "<");  
-    
+    this.host = host;
+    this.username = username;
+    this.password = password;
+    this.address = address;
+    this.command = command;
   }
 
+  public Isy99Command(String host, String username, String password, String address, String command, String commandParam)
+  {
+    this(host, username, password, address, command);
+    this.commandParam = commandParam;
+  }
 
   // Implements ExecutableCommand -----------------------------------------------------------------
 
+  private String formWriteCommandUrl()
+  {
+    StringBuilder url = new StringBuilder();
+    String effectiveCommand = command;
+    String effectiveCommandParam = commandParam;
+
+    // Compensate for the somewhat odd ISY-99 dimming behavior. Using the DON command
+    // with 0 as a parameter does not actually cause the device to be turned off. Using
+    // the DOF command will, though.
+    if (ISY99_ON_COMMAND.equals(command) && commandParam != null)
+    {
+      if (commandParam.equals("0"))
+      {
+        effectiveCommand = ISY99_OFF_COMMAND;
+        effectiveCommandParam = null;
+      }
+      else
+      {
+        effectiveCommandParam = "" + ((Integer.valueOf(commandParam) * ISY99_MAX_DIMMER_VALUE)/100);
+      }
+    }
+
+    url.append("http://");
+    url.append(host);
+    url.append("/rest/nodes/");
+    url.append(address.replaceAll(" ", "%20"));
+    url.append("/cmd/");
+    url.append(effectiveCommand);
+    if (effectiveCommandParam != null && !effectiveCommandParam.equals(""))
+    {
+      url.append("/");
+      url.append(effectiveCommandParam);
+    }
+
+    return url.toString();
+  }
+
+  @Override
   public void send()
   {
-    
-    final String urlPath = "/rest/nodes/";
-    final String preIsy99Cmd = "/cmd/";
-    String urlStr = null;
+    String url = formWriteCommandUrl();
+    log.debug("send(): URL is " + url);
 
-    DefaultHttpClient httpclient = new DefaultHttpClient();
+    DefaultHttpClient client = new DefaultHttpClient();
+    
+    if (username != null && !username.equals(""))
+    {
+      CredentialsProvider cred = new BasicCredentialsProvider();
+      
+      cred.setCredentials(AuthScope.ANY,
+          new UsernamePasswordCredentials(username, password));
+
+      client.setCredentialsProvider(cred);
+    }
+
     try
     {
-      httpclient.getCredentialsProvider().setCredentials(new AuthScope(host, 80),
-              new UsernamePasswordCredentials(userName, password));
-
-      // TODO handle percent encoding when constructing URL
-      StringBuilder urlBuilder = new StringBuilder();
-      // urlStr = "http://" + url + UrlPath + switchMac + PreIsy99Cmd + Isy99Cmd;
-      // TODO support https scheme as well
-      urlBuilder.append("http://");
-      urlBuilder.append(host);
-      urlBuilder.append(urlPath);
-      urlBuilder.append(address);
-      urlBuilder.append(preIsy99Cmd);
-      urlBuilder.append(command);
-      
-      if (commandParam != null)
-      {
-        // TODO 
-        
-        urlBuilder.append("/");
-        urlBuilder.append(commandParam);
-        
-        //TODO log to debug after clean up ? 
-        
-        log.warn("commandParam  "+urlBuilder.toString());
-        
-      }
-      
-      urlStr = urlBuilder.toString();
-      log.debug("send(): URL is " + urlStr);
-      log.warn("send(): URL is rest call  " + urlStr);
-      
-      HttpGet httpget = new HttpGet(urlStr);
-      log.debug("executing request" + httpget.getRequestLine());
-      HttpResponse response = httpclient.execute(httpget);
+      HttpGet req = new HttpGet(url);
+      HttpResponse response = client.execute(req);
 
       int responseStatusCode = response.getStatusLine().getStatusCode();
       if (responseStatusCode != 200)
@@ -194,77 +179,63 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       log.error("send(): IOException: address: " + address + "command: " +
           command, e);
     }
-    finally
-    {
-      // TODO find out if this affects other code!
-      
-      // When HttpClient instance is no longer needed,
-      // shut down the connection manager to ensure
-      // immediate deallocation of all system resources
-      
-      // httpclient.getConnectionManager().shutdown();
-    }
   }
-      
+
   // Implements StatusCommand ---------------------------------------------------------------------
 
+  private String formReadCommandUrl()
+  {
+    StringBuilder url = new StringBuilder();
+
+    url.append("http://");
+    url.append(host);
+    url.append("/rest/nodes/");
+    url.append(address.replaceAll(" ", "%20"));
+
+    return url.toString();
+  }
+
+  @Override
   public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
-    String urlPath = "/rest/nodes/"; 
-    String preIsy99Cmd = "/"; 
-    String urlStr = null; 
-    // String switchMac = args[0]; 
-    //    String Isy99Cmd  = args[1]; 
+    String url = formReadCommandUrl();
+    log.debug("read(): URL is " + url);
 
-    // TODO consider reducing the size of this try block
-    DefaultHttpClient httpclient = new DefaultHttpClient();
-    InputStream content = null;
+    DefaultHttpClient client = new DefaultHttpClient();
+
+    if (username != null && !username.equals(""))
+    {
+      CredentialsProvider cred = new BasicCredentialsProvider();
+
+      cred.setCredentials(AuthScope.ANY,
+          new UsernamePasswordCredentials(username, password));
+
+      client.setCredentialsProvider(cred);
+    }
+
+    HttpGet req = new HttpGet(url);
+
     String value = null;
+    InputStream content = null;
     try
     {
-      //TODO 
-      //Need to change to https or http from .property file 
-      httpclient.getCredentialsProvider().setCredentials(
-          new AuthScope(host, 80),
-          new UsernamePasswordCredentials(userName, password));
-      // does this work with the map ? 
-      urlStr = "http://"+host+urlPath+address+preIsy99Cmd; 
-
-      HttpGet httpget = new HttpGet(urlStr);  
-
-      log.debug("executing request " + httpget.getURI());
-
-      HttpResponse response = httpclient.execute(httpget);
+      HttpResponse response = client.execute(req);
       HttpEntity entity = response.getEntity();
 
-      if (response.getStatusLine().getStatusCode() != 200)  
+      if (response.getStatusLine().getStatusCode() != 200)
       {
-        // TODO log this
-        log.debug("status line "+response.getStatusLine());
-        if (entity != null) 
+        log.debug("status line " + response.getStatusLine());
+        if (entity != null)
         {
-          // TODO log this
           log.debug("Response content length: " + entity.getContentLength());
         }
-        // EntityUtils.consume(entity);
       }
-      else
-      {
-        // TODO log this
-        log.debug("Command was sent successfull ");
-      }
-      
-      log.debug("----------------------------------------");
-      // log.debug(responseBody);
-      log.debug("----------------------------------------");
-      
-      // Now we shall set up the xml parsing 
 
       SAXBuilder builder = new SAXBuilder();
-      
+
       content = response.getEntity().getContent();
-      
-      Document document = (Document) builder.build(content);
+
+      Document document = builder.build(content);
       Element rootNode = document.getRootElement();
 
       @SuppressWarnings("unchecked")
@@ -272,50 +243,32 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
 
       for (Element node : list)
       {
-        log.debug("XML Parsing ");
-        log.debug("address : " + node.getChildText("address"));
-        log.debug("name : " + node.getChildText("name"));
-        log.debug("type: " + node.getChildText("type"));
-        log.debug("enabled: " + node.getChildText("enabled"));
-        log.debug("elk_id: " + node.getChildText("ELK_ID"));
-        log.debug("property: " + node.getChildText("property"));
         value = node.getChild("property").getAttributeValue("value");
-        log.debug("prop->value-> " + value);
-      }   
+        log.debug("node->property->value = " + value);
+      }
     }
     catch (IOException ioe)
     {
       log.error("IOException while reading data from ISY-99", ioe);
-      // TODO make finally still happen
-      return "";
     }
     catch (JDOMException jdomex)
     {
       log.error("error while parsing response from ISY-99", jdomex);
-      // TODO make finally still happen
-      return "";
     }
     finally
     {
-      // TODO find out what effect that this has on other code
-
-      // When HttpClient instance is no longer needed,
-      // shut down the connection manager to ensure
-      // immediate deallocation of all system resources
-              
-      // httpclient.getConnectionManager().shutdown();
-
-      // TODO check whether we need to do this
       try
       {
         content.close();
       }
-      catch (IOException e)
-      {
-        ; // swallowed on purpose! (Andrew D. Ball <aball@osintegrators.com>
-      }
+      catch (Exception e) {}
     }
     
+    if (value == null || value.equals(""))
+    {
+      return "";
+    }
+
     int integerValue = -1;
     try
     {
@@ -323,34 +276,26 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
     }
     catch (NumberFormatException e)
     {
-      // TODO log
       log.error("invalid sensor reading from ISY-99: expected an integer, got \"" + value + "\"");
       return "";
     }
-    
+
     switch (sensorType)
     {
-
       case SWITCH:
 
-        if (value == null)
-        {
-          return "off";
-        }
-
-        else if (integerValue >= 1)
+        if (integerValue >= 1)
         {
           return "on";
         }
-
-        else if (integerValue == 0)
+        else
         {
           return "off";
         }
 
       case LEVEL:
-        return "" + (integerValue * (100/250)); 
-          
+        return "" + ((integerValue * 100)/ISY99_MAX_DIMMER_VALUE);
+
       case RANGE:
 
         return "" + integerValue;
