@@ -14,13 +14,13 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	private static final String CLASS_NAME = "panelComponent";
 	private int left;
 	private int top;
-	private int height;
-	private int width;
+	protected int height;
+	protected int width;
 	private Double widthPercentage = null;
 	private Double heightPercentage = null;
 	private Double leftPercentage = null;
 	private Double topPercentage = null;
-	private ScreenViewImpl parent = null;
+	protected ScreenViewImpl parent = null;
 	
 	public static enum DimensionUnit {
 		PX,
@@ -204,32 +204,6 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		
 		return new DimensionResult(dim, unit);
 	}
-	
-//	public int calculateDynamicDimension(String dimStr, ScreenDirection direction) {
-//		int dim = 0;
-//		int refLength = 0;
-//		
-//		switch(direction) {
-//			case WIDTH:
-//				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
-//				break;
-//			case HEIGHT:
-//				refLength = WebConsole.getConsoleUnit().getConsoleDisplay().getHeight();
-//		}
-//		if (dimStr.endsWith("%")) {
-//			dimStr = dimStr.replaceAll("%", "");
-//			try {
-//				double calc = Double.parseDouble(dimStr);
-//				dim = (int)Math.round((calc / 100) * refLength); 
-//			} catch (Exception e) {}
-//		} else if (dimStr.endsWith("px")) {
-//			dimStr = dimStr.replaceAll("px", "");
-//			try {
-//				dim = Integer.parseInt(dimStr);
-//			} catch (Exception e) {}
-//		}
-//		return dim;
-//	}
 	
 	public abstract Set<Sensor> getSensors();
 	

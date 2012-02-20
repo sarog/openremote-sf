@@ -1,5 +1,6 @@
 package org.openremote.web.console.unit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.dom.client.Style;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
+import org.openremote.web.console.controller.ControllerCredentialsList;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.*;
@@ -36,8 +38,11 @@ import org.openremote.web.console.service.*;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
+import org.openremote.web.console.view.TestScreenView;
 import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
+import org.openremote.web.console.widget.panel.list.ListItem;
+
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
@@ -96,12 +101,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 //TODO: System Screens - For now point everything to settings screen
 		
-		CONTROLLER_LIST(51, 3, "controllerlist"),
-		ADD_EDIT_CONTROLLER(51, 3, "editcontroller"),
+		CONTROLLER_LIST(50, 2, "controllerlist"),
+		ADD_EDIT_CONTROLLER(54, 5, "editcontroller"),
 		CONSOLE_SETTINGS(51, 3, "settings"),
 		LOGIN(51, 3, "login"),
 		LOGOUT(51, 3, "logout"),
-		PANEL_SELECTION(51, 3, "panelselection");
+		PANEL_SELECTION(50, 2, "panelselection");
 		
 		private final int id;
 		private final int groupId;
@@ -179,10 +184,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
-		
-		// Initialise Popup
-		alertPopup = new PopupPanel(true);
-		alertPopup.setWidget(new Label());
 	}
 	
 	public void setSize(int width, int height) {
@@ -506,6 +507,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			Window.alert("Cannot load system panel definition");
 			return;
 		}
+		
 		if (panelService.getCurrentPanel() != systemPanel) { 
 			unloadPanel();
 			setPanel(systemPanel);
@@ -687,8 +689,21 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		// Configure display
 		consoleDisplay.onAdd(width, height);
-		
+
 		show();
+		// Create some dummy controllers in the cache
+//		List<ControllerCredentials> credList = new ArrayList<ControllerCredentials>();
+//		for (int i=1; i<=30; i++) {
+//			ControllerCredentials creds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
+//			creds.setUrl("http://controller.openremote.org/controller" + i + "/");
+//			creds.setDefaultPanel("My Home");
+//			credList.add(creds);
+//		}
+//		ControllerCredentialsList list = AutoBeanService.getInstance().getFactory().create(ControllerCredentialsList.class).as();
+//		list.setControllerCredentials(credList);
+//		dataService.setControllerCredentialsList(list);
+//		
+//		consoleDisplay.setScreenView(new TestScreenView(), null);
 		
 		// Check for default Controller in Settings
 		controllerCreds = dataService.getDefaultControllerCredentials();
@@ -817,7 +832,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			if (to != null && !to.equals("")) {
 				EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
 				if (screen != null) {
-					loadSettings(screen, null);
+					loadSettings(screen, data);
 				}
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);

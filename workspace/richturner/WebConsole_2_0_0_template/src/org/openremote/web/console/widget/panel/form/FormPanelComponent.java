@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.controller.ControllerCredentials;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.tap.TapEvent;
-import org.openremote.web.console.event.tap.TapHandler;
-import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.Field;
 import org.openremote.web.console.panel.entity.FormButton;
@@ -33,7 +28,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 
-public class FormPanelComponent extends PanelComponent implements TapHandler {
+public class FormPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "formPanelComponent";
 	private List<FormField> fields = new ArrayList<FormField>();
 	private List<FormButtonComponent> buttons = new ArrayList<FormButtonComponent>();
@@ -141,10 +136,10 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 			for (FormButtonComponent button : buttons) {
 				switch (button.getType()) {
 					case SUBMIT:
-						button.addHandler(this, TapEvent.getType());
-						button.setNavigate(null);
-						button.setHasControlCommand(false);
-						break;
+						// button.addHandler(this, TapEvent.getType());
+						// button.setNavigate(null);
+						// button.setHasControlCommand(false);
+						break;						
 				}
 				buttonPanel.add((Widget)button);
 				button.onAdd(80, 35);
@@ -186,31 +181,14 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 		}
 	}
 	
-	@Override
-	public void onTap(TapEvent event) {
-		FormButtonComponent btn = (FormButtonComponent)event.getSource();
-		switch (btn.getType()) {
-			case SUBMIT:
-				if (isValid()) {
-					onSubmit();
-				}
-				break;
-			case CANCEL:
-				// This is handled by the button component superclass as a navigate action should be specified
-				break;
-			case CLEAR:
-				break;
-		}
-	}
-	
-	private void onSubmit() {
+	public void onSubmit() {
 		for (FormField field : fields) {
 			String name = field.getName();
 			if (dataMap != null && name != null) {
 				dataMap.setReified(name, field.getValue());
 			}
 		}
-		AutoBean<ControllerCredentials> bean = AutoBeanService.getInstance().fromJsonString(ControllerCredentials.class, dataMap);
+		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(dataSource), dataMap);
 		Map<String, Object> diffMap = AutoBeanUtils.diff(inputObject, bean);
 		if (diffMap.size() > 0) {
 			DataBindingService.getInstance().setData(dataSource, bean);
@@ -253,9 +231,9 @@ public class FormPanelComponent extends PanelComponent implements TapHandler {
 				FormButtonComponent buttonComp;
 				String name = button.getName();
 				if (name != null && name.length() > 0) {
-					buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()), name);
+					buttonComp = new FormButtonComponent(panel, EnumFormButtonType.getButtonType(button.getType()), name);
 				} else {
-					buttonComp = new FormButtonComponent(EnumFormButtonType.getButtonType(button.getType()));
+					buttonComp = new FormButtonComponent(panel, EnumFormButtonType.getButtonType(button.getType()));
 				}
 				buttonComp.setNavigate(button.getNavigate());
 				panel.addButton(buttonComp);

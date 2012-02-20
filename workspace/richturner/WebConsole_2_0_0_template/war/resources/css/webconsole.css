@@ -90,8 +90,8 @@ CONSOLE UNIT
   -webkit-transform: rotate(-90deg);  
       -ms-transform: rotate(-90deg);  
           transform: rotate(-90deg);  
-             filter: progid:DXImageTransform.Microsoft.Matrix( 
-                     M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
+/*             filter: progid:DXImageTransform.Microsoft.Matrix( 
+                     M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand'); */
                zoom: 1;
 }
 
@@ -168,8 +168,8 @@ CONSOLE UNIT
   -webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
       -ms-transform: rotate(90deg);  /* IE9 */
           transform: rotate(90deg);  
-             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
-                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand');
+/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
+                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
                zoom: 1;
 }
 
@@ -389,3 +389,8 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.listItemComponent {
+	border-bottom: 1px solid #444;
+}
+

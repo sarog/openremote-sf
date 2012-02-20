@@ -34,4 +34,5 @@ public interface MyFactory extends AutoBeanFactory {
 	AutoBean<ImageComponent> image();
 	AutoBean<StatusList> statuses();
 	AutoBean<Status> status();
+	AutoBean<ListItemLayout> listItem();
 }

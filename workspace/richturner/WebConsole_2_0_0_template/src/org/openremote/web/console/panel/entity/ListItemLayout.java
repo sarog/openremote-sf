@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,26 +24,12 @@ import java.util.List;
 /**
  * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
  */
-public interface Screen {
-   Integer getId();
-   String getName();
+public interface ListItemLayout {
    List<AbsoluteLayout> getAbsolute();
    List<GridLayout> getGrid();
-   List<FormLayout> getForm();
-   List<ListLayout> getList();
-   List<Gesture> getGesture();
-   Background getBackground();
-   Integer getInverseScreenId();
-   Boolean getLandscape();
+   String getItemHeight();
    
-   void setId(Integer id);
-   void setName(String name);
    void setAbsolute(List<AbsoluteLayout> layouts);
    void setGrid(List<GridLayout> layouts);
-   void setForm(List<FormLayout> layouts);
-   void setList(List<ListLayout> layouts);
-   void setGesture(List<Gesture> gestures);
-   void setBackground(Background background);
-   void setInverseScreenId(Integer id);
-   void setLandscape(Boolean bool);
+   void setItemHeight(String itemHeight);
 }
