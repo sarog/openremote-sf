@@ -25,9 +25,11 @@ import java.util.List;
 import org.openremote.modeler.client.rpc.DeviceRPCService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
@@ -68,7 +70,17 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
      ArrayList<Device> result = new ArrayList<Device>();
      for (Device device : devices)
      {
-       result.add(saveDevice(device));
+       Device dev = saveDevice(device);
+       for (Sensor s : dev.getSensors()) {
+         s.setAccount(dev.getAccount());
+       }
+       for (Switch s : dev.getSwitchs()) {
+         s.setAccount(dev.getAccount());
+       }
+       for (Slider s : dev.getSliders()) {
+         s.setAccount(dev.getAccount());
+       }
+       result.add(dev);
      }
      return result;
    }
