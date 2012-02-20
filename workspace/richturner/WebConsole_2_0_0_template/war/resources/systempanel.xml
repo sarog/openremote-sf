@@ -14,9 +14,22 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="108" fontSize="20" color="#FFFFFF" text="Controller List" />
       </absolute>
-      <absolute left="0" top="55" width="100%" height="300">
-        <label id="110" fontSize="14" color="#FFFFFF" text="LIST PANEL HERE" />
-      </absolute>
+      <list left="0" top="50" width="100%" height="410" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
+	<itemtemplate itemHeight="50">
+	      <absolute left="0" top="0" width="270" height="50">
+		<label id="110" fontSize="13" color="#FFFFFF" text="${url}" />
+	      </absolute>
+	      <absolute left="275" top="0" width="40" height="50">
+		<button id="130" name=">">
+		  <navigate to="editcontroller">
+		     <data>
+			<dataValuePair name="url" value="${url}" />
+		     </data>
+		  </navigate>
+		</button>
+	      </absolute>
+	</itemtemplate>
+      </list>
     </screen>
     <screen id="51" name="settings">
       <absolute left="0" top="0" width="100%" height="50">
@@ -27,9 +40,9 @@
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="Save"/>
+	<button type="submit" name="SAVE"/>
 	<button type="cancel">
-	   <navigate to="settings" />
+	   <navigate to="controllerlist" />
 	</button>
       </form>
     </screen>
@@ -47,14 +60,16 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="100" fontSize="20" color="#FFFFFF" text="Edit/Add Controller" />
       </absolute>
-      <form left="2%" top="55" width="95%" height="300" dataSource="defaultControllerCredentials">
+      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsByUrl">
 	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https)\://.+/.+$" name="url" />
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="SAVE"/>
+	<button type="submit" name="SAVE">
+	   <navigate to="controllerlist" />
+	</button>
 	<button type="cancel">
-	   <navigate to="settings" />	
+	   <navigate to="controllerlist" />
 	</button>
       </form>
     </screen>

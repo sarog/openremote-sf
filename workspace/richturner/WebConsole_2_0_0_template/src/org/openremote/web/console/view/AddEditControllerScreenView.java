@@ -57,9 +57,9 @@ public class AddEditControllerScreenView extends ScreenViewImpl {
 		form.addField(fieldPassword);
 
 		// Add Buttons
-		FormButtonComponent submitBtn = new FormButtonComponent(EnumFormButtonType.SUBMIT);
+		FormButtonComponent submitBtn = new FormButtonComponent(form, EnumFormButtonType.SUBMIT);
 		form.addButton(submitBtn);
-		FormButtonComponent cancelBtn = new FormButtonComponent(EnumFormButtonType.CANCEL);
+		FormButtonComponent cancelBtn = new FormButtonComponent(form, EnumFormButtonType.CANCEL);
 		Navigate navigate = AutoBeanService.getInstance().getFactory().create(Navigate.class).as();
 		navigate.setTo("controllerlist");
 		List<DataValuePair> dataValues = new ArrayList<DataValuePair>();

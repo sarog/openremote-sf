@@ -6,11 +6,13 @@ import java.util.Map;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.panel.entity.GridLayout;
+import org.openremote.web.console.panel.entity.ListLayout;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.panel.AbsolutePanelComponent;
 import org.openremote.web.console.widget.panel.GridPanelComponent;
 import org.openremote.web.console.widget.panel.form.FormPanelComponent;
+import org.openremote.web.console.widget.panel.list.ListPanelComponent;
 
 public class ScreenViewService {
 	private static ScreenViewService instance = null;
@@ -63,7 +65,7 @@ public class ScreenViewService {
 			screenView.setIsLandscape(true);
 		}
 		
-		// Cycle through absolute, grid and form panels and create components
+		// Create panel components
 		try {
 			List<AbsoluteLayout> absoluteElems = screen.getAbsolute();
 			
@@ -91,6 +93,15 @@ public class ScreenViewService {
 				for (FormLayout layout : formElems) {
 					FormPanelComponent formPanel = FormPanelComponent.build(layout);
 					screenView.addPanelComponent(formPanel);
+				}
+			}
+			
+			List<ListLayout> listElems = screen.getList();
+			
+			if (listElems != null) {
+				for (ListLayout layout : listElems) {
+					ListPanelComponent listPanel = ListPanelComponent.build(layout);
+					screenView.addPanelComponent(listPanel);
 				}
 			}
 		} catch (Exception e) {

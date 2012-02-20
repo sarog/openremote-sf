@@ -5,6 +5,7 @@ import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
+import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent;
@@ -32,6 +33,10 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		pressStarted = true;
 		pressStartEvent = event;
 		pressedWidget = event.getSource();
+		if (pressedWidget instanceof Draggable) {
+			pressedWidget.fireEvent(new DragStartEvent(event));
+			eventHandled = true;
+		}
 	}
 
 	public void onPressMove(PressMoveEvent event) {

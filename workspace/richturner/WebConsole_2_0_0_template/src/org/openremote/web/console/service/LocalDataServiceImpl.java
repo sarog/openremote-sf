@@ -47,6 +47,23 @@ public class LocalDataServiceImpl implements LocalDataService {
 		}
 		return data;
 	}
+
+	@Override
+	public void clearData(String dataName) {
+		if (dataStore != null) {
+			dataStore.removeItem(dataName);
+		} else {
+			Cookies.removeCookie(dataName);
+		}
+	}
+	@Override
+	public void clearAllData() {
+		if (dataStore != null) {
+			dataStore.clear();
+		} else {
+			// TODO: Clear out cookies
+		}
+	}
 	
 	@Override
 	public ControllerCredentials getLastControllerCredentials() {
@@ -94,22 +111,19 @@ public class LocalDataServiceImpl implements LocalDataService {
 	}
 
 	@Override
-	public List<ControllerCredentials> getStoredControllerCredentials() {
-		List<ControllerCredentials> credentials = new ArrayList<ControllerCredentials>();
+	public ControllerCredentialsList getControllerCredentialsList() {
+		ControllerCredentialsList credentialsList = null;
 		String jsonString = getData("LocalDataService.ControllerCredentialsList");
 
 		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
-			ControllerCredentialsList list = AutoBeanService.getInstance().fromJsonString(ControllerCredentialsList.class, jsonString).as();
-			credentials = list.getControllerCredentials();
+			credentialsList = AutoBeanService.getInstance().fromJsonString(ControllerCredentialsList.class, jsonString).as();
 		}
-		return credentials;
+		return credentialsList;
 	}
 
 	@Override
-	public void setStoredControllerCredentials(List<ControllerCredentials> credentialsList) {
-		AutoBean<ControllerCredentialsList> list = AutoBeanService.getInstance().getFactory().controllerCredentialsList();
-		list.as().setControllerCredentials(credentialsList);
-		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentialsList.class, list);
+	public void setControllerCredentialsList(ControllerCredentialsList credentialsList) {
+		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentialsList.class, credentialsList);
 		setData("LocalDataService.ControllerCredentialsList", data);
 	}
 }
