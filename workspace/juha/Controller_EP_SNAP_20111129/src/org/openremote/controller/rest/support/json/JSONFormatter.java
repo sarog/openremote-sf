@@ -214,6 +214,23 @@ public class JSONFormatter {
                            }                  
                         }
                         
+                        // Convert list array
+                        updateValue(screenObj, "list", convertToArray(screenObj.opt("list")));
+                        
+                        // Convert any 0 string values to integer values
+                        JSONArray listComps = screenObj.optJSONArray("list");
+                        if (listComps != null) {
+                           for (int j=0; j<listComps.length(); j++) {
+                              JSONObject comp = listComps.optJSONObject(j);
+                              if (comp != null) {
+                                 updateValue(comp, "top", comp.optString("top"));
+                                 updateValue(comp, "left", comp.optString("left"));
+                                 updateValue(comp, "width", comp.optString("width"));
+                                 updateValue(comp, "height", comp.optString("height"));      
+                              }
+                           }                  
+                        }
+                        
                         // Update the gesture array
                         updateValue(screenObj, "gesture", convertToArray(screenObj.opt("gesture")));
                      }
