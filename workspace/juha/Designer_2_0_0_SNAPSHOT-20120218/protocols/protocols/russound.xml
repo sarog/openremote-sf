@@ -54,12 +54,6 @@
         <regex message = "A Russound command as defined in RussCmdEnum">.*</regex>
       </validations>
     </attr>
-    
-    <attr name="name" label="Name used in Rules">
-      <validations>
-        <allowBlank>true</allowBlank>
-      </validations>
-    </attr>
 
   </protocol>
 </openremote>
