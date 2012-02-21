@@ -155,6 +155,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<jvmarg value="-Xmx512M"/>
 			<jvmarg value="-Xss64m"/>
 			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg value="-localWorkers"/>
+			<arg value="2"/>
 			<arg value="org.openremote.modeler.Modeler"/>
 		</java>
 	</target>
