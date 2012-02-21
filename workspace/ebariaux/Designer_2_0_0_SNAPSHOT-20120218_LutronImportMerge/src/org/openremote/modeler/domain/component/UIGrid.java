@@ -23,14 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Cell;
+import org.openremote.modeler.domain.PositionableAndSizable;
 /**
  * used to store grid's information. 
  * @author Javen
  *
  */
-@SuppressWarnings("serial")
-public class UIGrid extends UIComponent {
-   public static final int DEFAULT_LEFT = 1;
+
+public class UIGrid extends UIComponent implements PositionableAndSizable {
+
+  private static final long serialVersionUID = 7321863137565245106L;
+
+  public static final int DEFAULT_LEFT = 1;
    public static final int DEFALUT_TOP = 1;
    public static final int DEFALUT_WIDTH = 200;
    public static final int DEFAULT_HEIGHT = 200;

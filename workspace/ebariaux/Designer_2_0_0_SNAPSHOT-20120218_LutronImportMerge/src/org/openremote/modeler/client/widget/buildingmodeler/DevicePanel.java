@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
+import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -81,7 +83,9 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -91,6 +95,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DevicePanel extends ContentPanel {
 
+  private EventBus eventBus;
+  
    /** The tree. */
    private TreePanel<BeanModel> tree;
    
@@ -105,7 +111,9 @@ public class DevicePanel extends ContentPanel {
    /**
     * Instantiates a new device panel.
     */
-   public DevicePanel() {
+   public DevicePanel(EventBus eventBus) {
+     this.eventBus = eventBus;
+     bind();
       setHeading("Device");
       setIcon(icon.device());
       setLayout(new FitLayout());
@@ -113,6 +121,23 @@ public class DevicePanel extends ContentPanel {
       createMenu();
       createTreeContainer();
       show();
+   }
+   
+   private void bind() {
+     eventBus.addHandler(DeviceUpdatedEvent.TYPE, new DeviceUpdatedEventHandler() {
+
+      @Override
+      public void onDeviceUpdated(DeviceUpdatedEvent event) {
+        
+        Info.display("INFO", "Should expand device");
+        
+        // TODO: should lookup device model based on updated device from event
+        tree.getStore().getLoader().load(); // This reloads the all tree, collapsing all nodes (all those that were expanded)
+        
+//        tree.setExpanded(getDeviceModel(), true);
+      }
+       
+     });
    }
 
    /**
@@ -273,6 +298,8 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSliderMenuItem = createNewSliderMenu();
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
+      final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
+      final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
       newMenu.add(newCommandMemuItem);
       newMenu.add(importCommandMemuItem);
@@ -280,6 +307,8 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
+      newMenu.add(newLutronImportMenuItem);
+      newMenu.add(importIRCommandFileMenuItem);
       
       // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -296,6 +325,8 @@ public class DevicePanel extends ContentPanel {
             newSliderMenuItem.setEnabled(enabled);
             newSwitchMenuItem.setEnabled(enabled);
             importKnxCommandMemuItem.setEnabled(enabled);
+            newLutronImportMenuItem.setEnabled(enabled);
+            importIRCommandFileMenuItem.setEnabled(enabled);
          }
          
       });
@@ -428,6 +459,24 @@ public class DevicePanel extends ContentPanel {
       });
       return newCommandItem;
    }
+   
+   /**
+    * Creates the import knx menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createNewLutronImportMenu() {
+      MenuItem importCommandItem = new MenuItem("Import Lutron Commands from XML");
+      importCommandItem.setIcon(icon.importFromDB());
+      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            importLutronCommand();
+         }
+
+      });
+      return importCommandItem;
+   }
+
    /**
     * Creates the device command.
     */
@@ -769,6 +818,43 @@ public class DevicePanel extends ContentPanel {
    }
 
    /**
+    * Creates the import IR File menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createimportIRCommandFileImportMenu() {
+		MenuItem importIRCommandFileItem = new MenuItem("import IR Commands from file");
+		importIRCommandFileItem.setIcon(icon.importFromDB());
+		importIRCommandFileItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				importIRCommandFile();
+			}
+		});
+		return importIRCommandFileItem;
+	}
+   
+   private void importIRCommandFile() {
+		 final BeanModel deviceModel = getDeviceModel();
+		 if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+			 final IRFileImportWindow selectIRFileWindow = new IRFileImportWindow(deviceModel);
+			 selectIRFileWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+				
+				@Override
+				public void afterSubmit(SubmitEvent be) {
+					List<BeanModel> deviceCommandModels = be.getData();
+		               for (BeanModel deviceCommandModel : deviceCommandModels) {
+		                  tree.getStore().add(deviceModel, deviceCommandModel, false);
+		               }
+		               tree.setExpanded(deviceModel, true);
+		               selectIRFileWindow.hide();
+					
+				}
+			});
+			 
+		 }
+	  }
+   /**
     * Import ir command.
     */
    private void importIRCommand() {
@@ -789,6 +875,7 @@ public class DevicePanel extends ContentPanel {
       }
    }
    
+
    /**
     * Import KNX command.
     */
@@ -810,6 +897,42 @@ public class DevicePanel extends ContentPanel {
        }
    }
    
+   /**
+    * Import Lutron command.
+    */
+   private void importLutronCommand() {    
+     final BeanModel deviceModel = getDeviceModel();
+     if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+       
+       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean(), eventBus);
+       importWizard.show();
+       importWizard.center();
+       
+
+       
+       /*
+        * TODO: check to replace this with an event bus, import wizard posts notification that device changed
+        * and tree does expand (and reload if required)
+        * 
+       final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
+       importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+           List<BeanModel> allModels = be.getData();
+           for (BeanModel model : allModels) {
+              tree.getStore().add(deviceModel, model, false);
+           }
+           tree.setExpanded(deviceModel, true);
+           importWizardWindow.hide();
+         }
+       });
+       */
+       
+       
+       
+     }
+   }
+
    private void addTreeStoreEventListener() {
       tree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
          public void handleEvent(TreeStoreEvent<BeanModel> be) {

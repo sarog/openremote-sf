@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -39,13 +40,13 @@ public class ScreenButton extends ScreenComponent {
    /**
     * Instantiates a new screen button.
     */
-   public ScreenButton(ScreenCanvas canvas) {
-      super(canvas);
+   public ScreenButton(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       initial();
    }
 
-   public ScreenButton(ScreenCanvas canvas, String text) {
-      super(canvas);
+   public ScreenButton(ScreenCanvas canvas, String text, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       setText(text);
    }
 
@@ -57,13 +58,13 @@ public class ScreenButton extends ScreenComponent {
     * @param height
     *           the height
     */
-   public ScreenButton(ScreenCanvas canvas, int width, int height) {
-      this(canvas);
+   public ScreenButton(ScreenCanvas canvas, int width, int height, WidgetSelectionUtil widgetSelectionUtil) {
+      this(canvas, widgetSelectionUtil);
       setSize(width, height);
    }
 
-   public ScreenButton(ScreenCanvas canvas, UIButton uiButton) {
-      this(canvas);
+   public ScreenButton(ScreenCanvas canvas, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
+      this(canvas, widgetSelectionUtil);
       this.uiButton = uiButton;
       adjustTextLength();
       if (uiButton.getImage() != null) {
@@ -84,12 +85,6 @@ public class ScreenButton extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-      uiButton.setName(name);
-      adjustTextLength();
-   }
-
-   @Override
    public String getName() {
       return uiButton.getName();
    }
@@ -105,7 +100,7 @@ public class ScreenButton extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new ButtonPropertyForm(this, uiButton);
+      return new ButtonPropertyForm(this, uiButton, widgetSelectionUtil);
    }
 
    @Override
@@ -124,7 +119,7 @@ public class ScreenButton extends ScreenComponent {
     * @param length
     *           the length
     */
-   private void adjustTextLength() {
+   public void adjustTextLength() {
       adjustTextLength(getWidth());
    }
 

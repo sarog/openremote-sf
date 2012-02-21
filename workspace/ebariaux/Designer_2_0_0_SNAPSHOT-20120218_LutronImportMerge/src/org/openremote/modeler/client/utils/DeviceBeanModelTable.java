@@ -95,7 +95,7 @@ public class DeviceBeanModelTable extends BeanModelTable {
    public void addInsertListener(final BeanModel parentBeanModel, final TreeStore treeStore) {
       long parentOid = BeanModelDataBase.getSourceBeanModelId(parentBeanModel);
       
-      addInsertListener(parentOid, new ChangeListener() {
+      setInsertListener(parentOid, new ChangeListener() {
          public void modelChanged(ChangeEvent event) {
             BeanModel sourceBeanModel = (BeanModel) event.getItem();
             if (event.getType() == BeanModelTable.ADD) {

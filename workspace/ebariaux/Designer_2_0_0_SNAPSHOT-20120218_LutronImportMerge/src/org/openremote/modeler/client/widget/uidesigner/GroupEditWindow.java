@@ -109,7 +109,6 @@ public class GroupEditWindow extends FormWindow {
       for (BeanModel screenPairModel : screenPairModels) {
          if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().equals(touchPanel)) {
             store.add(screenPairModel);
-            screenPairListView.getSelectionModel().select(screenPairModel, true);
          } else if (((ScreenPair) screenPairModel.getBean()).getTouchPanelDefinition().getCanvas().equals(touchPanel.getCanvas())){
             otherModels.add(screenPairModel);
          }

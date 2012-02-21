@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.model.ORBounds;
 import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -35,8 +36,8 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
    /**
     * Instantiates a new absolute layout container.
     */
-   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas, Absolute absolute, ScreenComponent screenComponent) {
-      super(screenCanvas);
+   public AbsoluteLayoutContainer(ScreenCanvas screenCanvas, Absolute absolute, ScreenComponent screenComponent, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
       addStyleName("cursor-move");
       setStyleAttribute("position", "absolute");
       this.absolute = absolute;
@@ -64,6 +65,7 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
    @Override
    public void setPosition(int left, int top) {
       super.setPosition(left, top);
+      // TODO: this should not be here, modifying to underlying model should not be done from visual object
       absolute.setPosition(left, top);
       AbsoluteBoundsListenerManager.getInstance().notifyAbsoluteBoundsListener(this,
             new ORBounds(left, top, absolute.getWidth(), absolute.getHeight()));

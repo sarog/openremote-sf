@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
@@ -26,8 +27,7 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class make the group be edit in property form.
@@ -41,17 +41,16 @@ public class GroupPropertyEditable implements PropertyEditable {
 
    private Group group = null;
    private GroupRef groupRef = null;
-   
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
 
+   private EventBus eventBus;
+   
    public GroupPropertyEditable() {
    }
 
-   public GroupPropertyEditable(GroupRef groupRef, TreePanel<BeanModel> profileTree) {
+   public GroupPropertyEditable(GroupRef groupRef, EventBus eventBus) {
       this.groupRef = groupRef;
       this.group = groupRef.getGroup();
-      this.profileTree = profileTree;
+      this.eventBus = eventBus;
    }
 
    public void setName(String name) {
@@ -75,7 +74,7 @@ public class GroupPropertyEditable implements PropertyEditable {
    }
 
    private void updateGroup() {
-      profileTree.getStore().update(groupRef.getBeanModel());
+     eventBus.fireEvent(new UIElementEditedEvent(groupRef));     
       BeanModelDataBase.groupTable.update(group.getBeanModel());
    }
 

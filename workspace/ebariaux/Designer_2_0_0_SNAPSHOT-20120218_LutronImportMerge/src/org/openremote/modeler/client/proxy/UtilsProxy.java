@@ -31,6 +31,7 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -146,4 +147,13 @@ public class UtilsProxy {
       }
       return true;
    }
+   
+   public static void getUserImagesURLs(AsyncCallback<List<GraphicalAssetDTO>> callback) {
+     AsyncServiceFactory.getUtilsRPCServiceAsync().getUserImagesURLs(callback);
+   }
+   
+   public static void deleteImage(String imageName, AsyncCallback<Void> callback) {
+     AsyncServiceFactory.getUtilsRPCServiceAsync().deleteImage(imageName, callback);
+   }
+
 }

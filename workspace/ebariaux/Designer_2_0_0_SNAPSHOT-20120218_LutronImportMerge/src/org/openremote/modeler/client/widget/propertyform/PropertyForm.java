@@ -54,9 +54,11 @@ import com.google.gwt.core.client.GWT;
  */
 public class PropertyForm extends FormPanel {
    private ComponentContainer componentContainer;
+   protected WidgetSelectionUtil widgetSelectionUtil;
 
-   public PropertyForm(ComponentContainer componentContainer) {
+   public PropertyForm(ComponentContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
       this.componentContainer = componentContainer;
+      this.widgetSelectionUtil = widgetSelectionUtil;
       setFrame(true);
       setHeaderVisible(false);
       setBorders(false);
@@ -170,7 +172,7 @@ public class PropertyForm extends FormPanel {
                            ((ComponentContainer) componentContainer.getParent()).fireEvent(
                                  WidgetDeleteEvent.WIDGETDELETE, new WidgetDeleteEvent());
                         }
-                        WidgetSelectionUtil.setSelectWidget(null);
+                        widgetSelectionUtil.resetSelection();
                      }
                   }
                });

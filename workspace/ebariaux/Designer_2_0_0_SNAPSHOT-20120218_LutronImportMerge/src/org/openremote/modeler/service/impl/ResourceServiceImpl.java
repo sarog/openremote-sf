@@ -23,6 +23,7 @@ package org.openremote.modeler.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -41,6 +42,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -52,6 +54,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
@@ -62,6 +65,7 @@ import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -73,12 +77,11 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.SensorOwner;
@@ -93,15 +96,17 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
+import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
-import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -109,9 +114,6 @@ import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
-import org.openremote.modeler.cache.LocalFileCache;
-import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.logging.AdministratorAlert;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
@@ -350,17 +352,31 @@ public class ResourceServiceImpl implements ResourceService
         dir.mkdirs();     // TODO : need to check success
       }
 
+       String originalFileName = file.getName();
+
+       // First get rid of "invalid" characters in filename
+       String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
+       originalFileName = originalFileName.replaceAll(escapedChar, "");
+       file = new File(dir.getAbsolutePath() + File.separator + originalFileName);
+
+       // Don't replace an existing file, add "index" if required to not have a name clash
+       String extension = FilenameUtils.getExtension(originalFileName);
+       String originalNameWithoutExtension = originalFileName.replace("." + extension, "");
+       int index = 0;
+       while (file.exists()) {
+         file = new File(dir.getAbsolutePath() + File.separator + originalNameWithoutExtension + "." + Integer.toString(++index) + "." + extension);
+       }
+
       FileUtils.touch(file);
 
       fileOutputStream = new FileOutputStream(file);
       IOUtils.copy(inputStream, fileOutputStream);
     }
-
+      
     catch (IOException e)
     {
       throw new FileOperationException("Failed to save uploaded image", e);
     }
-
     finally
     {
       try
@@ -380,6 +396,23 @@ public class ResourceServiceImpl implements ResourceService
     return file;
   }
 
+   public List<GraphicalAssetDTO>getUserImagesURLs() {
+     File userFolder = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()));
+     String[] imageFiles = userFolder.list(new FilenameFilter() {
+       @Override
+       public boolean accept(File dir, String name) {
+         String lowercaseName = name.toLowerCase();
+         return (lowercaseName.endsWith("png") || lowercaseName.endsWith("gif") || lowercaseName.endsWith("jpg") || lowercaseName.endsWith("jpeg"));
+       }
+     });
+     List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
+     if (imageFiles != null) { // Seems we sometimes get a null (got it when tomcat was still starting)
+       for (int i = 0; i < imageFiles.length; i++) {
+         assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
+       }
+     }
+     return assets;
+   }
 
    /**
     * TODO
@@ -478,10 +511,12 @@ public class ResourceServiceImpl implements ResourceService
       StringBuffer sectionIdsSB = new StringBuffer();
       int i = 0;
       for (String sectionId : sectionIds) {
+        if (sectionId != null) {
          sectionIdsSB.append(sectionId);
          if (i < sectionIds.size() - 1) {
             sectionIdsSB.append(",");
          }
+        }
          i++;
       }
       return sectionIdsSB.toString();
@@ -1306,4 +1341,30 @@ public class ResourceServiceImpl implements ResourceService
       }
    }
 
+   
+   @Override
+   public File getTempDirectory(String sessionId) {
+
+   	File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+       if (tmpDir.exists() && tmpDir.isDirectory()) {
+          try {
+             FileUtils.deleteDirectory(tmpDir);
+          } catch (IOException e) {
+             throw new FileOperationException("Error in deleting temp dir", e);
+          }
+       }
+       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs(); 
+   	return tmpDir;
+   }
+   
+   public void deleteImage(String imageName) {
+     
+     // TODO: make it fail to test UI reporting
+     
+     File image = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + imageName);
+     if (!image.delete()) {
+       // TODO: handle correctly
+       throw new RuntimeException("Could not delete file");
+     }
+   }
 }
