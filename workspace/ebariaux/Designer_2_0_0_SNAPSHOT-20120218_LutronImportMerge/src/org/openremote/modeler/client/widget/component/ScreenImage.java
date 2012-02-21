@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -52,8 +53,8 @@ public class ScreenImage extends ScreenComponent {
    
    private List<String> states = new ArrayList<String>();
    
-   public ScreenImage(ScreenCanvas canvas, UIImage uiImage) {
-      super(canvas);
+   public ScreenImage(ScreenCanvas canvas, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.uiImage = uiImage;
       initial();
    }
@@ -85,18 +86,13 @@ public class ScreenImage extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-      return;
-   }
-
-   @Override
    public String getName() {
       return uiImage.getName();
    }
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new ImagePropertyForm(this);
+      return new ImagePropertyForm(this, widgetSelectionUtil);
    }
 
    public void clearSensorStates() {

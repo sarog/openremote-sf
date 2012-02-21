@@ -9,21 +9,27 @@
   <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='net.sf.gilead.Gilead4Gwt'/>
   
+  <inherits name="com.google.gwt.inject.Inject" />
+  <inherits name='net.customware.gwt.dispatch.Dispatch' />
+
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->
   <inherits name="com.google.gwt.user.Debug"/>
+
+  <!-- Default GWT css  -->
+  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
   
-  <!-- Inherit the default GWT style sheet.  You can change       -->
-  <!-- the theme of your GWT application by uncommenting          -->
-  <!-- any one of the following lines.                            -->
- <inherits name='com.extjs.gxt.themes.Themes' />            
+  <inherits name='com.extjs.gxt.themes.Themes' />
+              
 	<source path='domain'/>
 	<source path='client'/>
+	<source path='shared'/>
 	<source path='protocol'/>
 	<source path='touchpanel'/>
 	<source path='auth'/>
 	<source path='selenium'/>
 	<source path="exception" />
+	<source path='irfileparser'/>
 	<source path='utils'>
 	  <include name="String*"/>
 	</source>

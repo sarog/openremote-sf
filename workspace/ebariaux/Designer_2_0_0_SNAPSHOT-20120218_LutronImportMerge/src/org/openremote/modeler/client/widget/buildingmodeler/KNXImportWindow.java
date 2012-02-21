@@ -364,7 +364,7 @@ public class KNXImportWindow extends FormWindow {
             }
         }
         List<DeviceCommand> deviceCommands = createDeviceCommandsFromGridData(importData);
-        DeviceCommandBeanModelProxy.saveAllKnxDeviceCommands(deviceCommands,
+        DeviceCommandBeanModelProxy.saveDeviceCommandList(deviceCommands,
                 new AsyncSuccessCallback<List<BeanModel>>() {
                     @Override
                     public void onSuccess(List<BeanModel> deviceCommandModels) {

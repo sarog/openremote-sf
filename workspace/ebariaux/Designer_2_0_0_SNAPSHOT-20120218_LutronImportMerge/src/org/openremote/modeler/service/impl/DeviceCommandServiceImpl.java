@@ -61,7 +61,11 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    @Transactional
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       for (DeviceCommand command : deviceCommands) {
-         genericDAO.save(command);
+        
+        System.out.println("Saving command : " + command);
+        
+//         genericDAO.save(command);
+        save(command);
       }
       return deviceCommands;
    }

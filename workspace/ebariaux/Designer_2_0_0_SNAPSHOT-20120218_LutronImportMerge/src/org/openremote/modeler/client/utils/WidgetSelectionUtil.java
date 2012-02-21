@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,39 +19,74 @@
 */
 package org.openremote.modeler.client.utils;
 
-import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
-import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The SelectedWidgetContainer for store selected widget and fire widgetSelectChange event.
  */
 public class WidgetSelectionUtil {
 
-   private WidgetSelectionUtil() {
-   }
-   private static ComponentContainer currentSelectedWidget;
-   private static WidgetSelectChangeListener widgetSelectChangeListener;
+  private EventBus eventBus;
+  
+   private List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
    
-   public static void setChangeListener(WidgetSelectChangeListener listener) {
-      widgetSelectChangeListener = listener;
+   public WidgetSelectionUtil(EventBus eventBus) {
+    super();
+    this.eventBus = eventBus;
+  }
+   
+   public void resetSelection() {
+     setSelectWidget(null);
    }
    
-   public static void setSelectWidget(ComponentContainer selectedWidget) {
-      if (currentSelectedWidget != null) {
-         currentSelectedWidget.removeStyleName("button-border");
-      }
+   public void setSelectWidget(ComponentContainer selectedWidget) {
+     for (ComponentContainer widget : selectedWidgets) {
+       widget.removeStyleName("button-border");
+     }
+     
       if (selectedWidget != null) {
-         selectedWidget.addStyleName("button-border");
-         
-         // add tab index and focus it, for catch keyboard "delete" event in Firefox.
-         if (selectedWidget.isRendered()) {
-            selectedWidget.el().dom.setPropertyInt("tabIndex", 0);
-         }
-         selectedWidget.focus();
+         selectWidget(selectedWidget);
       }
-      currentSelectedWidget = selectedWidget;
-      widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidget));
+      selectedWidgets.clear();
+      if (selectedWidget != null) {
+        selectedWidgets.add(selectedWidget);
+      }
+
+      eventBus.fireEvent(new WidgetSelectedEvent(selectedWidgets));
+   }
+
+   public void toggleSelectWidget(ComponentContainer selectedWidget) {
+     if (selectedWidget != null) {
+       if (selectedWidgets.contains(selectedWidget)) {
+         selectedWidget.removeStyleName("button-border");
+         selectedWidgets.remove(selectedWidget);
+       } else {
+         selectWidget(selectedWidget);
+         selectedWidgets.add(selectedWidget);
+       }
+       
+       eventBus.fireEvent(new WidgetSelectedEvent(selectedWidgets));
+     }
    }
    
+   public List<ComponentContainer> getSelectedWidgets() {
+    return selectedWidgets;
+  }
+
+  private void selectWidget(ComponentContainer selectedWidget) {
+     selectedWidget.addStyleName("button-border");
+      
+      // add tab index and focus it, for catch keyboard "delete" event in Firefox.
+      if (selectedWidget.isRendered()) {
+         selectedWidget.el().dom.setPropertyInt("tabIndex", 0);
+      }
+      selectedWidget.focus();
+   }
+    
 }

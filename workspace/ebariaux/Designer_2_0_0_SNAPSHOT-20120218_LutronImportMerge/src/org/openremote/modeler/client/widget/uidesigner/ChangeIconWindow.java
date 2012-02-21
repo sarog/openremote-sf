@@ -58,11 +58,11 @@ import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.BoxLayout.BoxLayoutPack;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
-import com.extjs.gxt.ui.client.widget.layout.VBoxLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.BoxLayout.BoxLayoutPack;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout.VBoxLayoutAlign;
+import com.extjs.gxt.ui.client.widget.layout.VBoxLayoutData;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -116,6 +116,9 @@ public class ChangeIconWindow extends Dialog {
     */
    public ChangeIconWindow(IconPreviewWidget previewWidget, int previewWidth) {
       this.previewWidget = previewWidget;
+      
+      // Make sure we "set image mode, not text", prevents display of weird image if none is set
+      previewWidget.setIcon("");      
       window = this;
       if (previewWidth > 90) {
          setMinWidth(400 + previewWidth + 16);
@@ -129,7 +132,7 @@ public class ChangeIconWindow extends Dialog {
    
    private void initial() {
       setMinHeight(350);
-      setHeading("Change Icon");
+      setHeading("Add image");
       setModal(true);
       setLayout(new BorderLayout());
       setButtons(Dialog.OKCANCEL);  
@@ -145,7 +148,6 @@ public class ChangeIconWindow extends Dialog {
                if (imageURL != null) {
                   if (imageURL.startsWith("http")) {
                      UtilsProxy.downLoadImage(imageURL, new AsyncCallback<String> () {
-
                         @Override
                         public void onFailure(Throwable caught) {
                           Info.display("Error","Failed to download image from: " + imageURL);
@@ -154,13 +156,13 @@ public class ChangeIconWindow extends Dialog {
                         @Override
                         public void onSuccess(String result) {
                            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
-                        }
-                        
+                        }                        
                      });
+                  } else {
+                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                   }
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(imageURL));
                } else {
-                  MessageBox.alert("Error", "Please select an image.", null);
+                 hide();
                }
             }
          }

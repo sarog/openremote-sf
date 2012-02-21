@@ -28,6 +28,7 @@ import java.util.List;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 /**
  * TODO : this interface is on the way out
@@ -36,7 +37,6 @@ import org.openremote.modeler.domain.Template;
  */
 public interface ResourceService
 {
-
   /**
    * @deprecated Should eventually go away, with a direct call to
    * {@link org.openremote.modeler.beehive.BeehiveService} API to download up-to-date
@@ -95,4 +95,10 @@ public interface ResourceService
   void downloadResourcesForTemplate(long templateOid);
 
   File getTemplateResource(Template template);
+   
+  public List<GraphicalAssetDTO>getUserImagesURLs();
+
+  File getTempDirectory(String sessionId);
+   
+  void deleteImage(String imageName);
 }

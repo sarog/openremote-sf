@@ -20,14 +20,9 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.DoubleClickEvent;
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -39,16 +34,11 @@ import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.PanelTreeStoreChangeListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.UtilsProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.BeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
@@ -57,11 +47,8 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ChangeEvent;
-import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -88,13 +75,13 @@ public class ProfilePanel extends ContentPanel {
    private TreePanel<BeanModel> panelTree;
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
-   private ScreenPanel screenPanel = null;
    private boolean initialized = false;
+   private Button editButton;
+   
    /**
     * Instantiates a new profile panel.
     */
-   public ProfilePanel(ScreenPanel screenPanel) {
-      this.screenPanel = screenPanel;
+   public ProfilePanel() {
       selectionService = new SelectionServiceExt<BeanModel>();
       setHeading("Panel");
       setIcon(icon.panelIcon());
@@ -113,14 +100,13 @@ public class ProfilePanel extends ContentPanel {
       List<Button> editDelBtns = new ArrayList<Button>();
       toolBar.add(createNewBtn());
 
-      Button editBtn = createEditBtn();
-      editBtn.setEnabled(false);
+      editButton = createEditBtn();
       Button deleteBtn = createDeleteBtn();
       deleteBtn.setEnabled(false);
 
-      toolBar.add(editBtn);
+      toolBar.add(editButton);
       toolBar.add(deleteBtn);
-      editDelBtns.add(editBtn);
+      editDelBtns.add(editButton);
       editDelBtns.add(deleteBtn);
       selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns) {
          @Override
@@ -140,7 +126,8 @@ public class ProfilePanel extends ContentPanel {
     * Creates the screen tree.
     */
    private void createPanelTree() {
-      panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
+      panelTree = TreePanelBuilder.buildPanelTree();
+      
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
       LayoutContainer treeContainer = new LayoutContainer() {
@@ -150,23 +137,6 @@ public class ProfilePanel extends ContentPanel {
 //            addTreeStoreEventListener();
             new PanelTreeStoreChangeListener(panelTree);
             add(panelTree);
-            initTreeWithAutoSavedPanels();
-            panelTree.addListener(DoubleClickEvent.DOUBLECLICK, new Listener<DoubleClickEvent>() {
-               public void handleEvent(DoubleClickEvent be) {
-                  editSelectedModel();
-               }
-               
-            });
-            
-            panelTree.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
-               public void handleEvent(PropertyEditEvent be) {
-                  if (be.getPropertyEditable() instanceof ScreenPropertyEditable) {
-                     ((ScreenPropertyEditable)be.getPropertyEditable()).setScreenTab(screenPanel.getScreenItem());
-                  }
-                  ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,be);
-               }
-               
-            });
          }
       };
       // overflow-auto style is for IE hack.
@@ -175,88 +145,6 @@ public class ProfilePanel extends ContentPanel {
       treeContainer.setBorders(false);
       add(treeContainer);
 
-   }
-
-   private void initTreeWithAutoSavedPanels() {
-      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
-         @Override
-         public void onSuccess(Collection<Panel> panels) {
-            if (panels.size() > 0) {
-               initModelDataBase(panels);
-               panelTree.getStore().removeAll();
-               new PanelTreeStoreChangeListener(panelTree);
-               for (Panel panel : panels) {
-                  BeanModel panelBeanModel = panel.getBeanModel();
-                  panelTree.getStore().add(panelBeanModel, false);
-                  for (GroupRef groupRef : panel.getGroupRefs()) {
-                     panelTree.getStore().add(panelBeanModel, groupRef.getBeanModel(), false);
-                     for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-                        panelTree.getStore().add(groupRef.getBeanModel(), screenRef.getBeanModel(), false);
-                     }
-                  }
-               }
-               panelTree.expandAll();
-               BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
-                  public void modelChanged(ChangeEvent event) {
-                     if (event.getType() == BeanModelTable.ADD) {
-                        BeanModel beanModel = (BeanModel) event.getItem();
-                        if (beanModel.getBean() instanceof ScreenPair) {
-                           screenPanel.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
-                        }
-                     }
-                  }
-
-               });
-            } else {
-               panelTree.unmask();
-            }
-            UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
-               @Override
-               public void onSuccess(Long maxID) {
-                  if (maxID > 0) {              // set the layout component's max id after refresh page.
-                     IDUtil.setCurrentID(maxID.longValue());
-                  }
-                  initialized = true;
-               }
-               
-            });
-         }
-         @Override
-         public void onFailure(Throwable caught) {
-            if (caught instanceof UIRestoreException) {
-               initialized = true;
-            }
-            panelTree.unmask();
-            super.onFailure(caught);
-            super.checkTimeout(caught);
-         }
-
-         private void initModelDataBase(Collection<Panel> panels) {
-            BeanModelDataBase.panelTable.clear();
-            BeanModelDataBase.groupTable.clear();
-            BeanModelDataBase.screenTable.clear();
-            Set<Group> groups = new LinkedHashSet<Group>();
-            Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
-            for (Panel panel : panels) {
-               List<GroupRef> groupRefs = panel.getGroupRefs();
-               for (GroupRef groupRef : groupRefs) {
-                  groups.add(groupRef.getGroup());
-               }
-               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-            }
-
-            for (Group group : groups) {
-               List<ScreenPairRef> screenRefs = group.getScreenRefs();
-               for (ScreenPairRef screenRef : screenRefs) {
-                  screens.add(screenRef.getScreen());
-                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
-               }
-               BeanModelDataBase.groupTable.insert(group.getBeanModel());
-            }
-            
-         }
-      });
-      
    }
    
    /**
@@ -314,95 +202,10 @@ public class ProfilePanel extends ContentPanel {
    private Button createEditBtn() {
       Button editBtn = new Button("Edit");
       editBtn.setIcon(icon.edit());
-      editBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            editSelectedModel();
-         }
-      });
+      editBtn.setEnabled(false);
       return editBtn;
    }
 
-   /**
-    * Edits the group.
-    * 
-    * @param panelBeanModel
-    *           the group bean model
-    */
-   private void editPanel(final BeanModel panelBeanModel) {
-      Panel panel = panelBeanModel.getBean();
-      if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
-         final CustomPanelWindow editCustomPanelWindow = new CustomPanelWindow(panel);
-         editCustomPanelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               editCustomPanelWindow.hide();
-               Panel panel = be.<Panel> getData();
-               panelTree.getStore().update(panel.getBeanModel());
-               for (GroupRef groupRef : panel.getGroupRefs()) {
-                  for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-                     ScreenPair screenPair = screenRef.getScreen();
-                     screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
-                     BeanModelDataBase.screenTable.update(screenPair.getBeanModel());
-                  }
-               }
-               Info.display("Info", "Edit panel " + panel.getName() + " success.");
-            }
-         });
-      } else {
-         final PanelWindow panelWindow = new PanelWindow(panelBeanModel);
-         panelWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               panelWindow.hide();
-               Panel panel = be.<Panel> getData();
-               panelTree.getStore().update(panel.getBeanModel());
-               Info.display("Info", "Edit panel " + panel.getName() + " success.");
-               ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(panelBeanModel,panelTree)));
-            }
-         });
-      }
-   }
-   private void editGroup(final BeanModel groupRefBeanModel) {
-      final GroupEditWindow groupEditWindow = new GroupEditWindow(groupRefBeanModel);
-      groupEditWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-            groupEditWindow.hide();
-            BeanModel groupRefModel = be.getData();
-            GroupRef groupRef = groupRefModel.getBean();
-            panelTree.getStore().removeAll(groupRefModel);
-            for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-               if (screenRef.getScreen().getRefCount() > 1) {
-                  BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
-               }
-               panelTree.getStore().add(groupRefModel, screenRef.getBeanModel(), false);
-            }
-            panelTree.getStore().update(groupRefModel);
-            BeanModelDataBase.groupTable.update(groupRef.getGroup().getBeanModel());
-            panelTree.setExpanded(groupRefModel, true);
-            panelTree.getSelectionModel().select(groupRefModel, false);
-            BeanModelDataBase.screenTable.clearUnuseData();
-            Info.display("Info", "Edit Group " + groupRef.getGroup().getName() + " success.");
-            ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(groupRefBeanModel,panelTree)));
-         }
-      });
-   }
-   private void editScreen(final BeanModel screenRefBeanModel) {
-      final ScreenWindow screenWizard = new ScreenWindow(screenRefBeanModel, ScreenWindow.Operation.EDIT);
-      screenWizard.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-            screenWizard.hide();
-            ScreenPairRef screenRef = be.<ScreenPairRef> getData();
-            panelTree.getStore().update(screenRef.getBeanModel());
-            BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
-            Info.display("Info", "Edit screen " + screenRef.getScreen().getName() + " success.");
-            ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(screenRefBeanModel,panelTree)));
-         }
-         
-      });
-   }
    /**
     * Creates the delete btn.
     * 
@@ -736,31 +539,21 @@ public class ProfilePanel extends ContentPanel {
       });
       return configTabbarItem;
    }
+
    public TreePanel<BeanModel> getPanelTree() {
       return panelTree;
    }
 
-   public void setPanelTree(TreePanel<BeanModel> panelTree) {
-      this.panelTree = panelTree;
+   public Button getEditButton() {
+     return editButton;
    }
+   
+   public void setInitialized(boolean initialized) {
+    this.initialized = initialized;
+  }
 
-   /**
-    * 
-    */
-   private void editSelectedModel() {
-      BeanModel selectedModel = panelTree.getSelectionModel().getSelectedItem();
-      if (selectedModel != null) {
-         if (selectedModel.getBean() instanceof Panel) {
-            editPanel(selectedModel);
-         } else if (selectedModel.getBean() instanceof GroupRef) {
-            editGroup(selectedModel);
-         } else if (selectedModel.getBean() instanceof ScreenPairRef) {
-            editScreen(selectedModel);
-         }
-      }
-   }
-
-   public boolean isInitialized() {
+  public boolean isInitialized() {
       return initialized;
    }
+   
 }
