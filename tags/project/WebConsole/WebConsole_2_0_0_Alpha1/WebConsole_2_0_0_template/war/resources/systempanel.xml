@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/panel.xsd">
+  <panels>
+    <panel id="1" name="System">
+      <include type="group" ref="2" />
+      <include type="group" ref="3" />
+      <include type="group" ref="4" />
+      <include type="group" ref="5" />
+      <include type="group" ref="6" />
+    </panel>
+  </panels>
+  <screens>
+    <screen id="50" name="controllerlist">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="108" fontSize="20" color="#FFFFFF" text="Controller List" />
+      </absolute>
+      <absolute left="0" top="55" width="100%" height="300">
+        <label id="110" fontSize="14" color="#FFFFFF" text="LIST PANEL HERE" />
+      </absolute>
+    </screen>
+    <screen id="51" name="settings">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="108" fontSize="20" color="#FFFFFF" text="Settings" />
+      </absolute>
+      <form left="2%" top="55" width="95%" height="300" dataSource="defaultControllerCredentials">
+	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https)\://.+/.+$" name="url" />
+	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
+	<field label="Username:" optional="true" inputType="textbox" name="username" />
+	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
+	<button type="submit" name="Save"/>
+	<button type="cancel">
+	   <navigate to="settings" />
+	</button>
+      </form>
+    </screen>
+    <screen id="52" name="login">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="115" fontSize="20" color="#FFFFFF" text="Login" />
+      </absolute>
+    </screen>
+    <screen id="53" name="logout">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="119" fontSize="20" color="#FFFFFF" text="Logout" />
+      </absolute>
+    </screen>
+    <screen id="54" name="editcontroller">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="100" fontSize="20" color="#FFFFFF" text="Edit/Add Controller" />
+      </absolute>
+      <form left="2%" top="55" width="95%" height="300" dataSource="defaultControllerCredentials">
+	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https)\://.+/.+$" name="url" />
+	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
+	<field label="Username:" optional="true" inputType="textbox" name="username" />
+	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
+	<button type="submit" name="SAVE"/>
+	<button type="cancel">
+	   <navigate to="settings" />	
+	</button>
+      </form>
+    </screen>
+    <screen id="55" name="selectpanel">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="120" fontSize="20" color="#FFFFFF" text="Select Panel" />
+      </absolute>
+      <absolute left="0" top="55" width="100%" height="300">
+        <label id="121" fontSize="14" color="#FFFFFF" text="PANEL LIST HERE" />
+      </absolute>
+    </screen>
+  </screens>
+  <groups>
+    <group id="2" name="Default">
+      <tabbar>
+        <item name="SEARCH">
+	   <navigate action="search" />
+	</item>
+        <item name="+">
+	   <navigate to="editcontroller" />
+	</item>
+        <item name="SETTINGS">
+	   <navigate to="settings" />
+	</item>
+      </tabbar>
+      <include type="screen" ref="50" />
+    </group>
+    <group id="3" name="Edit Settings">
+      <include type="screen" ref="51" />
+    </group>
+    <group id="4" name="Login Logout">
+      <include type="screen" ref="52" />
+      <include type="screen" ref="53" />
+    </group>
+    <group id="5" name="Edit Controller">
+      <include type="screen" ref="54" />
+    </group>
+    <group id="6" name="Panel List">
+      <include type="screen" ref="55" />
+      <tabbar>
+        <item name="CONTROLLER LIST">
+	   <navigate to="controllerlist" />
+	</item>
+        <item name="SETTINGS">
+	   <navigate to="settings" />
+	</item>
+      </tabbar>
+    </group>
+  </groups>
+</openremote>
+
