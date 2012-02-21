@@ -114,8 +114,8 @@ public class ScreenTabItem extends TabItem {
       if (touchPanelDefinition.getBgImage() != null) {
          screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
       }
-      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft() - 5));
-      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop() -5));
+      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft() - 5) + "px");
+      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop() -5) + "px");
       int width = touchPanelDefinition.getCanvas().getWidth();
       int height = touchPanelDefinition.getCanvas().getHeight();
       if (dropTarget != null) {
