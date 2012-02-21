@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+<html>
+	<head>
+		<title>OpenRemote Web Console - 2.0</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		
+		<!-- For mobile devices -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi;" />
+		<meta name="HandheldFriendly" content="true"/>
+
+		<!-- Apple settings -->
+		<!-- hide the browser chrome -->
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 
+		<!-- set the phone status bar style; can be grey, black, or black translucent -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<!-- set home screen icon for iOS -->
+		<link rel="apple-touch-icon" href="resources/images/icon.png"/>
+		<!-- set startup image when web app launched from home screen on iOS -->
+		<link rel="apple-touch-startup-image" href="resources/images/startup.png">
+		
+		<!-- General settings -->
+	 	<link rel="shortcut icon" href="resources/images/icon.png">
+    	<link type="image/png" rel="icon" href="resources/images/icon.png">
+		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
+	    <style type="text/css">
+	      #welcome-content {
+	      	 background: none repeat scroll 0 0 white;
+	      	 width: 250px;
+	         border: 1px solid #CCCCCC;
+	         height: auto;
+	         left: 50%;
+	         margin-left: -125px;
+	         padding: 5px;
+	         position: absolute;
+	         top: 40%;
+	         z-index: 20001;
+	      }
+	      
+	      #welcome-content .spinner {
+	         float: left;
+	         margin-right: 8px;
+	         vertical-align: top;
+	      }
+	    </style>
+	    
+	    <!-- GWT Bootstrap -->
+	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
+	</head>
+
+	<body>
+		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+		
+		<div style="font: 10px arial, tahoma, sans-serif;" id="welcome-content">
+			<div style="width: 100%; text-align: center;">OpenRemote Boss 2.0 Web Console</div>
+			<div class="spinner" style="margin: 10px 15px 0 0; width:40px; height: 40px; position: relative; display: inline-block;"><div class="bar1"></div><div class="bar2"></div><div class="bar3"></div><div class="bar4"></div><div class="bar5"></div><div class="bar6"></div><div class="bar7"></div><div class="bar8"></div><div class="bar9"></div><div class="bar10"></div><div class="bar11"></div><div class="bar12"></div></div>
+		    <span style="line-height: 40px" id="loading-msg">Loading resources, please wait...</span>
+		</div>
+	    <noscript>
+	      <div id="noScriptError">
+	        Your web browser must have JavaScript enabled
+	        in order for this application to display correctly.
+	      </div>
+	    </noscript>
+	</body>
+</html>
