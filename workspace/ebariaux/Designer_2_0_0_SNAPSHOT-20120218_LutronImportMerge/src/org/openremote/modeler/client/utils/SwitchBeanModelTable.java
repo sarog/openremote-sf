@@ -22,10 +22,10 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.dto.SwitchDTO;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
