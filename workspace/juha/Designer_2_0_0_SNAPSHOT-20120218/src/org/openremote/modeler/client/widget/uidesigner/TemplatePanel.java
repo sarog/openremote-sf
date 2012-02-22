@@ -70,7 +70,7 @@ public class TemplatePanel extends ContentPanel {
    
    private ScreenTab editTabItem = null;
    
-   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
+   private static final int AUTO_SAVE_INTERVAL_MS = 300000;
 
    private Timer timer;
 
