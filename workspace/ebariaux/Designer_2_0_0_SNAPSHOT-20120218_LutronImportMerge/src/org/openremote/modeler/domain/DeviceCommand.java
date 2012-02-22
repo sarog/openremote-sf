@@ -195,13 +195,19 @@ public class DeviceCommand extends BusinessEntity {
       return true;
    }
    
-   public void createProtocolWithAttributes(String type, Map<String, String> attributes) {
-     Protocol protocol = new Protocol();
-     protocol.setType(type);
-     protocol.setDeviceCommand(this);
-     setProtocol(protocol);
+   public Protocol createProtocol(String type) {
+     Protocol proto = new Protocol();
+     proto.setType(type);
+     proto.setDeviceCommand(this);
+     setProtocol(proto);
+     return proto;
+   }
+   
+   public Protocol createProtocolWithAttributes(String type, Map<String, String> attributes) {
+     Protocol proto = createProtocol(type); 
      for (Entry<String, String> e : attributes.entrySet()) {
-       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+       proto.addProtocolAttribute(e.getKey(), e.getValue());
      }
+     return proto;
    }
 }

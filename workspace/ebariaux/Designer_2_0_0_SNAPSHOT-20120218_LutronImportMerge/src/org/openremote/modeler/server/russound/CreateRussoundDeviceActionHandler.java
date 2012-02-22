@@ -204,7 +204,7 @@ public class CreateRussoundDeviceActionHandler implements ActionHandler<CreateRu
       }
     }
     for (Entry<DeviceCommand, Sensor> entry : sliderCommandsAndSensors.entrySet()) {
-      Slider slider = new Slider(entry.getKey(), entry.getValue());
+      Slider slider = new Slider(entry.getValue().getName() + " Slider", entry.getKey(), entry.getValue());
       slider.setAccount(device.getAccount());
       device.getSliders().add(slider);
     }
