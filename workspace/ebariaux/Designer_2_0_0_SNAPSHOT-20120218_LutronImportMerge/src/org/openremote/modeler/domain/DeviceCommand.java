@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -190,5 +193,15 @@ public class DeviceCommand extends BusinessEntity {
          if (other.sectionId != null) return false;
       } else if (!sectionId.equals(other.sectionId)) return false;
       return true;
+   }
+   
+   public void createProtocolWithAttributes(String type, Map<String, String> attributes) {
+     Protocol protocol = new Protocol();
+     protocol.setType(type);
+     protocol.setDeviceCommand(this);
+     setProtocol(protocol);
+     for (Entry<String, String> e : attributes.entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
    }
 }
