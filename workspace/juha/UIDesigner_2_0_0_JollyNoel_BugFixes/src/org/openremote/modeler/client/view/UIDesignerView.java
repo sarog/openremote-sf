@@ -75,7 +75,7 @@ public class UIDesignerView extends TabItem {
    private ScreenPanel screenPanel = new ScreenPanel();
 
    /** The auto_save_interval millisecond. */
-   private static final int AUTO_SAVE_INTERVAL_MS = 30000;
+   private static final int AUTO_SAVE_INTERVAL_MS = 300000;
 
    private Timer timer;
 
