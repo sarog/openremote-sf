@@ -396,9 +396,16 @@ public class DevicePanel extends ContentPanel {
               @Override
               public void afterSubmit(SubmitEvent be) {
                  deviceWindow.hide();
+                 
+//                 ArrayList<Device> devices = be.getData();
+                 // TODO: should indicate the devices that are updated
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null));
+
+                 /*
                  List<BeanModel> deviceModels = be.getData();
                  tree.getStore().add(deviceModels, true);
-                 Info.display("Info", "Added " + deviceModels.size() + " Russound zone devices successfully.");
+                 */
+//                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
               }
            });
         }
