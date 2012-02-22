@@ -53,8 +53,9 @@ public class Slider extends BusinessEntity {
     super(oid);
   }
 
-  public Slider(DeviceCommand setCmd, Sensor sensor) {
+  public Slider(String name, DeviceCommand setCmd, Sensor sensor) {
     super();
+    setName(name);
     setDevice(sensor.getDevice());
     SliderCommandRef setValueCmdRef = new SliderCommandRef();
     setValueCmdRef.setDeviceCommand(setCmd);
@@ -64,7 +65,6 @@ public class Slider extends BusinessEntity {
     sensorRef.setSensor(sensor);
     setSetValueCmd(setValueCmdRef);
     setSliderSensorRef(sensorRef);
-    setName(sensor.getName()+" Slider");
   }
 
   public String getName() {

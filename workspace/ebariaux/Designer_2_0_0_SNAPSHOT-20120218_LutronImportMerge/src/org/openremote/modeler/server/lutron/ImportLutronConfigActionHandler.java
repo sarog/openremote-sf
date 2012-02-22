@@ -158,16 +158,18 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
     deviceCommandService.saveAll(deviceCommands);
     sensorService.saveAllSensors(sensors, device.getAccount());
     sliderService.saveAllSliders(sliders, device.getAccount());
+    
+    
+    // TODO: test just re-saving the device
+    
+    // TODO : Nothing returned for now, DisplatchHandler does not handle Hibernate objects over the wire
     return null;
   }
 
   private DeviceCommand addDeviceCommand(Device aDevice, String name, String address, String command, String scene, String level, String key) {
     DeviceCommand dc = new DeviceCommand();
     
-    Protocol protocol = new Protocol();
-    protocol.setType("Lutron HomeWorks");
-    protocol.setDeviceCommand(dc);
-    dc.setProtocol(protocol);
+    Protocol protocol = dc.createProtocol("Lutron HomeWorks");
     protocol.addProtocolAttribute("address", address);
     protocol.addProtocolAttribute("command", command);
     if (scene != null) {
@@ -203,17 +205,7 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   }
 
   private Slider createDeviceSlider(Device aDevice, DeviceCommand sliderCommand, Sensor readSensor, String name) {
-    Slider slider = new Slider();
-    slider.setName(name);
-    SliderCommandRef sliderCommandRef = new SliderCommandRef();
-    sliderCommandRef.setDeviceCommand(sliderCommand);
-    sliderCommandRef.setSlider(slider);
-    sliderCommandRef.setDeviceName(aDevice.getName());
-    slider.setSetValueCmd(sliderCommandRef);
-    SliderSensorRef sliderSensorRef = new SliderSensorRef();
-    sliderSensorRef.setSensor(readSensor);
-    sliderSensorRef.setSlider(slider);
-    slider.setSliderSensorRef(sliderSensorRef);
+    Slider slider = new Slider(name, sliderCommand, readSensor);
     slider.setDevice(aDevice);
     return slider;
   }
