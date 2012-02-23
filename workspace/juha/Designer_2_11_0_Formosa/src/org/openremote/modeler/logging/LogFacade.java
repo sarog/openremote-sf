@@ -113,9 +113,6 @@ public class LogFacade
      */
     STATE_RECOVERY(RECOVERY_LOG_CATEGORY, "Designer State Recovery Log"),
 
-    // TODO
-    STATE_RECOVERY_PERFORMANCE(RECOVERY_PERFORMANCE_LOG_CATEGORY, "State Recovery Execution Performance"),
-
 
 
     // Beehive REST API Related Log Categories ----------------------------------------------------
@@ -271,14 +268,6 @@ public class LogFacade
    */
   public final static String RECOVERY_LOG_CATEGORY = STATE_LOG_CATEGORY + ".Restore";
 
-
-  /**
-   * Specialized subcategory of {@link LogFacade.Category#STATE_RECOVERY} for recording
-   * performance (execution, network, resource use) related statistics on Designer UI
-   * state restore operation.
-   */
-  public final static String RECOVERY_PERFORMANCE_LOG_CATEGORY =
-      RECOVERY_LOG_CATEGORY + ".Performance";
 
 
   /**
