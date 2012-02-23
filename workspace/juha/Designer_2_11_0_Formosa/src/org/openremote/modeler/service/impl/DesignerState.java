@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
@@ -121,23 +122,45 @@ import org.openremote.modeler.logging.AdministratorAlert;
 class DesignerState
 {
 
+  // TODO :
+  //
+  //    - replace throwing runtime exceptions to report issues back to user in UI with a
+  //      more robust messaging implementation
+
 
   // Class Members --------------------------------------------------------------------------------
 
 
-
+  /**
+   * Logging for save operation.
+   */
   private final static LogFacade saveLog =
       LogFacade.getInstance(LogFacade.Category.STATE_SAVE);
 
+  /**
+   * Logging for restore operation.
+   */
   private final static LogFacade restoreLog =
       LogFacade.getInstance(LogFacade.Category.STATE_RECOVERY);
 
-
+  /**
+   * Admin alerts for critical errors.
+   */
   private final static AdministratorAlert admin =
       AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE);
 
-
-  private final static Set<Long> haltAccountSave = new HashSet<Long>(0);
+  /**
+   * Class-wide safety valve on account data save. If any errors on restore are detected, halt
+   * data saves based on the concern of potential data corruption. <p>
+   *
+   * This set contains account IDs that have been flagged and should not attempt to save data
+   * from the current in-memory domain model.  <p>
+   *
+   * Multiple thread-access is synchronized via copy-on-write implementation. Assumption is that
+   * writes are rare (only occur in case of critical errors) and mostly access is read-only to
+   * check existence of account IDs.
+   */
+  private final static Set<Long> haltAccountSave = new CopyOnWriteArraySet<Long>();
 
 
 
@@ -242,13 +265,26 @@ class DesignerState
   private Long maxOID = 0L;
   private Collection<Panel> panels = new ArrayList<Panel>();
 
+  /**
+   * The current user executing the operations.
+   */
   private User user;
+
+  /**
+   * Designer configuration.
+   */
   private Configuration configuration;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
 
+  /**
+   * Constructs a new designer state management instance for the given user.
+   *
+   * @param config    Designer configuration
+   * @param user      current user associated with the incoming HTTP request thread
+   */
   protected DesignerState(Configuration config, User user)
   {
     this.configuration = config;
@@ -289,8 +325,8 @@ class DesignerState
 
     // collect some performance stats...
 
-    ExecutionPerformance perf = new ExecutionPerformance(LogFacade.Category.STATE_RECOVERY_PERFORMANCE);
-    perf.start();
+    PerformanceLog perf = new PerformanceLog(PerformanceLog.Category.RESTORE_PERFORMANCE);
+    perf.startTimer();
 
 
     try
@@ -445,7 +481,7 @@ class DesignerState
 
     finally
     {
-      perf.end("Restore time " + printUserAccountLog(user) + " : {0}");
+      perf.stopTimer("Restore time " + printUserAccountLog(user) + " : {0} seconds.");
 
       removeContextLog();
     }
@@ -454,127 +490,169 @@ class DesignerState
 
 
   /**
-   * TODO
+   * Saves the account artifacts from the current in-memory domain model to Beehive server.
    *
-   * @param panels
+   * @param panels    set of panels in the domain model -- the panels aggregate all other
+   *                  objects and artifacts to be saved
+   *
+   * @throws UIRestoreException   TODO : should use appropriate checked exception type or return value
    */
   protected void save(Set<Panel> panels)
   {
-    // TODO : assumes cache state is in sync, see MODELER-287
 
-    Account acct = user.getAccount();
-    
-    // This is a safety lock -- if there has been previous errors then the save operation
-    // may have been disabled. Prevents autosave from corrupting data...
-
-    if (haltAccountSave.contains(acct.getOid()))
-    {
-      saveLog.error("Did not save to Beehive due to earlier restore failure");
-
-      // TODO : could save a recovery copy
-
-      return;
-    }
-
-    // Collect all image file names (without path references to this account's
-    // local cache) included in panel definitions and components in panels...
-
-    Set<File> imageFiles = new HashSet<File>();
-
-    if (panels == null)
-    {
-      saveLog.warn(
-          "getAllImageNames(panels) was called with null argument (Account : {0})",
-          acct.getOid()
-     );
-    }
-
-    else
-    {
-      for (Panel panel : panels)
-      {
-        Set<String> imageNames = Panel.getAllImageNames(panel);
-
-        for (String imageName : imageNames)
-        {
-          imageFiles.add(new File(imageName));
-        }
-      }
-    }
-
-
-    // Get Beehive Client API...
-
-    BeehiveService beehive = new Beehive30API(configuration);
-
-
-    // Fetch the required resource files from the user's cache...
-
-    ResourceCache<File> fileCache = new LocalFileCache(configuration, user);
+    PerformanceLog perf = new PerformanceLog(PerformanceLog.Category.SAVE_PERFORMANCE);
 
     try
     {
-      fileCache.markInUseImages(imageFiles);
 
-      // Upload ZIP to Beehive server...
+      // add thread-local logging contexts...
 
-      beehive.uploadResources(fileCache.openReadStream(), user);
+      addContextLog();
+
+      // TODO : assumes cache state is in sync, see MODELER-287
+
+      Account acct = user.getAccount();
+
+      // This is a safety lock -- if there has been previous errors then the save operation
+      // may have been disabled. Prevents autosave from corrupting data...
+
+      if (haltAccountSave.contains(acct.getOid()))
+      {
+        saveLog.error("Did not save to Beehive due to earlier restore failure");
+
+        // TODO : could save a recovery copy
+
+        return;
+      }
+
+
+      // collect some performance stats...
+
+      perf.startTimer();
+
+      // Collect all image file names (without path references to this account's
+      // local cache) included in panel definitions and components in panels...
+
+      Set<File> imageFiles = new HashSet<File>();
+
+      if (panels == null)
+      {
+        saveLog.warn(
+            "getAllImageNames(panels) was called with null argument (Account : {0})",
+            acct.getOid()
+       );
+      }
+
+      else
+      {
+        for (Panel panel : panels)
+        {
+          Set<String> imageNames = Panel.getAllImageNames(panel);
+
+          for (String imageName : imageNames)
+          {
+            imageFiles.add(new File(imageName));
+
+            saveLog.debug(
+                "Added image resource ''{0}'' from panel ''{1}''", imageName, panel.getDisplayName()
+            );
+          }
+        }
+      }
+
+
+      // Get Beehive Client API...
+
+      BeehiveService beehive = new Beehive30API(configuration);
+
+
+      // Fetch the required resource files from the user's cache...
+
+      ResourceCache<File> fileCache = new LocalFileCache(configuration, user);
+
+      try
+      {
+        // Will only save images that are included in the current in-memory domain model...
+
+        fileCache.markInUseImages(imageFiles);
+
+        // Upload ZIP to Beehive server...
+
+        beehive.uploadResources(fileCache.openReadStream(), user);
+
+        saveLog.info("Saved resources for {0}", printUserAccountLog(user));
+      }
+
+      catch (NetworkException e)
+      {
+        // TODO : log and throw because unclear if runtime exceptions thrown to client will log...
+
+        saveLog.error("Save failed due to network error : {0}", e, e.getMessage());
+
+        throw new UIRestoreException(
+            "Save failed due to network error to Beehive server. You may try again later. " +
+            "If the issue persists, contact support (Error : " + e.getMessage() + ").", e
+        );
+      }
+
+      catch (CacheOperationException e)
+      {
+        admin.alert(
+            "Can't save account data due to cache error. Account ID : {0}, User : {1}. " +
+            "Error: {2}", e, user.getAccount().getOid(), printUserAccountLog(user), e.getMessage()
+        );
+
+        throw new UIRestoreException(
+            "Saving your design failed due to a cache error. Administrators have been notified " +
+            "of this issue."
+        );
+      }
+
+      catch (ConfigurationException e)
+      {
+        admin.alert(
+            "Save failed for account {0} due to configuration error : {1}",
+            e, user.getAccount().getOid(), e.getMessage()
+        );
+
+        throw new UIRestoreException(
+            "Unable to save your data due to Designer configuration error. " +
+            "Administrators have been notified of this issue. For further assistance, " +
+            "please contact support. (Error : " + e.getMessage() + ")", e
+        );
+      }
+
+      catch (Throwable t)
+      {
+        // Catch-all for implementation errors...
+
+        admin.alert("IMPLEMENTATION ERROR : {0}", t, t.getMessage());
+
+        throw new UIRestoreException(
+            "Save failed due to Designer implementation error. Administrators have been notified " +
+            "of this issue. For further assistance, please contact support. Error : " +
+            t.getMessage(), t
+        );
+      }
     }
 
-    catch (NetworkException e)
+    finally
     {
-      // TODO : log and throw because unclear if runtime exceptions thrown to client will log...
+      perf.stopTimer("Save time " + printUserAccountLog(user) + " : {0} seconds.");
 
-      saveLog.error("Save failed due to network error : " + e.getMessage());
-
-      throw new UIRestoreException(
-          "Save failed due to network error to Beehive server. You may try again later. " +
-          "If the issue persists, contact support (Error : " + e.getMessage() + ").", e
-      );
-    }
-
-    catch (CacheOperationException e)
-    {
-      admin.alert(
-          "Can't save account data due to cache error. Account ID : {0}, User : {1}. " +
-          "Error: {2}", e, user.getAccount().getOid(), printUserAccountLog(user), e.getMessage()
-      );
-
-      throw new UIRestoreException(
-          "Saving your design failed due to a cache error. Administrators have been notified " +
-          "of this issue."
-      );
-    }
-
-    catch (ConfigurationException e)
-    {
-      admin.alert(
-          "Save failed for account {0} due to configuration error : {1}",
-          e, user.getAccount().getOid(), e.getMessage()
-      );
-
-      throw new UIRestoreException(
-          "Unable to save your data due to Designer configuration error. " +
-          "Administrators have been notified of this issue. For further assistance, " +
-          "please contact support. (Error : " + e.getMessage() + ")", e
-      );
-    }
-
-    catch (Throwable t)
-    {
-      // Catch-all for implementation errors...
-
-      admin.alert("IMPLEMENTATION ERROR : {0}", t, t.getMessage());
-
-      throw new UIRestoreException(
-          "Save failed due to Designer implementation error. Administrators have been notified " +
-          "of this issue. For further assistance, please contact support. Error : " +
-          t.getMessage(), t
-      );
+      removeContextLog();
     }
   }
 
 
+  /**
+   * TODO :
+   *
+   *   - translates restored state to PanelsAndMaxOid instance that is currently required by
+   *     the interface API design. Should be modified later (also to include more robust
+   *     mechanism of passing error messages back to UI other than runtime exceptions).
+   *
+   */
   protected PanelsAndMaxOid transformToPanelsAndMaxOid()
   {
     return new PanelsAndMaxOid(panels, maxOID);
@@ -747,29 +825,56 @@ class DesignerState
   }
 
 
-
+  /**
+   * Adds thread context variables username and account ID to log statements.
+   *
+   * @see LogFacade#addUserName(String)
+   * @see LogFacade#addAccountID(Long)
+   */
   private void addContextLog()
   {
     LogFacade.addUserName(user.getUsername());
     LogFacade.addAccountID(user.getAccount().getOid());
   }
 
+  /**
+   * Removes thread context variables username and account ID from log statements.
+   *
+   * @see org.openremote.modeler.logging.LogFacade#removeUserName()
+   * @see org.openremote.modeler.logging.LogFacade#removeAccountID()
+   */
   private void removeContextLog()
   {
     LogFacade.removeUserName();
     LogFacade.removeAccountID();
   }
 
+
   private boolean hasXMLUIState()
   {
     return false; // TODO
   }
 
+
+  /**
+   * Halts account save/restore operations in case of critical errors.
+   *
+   * @param adminMessage    Message to log to admins
+   * @param userMessage     Message to display to user
+   */
   private void haltAccount(String adminMessage, String userMessage)
   {
     haltAccount(adminMessage, userMessage, null);
   }
 
+
+  /**
+   * Halts account save/restore operations in case of critical errors
+   * 
+   * @param adminMessage    Message to log to admins
+   * @param userMessage     Message to display to user
+   * @param exception       The exception that caused the halt operation
+   */
   private void haltAccount(String adminMessage, String userMessage, Throwable exception)
   {
 
@@ -854,28 +959,183 @@ class DesignerState
   // Nested Classes -------------------------------------------------------------------------------
 
 
-  private static class ExecutionPerformance
+  /**
+   * TODO : move to top level class
+   */
+  private static class PerformanceLog
   {
-    private long startTime = 0;
-    private LogFacade logger;
 
+    // Enums ----------------------------------------------------------------------------------------
 
-    private ExecutionPerformance(LogFacade.Category category)
+    /**
+     * Typesafe performance logging categories. These are specific log categories that
+     * record resource, execution and network performance
+     */
+    public enum Category implements LogFacade.Hierarchy
     {
-      this.logger = LogFacade.getInstance(category);
+      /**
+       * State restore performance logs.
+       *
+       * The canonical log category name is defined in
+       * {@link PerformanceLog#RESTORE_PERFORMANCE_LOG_CATEGORY}
+       *
+       * @see org.openremote.modeler.service.impl.DesignerState
+       */
+      RESTORE_PERFORMANCE(RESTORE_PERFORMANCE_LOG_CATEGORY, "State Restore Performance Log"),
 
+      /**
+       * Designer server-side save performance logs.
+       *
+       * The canonical log category name is defined in
+       * {@link PerformanceLog#SAVE_PERFORMANCE_LOG_CATEGORY}
+       *
+       * @see org.openremote.modeler.service.impl.DesignerState
+       */
+      SAVE_PERFORMANCE(SAVE_PERFORMANCE_LOG_CATEGORY, "Save Performance Log"),
+
+      ;
+
+
+
+      // Instance Fields ----------------------------------------------------------------------------
+
+      /**
+       * Stores canonical log hierarchy name with a string dot-notation as defined for Java util
+       * logging (JUL) and Log4j frameworks.
+       */
+      private String canonicalLogCategoryName;
+      private String displayName;
+
+
+      // Constructors -------------------------------------------------------------------------------
+
+      private Category(String canonicalLogCategoryName, String displayName)
+      {
+        this.canonicalLogCategoryName = canonicalLogCategoryName;
+        this.displayName = displayName;
+      }
+
+
+      // Implements LogFacade.Hierarchy -------------------------------------------------------------
+
+      @Override public String getCanonicalLogCategoryName()
+      {
+        return canonicalLogCategoryName;
+      }
     }
 
-    private void start()
+
+
+    // Constants ------------------------------------------------------------------------------------
+
+    /**
+     * Common log subcategory name for performance logs.
+     */
+    public final static String PERFORMANCE_LOG_CATEGORY = ".Performance";
+
+    /**
+     * Common log subcategory name for execution performance logs.
+     *
+     * This should always be a child category of {@link #PERFORMANCE_LOG_CATEGORY}.
+     */
+    public final static String EXECUTION_PERFORMANCE_LOG_CATEGORY = ".Execution";
+
+
+    /**
+     * Canonical log hierarchy name for Designer restore operation performance. <p>
+     *
+     * @see Category#RESTORE_PERFORMANCE
+     */
+    public final static String RESTORE_PERFORMANCE_LOG_CATEGORY =
+        LogFacade.RECOVERY_LOG_CATEGORY + PERFORMANCE_LOG_CATEGORY;
+
+    /**
+     * Canonical log hierarchy name for Designer save operation performance. <p>
+     *
+     * @see Category#SAVE_PERFORMANCE
+     */
+    public final static String SAVE_PERFORMANCE_LOG_CATEGORY =
+        LogFacade.STATE_SAVE_LOG_CATEGORY + PERFORMANCE_LOG_CATEGORY;
+
+
+
+    // Instance Fields ----------------------------------------------------------------------------
+
+
+    /**
+     * Stores the start time for measuring execution performance.
+     *
+     * @see #startTimer()
+     */
+    private long startTime = 0;
+
+    /**
+     * The log category for performance logging. Depending on the type of measurement, actual
+     * logs may be written to a sub-category of this category, such as
+     * {@link #EXECUTION_PERFORMANCE_LOG_CATEGORY}.
+     */
+    private Category performanceCategory;
+
+
+
+    // Constructors -------------------------------------------------------------------------------
+
+
+    /**
+     * Constructs a new performance log facade with a given category. The category is a top
+     * level performance related category where logs are added to specific sub-categories
+     * depending on their type (execution, network, resource use, etc.).
+     *
+     * @see #EXECUTION_PERFORMANCE_LOG_CATEGORY
+     *
+     * @param category    See {@link PerformanceLog.Category}
+     */
+    public PerformanceLog(Category category)
+    {
+       this.performanceCategory = category;
+    }
+
+
+
+    // Public Instance Methods --------------------------------------------------------------------
+
+
+    /**
+     * Start measuring execution performance with this performance log instance. Notice that
+     * the measurements are not designed or intended for fine-grained performance measurements
+     * but for coarse-grained granularity at a tenth of a second or higher.
+     */
+    public void startTimer()
     {
       startTime = System.currentTimeMillis();
     }
 
-    private void end(String logMessage)
+
+    /**
+     * Stop measuring execution performance and log a related message to a
+     * {@link #EXECUTION_PERFORMANCE_LOG_CATEGORY} subcategory of the configured logging
+     * category of this instance.
+     *
+     * @see #performanceCategory
+     *
+     * @param logMessage    The message to log when stopping the timer. The first argument
+     *                      (<tt>{0}</tt>) will be used to store the measured execution time
+     *                      in seconds.
+     */
+    public void stopTimer(String logMessage)
     {
       float time = (float)(System.currentTimeMillis() - startTime) / 1000;
 
-      logger.info(logMessage, new DecimalFormat("######00.000").format(time) + " seconds.");
+      LogFacade logger = LogFacade.getInstance(new LogFacade.Hierarchy()
+        {
+          @Override public String getCanonicalLogCategoryName()
+          {
+            return performanceCategory.getCanonicalLogCategoryName() + EXECUTION_PERFORMANCE_LOG_CATEGORY;
+          }
+        }
+      );
+
+      logger.info(logMessage, new DecimalFormat("######00.000").format(time));
     }
   }
 
