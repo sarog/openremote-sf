@@ -445,7 +445,7 @@ class DesignerState
 
     finally
     {
-      perf.end("Restore time " + printUserAccountLog(user) + " : {1}");
+      perf.end("Restore time " + printUserAccountLog(user) + " : {0}");
 
       removeContextLog();
     }
