@@ -8,9 +8,10 @@
 <html>
   <head>
     <meta http-equiv = "Content-Type" content = "text/html; charset=UTF-8">
-    <meta content = "openremote, open source, home automation, iphone, android,
-                     knx, insteon, x10, infrared, z-wave, zigbee, isy-99, russound,
-                     lutron, domintell, globalcache, irtrans"
+    <meta content = "openremote, open source, home automation, open source automation,
+                     iphone, android, ipad, knx, insteon, x10, infrared, z-wave, isy-99,
+                     russound, lutron, domintell, globalcache, irtrans, samsung,
+                     samsung smart tv, insteon"
           name = "KEYWORDS"/>
 
     <link href = "image/OpenRemote.Logo.16x16.png" rel = "shortcut icon"/>
@@ -22,8 +23,8 @@
 
       BODY
       {
-        background-color: rgba(255, 255, 255, 1.0);
-        color: rgba(107, 92, 79, 1.0);
+        background-color: rgb(255, 255, 255);
+        color: rgb(107, 92, 79);
 
         border-width: 0px;
         border-style: none;
@@ -242,15 +243,20 @@
       <div class = "logo">
         <p>
           <a href = "http://www.openremote.org">
-            <img src = "http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png"
-              border = "0"/>
+            <img src    = "http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png"
+                 border = "0"
+                 alt    = "OpenRemote Logo"
+            />
           </a>
         </p>
 
       <!-- 'watermark' -->
 
-      <img class = "watermark" src = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
-          border = "0"/>
+      <img class  = "watermark"
+           src    = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
+           border = "0"
+           alt    = "watermark"
+      />
 
       </div>
 
@@ -271,7 +277,7 @@
           <div class="inner-boundary">
             <div class="inner-border">
 
-              <p class="title">Login to OpenRemote Designer Alpha (Jolly Noel)</p>
+              <p class="title">Login to OpenRemote Designer 11 (Formosa)</p>
 
               <c:if test = "${isActivated ne null and isActivated}">
                 <p class="pass"><b>${username}</b> has been activated, please login.</p>
@@ -342,14 +348,14 @@
 
         <p class = "copyright">
             Copyright &copy; 2008-<fmt:formatDate value = "${now}" pattern = "yyyy"/>
-            <a href="http://www.openremote.org">OpenRemote</a> -- SNAPSHOT 20111226 (Alpha 10)
+            <a href="http://www.openremote.org">OpenRemote</a> -- Version 2.11 (2012-02-25 Formosa)
         </p>
 
 
 
         <!-- ========== CONTROLLER DOWNLOAD REMINDER ====================================== -->
 
-<!--
+
         <div class = "box">
 
           <img style  = "position: absolute; left: -50px; bottom: 0px;"
@@ -358,6 +364,14 @@
             
           <div style = "margin: 0px 0px 30px 120px;">
 
+            <h2 class = "box-header">Update to Latest OpenRemote Controller</h2>
+
+            <p>
+              In order to use all the latest Designer features, make sure you've
+              <a href = "">installed OpenRemote Controller 2.0 or later</a>.
+            </p>
+
+<!--
             <h2 class = "box-header">Have You Installed OpenRemote Controller?</h2>
 
             <p>
@@ -369,11 +383,12 @@
               Installation instructions are available for Windows, Linux,
               Mac OS X, Synology NAS, ReadyNAS, QNAP NAS and <a href = "http://openremote.org/display/orb/Building+OpenRemote+Hardware+Reference+Implementation">ALIX</a>.
             </p>
+-->
 
           </div>
 
         </div>
--->
+
 
       </div>
     </div>
