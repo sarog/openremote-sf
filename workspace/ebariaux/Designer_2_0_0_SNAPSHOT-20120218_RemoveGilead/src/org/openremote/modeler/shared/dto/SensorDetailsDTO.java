@@ -20,27 +20,33 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class SliderDTO implements DTO {
+import org.openremote.modeler.domain.SensorType;
+
+public class SensorDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
 
   private String displayName;
+  private SensorType type;
   private String commandName;
-  private String sensorName;
-  private String deviceName;
+  private String minValue;
+  private String maxValue;
+  private String statesInfo;
   private Long oid;
-
-  public SliderDTO() {
+  
+  public SensorDetailsDTO() {
     super();
   }
-  
-  public SliderDTO(Long oid, String displayName, String commandName, String sensorName, String deviceName) {
+
+  public SensorDetailsDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, String statesInfo) {
     super();
     this.oid = oid;
     this.displayName = displayName;
+    this.type = type;
     this.commandName = commandName;
-    this.sensorName = sensorName;
-    this.deviceName = deviceName;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.statesInfo = statesInfo;
   }
 
   public String getDisplayName() {
@@ -51,6 +57,14 @@ public class SliderDTO implements DTO {
     this.displayName = displayName;
   }
 
+  public SensorType getType() {
+    return type;
+  }
+
+  public void setType(SensorType type) {
+    this.type = type;
+  }
+
   public String getCommandName() {
     return commandName;
   }
@@ -59,12 +73,28 @@ public class SliderDTO implements DTO {
     this.commandName = commandName;
   }
 
-  public String getSensorName() {
-    return sensorName;
+  public String getMinValue() {
+    return minValue;
   }
 
-  public void setSensorName(String sensorName) {
-    this.sensorName = sensorName;
+  public void setMinValue(String minValue) {
+    this.minValue = minValue;
+  }
+
+  public String getMaxValue() {
+    return maxValue;
+  }
+
+  public void setMaxValue(String maxValue) {
+    this.maxValue = maxValue;
+  }
+
+  public String getStatesInfo() {
+    return statesInfo;
+  }
+
+  public void setStatesInfo(String statesInfo) {
+    this.statesInfo = statesInfo;
   }
 
   public Long getOid() {
@@ -73,14 +103,6 @@ public class SliderDTO implements DTO {
 
   public void setOid(Long oid) {
     this.oid = oid;
-  }
-
-  public String getDeviceName() {
-    return deviceName;
-  }
-
-  public void setDeviceName(String deviceName) {
-    this.deviceName = deviceName;
   }
   
 }

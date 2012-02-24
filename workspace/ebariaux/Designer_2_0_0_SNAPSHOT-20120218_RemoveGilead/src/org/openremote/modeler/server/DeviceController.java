@@ -34,9 +34,9 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
-import org.openremote.modeler.shared.dto.SensorDTO;
-import org.openremote.modeler.shared.dto.SliderDTO;
-import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
@@ -160,19 +160,19 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
        dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
      }
      deviceDTO.setDeviceCommands(dcDTOs);
-     ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+     ArrayList<SensorDetailsDTO> sensorDTOs = new ArrayList<SensorDetailsDTO>();
      for (Sensor sensor : device.getSensors()) {
-       sensorDTOs.add(new SensorDTO(sensor.getOid(), sensor.getDisplayName(), null, null, null, null, null)); // TODO EBR : have a simple DTO for just name
+       sensorDTOs.add(new SensorDetailsDTO(sensor.getOid(), sensor.getDisplayName(), null, null, null, null, null)); // TODO EBR : have a simple DTO for just name
      }
      deviceDTO.setSensors(sensorDTOs);
-     ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+     ArrayList<SwitchDetailsDTO> switchDTOs = new ArrayList<SwitchDetailsDTO>();
      for (Switch s : device.getSwitchs()) {
-       switchDTOs.add(new SwitchDTO(s.getOid(), s.getDisplayName(), null, null, null, null)); // TODO EBR : have a simple DTO
+       switchDTOs.add(new SwitchDetailsDTO(s.getOid(), s.getDisplayName(), null, null, null, null)); // TODO EBR : have a simple DTO
      }
      deviceDTO.setSwitches(switchDTOs);
-     ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+     ArrayList<SliderDetailsDTO> sliderDTOs = new ArrayList<SliderDetailsDTO>();
      for (Slider s : device.getSliders()) {
-       sliderDTOs.add(new SliderDTO(s.getOid(), s.getDisplayName(), null, null, null)); // TODO EBR : have a simple DTO
+       sliderDTOs.add(new SliderDetailsDTO(s.getOid(), s.getDisplayName(), null, null, null)); // TODO EBR : have a simple DTO
      }
      deviceDTO.setSliders(sliderDTOs);
      return deviceDTO;

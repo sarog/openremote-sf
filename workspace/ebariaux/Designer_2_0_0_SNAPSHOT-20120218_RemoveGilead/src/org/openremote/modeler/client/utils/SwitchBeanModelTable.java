@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -52,12 +52,12 @@ public class SwitchBeanModelTable extends BeanModelTable {
    */
    
    public List<BeanModel> loadAllAsDTOs() {
-     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SwitchDTO.class);
+     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SwitchDetailsDTO.class);
 
       List<BeanModel> beanModelList = new ArrayList<BeanModel>();
       for (Long key : map.keySet()) {
         Switch aSwitch = (Switch)map.get(key).getBean(); 
-        beanModelList.add(beanModelFactory.createModel(new SwitchDTO(aSwitch.getOid(), aSwitch.getDisplayName(),
+        beanModelList.add(beanModelFactory.createModel(new SwitchDetailsDTO(aSwitch.getOid(), aSwitch.getDisplayName(),
                 (aSwitch.getSwitchCommandOnRef() != null)?aSwitch.getSwitchCommandOnRef().getDisplayName():null,
                 (aSwitch.getSwitchCommandOffRef() != null)?aSwitch.getSwitchCommandOffRef().getDisplayName():null,
                 (aSwitch.getSwitchSensorRef() != null)?aSwitch.getSwitchSensorRef().getDisplayName():null,
