@@ -19,9 +19,11 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -81,4 +83,6 @@ public interface DeviceCommandRPCService extends RemoteService {
     * @return the list< device command>
     */
    List<DeviceCommand> loadByDevice(long id);
+
+   ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id);
 }

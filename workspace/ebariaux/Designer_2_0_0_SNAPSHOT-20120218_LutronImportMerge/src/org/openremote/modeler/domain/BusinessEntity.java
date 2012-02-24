@@ -31,13 +31,9 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import net.sf.gilead.pojo.gwt.LightEntity;
-
-
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
 import com.extjs.gxt.ui.client.data.BeanModelLookup;
-import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import flexjson.JSON;
 
@@ -48,7 +44,7 @@ import flexjson.JSON;
  * @author Dan 2009-2-6
  */
 @MappedSuperclass
-public abstract class BusinessEntity extends LightEntity implements Serializable, BeanModelTag {
+public abstract class BusinessEntity implements Serializable {
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -4133577592315343274L;
@@ -93,6 +89,10 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
       this.oid = oid;
    }
 
+   
+   // TODO EBR : following 2 methods must go
+   
+   
    /**
     * Gets the bean model.
     * 
@@ -130,12 +130,5 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
    @Transient
    public String getDisplayName() {
       return "unKnown";
-   }
-   
-   @Override
-   @Transient
-   @JSON(include = false)
-   public String getDebugString() {
-      return super.getDebugString();
    }
 }

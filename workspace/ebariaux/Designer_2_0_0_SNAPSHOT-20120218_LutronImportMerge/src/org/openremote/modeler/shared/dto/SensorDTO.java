@@ -20,14 +20,11 @@
  */
 package org.openremote.modeler.shared.dto;
 
-import java.io.Serializable;
-
 import org.openremote.modeler.domain.SensorType;
 
-import com.extjs.gxt.ui.client.data.BeanModelTag;
+public class SensorDTO implements DTO {
 
-@SuppressWarnings("serial")
-public class SensorDTO implements Serializable, BeanModelTag {
+  private static final long serialVersionUID = 1L;
 
   private String displayName;
   private SensorType type;

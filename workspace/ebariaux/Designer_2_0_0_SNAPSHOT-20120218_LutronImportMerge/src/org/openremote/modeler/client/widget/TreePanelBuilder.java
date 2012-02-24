@@ -35,6 +35,7 @@
  */
 package org.openremote.modeler.client.widget;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,10 +52,6 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
-import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
@@ -82,6 +79,12 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -92,6 +95,7 @@ import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
@@ -135,6 +139,7 @@ public class TreePanelBuilder {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+           Info.display("INFO", "loadDeviceRPCProxy");
             DeviceBeanModelProxy.loadDeviceAndCommand((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                public void onSuccess(List<BeanModel> result) {
                   listAsyncCallback.onSuccess(result);
@@ -187,6 +192,7 @@ public class TreePanelBuilder {
          RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
             @Override
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+              Info.display("INFO", "Will load devices");
                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                   public void onSuccess(List<BeanModel> result) {
                      listAsyncCallback.onSuccess(result);
@@ -245,15 +251,15 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
                return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Device) {
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
-            } else if (thisModel.getBean() instanceof Sensor) {
+            } else if (thisModel.getBean() instanceof SensorDTO) {
                return ICON.sensorIcon();
-            } else if (thisModel.getBean() instanceof Switch) {
+            } else if (thisModel.getBean() instanceof SwitchDTO) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof Slider) {
+            } else if (thisModel.getBean() instanceof SliderDTO) {
                return ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UICommand) {
                return ICON.deviceCmd();
@@ -267,41 +273,48 @@ public class TreePanelBuilder {
    }
 
    public static TreePanel<BeanModel> buildCommandTree(final Device device, final BeanModel selectedCommandModel) {
-      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
-         @Override
-         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-            DeviceCommandBeanModelProxy.loadDeviceCmdFromDevice(device,
-                  new AsyncSuccessCallback<List<DeviceCommand>>() {
+     RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
+        @Override
+        protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+           DeviceCommandBeanModelProxy.loadDeviceCommandsDTOFromDevice(device,
+                 new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
 
-                     @Override
-                     public void onSuccess(List<DeviceCommand> result) {
-                        listAsyncCallback.onSuccess(DeviceCommand.createModels(result));
-                     }
+                    @Override
+                    public void onSuccess(ArrayList<DeviceCommandDTO> result) {
+                       listAsyncCallback.onSuccess(DTOHelper.createModels(result));
+                    }
 
-                  });
-         }
-      };
-      TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
-         @Override
-         public boolean hasChildren(BeanModel beanModel) {
-            if (beanModel.getBean() instanceof Device) {
-               return true;
-            }
-            return false;
-         }
+                 });
+        }
+     };
+     TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+        @Override
+        public boolean hasChildren(BeanModel beanModel) {
+           if (beanModel.getBean() instanceof DeviceDTO) {
+              return true;
+           }
+           return false;
+        }
 
-      };
-      TreeStore<BeanModel> commandTree = new TreeStore<BeanModel>(loadDeviceTreeLoader);
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandTree);
-      loadDeviceTreeLoader.addLoadListener(new LoadListener() {
-         public void loaderLoad(LoadEvent le) {
-            super.loaderLoad(le);
-            if (selectedCommandModel != null) {
-               tree.getSelectionModel().select(selectedCommandModel, false);
-            }
-         }
-         
-      });
+     };
+     TreeStore<BeanModel> commandTree = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+     final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandTree);
+     loadDeviceTreeLoader.addLoadListener(new LoadListener() {
+        public void loaderLoad(LoadEvent le) {
+           super.loaderLoad(le);
+           Info.display("INFO", "Loaded class " + le.getData().getClass());
+           if (selectedCommandModel != null) {
+             Info.display("INFO", "Will select " + selectedCommandModel.getBean());
+             for (BeanModel bm : ((List<BeanModel>)le.getData())) {
+               DeviceCommandDTO dto = bm.getBean();
+               if (dto.getOid() == ((DeviceCommand)selectedCommandModel.getBean()).getOid()) {
+                 tree.getSelectionModel().select(bm, false);
+               }
+             }
+           }
+        }
+        
+     });
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -569,13 +582,11 @@ public class TreePanelBuilder {
    }
 
    public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanelImpl templatePanel) {
-
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
       privateTemplatesBean.setDisplayName("My private templates");
 
       TreeFolderBean publicTemplatesBean = new TreeFolderBean();
       publicTemplatesBean.setDisplayName("My public templates");
-
       RpcProxy<List<BeanModel>> loadTemplateRPCProxy = new RpcProxy<List<BeanModel>>() {
 
          @Override
@@ -585,6 +596,9 @@ public class TreePanelBuilder {
                if (model.getBean() instanceof TreeFolderBean) {
                   TreeFolderBean folderBean = model.getBean();
                   if (folderBean.getDisplayName().contains("rivate")) {
+                    
+                    Info.display("INFO", "Loading private templates");
+
                      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
@@ -594,6 +608,9 @@ public class TreePanelBuilder {
 
                      });
                   } else {
+                    
+                    Info.display("INFO", "Loading public templates");
+
                      TemplateProxy.getTemplates(false, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
@@ -608,7 +625,7 @@ public class TreePanelBuilder {
          }
 
       };
-
+      
       TreeLoader<BeanModel> templateLoader = new BaseTreeLoader<BeanModel>(loadTemplateRPCProxy) {
          @Override
          public boolean hasChildren(BeanModel beanModel) {
@@ -622,10 +639,13 @@ public class TreePanelBuilder {
       if (templateTreeStore == null) {
          templateTreeStore = new TreeStore<BeanModel>(templateLoader);
       }
+
       //set private template folder as the first node
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
+      
       //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
+
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
         @Override
         public void onBrowserEvent(Event event) {
@@ -643,7 +663,6 @@ public class TreePanelBuilder {
         }
      };
 
-
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof TreeFolderBean) {
@@ -652,7 +671,7 @@ public class TreePanelBuilder {
             return ICON.templateIcon();
          }
       });
-
+      
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");

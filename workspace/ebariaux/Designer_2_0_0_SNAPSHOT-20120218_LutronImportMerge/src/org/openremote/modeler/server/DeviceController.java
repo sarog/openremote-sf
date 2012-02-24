@@ -25,14 +25,23 @@ import java.util.List;
 import org.openremote.modeler.client.rpc.DeviceRPCService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
  */
-public class DeviceController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceRPCService {
+public class DeviceController extends BaseGWTSpringController implements DeviceRPCService {
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -6698924847005128888L;
@@ -132,6 +141,41 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    public Account getAccount() {
       return userService.getAccount();
    }
+   
+   
+   public ArrayList<DeviceDTO> loadAllDTOs() {
+     List<Device> devices = deviceService.loadAll(userService.getAccount());
+     ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
+     for (Device d : devices) {
+       dtos.add(new DeviceDTO(d.getOid(), d.getDisplayName()));
+     }
+     return dtos;
+  }
 
+   public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
+     Device device = deviceService.loadById(oid);
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
+     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
+     for (DeviceCommand dc : device.getDeviceCommands()) {
+       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+     }
+     deviceDTO.setDeviceCommands(dcDTOs);
+     ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+     for (Sensor sensor : device.getSensors()) {
+       sensorDTOs.add(new SensorDTO(sensor.getOid(), sensor.getDisplayName(), null, null, null, null, null)); // TODO EBR : have a simple DTO for just name
+     }
+     deviceDTO.setSensors(sensorDTOs);
+     ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+     for (Switch s : device.getSwitchs()) {
+       switchDTOs.add(new SwitchDTO(s.getOid(), s.getDisplayName(), null, null, null, null)); // TODO EBR : have a simple DTO
+     }
+     deviceDTO.setSwitches(switchDTOs);
+     ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+     for (Slider s : device.getSliders()) {
+       sliderDTOs.add(new SliderDTO(s.getOid(), s.getDisplayName(), null, null, null)); // TODO EBR : have a simple DTO
+     }
+     deviceDTO.setSliders(sliderDTOs);
+     return deviceDTO;
+   }
    
 }

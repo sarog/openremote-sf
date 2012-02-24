@@ -32,7 +32,7 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
  * The server side implementation of the RPC service <code>SliderRPCService</code>.
  */
 @SuppressWarnings("serial")
-public class SliderController extends BaseGWTSpringControllerWithHibernateSupport implements SliderRPCService {
+public class SliderController extends BaseGWTSpringController implements SliderRPCService {
 
    private SliderService sliderService;
    
