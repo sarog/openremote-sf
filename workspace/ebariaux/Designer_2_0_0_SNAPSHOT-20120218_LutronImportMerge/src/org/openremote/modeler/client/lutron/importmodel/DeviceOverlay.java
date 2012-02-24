@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.lutron.importmodel;
 
+import org.openremote.modeler.client.utils.ArrayOverlay;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class DeviceOverlay extends JavaScriptObject {
