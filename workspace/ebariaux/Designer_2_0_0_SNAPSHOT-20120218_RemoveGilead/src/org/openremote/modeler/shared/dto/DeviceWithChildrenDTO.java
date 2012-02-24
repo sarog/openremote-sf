@@ -27,9 +27,9 @@ public class DeviceWithChildrenDTO extends DeviceDTO {
   private static final long serialVersionUID = 1L;
 
   private ArrayList<DeviceCommandDTO> deviceCommands;
-  private ArrayList<SensorDetailsDTO> sensors;
-  private ArrayList<SwitchDetailsDTO> switches;
-  private ArrayList<SliderDetailsDTO> sliders;
+  private ArrayList<SensorDTO> sensors;
+  private ArrayList<SwitchDTO> switches;
+  private ArrayList<SliderDTO> sliders;
   
   public ArrayList<DeviceCommandDTO> getDeviceCommands() {
     return deviceCommands;
@@ -39,27 +39,27 @@ public class DeviceWithChildrenDTO extends DeviceDTO {
     this.deviceCommands = deviceCommands;
   }
 
-  public ArrayList<SensorDetailsDTO> getSensors() {
+  public ArrayList<SensorDTO> getSensors() {
     return sensors;
   }
 
-  public void setSensors(ArrayList<SensorDetailsDTO> sensors) {
+  public void setSensors(ArrayList<SensorDTO> sensors) {
     this.sensors = sensors;
   }
 
-  public ArrayList<SwitchDetailsDTO> getSwitches() {
+  public ArrayList<SwitchDTO> getSwitches() {
     return switches;
   }
 
-  public void setSwitches(ArrayList<SwitchDetailsDTO> switches) {
+  public void setSwitches(ArrayList<SwitchDTO> switches) {
     this.switches = switches;
   }
 
-  public ArrayList<SliderDetailsDTO> getSliders() {
+  public ArrayList<SliderDTO> getSliders() {
     return sliders;
   }
 
-  public void setSliders(ArrayList<SliderDetailsDTO> sliders) {
+  public void setSliders(ArrayList<SliderDTO> sliders) {
     this.sliders = sliders;
   }
 

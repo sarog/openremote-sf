@@ -82,9 +82,9 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
-import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -255,11 +255,11 @@ public class TreePanelBuilder {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
-            } else if (thisModel.getBean() instanceof SensorDetailsDTO) {
+            } else if (thisModel.getBean() instanceof SensorDTO) {
                return ICON.sensorIcon();
-            } else if (thisModel.getBean() instanceof SwitchDetailsDTO) {
+            } else if (thisModel.getBean() instanceof SwitchDTO) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof SliderDetailsDTO) {
+            } else if (thisModel.getBean() instanceof SliderDTO) {
                return ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UICommand) {
                return ICON.deviceCmd();
