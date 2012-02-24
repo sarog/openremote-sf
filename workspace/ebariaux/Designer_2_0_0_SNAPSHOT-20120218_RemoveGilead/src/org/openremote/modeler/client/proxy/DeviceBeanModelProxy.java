@@ -37,10 +37,12 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -102,23 +104,21 @@ public class DeviceBeanModelProxy {
             }
             
          });
-      }else if(beanModel.getBean() instanceof Sensor){
-         Sensor sensor = beanModel.getBean();
+      }else if(beanModel.getBean() instanceof SensorDTO) {
+         SensorDTO sensor = beanModel.getBean();
          List<BeanModel> sensorBenModels = new ArrayList<BeanModel>();
-         sensorBenModels.add(sensor.getSensorCommandRef().getBeanModel());
+         sensorBenModels.add(DTOHelper.getBeanModel(sensor.getCommand()));
          callback.onSuccess(sensorBenModels);
-      } else if(beanModel.getBean() instanceof Slider){
-         Slider slider = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SliderDTO) {
+         SliderDTO slider = beanModel.getBean();
          List<BeanModel> sliderModels = new ArrayList<BeanModel>();
-         if (slider.getSetValueCmd() != null) {
-            sliderModels.add(slider.getSetValueCmd().getBeanModel());
-         }
+         sliderModels.add(DTOHelper.getBeanModel(slider.getCommand()));
          callback.onSuccess(sliderModels);
-      } else if(beanModel.getBean() instanceof Switch){
-         Switch swh = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SwitchDTO) {
+         SwitchDTO swh = beanModel.getBean();
          List<BeanModel> switchBeanModels = new ArrayList<BeanModel>();
-         switchBeanModels.add(swh.getSwitchCommandOnRef().getBeanModel());
-         switchBeanModels.add(swh.getSwitchCommandOffRef().getBeanModel());
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOnCommand()));
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOffCommand()));
          callback.onSuccess(switchBeanModels);
       }
    }
