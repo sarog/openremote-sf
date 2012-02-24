@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -83,4 +85,9 @@ public interface DeviceRPCServiceAsync {
    void getAccount(AsyncCallback<Account> callback);
 
   void saveDevices(ArrayList<Device> devices, AsyncCallback<ArrayList<Device>> callback);
+  
+  
+  void loadAllDTOs(AsyncCallback<ArrayList<DeviceDTO>> callback);
+  
+  void loadDeviceWithChildrenDTOById(long oid, AsyncCallback<DeviceWithChildrenDTO> callback);
 }

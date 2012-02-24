@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
@@ -43,8 +44,8 @@ public class ScreenPairPropertyForm extends PropertyForm {
 
    private ScreenTab screenTab;
    private ScreenPair screenPair;
-   public ScreenPairPropertyForm(ComponentContainer componentContainer) {
-      super(componentContainer);
+   public ScreenPairPropertyForm(ComponentContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
+      super(componentContainer, widgetSelectionUtil);
       setFieldWidth(130);
       this.screenTab = (ScreenTab) componentContainer.getParent().getParent();
       this.screenPair = screenTab.getScreenPair();
@@ -92,7 +93,7 @@ public class ScreenPairPropertyForm extends PropertyForm {
                   screenTab.getItemByItemId(Constants.LANDSCAPE).disable();
                }
                if (screenTab.getItemByItemId(Constants.PORTRAIT) == null) {
-                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil), 0);
                } else {
                   screenTab.getItemByItemId(Constants.PORTRAIT).enable();
                }
@@ -111,7 +112,7 @@ public class ScreenPairPropertyForm extends PropertyForm {
                   screenTab.getItemByItemId(Constants.PORTRAIT).disable();
                }
                if (screenTab.getItemByItemId(Constants.LANDSCAPE) == null) {
-                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
                } else {
                   screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
                }
@@ -135,12 +136,12 @@ public class ScreenPairPropertyForm extends PropertyForm {
                if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
                   screenTab.getItemByItemId(Constants.PORTRAIT).enable();
                } else {
-                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil), 0);
                }
                if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
                   screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
                } else {
-                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
                }
                screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
             }

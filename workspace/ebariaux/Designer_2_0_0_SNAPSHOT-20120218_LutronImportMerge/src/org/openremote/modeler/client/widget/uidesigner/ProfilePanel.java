@@ -144,7 +144,6 @@ public class ProfilePanel extends ContentPanel {
       treeContainer.setStyleAttribute("backgroundColor", "white");
       treeContainer.setBorders(false);
       add(treeContainer);
-
    }
    
    /**

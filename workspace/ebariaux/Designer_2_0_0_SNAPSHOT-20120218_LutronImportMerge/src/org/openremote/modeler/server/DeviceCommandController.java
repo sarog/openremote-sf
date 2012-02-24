@@ -20,16 +20,18 @@
 
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 /**
  * The server side implementation of the RPC service <code>DeviceCommandRPCService</code>.
  */
-public class DeviceCommandController extends BaseGWTSpringControllerWithHibernateSupport implements
+public class DeviceCommandController extends BaseGWTSpringController implements
         DeviceCommandRPCService {
 
    /** The Constant serialVersionUID. */
@@ -101,4 +103,8 @@ public class DeviceCommandController extends BaseGWTSpringControllerWithHibernat
       return deviceCommandService.loadByDevice(id);
    }
 
+   public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
+     System.out.println(">>DeviceCommandController.loadCommandsDTOByDevice");
+     return deviceCommandService.loadCommandsDTOByDevice(id);
+   }
 }
