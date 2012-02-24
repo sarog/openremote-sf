@@ -33,8 +33,6 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderCommandRef;
-import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
