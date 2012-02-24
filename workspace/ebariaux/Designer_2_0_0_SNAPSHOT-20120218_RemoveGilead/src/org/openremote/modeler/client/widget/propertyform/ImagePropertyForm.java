@@ -44,7 +44,7 @@ import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -90,7 +90,7 @@ public class ImagePropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  SensorDTO sensorDTO = dataModel.getBean();
+                  SensorDetailsDTO sensorDTO = dataModel.getBean();
                   Sensor sensor = BeanModelDataBase.sensorTable.get(sensorDTO.getOid()).getBean();
                   uiImage.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());

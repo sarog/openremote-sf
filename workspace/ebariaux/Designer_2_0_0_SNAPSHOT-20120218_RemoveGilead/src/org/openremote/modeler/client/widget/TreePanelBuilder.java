@@ -82,9 +82,9 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.openremote.modeler.shared.dto.SensorDTO;
-import org.openremote.modeler.shared.dto.SliderDTO;
-import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -203,7 +203,7 @@ public class TreePanelBuilder {
          final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
-               if (beanModel.getBean() instanceof DeviceCommand || beanModel.getBean() instanceof UICommand) {
+               if (beanModel.getBean() instanceof DeviceCommandDTO || beanModel.getBean() instanceof UICommand) {
                   return false;
                }
                return true;
@@ -255,11 +255,11 @@ public class TreePanelBuilder {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
-            } else if (thisModel.getBean() instanceof SensorDTO) {
+            } else if (thisModel.getBean() instanceof SensorDetailsDTO) {
                return ICON.sensorIcon();
-            } else if (thisModel.getBean() instanceof SwitchDTO) {
+            } else if (thisModel.getBean() instanceof SwitchDetailsDTO) {
                return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof SliderDTO) {
+            } else if (thisModel.getBean() instanceof SliderDetailsDTO) {
                return ICON.sliderIcon();
             } else if (thisModel.getBean() instanceof UICommand) {
                return ICON.deviceCmd();

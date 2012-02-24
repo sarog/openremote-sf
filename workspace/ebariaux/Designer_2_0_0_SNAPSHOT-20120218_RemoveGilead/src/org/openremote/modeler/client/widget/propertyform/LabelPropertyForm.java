@@ -37,7 +37,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -106,7 +106,7 @@ public class LabelPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  SensorDTO sensorDTO = dataModel.getBean();
+                  SensorDetailsDTO sensorDTO = dataModel.getBean();
                   Sensor sensor = BeanModelDataBase.sensorTable.get(sensorDTO.getOid()).getBean();
                   uiLabel.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
