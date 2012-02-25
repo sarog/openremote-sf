@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
@@ -81,7 +82,7 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof DeviceDTO){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
          DeviceDTO device = (DeviceDTO) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>(){
+         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() {
 
             @Override
             public void onSuccess(DeviceWithChildrenDTO result) {
@@ -374,4 +375,13 @@ public class DeviceBeanModelProxy {
          }
       });
    }
+   
+   public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
+         public void onSuccess(DeviceDetailsDTO result) {
+           callback.onSuccess(DTOHelper.getBeanModel(result));
+         }
+       });
+   }
+
 }
