@@ -22,7 +22,6 @@ package org.openremote.controller.protocol.bus;
 
 import java.io.IOException;
 
-import org.openremote.controller.protocol.knx.ip.KnxIpException;
 
 /**
  * The abstraction of a physical bus/gateway. <p>
@@ -34,36 +33,32 @@ public interface PhysicalBus
   /**
    * Start the physical bus.
    *
-   * @param srcAddr
-   * @return An object that may be used by the caller.
-   * @throws KnxIpException
-   * @throws IOException
-   * @throws InterruptedException
+   * @param  inChannel      // TODO : should be in ctor
+   * @param  outChannel     // TODO : should be in ctor
    */
   void start(Object inChannel, Object outChannel);
 
   /**
    * Stop the physical bus.
-   *
-   * @throws InterruptedException
    */
   void stop();
 
   /**
    * Send a message to device(s) through the physical bus.
    *
-   * @param message
-   *           The message to send.
-   * @throws IOException
+   * @param   message  message to send to gateway
+   *
+   * @throws  IOException   if there was an I/O error when sending message
+   *
    */
   void send(Message message) throws IOException;
 
   /**
    * Receive a message from the physical bus. This method blocks until a message is received.
    *
-   * @return Expected message.
-   * @throws IOException
-   *            Message could not be received.
+   * @return received message.
+   *
+   * @throws IOException    if there was an I/O error while receiving the message
    */
   Message receive() throws IOException;
   
