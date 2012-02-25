@@ -19,19 +19,21 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.CommonWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
  * The window to creates or updates a device.
  */
 public class DeviceWindow extends CommonWindow {
-   
    
    /** The device form. */
    private CommonForm deviceForm;
@@ -46,6 +48,7 @@ public class DeviceWindow extends CommonWindow {
     */
    public DeviceWindow(BeanModel deviceBeanModel) {
       super();
+      Info.display("INFO", "DeviceWindow");
       this.deviceModel = deviceBeanModel;
       initial(deviceBeanModel);
       show();
@@ -57,12 +60,24 @@ public class DeviceWindow extends CommonWindow {
     * 
     * @param deviceBeanModel the device bean model
     */
-   protected void initial(BeanModel deviceBeanModel) {
+   protected void initial(final BeanModel deviceBeanModel) {
       setSize(360, 200);
-      setHeading(((Device) deviceBeanModel.getBean()).getName() == null ? "New Device" : "Edit Device");
-      deviceForm = new DeviceInfoForm(this, deviceBeanModel);
+      setHeading("Loading...");
+      // TODO EBR better indicate device is loading
+      
+      DeviceBeanModelProxy.loadDeviceDetails(deviceBeanModel, new AsyncSuccessCallback<BeanModel>() {  
+        public void onSuccess(BeanModel result) {
+          
+          // TODO EBR : seems this is only used for edit, never new
+          
+          setHeading(((DeviceDetailsDTO) result.getBean()).getName() == null ? "New Device" : "Edit Device");
+          deviceForm = new DeviceInfoForm(DeviceWindow.this, result);
+          add(deviceForm);
+          layout();
+        }
+      });
+      
       ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
-      add(deviceForm);
    }
 
 }

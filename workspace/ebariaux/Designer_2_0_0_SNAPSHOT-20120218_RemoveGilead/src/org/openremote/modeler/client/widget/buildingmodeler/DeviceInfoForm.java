@@ -23,14 +23,15 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -64,6 +65,7 @@ public class DeviceInfoForm extends CommonForm {
     */
    public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
+      Info.display("INFO", "DeviceInfoForm");
       this.deviceBeanModel = deviceBeanModel;
       this.wrapper = wrapper;
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
@@ -75,7 +77,10 @@ public class DeviceInfoForm extends CommonForm {
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
                }
             };
-            if (((Device) deviceBeanModel.getBean()).getName() == null) {
+            
+            // TODO EBR : to review, seems this is only used for edit
+            
+            if (((DeviceDetailsDTO) deviceBeanModel.getBean()).getName() == null) {
                DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
             } else {
                DeviceBeanModelProxy.updateDevice(deviceBeanModel, getFieldMap(), callback);
@@ -110,14 +115,16 @@ public class DeviceInfoForm extends CommonForm {
       modelField.setFieldLabel("Model");
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
+
+      // TODO EBR : seems this will never be null
       
       if (deviceBeanModel != null) {
-         Device device = deviceBeanModel.getBean();
+         DeviceDetailsDTO device = deviceBeanModel.getBean();
          nameField.setValue(device.getName());
          vendorField.setValue(device.getVendor());
          modelField.setValue(device.getModel());
       }
-      
+
       add(nameField);
       add(vendorField);
       add(modelField);

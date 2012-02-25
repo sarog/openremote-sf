@@ -58,6 +58,11 @@ import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -85,7 +90,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -595,6 +599,10 @@ public class DevicePanel extends ContentPanel {
       editDeviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
+           
+           // TODO EBR : review
+           
+           
             editDeviceWindow.hide();
             BeanModel deviceModel = be.getData();
             tree.getStore().update(deviceModel);
@@ -1059,15 +1067,15 @@ public class DevicePanel extends ContentPanel {
 
    private void editSelectedModel() {
       BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
-      if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+      if (selectedModel != null && selectedModel.getBean() instanceof DeviceDTO) {
          editDevice(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+      } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommandDTO) {
          editCommand(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof Sensor){
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SensorDTO){
          editSensor(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof Slider){
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SliderDTO){
          editSlider(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof Switch){
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SwitchDTO){
          editSwitch(selectedModel);
       }
    }
