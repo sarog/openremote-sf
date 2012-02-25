@@ -34,15 +34,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface DeviceMacroRPCServiceAsync {
 
-
-    /**
-     * Load all.
-     * 
-     * @param async the async
-     * 
-     */
-    void loadAll(AsyncCallback<List<DeviceMacro>> async);
-
     /**
      * Save device macro.
      * 

@@ -38,14 +38,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceMacroRPCService extends RemoteService {
 
    /**
-    * Load all device macros.
-    * 
-    * @return the list< device macro>
-    */
-   List<DeviceMacro> loadAll();
-
-
-   /**
     * Save device macro.
     * 
     * @param deviceMacro the device macro
