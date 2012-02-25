@@ -38,7 +38,7 @@ import org.jdom.Element;
  * 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class RangeTest
+public class RangeWriteTest
 {
 
 
