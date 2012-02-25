@@ -56,16 +56,6 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
       this.deviceMacroService = deviceMacroService;
    }
 
-
-   /**
-    * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadAll()
-    */
-   public List<DeviceMacro> loadAll() {
-      return deviceMacroService.loadAll(userService.getAccount());
-   }
-
-
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#save(org.openremote.modeler.domain.DeviceMacro)
