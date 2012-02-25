@@ -27,7 +27,7 @@ import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
 import org.openremote.controller.protocol.knx.DimIncreaseDecreaseTest;
 import org.openremote.controller.protocol.knx.ScalingTest;
 import org.openremote.controller.protocol.knx.KNXIpConnectionManagerTest;
-import org.openremote.controller.protocol.knx.RangeTest;
+import org.openremote.controller.protocol.knx.RangeWriteTest;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
 
 /**
@@ -41,7 +41,7 @@ import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
        KNXCommandBuilderTest.class,
        DimIncreaseDecreaseTest.class,
        ScalingTest.class,
-       RangeTest.class,
+       RangeWriteTest.class,
        GroupAddressTest.class,
        KNXIpConnectionManagerTest.class,
        TwoOctetFloatTest.class
