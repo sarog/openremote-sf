@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -41,6 +41,8 @@ import org.jdom.Element;
 public class RangeWriteTest
 {
 
+  // TODO : ORCJAVA-214- test range command write() ops with an in-memory gateway mock
+  
 
   // Test Setup -----------------------------------------------------------------------------------
 
@@ -50,6 +52,9 @@ public class RangeWriteTest
   {
     builder = new KNXCommandBuilder(
         "127.0.0.1", 9999,
+
+        // TODO : no need to use a real physical bus for tests (or start a dummy knx gateway server to respond)
+
         "org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus"
     );
   }
