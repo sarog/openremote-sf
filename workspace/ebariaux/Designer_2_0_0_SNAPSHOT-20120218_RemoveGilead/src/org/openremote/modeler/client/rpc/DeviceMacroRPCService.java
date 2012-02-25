@@ -20,10 +20,12 @@
 package org.openremote.modeler.client.rpc;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -82,4 +84,7 @@ public interface DeviceMacroRPCService extends RemoteService {
    List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
 
 
+   
+   ArrayList<MacroDTO> loadAllDTOs();
+   
 }
