@@ -26,10 +26,37 @@ import java.io.OutputStream;
 /**
  * A generic KNXnet/IP tunneling message. Manages the common IP frame header,
  * which includes information about the variable frame length, the KNXnet/IP version used and
- * a service type identifier (STI).  <p>
+ * a service type identifier (STI). The fixed header is included with each written
+ * KNXnet/IP message. <p>
  *
  * Each IP Message may represent either a request or response message as defined
- * in {@link IpMessage.Primitive}
+ * in {@link IpMessage.Primitive}  <p>
+ *
+ * The structure of the KNXnet/IP 1.0 header is following:
+ *
+ * <pre>
+ *   +--------+--------+----------------+----------------+------- ... -------+
+ *   | Header |Version | Service Type   |  Total Frame   |   Frame Body      |
+ *   |  Size  |        |  Identifier    |      Size      |                   |
+ *   +--------+--------+----------------+----------------+------- ... -------+
+ *     1 byte   1 byte      2 bytes          2 bytes            n bytes
+ * </pre>
+ *
+ * The header size for version 1.0 is fixed at 6 bytes (see {@link #KNXNET_IP_10_HEADER_SIZE}). <p>
+ *
+ * Version identifier for version 1.0 is defined in {@link #KNXNET_IP_10_VERSION}.
+ *
+ * Service type identifiers are defined as follows:
+ *
+ *   TODO
+ *
+ * <p>
+ *
+ * Total frame size should indicate the length of the entire frame in bytes -- including the
+ * fixed header size of 6 bytes plus the variable length frame body size.  </p>
+ *
+ * Frame body varies in content and lenght depending on the service type identifier.
+ *
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
