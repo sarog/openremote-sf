@@ -116,6 +116,32 @@ public abstract class IpMessage
   }
 
 
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Does a simple validation on given KNXnet/IP frame content to check if it has a valid
+   * header values -- checks for header length, version identifier and total frame size. <p>
+   *
+   * This method applies to version 1.0 of KNXnet/IP specification.
+   *
+   * @param     content   KNXnet/IP frame as byte array
+   *
+   * @return    true if valid frame, false otherwise
+   */
+  public static boolean isValidFrame(byte[] content)
+  {
+    if (content.length < 6)
+    {
+      return false;
+    }
+
+    return (content[0] == KNXNET_IP_10_HEADER_SIZE &&
+            content[1] == KNXNET_IP_10_VERSION     &&
+            content[4] + content[5] >= KNXNET_IP_10_HEADER_SIZE);
+  }
+
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
