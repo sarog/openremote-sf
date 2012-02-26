@@ -32,6 +32,9 @@ import java.io.OutputStream;
  * Each IP Message may represent either a request or response message as defined
  * in {@link IpMessage.Primitive}  <p>
  *
+ * This implementation is based on the version 1.1 of the KNX specification as defined in
+ * Volume 3: System Specifications, Part 8: EIBnet/IP, Chapter 2: Core. <p> 
+ *
  * The structure of the KNXnet/IP 1.0 header is following:
  *
  * <pre>
@@ -180,9 +183,9 @@ public abstract class IpMessage
     os.write((d >> 8) & 0xFF);
     os.write(d & 0xFF);
 
-    // IP body content size (two byte value)...
+    // Total frame size (two byte value)...
 
-    d = this.getVariableLength() + 6;
+    d = this.getVariableLength() + KNXNET_IP_10_HEADER_SIZE;
     os.write((d >> 8) & 0xFF);
     os.write(d & 0xFF);
   }
@@ -199,26 +202,26 @@ public abstract class IpMessage
   }
 
   /**
-   * TODO : not used externally, reduce visibility.
-   *
    * Returns the service type identifier of this frame.
    *
    * @return  service type identifier
    */
-  public int getServiceTypeIdentifier()
+  private int getServiceTypeIdentifier()
   {
+    // TODO : can be replaced with direct variable access
+
     return this.sti;
   }
 
   /**
-   * TODO : not used externally, reduce visibility.
-   *
    * Returns the length of the IP body in this frame.
    *
    * @return  size of the IP body portion of this KNXNet/IP frame
    */
-  public int getVariableLength()
+  private int getVariableLength()
   {
+    // TODO : can be replaced with direct variable access
+
     return this.variableLength;
   }
 
