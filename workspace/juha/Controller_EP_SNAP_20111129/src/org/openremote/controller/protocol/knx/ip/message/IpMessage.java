@@ -56,7 +56,7 @@ import java.io.OutputStream;
  * <p>
  *
  * Total frame size should indicate the length of the entire frame in bytes -- including the
- * fixed header size of 6 bytes plus the variable length frame body size.  </p>
+ * fixed header size of 6 bytes plus the variable length frame body size.  <p>
  *
  * Frame body varies in content and lenght depending on the service type identifier.
  *
@@ -83,6 +83,28 @@ public abstract class IpMessage
    * The version identifier of KNXnet/IP 1.0 frame :  {@value}
    */
   public final static byte KNXNET_IP_10_VERSION = 0x10;
+
+  
+  /**
+   * Byte order index of the header size field in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_SIZE_INDEX = 0;
+
+  /**
+   * Byte order index of the header version field in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_VERSION_INDEX = 1;
+
+  /**
+   * Byte order index of the Service Type Identifier (STI) high byte in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_STI_HIBYTE_INDEX = 2;
+
+  /**
+   * Byte order index of the Service Type Identifier (STI) low byte in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_STI_LOBYTE_INDEX = 3;
+
 
 
   /**
