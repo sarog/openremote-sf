@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,24 +23,49 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class IpMessage {
-  public static final int     OK     = 0;
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public abstract class IpMessage
+{
+
+  // Constants ------------------------------------------------------------------------------------
+
+  public static final int OK     = 0;
+
   private static final byte[] HEADER = { 0x06, 0x10 };
-  private int                 sti;
-  private int                 variableLength;
 
-  public static enum Primitive {
+
+  // Enums ----------------------------------------------------------------------------------------
+
+  public static enum Primitive
+  {
     REQ, RESP
-  };
+  }
 
-  public abstract Primitive getPrimitive();
 
-  public IpMessage(int sti, int variableLength) {
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private int sti;
+  private int variableLength;
+
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public IpMessage(int sti, int variableLength)
+  {
     this.sti = sti;
     this.variableLength = variableLength;
   }
 
-  public void write(OutputStream os) throws IOException {
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  public void write(OutputStream os) throws IOException
+  {
     os.write(HEADER);
     int d = this.getServiceTypeIdentifier();
     os.write((d >> 8) & 0xFF);
@@ -50,15 +75,21 @@ public abstract class IpMessage {
     os.write(d & 0xFF);
   }
 
-  public int getSyncSendTimeout() {
+  public int getSyncSendTimeout()
+  {
     return 0;
   }
 
-  public int getServiceTypeIdentifier() {
+  public int getServiceTypeIdentifier()
+  {
     return this.sti;
   }
 
-  public int getVariableLength() {
+  public int getVariableLength()
+  {
     return this.variableLength;
   }
+
+  public abstract Primitive getPrimitive();
+
 }
