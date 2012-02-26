@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,30 +23,52 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class IpDiscoverReq extends IpMessage {
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public class IpDiscoverReq extends IpMessage
+{
+  // Constants ------------------------------------------------------------------------------------
+
   // TODO check value
   public static final int SEARCH_TIMEOUT = 10000;
-  public static final int STI            = 0x201;
-  private Hpai            discoveryEndpoint;
 
-  public IpDiscoverReq(Hpai hpai) {
+  public static final int STI            = 0x201;
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Hpai discoveryEndpoint;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public IpDiscoverReq(Hpai hpai)
+  {
     super(STI, Hpai.getLength());
+
     this.discoveryEndpoint = hpai;
   }
 
-  @Override
-  public Primitive getPrimitive() {
+
+  // IpMessage Overrides --------------------------------------------------------------------------
+
+  @Override public Primitive getPrimitive()
+  {
     return Primitive.REQ;
   }
 
-  @Override
-  public void write(OutputStream os) throws IOException {
+  @Override public void write(OutputStream os) throws IOException
+  {
     super.write(os);
+
     this.discoveryEndpoint.write(os);
   }
 
-  @Override
-  public int getSyncSendTimeout() {
+  @Override public int getSyncSendTimeout()
+  {
     return SEARCH_TIMEOUT;
   }
 }
