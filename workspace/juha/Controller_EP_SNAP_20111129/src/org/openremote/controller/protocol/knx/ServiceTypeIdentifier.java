@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+
 /**
  * Service type identifier field in KNXnet/IP frame header.
  * See {@link org.openremote.controller.protocol.knx.ip.message.IpMessage} for additional
@@ -27,12 +29,17 @@ package org.openremote.controller.protocol.knx;
  *
  * Service type identifier is sent with two bytes in the KNXnet/IP header. The first byte
  * (high byte) indicates a generic service family category and the second (low) byte
- * indicates a specific service type within the family.
+ * indicates a specific service type within the family. <p>
+ *
+ * This implementation is according to KNX 1.1 specification and version 1.0 of the
+ * KNXnet/IP protocol. See Volume 3: System Specification, Part 8: EIBnet/IP, Chapter 1:
+ * Overview and Chapter 2: Core for more information.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public enum ServiceTypeIdentifier
 {
+
 
   // Core Service Family...
 
@@ -126,13 +133,38 @@ public enum ServiceTypeIdentifier
   ROUTING_LOST_MESSAGE(0x531);
   
 
+
+  // Enum Instance Fields -------------------------------------------------------------------------
+
+  /**
+   * KNX frame header service type identifier (STI).
+   */
   private int sti;
+
+
+  // Enum Constructors ----------------------------------------------------------------------------
 
   private ServiceTypeIdentifier(int serviceTypeIdentifier)
   {
     this.sti = serviceTypeIdentifier;
   }
 
+
+  // Enum Instance Methods ------------------------------------------------------------------------
+
+  /**
+   * Indicates if this service type identifier field is included in the given KNXnet/IP frame.
+   *
+   * @param     knxFrame    KNXnet/IP frame as byte array
+   *
+   * @return    true if this service type identifier (STI) is included in the KNX frame header,
+   *            false otherwise
+   */
+  public boolean isIncluded(byte[] knxFrame)
+  {
+    return knxFrame[IpMessage.KNXNET_IP_10_HEADER_STI_HIBYTE_INDEX] == ((sti >> 8) & 0xFF) &&
+           knxFrame[IpMessage.KNXNET_IP_10_HEADER_STI_LOBYTE_INDEX] == (sti & 0xFF);
+  }
 
 }
 
