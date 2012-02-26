@@ -24,37 +24,106 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * TODO
+ * A generic KNXnet/IP tunneling message. Manages the common IP frame header,
+ * which includes information about the variable frame length, the KNXnet/IP version used and
+ * a service type identifier (STI).  <p>
+ *
+ * Each IP Message may represent either a request or response message as defined
+ * in {@link IpMessage.Primitive}
  *
  * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public abstract class IpMessage
 {
 
   // Constants ------------------------------------------------------------------------------------
 
-  public static final int OK     = 0;
+  /**
+   * Indicates message status (for response messages and acknowledgement messages).
+   */
+  public final static int OK = 0;
 
-  private static final byte[] HEADER = { 0x06, 0x10 };
+  /**
+   * The fixed size of a KNXNet/IP 1.0 frame header : {@value}
+   */
+  public final static byte KNXNET_IP_10_HEADER_SIZE = 0x06;
+
+  /**
+   * The version identifier of KNXnet/IP 1.0 frame :  {@value}
+   */
+  public final static byte KNXNET_IP_10_VERSION = 0x10;
+
+
+  /**
+   * The first two bytes of an KNXnet/IP frame header. <p>
+   *
+   * First byte indicates the header length (not including the variable size IP body) which
+   * is a fixed size of 6 bytes in version 1.0 of KNXnet/IP protocol.  <p>
+   *
+   * The second byte is the version identifier this KNXNet/IP frame adheres to (0x10 stands
+   * for version 1.0)
+   */
+  private static final byte[] HEADER = { KNXNET_IP_10_HEADER_SIZE, KNXNET_IP_10_VERSION };
 
 
   // Enums ----------------------------------------------------------------------------------------
 
+  /**
+   * Used to indicate the message primitive, either a request message or a response message.
+   */
   public static enum Primitive
   {
-    REQ, RESP
+    /**
+     * KNXnet/IP request message
+     */
+    REQ,
+
+    /**
+     * KNXnet/IP response message
+     */
+    RESP
   }
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * Service type identifier for this message.  <p>
+   *
+   * For example:
+   *
+   * <pre>
+   *   SEARCH_REQUEST           --  0x0201
+   *   SEARCH_RESPONSE          --  0x0202
+   *   DESCRIPTION_REQUEST      --  0x0203
+   *   DESCRIPTION_RESPNSE      --  0x0204
+   *   CONNECT_REQUEST          --  0x0205
+   *   CONNECT_RESPONSE         --  0x0206
+   *   CONNECTIONSTATE_REQUEST  --  0x0207
+   *   CONNECTIONSTATE_RESPONSE --  0x0208
+   *   DISCONNECT_REQUEST       --  0x0209
+   *   DISCONNECT_RESPONSE      --  0x020A
+   * </pre>
+   */
   private int sti;
+
+  /**
+   * The size of the variable length IP body in this KNXnet/IP frame.
+   */
   private int variableLength;
 
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Constructs a new KNXnet/IP message with a given service type identifier and a given size of
+   * the variable length IP body.
+   *
+   * @param sti               service type identifier
+   * @param variableLength    the length of the variable size IP body in this KNXnet/IP frame
+   */
   public IpMessage(int sti, int variableLength)
   {
     this.sti = sti;
@@ -64,32 +133,75 @@ public abstract class IpMessage
 
   // Public Instance Methods ----------------------------------------------------------------------
 
+  /**
+   * Writes an KNXnet/IP message *header* to a given output stream.
+   *
+   * @param os      output stream to write the KNXnet/IP header to
+   *
+   * @throws IOException
+   *                if there was an I/O error writing to the output stream
+   */
   public void write(OutputStream os) throws IOException
   {
+    // KNXNet/IP frame length and version (two bytes)...
+
     os.write(HEADER);
+
+    // Service type identifier as a two-byte value...
+
     int d = this.getServiceTypeIdentifier();
     os.write((d >> 8) & 0xFF);
     os.write(d & 0xFF);
+
+    // IP body content size (two byte value)...
+
     d = this.getVariableLength() + 6;
     os.write((d >> 8) & 0xFF);
     os.write(d & 0xFF);
   }
 
+  /**
+   * Timeout used in connection with request frames to indicate how long to wait for a
+   * device response frame or acknowledgement.
+   *
+   * @return    timeout in milliseconds
+   */
   public int getSyncSendTimeout()
   {
     return 0;
   }
 
+  /**
+   * TODO : not used externally, reduce visibility.
+   *
+   * Returns the service type identifier of this frame.
+   *
+   * @return  service type identifier
+   */
   public int getServiceTypeIdentifier()
   {
     return this.sti;
   }
 
+  /**
+   * TODO : not used externally, reduce visibility.
+   *
+   * Returns the length of the IP body in this frame.
+   *
+   * @return  size of the IP body portion of this KNXNet/IP frame
+   */
   public int getVariableLength()
   {
     return this.variableLength;
   }
 
+  /**
+   * Indicates whether this frame is a request or a response frame.
+   *
+   * @see IpMessage.Primitive
+   *
+   * @return    this frame's type
+   */
   public abstract Primitive getPrimitive();
 
 }
