@@ -23,6 +23,8 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+
 /**
  * This is an implementation of a <tt>SEARCH_REQUEST</tt> frame in KNXnet/IP v1.0 as
  * defined in KNX 1.1 specifications Volume 3: System Specifications, Part 8: EIBnet/IP,
@@ -77,8 +79,28 @@ public class IpDiscoverReq extends IpMessage
   public final static int STI            = 0x201;
 
 
-  // Instance Fields ------------------------------------------------------------------------------
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Indicates whether the given KNXnet/IP frame includes a <tt>SEARCH_REQUEST</tt> service
+   * type identifier.
+   * 
+   * @param     knxFrame    KNXnet/IP frame as a byte array
+   *
+   * @return    true if the frame header includes a <tt>SEARCH_REQUEST</tt> service type
+   *            identifier, false otherwise
+   */
+  public static boolean isSearchRequest(byte[] knxFrame)
+  {
+    return (knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]       == KNXNET_IP_10_HEADER_SIZE &&
+            knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX]    == KNXNET_IP_10_VERSION &&
+            ServiceTypeIdentifier.SEARCH_REQUEST.isIncluded(knxFrame));
+  }
+
+
+
+  // Instance Fields ------------------------------------------------------------------------------
 
   /**
    * Client address and port the gateway/router can use to directly send a search response
@@ -140,6 +162,8 @@ public class IpDiscoverReq extends IpMessage
    */
   @Override public int getSyncSendTimeout()
   {
+    // TODO : could use TimeUnit instead of int
+
     return SEARCH_TIMEOUT;
   }
 }
