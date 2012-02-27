@@ -116,7 +116,7 @@ public class DeviceCommandWindow extends FormWindow {
          public void onSuccess(DeviceCommandDetailsDTO cmd) {
            deviceCommand = cmd;
            initial(); // TODO: review to display so form of wait message while loading the command
-           show();
+           show(); // TODO EBR: this should just be layout, show() being called by caller, but doesn't work
          }
       });
    }

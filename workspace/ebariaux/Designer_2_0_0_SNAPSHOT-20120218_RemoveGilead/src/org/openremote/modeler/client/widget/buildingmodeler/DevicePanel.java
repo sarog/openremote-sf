@@ -612,20 +612,7 @@ public class DevicePanel extends ContentPanel {
       }
 
       final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd, eventBus);
-      // TODO : pass eventBus
-      
-//      deviceCommandWindow.show();
-/*
-      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-           Info.display("INFO", "DevicePanel.afterSubmit");
-//            BeanModel deviceCommandModel = be.getData();
-//            tree.getStore().update(deviceCommandModel);
-//            Info.display("Info", "Edit device command " + deviceCommandModel.get("name") + " success.");
-//            deviceCommandWindow.hide();
-         }
-      });*/
+      // deviceCommandWindow.show(); // TODO EBR : this should be the correct way to do it, but having the show here messes up the size of the displayed window
    }
    
    private void editSensor(final BeanModel selectedModel) {
