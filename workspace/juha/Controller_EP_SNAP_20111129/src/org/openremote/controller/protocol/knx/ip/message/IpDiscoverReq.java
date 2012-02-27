@@ -36,7 +36,7 @@ import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
  * includes Host Protocol Address Information (HPAI) (see {@link Hpai}) block as part
  * of the frame body. <p>
  *
- * The SEARCH_REQUEST frame is therefore:
+ * The <tt>SEARCH_REQUEST</tt> frame is therefore:
  *
  * <pre>
  *   +------- ... -------+--------------- ... ---------------+
@@ -76,7 +76,7 @@ public class IpDiscoverReq extends IpMessage
    * The high byte value (0x02) indicates 'Core' service family, and low byte (0x01)
    * indicates search request service.
    */
-  public final static int STI            = 0x201;
+  public final static int STI = ServiceTypeIdentifier.SEARCH_REQUEST.getValue();
 
 
 
