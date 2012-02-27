@@ -57,11 +57,9 @@ public class DeviceWindow extends CommonWindow {
       this.deviceModel = deviceBeanModel;
       this.eventBus = eventBus;
       initial(deviceBeanModel);
-//      show();
-      setFocusWidget(deviceForm.getFields().get(0));
    }
    
-   /**
+  /**
     * Initial.
     * 
     * @param deviceBeanModel the device bean model
@@ -88,6 +86,7 @@ public class DeviceWindow extends CommonWindow {
           setHeading(((DeviceDetailsDTO) result.getBean()).getName() == null ? "New Device" : "Edit Device");
           deviceForm = new DeviceInfoForm(DeviceWindow.this, result);
           add(deviceForm);
+          setFocusWidget(deviceForm.getFields().get(0));
           layout();
         }
       });
