@@ -210,25 +210,6 @@ public class DeviceBeanModelProxy {
       });
    }
 
-   
-   /**
-    * Update device.
-    * 
-    * @param deviceModel the device model
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      Device device = deviceModel.getBean();
-      setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModelDataBase.deviceTable.update(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
    public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
    }
