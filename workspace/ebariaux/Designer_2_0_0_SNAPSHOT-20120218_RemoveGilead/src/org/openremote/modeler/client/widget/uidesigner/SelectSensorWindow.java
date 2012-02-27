@@ -24,6 +24,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -89,7 +90,7 @@ public class SelectSensorWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSensorModel = se.getSelectedItem();
             if (selectedSensorModel != null) {
-               SensorDetailsDTO sensor = selectedSensorModel.getBean();
+               SensorWithInfoDTO sensor = selectedSensorModel.getBean();
                String sensorInfo = "<p><b>Sensor info</b></p><p>Type: " + sensor.getType() + "</p><p>Command: "
                      + sensor.getCommandName() + "</P>";
                if (sensor.getType() == SensorType.RANGE) {

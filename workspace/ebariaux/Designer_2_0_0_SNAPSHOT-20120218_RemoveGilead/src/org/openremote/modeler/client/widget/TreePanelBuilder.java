@@ -273,11 +273,11 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildCommandTree(final Device device, final BeanModel selectedCommandModel) {
+   public static TreePanel<BeanModel> buildCommandTree(final Long deviceId, final Long selectedCommandId) {
      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
         @Override
         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-           DeviceCommandBeanModelProxy.loadDeviceCommandsDTOFromDevice(device,
+           DeviceCommandBeanModelProxy.loadDeviceCommandsDTOFromDeviceId(deviceId,
                  new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
 
                     @Override
@@ -303,12 +303,10 @@ public class TreePanelBuilder {
      loadDeviceTreeLoader.addLoadListener(new LoadListener() {
         public void loaderLoad(LoadEvent le) {
            super.loaderLoad(le);
-           Info.display("INFO", "Loaded class " + le.getData().getClass());
-           if (selectedCommandModel != null) {
-             Info.display("INFO", "Will select " + selectedCommandModel.getBean());
+           if (selectedCommandId != null) {
              for (BeanModel bm : ((List<BeanModel>)le.getData())) {
                DeviceCommandDTO dto = bm.getBean();
-               if (dto.getOid() == ((DeviceCommand)selectedCommandModel.getBean()).getOid()) {
+               if (dto.getOid() == selectedCommandId) {
                  tree.getSelectionModel().select(bm, false);
                }
              }
@@ -324,9 +322,9 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
                return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Device) {
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
             } else {
                return ICON.folder();

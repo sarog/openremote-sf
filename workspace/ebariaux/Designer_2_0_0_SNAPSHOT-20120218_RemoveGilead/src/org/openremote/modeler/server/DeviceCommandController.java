@@ -100,7 +100,6 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    }
 
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
-     System.out.println(">>DeviceCommandController.loadCommandsDTOByDevice");
      return deviceCommandService.loadCommandsDTOByDevice(id);
    }
    

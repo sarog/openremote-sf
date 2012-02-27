@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -82,4 +83,7 @@ public interface SensorRPCService extends RemoteService {
     */
    List<Sensor> saveAll(List<Sensor> sensorList);
    
+  SensorDetailsDTO loadSensorDetails(long id);
+
+  void updateSensorWithDTO(SensorDetailsDTO sensor);
 }

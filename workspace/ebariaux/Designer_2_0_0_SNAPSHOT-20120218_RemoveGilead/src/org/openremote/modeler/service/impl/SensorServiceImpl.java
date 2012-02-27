@@ -66,6 +66,11 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    }
 
    @Transactional public Sensor updateSensor(Sensor sensor) {
+     genericDAO.saveOrUpdate(sensor);
+     return sensor;
+     /*
+      * 
+      * Old implementation
       Sensor old = null;
       
       if (SensorType.RANGE == sensor.getType()) {
@@ -85,6 +90,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       genericDAO.delete(old.getSensorCommandRef());
       old.setSensorCommandRef(sensor.getSensorCommandRef());
       return old;
+      */
    }
 
    public Sensor loadById(long id) {

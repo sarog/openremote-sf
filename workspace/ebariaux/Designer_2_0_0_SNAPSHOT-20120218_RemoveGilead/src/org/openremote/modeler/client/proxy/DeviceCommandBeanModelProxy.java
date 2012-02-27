@@ -213,10 +213,9 @@ public class DeviceCommandBeanModelProxy {
          
       });
    }
-
    
-   public static void loadDeviceCommandsDTOFromDevice(Device device,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
-     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(device.getOid(), callback);
+   public static void loadDeviceCommandsDTOFromDeviceId(final Long deviceId,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(deviceId, callback);
   }
    
 }
