@@ -153,6 +153,21 @@ public enum ServiceTypeIdentifier
   // Enum Instance Methods ------------------------------------------------------------------------
 
   /**
+   * Returns the integer value of this service type identifier. <p>
+   *
+   * Service type identifier is included in every KNXnet/IP frame header as a two byte value.
+   * The high byte ({@code (getValue() >> 8) & 0xFF)}) is a service family identifier. The low
+   * byte ({@code getValue() & 0xFF}) is the service identifier within the service family. <p>
+   *
+   * @return    service type identifier value as an integer
+   */
+  public int getValue()
+  {
+    return sti;
+  }
+
+
+  /**
    * Indicates if this service type identifier field is included in the given KNXnet/IP frame.
    *
    * @param     knxFrame    KNXnet/IP frame as byte array
