@@ -595,31 +595,8 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editDevice(BeanModel selectedModel) {
-      final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel);
-      editDeviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-        
-        
-        
-         @Override
-        public void handleEvent(SubmitEvent be) {
-Info.display("INFO", "handleEvent");
-super.handleEvent(be);
-        }
-
-        @Override
-         public void afterSubmit(SubmitEvent be) {
-           
-           // TODO EBR : review
-           
-           Info.display("INFO", "1.");
-            editDeviceWindow.hide();
-            Info.display("INFO", "2.");
-            BeanModel deviceModel = be.getData();
-            Info.display("INFO", "3.");
-            tree.getStore().update(deviceModel);
-            Info.display("Info", "Edit device " + deviceModel.get("name") + " success.");
-         }
-      });
+      final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel, eventBus);
+//      editDeviceWindow.show();
    }
    
    /**
