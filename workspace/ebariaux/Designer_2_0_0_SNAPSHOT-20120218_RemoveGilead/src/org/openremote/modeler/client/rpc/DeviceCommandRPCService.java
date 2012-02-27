@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -85,4 +86,9 @@ public interface DeviceCommandRPCService extends RemoteService {
    List<DeviceCommand> loadByDevice(long id);
 
    ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id);
+   
+   DeviceCommandDetailsDTO loadCommandDetailsDTO(long id);
+   
+   void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto);
+
 }

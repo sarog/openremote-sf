@@ -147,14 +147,14 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
      ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
      for (DeviceCommand dc : device.getDeviceCommands()) {
-       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
      }
      deviceDTO.setDeviceCommands(dcDTOs);
      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
      for (Sensor sensor : device.getSensors()) {
        SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName());
        DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
-       sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
        sensorDTOs.add(sensorDTO);
      }
      deviceDTO.setSensors(sensorDTOs);
@@ -162,9 +162,9 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      for (Switch s : device.getSwitchs()) {
        SwitchDTO switchDTO = new SwitchDTO(s.getOid(), s.getDisplayName());
        DeviceCommand dc = s.getSwitchCommandOnRef().getDeviceCommand();
-       switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
        dc = s.getSwitchCommandOffRef().getDeviceCommand();
-       switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
        switchDTOs.add(switchDTO);
      }
      deviceDTO.setSwitches(switchDTOs);
@@ -172,7 +172,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      for (Slider s : device.getSliders()) {
        SliderDTO sliderDTO = new SliderDTO(s.getOid(), s.getDisplayName());
        DeviceCommand dc = s.getSetValueCmd().getDeviceCommand();
-       sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
        sliderDTOs.add(sliderDTO);
      }
      deviceDTO.setSliders(sliderDTOs);
