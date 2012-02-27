@@ -20,45 +20,41 @@
  */
 package org.openremote.modeler.shared.dto;
 
-import java.util.HashMap;
-
 import org.openremote.modeler.domain.SensorType;
 
-public class SensorDetailsDTO implements DTO {
+public class SensorWithInfoDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
 
-  private String name;
+  private String displayName;
   private SensorType type;
   private String commandName;
-  private Integer minValue;
-  private Integer maxValue;
-  private HashMap<String, String> states;
+  private String minValue;
+  private String maxValue;
+  private String statesInfo;
   private Long oid;
-  private Long deviceId;
-  private Long commandId;
   
-  public SensorDetailsDTO() {
+  public SensorWithInfoDTO() {
     super();
   }
 
-  public SensorDetailsDTO(Long oid, String name, SensorType type, String commandName, Integer minValue, Integer maxValue, HashMap<String, String> states) {
+  public SensorWithInfoDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, String statesInfo) {
     super();
     this.oid = oid;
-    this.name = name;
+    this.displayName = displayName;
     this.type = type;
     this.commandName = commandName;
     this.minValue = minValue;
     this.maxValue = maxValue;
-    this.states = states;
+    this.statesInfo = statesInfo;
   }
 
-  public String getName() {
-    return name;
+  public String getDisplayName() {
+    return displayName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public SensorType getType() {
@@ -77,28 +73,28 @@ public class SensorDetailsDTO implements DTO {
     this.commandName = commandName;
   }
 
-  public Integer getMinValue() {
+  public String getMinValue() {
     return minValue;
   }
 
-  public void setMinValue(Integer minValue) {
+  public void setMinValue(String minValue) {
     this.minValue = minValue;
   }
 
-  public Integer getMaxValue() {
+  public String getMaxValue() {
     return maxValue;
   }
 
-  public void setMaxValue(Integer maxValue) {
+  public void setMaxValue(String maxValue) {
     this.maxValue = maxValue;
   }
 
-  public HashMap<String, String> getStates() {
-    return states;
+  public String getStatesInfo() {
+    return statesInfo;
   }
 
-  public void setStates(HashMap<String, String> states) {
-    this.states = states;
+  public void setStatesInfo(String statesInfo) {
+    this.statesInfo = statesInfo;
   }
 
   public Long getOid() {
@@ -108,21 +104,5 @@ public class SensorDetailsDTO implements DTO {
   public void setOid(Long oid) {
     this.oid = oid;
   }
-
-  public Long getDeviceId() {
-    return deviceId;
-  }
-
-  public void setDeviceId(Long deviceId) {
-    this.deviceId = deviceId;
-  }
-
-  public Long getCommandId() {
-    return commandId;
-  }
-
-  public void setCommandId(Long commandId) {
-    this.commandId = commandId;
-  }
-
+  
 }
