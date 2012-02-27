@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -83,5 +84,9 @@ public interface DeviceCommandRPCServiceAsync {
    void loadByDevice(long id, AsyncCallback<List<DeviceCommand>> asyncCallback);
    
    void loadCommandsDTOByDevice(long id, AsyncCallback<ArrayList<DeviceCommandDTO>> asyncCallback);
-      
+
+   void loadCommandDetailsDTO(long id, AsyncCallback<DeviceCommandDetailsDTO> asyncCallback);
+
+   void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto, AsyncCallback<Void> asyncCallback);
+
 }

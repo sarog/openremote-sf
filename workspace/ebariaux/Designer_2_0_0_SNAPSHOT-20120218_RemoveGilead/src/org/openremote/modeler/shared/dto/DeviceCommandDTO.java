@@ -25,16 +25,18 @@ public class DeviceCommandDTO implements DTO {
   private static final long serialVersionUID = 1L;
   
   private String displayName;
+  private String protocolType;
   private long oid;
 
   public DeviceCommandDTO() {
     super();
   }
   
-  public DeviceCommandDTO(long oid, String displayName) {
+  public DeviceCommandDTO(long oid, String displayName, String protocolType) {
     super();
     this.oid = oid;
     this.displayName = displayName;
+    this.protocolType = protocolType;
   }
 
   public String getDisplayName() {
@@ -51,6 +53,14 @@ public class DeviceCommandDTO implements DTO {
   
   public void setOid(long oid) {
     this.oid = oid;
+  }
+
+  public String getProtocolType() {
+    return protocolType;
+  }
+
+  public void setProtocolType(String protocolType) {
+    this.protocolType = protocolType;
   }
 
 }

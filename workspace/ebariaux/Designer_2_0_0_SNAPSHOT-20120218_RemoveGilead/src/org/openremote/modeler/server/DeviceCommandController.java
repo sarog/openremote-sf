@@ -21,12 +21,17 @@
 package org.openremote.modeler.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>DeviceCommandRPCService</code>.
@@ -106,5 +111,29 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
      System.out.println(">>DeviceCommandController.loadCommandsDTOByDevice");
      return deviceCommandService.loadCommandsDTOByDevice(id);
+   }
+   
+   public DeviceCommandDetailsDTO loadCommandDetailsDTO(long id) {
+     DeviceCommand dc = deviceCommandService.loadById(id);
+     DeviceCommandDetailsDTO dto = new DeviceCommandDetailsDTO(dc.getOid(), dc.getName(), dc.getProtocol().getType());
+     HashMap<String, String> attributes = new HashMap<String, String>();
+     for (ProtocolAttr attr : dc.getProtocol().getAttributes()) {
+       attributes.put(attr.getName(), attr.getValue());
+     }
+     dto.setProtocolAttributes(attributes);
+     return dto;
+   }
+
+   public void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto) {
+     DeviceCommand dc = deviceCommandService.loadById(dto.getOid());
+     dc.setName(dto.getName());
+     Protocol protocol = new Protocol();
+     protocol.setDeviceCommand(dc);
+     dc.setProtocol(protocol);
+     protocol.setType(dto.getProtocolType());
+     for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
+     deviceCommandService.update(dc);
    }
 }

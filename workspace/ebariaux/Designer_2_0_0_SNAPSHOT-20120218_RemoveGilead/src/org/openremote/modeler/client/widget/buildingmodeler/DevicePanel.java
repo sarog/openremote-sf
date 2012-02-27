@@ -605,23 +605,27 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editCommand(BeanModel selectedModel) {
-      DeviceCommand cmd = selectedModel.getBean();
-      if (cmd.getProtocol().getType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+      DeviceCommandDTO cmd = selectedModel.getBean();
+      if (cmd.getProtocolType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
          MessageBox.alert("Warn", "Infrared command can not be edited", null);
          return;
       }
-      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd);
+
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd, eventBus);
+      // TODO : pass eventBus
+      
+//      deviceCommandWindow.show();
+/*
       deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-            BeanModel deviceCommandModel = be.getData();
-            tree.getStore().update(deviceCommandModel);
-            Info.display("Info", "Edit device command " + deviceCommandModel.get("name") + " success.");
-            deviceCommandWindow.hide();
-//            tree.collapseAll();
-//            tree.expandAll();
+           Info.display("INFO", "DevicePanel.afterSubmit");
+//            BeanModel deviceCommandModel = be.getData();
+//            tree.getStore().update(deviceCommandModel);
+//            Info.display("Info", "Edit device command " + deviceCommandModel.get("name") + " success.");
+//            deviceCommandWindow.hide();
          }
-      });
+      });*/
    }
    
    private void editSensor(final BeanModel selectedModel) {
