@@ -229,6 +229,10 @@ public class DeviceBeanModelProxy {
       });
    }
    
+   public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
+   }
+   
    /**
     * Sets the attrs to device.
     * 

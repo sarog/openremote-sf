@@ -28,6 +28,7 @@ import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -94,4 +95,7 @@ public interface DeviceRPCService extends RemoteService {
    DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid);
    
    DeviceDetailsDTO loadDeviceDetailsDTO(long oid);
+   
+   void updateDeviceWithDTO(DeviceDetailsDTO device);
+
 }
