@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -26,15 +26,39 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Hpai {
-  private static byte[]     HEADER = { 0x08, 0x01 };
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public class Hpai
+{
+
+  // Class Members --------------------------------------------------------------------------------
+
+  private static byte[] HEADER = { 0x08, 0x01 };
+
+
+  static int getLength()
+  {
+    return 0x8;
+  }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
   private InetSocketAddress address;
 
-  public Hpai(InetSocketAddress address) {
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public Hpai(InetSocketAddress address)
+  {
     this.address = address;
   }
 
-  public Hpai(InputStream is) throws IOException {
+  public Hpai(InputStream is) throws IOException
+  {
     // TODO check structure length & protocol type
     is.skip(2);
 
@@ -45,7 +69,11 @@ public class Hpai {
     this.address = new InetSocketAddress(InetAddress.getByAddress(a), p);
   }
 
-  public void write(OutputStream os) throws IOException {
+
+  // Public Instance Methods ----------------------------------------------------------------------
+  
+  public void write(OutputStream os) throws IOException
+  {
     os.write(HEADER);
     // TODO check byte array contains exactly 4 bytes
     byte[] a = this.address.getAddress().getAddress();
@@ -55,11 +83,8 @@ public class Hpai {
     os.write(p & 0xFF);
   }
 
-  static int getLength() {
-    return 0x8;
-  }
-
-  public InetSocketAddress getAddress() {
+  public InetSocketAddress getAddress()
+  {
     return this.address;
   }
 }
