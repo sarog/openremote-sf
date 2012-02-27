@@ -30,13 +30,19 @@ import java.net.InetSocketAddress;
  * TODO
  *
  * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class Hpai
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  private final static byte[] HEADER = { 0x08, 0x01 };
+
+
+
   // Class Members --------------------------------------------------------------------------------
 
-  private static byte[] HEADER = { 0x08, 0x01 };
 
 
   static int getStructureSize()
