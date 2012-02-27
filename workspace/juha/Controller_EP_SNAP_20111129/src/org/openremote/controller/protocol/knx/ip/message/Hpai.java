@@ -37,8 +37,35 @@ public class Hpai
 
   // Constants ------------------------------------------------------------------------------------
 
-  private final static byte[] HEADER = { 0x08, 0x01 };
+  public final static int KNXNET_IP_10_HPAI_SIZE = 0x08;
 
+  private final static byte[] HEADER = {
+      KNXNET_IP_10_HPAI_SIZE,
+      HostProtocolCode.IPV4_UDP.getValue()
+  };
+
+
+  // Enums ----------------------------------------------------------------------------------------
+  
+  private enum HostProtocolCode
+  {
+    IPV4_UDP(0x01),
+
+    IPV4_TCP(0x02);
+
+
+    private byte value;
+
+    HostProtocolCode(int value)
+    {
+      this.value = (byte)(value & 0xFF);
+    }
+
+    byte getValue()
+    {
+      return value;
+    }
+  }
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -47,7 +74,7 @@ public class Hpai
 
   static int getStructureSize()
   {
-    return 0x8;
+    return KNXNET_IP_10_HPAI_SIZE;
   }
 
 
