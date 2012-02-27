@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Inet4Address;
 
 /**
  * This is an implementation of a Host Protocol Address Information (HPAI) structure used in
@@ -180,16 +181,62 @@ public class Hpai
    */
   public Hpai(InputStream is) throws IOException
   {
-    // TODO check structure length & protocol type
-    is.skip(2);
+    // read HPAI structure size byte...
 
-    // TODO check read return values
-    byte[] a = new byte[4];
-    is.read(a);
+    int hpaiStructureSize = is.read();
 
-    int p = (is.read() << 8) + is.read();
+    if (hpaiStructureSize != KNXNET_IP_10_HPAI_SIZE)
+    {
+      throw new IOException(
+          "Corrupt KNX Frame -- received HPAI structure size " + hpaiStructureSize +
+          "while expecting size " + KNXNET_IP_10_HPAI_SIZE
+      );
+    }
 
-    this.address = new InetSocketAddress(InetAddress.getByAddress(a), p);
+
+    // read HPAI protocol code (structure identifier) byte...
+
+    int hostProtocolCode = is.read();
+
+    if (hostProtocolCode != HostProtocolCode.IPV4_UDP.getValue())
+    {
+      HostProtocolCode[] codes = HostProtocolCode.values();
+
+      for (HostProtocolCode code : codes)
+      {
+        if (hostProtocolCode == code.getValue())
+        {
+          throw new IOException("Host Protocol Code " + code + " is not supported.");
+        }
+      }
+
+      throw new IOException(
+          "Unknown host protocol code '" + hostProtocolCode + "' in HPAI structure : " +
+          toString() + ". Either the received KNX frame is corrupt or belongs to an unsupported " +
+          "version of KNXnet/IP protocol."
+      );
+    }
+
+
+    // read four address bytes...
+
+    byte[] addressBytes = new byte[4];
+
+    int bytecount = is.read(addressBytes);
+
+    if (bytecount != 4)
+    {
+      throw new IOException(
+          "Failed to read address fully -- stream may be broken or the frame corrupted."
+      );
+    }
+
+
+    // read two port bytes...
+
+    int port = (is.read() << 8) + is.read();
+
+    this.address = new InetSocketAddress(InetAddress.getByAddress(addressBytes), port);
   }
 
 
@@ -208,15 +255,29 @@ public class Hpai
    */
   public void write(OutputStream os) throws IOException
   {
+    // write the HPAI structure size byte and IPV4_UDP protocol code byte...
+
     os.write(HEADER);
 
-    // TODO check byte array contains exactly 4 bytes
-    byte[] a = this.address.getAddress().getAddress();
-    os.write(a);
+    // Check that we've got IPv4 address configured for this HPAI...
 
-    int p = this.address.getPort();
-    os.write((p >> 8) & 0xFF);
-    os.write(p & 0xFF);
+    InetAddress inetAddress = address.getAddress();
+
+    if (!(inetAddress instanceof Inet4Address))
+    {
+      throw new IOException(toString() + " contained non-IPv4 address : " + address);
+    }
+
+    // java.net.InetAddress gives us the 4 bytes in network order, which is what we want...
+
+    byte[] address = this.address.getAddress().getAddress();
+    os.write(address);
+
+    // and add the last two bytes for port, totaling 8 bytes for this HPAI...
+
+    int port = this.address.getPort();
+    os.write((port >> 8) & 0xFF);
+    os.write(port & 0xFF);
   }
 
   /**
@@ -227,5 +288,18 @@ public class Hpai
   public InetSocketAddress getAddress()
   {
     return this.address;
+  }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * Returns the address and port information of this HPAI.
+   *
+   * @return    string representation of this object
+   */
+  @Override public String toString()
+  {
+    return "KNX IPV4_UDP HPAI : " + address;
   }
 }
