@@ -27,7 +27,6 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
@@ -68,29 +67,6 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    @Transactional public Sensor updateSensor(Sensor sensor) {
      genericDAO.saveOrUpdate(sensor);
      return sensor;
-     /*
-      * 
-      * Old implementation
-      Sensor old = null;
-      
-      if (SensorType.RANGE == sensor.getType()) {
-         old = genericDAO.loadById(RangeSensor.class, sensor.getOid());
-         RangeSensor rangeSensor = (RangeSensor)sensor;
-         ((RangeSensor) old).setMax(rangeSensor.getMax());
-         ((RangeSensor) old).setMin(rangeSensor.getMin());
-      } else if (SensorType.CUSTOM == sensor.getType()) {
-         old = genericDAO.loadById(CustomSensor.class, sensor.getOid());
-         genericDAO.deleteAll(((CustomSensor)old).getStates());
-         ((CustomSensor)old).setStates(((CustomSensor) sensor).getStates());
-      } else {
-         old = genericDAO.loadById(Sensor.class, sensor.getOid());
-      }
-      
-      old.setName(sensor.getName());
-      genericDAO.delete(old.getSensorCommandRef());
-      old.setSensorCommandRef(sensor.getSensorCommandRef());
-      return old;
-      */
    }
 
    public Sensor loadById(long id) {

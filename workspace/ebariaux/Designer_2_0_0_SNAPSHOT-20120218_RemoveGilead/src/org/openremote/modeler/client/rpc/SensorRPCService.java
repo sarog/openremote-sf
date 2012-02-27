@@ -43,15 +43,6 @@ public interface SensorRPCService extends RemoteService {
    Sensor saveSensor(Sensor sensor);
    
    /**
-    * Update sensor with database.
-    * 
-    * @param sensor the sensor
-    * 
-    * @return the sensor
-    */
-   Sensor updateSensor(Sensor sensor);
-   
-   /**
     * Delete sensor by id from database.
     * 
     * @param id the id

@@ -62,10 +62,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
       return sensorService.saveSensor(sensor);
    }
 
-   public Sensor updateSensor(Sensor sensor) {
-      return sensorService.updateSensor(sensor);
-   }
-
    public void setSensorService(SensorService sensorService) {
       this.sensorService = sensorService;
    }
