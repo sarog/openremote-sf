@@ -27,7 +27,6 @@ import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -48,7 +47,6 @@ public class DeviceWindow extends CommonWindow {
     */
    public DeviceWindow(BeanModel deviceBeanModel) {
       super();
-      Info.display("INFO", "DeviceWindow");
       this.deviceModel = deviceBeanModel;
       initial(deviceBeanModel);
       show();

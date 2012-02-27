@@ -37,7 +37,6 @@ import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 
 /**
@@ -194,6 +193,14 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
+   }
+
+   public void updateDeviceWithDTO(DeviceDetailsDTO device) {
+     Device deviceBean = deviceService.loadById(device.getOid());
+     deviceBean.setName(device.getName());
+     deviceBean.setVendor(device.getVendor());
+     deviceBean.setModel(device.getModel());
+     deviceService.updateDevice(deviceBean);
    }
 
 }

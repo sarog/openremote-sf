@@ -93,4 +93,6 @@ public interface DeviceRPCServiceAsync {
   void loadDeviceWithChildrenDTOById(long oid, AsyncCallback<DeviceWithChildrenDTO> callback);
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
+  
+  void updateDeviceWithDTO(DeviceDetailsDTO device, AsyncCallback<Void> callback);
 }

@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.Map;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -68,22 +70,29 @@ public class DeviceInfoForm extends CommonForm {
       Info.display("INFO", "DeviceInfoForm");
       this.deviceBeanModel = deviceBeanModel;
       this.wrapper = wrapper;
+      final DeviceDetailsDTO device = (DeviceDetailsDTO) deviceBeanModel.getBean(); 
+
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             
-            AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
+            AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(BeanModel deviceModel) {
-                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
+               public void onSuccess(Void result) {
+                 Info.display("INFO", "update with DTO done");
+                 Info.display("INFO", "Wrapper >" + ((wrapper != null)?"Not null":"null") + "<");
+                 Info.display("INFO", wrapper.getClass().toString().substring(wrapper.getClass().toString().lastIndexOf(".")));
+                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
+                  Info.display("INFO", "Has fired event");
                }
             };
             
             // TODO EBR : to review, seems this is only used for edit
-            
-            if (((DeviceDetailsDTO) deviceBeanModel.getBean()).getName() == null) {
-               DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
+            if (device.getName() == null) {
+              // TODO: double check
+//               DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
             } else {
-               DeviceBeanModelProxy.updateDevice(deviceBeanModel, getFieldMap(), callback);
+              updateDeviceWithFieldValues(device, getFieldMap());
+              DeviceBeanModelProxy.updateDeviceWithDTO(device, callback);
             }
          }
 
@@ -91,9 +100,12 @@ public class DeviceInfoForm extends CommonForm {
       createFields();
    }
 
-
-
-
+  private void updateDeviceWithFieldValues(DeviceDetailsDTO device, Map<String, String> map) {
+    device.setName(map.get(DEVICE_NAME));
+    device.setVendor(map.get(DEVICE_VENDOR));
+    device.setModel(map.get(DEVICE_MODEL));
+  }
+  
    /**
     * Creates the fields.
     */
