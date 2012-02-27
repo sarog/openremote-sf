@@ -54,13 +54,6 @@ public interface DeviceCommandRPCService extends RemoteService {
    DeviceCommand save(DeviceCommand deviceCommand);
    
    /**
-    * Update.
-    * 
-    * @param deviceCommand the device command
-    */
-   DeviceCommand update(DeviceCommand deviceCommand);
-   
-   /**
     * Load by id.
     * 
     * @param id the id

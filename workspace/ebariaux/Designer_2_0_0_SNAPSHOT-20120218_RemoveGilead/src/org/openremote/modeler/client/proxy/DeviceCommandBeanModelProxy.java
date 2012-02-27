@@ -95,30 +95,9 @@ public class DeviceCommandBeanModelProxy {
       return protocol;
    }
    
-   /**
-    * Update device command.
-    * 
-    * @param deviceCommand the device command
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDeviceCommand(final DeviceCommand deviceCommand, Map<String, String> map,
-         final AsyncSuccessCallback<BeanModel> callback) {
-      deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
-      deviceCommand.setProtocol(careateProtocol(map, deviceCommand));
-      AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand result) {
-            BeanModel deviceCommandModel = result.getBeanModel();
-            BeanModelDataBase.deviceCommandTable.update(deviceCommandModel);
-            callback.onSuccess(deviceCommandModel);
-         }
-      });
-   }
-   
    public static void updateDeviceCommandWithDTO(final DeviceCommandDetailsDTO deviceCommand, AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceCommandServiceAsync().updateDeviceCommandWithDTO(deviceCommand, callback);
    }
-   
    
    /**
     * Save all ir device commands from IR import form
