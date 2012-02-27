@@ -39,7 +39,7 @@ public class Hpai
   private static byte[] HEADER = { 0x08, 0x01 };
 
 
-  static int getLength()
+  static int getStructureSize()
   {
     return 0x8;
   }
