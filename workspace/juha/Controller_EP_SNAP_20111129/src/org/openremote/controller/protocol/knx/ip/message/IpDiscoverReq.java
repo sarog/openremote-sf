@@ -119,7 +119,7 @@ public class IpDiscoverReq extends IpMessage
    */
   public IpDiscoverReq(Hpai hpai)
   {
-    super(STI, Hpai.getLength());
+    super(STI, Hpai.getStructureSize());
 
     this.discoveryEndpoint = hpai;
   }
