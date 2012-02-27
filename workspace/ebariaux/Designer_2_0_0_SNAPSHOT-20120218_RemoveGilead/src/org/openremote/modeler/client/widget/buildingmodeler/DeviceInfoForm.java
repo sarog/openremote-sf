@@ -33,7 +33,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.Component;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
@@ -52,7 +51,6 @@ public class DeviceInfoForm extends CommonForm {
    /** The Constant DEVICE_MODEL. */
    public static final String DEVICE_MODEL = "model";
    
-   
    /** The device bean model. */
    protected BeanModel deviceBeanModel = null;
    
@@ -67,22 +65,16 @@ public class DeviceInfoForm extends CommonForm {
     */
    public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
-      Info.display("INFO", "DeviceInfoForm");
       this.deviceBeanModel = deviceBeanModel;
       this.wrapper = wrapper;
       final DeviceDetailsDTO device = (DeviceDetailsDTO) deviceBeanModel.getBean(); 
 
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-         public void handleEvent(FormEvent be) {
-            
+         public void handleEvent(FormEvent be) {            
             AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
-                 Info.display("INFO", "update with DTO done");
-                 Info.display("INFO", "Wrapper >" + ((wrapper != null)?"Not null":"null") + "<");
-                 Info.display("INFO", wrapper.getClass().toString().substring(wrapper.getClass().toString().lastIndexOf(".")));
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
-                  Info.display("INFO", "Has fired event");
                }
             };
             
@@ -128,7 +120,7 @@ public class DeviceInfoForm extends CommonForm {
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
 
-      // TODO EBR : seems this will never be null
+      // TODO EBR : seems this will never be null, double check
       
       if (deviceBeanModel != null) {
          DeviceDetailsDTO device = deviceBeanModel.getBean();
@@ -141,6 +133,5 @@ public class DeviceInfoForm extends CommonForm {
       add(vendorField);
       add(modelField);
    }
-   
    
 }
