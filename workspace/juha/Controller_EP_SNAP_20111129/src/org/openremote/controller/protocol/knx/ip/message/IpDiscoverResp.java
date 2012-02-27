@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,12 +23,29 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class IpDiscoverResp extends IpMessage {
-  public static final int STI = 0x202;
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public class IpDiscoverResp extends IpMessage
+{
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static int STI = 0x202;
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
   private Hpai            controlEndpoint;
 
-  public IpDiscoverResp(InputStream is, int vl) throws IOException {
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public IpDiscoverResp(InputStream is, int vl) throws IOException
+  {
     super(STI, vl);
+
     this.controlEndpoint = new Hpai(is);
 
     // TODO Read device hardware DIB
@@ -40,12 +57,18 @@ public class IpDiscoverResp extends IpMessage {
     is.skip(l - 1);
   }
 
-  @Override
-  public Primitive getPrimitive() {
+  // IpMessage Overrides --------------------------------------------------------------------------
+
+  @Override public Primitive getPrimitive()
+  {
     return Primitive.RESP;
   }
 
-  public Hpai getControlEndpoint() {
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  public Hpai getControlEndpoint()
+  {
     return this.controlEndpoint;
   }
 }
