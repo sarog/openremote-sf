@@ -128,17 +128,6 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
       return null;
    }
 
-   
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#updateDevice(org.openremote.modeler.domain.Device)
-    */
-   public void updateDevice(Device device) {
-      deviceService.updateDevice(device);
-      
-   }
-
    public Account getAccount() {
       return userService.getAccount();
    }

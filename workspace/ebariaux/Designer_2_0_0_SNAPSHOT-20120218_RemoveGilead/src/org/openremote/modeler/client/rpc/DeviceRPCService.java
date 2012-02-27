@@ -49,13 +49,6 @@ public interface DeviceRPCService extends RemoteService {
    ArrayList<Device> saveDevices(ArrayList<Device> device);
    
    /**
-    * Update device.
-    * 
-    * @param device the device
-    */
-   void updateDevice(Device device);
-   
-   /**
     * Delete device.
     * 
     * @param id the id

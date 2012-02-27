@@ -43,15 +43,7 @@ public interface DeviceRPCServiceAsync {
     * @param callback the callback
     */
    void saveDevice(Device device, AsyncCallback<Device> callback);
-   
-   /**
-    * Update device.
-    * 
-    * @param device the device
-    * @param callback the callback
-    */
-   void updateDevice(Device device, AsyncCallback<Void> callback);
-   
+      
    /**
     * Delete device.
     * 
