@@ -98,7 +98,7 @@ public class Hpai
   /**
    * Host protocol codes for IPv4 based HPAI (KNXNet/IP frame structure identifier).
    */
-  private enum HostProtocolCode
+  enum HostProtocolCode
   {
     /**
      * IPv4 UDP protocol : {@value}
@@ -164,6 +164,11 @@ public class Hpai
    */
   public Hpai(InetSocketAddress address)
   {
+    if (address.isUnresolved())
+    {
+      throw new IllegalArgumentException("Cannot resolve '" + address + "' to a valid IPv4 address.");
+    }
+    
     this.address = address;
   }
 
@@ -181,6 +186,9 @@ public class Hpai
    */
   public Hpai(InputStream is) throws IOException
   {
+    // TODO : MODELER-215 -- use non-blocking / interruptible I/O
+
+
     // read HPAI structure size byte...
 
     int hpaiStructureSize = is.read();
@@ -189,7 +197,7 @@ public class Hpai
     {
       throw new IOException(
           "Corrupt KNX Frame -- received HPAI structure size " + hpaiStructureSize +
-          "while expecting size " + KNXNET_IP_10_HPAI_SIZE
+          " while expecting size " + KNXNET_IP_10_HPAI_SIZE
       );
     }
 
