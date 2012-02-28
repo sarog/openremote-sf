@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
 
 /**
- * TODO
+ * Unit test for {@link SupportedServiceFamily} class.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
