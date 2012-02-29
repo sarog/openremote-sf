@@ -80,7 +80,7 @@ public class SensorBeanModelProxy {
    }
    
    public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
-      Sensor sensor = beanModel.getBean();
+      SensorDTO sensor = beanModel.getBean();
       AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
             if (result) {

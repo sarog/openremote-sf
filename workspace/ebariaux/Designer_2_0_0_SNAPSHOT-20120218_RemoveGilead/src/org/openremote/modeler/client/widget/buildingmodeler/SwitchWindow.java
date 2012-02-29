@@ -112,8 +112,6 @@ public class SwitchWindow extends FormWindow {
      this.setHeading("New Switch");
      this.setSize(320, 240);
      createField();
-     setHeight(300); // Somehow setting the height here is required for the autoheight calculation to work when layout is called 
-     layout();
    }
 
    /**

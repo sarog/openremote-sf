@@ -41,8 +41,8 @@ public class SliderBeanModelProxy {
    }
    
    public static void delete(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Slider) {
-         AsyncServiceFactory.getSliderRPCServiceAsync().delete(((Slider) (beanModel.getBean())).getOid(),
+      if (beanModel != null && beanModel.getBean() instanceof SliderDTO) {
+         AsyncServiceFactory.getSliderRPCServiceAsync().delete(((SliderDTO) (beanModel.getBean())).getOid(),
                new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
