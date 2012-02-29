@@ -19,8 +19,6 @@
 */
 package org.openremote.modeler.server;
 
-import java.util.List;
-
 import org.openremote.modeler.client.rpc.SwitchRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
@@ -49,21 +47,9 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
    }
 
    @Override
-   public List<Switch> loadAll() {
-      return switchService.loadAll();
-   }
-
-   @Override
    public Switch save(Switch switchToggle) {
       switchToggle.setAccount(userService.getAccount());
       return switchService.save(switchToggle);
-   }
-
-   
-   @Override
-   public Switch update(Switch switchToggle) {
-      switchToggle.setAccount(userService.getAccount());
-      return switchService.update(switchToggle);
    }
 
    public void setSwitchService(SwitchService switchService) {

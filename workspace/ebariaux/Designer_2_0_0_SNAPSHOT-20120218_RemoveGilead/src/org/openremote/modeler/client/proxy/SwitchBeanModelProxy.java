@@ -19,10 +19,6 @@
 */
 package org.openremote.modeler.client.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Switch;
@@ -37,25 +33,6 @@ import com.extjs.gxt.ui.client.data.BeanModel;
  */
 public class SwitchBeanModelProxy {
    private SwitchBeanModelProxy() {
-   }
-   public static void loadAll(BeanModel switchBean, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (switchBean == null || switchBean.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().loadAll(new AsyncSuccessCallback<List<Switch>>() {
-            @Override
-            public void onSuccess(List<Switch> result) {
-               List<BeanModel> switchBeanModels = Switch.createModels(result);
-               BeanModelDataBase.switchTable.insertAll(switchBeanModels);
-               callback.onSuccess(switchBeanModels);
-            }
-         });
-      } else {
-         Switch switchToggle = switchBean.getBean();
-         List<BeanModel> commandBeanModels = new ArrayList<BeanModel>();
-         commandBeanModels.add(switchToggle.getSwitchCommandOnRef().getBeanModel());
-         commandBeanModels.add(switchToggle.getSwitchCommandOffRef().getBeanModel());
-
-         callback.onSuccess(commandBeanModels);
-      }
    }
    
    public static void delete(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
@@ -85,21 +62,6 @@ public class SwitchBeanModelProxy {
                });
       }
    }
-   
-   public static void update(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch) (beanModel.getBean()),
-               new AsyncSuccessCallback<Switch>() {
-                  @Override
-                  public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.update(result.getBeanModel());
-                     callback.onSuccess(result);
-                  }
-
-               });
-      }
-   }
-   
    
    public static void loadSwitchDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
      AsyncServiceFactory.getSwitchRPCServiceAsync().loadSwitchDetails(((SwitchDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SwitchDetailsDTO>() {
