@@ -84,7 +84,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
        return sensorService.saveAllSensors(sensorList, userService.getAccount());
    }
    
-   
+   @Override   
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
      for (Sensor s : sensorService.loadByDeviceId(id)) {
@@ -93,6 +93,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
      return dtos;
    }
    
+   @Override
    public SensorDetailsDTO loadSensorDetails(long id) {
      Sensor sensor = sensorService.loadById(id);
      SensorDetailsDTO dto;
@@ -121,6 +122,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
     return dto;
   }
    
+   @Override
   public void updateSensorWithDTO(SensorDetailsDTO sensor) {
     Sensor sensorBean = sensorService.loadById(sensor.getOid());
     
