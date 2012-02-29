@@ -48,22 +48,6 @@ public interface SliderRPCService extends RemoteService {
     * @param id the id
     */
    void delete(long id);
-
-   /**
-    * Update slider with database.
-    * 
-    * @param slider the slider
-    * 
-    * @return the slider
-    */
-   Slider update(Slider slider);
-
-   /**
-    * Load all sliders from database.
-    * 
-    * @return the list< slider>
-    */
-   List<Slider> loadAll();
    
    /**
     * Saves all sliders in the database
