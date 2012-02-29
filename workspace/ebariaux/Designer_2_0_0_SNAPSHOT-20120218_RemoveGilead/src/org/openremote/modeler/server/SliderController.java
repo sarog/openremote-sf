@@ -51,11 +51,6 @@ public class SliderController extends BaseGWTSpringController implements SliderR
    }
 
    @Override
-   public List<Slider> loadAll() {
-      return sliderService.loadAll();
-   }
-
-   @Override
    public Slider save(Slider slider) {
       slider.setAccount(userService.getAccount());
       return sliderService.save(slider);
@@ -65,12 +60,6 @@ public class SliderController extends BaseGWTSpringController implements SliderR
    public List<Slider> saveAll(List<Slider> sliderList) {
      return sliderService.saveAllSliders(sliderList, userService.getAccount());
  }
-
-   @Override
-   public Slider update(Slider slider) {
-      slider.setAccount(userService.getAccount());
-      return sliderService.update(slider);
-   }
 
    public void setSliderService(SliderService switchService) {
       this.sliderService = switchService;

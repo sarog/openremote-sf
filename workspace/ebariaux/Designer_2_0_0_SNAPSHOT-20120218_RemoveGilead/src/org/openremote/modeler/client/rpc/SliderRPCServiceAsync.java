@@ -32,10 +32,6 @@ public interface SliderRPCServiceAsync {
 
    void delete(long id, AsyncCallback<Void> callback);
 
-   void update(Slider slider, AsyncCallback<Slider> callback);
-
-   void loadAll(AsyncCallback<List<Slider>> callback);
-
    void saveAll(List<Slider> sliderList, AsyncCallback<List<Slider>> async);
 
    void loadSliderDetails(long id, AsyncCallback<SliderDetailsDTO> async);
