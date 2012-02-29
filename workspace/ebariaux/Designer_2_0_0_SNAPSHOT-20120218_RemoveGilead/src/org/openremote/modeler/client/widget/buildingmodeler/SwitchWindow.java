@@ -197,7 +197,7 @@ public class SwitchWindow extends FormWindow {
           return;
         }
         if (switchDTO.getSensorId() == null) {
-          MessageBox.alert("Switch", "A switch must have a sensor defined to define its state", null);
+          MessageBox.alert("Switch", "A switch must have a sensor defined to read its state", null);
           return;
         }
          

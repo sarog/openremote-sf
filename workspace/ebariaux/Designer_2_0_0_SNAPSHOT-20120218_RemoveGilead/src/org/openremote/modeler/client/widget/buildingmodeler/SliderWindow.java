@@ -51,6 +51,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -187,7 +188,16 @@ public class SliderWindow extends FormWindow {
       @Override
       public void handleEvent(FormEvent be) {
         
-        // TODO validation
+        // TODO EBR : review this validation, this does prevent re-submitting the form
+        // there must be a specific way to handle validation, not doing it in submit        
+        if (sliderDTO.getCommandId() == null) {
+          MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
+          return;
+        }
+        if (sliderDTO.getSensorId() == null) {
+          MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
+          return;
+        }
         
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
