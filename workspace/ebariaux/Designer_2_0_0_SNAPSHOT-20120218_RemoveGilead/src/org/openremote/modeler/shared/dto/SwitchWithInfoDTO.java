@@ -20,7 +20,7 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class SwitchDetailsDTO implements DTO {
+public class SwitchWithInfoDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
 
@@ -31,11 +31,11 @@ public class SwitchDetailsDTO implements DTO {
   private String deviceName;
   private Long oid;
   
-  public SwitchDetailsDTO() {
+  public SwitchWithInfoDTO() {
     super();
   }
 
-  public SwitchDetailsDTO(Long oid, String displayName, String onCommandName, String offCommandName, String sensorName, String deviceName) {
+  public SwitchWithInfoDTO(Long oid, String displayName, String onCommandName, String offCommandName, String sensorName, String deviceName) {
     super();
     this.oid = oid;
     this.displayName = displayName;

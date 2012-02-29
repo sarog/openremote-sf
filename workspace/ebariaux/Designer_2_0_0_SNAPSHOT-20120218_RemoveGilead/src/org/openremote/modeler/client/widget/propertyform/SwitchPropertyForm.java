@@ -32,7 +32,7 @@ import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -156,8 +156,8 @@ public class SwitchPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  if (dataModel.getBean() instanceof SwitchDetailsDTO) {
-                     SwitchDetailsDTO switchDTO = dataModel.getBean();
+                  if (dataModel.getBean() instanceof SwitchWithInfoDTO) {
+                     SwitchWithInfoDTO switchDTO = dataModel.getBean();
                      Switch switchCommand = BeanModelDataBase.switchTable.get(switchDTO.getOid()).getBean();
                      uiSwitch.setSwitchCommand(switchCommand);
                      command.setText(switchCommand.getDisplayName());
