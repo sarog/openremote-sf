@@ -54,13 +54,13 @@ public class SliderWizardWindow extends SliderWindow {
 
    private Device device;
    public SliderWizardWindow(Device device) {
-      super(null, device);
+      super(null, device.getOid(), null); // TODO
       this.device = device;
       initSensorFiled();
       addNewSensorButton();
       addCommandSelectListener();
       form.removeAllListeners();
-      onSubmit();
+// TODO      onSubmit();
    }
 
    /**
@@ -68,7 +68,7 @@ public class SliderWizardWindow extends SliderWindow {
     */
    private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
-      newSensorButton.addSelectionListener(new NewSensorListener());
+// TODO      newSensorButton.addSelectionListener(new NewSensorListener());
       AdapterField newSensorField = new AdapterField(newSensorButton);
       newSensorField.setLabelSeparator("");
       form.insert(newSensorField, 2);
@@ -88,12 +88,13 @@ public class SliderWizardWindow extends SliderWindow {
    }
    private void addCommandSelectListener() {
       setValueBtn.removeAllListeners();
-      setValueBtn.addSelectionListener(new CommandSelectionListener());
+// TODO      setValueBtn.addSelectionListener(new CommandSelectionListener());
    }
    
    /**
     * Add the new slider into the current device.
     */
+   /* TODO
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
@@ -110,10 +111,11 @@ public class SliderWizardWindow extends SliderWindow {
          
       });
    }
-   
+   */
    /**
     * The listener to create a new sensor for the current device.
     */
+   /* TODO
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -143,10 +145,12 @@ public class SliderWizardWindow extends SliderWindow {
          });
       }
    }
+   */
    
    /**
     * The listener to create a new command for the current device.
     */
+   /* TODO
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -171,4 +175,5 @@ public class SliderWizardWindow extends SliderWindow {
          });
       }
    }
+   */
 }
