@@ -75,4 +75,7 @@ public class SwitchBeanModelProxy {
      AsyncServiceFactory.getSwitchRPCServiceAsync().updateSwitchWithDTO(switchDTO, callback);
    }
 
+   public static void saveNewSwitch(final SwitchDetailsDTO switchDTO, final long deviceId, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().saveNewSwitch(switchDTO, deviceId, callback);
+   }
 }

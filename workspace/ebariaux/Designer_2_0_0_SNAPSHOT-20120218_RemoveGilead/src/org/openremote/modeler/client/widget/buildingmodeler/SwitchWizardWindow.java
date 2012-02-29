@@ -54,18 +54,18 @@ public class SwitchWizardWindow extends SwitchWindow {
 
    private Device device;
    public SwitchWizardWindow(Device device) {
-      super(null, device);
+      super(null, device.getOid(), null);
       this.device = device;
       initSensorFiled();
       addNewSensorButton();
       addCommandSelectListeners();
       form.removeAllListeners();
-      onSubmit();
+//TODO      onSubmit();
    }
 
    private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
-      newSensorButton.addSelectionListener(new NewSensorListener());
+//TODO      newSensorButton.addSelectionListener(new NewSensorListener());
       AdapterField newSensorField = new AdapterField(newSensorButton);
       newSensorField.setLabelSeparator("");
       form.insert(newSensorField, 2);
@@ -83,9 +83,10 @@ public class SwitchWizardWindow extends SwitchWindow {
    private void addCommandSelectListeners() {
       switchOnBtn.removeAllListeners();
       switchOffBtn.removeAllListeners();
-      switchOnBtn.addSelectionListener(new CommandSelectionListener(true));
-      switchOffBtn.addSelectionListener(new CommandSelectionListener(false));
+//TODO      switchOnBtn.addSelectionListener(new CommandSelectionListener(true));
+//TODO      switchOffBtn.addSelectionListener(new CommandSelectionListener(false));
    }
+   /*
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
@@ -105,8 +106,10 @@ public class SwitchWizardWindow extends SwitchWindow {
          }
          
       });
-   }
+   }*/
    
+   /*
+    * TODO
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -171,4 +174,5 @@ public class SwitchWizardWindow extends SwitchWindow {
          });
       }
    }
+   */
 }
