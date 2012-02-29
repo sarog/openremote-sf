@@ -123,9 +123,8 @@ public class SensorWindow extends FormWindow {
         public void onSuccess(BeanModel result) {
           SensorWindow.this.sensorModel = result;
           init();
-          
-          // TODO remove
-          show();        
+          setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
+          layout();
         }
       });
    }
