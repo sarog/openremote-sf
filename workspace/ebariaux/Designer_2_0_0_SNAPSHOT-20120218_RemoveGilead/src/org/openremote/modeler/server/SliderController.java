@@ -88,9 +88,8 @@ public class SliderController extends BaseGWTSpringController implements SliderR
    public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
      Slider slider = sliderService.loadById(sliderDTO.getOid());
      slider.setName(sliderDTO.getName());
-     
-     
-     if (slider.getSliderSensorRef().getSlider().getOid() != sliderDTO.getSensorId()) {
+
+     if (slider.getSliderSensorRef().getSensor().getOid() != sliderDTO.getSensorId()) {
        Sensor sensor = sensorService.loadById(sliderDTO.getSensorId());
        slider.getSliderSensorRef().setSensor(sensor);
      }
