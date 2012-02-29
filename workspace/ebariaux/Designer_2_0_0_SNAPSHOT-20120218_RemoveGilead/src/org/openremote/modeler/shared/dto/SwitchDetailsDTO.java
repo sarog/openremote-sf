@@ -4,19 +4,19 @@ public class SwitchDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
-  private long oid;
+  private Long oid;
   private String name;
-  private long sensorId;
-  private long onCommandId;
+  private Long sensorId;
+  private Long onCommandId;
   private String onCommandDisplayName;
-  private long offCommandId;
+  private Long offCommandId;
   private String offCommandDisplayName;
 
   public SwitchDetailsDTO() {
     super();
   }
 
-  public SwitchDetailsDTO(long oid, String name, long sensorId, long onCommandId, String onCommandDisplayName, long offCommandId, String offCommandDisplayName) {
+  public SwitchDetailsDTO(Long oid, String name, Long sensorId, Long onCommandId, String onCommandDisplayName, Long offCommandId, String offCommandDisplayName) {
     super();
     this.oid = oid;
     this.name = name;
@@ -27,11 +27,11 @@ public class SwitchDetailsDTO implements DTO {
     this.offCommandDisplayName = offCommandDisplayName;
   }
 
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
 
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
 
@@ -43,19 +43,19 @@ public class SwitchDetailsDTO implements DTO {
     this.name = name;
   }
 
-  public long getSensorId() {
+  public Long getSensorId() {
     return sensorId;
   }
 
-  public void setSensorId(long sensorId) {
+  public void setSensorId(Long sensorId) {
     this.sensorId = sensorId;
   }
 
-  public long getOnCommandId() {
+  public Long getOnCommandId() {
     return onCommandId;
   }
 
-  public void setOnCommandId(long onCommandId) {
+  public void setOnCommandId(Long onCommandId) {
     this.onCommandId = onCommandId;
   }
 
@@ -67,11 +67,11 @@ public class SwitchDetailsDTO implements DTO {
     this.onCommandDisplayName = onCommandDisplayName;
   }
 
-  public long getOffCommandId() {
+  public Long getOffCommandId() {
     return offCommandId;
   }
 
-  public void setOffCommandId(long offCommandId) {
+  public void setOffCommandId(Long offCommandId) {
     this.offCommandId = offCommandId;
   }
 
