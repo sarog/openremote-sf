@@ -40,7 +40,6 @@ import org.openremote.controller.protocol.knx.ip.message.IpMessage;
 public enum ServiceTypeIdentifier
 {
 
-
   // Core Service Family...
 
   /**
@@ -131,7 +130,58 @@ public enum ServiceTypeIdentifier
 
   // TODO
   ROUTING_LOST_MESSAGE(0x531);
-  
+
+
+  /**
+   * Service Family Identifiers. These represent the high-byte value of the
+   * two-byte {@link ServiceTypeIdentifier}.
+   */
+  public enum Family
+  {
+    /**
+     * Core services. Mandatory for KNXnet/IP devices.
+     */
+    CORE(0x02),
+
+    /**
+     * Remote configuration and management of KNXnet/IP gateway/router.
+     */
+    DEVICE_MANAGEMENT(0x03),
+
+    /**
+     * Point-to-point tunneling of KNX frames over IP network between client and KNXnet/IP
+     * gateway/router.
+     */
+    TUNNELING(0x04),
+
+    /**
+     * Multicast routing services between KNXnet/IP routers to establish an IP-based back-bone
+     * to KNX installations.
+     */
+    ROUTING(0x05),
+
+    // TODO
+    REMOTE_LOGGING(0x06),
+
+    // TODO
+    REMOTE_CONFIG_AND_DIAGNOSIS(0x07),
+
+    // TODO
+    OBJECT_SERVER(0x08);
+
+
+    private byte code;
+
+    private Family(int code)
+    {
+      this.code = (byte)(code & 0xFF);
+    }
+
+    public byte getValue()
+    {
+      return code;
+    }
+  }
 
 
   // Enum Instance Fields -------------------------------------------------------------------------
