@@ -656,9 +656,10 @@ public class DevicePanel extends ContentPanel {
       */
    }
    
-   private void editSwitch(final BeanModel selectedModel) {
-      Switch swh = selectedModel.getBean();
-      final SwitchWindow switchWindow = new SwitchWindow(swh);
+   private void editSwitch(final BeanModel selectedModel, final BeanModel parentModel) {     
+      final SwitchWindow switchWindow = new SwitchWindow(selectedModel, ((DeviceDTO)parentModel.getBean()).getOid(), eventBus);
+      switchWindow.show();
+      /*
       switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -671,6 +672,7 @@ public class DevicePanel extends ContentPanel {
             switchWindow.hide();
          }
       });
+      */
    }
    /**
     * Creates the delete button.
@@ -1063,7 +1065,7 @@ public class DevicePanel extends ContentPanel {
       } else if (selectedModel != null && selectedModel.getBean() instanceof SliderDTO){
          editSlider(selectedModel, tree.getStore().getParent(selectedModel));
       } else if (selectedModel != null && selectedModel.getBean() instanceof SwitchDTO){
-         editSwitch(selectedModel);
+         editSwitch(selectedModel, tree.getStore().getParent(selectedModel));
       }
    }
    

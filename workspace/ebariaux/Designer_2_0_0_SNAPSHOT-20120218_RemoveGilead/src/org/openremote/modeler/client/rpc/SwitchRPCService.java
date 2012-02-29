@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -63,4 +64,9 @@ public interface SwitchRPCService extends RemoteService {
     * @param id the id
     */
    void delete(long id);
+   
+   SwitchDetailsDTO loadSwitchDetails(long id);
+
+   void updateSwitchWithDTO(SwitchDetailsDTO switchDTO);
+
 }

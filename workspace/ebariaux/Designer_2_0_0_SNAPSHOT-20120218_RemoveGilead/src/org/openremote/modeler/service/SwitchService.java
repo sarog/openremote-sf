@@ -25,6 +25,8 @@ import org.openremote.modeler.domain.Switch;
 
 public interface SwitchService {
    
+  Switch loadById(long id);
+  
    List<Switch> loadAll();
    
    void delete(long id);

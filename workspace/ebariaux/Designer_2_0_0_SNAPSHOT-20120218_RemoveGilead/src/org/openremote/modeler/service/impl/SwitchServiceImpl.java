@@ -36,6 +36,11 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    private UserService userService = null;
 
    @Override
+   public Switch loadById(long id) {
+     return genericDAO.getById(Switch.class, id);
+   }
+   
+   @Override
    @Transactional
    public void delete(long id) {
       Switch switchToggle = genericDAO.loadById(Switch.class, id);
@@ -66,6 +71,9 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    @Override
    @Transactional
    public Switch update(Switch switchToggle) {
+     genericDAO.saveOrUpdate(switchToggle);
+     return switchToggle;
+     /*
       Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
       old.setName(switchToggle.getName());
       if (switchToggle.getSwitchCommandOffRef() != null
@@ -87,6 +95,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          switchToggle.getSwitchSensorRef().setSwitchToggle(old);
       }
       return old;
+      */
    }
    
    public UserService getUserService() {

@@ -19,19 +19,24 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
+import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
-import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
+import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.SliderWindow.SensorSelectChangeListener;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -40,6 +45,9 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -58,6 +66,7 @@ import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The window to creates or updates a switch in a device.
@@ -68,6 +77,11 @@ public class SwitchWindow extends FormWindow {
    public static final String SWITCH_ON_COMMAND_FIELD_NAME="command(on)";
    public static final String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
    
+   private EventBus eventBus;
+   
+   private long deviceId;
+   private SwitchDetailsDTO switchDTO;
+
    protected Switch switchToggle = null;
    
    private TextField<String> nameField = new TextField<String>();
@@ -82,8 +96,22 @@ public class SwitchWindow extends FormWindow {
     * 
     * @param switchToggle the switch toggle
     */
-   public SwitchWindow(Switch switchToggle) {
-      this(switchToggle,null);
+   public SwitchWindow(BeanModel switchModel, long deviceId, EventBus eventBus) {
+     super();
+     this.deviceId = deviceId;
+     this.eventBus = eventBus;
+     this.setHeading("Edit Switch");
+     edit = true;
+     this.setSize(320, 240);
+
+     SwitchBeanModelProxy.loadSwitchDetails(switchModel, new AsyncSuccessCallback<BeanModel>() {
+       public void onSuccess(BeanModel result) {
+         SwitchWindow.this.switchDTO = result.getBean();
+         createField();
+         setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
+         layout();
+       }
+     });
    }
    
    /**
@@ -127,26 +155,28 @@ public class SwitchWindow extends FormWindow {
       
       sensorField.setFieldLabel(SWITCH_SENSOR_FIELD_NAME);
       sensorField.setName(SWITCH_SENSOR_FIELD_NAME);
-      ListStore<ModelData> sensorStore = new ListStore<ModelData>();
-      List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
-      for (BeanModel sensorBean : sensors) {
-         Sensor sensor = sensorBean.getBean();
-         if (sensor.getDevice().equals(switchToggle.getDevice())) {
-            ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-            sensorStore.add(sensorRefSelector);
-         }
-      }
+      
+      
+      final ListStore<ModelData> sensorStore = new ListStore<ModelData>();
+      SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SensorDTO> result) {
+          for (SensorDTO s : result) {
+            ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
+            sensorStore.add(dm);
+            if (edit && s.getOid() == switchDTO.getSensorId()) {
+              sensorField.setValue(dm);
+            }
+          }
+        }
+      });
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
       
       if (edit) {
-         nameField.setValue(switchToggle.getName());
-         if (switchToggle.getSwitchSensorRef() != null) {
-            sensorField.setValue(new ComboBoxDataModel<Sensor>(switchToggle.getSwitchSensorRef().getSensor()
-                  .getDisplayName(), switchToggle.getSwitchSensorRef().getSensor()));
-         }
-         switchOnBtn.setText(switchToggle.getSwitchCommandOnRef().getDisplayName());
-         switchOffBtn.setText(switchToggle.getSwitchCommandOffRef().getDisplayName());
+         nameField.setValue(switchDTO.getName());
+         switchOnBtn.setText(switchDTO.getOnCommandDisplayName());
+         switchOffBtn.setText(switchDTO.getOffCommandDisplayName());
          
 //         switchOnBtn.setEnabled(false);
 //         switchOffBtn.setEnabled(false);
@@ -160,7 +190,6 @@ public class SwitchWindow extends FormWindow {
       
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
-      
       
       form.add(nameField);
       form.add(sensorField);
@@ -180,6 +209,10 @@ public class SwitchWindow extends FormWindow {
       add(form);
    }
    
+   
+   
+   // TODO below
+   
 
    /**
     * The listener to submit the window, save the switch data into device and server.
@@ -188,14 +221,17 @@ public class SwitchWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
+        /*
          if (switchToggle.getSwitchCommandOnRef() == null || switchToggle.getSwitchCommandOffRef() == null) {
             MessageBox.alert("Switch", "A switch must have the command to control its on and off", null);
             return;
          }
+         */
+         
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SWITCH_NAME_FIELD_NAME.equals(field.getName())) {
-               switchToggle.setName(field.getValue().toString());
+               switchDTO.setName(field.getValue().toString());
                break;
             }
          }
@@ -208,6 +244,7 @@ public class SwitchWindow extends FormWindow {
 
             });
          } else {
+           /*
             SwitchCommandOnRef onRef = new SwitchCommandOnRef();
             onRef.setDeviceCommand(switchToggle.getSwitchCommandOnRef().getDeviceCommand());
             onRef.setDeviceName(switchToggle.getDevice().getName());
@@ -225,12 +262,13 @@ public class SwitchWindow extends FormWindow {
             switchToggle.setSwitchCommandOnRef(onRef);
             switchToggle.setSwitchCommandOffRef(offRef);
             switchToggle.setSwitchSensorRef(sensorRef);
-            SwitchBeanModelProxy.update(switchToggle.getBeanModel(), new AsyncSuccessCallback<Switch>() {
+            */
+            SwitchBeanModelProxy.updateSwitchWithDTO(switchDTO, new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(Switch result) {
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result.getBeanModel()));
-               };
-
+               public void onSuccess(Void result) {
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 hide();
+              };
             });
          }
       }
@@ -255,32 +293,20 @@ public class SwitchWindow extends FormWindow {
       }
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SwitchWindow.this.switchToggle.getDevice().getOid());
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(deviceId);
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
-               DeviceCommand deviceCommand = null;
-               if (dataModel.getBean() instanceof DeviceCommand) {
-                  deviceCommand = dataModel.getBean();
-               } else if (dataModel.getBean() instanceof DeviceCommandRef) {
-                  deviceCommand = ((DeviceCommandRef) dataModel.getBean()).getDeviceCommand();
-               } else {
-                  MessageBox.alert("error", "A switch can only have command instead of macor", null);
-                  return;
-               }
-               command.setText(deviceCommand.getDisplayName());
+               DeviceCommandDTO dc = dataModel.getBean();
+               command.setText(dc.getDisplayName());
                if (forSwitchOn) {
-                  SwitchCommandOnRef switchOnCmdRef = new SwitchCommandOnRef();
-                  switchOnCmdRef.setOnSwitch(switchToggle);
-                  switchOnCmdRef.setDeviceCommand(deviceCommand);
-                  switchToggle.setSwitchCommandOnRef(switchOnCmdRef);
-               } else  {
-                  SwitchCommandOffRef switchOffCmdRef = new SwitchCommandOffRef();
-                  switchOffCmdRef.setOffSwitch(switchToggle);
-                  switchOffCmdRef.setDeviceCommand(deviceCommand);
-                  switchToggle.setSwitchCommandOffRef(switchOffCmdRef);
+                 switchDTO.setOnCommandId(dc.getOid());
+                 switchDTO.setOnCommandDisplayName(dc.getDisplayName());
+               } else {
+                 switchDTO.setOffCommandId(dc.getOid());
+                 switchDTO.setOffCommandDisplayName(dc.getDisplayName());
                }
             }
          });
@@ -295,14 +321,8 @@ public class SwitchWindow extends FormWindow {
       @SuppressWarnings("unchecked")
       @Override
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-         ComboBoxDataModel<Sensor> sensorItem;
-         sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
-         if (sensorItem != null) {
-            Sensor sensor = sensorItem.getData();
-            SwitchSensorRef switchSensorRef = new SwitchSensorRef(switchToggle);
-            switchSensorRef.setSensor(sensor);
-            switchToggle.setSwitchSensorRef(switchSensorRef);
-         }
+        ComboBoxDataModel<SensorDTO> sensorItem = (ComboBoxDataModel<SensorDTO>) se.getSelectedItem();
+        switchDTO.setSensorId(sensorItem.getData().getOid());
       }
    }
 }

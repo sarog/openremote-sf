@@ -22,10 +22,14 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.SwitchRPCService;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>SwitchRPCService</code>.
@@ -34,6 +38,8 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 public class SwitchController extends BaseGWTSpringController implements SwitchRPCService {
 
    private SwitchService switchService;
+   private SensorService sensorService;
+   private DeviceCommandService deviceCommandService;
    
    private UserService userService;
    
@@ -64,9 +70,47 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
       this.switchService = switchService;
    }
 
-   public void setUserService(UserService userService) {
+   public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  public void setUserService(UserService userService) {
       this.userService = userService;
    }
-
    
+   @Override
+   public SwitchDetailsDTO loadSwitchDetails(long id) {
+     Switch sw = switchService.loadById(id);
+     return new SwitchDetailsDTO(sw.getOid(), sw.getName(), sw.getSwitchSensorRef().getSensor().getOid(),
+             sw.getSwitchCommandOnRef().getDeviceCommand().getOid(), sw.getSwitchCommandOnRef().getDeviceCommand().getDisplayName(),
+             sw.getSwitchCommandOffRef().getDeviceCommand().getOid(), sw.getSwitchCommandOffRef().getDeviceCommand().getDisplayName());
+   }
+
+   @Override
+   public void updateSwitchWithDTO(SwitchDetailsDTO switchDTO) {
+     Switch sw = switchService.loadById(switchDTO.getOid());
+     sw.setName(switchDTO.getName());
+     
+     if (sw.getSwitchSensorRef().getSensor().getOid() != switchDTO.getSensorId()) {
+       Sensor sensor = sensorService.loadById(switchDTO.getSensorId());
+       sw.getSwitchSensorRef().setSensor(sensor);
+     }
+     
+     if (sw.getSwitchCommandOnRef().getDeviceCommand().getOid() != switchDTO.getOnCommandId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOnCommandId());
+       sw.getSwitchCommandOnRef().setDeviceCommand(dc);
+     }
+     
+     if (sw.getSwitchCommandOffRef().getDeviceCommand().getOid() != switchDTO.getOffCommandId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOffCommandId());
+       sw.getSwitchCommandOffRef().setDeviceCommand(dc);
+     }
+
+     switchService.update(sw);
+   }
+
 }
