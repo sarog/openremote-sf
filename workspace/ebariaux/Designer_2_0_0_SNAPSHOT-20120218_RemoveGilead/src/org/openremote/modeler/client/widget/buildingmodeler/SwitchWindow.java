@@ -34,8 +34,6 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
@@ -50,6 +48,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -190,12 +189,17 @@ public class SwitchWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        /*
-         if (switchToggle.getSwitchCommandOnRef() == null || switchToggle.getSwitchCommandOffRef() == null) {
-            MessageBox.alert("Switch", "A switch must have the command to control its on and off", null);
-            return;
-         }
-         */
+        
+        // TODO EBR : review this validation, this does prevent re-submitting the form
+        // there must be a specific way to handle validation, not doing it in submit        
+        if (switchDTO.getOnCommandId() == null || switchDTO.getOffCommandId() == null) {
+          MessageBox.alert("Switch", "A switch must have on and off commands defined to toggle its state", null);
+          return;
+        }
+        if (switchDTO.getSensorId() == null) {
+          MessageBox.alert("Switch", "A switch must have a sensor defined to define its state", null);
+          return;
+        }
          
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
