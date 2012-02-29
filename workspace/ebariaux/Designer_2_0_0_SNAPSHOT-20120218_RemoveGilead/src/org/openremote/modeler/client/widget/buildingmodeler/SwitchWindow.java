@@ -28,23 +28,14 @@ import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
-import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.client.widget.buildingmodeler.SliderWindow.SensorSelectChangeListener;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchCommandOffRef;
-import org.openremote.modeler.domain.SwitchCommandOnRef;
-import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
@@ -59,7 +50,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -177,10 +167,6 @@ public class SwitchWindow extends FormWindow {
          nameField.setValue(switchDTO.getName());
          switchOnBtn.setText(switchDTO.getOnCommandDisplayName());
          switchOffBtn.setText(switchDTO.getOffCommandDisplayName());
-         
-//         switchOnBtn.setEnabled(false);
-//         switchOffBtn.setEnabled(false);
-//         sensorField.setEnabled(false);
       }
       
       AdapterField switchOnAdapter = new AdapterField(switchOnBtn);
@@ -209,11 +195,6 @@ public class SwitchWindow extends FormWindow {
       add(form);
    }
    
-   
-   
-   // TODO below
-   
-
    /**
     * The listener to submit the window, save the switch data into device and server.
     */
@@ -244,25 +225,6 @@ public class SwitchWindow extends FormWindow {
 
             });
          } else {
-           /*
-            SwitchCommandOnRef onRef = new SwitchCommandOnRef();
-            onRef.setDeviceCommand(switchToggle.getSwitchCommandOnRef().getDeviceCommand());
-            onRef.setDeviceName(switchToggle.getDevice().getName());
-            onRef.setOnSwitch(switchToggle);
-            
-            SwitchCommandOffRef offRef = new SwitchCommandOffRef();
-            offRef.setDeviceCommand(switchToggle.getSwitchCommandOffRef().getDeviceCommand());
-            offRef.setDeviceName(switchToggle.getDevice().getName());
-            offRef.setOffSwitch(switchToggle);
-            
-            SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
-            sensorRef.setSensor(switchToggle.getSwitchSensorRef().getSensor());
-            sensorRef.setSwitchToggle(switchToggle);
-            
-            switchToggle.setSwitchCommandOnRef(onRef);
-            switchToggle.setSwitchCommandOffRef(offRef);
-            switchToggle.setSwitchSensorRef(sensorRef);
-            */
             SwitchBeanModelProxy.updateSwitchWithDTO(switchDTO, new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
@@ -273,7 +235,6 @@ public class SwitchWindow extends FormWindow {
          }
       }
    }
-   
    
    /**
     * The listener to select on or off command for the switch.
