@@ -56,6 +56,8 @@ package org.openremote.controller.protocol.knx;
 public class IndividualAddress
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
   static String formatToAreaLineDevice(byte[] address)
   {
     String devc = (address[1] < 0)    ? "" + address[1] * -1             : "" + address[1];
@@ -63,5 +65,45 @@ public class IndividualAddress
     String area = (address[0] < 0)    ? "" + ((address[0] * -1) >> 4)    : "" + (address[0] >> 4);
 
     return area + "." + line + "." + devc;
+  }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  /**
+   * Individual address as integer value (16 least significant bits).
+   */
+  private int address;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * Constructs a new individual address from an integer value.
+   *
+   * @param addressAsTwoByteValue   the address as a 16-bit integer
+   */
+  public IndividualAddress(int addressAsTwoByteValue)
+  {
+    this.address = addressAsTwoByteValue & 0xFFFF;
+  }
+
+
+  // Instance Methods -----------------------------------------------------------------------------
+
+  /**
+   * Returns this address as a two-byte array.
+   *
+   * @return  two byte array where the most significant bits of the address are at index 0 and
+   *          least significant bits are at index 1 (big-endian/network byte order)
+   */
+  public byte[] getAddress()
+  {
+    byte[] addressBytes = new byte[2];
+
+    addressBytes[0] = (byte)((address >> 8) & 0xFF);
+    addressBytes[1] = (byte)(address & 0xFF);
+
+    return addressBytes;
   }
 }
