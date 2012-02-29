@@ -27,6 +27,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
@@ -77,12 +78,11 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensor;
    }
 
-  /* @Override
-   public List<Sensor> loadByDevice(Device device) {
-      Device dvic = genericDAO.loadById(Device.class, device.getOid());
-      return dvic.getSensors();
+   public List<Sensor> loadByDeviceId(long deviceId) {
+      Device device = genericDAO.loadById(Device.class, deviceId);
+      return device.getSensors();
    }
-*/
+   
    public List<Sensor> loadSameSensors(Sensor sensor) {
       List<Sensor> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);

@@ -34,6 +34,7 @@ import org.openremote.modeler.domain.State;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 /**
@@ -82,7 +83,16 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public List<Sensor> saveAll(List<Sensor> sensorList) {
        return sensorService.saveAllSensors(sensorList, userService.getAccount());
    }
-
+   
+   
+   public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
+     ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
+     for (Sensor s : sensorService.loadByDeviceId(id)) {
+       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName()));
+     }
+     return dtos;
+   }
+   
    public SensorDetailsDTO loadSensorDetails(long id) {
      Sensor sensor = sensorService.loadById(id);
      SensorDetailsDTO dto;

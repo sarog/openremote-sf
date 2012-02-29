@@ -633,9 +633,10 @@ public class DevicePanel extends ContentPanel {
       */
    }
    
-   private void editSlider(final BeanModel selectedModel) {
-      Slider slider = selectedModel.getBean();
-      final SliderWindow sliderWindow = new SliderWindow(slider);
+   private void editSlider(final BeanModel selectedModel, final BeanModel parentModel) {
+      final SliderWindow sliderWindow = new SliderWindow(selectedModel, ((DeviceDTO)parentModel.getBean()).getOid(), eventBus);
+      
+      /*
       sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
@@ -650,6 +651,8 @@ public class DevicePanel extends ContentPanel {
             sliderWindow.hide();
          }
       });
+      
+      */
    }
    
    private void editSwitch(final BeanModel selectedModel) {
@@ -1057,7 +1060,7 @@ public class DevicePanel extends ContentPanel {
       } else if (selectedModel != null && selectedModel.getBean() instanceof SensorDTO){
          editSensor(selectedModel);
       } else if (selectedModel != null && selectedModel.getBean() instanceof SliderDTO){
-         editSlider(selectedModel);
+         editSlider(selectedModel, tree.getStore().getParent(selectedModel));
       } else if (selectedModel != null && selectedModel.getBean() instanceof SwitchDTO){
          editSwitch(selectedModel);
       }

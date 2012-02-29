@@ -25,8 +25,11 @@ import java.util.List;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -105,4 +108,17 @@ public class SliderBeanModelProxy {
          }
       });
  }
+   
+   public static void loadSliderDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
+     AsyncServiceFactory.getSliderRPCServiceAsync().loadSliderDetails(((SliderDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SliderDetailsDTO>() {
+      public void onSuccess(SliderDetailsDTO result) {
+        asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
+      }
+    });
+   }
+   
+   public static void updateSliderWithDTO(final SliderDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getSliderRPCServiceAsync().updateSliderWithDTO(sensor, callback);
+   }
+
 }

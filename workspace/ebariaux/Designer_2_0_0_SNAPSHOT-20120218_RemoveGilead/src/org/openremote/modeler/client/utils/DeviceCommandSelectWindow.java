@@ -21,9 +21,7 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -43,26 +41,26 @@ public class DeviceCommandSelectWindow extends Dialog{
    
    protected TreePanel<BeanModel> deviceCommandTree;
    
-   public DeviceCommandSelectWindow(Device device){
+   public DeviceCommandSelectWindow(long deviceId) {
       setHeading("Select Command");
       setMinHeight(260);
       setWidth(200);
       setLayout(new FitLayout());
       setModal(true);
-      initCommandTree(device);
+      initCommandTree(deviceId);
       setButtons(Dialog.OKCANCEL);
       setHideOnButtonClick(true);
       addButtonListener();
       show();
    }
 
-   private void initCommandTree(Device device) {
+   private void initCommandTree(long deviceId) {
       ContentPanel deviceCommandPanel = new ContentPanel();
       deviceCommandPanel.setBorders(false);
       deviceCommandPanel.setBodyBorder(false);
       deviceCommandPanel.setHeaderVisible(false);
       if (deviceCommandTree == null) {
-         createCommandTree(device);
+         createCommandTree(deviceId);
          deviceCommandPanel.add(deviceCommandTree);
       }
       // overflow-auto style is for IE hack.
@@ -70,8 +68,8 @@ public class DeviceCommandSelectWindow extends Dialog{
       add(deviceCommandPanel);
    }
    
-   protected void createCommandTree(Device device) {
-      deviceCommandTree = TreePanelBuilder.buildCommandTree(device.getOid(), null);
+   protected void createCommandTree(long deviceId) {
+      deviceCommandTree = TreePanelBuilder.buildCommandTree(deviceId, null);
    }
    
    private void addButtonListener() {
@@ -83,7 +81,7 @@ public class DeviceCommandSelectWindow extends Dialog{
                   MessageBox.alert("Error", "Please select a command.", null);
                   be.cancelBubble();
                } else {
-                  if ((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceCommandRef)) {
+                  if (beanModel.getBean() instanceof DeviceCommandDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a command.", null);

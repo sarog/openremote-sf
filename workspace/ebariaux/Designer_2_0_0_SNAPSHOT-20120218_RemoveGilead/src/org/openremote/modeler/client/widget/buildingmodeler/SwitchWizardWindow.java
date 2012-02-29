@@ -142,7 +142,7 @@ public class SwitchWizardWindow extends SwitchWindow {
       }
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(switchToggle.getDevice());
+         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(switchToggle.getDevice().getOid());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
