@@ -26,12 +26,15 @@ import java.util.Map;
 
 import org.openremote.modeler.client.rpc.SensorRPCService;
 import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.SensorDTO;
@@ -45,7 +48,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    private static final long serialVersionUID = 7122839354773238989L;
 
    private SensorService sensorService;
-   
+   private DeviceService deviceService;
    private DeviceCommandService deviceCommandService;
    
    private UserService userService;
@@ -70,8 +73,12 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+   
+   public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
 
-   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
   }
 
@@ -151,6 +158,35 @@ public class SensorController extends BaseGWTSpringController implements SensorR
       customSensor.setStates(states);
    }
     sensorService.updateSensor(sensorBean);
+  }
+
+  public void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId) {
+    Sensor sensor = null;
+    if (sensorDTO.getType() == SensorType.RANGE) {
+      sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+   } else if (sensorDTO.getType() == SensorType.CUSTOM) {
+     CustomSensor customSensor = new CustomSensor();
+     for (Map.Entry<String,String> e : sensorDTO.getStates().entrySet()) {
+       customSensor.addState(new State(e.getKey(), e.getValue()));
+     }
+     sensor = customSensor;
+
+   } else {
+     sensor = new Sensor(sensorDTO.getType());
+   }
+    
+    Device device = deviceService.loadById(deviceId);
+    sensor.setDevice(device);
+    sensor.setName(sensorDTO.getName());
+    sensor.setAccount(userService.getAccount());
+
+    DeviceCommand deviceCommand = deviceCommandService.loadById(sensorDTO.getCommandId());
+    SensorCommandRef commandRef = new SensorCommandRef();
+    commandRef.setSensor(sensor);
+    commandRef.setDeviceCommand(deviceCommand);
+    sensor.setSensorCommandRef(commandRef);
+    
+    sensorService.saveSensor(sensor);
   }
 
 }

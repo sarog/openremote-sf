@@ -41,8 +41,14 @@ public class RangeSensor extends Sensor {
    public RangeSensor() {
       super(SensorType.RANGE);
    }
-   
-   @Column(table = "range_sensor", name = "min_value")
+
+   public RangeSensor(int min, int max) {
+    super(SensorType.RANGE);
+    this.min = min;
+    this.max = max;
+  }
+
+  @Column(table = "range_sensor", name = "min_value")
    public int getMin() {
       return min;
    }

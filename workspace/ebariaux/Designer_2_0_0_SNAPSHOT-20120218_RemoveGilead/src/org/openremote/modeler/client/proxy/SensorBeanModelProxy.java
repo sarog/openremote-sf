@@ -117,5 +117,9 @@ public class SensorBeanModelProxy {
   public static void updateSensorWithDTO(final SensorDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {
     AsyncServiceFactory.getSensorRPCServiceAsync().updateSensorWithDTO(sensor, callback);
   }
+  
+  public static void saveNewSensor(final SensorDetailsDTO sensor, final long deviceId, AsyncSuccessCallback<Void> callback) {
+    AsyncServiceFactory.getSensorRPCServiceAsync().saveNewSensor(sensor, deviceId, callback);
+  }
 
 }

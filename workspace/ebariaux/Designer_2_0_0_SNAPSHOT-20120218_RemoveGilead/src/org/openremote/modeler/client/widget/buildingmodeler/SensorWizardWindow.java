@@ -58,15 +58,16 @@ public class SensorWizardWindow extends SensorWindow {
 
    private Device device;
    public SensorWizardWindow(Device device) {
-      super(device);
+      super(device.getOid(), null); // TODO
       this.device = device;
       addNewCommandButton();
       form.removeAllListeners();
       onSubmit();
    }
    
+   /* TODO
    @Override
-   protected void buildCommandSelectTree(Device device) {
+   protected void buildCommandSelectTree(long deviceId) {
       TreeStore<BeanModel> commandTreeStore = new TreeStore<BeanModel>();
       for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
          commandTreeStore.add(deviceCommand.getBeanModel(), false);
@@ -84,6 +85,7 @@ public class SensorWizardWindow extends SensorWindow {
 
       });
    }
+   */
    private void addNewCommandButton() {
       Button newCommandButton = new Button("New command..");
       newCommandButton.addSelectionListener(new NewCommandListener());

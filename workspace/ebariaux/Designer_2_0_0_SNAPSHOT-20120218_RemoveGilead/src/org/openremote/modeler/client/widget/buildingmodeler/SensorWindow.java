@@ -37,6 +37,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -83,7 +84,11 @@ public class SensorWindow extends FormWindow {
 
   private EventBus eventBus;
   
-   private BeanModel sensorModel = null;
+  private long deviceId;
+  
+   private SensorDetailsDTO sensorDTO;
+   
+   private boolean edit;
    
    protected TextField<String> nameField = new TextField<String>();
    
@@ -106,8 +111,6 @@ public class SensorWindow extends FormWindow {
    protected EditorGrid<BaseModelData> grid = null;
    private int stateRowIndex = -1;
    
-   private Device device = null;
-   
    /**
     * Instantiates a window to edit a sensor.
     * 
@@ -116,12 +119,13 @@ public class SensorWindow extends FormWindow {
    public SensorWindow(BeanModel sensorModel, EventBus eventBus) {
      this.eventBus = eventBus;
       setHeading("Edit sensor");
+      edit = true;
 
       // TODO : have a display stating we're loading
       
       SensorBeanModelProxy.loadSensorDetails(sensorModel, new AsyncSuccessCallback<BeanModel>() {  
         public void onSuccess(BeanModel result) {
-          SensorWindow.this.sensorModel = result;
+          SensorWindow.this.sensorDTO = result.getBean();
           init();
           setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
           layout();
@@ -134,14 +138,14 @@ public class SensorWindow extends FormWindow {
     * 
     * @param device the device
     */
-   public SensorWindow(Device device) {
-      this.device = device;
-      if (device == null){
-         throw new NullPointerException("A sensor must belong to a device!");
-      }
+   public SensorWindow(long deviceId, EventBus eventBus) {
+     super();
+     this.deviceId = deviceId;
+     this.eventBus = eventBus;
+     sensorDTO = new SensorDetailsDTO();
       setHeading("New sensor");
+      edit = false;
       init();
-      show();
    }
    
    /**
@@ -168,9 +172,6 @@ public class SensorWindow extends FormWindow {
    private void createFields() {
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
-      if (sensorModel != null) {
-         nameField.setValue(((SensorDetailsDTO) sensorModel.getBean()).getName());
-      }
       
       AdapterField commandField = new AdapterField(createCommandTreeView());
       commandField.setFieldLabel("Command");
@@ -221,19 +222,19 @@ public class SensorWindow extends FormWindow {
          
       });
       
-      if (sensorModel != null) {
-         SensorDetailsDTO sensor = sensorModel.getBean();
-         if (sensor.getType() != null) {
-            typeList.setValue(new ComboBoxDataModel<SensorType>(sensor.getType().toString(), sensor.getType()));
-            if (sensor.getType() == SensorType.RANGE) {
-               minField.setValue(sensor.getMinValue());
-               maxField.setValue(sensor.getMaxValue());
+      if (edit) {
+        nameField.setValue(sensorDTO.getName());
+         if (sensorDTO.getType() != null) {
+            typeList.setValue(new ComboBoxDataModel<SensorType>(sensorDTO.getType().toString(), sensorDTO.getType()));
+            if (sensorDTO.getType() == SensorType.RANGE) {
+               minField.setValue(sensorDTO.getMinValue());
+               maxField.setValue(sensorDTO.getMaxValue());
 //               minField.disable();
 //               maxField.disable();
-            } else if (sensor.getType() == SensorType.CUSTOM) {
+            } else if (sensorDTO.getType() == SensorType.CUSTOM) {
               // TODO EBR : see if we can avoid this transcoding of data and use the HashMap directly for display
               
-              for (Map.Entry<String, String> e : sensor.getStates().entrySet()) {
+              for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
                 BaseModelData bmd = new BaseModelData();
                 bmd.set("name", e.getKey());
                 bmd.set("value", e.getValue());
@@ -243,8 +244,7 @@ public class SensorWindow extends FormWindow {
             }
          }
 //         commandSelectTree.disable();
-         typeList.disable();
-         
+         typeList.disable();         
       }
    }
    
@@ -261,7 +261,7 @@ public class SensorWindow extends FormWindow {
 //      deviceCommandTreeContainer.addStyleName("overflow-auto");
       deviceCommandTreeContainer.setStyleAttribute("backgroundColor", "white");
       
-      buildCommandSelectTree(device);
+      buildCommandSelectTree();
       deviceCommandTreeContainer.add(commandSelectTree);
       
       return deviceCommandTreeContainer;
@@ -272,16 +272,15 @@ public class SensorWindow extends FormWindow {
     * 
     * @param device the device
     */
-   protected void buildCommandSelectTree(Device device) {      
-      Long deviceId = null;
+   protected void buildCommandSelectTree() {      
+      Long devId = null;
       Long selectedCommandId = null;
 
-      if (sensorModel != null) {
-         SensorDetailsDTO sensor = sensorModel.getBean();
-         deviceId = sensor.getDeviceId();
-         selectedCommandId = sensor.getCommandId();
+      if (sensorDTO != null) {
+         devId = sensorDTO.getDeviceId();
+         selectedCommandId = sensorDTO.getCommandId();
       }
-      commandSelectTree = TreePanelBuilder.buildCommandTree(device != null?device.getOid():deviceId, selectedCommandId);
+      commandSelectTree = TreePanelBuilder.buildCommandTree(devId != null?devId:deviceId, selectedCommandId);
    }
    
    /**
@@ -442,18 +441,14 @@ public class SensorWindow extends FormWindow {
             }
             
             SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();            
-            SensorDetailsDTO sensor = null;            
-            if (null == sensorModel) {
-              sensor = new SensorDetailsDTO();
-              sensor.setType(type);
-              sensor.setDeviceId(device.getOid());
-            } else {
-              sensor = sensorModel.getBean();
+            if (!edit) {
+              sensorDTO.setType(type);
+              sensorDTO.setDeviceId(deviceId);
             }
             
             if (type == SensorType.RANGE) {
-              sensor.setMinValue(Integer.valueOf(minField.getRawValue()));
-              sensor.setMaxValue(Integer.valueOf(maxField.getRawValue()));
+              sensorDTO.setMinValue(Integer.valueOf(minField.getRawValue()));
+              sensorDTO.setMaxValue(Integer.valueOf(maxField.getRawValue()));
             } else if (type == SensorType.CUSTOM) {
               HashMap<String,String> sensorStates = new HashMap<String,String>();
 
@@ -461,25 +456,21 @@ public class SensorWindow extends FormWindow {
                for (BaseModelData stateModel : states) {
                  sensorStates.put((String)stateModel.get("name"), (String)stateModel.get("value"));
                }
-               sensor.setStates(sensorStates);
+               sensorDTO.setStates(sensorStates);
             }
-            sensor.setName(nameField.getValue());
+            sensorDTO.setName(nameField.getValue());
             DeviceCommandDTO cmd = selectedCommand.getBean();
-            sensor.setCommandId(cmd.getOid());
+            sensorDTO.setCommandId(cmd.getOid());
 
-            if (null == sensorModel) {
-              
-              // TODO
-/*
-              SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
-                 public void onSuccess(Sensor result) {
-                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
+            if (!edit) {
+              SensorBeanModelProxy.saveNewSensor(sensorDTO, deviceId, new AsyncSuccessCallback<Void>() {
+                 public void onSuccess(Void result) {
+                   hide();
+                   eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO EBR : pass appropriate parameter
                  }
               });
-              */
-
             } else {
-               SensorBeanModelProxy.updateSensorWithDTO(sensor, new AsyncSuccessCallback<Void>() {
+               SensorBeanModelProxy.updateSensorWithDTO(sensorDTO, new AsyncSuccessCallback<Void>() {
                   public void onSuccess(Void result) {
                     hide();
                     eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO EBR : pass appropriate parameter

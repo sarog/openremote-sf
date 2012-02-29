@@ -525,8 +525,10 @@ public class DevicePanel extends ContentPanel {
    }
    private void createSensor() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final SensorWindow sensorWindow = new SensorWindow((Device) deviceModel.getBean());
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
+         final SensorWindow sensorWindow = new SensorWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         sensorWindow.show();
+         /*
          sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -536,6 +538,7 @@ public class DevicePanel extends ContentPanel {
                sensorWindow.hide();
             }
          });
+         */
       }
    }
    
