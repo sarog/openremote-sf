@@ -70,7 +70,7 @@ public class Rrd4jDataLogger extends EventProcessor {
    }
 
    @Override
-   public void push(EventContext ctx) {
+   public synchronized void push(EventContext ctx) {
       String sensorName = ctx.getEvent().getSource();
       for (RrdDb rrdDb : rrdDbList) {
          try {
