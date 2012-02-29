@@ -186,7 +186,7 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Boolean> callback) {
-      final DeviceCommand deviceCommand = deviceCommnadModel.getBean();
+      final DeviceCommandDTO deviceCommand = deviceCommnadModel.getBean();
       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
             if (result) {

@@ -233,7 +233,7 @@ public class DeviceBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback) {
-      final Device device = deviceModel.getBean();
+      final DeviceDTO device = deviceModel.getBean();
       /*AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
          @Override
          public void onSuccess(List<DeviceCommand> result) {
@@ -244,6 +244,8 @@ public class DeviceBeanModelProxy {
             }*/
             AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
+                 
+                 /* TODO
                   //1, remove switches and sliders.
                   removeAllSwitchsForDevice(device);
                   removeAllSlidersForDevice(device);
@@ -253,6 +255,8 @@ public class DeviceBeanModelProxy {
                   removeAllDeviceCommandsForDevice(device);
                   //4, remove device
                   BeanModelDataBase.deviceTable.delete(device.getOid());
+                  
+                  */
                   callback.onSuccess(result);
                }
             });

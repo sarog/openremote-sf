@@ -696,15 +696,15 @@ public class DevicePanel extends ContentPanel {
          public void onDelete(ButtonEvent ce) {
             List<BeanModel> selectedModels = tree.getSelectionModel().getSelectedItems();
             for (BeanModel selectedModel : selectedModels) {
-               if (selectedModel != null && selectedModel.getBean() instanceof Device) {
+               if (selectedModel != null && selectedModel.getBean() instanceof DeviceDTO) {
                   deleteDevice(selectedModel);
-               } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommand) {
+               } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommandDTO) {
                   deleteCommand(selectedModel);
-               } else if (selectedModel != null && selectedModel.getBean() instanceof Sensor){
+               } else if (selectedModel != null && selectedModel.getBean() instanceof SensorDTO) {
                   deleteSensor(selectedModel);
-               } else if (selectedModel!=null && selectedModel.getBean() instanceof Slider){
+               } else if (selectedModel!=null && selectedModel.getBean() instanceof SliderDTO) {
                   deleteSlider(selectedModel);
-               } else if (selectedModel !=null && selectedModel.getBean() instanceof Switch){
+               } else if (selectedModel !=null && selectedModel.getBean() instanceof SwitchDTO) {
                   deleteSwitch(selectedModel);
                }
             }

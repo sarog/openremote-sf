@@ -114,10 +114,6 @@ public class SliderWindow extends FormWindow {
       edit = false;
       this.setSize(320, 240);      
       createField();
-      /*
-      setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
-      layout();
-      */
    }
    
    /**
