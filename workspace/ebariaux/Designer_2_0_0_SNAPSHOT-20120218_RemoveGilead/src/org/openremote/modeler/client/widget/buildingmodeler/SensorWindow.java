@@ -33,11 +33,8 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -56,6 +53,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -361,17 +359,15 @@ public class SensorWindow extends FormWindow {
 //      grid.setHideHeaders(true);
       stateItemsContainer.add(grid);
       
-      
-      // TODO EBR : this might be BaseModelData, not BeanModel
-      grid.addListener(Events.RowClick, new Listener<GridEvent<BeanModel>>() {
+      grid.addListener(Events.RowClick, new Listener<GridEvent<BaseModelData>>() {
          @Override
-         public void handleEvent(GridEvent<BeanModel> be) {
+         public void handleEvent(GridEvent<BaseModelData> be) {
             stateRowIndex = be.getRowIndex();
          }
       });
-      grid.addListener(Events.AfterEdit, new Listener<GridEvent<BeanModel>>() {
+      grid.addListener(Events.AfterEdit, new Listener<GridEvent<BaseModelData>>() {
          @Override
-         public void handleEvent(GridEvent<BeanModel> be) {
+         public void handleEvent(GridEvent<BaseModelData> be) {
             grid.getStore().commitChanges();
          }
       });
@@ -386,7 +382,7 @@ public class SensorWindow extends FormWindow {
          @Override
          public void componentSelected(ButtonEvent ce) {
             grid.stopEditing();
-            grid.getStore().add(new State().getBeanModel());
+            grid.getStore().add(new BaseModelData());
             grid.startEditing(grid.getStore().getCount() - 1, 0);
          }
       });
