@@ -635,6 +635,7 @@ public class DevicePanel extends ContentPanel {
    
    private void editSlider(final BeanModel selectedModel, final BeanModel parentModel) {
       final SliderWindow sliderWindow = new SliderWindow(selectedModel, ((DeviceDTO)parentModel.getBean()).getOid(), eventBus);
+      sliderWindow.show();
       
       /*
       sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {

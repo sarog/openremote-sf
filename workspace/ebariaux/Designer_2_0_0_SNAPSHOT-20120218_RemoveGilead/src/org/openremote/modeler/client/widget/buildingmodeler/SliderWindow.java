@@ -84,13 +84,7 @@ public class SliderWindow extends FormWindow {
    
    /**
     * Instantiates a window to edit a slider.
-    * 
-    * @param slider the slider
     */
-   
-   
-   // TODO: have device id passed in as parameter
-   
    public SliderWindow(BeanModel sliderModel, long deviceId, EventBus eventBus) {
       super();
       this.eventBus = eventBus;
@@ -102,11 +96,9 @@ public class SliderWindow extends FormWindow {
       SliderBeanModelProxy.loadSliderDetails(sliderModel, new AsyncSuccessCallback<BeanModel>() {
         public void onSuccess(BeanModel result) {
           SliderWindow.this.sliderDTO = result.getBean();
-          Info.display("INFO", "Back from server");
           createField();
-          
-          // TODO remove
-          show();     
+          setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
+          layout();
         }
       });
    }
@@ -192,7 +184,7 @@ public class SliderWindow extends FormWindow {
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
       
-      form.addListener(Events.BeforeSubmit, new SliderSubmitListener());
+      form.addListener(Events.BeforeSubmit, new SliderSubmitListener());      
       add(form);
    }
    
