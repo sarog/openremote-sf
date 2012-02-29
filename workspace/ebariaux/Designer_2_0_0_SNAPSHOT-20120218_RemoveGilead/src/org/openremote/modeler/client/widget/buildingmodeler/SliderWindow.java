@@ -74,8 +74,6 @@ public class SliderWindow extends FormWindow {
    private long deviceId;
    private SliderDetailsDTO sliderDTO;
    
-   protected Slider slider = null;
-   
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
    protected Button setValueBtn = new Button("select");
@@ -105,28 +103,20 @@ public class SliderWindow extends FormWindow {
    
    /**
     * Instantiates a window to create a new slider.
-    * 
-    * @param slider the slider
-    * @param device the device
     */
-   public SliderWindow(Slider slider,Device device){
+   public SliderWindow(long deviceId, EventBus eventBus) {
       super();
-      if (null != slider) {
-         this.slider = slider;
-         edit = true;
-      } else {
-         this.slider = new Slider();
-         edit = false;
-      }
-      if(device==null){
-         throw new NullPointerException("A slider must belong to a device!");
-      }
-      this.slider.setDevice(device);
-      this.setHeading(edit ? "Edit Slider" : "New Slider");
-      this.setSize(320, 240);
-      
+      this.eventBus = eventBus;
+      this.deviceId = deviceId;
+      sliderDTO = new SliderDetailsDTO();
+      this.setHeading("New Slider");
+      edit = false;
+      this.setSize(320, 240);      
       createField();
-      show();
+      /*
+      setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
+      layout();
+      */
    }
    
    /**
@@ -196,6 +186,9 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
+        
+        // TODO validation
+        
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
@@ -204,14 +197,11 @@ public class SliderWindow extends FormWindow {
             }
          }
          if (!edit) {
-           
-           // TODO
-           
-            SliderBeanModelProxy.save(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
+            SliderBeanModelProxy.saveNewSlider(sliderDTO, deviceId, new AsyncSuccessCallback<Void>(){
                @Override
-               public void onSuccess(Slider result) {
-                  slider = result;
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider.getBeanModel()));
+               public void onSuccess(Void result) {
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 hide();
                }
             });
          } else {

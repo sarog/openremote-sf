@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
@@ -101,5 +102,15 @@ public class SliderController extends BaseGWTSpringController implements SliderR
      
      sliderService.update(slider);
    }
+
+  public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
+    Sensor sensor = sensorService.loadById(sliderDTO.getSensorId());
+    DeviceCommand command = deviceCommandService.loadById(sliderDTO.getCommandId());
+
+    Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+    slider.setAccount(userService.getAccount());
+    
+    sliderService.save(slider);
+  }
 
 }

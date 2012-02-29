@@ -59,4 +59,6 @@ public interface SliderRPCService extends RemoteService {
    SliderDetailsDTO loadSliderDetails(long id);
 
    void updateSliderWithDTO(SliderDetailsDTO sliderDTO);
+   
+   void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId);
 }

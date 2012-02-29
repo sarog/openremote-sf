@@ -38,4 +38,6 @@ public interface SliderRPCServiceAsync {
    
    void updateSliderWithDTO(SliderDetailsDTO sliderDTO, AsyncCallback<Void> async);
 
+   void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId, AsyncCallback<Void> async);
+
 }

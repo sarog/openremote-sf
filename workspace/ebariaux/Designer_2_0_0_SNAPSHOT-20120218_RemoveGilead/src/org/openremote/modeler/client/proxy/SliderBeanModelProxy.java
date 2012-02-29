@@ -93,4 +93,8 @@ public class SliderBeanModelProxy {
      AsyncServiceFactory.getSliderRPCServiceAsync().updateSliderWithDTO(sensor, callback);
    }
 
+   public static void saveNewSlider(final SliderDetailsDTO sensor, final long deviceId, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getSliderRPCServiceAsync().saveNewSlider(sensor, deviceId, callback);
+   }
+
 }

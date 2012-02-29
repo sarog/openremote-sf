@@ -541,8 +541,10 @@ public class DevicePanel extends ContentPanel {
    
    private void createSlider() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final SliderWindow sliderWindow = new SliderWindow(null,(Device) deviceModel.getBean());
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
+         final SliderWindow sliderWindow = new SliderWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         sliderWindow.show();
+         /*
          sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -552,6 +554,7 @@ public class DevicePanel extends ContentPanel {
                sliderWindow.hide();
             }
          });
+         */
       }
    }
    
