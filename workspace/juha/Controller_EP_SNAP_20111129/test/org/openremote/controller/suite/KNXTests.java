@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -29,6 +29,7 @@ import org.openremote.controller.protocol.knx.ScalingTest;
 import org.openremote.controller.protocol.knx.KNXIpConnectionManagerTest;
 import org.openremote.controller.protocol.knx.RangeWriteTest;
 import org.openremote.controller.protocol.knx.dib.SupportedServiceFamilyTest;
+import org.openremote.controller.protocol.knx.dib.DeviceInformationTest;
 import org.openremote.controller.protocol.knx.ip.message.HpaiTest;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
 
@@ -57,7 +58,8 @@ import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
 
        // dib tests...
 
-       SupportedServiceFamilyTest.class
+       SupportedServiceFamilyTest.class,
+       DeviceInformationTest.class
    }
 )
 public class KNXTests
