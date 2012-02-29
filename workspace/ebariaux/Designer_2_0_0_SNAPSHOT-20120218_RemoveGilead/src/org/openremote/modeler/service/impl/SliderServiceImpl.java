@@ -36,9 +36,9 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
 
    private UserService userService = null;
 
+   @Override
    public Slider loadById(long id) {
-     Slider slider = genericDAO.getById(Slider.class, id);
-     return slider;
+     return genericDAO.getById(Slider.class, id);
    }
 
    @Override
