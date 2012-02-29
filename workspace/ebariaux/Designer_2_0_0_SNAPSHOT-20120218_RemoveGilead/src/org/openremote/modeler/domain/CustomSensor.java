@@ -55,6 +55,7 @@ public class CustomSensor extends Sensor {
    
    public void addState(State state) {
       states.add(state);
+      state.setSensor(this);
    }
    
    @Override

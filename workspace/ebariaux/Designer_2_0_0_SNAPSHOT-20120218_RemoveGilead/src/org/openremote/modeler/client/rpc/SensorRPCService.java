@@ -82,4 +82,6 @@ public interface SensorRPCService extends RemoteService {
   SensorDetailsDTO loadSensorDetails(long id);
 
   void updateSensorWithDTO(SensorDetailsDTO sensor);
+
+  void saveNewSensor(SensorDetailsDTO sensor, long deviceId);
 }

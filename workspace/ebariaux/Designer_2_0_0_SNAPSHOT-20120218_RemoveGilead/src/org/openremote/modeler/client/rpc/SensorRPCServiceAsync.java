@@ -48,4 +48,6 @@ public interface SensorRPCServiceAsync {
 
    void updateSensorWithDTO(SensorDetailsDTO sensor, AsyncCallback<Void> async);
 
+   void saveNewSensor(SensorDetailsDTO sensor, long deviceId, AsyncCallback<Void> async);
+
 }
