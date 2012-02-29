@@ -557,8 +557,12 @@ public class DevicePanel extends ContentPanel {
    
    private void createSwitch() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final SwitchWindow switchWindow = new SwitchWindow(null,(Device) deviceModel.getBean());
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
+        
+         final SwitchWindow switchWindow = new SwitchWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         switchWindow.show();
+         
+         /*
          switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -568,6 +572,7 @@ public class DevicePanel extends ContentPanel {
                switchWindow.hide();
             }
          });
+         */
       }
    }
    /**

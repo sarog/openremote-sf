@@ -51,4 +51,6 @@ public interface SwitchRPCService extends RemoteService {
 
    void updateSwitchWithDTO(SwitchDetailsDTO switchDTO);
 
+   void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId);
+
 }

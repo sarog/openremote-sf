@@ -99,4 +99,17 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
      switchService.update(sw);
    }
 
+   @Override
+   public void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId) {
+     Sensor sensor = sensorService.loadById(switchDTO.getSensorId());
+     DeviceCommand onCommand = deviceCommandService.loadById(switchDTO.getOnCommandId());
+     DeviceCommand offCommand = deviceCommandService.loadById(switchDTO.getOffCommandId());
+     
+     Switch sw = new Switch(onCommand, offCommand, sensor);
+     sw.setName(switchDTO.getName());
+     sw.setAccount(userService.getAccount());
+     
+     switchService.save(sw);
+   }
+
 }

@@ -68,12 +68,9 @@ public class SwitchWindow extends FormWindow {
    public static final String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
    
    private EventBus eventBus;
-   
    private long deviceId;
    private SwitchDetailsDTO switchDTO;
 
-   protected Switch switchToggle = null;
-   
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
    protected Button switchOnBtn = new Button("select");
@@ -98,7 +95,7 @@ public class SwitchWindow extends FormWindow {
        public void onSuccess(BeanModel result) {
          SwitchWindow.this.switchDTO = result.getBean();
          createField();
-         setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
+         setHeight(300); // Somehow setting the height here is required for the autoheight calculation to work when layout is called 
          layout();
        }
      });
@@ -106,27 +103,18 @@ public class SwitchWindow extends FormWindow {
    
    /**
     * Instantiates a window to create or edit a switch.
-    * 
-    * @param switchToggle the switch toggle
-    * @param device the device
     */
-   public SwitchWindow(Switch switchToggle, Device device) {
-      super();
-      if (null != switchToggle) {
-         this.switchToggle = switchToggle;
-         edit = true;
-      } else {
-         this.switchToggle = new Switch();
-         edit = false;
-      }
-      if (device != null) {
-         this.switchToggle.setDevice(device);
-      }
-      this.setHeading(edit ? "Edit Switch" : "New Switch");
-      this.setSize(320, 240);
-      
-      createField();
-      show();
+   public SwitchWindow(long deviceId, EventBus eventBus) {
+     super();
+     this.deviceId = deviceId;
+     this.eventBus = eventBus;
+     switchDTO = new SwitchDetailsDTO();
+     edit = false;
+     this.setHeading("New Switch");
+     this.setSize(320, 240);
+     createField();
+     setHeight(300); // Somehow setting the height here is required for the autoheight calculation to work when layout is called 
+     layout();
    }
 
    /**
@@ -217,10 +205,11 @@ public class SwitchWindow extends FormWindow {
             }
          }
          if (!edit) {
-            SwitchBeanModelProxy.save(switchToggle.getBeanModel(), new AsyncSuccessCallback<Switch>() {
+            SwitchBeanModelProxy.saveNewSwitch(switchDTO, deviceId, new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(Switch result) {
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result.getBeanModel()));
+               public void onSuccess(Void result) {
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 hide();
                };
 
             });

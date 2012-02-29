@@ -34,4 +34,6 @@ public interface SwitchRPCServiceAsync {
 
    void updateSwitchWithDTO(SwitchDetailsDTO switchDTO, AsyncCallback<Void> callback);
 
+   void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId, AsyncCallback<Void> callback);
+
 }
