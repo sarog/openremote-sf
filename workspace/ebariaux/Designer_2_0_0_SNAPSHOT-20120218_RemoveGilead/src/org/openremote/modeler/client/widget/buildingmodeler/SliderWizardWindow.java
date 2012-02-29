@@ -150,7 +150,7 @@ public class SliderWizardWindow extends SliderWindow {
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(device);
+         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(device.getOid());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override

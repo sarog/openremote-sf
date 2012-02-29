@@ -22,11 +22,16 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.SliderRPCService;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.SliderCommandRef;
+import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>SliderRPCService</code>.
@@ -35,6 +40,8 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 public class SliderController extends BaseGWTSpringController implements SliderRPCService {
 
    private SliderService sliderService;
+   private SensorService sensorService;
+   private DeviceCommandService deviceCommandService;
    
    private UserService userService;
    
@@ -73,5 +80,36 @@ public class SliderController extends BaseGWTSpringController implements SliderR
       this.userService = userService;
    }
 
-   
+   public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  public SliderDetailsDTO loadSliderDetails(long id) {
+     Slider slider = sliderService.loadById(id);
+     DeviceCommand command = slider.getSetValueCmd().getDeviceCommand();
+     return new SliderDetailsDTO(slider.getOid(), slider.getName(), slider.getSliderSensorRef().getSensor().getOid(), command.getOid(), command.getDisplayName());
+   }
+
+   public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
+     Slider slider = sliderService.loadById(sliderDTO.getOid());
+     slider.setName(sliderDTO.getName());
+     
+     
+     if (slider.getSliderSensorRef().getSlider().getOid() != sliderDTO.getSensorId()) {
+       Sensor sensor = sensorService.loadById(sliderDTO.getSensorId());
+       slider.getSliderSensorRef().setSensor(sensor);
+     }
+     
+     if (slider.getSetValueCmd().getDeviceCommand().getOid() != sliderDTO.getCommandId()) {
+       DeviceCommand dc = deviceCommandService.loadById(sliderDTO.getCommandId());
+       slider.getSetValueCmd().setDeviceCommand(dc);
+     }
+     
+     sliderService.update(slider);
+   }
+
 }

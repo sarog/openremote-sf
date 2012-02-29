@@ -22,7 +22,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.SliderBeanModelTable;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -88,7 +88,7 @@ public class SelectSliderWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSliderModel = se.getSelectedItem();
             if (selectedSliderModel != null) {
-               SliderDetailsDTO slider = selectedSliderModel.getBean();
+               SliderWithInfoDTO slider = selectedSliderModel.getBean();
                String sliderInfo = "<p><b>Slider info</b></p>";
                if (slider.getCommandName() != null){
                   sliderInfo = sliderInfo + "<p>Command: " + slider.getCommandName() + "</p>";
@@ -113,7 +113,7 @@ public class SelectSliderWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a slider.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof SliderDetailsDTO) {
+                  if (beanModel.getBean() instanceof SliderWithInfoDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a slider.", null);

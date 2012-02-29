@@ -255,7 +255,7 @@ public class SwitchWindow extends FormWindow {
       }
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SwitchWindow.this.switchToggle.getDevice());
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SwitchWindow.this.switchToggle.getDevice().getOid());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override

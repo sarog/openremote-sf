@@ -34,16 +34,20 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  * The Class is for select device command round under a device.
  */
 public class DeviceCommandWizardSelectWindow extends DeviceCommandSelectWindow {
-   public DeviceCommandWizardSelectWindow(Device device) {
-      super(device);
+   public DeviceCommandWizardSelectWindow(long deviceId) {
+      super(deviceId);
    }
 
    @Override
-   protected void createCommandTree(Device device) {
+   protected void createCommandTree(long deviceId) {
       TreeStore<BeanModel> commandTreeStore = new TreeStore<BeanModel>();
+      
+      // TODO
+/*      
       for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
          commandTreeStore.add(deviceCommand.getBeanModel(), false);
       }
+      */
       deviceCommandTree = new TreePanel<BeanModel>(commandTreeStore);
       deviceCommandTree.setBorders(false);
       deviceCommandTree.setStateful(true);

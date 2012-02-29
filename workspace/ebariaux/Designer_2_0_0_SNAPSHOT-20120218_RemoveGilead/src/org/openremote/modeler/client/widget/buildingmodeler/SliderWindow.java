@@ -19,26 +19,26 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
-import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderCommandRef;
-import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -50,13 +50,14 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
+import com.google.gwt.event.shared.EventBus;
 /**
  * The window to creates or update a slider and save it into server.
  * 
@@ -67,6 +68,11 @@ public class SliderWindow extends FormWindow {
    public static final String SLIDER_NAME_FIELD_NAME = "name";
    public static final String SLIDER_SENSOR_FIELD_NAME = "sensor";
    public static final String SLIDER_SETVALUE_COMMMAND_FIELD_NAME="setValue";
+   
+   private EventBus eventBus;
+   
+   private long deviceId;
+   private SliderDetailsDTO sliderDTO;
    
    protected Slider slider = null;
    
@@ -81,20 +87,28 @@ public class SliderWindow extends FormWindow {
     * 
     * @param slider the slider
     */
-   public SliderWindow(Slider slider) {
+   
+   
+   // TODO: have device id passed in as parameter
+   
+   public SliderWindow(BeanModel sliderModel, long deviceId, EventBus eventBus) {
       super();
-      if (null != slider) {
-         this.slider = slider;
-         edit = true;
-      } else {
-         this.slider = new Slider();
-         edit = false;
-      }
-      this.setHeading(edit ? "Edit Slider" : "New Slider");
+      this.eventBus = eventBus;
+      this.deviceId = deviceId;
+      this.setHeading("Edit Slider");
+      edit = true;
       this.setSize(320, 240);
-      
-      createField();
-      show();
+
+      SliderBeanModelProxy.loadSliderDetails(sliderModel, new AsyncSuccessCallback<BeanModel>() {
+        public void onSuccess(BeanModel result) {
+          SliderWindow.this.sliderDTO = result.getBean();
+          Info.display("INFO", "Back from server");
+          createField();
+          
+          // TODO remove
+          show();     
+        }
+      });
    }
    
    /**
@@ -140,35 +154,29 @@ public class SliderWindow extends FormWindow {
       sensorField.setFieldLabel(SLIDER_SENSOR_FIELD_NAME);
       sensorField.setName(SLIDER_SENSOR_FIELD_NAME);
       
-      ListStore<ModelData> sensorStore = new ListStore<ModelData>();
-      List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
-      for (BeanModel sensorBean : sensors) {
-         Sensor sensor = sensorBean.getBean();
-         if (sensor.getDevice().equals(slider.getDevice())) {
-            ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-            sensorStore.add(sensorRefSelector);
-         }
-      }
+      final ListStore<ModelData> sensorStore = new ListStore<ModelData>();
+      SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SensorDTO> result) {
+          for (SensorDTO s : result) {
+            ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
+            sensorStore.add(dm);
+            if (edit && s.getOid() == sliderDTO.getSensorId()) {
+              sensorField.setValue(dm);
+            }
+          }
+        }
+      });
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
-      
+
       if (edit) {
-         nameField.setValue(slider.getName());
-         if (slider.getSliderSensorRef() != null) {
-            sensorField.setValue(new ComboBoxDataModel<Sensor>(
-                  slider.getSliderSensorRef().getSensor().getDisplayName(), slider.getSliderSensorRef().getSensor()));
-         }
-         if (slider.getSetValueCmd() != null) {
-            setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
-         }
-         
-//         sensorField.setEnabled(false);
-//         setValueBtn.setEnabled(false);
+         nameField.setValue(sliderDTO.getName());
+         setValueBtn.setText(sliderDTO.getCommandName());
       }
-      
+
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
       switchOnAdapter.setFieldLabel(SLIDER_SETVALUE_COMMMAND_FIELD_NAME);
-      
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
       
@@ -181,7 +189,6 @@ public class SliderWindow extends FormWindow {
       
       form.addButton(submitBtn);
       form.addButton(resetButton);
-      
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
       
@@ -200,11 +207,14 @@ public class SliderWindow extends FormWindow {
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
-               slider.setName(field.getValue().toString());
+               sliderDTO.setName(field.getValue().toString());
                break;
             }
          }
          if (!edit) {
+           
+           // TODO
+           
             SliderBeanModelProxy.save(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
                @Override
                public void onSuccess(Slider result) {
@@ -213,11 +223,11 @@ public class SliderWindow extends FormWindow {
                }
             });
          } else {
-            SliderBeanModelProxy.update(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
+            SliderBeanModelProxy.updateSliderWithDTO(sliderDTO, new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(Slider result) {
-                  slider = result;
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider.getBeanModel()));
+               public void onSuccess(Void result) {
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 hide();
                }
             });
          }
@@ -231,27 +241,16 @@ public class SliderWindow extends FormWindow {
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(SliderWindow.this.slider.getDevice());
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(deviceId);
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
-               DeviceCommandRef deviceCommandRef = null;
-               if (dataModel.getBean() instanceof DeviceCommand) {
-                  deviceCommandRef = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
-               } else if (dataModel.getBean() instanceof DeviceCommandRef) {
-                  DeviceCommandRef ref = (DeviceCommandRef) dataModel.getBean();
-                  deviceCommandRef = new DeviceCommandRef(ref.getDeviceCommand());
-               } else {
-                  MessageBox.alert("error", "A slider can only have command instead of macor", null);
-                  return;
-               }
-               command.setText(deviceCommandRef.getDeviceCommand().getDisplayName());
-               SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
-               sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
-               sliderCommandRef.setDeviceName(slider.getDevice().getName());
-               slider.setSetValueCmd(sliderCommandRef);
+               DeviceCommandDTO dc = dataModel.getBean();
+               command.setText(dc.getDisplayName());
+               sliderDTO.setCommandId(dc.getOid());
+               sliderDTO.setCommandName(dc.getDisplayName());
             }
          });
       }
@@ -265,10 +264,8 @@ public class SliderWindow extends FormWindow {
       @SuppressWarnings("unchecked")
       @Override
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-          ComboBoxDataModel<Sensor> sensorItem = (ComboBoxDataModel<Sensor>) se.getSelectedItem();
-         SliderSensorRef sensorRef = new SliderSensorRef(slider);
-         sensorRef.setSensor(sensorItem.getData());
-         slider.setSliderSensorRef(sensorRef);
+          ComboBoxDataModel<SensorDTO> sensorItem = (ComboBoxDataModel<SensorDTO>) se.getSelectedItem();
+          sliderDTO.setSensorId(sensorItem.getData().getOid());
       }
    }
 }
