@@ -617,7 +617,7 @@ public class DevicePanel extends ContentPanel {
    
    private void editSensor(final BeanModel selectedModel) {
       final SensorWindow sensorWindow = new SensorWindow(selectedModel, eventBus);
-//      sensorWindow.show();
+      sensorWindow.show();
       
   /*    
       sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
