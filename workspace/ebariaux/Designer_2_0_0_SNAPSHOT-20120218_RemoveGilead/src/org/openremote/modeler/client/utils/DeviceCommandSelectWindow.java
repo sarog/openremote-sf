@@ -21,6 +21,7 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -72,6 +73,10 @@ public class DeviceCommandSelectWindow extends Dialog{
       deviceCommandTree = TreePanelBuilder.buildCommandTree(deviceId, null);
    }
    
+   protected Class<? extends DTO> getBeanClass() {
+     return DeviceCommandDTO.class;
+   }
+   
    private void addButtonListener() {
       addListener(Events.BeforeHide, new Listener<WindowEvent>() {
          public void handleEvent(WindowEvent be) {
@@ -81,7 +86,7 @@ public class DeviceCommandSelectWindow extends Dialog{
                   MessageBox.alert("Error", "Please select a command.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof DeviceCommandDTO) {
+                  if (beanModel.getBean().getClass() == getBeanClass()) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a command.", null);

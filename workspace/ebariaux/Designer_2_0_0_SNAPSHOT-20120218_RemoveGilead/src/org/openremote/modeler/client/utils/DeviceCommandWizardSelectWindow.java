@@ -19,9 +19,12 @@
 */
 package org.openremote.modeler.client.utils;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.shared.dto.DTO;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
@@ -34,24 +37,29 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  * The Class is for select device command round under a device.
  */
 public class DeviceCommandWizardSelectWindow extends DeviceCommandSelectWindow {
-   public DeviceCommandWizardSelectWindow(long deviceId) {
-      super(deviceId);
+  
+  TreeStore<BeanModel> commandTreeStore;
+  
+   public DeviceCommandWizardSelectWindow(ArrayList<DeviceCommandDetailsDTO> commands) {
+      super(0L); // not used, can be dummy data
+      for (DeviceCommandDetailsDTO deviceCommandDTO : commands) {
+        commandTreeStore.add(DTOHelper.getBeanModel(deviceCommandDTO), false);
+      }
+   }
+
+   @Override
+   protected Class<? extends DTO> getBeanClass() {
+     return DeviceCommandDetailsDTO.class;
    }
 
    @Override
    protected void createCommandTree(long deviceId) {
-      TreeStore<BeanModel> commandTreeStore = new TreeStore<BeanModel>();
-      
-      // TODO
-/*      
-      for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-         commandTreeStore.add(deviceCommand.getBeanModel(), false);
-      }
-      */
+      commandTreeStore = new TreeStore<BeanModel>();
+
       deviceCommandTree = new TreePanel<BeanModel>(commandTreeStore);
       deviceCommandTree.setBorders(false);
       deviceCommandTree.setStateful(true);
-      deviceCommandTree.setDisplayProperty("displayName");
+      deviceCommandTree.setDisplayProperty("name");
       deviceCommandTree.setStyleAttribute("overflow", "auto");
       deviceCommandTree.setHeight("100%");
       deviceCommandTree.setIconProvider(new ModelIconProvider<BeanModel>() {
@@ -62,5 +70,4 @@ public class DeviceCommandWizardSelectWindow extends DeviceCommandSelectWindow {
       });
    }
 
-   
 }

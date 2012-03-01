@@ -69,7 +69,7 @@ public class SwitchWindow extends FormWindow {
    
    private EventBus eventBus;
    private long deviceId;
-   private SwitchDetailsDTO switchDTO;
+   protected SwitchDetailsDTO switchDTO;
 
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
@@ -102,7 +102,7 @@ public class SwitchWindow extends FormWindow {
    }
    
    /**
-    * Instantiates a window to create or edit a switch.
+    * Instantiates a window to create a switch.
     */
    public SwitchWindow(long deviceId, EventBus eventBus) {
      super();
@@ -113,9 +113,26 @@ public class SwitchWindow extends FormWindow {
      this.setHeading("New Switch");
      this.setSize(320, 240);
      createField();
+     populateSensorFieldStore();
    }
 
-   /**
+   protected void populateSensorFieldStore() {
+     final ListStore<ModelData> sensorStore = sensorField.getStore();
+     SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+       @Override
+       public void onSuccess(ArrayList<SensorDTO> result) {
+         for (SensorDTO s : result) {
+           ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
+           sensorStore.add(dm);
+           if (edit && s.getOid() == switchDTO.getSensor().getId()) {
+             sensorField.setValue(dm);
+           }
+         }
+       }
+     });
+  }
+
+  /**
     * Creates the switch's fields, which includes name, sensor, on command and off command.
     */
    private void createField() {
@@ -134,18 +151,6 @@ public class SwitchWindow extends FormWindow {
       
       
       final ListStore<ModelData> sensorStore = new ListStore<ModelData>();
-      SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
-        @Override
-        public void onSuccess(ArrayList<SensorDTO> result) {
-          for (SensorDTO s : result) {
-            ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
-            sensorStore.add(dm);
-            if (edit && s.getOid() == switchDTO.getSensor().getId()) {
-              sensorField.setValue(dm);
-            }
-          }
-        }
-      });
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
       
