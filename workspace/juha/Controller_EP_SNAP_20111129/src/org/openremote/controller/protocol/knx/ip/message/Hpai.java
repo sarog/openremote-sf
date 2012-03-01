@@ -98,7 +98,7 @@ public class Hpai
   /**
    * Host protocol codes for IPv4 based HPAI (KNXNet/IP frame structure identifier).
    */
-  enum HostProtocolCode
+  public enum HostProtocolCode
   {
     /**
      * IPv4 UDP protocol : {@value}
