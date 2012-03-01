@@ -374,6 +374,8 @@ public class DevicePanel extends ContentPanel {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   deviceWindow.hide();
+                  
+                  /*
                   BeanModel deviceModel = be.getData();
                   tree.getStore().add(deviceModel, true);
                   
@@ -385,7 +387,9 @@ public class DevicePanel extends ContentPanel {
                   
                   //create and select it.
                   tree.getSelectionModel().select(deviceModel, false);
-                  Info.display("Info", "Add device " + deviceModel.get("name") + " success.");
+                  */
+                  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass DTO, should be a created event ?
+//                  Info.display("Info", "Add device " + deviceModel.get("name") + " success."); // TODO based on DTO in event
                   
                }
             });

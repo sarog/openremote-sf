@@ -178,6 +178,12 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      Device device = deviceService.loadById(oid);
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
    }
+   
+   public void saveNewDevice(DeviceDetailsDTO device) {
+     Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
+     deviceBean.setAccount(userService.getAccount());
+     deviceService.saveDevice(deviceBean);
+   }
 
    public void updateDeviceWithDTO(DeviceDetailsDTO device) {
      Device deviceBean = deviceService.loadById(device.getOid());

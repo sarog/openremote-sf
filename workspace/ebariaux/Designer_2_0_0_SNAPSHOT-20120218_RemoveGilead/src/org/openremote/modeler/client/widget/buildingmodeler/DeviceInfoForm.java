@@ -77,13 +77,11 @@ public class DeviceInfoForm extends CommonForm {
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
                }
             };
-            
-            // TODO EBR : to review, seems this is only used for edit
-            if (device.getName() == null) {
-              // TODO: double check
-//               DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
+
+            updateDeviceWithFieldValues(device, getFieldMap());
+            if (device.getOid() == null) {
+              DeviceBeanModelProxy.saveNewDevice(device, callback);
             } else {
-              updateDeviceWithFieldValues(device, getFieldMap());
               DeviceBeanModelProxy.updateDeviceWithDTO(device, callback);
             }
          }
