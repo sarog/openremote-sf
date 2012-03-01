@@ -57,7 +57,7 @@ public abstract class DescriptionInformationBlock
   /**
    * Structure identifier for various Description Information Block (DIB).
    */
-  enum TypeCode
+  public enum TypeCode
   {
     /**
      * Device Information DIB. See {@link DeviceInformation} for an implementation.
