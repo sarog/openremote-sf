@@ -98,12 +98,14 @@ public class DeviceWizardWindow extends WizardWindow {
          
          break;
       case IMPORT_IR_STEP:
+        /* TODO: re-check, not sure what this is for
          Map<String, String> map = deviceInfoWizardForm.getFieldMap();
          Device device = commandImportWizardForm.getDevice();
          device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
          device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
          device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
          commandImportWizardForm.setDevice(device);
+         */
          break;
 
       default:

@@ -502,8 +502,11 @@ public class DevicePanel extends ContentPanel {
     */
    private void createDeviceCommand() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
+         DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         
+         // TODO deviceCommandWindow.show()
+         /*
          deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -513,6 +516,7 @@ public class DevicePanel extends ContentPanel {
                Info.display("Info", "Create command " + deviceCommandModel.get("name") + " success");
             }
          });
+         */
       }
    }
    

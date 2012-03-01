@@ -19,63 +19,36 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 
-import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.widget.form.Field;
 
 /**
  * The window creates a deviceCommand, but not save into server.
  */
 public class DeviceCommandWizardWindow extends DeviceCommandWindow {
 
-   public DeviceCommandWizardWindow(Device device) {
-      super(device);
+   public DeviceCommandWizardWindow() {
+     super(0L, null); // No need for this here, provide dummy info
       form.removeAllListeners();
-      onSubmit(device);
+      onSubmit();
    }
-   
-   private void onSubmit(final Device device) {
+
+   private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-         @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
-            List<Field<?>> list = form.getFields();
-            Map<String, String> attrMap = new HashMap<String, String>();
-            for (Field<?> f : list) {
-               if (DEVICE_COMMAND_PROTOCOL.equals(f.getName())) {
-                  Field<BaseModelData> p = (Field<BaseModelData>) f;
-                  attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
-                        .toString());
-               } else {
-                  if (f.getValue() != null && !"".equals(f.getValue().toString()) && ! INFO_FIELD.equals(f.getName())) {
-                     attrMap.put(f.getName(), f.getValue().toString());
-                  }
-               }
-            }
-            DeviceCommand deviceCommand = new DeviceCommand();
-            deviceCommand.setName(attrMap.get(DEVICE_COMMAND_NAME));
-            deviceCommand.setDevice(device);
-            deviceCommand.setProtocol(DeviceCommandBeanModelProxy.careateProtocol(attrMap, deviceCommand));
-            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommand));
-            if (hideWindow) {
-               hide();
-            } else {
-               hideWindow = true;
-               unmask();
-               info.setText("Command '" + deviceCommand.getName() + "' is saved.");
-               info.show();
-            }
+           populateDeviceCommandFromFields();
+           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommand));
+           if (hideWindow) {
+              hide();
+           } else {
+              hideWindow = true;
+              unmask();
+              info.setText("Command '" + deviceCommand.getName() + "' is created.");
+              info.show();
+           }
          }
       });
    }

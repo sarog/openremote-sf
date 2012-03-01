@@ -99,6 +99,11 @@ public class DeviceCommandBeanModelProxy {
      AsyncServiceFactory.getDeviceCommandServiceAsync().updateDeviceCommandWithDTO(deviceCommand, callback);
    }
    
+   public static void saveNewDeviceCommand(final DeviceCommandDetailsDTO deviceCommand, final long deviceId, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().saveNewDeviceCommand(deviceCommand, deviceId, callback);
+   }
+   
+   
    /**
     * Save all ir device commands from IR import form
     * 
