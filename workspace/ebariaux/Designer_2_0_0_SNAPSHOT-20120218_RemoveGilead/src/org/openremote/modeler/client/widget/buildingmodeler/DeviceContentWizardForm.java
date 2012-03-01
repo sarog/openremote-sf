@@ -22,8 +22,10 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.shared.dto.DTOHelper;
@@ -265,15 +267,14 @@ public class DeviceContentWizardForm extends CommonForm {
                sensorWizardWindow.hide();
             }
          });
-         /*
          sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
                BeanModel deviceCommandModel = be.getData();
+               commands.add((DeviceCommandDetailsDTO)deviceCommandModel.getBean());
                deviceContentTree.getStore().add(deviceCommandModel, false);
             }
          });
-         */
          sensorWizardWindow.show();
       }
    }
