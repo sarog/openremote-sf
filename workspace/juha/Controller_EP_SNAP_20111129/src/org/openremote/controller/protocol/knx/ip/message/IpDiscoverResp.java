@@ -178,11 +178,11 @@ public class IpDiscoverResp extends IpMessage
 
     this.controlEndpoint = new Hpai(is);
 
-    // TODO Read device hardware DIB
+    // TODO : http://jira.openremote.org/browse/ORCJAVA-216 -- Read device hardware DIB
     int l = is.read();
     is.skip(l - 1);
 
-    // TODO Read supported service families DIB
+    // TODO : http://jira.openremote.org/browse/ORCJAVA-216 -- Read supported service families DIB
     l = is.read();
     is.skip(l - 1);
   }
