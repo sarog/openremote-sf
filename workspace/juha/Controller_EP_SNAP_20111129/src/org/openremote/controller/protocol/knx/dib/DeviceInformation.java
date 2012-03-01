@@ -125,7 +125,7 @@ public class DeviceInformation extends DescriptionInformationBlock
       this.code = (byte)(code & 0xFF);
     }
 
-    byte getValue()
+    public byte getValue()
     {
       return code;
     }
