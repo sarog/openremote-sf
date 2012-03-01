@@ -22,8 +22,11 @@ package org.openremote.controller.protocol.knx.ip.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+import org.openremote.controller.protocol.knx.dib.SupportedServiceFamily;
+import org.openremote.controller.protocol.knx.dib.DeviceInformation;
 
 /**
  * This is an implementation of a <tt>SEARCH_RESPONSE</tt> frame in KNXnet/IP v1.0 as
@@ -36,11 +39,15 @@ import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
  *
  * Included in the search response are gateway/router's *control* address and port in a HPAI
  * block (which the client can use to send control requests, such as connection creation
- * requests), and two Device Information Blocks (DIBs) where the gateway/router includes
- * (first DIB block) its own hardware self-description (manufacturer, serial number,
- * MAC address, etc.) and (second DIB block) description of supported
+ * requests), and two Description Information Blocks (DIBs). <p>
+ *
+ * The first description information block includes device information where the gateway/router
+ * includes its hardware self-description -- manufacturer, serial number, MAC address, etc.
+ * See {@link org.openremote.controller.protocol.knx.dib.DeviceInformation} for more details. <p>
+ *
+ * The second description information block includes supported
  * {@link org.openremote.controller.protocol.knx.ServiceTypeIdentifier service family}
- * implementations.
+ * implementations. See {@link SupportedServiceFamily} for more details. <p>
  *
  * The <tt>SEARCH_RESPONSE</tt> frame is therefore:
  *
@@ -62,13 +69,15 @@ import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
  * size of the last supported service families device information block. <p>
  *
  * See {@link IpMessage} for header block field details. See {@link Hpai} for HPAI block
- * field details. See {@link DeviceInformationBlock} for device information block and
+ * field details. See {@link org.openremote.controller.protocol.knx.dib.DeviceInformation} for device information block and
  * support service families DIB field details.
  *
  *
  * @see IpMessage
  * @see Hpai
- * @see DeviceInformationBlock
+ * @see SupportedServiceFamily
+ * @see org.openremote.controller.protocol.knx.dib.DescriptionInformationBlock
+ * @see org.openremote.controller.protocol.knx.dib.DeviceInformation
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -95,9 +104,57 @@ public class IpDiscoverResp extends IpMessage
    */
   private Hpai controlEndpoint;
 
+  /**
+   * Device Information DIB for this KNXnet/IP gateway/router.
+   */
+  private DeviceInformation deviceInfo;
+
+  /**
+   * List of supported services for this KNXnet/IP gateway/router.
+   */
+  private SupportedServiceFamily supportedServices;
+
+
 
   // Constructors ---------------------------------------------------------------------------------
 
+
+  /**
+   * Constructs a {@link ServiceTypeIdentifier#SEARCH_RESPONSE} frame with given KNXnet/IP
+   * gateway/router *control* endpoint address and port, router/gateway device information
+   * and a list of supported service families (see {@link ServiceTypeIdentifier.Family}).
+   *
+   * @see Hpai
+   * @see DeviceInformation
+   * @see SupportedServiceFamily
+   *
+   * @param serverControlHPAI   Host Protocol Address Information (HPAI) for the gateway/routers
+   *                            *control* endpoint address and port. Client can use the control
+   *                            endpoint for further point-to-point requests such as connection
+   *                            or connection state requests.
+   *
+   * @param deviceInfo          Description Information Block (DIB) for Device Information.
+   *                            Contains description of this KNXnet/IP devices KNX and IP addresses,
+   *                            serial number, name, project and installation codes, etc. See
+   *                            {@link DeviceInformation} for further details.
+   *
+   * @param supportedServices   List of services supported by this KNXnet/IP gateway/router.
+   *                            See {@link ServiceTypeIdentifier.Family} for additional details.
+   */
+  public IpDiscoverResp(Hpai serverControlHPAI, DeviceInformation deviceInfo,
+                        SupportedServiceFamily supportedServices)
+  {
+    super(ServiceTypeIdentifier.SEARCH_RESPONSE.getValue(),
+          Hpai.getStructureSize() +
+          deviceInfo.getStructureSize() + 
+          supportedServices.getStructureSize()
+    );
+
+    this.controlEndpoint = serverControlHPAI;
+    this.deviceInfo = deviceInfo;
+    this.supportedServices = supportedServices;
+  }
+  
   /**
    * Reads a KNXnet/IP {@link ServiceTypeIdentifier#SEARCH_RESPONSE} from the given input
    * stream.  <p>
@@ -141,6 +198,25 @@ public class IpDiscoverResp extends IpMessage
   @Override public Primitive getPrimitive()
   {
     return Primitive.RESP;
+  }
+
+  /**
+   * Writes a {@link ServiceTypeIdentifier#SEARCH_RESPONSE} KNXnet/IP frame to a given
+   * output stream.
+   *
+   * @param out   output stream to write the KNXnet/IP frame to
+   *
+   * @throws IOException  if there was an I/O error writing the frame
+   */
+  @Override public void write(OutputStream out) throws IOException
+  {
+    super.write(out);                                 // write the KNXnet/IP frame header...
+
+    controlEndpoint.write(out);                       // write HPAI structure bytes...
+
+    out.write(deviceInfo.getFrameStructure());        // write device info DIB bytes...
+
+    out.write(supportedServices.getFrameStructure()); // write supported service DIB bytes...
   }
 
 
