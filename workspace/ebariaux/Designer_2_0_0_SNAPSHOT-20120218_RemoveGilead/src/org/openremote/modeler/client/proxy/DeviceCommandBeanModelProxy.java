@@ -21,12 +21,10 @@ package org.openremote.modeler.client.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.buildingmodeler.DeviceCommandWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
@@ -47,52 +45,6 @@ public class DeviceCommandBeanModelProxy {
     * Not be instantiated.
     */
    private DeviceCommandBeanModelProxy() {
-   }
-
-   /**
-    * Save device command.
-    * 
-    * @param device the device
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void saveDeviceCommand(Device device, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      DeviceCommand deviceCommand = new DeviceCommand();
-      deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
-      deviceCommand.setDevice(device);
-      deviceCommand.setProtocol(careateProtocol(map, deviceCommand));
-      device.getDeviceCommands().add(deviceCommand);
-      
-      AsyncServiceFactory.getDeviceCommandServiceAsync().save(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand deviceCommand) {
-            BeanModel deviceCommandModel = deviceCommand.getBeanModel();
-            BeanModelDataBase.deviceCommandTable.insert(deviceCommandModel);
-            callback.onSuccess(deviceCommandModel);
-         }
-      });
-   }
-
-   /**
-    * @param map
-    * @param deviceCommand
-    * @return
-    */
-   public static Protocol careateProtocol(Map<String, String> map, DeviceCommand deviceCommand) {
-      Protocol protocol = new Protocol();
-      protocol.setType(map.get(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL));
-      protocol.setDeviceCommand(deviceCommand);
-      
-      for (String key : map.keySet()) {
-         if (DeviceCommandWindow.DEVICE_COMMAND_NAME.equals(key) || DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL.equals(key)) {
-            continue;
-         }
-         ProtocolAttr protocolAttr = new ProtocolAttr();
-         protocolAttr.setName(key);
-         protocolAttr.setValue((map.get(key)));
-         protocolAttr.setProtocol(protocol);
-         protocol.getAttributes().add(protocolAttr);
-      }
-      return protocol;
    }
    
    public static void updateDeviceCommandWithDTO(final DeviceCommandDetailsDTO deviceCommand, AsyncSuccessCallback<Void> callback) {
@@ -121,25 +73,6 @@ public class DeviceCommandBeanModelProxy {
          }
       });
    }
-   
-   /**
-    * Save all device commands
-    * 
-    * @param device the device
-    * @param datas the datas
-    * @param callback the callback
-    */
-   public static void saveDeviceCommandList(List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
-         public void onSuccess(List<DeviceCommand> deviceCommands) {
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceCommandModels);
-         }
-      });
-   }
-   
-   
    
    /**
     * Convert to IR device command.

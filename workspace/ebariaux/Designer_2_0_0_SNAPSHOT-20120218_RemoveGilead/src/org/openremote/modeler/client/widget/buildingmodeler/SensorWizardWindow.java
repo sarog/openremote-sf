@@ -158,6 +158,8 @@ public class SensorWizardWindow extends SensorWindow {
       });
    }
    
+   // TODO
+   
    /**
     * This listener pops up a command window  to create a new device command for the current device.
     * And the current sensor can select the new command. 
@@ -165,10 +167,13 @@ public class SensorWizardWindow extends SensorWindow {
    private final class NewCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
+         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow();
          deviceCommandWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
+              
+              // TODO
+              
                DeviceCommand deviceCommand = be.getData();
                device.getDeviceCommands().add(deviceCommand);
                BeanModel deviceCommandModel = deviceCommand.getBeanModel();
