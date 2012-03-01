@@ -26,7 +26,6 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -44,24 +43,6 @@ public interface DeviceCommandRPCService extends RemoteService {
     * @return the list< device command>
     */
    List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
-   
-   /**
-    * Save.
-    * 
-    * @param deviceCommand the device command
-    * 
-    * @return the device command
-    */
-   DeviceCommand save(DeviceCommand deviceCommand);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * 
-    * @return the device command
-    */
-   DeviceCommand loadById(long id);
    
    /**
     * Delete command.
