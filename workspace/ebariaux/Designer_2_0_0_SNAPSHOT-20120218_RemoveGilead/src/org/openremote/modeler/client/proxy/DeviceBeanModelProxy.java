@@ -353,18 +353,6 @@ public class DeviceBeanModelProxy {
      });
   }
    
-   public static void getAccount(final AsyncCallback<Account> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncSuccessCallback <Account>() {
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-         public void onSuccess(Account result) {
-            callback.onSuccess(result);
-         }
-      });
-   }
-   
    public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
        AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
          public void onSuccess(DeviceDetailsDTO result) {
