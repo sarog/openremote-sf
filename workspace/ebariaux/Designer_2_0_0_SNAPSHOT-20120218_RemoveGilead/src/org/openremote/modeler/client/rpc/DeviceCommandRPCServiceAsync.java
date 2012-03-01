@@ -80,5 +80,7 @@ public interface DeviceCommandRPCServiceAsync {
    void loadCommandDetailsDTO(long id, AsyncCallback<DeviceCommandDetailsDTO> asyncCallback);
 
    void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto, AsyncCallback<Void> asyncCallback);
+   
+   void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId, AsyncCallback<Void> asyncCallback);
 
 }

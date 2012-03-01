@@ -6,7 +6,7 @@ public class DeviceCommandDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
-  private long oid;
+  private Long oid;
   private String name;
   private String protocolType;
   private HashMap<String, String> protocolAttributes;
@@ -22,11 +22,11 @@ public class DeviceCommandDetailsDTO implements DTO {
     this.protocolType = protocolType;
   }
 
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
   
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
   

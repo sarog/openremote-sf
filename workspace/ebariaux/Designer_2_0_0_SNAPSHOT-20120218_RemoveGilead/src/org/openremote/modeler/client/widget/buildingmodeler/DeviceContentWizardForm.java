@@ -19,26 +19,23 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.listener.DeviceWizardListener;
+import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.CommandRefItem;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorRefItem;
-import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
@@ -49,7 +46,6 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -60,13 +56,21 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * The wizard form supports to create deviceCommands, sensors, switches and sliders for a device
  */
 public class DeviceContentWizardForm extends CommonForm {
 
-   private Device device = null;
+  /** The Constant icon. */
+  private static final Icons ICON = GWT.create(Icons.class);
+
+   private DeviceDetailsDTO device = null;
+   
+   private List<DeviceCommandDetailsDTO> commands = new ArrayList<DeviceCommandDetailsDTO>();
+   
    private TreePanel<BeanModel> deviceContentTree;
    
    /** The wrapper is the window which wrap the form. */
@@ -81,7 +85,7 @@ public class DeviceContentWizardForm extends CommonForm {
    public DeviceContentWizardForm(Component wrapper, BeanModel deviceBeanModel) {
       super();
       this.wrapper = wrapper;
-//      this.device = deviceBeanModel.getBean(); // TODO
+      this.device = deviceBeanModel.getBean();
       setHeight(240);
       init();
    }
@@ -127,7 +131,7 @@ public class DeviceContentWizardForm extends CommonForm {
       contentItemsContainer.addStyleName("overflow-auto");
       
       TreeStore<BeanModel> deviceContentTreeStore = new TreeStore<BeanModel>();
-      deviceContentTree = TreePanelBuilder.buildDeviceContentTree(deviceContentTreeStore);
+      deviceContentTree = buildDeviceContentTree(deviceContentTreeStore);
       contentItemsContainer.add(deviceContentTree);
       
       LayoutContainer buttonsContainer = new LayoutContainer();
@@ -161,6 +165,34 @@ public class DeviceContentWizardForm extends CommonForm {
       return contentContainer;
    }
    
+   private TreePanel<BeanModel> buildDeviceContentTree(TreeStore<BeanModel> store) {
+     TreePanel<BeanModel> deviceContentTree = new TreePanel<BeanModel>(store);
+
+     deviceContentTree.setStateful(true);
+     deviceContentTree.setBorders(false);
+     deviceContentTree.setHeight("100%");
+     deviceContentTree.setDisplayProperty("name");
+     deviceContentTree.setStyleAttribute("overflow", "auto");
+
+     deviceContentTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+        public AbstractImagePrototype getIcon(BeanModel thisModel) {
+           if (thisModel.getBean() instanceof DeviceCommandDetailsDTO) {
+              return ICON.deviceCmd();
+           } else if (thisModel.getBean() instanceof SensorDetailsDTO) {
+              return ICON.sensorIcon();
+           } else if (thisModel.getBean() instanceof SwitchDetailsDTO) {
+              return ICON.switchIcon();
+           } else if (thisModel.getBean() instanceof SliderDetailsDTO) {
+              return ICON.sliderIcon();
+           } else {
+              return ICON.folder();
+           }
+        }
+     });
+
+     return deviceContentTree;
+  }
+
    @Override
    public boolean isNoButton() {
       return true;
@@ -172,25 +204,22 @@ public class DeviceContentWizardForm extends CommonForm {
       ((Window) wrapper).setSize(390, 240);
    }
    
-   public Device getDevice() {
-      return device;
-   }
-   public void setDevice(Device device) {
-      this.device = device;
-   }
-   
    /**
     * Add submit listener to save the device with its content.
     */
    private void onSubmit() {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
+           
+           /*
+            * TODO
             DeviceBeanModelProxy.saveDeviceWithContents(device, new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
                }
             });
+            */
          }
          
       });
@@ -204,13 +233,13 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
+         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow();
          deviceCommandWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               DeviceCommand deviceCommand = be.getData();
-               device.getDeviceCommands().add(deviceCommand);
-               deviceContentTree.getStore().add(deviceCommand.getBeanModel(), false);
+               DeviceCommandDetailsDTO deviceCommand = be.getData();
+               commands.add(deviceCommand);
+               deviceContentTree.getStore().add(DTOHelper.getBeanModel(deviceCommand), false);
                Info.display("Info", "Create command " + deviceCommand.getName() + " success");
             }
          });
@@ -223,6 +252,7 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
+        /* TODO
          final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
          sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
@@ -240,6 +270,7 @@ public class DeviceContentWizardForm extends CommonForm {
                deviceContentTree.getStore().add(deviceCommandModel, false);
             }
          });
+         */
       }
    }
    
@@ -249,6 +280,7 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSwitchListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
+        /* TODO
          final SwitchWizardWindow switchWizardWindow = new SwitchWizardWindow(device);
          switchWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
@@ -268,6 +300,7 @@ public class DeviceContentWizardForm extends CommonForm {
                }
             }
          });
+         */
       }
    }
    
@@ -277,6 +310,7 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSliderListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
+        /* TODO
          final SliderWizardWindow sliderWizardWindow = new SliderWizardWindow(device);
          sliderWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
@@ -296,6 +330,7 @@ public class DeviceContentWizardForm extends CommonForm {
                }
             }
          });
+         */
       }
    }
    
@@ -306,8 +341,10 @@ public class DeviceContentWizardForm extends CommonForm {
       @Override
       public void componentSelected(ButtonEvent ce) {
          List<BeanModel> selectedModels = deviceContentTree.getSelectionModel().getSelectedItems();
+         
          for (BeanModel beanModel : selectedModels) {
-            if (beanModel.getBean() instanceof DeviceCommand) {
+            if (beanModel.getBean() instanceof DeviceCommandDetailsDTO) {
+              /*
                List<CommandRefItem> commandRefItems = device.getCommandRefItems();
                for (CommandRefItem commandRefItem : commandRefItems) {
                   if (commandRefItem.getDeviceCommand() == beanModel.getBean()) {
@@ -315,8 +352,10 @@ public class DeviceContentWizardForm extends CommonForm {
                      return;
                   }
                }
-               device.getDeviceCommands().remove(beanModel.getBean());
-            } else if (beanModel.getBean() instanceof Sensor) {
+               */
+               commands.remove(beanModel.getBean());
+            } else if (beanModel.getBean() instanceof SensorDetailsDTO) {
+              /*
                List<SensorRefItem> sensorRefItems = device.getSensorRefItems();
                for (SensorRefItem sensorRefItem : sensorRefItems) {
                   if (sensorRefItem.getSensor() == beanModel.getBean()) {
@@ -324,15 +363,15 @@ public class DeviceContentWizardForm extends CommonForm {
                      return;
                   }
                }
-               device.getSensors().remove(beanModel.getBean());
-            } else if(beanModel.getBean() instanceof Slider) {
-               device.getSliders().remove(beanModel.getBean());
-            } else if(beanModel.getBean() instanceof Switch) {
-               deviceContentTree.getStore().remove(beanModel);
-               device.getSwitchs().remove(beanModel.getBean());
+               */
+               //device.getSensors().remove(beanModel.getBean());
+            } else if(beanModel.getBean() instanceof SliderDetailsDTO) {
+               //device.getSliders().remove(beanModel.getBean());
+            } else if(beanModel.getBean() instanceof SwitchDetailsDTO) {
+               //device.getSwitchs().remove(beanModel.getBean());
             }
             deviceContentTree.getStore().remove(beanModel);
          }
-      }
+      }      
    }
 }
