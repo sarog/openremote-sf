@@ -19,22 +19,20 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.RangeSensor;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
+import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -56,36 +54,36 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  */
 public class SensorWizardWindow extends SensorWindow {
 
-   private Device device;
-   public SensorWizardWindow(Device device) {
-      super(device.getOid(), null); // TODO
-      this.device = device;
+  private TreeStore<BeanModel> commandTreeStore; 
+  
+   public SensorWizardWindow(ArrayList<DeviceCommandDetailsDTO> commands) {
+      super(0L, null); // Pass dummy data, not used
+      // Must populate store here, as buildCommandSelectTree is called by our parent's constructor,
+      // so we don't have time to store commands before that method gets called for it to use while building tree 
+      for (DeviceCommandDetailsDTO deviceCommand : commands) {
+        commandTreeStore.add(DTOHelper.getBeanModel(deviceCommand), false);
+      }
       addNewCommandButton();
       form.removeAllListeners();
       onSubmit();
    }
    
-   /* TODO
    @Override
-   protected void buildCommandSelectTree(long deviceId) {
-      TreeStore<BeanModel> commandTreeStore = new TreeStore<BeanModel>();
-      for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-         commandTreeStore.add(deviceCommand.getBeanModel(), false);
-      }
+   protected void buildCommandSelectTree() {
+      commandTreeStore = new TreeStore<BeanModel>();
       commandSelectTree = new TreePanel<BeanModel>(commandTreeStore);
       commandSelectTree.setBorders(false);
       commandSelectTree.setStateful(true);
-      commandSelectTree.setDisplayProperty("displayName");
+      commandSelectTree.setDisplayProperty("name");
       commandSelectTree.setStyleAttribute("overflow", "auto");
       commandSelectTree.setHeight("100%");
       commandSelectTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             return ((Icons) GWT.create(Icons.class)).deviceCmd();
          }
-
       });
    }
-   */
+
    private void addNewCommandButton() {
       Button newCommandButton = new Button("New command..");
       newCommandButton.addSelectionListener(new NewCommandListener());
@@ -103,60 +101,54 @@ public class SensorWizardWindow extends SensorWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
-               Sensor sensor = new Sensor();
-               if (typeList.getValue() != null) {
-                  SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
-                  if (type == SensorType.RANGE) {
-                     sensor = new RangeSensor();
-                     ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
-                     ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
-                  } else if (type == SensorType.CUSTOM) {
-                    
-                    // TODO
-                    
-                    /* 
-                     sensor = new CustomSensor();
-                     List<BeanModel> states = grid.getStore().getModels();
-                     for (BeanModel stateModel : states) {
-                        State state = stateModel.getBean();
-                        state.setSensor((CustomSensor) sensor);
-                        ((CustomSensor) sensor).addState(state);
-                     }
-                     */
-                     
-                  }
-                  sensor.setType(type);
-               }else {
-                  MessageBox.alert("Warn", "A sensor must have a type", null);
-                  typeList.focus();
-                  return;
-               }
-               sensor.setDevice(device);
-               sensor.setName(nameField.getValue());
-//               sensor.setAccount(DeviceContentWizardForm.account); // TODO see how to not use that
-               BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
-               if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
-                  DeviceCommand cmd = selectedCommand.getBean();
-                  SensorCommandRef sensorCommandRef = new SensorCommandRef();
-                  sensorCommandRef.setDeviceCommand(cmd);
-                  sensorCommandRef.setSensor(sensor);
-                  sensor.setSensorCommandRef(sensorCommandRef);
-               } else {
-                  MessageBox.alert("Warn", "A sensor must have a device command", null);
-                  commandSelectTree.focus();
-                  return;
-               }
-               fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(sensor));
-//               SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
-//                  public void onSuccess(Sensor result) {
-//                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
-//                  }
-//
-//               });
+           BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
+           if (typeList.getValue() == null) {
+              MessageBox.alert("Warn", "A sensor must have a type", null);
+              typeList.focus();
+              return;
+           }
+           if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommandDTO)) {
+              MessageBox.alert("Warn", "A sensor must have a device command", null);
+              commandSelectTree.focus();
+              return;
+           }
+           
+           SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();            
+           sensorDTO.setType(type);
+           
+           if (type == SensorType.RANGE) {
+             sensorDTO.setMinValue(Integer.valueOf(minField.getRawValue()));
+             sensorDTO.setMaxValue(Integer.valueOf(maxField.getRawValue()));
+           } else if (type == SensorType.CUSTOM) {
+             HashMap<String,String> sensorStates = new HashMap<String,String>();
+
+              List<BaseModelData> states = grid.getStore().getModels();
+              for (BaseModelData stateModel : states) {
+                sensorStates.put((String)stateModel.get("name"), (String)stateModel.get("value"));
+              }
+              sensorDTO.setStates(sensorStates);
+           }
+           sensorDTO.setName(nameField.getValue());
+           
+           DeviceCommandDTO cmd = selectedCommand.getBean();
+           
+           
+           
+           sensorDTO.setCommandId(cmd.getOid()); // TODO handle this for unsaved commands
+           
+           
+           
+           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(sensorDTO));
          }
 
       });
    }
+
+   
+   
+   
+   
+   
    
    // TODO
    
@@ -171,15 +163,20 @@ public class SensorWizardWindow extends SensorWindow {
          deviceCommandWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-              
-              // TODO
-              
-               DeviceCommand deviceCommand = be.getData();
+               DeviceCommandDetailsDTO deviceCommand = be.getData();
+               
+               
+               /*
                device.getDeviceCommands().add(deviceCommand);
+               
                BeanModel deviceCommandModel = deviceCommand.getBeanModel();
+               
+               
                commandSelectTree.getStore().add(deviceCommandModel, false);
                commandSelectTree.getSelectionModel().select(deviceCommandModel, false);
+               
                fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(deviceCommandModel));
+               */
                Info.display("Info", "Create command " + deviceCommand.getName() + " success");
             }
          });

@@ -69,7 +69,10 @@ public class DeviceContentWizardForm extends CommonForm {
 
    private DeviceDetailsDTO device = null;
    
-   private List<DeviceCommandDetailsDTO> commands = new ArrayList<DeviceCommandDetailsDTO>();
+   private ArrayList<DeviceCommandDetailsDTO> commands = new ArrayList<DeviceCommandDetailsDTO>();
+   private ArrayList<SensorDetailsDTO> sensors = new ArrayList<SensorDetailsDTO>();
+   private ArrayList<SwitchDetailsDTO> switches = new ArrayList<SwitchDetailsDTO>();
+   private ArrayList<SliderDetailsDTO> sliders = new ArrayList<SliderDetailsDTO>();
    
    private TreePanel<BeanModel> deviceContentTree;
    
@@ -213,7 +216,7 @@ public class DeviceContentWizardForm extends CommonForm {
            
            /*
             * TODO
-            DeviceBeanModelProxy.saveDeviceWithContents(device, new AsyncSuccessCallback<BeanModel>() {
+            DeviceBeanModelProxy.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
@@ -252,17 +255,17 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-        /* TODO
-         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
+         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(commands);
          sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               Sensor sensor = be.getData();
-               device.getSensors().add(sensor);
-               deviceContentTree.getStore().add(sensor.getBeanModel(), false);
+               SensorDetailsDTO sensor = be.getData();
+               sensors.add(sensor);
+               deviceContentTree.getStore().add(DTOHelper.getBeanModel(sensor), false);
                sensorWizardWindow.hide();
             }
          });
+         /*
          sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
@@ -271,6 +274,7 @@ public class DeviceContentWizardForm extends CommonForm {
             }
          });
          */
+         sensorWizardWindow.show();
       }
    }
    

@@ -84,7 +84,7 @@ public class SensorWindow extends FormWindow {
   
   private long deviceId;
   
-   private SensorDetailsDTO sensorDTO;
+   protected SensorDetailsDTO sensorDTO;
    
    private boolean edit;
    
@@ -143,6 +143,7 @@ public class SensorWindow extends FormWindow {
      sensorDTO = new SensorDetailsDTO();
       setHeading("New sensor");
       edit = false;
+      Info.display("INFO", "SensorWindow");
       init();
    }
    
@@ -267,8 +268,6 @@ public class SensorWindow extends FormWindow {
    
    /**
     * Builds the device's commands as a tree to select.
-    * 
-    * @param device the device
     */
    protected void buildCommandSelectTree() {      
       Long devId = null;
