@@ -37,6 +37,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
@@ -124,7 +125,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
     }
      dto.setDeviceId(sensor.getDevice().getOid());
      if (sensor.getSensorCommandRef() != null) {
-       dto.setCommandId(sensor.getSensorCommandRef().getDeviceCommand().getOid());
+       dto.setCommand(new DTOReference(sensor.getSensorCommandRef().getDeviceCommand().getOid()));
      }
     return dto;
   }
@@ -139,7 +140,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
 
     sensorBean.setName(sensor.getName());
     
-    DeviceCommand deviceCommand = deviceCommandService.loadById(sensor.getCommandId());
+    DeviceCommand deviceCommand = deviceCommandService.loadById(sensor.getCommand().getId());
     sensorBean.getSensorCommandRef().setDeviceCommand(deviceCommand);
     
     if (sensor.getType() == SensorType.RANGE) {
@@ -180,7 +181,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
     sensor.setName(sensorDTO.getName());
     sensor.setAccount(userService.getAccount());
 
-    DeviceCommand deviceCommand = deviceCommandService.loadById(sensorDTO.getCommandId());
+    DeviceCommand deviceCommand = deviceCommandService.loadById(sensorDTO.getCommand().getId());
     SensorCommandRef commandRef = new SensorCommandRef();
     commandRef.setSensor(sensor);
     commandRef.setDeviceCommand(deviceCommand);

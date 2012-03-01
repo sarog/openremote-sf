@@ -34,6 +34,7 @@ import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
@@ -455,7 +456,7 @@ public class SensorWindow extends FormWindow {
             }
             sensorDTO.setName(nameField.getValue());
             DeviceCommandDTO cmd = selectedCommand.getBean();
-            sensorDTO.setCommandId(cmd.getOid());
+            sensorDTO.setCommand(new DTOReference(cmd.getOid()));
 
             if (!edit) {
               SensorBeanModelProxy.saveNewSensor(sensorDTO, deviceId, new AsyncSuccessCallback<Void>() {

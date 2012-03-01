@@ -34,6 +34,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
@@ -139,7 +140,7 @@ public class SwitchWindow extends FormWindow {
           for (SensorDTO s : result) {
             ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
             sensorStore.add(dm);
-            if (edit && s.getOid() == switchDTO.getSensorId()) {
+            if (edit && s.getOid() == switchDTO.getSensor().getId()) {
               sensorField.setValue(dm);
             }
           }
@@ -190,11 +191,11 @@ public class SwitchWindow extends FormWindow {
         
         // TODO EBR : review this validation, this does prevent re-submitting the form
         // there must be a specific way to handle validation, not doing it in submit        
-        if (switchDTO.getOnCommandId() == null || switchDTO.getOffCommandId() == null) {
+        if (switchDTO.getOnCommand() == null || switchDTO.getOffCommand() == null) {
           MessageBox.alert("Switch", "A switch must have on and off commands defined to toggle its state", null);
           return;
         }
-        if (switchDTO.getSensorId() == null) {
+        if (switchDTO.getSensor() == null) {
           MessageBox.alert("Switch", "A switch must have a sensor defined to read its state", null);
           return;
         }
@@ -254,10 +255,10 @@ public class SwitchWindow extends FormWindow {
                DeviceCommandDTO dc = dataModel.getBean();
                command.setText(dc.getDisplayName());
                if (forSwitchOn) {
-                 switchDTO.setOnCommandId(dc.getOid());
+                 switchDTO.setOnCommand(new DTOReference(dc.getOid()));
                  switchDTO.setOnCommandDisplayName(dc.getDisplayName());
                } else {
-                 switchDTO.setOffCommandId(dc.getOid());
+                 switchDTO.setOffCommand(new DTOReference(dc.getOid()));
                  switchDTO.setOffCommandDisplayName(dc.getDisplayName());
                }
             }
@@ -274,7 +275,7 @@ public class SwitchWindow extends FormWindow {
       @Override
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
         ComboBoxDataModel<SensorDTO> sensorItem = (ComboBoxDataModel<SensorDTO>) se.getSelectedItem();
-        switchDTO.setSensorId(sensorItem.getData().getOid());
+        switchDTO.setSensor(new DTOReference(sensorItem.getData().getOid()));
       }
    }
 }
