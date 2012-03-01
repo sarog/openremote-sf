@@ -24,6 +24,7 @@ package org.openremote.controller.protocol.knx.ip;
  * TODO
  *
  * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class KnxIpException extends Exception
 {
@@ -72,10 +73,4 @@ public class KnxIpException extends Exception
   }
 
 
-  // Exception Overrides --------------------------------------------------------------------------
-
-  @Override public String getMessage()
-  {
-    return super.getMessage();
-  }
 }
