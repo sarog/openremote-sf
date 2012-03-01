@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
@@ -31,7 +32,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
-import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
@@ -139,14 +139,6 @@ public class SensorWizardWindow extends SensorWindow {
 
       });
    }
-
-   
-   
-   
-   
-   
-   
-   // TODO
    
    /**
     * This listener pops up a command window  to create a new device command for the current device.
@@ -160,19 +152,10 @@ public class SensorWizardWindow extends SensorWindow {
             @Override
             public void afterSubmit(SubmitEvent be) {
                DeviceCommandDetailsDTO deviceCommand = be.getData();
-               
-               
-               /*
-               device.getDeviceCommands().add(deviceCommand);
-               
-               BeanModel deviceCommandModel = deviceCommand.getBeanModel();
-               
-               
+               BeanModel deviceCommandModel = DTOHelper.getBeanModel(deviceCommand);
                commandSelectTree.getStore().add(deviceCommandModel, false);
                commandSelectTree.getSelectionModel().select(deviceCommandModel, false);
-               
                fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(deviceCommandModel));
-               */
                Info.display("Info", "Create command " + deviceCommand.getName() + " success");
             }
          });
