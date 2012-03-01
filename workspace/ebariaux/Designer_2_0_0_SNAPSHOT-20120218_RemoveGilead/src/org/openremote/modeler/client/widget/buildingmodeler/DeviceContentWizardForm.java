@@ -48,6 +48,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -217,7 +218,13 @@ public class DeviceContentWizardForm extends CommonForm {
          public void handleEvent(FormEvent be) {
            
            /*
+            * 
+            * 
+            * 
             * TODO
+            * 
+            * 
+            * 
             DeviceBeanModelProxy.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(BeanModel deviceModel) {
@@ -349,31 +356,45 @@ public class DeviceContentWizardForm extends CommonForm {
          
          for (BeanModel beanModel : selectedModels) {
             if (beanModel.getBean() instanceof DeviceCommandDetailsDTO) {
-              /*
-               List<CommandRefItem> commandRefItems = device.getCommandRefItems();
-               for (CommandRefItem commandRefItem : commandRefItems) {
-                  if (commandRefItem.getDeviceCommand() == beanModel.getBean()) {
-                     MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
-                     return;
-                  }
-               }
-               */
-               commands.remove(beanModel.getBean());
+              DeviceCommandDetailsDTO commandToDelete = beanModel.getBean();
+              for (SensorDetailsDTO s : sensors) {
+                if (s.getCommand().getDto() == commandToDelete) {
+                  MessageBox.alert("Warn", "Command is referenced by sensor " + s.getName() + ", it can't be deleted.", null);
+                  return;
+                }
+              }
+              for (SwitchDetailsDTO s : switches) {
+                if (s.getOnCommand().getDto() == commandToDelete || s.getOffCommand().getDto() == commandToDelete) {
+                  MessageBox.alert("Warn", "Command is referenced by switch " + s.getName() + ", it can't be deleted.", null);
+                  return;
+                }
+              }
+              for (SliderDetailsDTO s : sliders) {
+                if (s.getCommand().getDto() == commandToDelete) {
+                  MessageBox.alert("Warn", "Command is referenced by slider " + s.getName() + ", it can't be deleted.", null);
+                  return;
+                }
+              }
+              commands.remove(commandToDelete);
             } else if (beanModel.getBean() instanceof SensorDetailsDTO) {
-              /*
-               List<SensorRefItem> sensorRefItems = device.getSensorRefItems();
-               for (SensorRefItem sensorRefItem : sensorRefItems) {
-                  if (sensorRefItem.getSensor() == beanModel.getBean()) {
-                     MessageBox.alert("Warn", "The sensor cann't be delete, because it was refrenced by other switch or slider.", null);
-                     return;
-                  }
-               }
-               */
-               //device.getSensors().remove(beanModel.getBean());
+              SensorDetailsDTO sensorToDelete = beanModel.getBean();
+              for (SwitchDetailsDTO s : switches) {
+                if (s.getSensor().getDto() == sensorToDelete) {
+                  MessageBox.alert("Warn", "Sensor is referenced by switch " + s.getName() + ", it can't be deleted.", null);
+                  return;
+                }
+              }
+              for (SliderDetailsDTO s : sliders) {
+                if (s.getSensor().getDto() == sensorToDelete) {
+                  MessageBox.alert("Warn", "Sensor is referenced by slider " + s.getName() + ", it can't be deleted.", null);
+                  return;
+                }
+              }
+              sensors.remove(sensorToDelete);
             } else if(beanModel.getBean() instanceof SliderDetailsDTO) {
-               //device.getSliders().remove(beanModel.getBean());
+              sliders.remove(beanModel.getBean());
             } else if(beanModel.getBean() instanceof SwitchDetailsDTO) {
-               //device.getSwitchs().remove(beanModel.getBean());
+               switches.remove(beanModel.getBean());
             }
             deviceContentTree.getStore().remove(beanModel);
          }
