@@ -61,7 +61,7 @@ import org.w3c.dom.NodeList;
  */
 public class Rrd4jDataLogger extends EventProcessor {
 
-   private List<RrdDb> rrdDbList = new ArrayList<RrdDb>();
+   private List<RrdDb> rrdDbList;
    private Map<String,String> graphDefMap;
    
    @Override
@@ -104,6 +104,7 @@ public class Rrd4jDataLogger extends EventProcessor {
       
       //Parse XML for RRD4J databases and datasources
       List<RrdDef> rrdDefList = parseConfigXML(rrdConfigUri);
+      rrdDbList = new ArrayList<RrdDb>();
       for (RrdDef rrdDef : rrdDefList) {
          RrdDb rrdDb = null;
          String dbFileName = rrdDef.getPath();
