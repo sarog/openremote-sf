@@ -31,6 +31,7 @@ import org.openremote.controller.protocol.knx.RangeWriteTest;
 import org.openremote.controller.protocol.knx.dib.SupportedServiceFamilyTest;
 import org.openremote.controller.protocol.knx.dib.DeviceInformationTest;
 import org.openremote.controller.protocol.knx.ip.message.HpaiTest;
+import org.openremote.controller.protocol.knx.ip.message.SearchResponseTest;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
 
 /**
@@ -55,6 +56,7 @@ import org.openremote.controller.protocol.knx.datatype.TwoOctetFloatTest;
        // ip.message tests...
 
        HpaiTest.class,
+       SearchResponseTest.class,
 
        // dib tests...
 
