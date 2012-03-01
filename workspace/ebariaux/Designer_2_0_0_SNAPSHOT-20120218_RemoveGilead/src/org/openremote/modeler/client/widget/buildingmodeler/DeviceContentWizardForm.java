@@ -29,7 +29,6 @@ import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -57,9 +56,9 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 /**
@@ -67,7 +66,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class DeviceContentWizardForm extends CommonForm {
 
-   public static Account account;
    private Device device = null;
    private TreePanel<BeanModel> deviceContentTree;
    
@@ -83,7 +81,7 @@ public class DeviceContentWizardForm extends CommonForm {
    public DeviceContentWizardForm(Component wrapper, BeanModel deviceBeanModel) {
       super();
       this.wrapper = wrapper;
-      this.device = deviceBeanModel.getBean();
+//      this.device = deviceBeanModel.getBean(); // TODO
       setHeight(240);
       init();
    }
@@ -102,17 +100,8 @@ public class DeviceContentWizardForm extends CommonForm {
       contentField.setFieldLabel("Commands,sensors,switches and sliders");
       add(contentField);
       onSubmit();
-      getAccount();
    }
 
-   private void getAccount() {
-      DeviceBeanModelProxy.getAccount(new AsyncSuccessCallback <Account>(){
-         public void onSuccess(Account result) {
-            account = result;
-         }
-      });
-   }
-   
    /**
     * Creates the content container.
     * It has a treePanel container to store the device content(deviceCommand, sensor, switch and slider),

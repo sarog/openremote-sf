@@ -128,11 +128,6 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
       return null;
    }
 
-   public Account getAccount() {
-      return userService.getAccount();
-   }
-   
-   
    public ArrayList<DeviceDTO> loadAllDTOs() {
      List<Device> devices = deviceService.loadAll(userService.getAccount());
      ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();

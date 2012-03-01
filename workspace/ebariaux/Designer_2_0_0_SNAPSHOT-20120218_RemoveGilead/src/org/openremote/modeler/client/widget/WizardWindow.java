@@ -19,9 +19,6 @@
 */
 package org.openremote.modeler.client.widget;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -35,9 +32,6 @@ import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
  * @author Dan 2009-8-21
  */
 public class WizardWindow extends CommonWindow {
-
-   /** The session. */
-   protected Map<String, Object> session = new HashMap<String, Object>();
 
    /** The form series. */
    protected CommonForm[] forms;

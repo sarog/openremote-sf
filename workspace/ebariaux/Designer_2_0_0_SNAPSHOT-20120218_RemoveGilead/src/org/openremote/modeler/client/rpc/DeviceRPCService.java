@@ -28,7 +28,6 @@ import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -80,8 +79,6 @@ public interface DeviceRPCService extends RemoteService {
     * @return the list< device>
     */
    List<Device> loadAll(Account account);
-   
-   Account getAccount();
    
    ArrayList<DeviceDTO> loadAllDTOs();
 

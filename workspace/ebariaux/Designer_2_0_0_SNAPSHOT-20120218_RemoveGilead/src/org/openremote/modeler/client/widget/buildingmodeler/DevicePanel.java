@@ -58,8 +58,10 @@ import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
@@ -364,7 +366,10 @@ public class DevicePanel extends ContentPanel {
       newDeviceItem.setIcon(icon.device());
       newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
-            final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(new Device().getBeanModel());
+            final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(DTOHelper.getBeanModel(new DeviceDetailsDTO()));
+
+            
+            
             deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {

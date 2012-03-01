@@ -133,7 +133,7 @@ public class SensorWizardWindow extends SensorWindow {
                }
                sensor.setDevice(device);
                sensor.setName(nameField.getValue());
-               sensor.setAccount(DeviceContentWizardForm.account);
+//               sensor.setAccount(DeviceContentWizardForm.account); // TODO see how to not use that
                BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
                if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
                   DeviceCommand cmd = selectedCommand.getBean();
