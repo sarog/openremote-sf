@@ -292,17 +292,17 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSwitchListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-        /* TODO
-         final SwitchWizardWindow switchWizardWindow = new SwitchWizardWindow(device);
+         final SwitchWizardWindow switchWizardWindow = new SwitchWizardWindow(commands, sensors);
          switchWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               Switch switchToggle = be.getData();
-               device.getSwitchs().add(switchToggle);
-               deviceContentTree.getStore().add(switchToggle.getBeanModel(), false);
+               SwitchDetailsDTO switchToggle = be.getData();
+               switches.add(switchToggle);
+               deviceContentTree.getStore().add(DTOHelper.getBeanModel(switchToggle), false);
                switchWizardWindow.hide();
             }
          });
+         /*
          switchWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
@@ -313,6 +313,7 @@ public class DeviceContentWizardForm extends CommonForm {
             }
          });
          */
+         switchWizardWindow.show();
       }
    }
    
