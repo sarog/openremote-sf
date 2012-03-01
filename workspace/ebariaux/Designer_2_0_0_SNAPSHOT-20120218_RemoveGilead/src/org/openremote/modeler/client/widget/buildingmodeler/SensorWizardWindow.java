@@ -28,7 +28,9 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
@@ -107,7 +109,7 @@ public class SensorWizardWindow extends SensorWindow {
               typeList.focus();
               return;
            }
-           if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommandDTO)) {
+           if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommandDetailsDTO)) {
               MessageBox.alert("Warn", "A sensor must have a device command", null);
               commandSelectTree.focus();
               return;
@@ -130,14 +132,8 @@ public class SensorWizardWindow extends SensorWindow {
            }
            sensorDTO.setName(nameField.getValue());
            
-           DeviceCommandDTO cmd = selectedCommand.getBean();
-           
-           
-           
-           sensorDTO.setCommandId(cmd.getOid()); // TODO handle this for unsaved commands
-           
-           
-           
+           DTO cmd = selectedCommand.getBean();
+           sensorDTO.setCommand(new DTOReference(cmd));
            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(sensorDTO));
          }
 

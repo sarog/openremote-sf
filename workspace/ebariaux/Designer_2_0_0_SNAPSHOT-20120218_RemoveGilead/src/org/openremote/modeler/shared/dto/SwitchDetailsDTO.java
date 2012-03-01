@@ -6,24 +6,24 @@ public class SwitchDetailsDTO implements DTO {
   
   private Long oid;
   private String name;
-  private Long sensorId;
-  private Long onCommandId;
+  private DTOReference sensor;
+  private DTOReference onCommand;
   private String onCommandDisplayName;
-  private Long offCommandId;
+  private DTOReference offCommand;
   private String offCommandDisplayName;
 
   public SwitchDetailsDTO() {
     super();
   }
 
-  public SwitchDetailsDTO(Long oid, String name, Long sensorId, Long onCommandId, String onCommandDisplayName, Long offCommandId, String offCommandDisplayName) {
+  public SwitchDetailsDTO(Long oid, String name, DTOReference sensor, DTOReference onCommand, String onCommandDisplayName, DTOReference offCommand, String offCommandDisplayName) {
     super();
     this.oid = oid;
     this.name = name;
-    this.sensorId = sensorId;
-    this.onCommandId = onCommandId;
+    this.sensor = sensor;
+    this.onCommand = onCommand;
     this.onCommandDisplayName = onCommandDisplayName;
-    this.offCommandId = offCommandId;
+    this.offCommand = offCommand;
     this.offCommandDisplayName = offCommandDisplayName;
   }
 
@@ -43,20 +43,28 @@ public class SwitchDetailsDTO implements DTO {
     this.name = name;
   }
 
-  public Long getSensorId() {
-    return sensorId;
+  public DTOReference getSensor() {
+    return sensor;
   }
 
-  public void setSensorId(Long sensorId) {
-    this.sensorId = sensorId;
+  public void setSensor(DTOReference sensor) {
+    this.sensor = sensor;
   }
 
-  public Long getOnCommandId() {
-    return onCommandId;
+  public DTOReference getOnCommand() {
+    return onCommand;
   }
 
-  public void setOnCommandId(Long onCommandId) {
-    this.onCommandId = onCommandId;
+  public void setOnCommand(DTOReference onCommand) {
+    this.onCommand = onCommand;
+  }
+
+  public DTOReference getOffCommand() {
+    return offCommand;
+  }
+
+  public void setOffCommand(DTOReference offCommand) {
+    this.offCommand = offCommand;
   }
 
   public String getOnCommandDisplayName() {
@@ -65,14 +73,6 @@ public class SwitchDetailsDTO implements DTO {
 
   public void setOnCommandDisplayName(String onCommandDisplayName) {
     this.onCommandDisplayName = onCommandDisplayName;
-  }
-
-  public Long getOffCommandId() {
-    return offCommandId;
-  }
-
-  public void setOffCommandId(Long offCommandId) {
-    this.offCommandId = offCommandId;
   }
 
   public String getOffCommandDisplayName() {

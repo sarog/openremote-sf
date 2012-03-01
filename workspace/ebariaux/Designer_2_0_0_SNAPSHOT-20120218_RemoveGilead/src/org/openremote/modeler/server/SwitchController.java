@@ -27,6 +27,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
@@ -71,9 +72,9 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
    @Override
    public SwitchDetailsDTO loadSwitchDetails(long id) {
      Switch sw = switchService.loadById(id);
-     return new SwitchDetailsDTO(sw.getOid(), sw.getName(), sw.getSwitchSensorRef().getSensor().getOid(),
-             sw.getSwitchCommandOnRef().getDeviceCommand().getOid(), sw.getSwitchCommandOnRef().getDeviceCommand().getDisplayName(),
-             sw.getSwitchCommandOffRef().getDeviceCommand().getOid(), sw.getSwitchCommandOffRef().getDeviceCommand().getDisplayName());
+     return new SwitchDetailsDTO(sw.getOid(), sw.getName(), new DTOReference(sw.getSwitchSensorRef().getSensor().getOid()),
+             new DTOReference(sw.getSwitchCommandOnRef().getDeviceCommand().getOid()), sw.getSwitchCommandOnRef().getDeviceCommand().getDisplayName(),
+             new DTOReference(sw.getSwitchCommandOffRef().getDeviceCommand().getOid()), sw.getSwitchCommandOffRef().getDeviceCommand().getDisplayName());
    }
 
    @Override
@@ -81,18 +82,18 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
      Switch sw = switchService.loadById(switchDTO.getOid());
      sw.setName(switchDTO.getName());
      
-     if (sw.getSwitchSensorRef().getSensor().getOid() != switchDTO.getSensorId()) {
-       Sensor sensor = sensorService.loadById(switchDTO.getSensorId());
+     if (sw.getSwitchSensorRef().getSensor().getOid() != switchDTO.getSensor().getId()) {
+       Sensor sensor = sensorService.loadById(switchDTO.getSensor().getId());
        sw.getSwitchSensorRef().setSensor(sensor);
      }
      
-     if (sw.getSwitchCommandOnRef().getDeviceCommand().getOid() != switchDTO.getOnCommandId()) {
-       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOnCommandId());
+     if (sw.getSwitchCommandOnRef().getDeviceCommand().getOid() != switchDTO.getOnCommand().getId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOnCommand().getId());
        sw.getSwitchCommandOnRef().setDeviceCommand(dc);
      }
      
-     if (sw.getSwitchCommandOffRef().getDeviceCommand().getOid() != switchDTO.getOffCommandId()) {
-       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOffCommandId());
+     if (sw.getSwitchCommandOffRef().getDeviceCommand().getOid() != switchDTO.getOffCommand().getId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOffCommand().getId());
        sw.getSwitchCommandOffRef().setDeviceCommand(dc);
      }
 
@@ -101,9 +102,9 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
 
    @Override
    public void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId) {
-     Sensor sensor = sensorService.loadById(switchDTO.getSensorId());
-     DeviceCommand onCommand = deviceCommandService.loadById(switchDTO.getOnCommandId());
-     DeviceCommand offCommand = deviceCommandService.loadById(switchDTO.getOffCommandId());
+     Sensor sensor = sensorService.loadById(switchDTO.getSensor().getId());
+     DeviceCommand onCommand = deviceCommandService.loadById(switchDTO.getOnCommand().getId());
+     DeviceCommand offCommand = deviceCommandService.loadById(switchDTO.getOffCommand().getId());
      
      Switch sw = new Switch(onCommand, offCommand, sensor);
      sw.setName(switchDTO.getName());

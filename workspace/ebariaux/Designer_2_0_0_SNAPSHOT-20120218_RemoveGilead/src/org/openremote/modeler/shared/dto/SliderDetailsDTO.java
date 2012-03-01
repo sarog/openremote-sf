@@ -6,20 +6,20 @@ public class SliderDetailsDTO implements DTO {
 
   private Long oid;
   private String name;
-  private Long sensorId;
+  private DTOReference sensor;
   private String commandName;
-  private Long commandId;
+  private DTOReference command;
 
   public SliderDetailsDTO() {
     super();
   }
 
-  public SliderDetailsDTO(Long oid, String name, Long sensorId, Long commandId, String commandName) {
+  public SliderDetailsDTO(Long oid, String name, DTOReference sensor, DTOReference command, String commandName) {
     super();
     this.oid = oid;
     this.name = name;
-    this.sensorId = sensorId;
-    this.commandId = commandId;
+    this.sensor = sensor;
+    this.command = command;
     this.commandName = commandName;
   }
 
@@ -38,23 +38,23 @@ public class SliderDetailsDTO implements DTO {
   public void setName(String name) {
     this.name = name;
   }
-
-  public Long getSensorId() {
-    return sensorId;
-  }
-
-  public void setSensorId(Long sensorId) {
-    this.sensorId = sensorId;
-  }
-
-  public Long getCommandId() {
-    return commandId;
-  }
-
-  public void setCommandId(Long commandId) {
-    this.commandId = commandId;
-  }
   
+  public DTOReference getSensor() {
+    return sensor;
+  }
+
+  public void setSensor(DTOReference sensor) {
+    this.sensor = sensor;
+  }
+
+  public DTOReference getCommand() {
+    return command;
+  }
+
+  public void setCommand(DTOReference command) {
+    this.command = command;
+  }
+
   public String getCommandName() {
     return commandName;
   }

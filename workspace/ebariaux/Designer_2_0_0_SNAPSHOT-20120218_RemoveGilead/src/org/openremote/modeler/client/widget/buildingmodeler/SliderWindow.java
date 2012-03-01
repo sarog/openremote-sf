@@ -34,8 +34,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
@@ -50,7 +49,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -140,7 +138,7 @@ public class SliderWindow extends FormWindow {
           for (SensorDTO s : result) {
             ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
             sensorStore.add(dm);
-            if (edit && s.getOid() == sliderDTO.getSensorId()) {
+            if (edit && s.getOid() == sliderDTO.getSensor().getId()) {
               sensorField.setValue(dm);
             }
           }
@@ -186,11 +184,11 @@ public class SliderWindow extends FormWindow {
         
         // TODO EBR : review this validation, this does prevent re-submitting the form
         // there must be a specific way to handle validation, not doing it in submit        
-        if (sliderDTO.getCommandId() == null) {
+        if (sliderDTO.getCommand() == null) {
           MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
           return;
         }
-        if (sliderDTO.getSensorId() == null) {
+        if (sliderDTO.getSensor() == null) {
           MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
           return;
         }
@@ -237,7 +235,7 @@ public class SliderWindow extends FormWindow {
                BeanModel dataModel = be.<BeanModel> getData();
                DeviceCommandDTO dc = dataModel.getBean();
                command.setText(dc.getDisplayName());
-               sliderDTO.setCommandId(dc.getOid());
+               sliderDTO.setCommand(new DTOReference(dc.getOid()));
                sliderDTO.setCommandName(dc.getDisplayName());
             }
          });
@@ -253,7 +251,7 @@ public class SliderWindow extends FormWindow {
       @Override
       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
           ComboBoxDataModel<SensorDTO> sensorItem = (ComboBoxDataModel<SensorDTO>) se.getSelectedItem();
-          sliderDTO.setSensorId(sensorItem.getData().getOid());
+          sliderDTO.setSensor(new DTOReference(sensorItem.getData().getOid()));
       }
    }
 }
