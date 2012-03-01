@@ -84,5 +84,7 @@ public interface DeviceRPCServiceAsync {
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
   
+  void saveNewDevice(DeviceDetailsDTO device, AsyncCallback<Void> callback);
+
   void updateDeviceWithDTO(DeviceDetailsDTO device, AsyncCallback<Void> callback);
 }

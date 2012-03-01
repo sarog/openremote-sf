@@ -210,6 +210,10 @@ public class DeviceBeanModelProxy {
       });
    }
 
+   public static void saveNewDevice(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().saveNewDevice(device, callback);
+   }
+   
    public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
    }

@@ -25,10 +25,8 @@ import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.WizardWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 
@@ -55,8 +53,6 @@ public class DeviceWizardWindow extends WizardWindow {
     */
    public DeviceWizardWindow(BeanModel deviceBeanModel) {
       super(deviceBeanModel);
-//      DeviceDetailsDTO device = deviceBeanModel.getBean();
-//      session.put("device", device); // TODO : double check but seems not used -> the whole session variable
       setHeading("New Device");
       show();
    }
