@@ -28,8 +28,6 @@ import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.utils.DeviceCommandWizardSelectWindow;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
@@ -45,7 +43,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -68,6 +65,7 @@ public class SwitchWizardWindow extends SwitchWindow {
       form.removeAllListeners();
       onSubmit();
    }
+   
   private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
       newSensorButton.addSelectionListener(new NewSensorListener());
@@ -82,7 +80,7 @@ public class SwitchWizardWindow extends SwitchWindow {
      // Don't load anything here, we'll load just after coming back from our parent's constructor
    }
 
-   private void populateSensorFieldStore( ArrayList<SensorDetailsDTO> sensors) {
+   private void populateSensorFieldStore(ArrayList<SensorDetailsDTO> sensors) {
       ListStore<ModelData> sensorStore = sensorField.getStore();
       sensorStore.removeAll();
       for (SensorDetailsDTO sensor : sensors) {
