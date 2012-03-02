@@ -368,12 +368,11 @@ public class DevicePanel extends ContentPanel {
          public void componentSelected(MenuEvent ce) {
             final DeviceWizardWindow deviceWindow = new DeviceWizardWindow(DTOHelper.getBeanModel(new DeviceDetailsDTO()));
 
-            
-            
             deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   deviceWindow.hide();
+                  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : should pass DTO
                   
                   /*
                   BeanModel deviceModel = be.getData();
@@ -388,7 +387,6 @@ public class DevicePanel extends ContentPanel {
                   //create and select it.
                   tree.getSelectionModel().select(deviceModel, false);
                   */
-                  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass DTO, should be a created event ?
 //                  Info.display("Info", "Add device " + deviceModel.get("name") + " success."); // TODO based on DTO in event
                   
                }

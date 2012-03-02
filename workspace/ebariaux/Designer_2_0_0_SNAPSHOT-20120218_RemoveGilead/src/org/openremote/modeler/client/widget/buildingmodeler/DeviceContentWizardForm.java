@@ -22,11 +22,14 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
@@ -217,21 +220,12 @@ public class DeviceContentWizardForm extends CommonForm {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
            
-           /*
-            * 
-            * 
-            * 
-            * TODO
-            * 
-            * 
-            * 
             DeviceBeanModelProxy.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(BeanModel deviceModel) {
-                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
+               public void onSuccess(Void result) {
+                 wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(device));
                }
             });
-            */
          }
          
       });
