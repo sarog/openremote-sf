@@ -22,10 +22,13 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.utils.DeviceCommandWizardSelectWindow;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
@@ -95,7 +98,7 @@ public class SliderWizardWindow extends SliderWindow {
     */
    private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
-// TODO      newSensorButton.addSelectionListener(new NewSensorListener());
+      newSensorButton.addSelectionListener(new NewSensorListener());
       AdapterField newSensorField = new AdapterField(newSensorButton);
       newSensorField.setLabelSeparator("");
       form.insert(newSensorField, 2);
@@ -138,37 +141,34 @@ public class SliderWizardWindow extends SliderWindow {
    /**
     * The listener to create a new sensor for the current device.
     */
-   /* TODO
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
-         // The submit listener to create a new sensor, and add it into the device content container.
-         sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               Sensor sensor = be.getData();
-               device.getSensors().add(sensor);
-               SliderSensorRef sliderSensorRef = new SliderSensorRef(slider);
-               sliderSensorRef.setSensor(sensor);
-               slider.setSliderSensorRef(sliderSensorRef);
-               ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-               sensorField.getStore().add(sensorRefSelector);
-               sensorField.setValue(sensorRefSelector);
-               sensorWizardWindow.hide();
-               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensor.getBeanModel()));
-            }
-         });
-         // The listener to transform the data into deviceContent and add it.
-         sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
-            @Override
-            public void afterAdd(DeviceWizardEvent be) {
-               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(be.getData()));
-            }
-         });
+        final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(commands);
+        sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+           @Override
+           public void afterSubmit(SubmitEvent be) {
+              SensorDetailsDTO sensor = be.getData();
+              BeanModel sensorModel = DTOHelper.getBeanModel(sensor);               
+              ComboBoxDataModel<SensorDetailsDTO> sensorRefSelector = new ComboBoxDataModel<SensorDetailsDTO>(sensor.getName(), sensor);
+              sensorField.getStore().add(sensorRefSelector);
+              sensorField.setValue(sensorRefSelector);
+              sliderDTO.setSensor(new DTOReference(sensor));               
+              sensorWizardWindow.hide();               
+              fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensorModel));
+           }
+        });
+        
+        // When new command is created from the sensor wizard window, this passes it down so it's added to the "device" command lists 
+        sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
+           @Override
+           public void afterAdd(DeviceWizardEvent be) {
+              fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(be.getData()));
+           }
+        });
+        sensorWizardWindow.show();
       }
    }
-   */
    
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       @Override
