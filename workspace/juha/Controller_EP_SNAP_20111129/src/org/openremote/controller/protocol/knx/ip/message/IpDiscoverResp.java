@@ -91,7 +91,7 @@ public class IpDiscoverResp extends IpMessage
    *
    * This integer value is stored as a two byte value in the KNXnet/IP frame header.
    * The high byte value (0x02) indicates 'Core' service family, and low byte (0x02)
-   * indicates search request service.
+   * indicates search response service.
    */
   public final static int STI = ServiceTypeIdentifier.SEARCH_RESPONSE.getValue();
 
