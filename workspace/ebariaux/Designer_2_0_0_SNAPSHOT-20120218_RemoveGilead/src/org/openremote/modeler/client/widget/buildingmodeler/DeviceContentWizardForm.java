@@ -326,27 +326,31 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddSliderListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-        /* TODO
-         final SliderWizardWindow sliderWizardWindow = new SliderWizardWindow(device);
+         final SliderWizardWindow sliderWizardWindow = new SliderWizardWindow(commands, sensors);
          sliderWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               Slider slider = be.getData();
-               device.getSliders().add(slider);
-               deviceContentTree.getStore().add(slider.getBeanModel(), false);
+               SliderDetailsDTO slider = be.getData();
+               sliders.add(slider);
+               deviceContentTree.getStore().add(DTOHelper.getBeanModel(slider), false);
                sliderWizardWindow.hide();
             }
          });
          sliderWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
-               BeanModel beanModel = be.getData();
-               if (beanModel != null) {
-                  deviceContentTree.getStore().add(beanModel, false);
-               }
+              BeanModel beanModel = be.getData();
+              if (beanModel.getBean() instanceof DeviceCommandDetailsDTO) {
+                // Happens when user does new sensor, then new command from the new sensor window
+                commands.add((DeviceCommandDetailsDTO)beanModel.getBean());
+                deviceContentTree.getStore().add(beanModel, false);
+              } else if (beanModel.getBean() instanceof SensorDetailsDTO) {
+                sensors.add((SensorDetailsDTO)beanModel.getBean());
+                deviceContentTree.getStore().add(beanModel, false);
+              }
             }
          });
-         */
+         sliderWizardWindow.show();
       }
    }
    
