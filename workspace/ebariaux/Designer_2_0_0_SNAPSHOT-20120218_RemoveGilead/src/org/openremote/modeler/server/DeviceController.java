@@ -138,7 +138,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      deviceDTO.setDeviceCommands(dcDTOs);
      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
      for (Sensor sensor : device.getSensors()) {
-       SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName());
+       SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName(), sensor.getType());
        DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
        sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
        sensorDTOs.add(sensorDTO);

@@ -42,7 +42,6 @@ import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -50,21 +49,20 @@ import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderCommandRef;
-import org.openremote.modeler.domain.SliderSensorRef;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchCommandOffRef;
-import org.openremote.modeler.domain.SwitchCommandOnRef;
-import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -181,20 +179,22 @@ public class DevicePanel extends ContentPanel {
       createSwitchMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
         public void componentSelected(MenuEvent ce) {
           List<BeanModel> selectedData = tree.getSelectionModel().getSelectedItems();
-          DeviceCommand onCmd = null;
-          DeviceCommand offCmd = null;
-          Sensor sensor = null;
+          DeviceCommandDTO onCmd = null;
+          DeviceCommandDTO offCmd = null;
+          SensorDTO sensor = null;
+          BeanModel deviceBeanModel = null;
           for (BeanModel beanModel : selectedData)
           {
-            BusinessEntity be = beanModel.getBean();
-            if ((be instanceof Sensor) && ((Sensor)be).getType() == SensorType.SWITCH) {
-              sensor = (Sensor)be;
+            DTO dto = beanModel.getBean();
+            if ((dto instanceof SensorDTO) && ((SensorDTO)dto).getType() == SensorType.SWITCH) {
+              sensor = (SensorDTO)dto;
+              deviceBeanModel = tree.getStore().getParent(beanModel);
             }
-            if ((be instanceof DeviceCommand) && ((DeviceCommand)be).getName().indexOf("(ON)") != -1) {
-              onCmd = (DeviceCommand)be;
+            if ((dto instanceof DeviceCommandDTO) && ((DeviceCommandDTO)dto).getDisplayName().indexOf("(ON)") != -1) {
+              onCmd = (DeviceCommandDTO)dto;
             }
-            if ((be instanceof DeviceCommand) && ((DeviceCommand)be).getName().indexOf("(OFF)") != -1) {
-              offCmd = (DeviceCommand)be;
+            if ((dto instanceof DeviceCommandDTO) && ((DeviceCommandDTO)dto).getDisplayName().indexOf("(OFF)") != -1) {
+              offCmd = (DeviceCommandDTO)dto;
             }
           }
           if ((onCmd == null) || (offCmd == null) || (sensor == null) || (selectedData.size() != 3)) {
@@ -203,29 +203,20 @@ public class DevicePanel extends ContentPanel {
             return;
           }
           
-          final Switch newSwitch = new Switch();
-          newSwitch.setDevice(sensor.getDevice());
-          SwitchCommandOnRef onRef = new SwitchCommandOnRef();
-          onRef.setDeviceCommand(onCmd);
-          onRef.setDeviceName(onCmd.getDevice().getName());
-          onRef.setOnSwitch(newSwitch);
-          SwitchCommandOffRef offRef = new SwitchCommandOffRef();
-          offRef.setDeviceCommand(offCmd);
-          offRef.setDeviceName(offCmd.getDevice().getName());
-          offRef.setOffSwitch(newSwitch);
-          SwitchSensorRef sensorRef = new SwitchSensorRef(newSwitch);
-          sensorRef.setSensor(sensor);
-          newSwitch.setSwitchCommandOnRef(onRef);
-          newSwitch.setSwitchCommandOffRef(offRef);
-          newSwitch.setSwitchSensorRef(sensorRef);
+          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final SwitchDetailsDTO newSwitch = new SwitchDetailsDTO();
+          newSwitch.setSensor(new DTOReference(sensor.getOid()));
+          newSwitch.setOnCommand(new DTOReference(onCmd.getOid()));
+          newSwitch.setOffCommand(new DTOReference(offCmd.getOid()));
           MessageBox.prompt("Switch name", "Please enter a name for the switch", new Listener<MessageBoxEvent>() {  
             public void handleEvent(MessageBoxEvent be) {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSwitch.setName(be.getValue());
-                SwitchBeanModelProxy.save(newSwitch.getBeanModel(), new AsyncSuccessCallback<Switch>() {
+                
+                SwitchBeanModelProxy.saveNewSwitch(newSwitch, deviceId, new AsyncSuccessCallback<Void>() {
                   @Override
-                  public void onSuccess(Switch result) {
-                    tree.getStore().add(result.getDevice().getBeanModel(), result.getBeanModel(), false);
+                  public void onSuccess(Void result) {
+                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
                   };
                 });
               }
@@ -240,40 +231,36 @@ public class DevicePanel extends ContentPanel {
       createSliderMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
         public void componentSelected(MenuEvent ce) {
           List<BeanModel> selectedData = tree.getSelectionModel().getSelectedItems();
-          DeviceCommand setValuCmd = null;
-          Sensor sensor = null;
+          DeviceCommandDTO setValuCmd = null;
+          SensorDTO sensor = null;
+          BeanModel deviceBeanModel = null;
           for (BeanModel beanModel : selectedData)
           {
-            BusinessEntity be = beanModel.getBean();
-            if ((be instanceof Sensor) && ((((Sensor)be).getType() == SensorType.LEVEL) || (((Sensor)be).getType() == SensorType.RANGE))) {
-              sensor = (Sensor)be;
+            DTO dto = beanModel.getBean();
+            if ((dto instanceof SensorDTO) && ((((SensorDTO)dto).getType() == SensorType.LEVEL) || (((SensorDTO)dto).getType() == SensorType.RANGE))) {
+              sensor = (SensorDTO)dto;
+              deviceBeanModel = tree.getStore().getParent(beanModel);
             }
-            if (be instanceof DeviceCommand) {
-              setValuCmd = (DeviceCommand)be;
+            if (dto instanceof DeviceCommandDTO) {
+              setValuCmd = (DeviceCommandDTO)dto;
             }
           }
           if ((setValuCmd == null) || (sensor == null) || (selectedData.size() != 2)) {
             MessageBox.alert("Wrong selection for Slider", "Make sure you have 1 Range-/Scale-Sensor and 1 command selected.", null);
             return;
           }
-          final Slider newSlider = new Slider();
-          newSlider.setDevice(sensor.getDevice());
-          SliderCommandRef setValueCmdRef = new SliderCommandRef();
-          setValueCmdRef.setDeviceCommand(setValuCmd);
-          setValueCmdRef.setDeviceName(setValuCmd.getDevice().getName());
-          setValueCmdRef.setSlider(newSlider);
-          SliderSensorRef sensorRef = new SliderSensorRef(newSlider);
-          sensorRef.setSensor(sensor);
-          newSlider.setSetValueCmd(setValueCmdRef);
-          newSlider.setSliderSensorRef(sensorRef);
+          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final SliderDetailsDTO newSlider = new SliderDetailsDTO();
+          newSlider.setCommand(new DTOReference(setValuCmd.getOid()));
+          newSlider.setSensor(new DTOReference(sensor.getOid()));
           MessageBox.prompt("Slider name", "Please enter a name for the slider", new Listener<MessageBoxEvent>() {  
             public void handleEvent(MessageBoxEvent be) {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSlider.setName(be.getValue());
-                SliderBeanModelProxy.save(newSlider.getBeanModel(), new AsyncSuccessCallback<Slider>() {
+                SliderBeanModelProxy.saveNewSlider(newSlider, deviceId, new AsyncSuccessCallback<Void>() {
                   @Override
-                  public void onSuccess(Slider result) {
-                    tree.getStore().add(result.getDevice().getBeanModel(), result.getBeanModel(), false);
+                  public void onSuccess(Void result) {
+                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
                   };
                 });
               }

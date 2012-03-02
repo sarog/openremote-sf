@@ -96,7 +96,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
      for (Sensor s : sensorService.loadByDeviceId(id)) {
-       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName()));
+       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName(), s.getType()));
      }
      return dtos;
    }
