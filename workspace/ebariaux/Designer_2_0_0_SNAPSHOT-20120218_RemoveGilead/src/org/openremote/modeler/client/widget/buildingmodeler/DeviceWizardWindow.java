@@ -19,11 +19,8 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import java.util.Map;
-
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.WizardWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -37,13 +34,9 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
  */
 public class DeviceWizardWindow extends WizardWindow {
 
-
-   /** The Step index DEVICE_INFO_STEP. */
    public static final int DEVICE_INFO_STEP = 0;
    
-   /** The Step index IMPORT_IR_STEP. */
-   public static final int IMPORT_IR_STEP = 1;
-   
+   public static final int DEVICE_CONTENT_STEP = 1;
    
    /**
     * Instantiates a new device wizard window.
@@ -75,47 +68,14 @@ public class DeviceWizardWindow extends WizardWindow {
    protected void postProcess(int step, FormPanel currentForm) {
       switch (step) {
       case DEVICE_INFO_STEP:
-         
+        // Ensures values entered at this step update the device dto
+        DeviceInfoWizardForm deviceInfoWizardForm = (DeviceInfoWizardForm) forms[DEVICE_INFO_STEP];
+        deviceInfoWizardForm.updateDeviceWithFieldValues();
          break;
-      case IMPORT_IR_STEP:
-         
+      case DEVICE_CONTENT_STEP:
          break;
-
       default:
          break;
       }
    }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   protected void finish(int step, FormPanel currentForm) {
-      DeviceContentWizardForm commandImportWizardForm = (DeviceContentWizardForm) forms[IMPORT_IR_STEP];
-      DeviceInfoWizardForm deviceInfoWizardForm = (DeviceInfoWizardForm) forms[DEVICE_INFO_STEP];
-      switch (step) {
-      case DEVICE_INFO_STEP:
-         
-         break;
-      case IMPORT_IR_STEP:
-        /* TODO: re-check, not sure what this is for
-         Map<String, String> map = deviceInfoWizardForm.getFieldMap();
-         Device device = commandImportWizardForm.getDevice();
-         device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
-         device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
-         device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
-         commandImportWizardForm.setDevice(device);
-         */
-         break;
-
-      default:
-         break;
-      }
-      super.finish(step, currentForm);
-      
-   }
-
-   
-
-
 }

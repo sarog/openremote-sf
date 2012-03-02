@@ -51,8 +51,7 @@ public class DeviceInfoForm extends CommonForm {
    /** The Constant DEVICE_MODEL. */
    public static final String DEVICE_MODEL = "model";
    
-   /** The device bean model. */
-   protected BeanModel deviceBeanModel = null;
+   protected DeviceDetailsDTO device = null;
    
    /** The wrapper. */
    protected Component wrapper;
@@ -65,9 +64,8 @@ public class DeviceInfoForm extends CommonForm {
     */
    public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
-      this.deviceBeanModel = deviceBeanModel;
+      this.device = (DeviceDetailsDTO) deviceBeanModel.getBean();
       this.wrapper = wrapper;
-      final DeviceDetailsDTO device = (DeviceDetailsDTO) deviceBeanModel.getBean(); 
 
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {            
@@ -78,7 +76,7 @@ public class DeviceInfoForm extends CommonForm {
                }
             };
 
-            updateDeviceWithFieldValues(device, getFieldMap());
+            updateDeviceWithFieldValues();
             if (device.getOid() == null) {
               DeviceBeanModelProxy.saveNewDevice(device, callback);
             } else {
@@ -90,7 +88,8 @@ public class DeviceInfoForm extends CommonForm {
       createFields();
    }
 
-  private void updateDeviceWithFieldValues(DeviceDetailsDTO device, Map<String, String> map) {
+  public void updateDeviceWithFieldValues() {
+    Map<String,String> map = getFieldMap();
     device.setName(map.get(DEVICE_NAME));
     device.setVendor(map.get(DEVICE_VENDOR));
     device.setModel(map.get(DEVICE_MODEL));
@@ -118,14 +117,9 @@ public class DeviceInfoForm extends CommonForm {
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
 
-      // TODO EBR : seems this will never be null, double check
-      
-      if (deviceBeanModel != null) {
-         DeviceDetailsDTO device = deviceBeanModel.getBean();
-         nameField.setValue(device.getName());
-         vendorField.setValue(device.getVendor());
-         modelField.setValue(device.getModel());
-      }
+     nameField.setValue(device.getName());
+     vendorField.setValue(device.getVendor());
+     modelField.setValue(device.getModel());
 
       add(nameField);
       add(vendorField);
