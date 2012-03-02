@@ -28,23 +28,25 @@ import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -214,6 +216,11 @@ public class DeviceBeanModelProxy {
      AsyncServiceFactory.getDeviceServiceAsync().saveNewDevice(device, callback);
    }
    
+   public static void saveNewDeviceWithChildren(final DeviceDetailsDTO device, final ArrayList<DeviceCommandDetailsDTO> commands,
+           final ArrayList<SensorDetailsDTO> sensors, final ArrayList<SwitchDetailsDTO> switches, final ArrayList<SliderDetailsDTO> sliders, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, callback);
+   }
+   
    public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
    }
@@ -364,5 +371,5 @@ public class DeviceBeanModelProxy {
          }
        });
    }
-
+   
 }
