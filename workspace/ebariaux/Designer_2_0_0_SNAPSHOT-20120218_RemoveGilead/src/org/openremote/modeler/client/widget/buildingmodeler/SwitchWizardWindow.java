@@ -22,16 +22,17 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.event.DeviceUpdatedEvent;
+import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandWizardSelectWindow;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
-import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -44,6 +45,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -68,7 +70,7 @@ public class SwitchWizardWindow extends SwitchWindow {
    }
   private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
-//TODO      newSensorButton.addSelectionListener(new NewSensorListener());
+      newSensorButton.addSelectionListener(new NewSensorListener());
       AdapterField newSensorField = new AdapterField(newSensorButton);
       newSensorField.setLabelSeparator("");
       form.insert(newSensorField, 2);
@@ -140,36 +142,35 @@ public class SwitchWizardWindow extends SwitchWindow {
       });
    }
    
-   /*
-    * TODO
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
+         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(commands);
          sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               Sensor sensor = be.getData();
-               device.getSensors().add(sensor);
-               SwitchSensorRef switchSensorRef = new SwitchSensorRef(switchToggle);
-               switchSensorRef.setSensor(sensor);
-               switchToggle.setSwitchSensorRef(switchSensorRef);
-               ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
+               SensorDetailsDTO sensor = be.getData();
+               BeanModel sensorModel = DTOHelper.getBeanModel(sensor);               
+               ComboBoxDataModel<SensorDetailsDTO> sensorRefSelector = new ComboBoxDataModel<SensorDetailsDTO>(sensor.getName(), sensor);
                sensorField.getStore().add(sensorRefSelector);
                sensorField.setValue(sensorRefSelector);
-               sensorWizardWindow.hide();
-               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensor.getBeanModel()));
+               switchDTO.setSensor(new DTOReference(sensor));               
+               sensorWizardWindow.hide();               
+               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensorModel));
             }
          });
+         
+         // TODO : needed ??
          sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
                fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(be.getData()));
             }
          });
+         sensorWizardWindow.show();
       }
    }
-   */
+
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       private boolean forSwitchOn = true;
       
