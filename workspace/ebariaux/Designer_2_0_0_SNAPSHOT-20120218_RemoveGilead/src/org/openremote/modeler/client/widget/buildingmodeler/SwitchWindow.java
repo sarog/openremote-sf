@@ -148,8 +148,6 @@ public class SwitchWindow extends FormWindow {
       
       sensorField.setFieldLabel(SWITCH_SENSOR_FIELD_NAME);
       sensorField.setName(SWITCH_SENSOR_FIELD_NAME);
-      
-      
       final ListStore<ModelData> sensorStore = new ListStore<ModelData>();
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
