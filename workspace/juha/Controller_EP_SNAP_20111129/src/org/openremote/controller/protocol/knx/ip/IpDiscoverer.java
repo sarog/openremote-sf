@@ -74,7 +74,7 @@ public class IpDiscoverer implements IpProcessorListener {
          try {
             ((MulticastSocket) s).joinGroup(multicastAddr);
          } catch (UnknownHostException e) {
-            throw new KnxIpException(Code.unknownHost, e.getMessage());
+            throw new KnxIpException(Code.UNKNOWN_HOST, e.getMessage());
          }
       }
       return s;

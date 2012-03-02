@@ -38,16 +38,16 @@ public class KnxIpException extends Exception
 
   public static enum Code
   {
-    alreadyConnected,
-    notConnected,
-    unknownHost,
-    noResponseFromInterface,
-    responseError,
-    wrongSequenceCounterValue,
-    wrongChannelId,
-    wrongResponseType,
-    invalidHeader,
-    unexpectedServiceType
+    ALREADY_CONNECTED,
+    NOT_CONNECTED,
+    UNKNOWN_HOST,
+    NO_RESPONSE_FROM_INTERFACE,
+    RESPONSE_ERROR,
+    WRONG_SEQUENCE_COUNTER_VALUE,
+    WRONG_CHANNEL_ID,
+    WRONG_RESPONSE_TYPE,
+    INVALID_HEADER,
+    UNEXPECTED_SERVICE_TYPE
   }
 
 

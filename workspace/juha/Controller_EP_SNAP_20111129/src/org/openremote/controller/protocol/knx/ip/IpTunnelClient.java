@@ -108,7 +108,7 @@ public class IpTunnelClient implements IpProcessorListener
 
     if (resp == null)
     {
-      throw new KnxIpException(Code.noResponseFromInterface, "Service failed, no ACK");
+      throw new KnxIpException(Code.NO_RESPONSE_FROM_INTERFACE, "Service failed, no ACK");
     }
 
     else
@@ -127,14 +127,14 @@ public class IpTunnelClient implements IpProcessorListener
 
             if (st != IpTunnelingAck.OK)
             {
-              throw new KnxIpException(Code.responseError, "Service failed : " + st);
+              throw new KnxIpException(Code.RESPONSE_ERROR, "Service failed : " + st);
             }
           }
 
           else
           {
             throw new KnxIpException(
-                Code.wrongSequenceCounterValue, "Service failed, expected " + this.seqCounter +
+                Code.WRONG_SEQUENCE_COUNTER_VALUE, "Service failed, expected " + this.seqCounter +
                 ", got " + cr.getSeqCounter()
             );
           }
@@ -142,7 +142,7 @@ public class IpTunnelClient implements IpProcessorListener
 
         else
         {
-          throw new KnxIpException(Code.wrongChannelId, "Service failed");
+          throw new KnxIpException(Code.WRONG_CHANNEL_ID, "Service failed");
         }
       }
     }
@@ -154,7 +154,7 @@ public class IpTunnelClient implements IpProcessorListener
   {
     if (this.isConnected())
     {
-      throw new KnxIpException(Code.alreadyConnected, "Connect failed");
+      throw new KnxIpException(Code.ALREADY_CONNECTED, "Connect failed");
     }
 
     this.processor.start("runtime", this.srcAddr, null);
@@ -201,7 +201,7 @@ public class IpTunnelClient implements IpProcessorListener
       {
         this.processor.stop();
 
-        throw new KnxIpException(Code.responseError, "Connect failed : " + st);
+        throw new KnxIpException(Code.RESPONSE_ERROR, "Connect failed : " + st);
       }
     }
 
@@ -209,7 +209,7 @@ public class IpTunnelClient implements IpProcessorListener
     {
       this.processor.stop();
 
-      throw new KnxIpException(Code.wrongResponseType, "Connect failed");
+      throw new KnxIpException(Code.WRONG_RESPONSE_TYPE, "Connect failed");
     }
   }
 
@@ -219,7 +219,7 @@ public class IpTunnelClient implements IpProcessorListener
     {
       if (!this.isConnected())
       {
-        throw new KnxIpException(Code.notConnected, "Disconnect failed");
+        throw new KnxIpException(Code.NOT_CONNECTED, "Disconnect failed");
       }
 
       IpDisconnectReq disconnectRequest = new IpDisconnectReq(
@@ -246,7 +246,7 @@ public class IpTunnelClient implements IpProcessorListener
 
           if (st != IpDisconnectResp.OK)
           {
-            throw new KnxIpException(Code.responseError, "Disconnect failed : " + st);
+            throw new KnxIpException(Code.RESPONSE_ERROR, "Disconnect failed : " + st);
           }
                
           log.info("Disconnected gracefully from " + this.destControlEndpointAddr);
@@ -254,13 +254,13 @@ public class IpTunnelClient implements IpProcessorListener
 
         else
         {
-          throw new KnxIpException(Code.wrongChannelId, "Disconnect failed");
+          throw new KnxIpException(Code.WRONG_CHANNEL_ID, "Disconnect failed");
         }
       }
 
       else
       {
-        throw new KnxIpException(Code.wrongResponseType, "Disconnect failed");
+        throw new KnxIpException(Code.WRONG_RESPONSE_TYPE, "Disconnect failed");
       }
     }
 
@@ -446,19 +446,19 @@ public class IpTunnelClient implements IpProcessorListener
 
           if (st != IpConnectResp.OK)
           {
-            throw new KnxIpException(Code.responseError, "Monitor failed : " + st);
+            throw new KnxIpException(Code.RESPONSE_ERROR, "Monitor failed : " + st);
           }
         }
 
         else
         {
-          throw new KnxIpException(Code.wrongChannelId, "Monitor failed : " + cId);
+          throw new KnxIpException(Code.WRONG_CHANNEL_ID, "Monitor failed : " + cId);
         }
       }
 
       else
       {
-        throw new KnxIpException(Code.wrongResponseType, "Monitor failed");
+        throw new KnxIpException(Code.WRONG_RESPONSE_TYPE, "Monitor failed");
       }
     }
   }
