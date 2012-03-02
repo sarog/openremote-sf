@@ -306,8 +306,14 @@ public class DeviceContentWizardForm extends CommonForm {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
                BeanModel beanModel = be.getData();
-               sensors.add((SensorDetailsDTO)beanModel.getBean());
-               deviceContentTree.getStore().add(beanModel, false);
+               if (beanModel.getBean() instanceof DeviceCommandDetailsDTO) {
+                 // Happens when user does new sensor, then new command from the new sensor window
+                 commands.add((DeviceCommandDetailsDTO)beanModel.getBean());
+                 deviceContentTree.getStore().add(beanModel, false);
+               } else if (beanModel.getBean() instanceof SensorDetailsDTO) {
+                 sensors.add((SensorDetailsDTO)beanModel.getBean());
+                 deviceContentTree.getStore().add(beanModel, false);
+               }
             }
          });
          switchWizardWindow.show();
