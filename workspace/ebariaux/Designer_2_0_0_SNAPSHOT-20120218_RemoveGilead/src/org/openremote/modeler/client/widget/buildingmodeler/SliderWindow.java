@@ -71,7 +71,7 @@ public class SliderWindow extends FormWindow {
    private EventBus eventBus;
    
    private long deviceId;
-   private SliderDetailsDTO sliderDTO;
+   protected SliderDetailsDTO sliderDTO;
    
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
@@ -112,6 +112,23 @@ public class SliderWindow extends FormWindow {
       edit = false;
       this.setSize(320, 240);      
       createField();
+      populateSensorFieldStore();
+   }
+   
+   protected void populateSensorFieldStore() {
+     final ListStore<ModelData> sensorStore = sensorField.getStore();
+     SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+       @Override
+       public void onSuccess(ArrayList<SensorDTO> result) {
+         for (SensorDTO s : result) {
+           ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
+           sensorStore.add(dm);
+           if (edit && s.getOid() == sliderDTO.getSensor().getId()) {
+             sensorField.setValue(dm);
+           }
+         }
+       }
+     });
    }
    
    /**
@@ -130,20 +147,7 @@ public class SliderWindow extends FormWindow {
       
       sensorField.setFieldLabel(SLIDER_SENSOR_FIELD_NAME);
       sensorField.setName(SLIDER_SENSOR_FIELD_NAME);
-      
       final ListStore<ModelData> sensorStore = new ListStore<ModelData>();
-      SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
-        @Override
-        public void onSuccess(ArrayList<SensorDTO> result) {
-          for (SensorDTO s : result) {
-            ComboBoxDataModel<SensorDTO> dm = new ComboBoxDataModel<SensorDTO>(s.getDisplayName(), s);
-            sensorStore.add(dm);
-            if (edit && s.getOid() == sliderDTO.getSensor().getId()) {
-              sensorField.setValue(dm);
-            }
-          }
-        }
-      });
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
 
@@ -172,7 +176,6 @@ public class SliderWindow extends FormWindow {
       form.addListener(Events.BeforeSubmit, new SliderSubmitListener());      
       add(form);
    }
-   
    
    /**
     * The listener to add the slider into current device and server.
