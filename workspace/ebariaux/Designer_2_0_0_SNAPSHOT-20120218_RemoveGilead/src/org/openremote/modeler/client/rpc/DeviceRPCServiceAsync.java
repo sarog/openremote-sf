@@ -41,14 +41,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface DeviceRPCServiceAsync {
    
    /**
-    * Save device.
-    * 
-    * @param device the device
-    * @param callback the callback
-    */
-   void saveDevice(Device device, AsyncCallback<Device> callback);
-      
-   /**
     * Delete device.
     * 
     * @param id the id
@@ -77,10 +69,7 @@ public interface DeviceRPCServiceAsync {
     * @param account the account
     * @param callback the callback
     */
-   void loadAll(Account account, AsyncCallback<List<Device>> callback);
-
-  void saveDevices(ArrayList<Device> devices, AsyncCallback<ArrayList<Device>> callback);
-  
+   void loadAll(Account account, AsyncCallback<List<Device>> callback);  
   
   void loadAllDTOs(AsyncCallback<ArrayList<DeviceDTO>> callback);
   

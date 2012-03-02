@@ -42,16 +42,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceRPCService extends RemoteService {
    
    /**
-    * Save device.
-    * 
-    * @param device the device
-    * 
-    * @return the device
-    */
-   Device saveDevice(Device device);
-   ArrayList<Device> saveDevices(ArrayList<Device> device);
-   
-   /**
     * Delete device.
     * 
     * @param id the id

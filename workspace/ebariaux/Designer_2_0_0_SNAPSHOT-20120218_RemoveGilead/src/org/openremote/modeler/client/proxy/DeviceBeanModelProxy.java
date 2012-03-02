@@ -152,65 +152,6 @@ public class DeviceBeanModelProxy {
          });
       }
    }
-   
-   /**
-    * Save device.
-    * 
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void saveDevice(Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      Device device = new Device();
-      setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
-   /**
-    * Save device with commands.
-    * 
-    * @param device
-    *           the device
-    * @param datas
-    *           the datas
-    * @param callback
-    *           the callback
-    */
-   public static void saveDeviceWithCommands(final Device device, List<ModelData> datas, final AsyncSuccessCallback<BeanModel> callback) {
-      device.setDeviceCommands(DeviceCommandBeanModelProxy.convertToIrDeviceCommand(device, datas));
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
-   /**
-    * Save device.
-    * 
-    * @param device
-    *           the device
-    * @param callback
-    *           the callback
-    */
-   public static void saveDevice(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
 
    public static void saveNewDevice(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().saveNewDevice(device, callback);
@@ -223,18 +164,6 @@ public class DeviceBeanModelProxy {
    
    public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
-   }
-   
-   /**
-    * Sets the attrs to device.
-    * 
-    * @param map the map
-    * @param device the device
-    */
-   private static void setAttrsToDevice(Map<String, String> map, Device device) {
-      device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
-      device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
-      device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
    }
    
    /**
@@ -322,47 +251,6 @@ public class DeviceBeanModelProxy {
          }
       }
    }
-   
-   public static void saveDeviceWithContents(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            List<BeanModel> sensorModels = Sensor.createModels(result.getSensors());
-            BeanModelDataBase.sensorTable.insertAll(sensorModels);
-            List<BeanModel> switchModels = Switch.createModels(result.getSwitchs());
-            BeanModelDataBase.switchTable.insertAll(switchModels);
-            List<BeanModel> sliderModels = Slider.createModels(result.getSliders());
-            BeanModelDataBase.sliderTable.insertAll(sliderModels);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
-   public static void saveDevicesWithContents(ArrayList<Device> devices, final AsyncSuccessCallback<ArrayList<BeanModel>> callback) {
-     AsyncServiceFactory.getDeviceServiceAsync().saveDevices(devices, new AsyncSuccessCallback<ArrayList<Device>>() {
-        public void onSuccess(ArrayList<Device> result) {
-          ArrayList<BeanModel> deviceModels = new ArrayList<BeanModel>();
-          for (Device device : result)
-          {
-            BeanModel deviceModel = device.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            List<BeanModel> sensorModels = Sensor.createModels(device.getSensors());
-            BeanModelDataBase.sensorTable.insertAll(sensorModels);
-            List<BeanModel> switchModels = Switch.createModels(device.getSwitchs());
-            BeanModelDataBase.switchTable.insertAll(switchModels);
-            List<BeanModel> sliderModels = Slider.createModels(device.getSliders());
-            BeanModelDataBase.sliderTable.insertAll(sliderModels);
-            deviceModels.add(deviceModel);
-          }
-          callback.onSuccess(deviceModels);
-        }
-     });
-  }
    
    public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
        AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
