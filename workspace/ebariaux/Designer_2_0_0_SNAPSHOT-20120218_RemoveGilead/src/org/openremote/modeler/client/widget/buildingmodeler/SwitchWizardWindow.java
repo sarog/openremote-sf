@@ -160,7 +160,7 @@ public class SwitchWizardWindow extends SwitchWindow {
             }
          });
          
-         // TODO : needed ??
+         // When new command is created from the sensor wizard window, this passes it down so it's added to the "device" command lists 
          sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
