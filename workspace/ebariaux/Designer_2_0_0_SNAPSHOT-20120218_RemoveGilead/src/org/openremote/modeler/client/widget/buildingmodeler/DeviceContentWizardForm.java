@@ -302,17 +302,14 @@ public class DeviceContentWizardForm extends CommonForm {
                switchWizardWindow.hide();
             }
          });
-         /*
          switchWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
                BeanModel beanModel = be.getData();
-               if (beanModel != null) {
-                  deviceContentTree.getStore().add(beanModel, false);
-               }
+               sensors.add((SensorDetailsDTO)beanModel.getBean());
+               deviceContentTree.getStore().add(beanModel, false);
             }
          });
-         */
          switchWizardWindow.show();
       }
    }
