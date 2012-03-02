@@ -47,7 +47,8 @@ public class DeviceCommandWizardWindow extends DeviceCommandWindow {
               hideWindow = true;
               unmask();
               info.setText("Command '" + deviceCommand.getName() + "' is created.");
-              info.show();
+              info.show();              
+              deviceCommand = deviceCommand.cloneFields();
            }
          }
       });

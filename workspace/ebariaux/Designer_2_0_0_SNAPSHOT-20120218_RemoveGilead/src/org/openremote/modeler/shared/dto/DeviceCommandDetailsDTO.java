@@ -15,7 +15,7 @@ public class DeviceCommandDetailsDTO implements DTO {
     super();
   }
   
-  public DeviceCommandDetailsDTO(long oid, String name, String protocolType) {
+  public DeviceCommandDetailsDTO(Long oid, String name, String protocolType) {
     super();
     this.oid = oid;
     this.name = name;
@@ -54,4 +54,13 @@ public class DeviceCommandDetailsDTO implements DTO {
     this.protocolAttributes = protocolAttributes;
   }
 
+  /**
+   * @return New DeviceCommandDetailsDTO instance with all fields equal except oid that is left null.
+   */
+  public DeviceCommandDetailsDTO cloneFields() {
+    DeviceCommandDetailsDTO clone = new DeviceCommandDetailsDTO(null, getName(), getProtocolType());
+    clone.setProtocolAttributes(new HashMap<String, String>(getProtocolAttributes()));
+    return clone;
+  }
+  
 }
