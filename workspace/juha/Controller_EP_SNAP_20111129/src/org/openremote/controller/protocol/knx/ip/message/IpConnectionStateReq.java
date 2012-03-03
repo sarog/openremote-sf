@@ -23,57 +23,114 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+
 /**
  * TODO
  *
  * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class IpConnectionStateReq extends IpMessage
 {
 
   // Constants ------------------------------------------------------------------------------------
 
-  public final static int STI = 0x207;
+  /**
+   * KNXnet/IP CONNECTIONSTATE_REQUEST service type identifier : {@value}  <p>
+   *
+   * This integer value is stored as a two byte value in the KNXnet/IP frame header.
+   * The high byte value (0x02) indicates 'Core' service family, and low byte (0x07)
+   * indicates connect state request service.
+   */
+  public final static int STI = ServiceTypeIdentifier.CONNECTIONSTATE_REQUEST.getValue();
+
+  /**
+   * Timeout used by this connection state request to wait for a
+   * {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE} frame to be sent back from the
+   * KNXnet/IP gateway/router (in milliseconds) : {@value}
+   */
+  public final static int KNXNET_IP_10_CONNECTIONSTATE_REQUEST_TIMEOUT = 10000;
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * Connection channel identifier.
+   */
   private int channelId;
 
+  /**
+   * Client's control endpoint address and port. The KNXnet/IP server's
+   * {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE} will be sent to this address.
+   */
   private Hpai controlEndpoint;
 
 
   // Constructors ---------------------------------------------------------------------------------
-  
-  public IpConnectionStateReq(int channelId, Hpai controlEndpoint)
+
+  /**
+   * Constructs a new connection state request to be sent to KNXnet/IP gateway/router *control*
+   * endpoint address and port. This request frame includes the connection channel identifier and
+   * the *client's* control endpoint address where the server will send its connection state
+   * response.
+   *
+   * @see IpConnectionStateResp
+   *
+   * @param channelId               connection channel identifier
+   *
+   * @param clientControlEndpoint   client's *control* endpoint address the KNXnet/IP
+   *                                gateway/router will use to send its
+   *                                {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE}
+   */
+  public IpConnectionStateReq(int channelId, Hpai clientControlEndpoint)
   {
     super(STI, 0x0A);
 
-    this.controlEndpoint = controlEndpoint;
+    this.controlEndpoint = clientControlEndpoint;
     this.channelId = channelId;
   }
 
 
   // IpMessage Overrides --------------------------------------------------------------------------
 
+  /**
+   * Indicates that this frame is a request type.
+   *
+   * @return  {@link IpMessage.Primitive#REQ}
+   */
   @Override public Primitive getPrimitive()
   {
     return Primitive.REQ;
   }
 
+  /**
+   * The timeout used by client to wait for a {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE}
+   * frame to be sent back from KNXnet/IP gateway/router after sending this connection state
+   * request.
+   *
+   * @return    {@link #KNXNET_IP_10_CONNECTIONSTATE_REQUEST_TIMEOUT}
+   */
   @Override public int getSyncSendTimeout()
   {
-    return 10000;
+    return KNXNET_IP_10_CONNECTIONSTATE_REQUEST_TIMEOUT;
   }
 
+  /**
+   * Writes {@link ServiceTypeIdentifier#CONNECTIONSTATE_REQUEST} frame to a given output stream.
+   *
+   * @param os   output stream to write the KNXnet/IP frame to
+   *
+   * @throws IOException  if there was an I/O error writing the frame
+   */
   @Override public void write(OutputStream os) throws IOException
   {
     super.write(os);
 
-    os.write(this.channelId);
+    os.write(channelId);
     os.write(0);
 
-    this.controlEndpoint.write(os);
+    controlEndpoint.write(os);
   }
 
 }
