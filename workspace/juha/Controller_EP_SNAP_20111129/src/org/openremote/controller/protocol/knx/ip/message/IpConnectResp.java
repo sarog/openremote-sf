@@ -28,7 +28,42 @@ import org.openremote.controller.utils.Strings;
 
 
 /**
- * TODO
+ * This is an implementation of a {@link ServiceTypeIdentifier#CONNECT_RESPONSE} frame
+ * for KNXnet/IP v1.0 clients as defined in KNX 1.1 specifications Volume 3: System Specifications,
+ * Part 8: EIBnet/IP, Chapter 2: Core and Chapter 4: Tunnelling. <p>
+ *
+ * The connect response is sent back by KNXnet/IP gateway or router in response to a connect
+ * request sent by the client. It will be sent back to the client's *control* endpoint address
+ * and port that was included in the originating connect request.  <p>
+ *
+ * The generic structure of <tt>CONNECT_RESPONSE</tt> frame is as follows:
+ *
+ * <pre>
+ *   +------- ... -------+--------+--------+--------- ... --------+-------- ... --------+
+ *   |  KNXnet/IP Header |Channel | Status | Server Data Endpoint | Connection Response |
+ *   |                   |  ID    |        |        (HPAI)        |     Data (CRD)      |
+ *   +------- ... -------+--------+--------+--------- ... --------+-------- ... --------+
+ *          6 bytes        1 byte   1 byte         8 bytes                n bytes
+ * </pre>
+ *
+ * The channel ID is used as an identifier for further connection related requests. The status
+ * byte is defined in {@link Status}. HPAI structure is defined in {@link Hpai}. <p>
+ *
+ * The Connection Response Data for IP *tunneling* connections is as follows:
+ *
+ * <pre>
+ *   +--------+--------+----------------+
+ *   |  Size  | Tunnel | KNX Individual |
+ *   |        |Connect.|    Address     |
+ *   +--------+--------+----------------+
+ *     1 byte   1 byte      2 bytes
+ * </pre>
+ *
+ * Where the size is fixed at 4 bytes, the value for a tunneling connection is 0x04 and the
+ * individual address is the assigned address for this connectio by the gateway / router (service
+ * container).
+ *
+ * @see IpConnectReq
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
