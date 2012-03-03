@@ -233,8 +233,28 @@ public class IpConnectReq extends IpMessage
     }
   }
 
-  // Instance Fields ------------------------------------------------------------------------------
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Indicates whether the given KNXnet/IP frame includes a <tt>CONNECT_REQUEST</tt> service
+   * type identifier.
+   *
+   * @param     knxFrame    KNXnet/IP frame as a byte array
+   *
+   * @return    true if the frame header includes a <tt>CONNECT_REQUEST</tt> service type
+   *            identifier, false otherwise
+   */
+  public static boolean isConnectRequest(byte[] knxFrame)
+  {
+    return (knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]       == KNXNET_IP_10_HEADER_SIZE &&
+            knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX]    == KNXNET_IP_10_VERSION &&
+            ServiceTypeIdentifier.CONNECT_REQUEST.isIncluded(knxFrame));
+  }
+
+
+
+  // Instance Fields ------------------------------------------------------------------------------
 
   /**
    * Client's control endpoint address and port. The KNXnet/IP server's
