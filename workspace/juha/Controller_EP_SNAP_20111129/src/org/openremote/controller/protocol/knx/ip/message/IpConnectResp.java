@@ -22,8 +22,11 @@ package org.openremote.controller.protocol.knx.ip.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+import org.openremote.controller.protocol.knx.IndividualAddress;
+import org.openremote.controller.protocol.knx.tunnel.ConnectionResponseData;
 import org.openremote.controller.utils.Strings;
 
 
@@ -61,8 +64,15 @@ import org.openremote.controller.utils.Strings;
  *
  * Where the size is fixed at 4 bytes, the value for a tunneling connection is 0x04 and the
  * individual address is the assigned address for this connectio by the gateway / router (service
- * container).
+ * container).  <p>
  *
+ * IMPLEMENTATION NOTE : this implementation is currently specific to *tunneling* connection
+ * responses via dependency to
+ * {@link org.openremote.controller.protocol.knx.tunnel.ConnectionResponseData}. It is otherwise
+ * fairly generic to the 'core' CRD so can be fairly easily modified to other connection types
+ * if necessary.
+ *
+ * @see ConnectionResponseData
  * @see IpConnectReq
  *
  * @author Olivier Gandit
@@ -80,11 +90,16 @@ public class IpConnectResp extends IpMessage
    * The high byte value (0x02) indicates 'Core' service family, and low byte (0x06)
    * indicates connect response service.
    */
-  public static final int STI = ServiceTypeIdentifier.CONNECT_RESPONSE.getValue();
+  public final static int STI = ServiceTypeIdentifier.CONNECT_RESPONSE.getValue();
+
+  /**
+   * Fixed Connect Response Data (CRD) structure size for tunneling connection : {@value}
+   */
+  public final static int KNXNET_IP_10_TUNNELING_CRD_SIZE = 0x04;
+
 
 
   // Enums ----------------------------------------------------------------------------------------
-
 
   /**
    * Connection status information included in this connection response.
@@ -155,6 +170,12 @@ public class IpConnectResp extends IpMessage
       this.value = (byte)(value & 0xFF);
     }
 
+    byte getValue()
+    {
+      return value;
+    }
+
+
     private static class UnknownConnectionStatusException extends Exception
     {
       UnknownConnectionStatusException(String msg)
@@ -185,8 +206,47 @@ public class IpConnectResp extends IpMessage
    */
   private Hpai dataEndpoint;
 
+  /**
+   * Connection Response Data (CRD) block for *tunneling* connections.
+   */
+  private ConnectionResponseData responseData;
+
 
   // Constructors ---------------------------------------------------------------------------------
+
+
+  /**
+   * Constructs an in-memory {@link ServiceTypeIdentifier@CONNECT_RESPONSE} frame.
+   *
+   * @param   channelID
+   *            channel identifier for the established connection
+   *
+   * @param   status
+   *            connection status -- {@link Status#NO_ERROR} for successful connections
+   *
+   * @param   serverDataEndpoint
+   *            the data endpoint address and port of the KNXnet/IP gateway/router -- client
+   *            can use the data endpoint for connection data transfer, for example with tunneling
+   *            connections sending the KNX telegrams over IP network
+   *            
+   * @param   connectionAddress
+   *            KNX individual address associated with this connection (service container
+   *            individual address)
+   */
+  public IpConnectResp(int channelID, Status status, Hpai serverDataEndpoint,
+                       IndividualAddress connectionAddress)
+  {
+    super(STI, 2 + Hpai.KNXNET_IP_10_HPAI_SIZE + KNXNET_IP_10_TUNNELING_CRD_SIZE);
+
+    this.channelId = channelID;
+
+    this.status = status;
+
+    this.dataEndpoint = serverDataEndpoint;
+
+    this.responseData = new ConnectionResponseData(connectionAddress);
+  }
+
 
   /**
    * Reads a KNXnet/IP {@link ServiceTypeIdentifier#CONNECT_RESPONSE} from the given input
@@ -239,8 +299,15 @@ public class IpConnectResp extends IpMessage
 
     this.dataEndpoint = new Hpai(is);
 
-    // TODO read CRD
-    is.skip(4);
+    byte[] crd = new byte[ConnectionResponseData.KNXNET_IP_10_TUNNELING_CRD_SIZE];
+    int bytecount = is.read(crd);
+
+    if (bytecount != crd.length)
+    {
+      throw new IOException();
+    }
+
+    this.responseData = new ConnectionResponseData(crd);
   }
 
 
@@ -254,6 +321,27 @@ public class IpConnectResp extends IpMessage
   @Override public Primitive getPrimitive()
   {
     return Primitive.RESP;
+  }
+
+  /**
+   * Writes a {@link ServiceTypeIdentifier#CONNECT_RESPONSE} KNXnet/IP frame to a given
+   * output stream.
+   *
+   * @param out   output stream to write the KNXnet/IP frame to
+   *
+   * @throws IOException  if there was an I/O error writing the frame
+   */
+  @Override public void write(OutputStream out) throws IOException
+  {
+    super.write(out);
+
+    out.write((byte)(channelId & 0xFF));
+
+    out.write(status.getValue());
+
+    dataEndpoint.write(out);
+
+    out.write(responseData.getFrameStructure());
   }
 
 
