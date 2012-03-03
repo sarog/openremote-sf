@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+import org.openremote.controller.utils.Strings;
 
 
 /**
@@ -152,6 +153,35 @@ public class IpConnectReq extends IpMessage
     OBJECT_SERVER_CONNECTION(0x08);
 
 
+    /**
+     * Resolves connection type byte value from KNXnet/IP
+     * {@link ServiceTypeIdentifier#CONNECT_REQUEST} frame into this type-safe Java enum.
+     *
+     * @param value   the connection type byte from <tt>CONNECT_REQUEST</tt> frame
+     *
+     * @return    connection type enum constant
+     *
+     * @throws UnknownConnectionTypeException
+     *            if the given byte value in the method parameter cannot be resolved to enum constant
+     */
+    public static ConnectionType resolve(byte value) throws UnknownConnectionTypeException
+    {
+      ConnectionType[] types = ConnectionType.values();
+
+      for (ConnectionType type : types)
+      {
+        if (type.getValue() == value)
+        {
+          return type;
+        }
+      }
+
+      throw new UnknownConnectionTypeException(
+          "Unknown connection type value : " + Strings.byteToUnsignedHexString(value)
+      );
+    }
+
+
     private byte value;
 
     private ConnectionType(int value)
@@ -160,7 +190,7 @@ public class IpConnectReq extends IpMessage
     }
 
 
-    byte getValue()
+    public byte getValue()
     {
       return value;
     }
@@ -282,4 +312,17 @@ public class IpConnectReq extends IpMessage
     this.dataEndpoint.write(os);
     os.write(LINKLAYER_TUNNELING_CRI);
   }
+
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  public static class UnknownConnectionTypeException extends Exception
+  {
+    UnknownConnectionTypeException(String msg)
+    {
+      super(msg);
+    }
+  }
+
 }
