@@ -170,9 +170,9 @@ public class IpTunnelClient implements IpProcessorListener
     {
       IpConnectResp cr = (IpConnectResp) resp;
 
-      int st = cr.getStatus();
+      IpConnectResp.Status st = cr.getStatus();
 
-      if (st == IpConnectResp.OK)
+      if (st == IpConnectResp.Status.NO_ERROR)
       {
         // Extract communication channel id
 
