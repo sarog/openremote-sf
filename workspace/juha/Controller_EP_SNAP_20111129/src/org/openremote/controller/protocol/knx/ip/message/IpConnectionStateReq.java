@@ -53,6 +53,25 @@ public class IpConnectionStateReq extends IpMessage
   public final static int KNXNET_IP_10_CONNECTIONSTATE_REQUEST_TIMEOUT = 10000;
 
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Indicates whether the given KNXnet/IP frame includes a
+   * {@link ServiceTypeIdentifier#CONNECTIONSTATE_REQUEST} service type identifier.
+   *
+   * @param     knxFrame    KNXnet/IP frame as a byte array
+   *
+   * @return    true if the frame header includes a <tt>CONNECTIONSTATE_REQUEST</tt> service type
+   *            identifier, false otherwise
+   */
+  public static boolean isConnectionStateRequest(byte[] knxFrame)
+  {
+    return (knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]       == KNXNET_IP_10_HEADER_SIZE &&
+            knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX]    == KNXNET_IP_10_VERSION &&
+            ServiceTypeIdentifier.CONNECTIONSTATE_REQUEST.isIncluded(knxFrame));
+  }
+
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
