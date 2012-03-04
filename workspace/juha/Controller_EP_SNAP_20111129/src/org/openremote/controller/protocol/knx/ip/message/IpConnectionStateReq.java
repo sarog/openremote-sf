@@ -26,8 +26,31 @@ import java.io.OutputStream;
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
 
 /**
- * TODO
+ * This is an implementation of a <tt>CONNECTIONSTATE_REQUEST</tt> frame in KNXnet/IP v1.0 as
+ * defined in KNX 1.1 specifications Volume 3: System Specifications, Part 8: EIBnet/IP,
+ * Chapter 1: Overview and Chapter 2: Core. <p>
  *
+ * Client can send a connection state request to KNXnet/IP server's *control* endpoint address. <p>
+ *
+ * The frame structure is as follows:
+ *
+ * <pre>
+ *   +-------- ... --------+--------+--------+-------- ... --------+
+ *   |  KNXnet/IP Header   |Channel |Reserved|   Client Control    |
+ *   |                     |  ID    |        |   Endpoint (HPAI)   |
+ *   +-------- ... --------+--------+--------+-------- ... --------+
+ *           6 bytes         1 byte   1 byte         8 bytes
+ * </pre>
+ *
+ * KNXnet/IP header details can be found in {@link IpMessage}. Channel ID identifies
+ * the connection this request is associated with. Client *control* endpoint is used by
+ * the KNXnet/IP server to send its corresponding
+ * {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE} frame.
+ *
+ *
+ * @see Hpai
+ * @see IpConnectionStateResp
+ * 
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
