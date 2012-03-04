@@ -6,6 +6,7 @@ import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.Background;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.panel.PanelComponent;
@@ -94,7 +95,7 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	}
 	
 	@Override
-	public void onAdd(int width, int height, List<DataValuePair> data) {
+	public void onAdd(int width, int height, List<DataValuePairContainer> data) {
 		setVisible(true);
 		onRender(width, height, data);
 	}
@@ -104,7 +105,7 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 		onRender(width, height, null);
 	}
 	
-	public void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		for (PanelComponent component : panelComponents) {
 			component.onAdd(this, width, height, data);
 		}

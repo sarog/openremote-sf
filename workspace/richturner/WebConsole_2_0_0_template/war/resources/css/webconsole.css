@@ -343,7 +343,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	border-radius: 8px;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
-    border: 2px solid #333;
+    border: none;
 }
 
 .formFieldComponent {
@@ -373,7 +373,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .formPasswordComponent {
-	
+	font-size: 16px;
 }
 
 .formButtonComponent {

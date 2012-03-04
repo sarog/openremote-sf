@@ -3,6 +3,8 @@ package org.openremote.web.console.widget.panel.form;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
@@ -14,7 +16,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FormField extends InteractiveConsoleComponent implements KeyUpHandler, BlurHandler {
+public class FormField extends InteractiveConsoleComponent implements KeyUpHandler, BlurHandler, FocusHandler {
 	public static final String CLASS_NAME = "formFieldComponent";
 	public static final String LABEL_CLASS_NAME = "formFieldLabelComponent";
 	public static final String INPUT_CLASS_NAME = "formFieldInputComponent";
@@ -196,11 +198,6 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 				setVisible(true);
 				
 				validateInput();
-				
-				// Initialise validation handler
-				if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
-					input.addDomHandler(this, KeyUpEvent.getType());
-				}
 			}
 		}
 		
@@ -221,8 +218,9 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 			
 			// Initialise validation handler
 			if (validationStr != null && (inputType == EnumFormInputType.TEXTBOX || inputType == EnumFormInputType.TEXTAREA || inputType == EnumFormInputType.PASSWORD)) {
-				input.addDomHandler(this, KeyUpEvent.getType());
-				input.addDomHandler(this, BlurEvent.getType());
+				registerHandler(input.addDomHandler(this, KeyUpEvent.getType()));
+				registerHandler(input.addDomHandler(this, BlurEvent.getType()));
+				registerHandler(input.addDomHandler(this, FocusEvent.getType()));
 			}
 		}
 	}
@@ -247,5 +245,14 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 	@Override
 	public void onBlur(BlurEvent event) {
 		validateInput();
+	}
+
+	@Override
+	public void onFocus(FocusEvent event) {
+		// Force cursor to end of input
+		if (input instanceof TextBox) {
+			TextBox inputBox = (TextBox)input;
+			inputBox.setCursorPos(inputBox.getText().length());
+		}
 	}
 }

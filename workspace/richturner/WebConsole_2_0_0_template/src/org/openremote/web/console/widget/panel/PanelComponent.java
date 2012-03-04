@@ -2,11 +2,17 @@ package org.openremote.web.console.widget.panel;
 
 import java.util.List;
 import java.util.Set;
-import org.openremote.web.console.panel.entity.DataValuePair;
+
+import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.sensor.SensorChangeEvent;
+import org.openremote.web.console.event.sensor.SensorChangeHandler;
+import org.openremote.web.console.event.ui.BindingDataChangeHandler;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -74,11 +80,14 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		onAdd(parent, screenWidth, screenHeight, null);
 	}
 	
-	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight, List<DataValuePair> data) {
+	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight, List<DataValuePairContainer> data) {
 		this.parent = parent;
 		setPositionAndSize(screenWidth, screenHeight);
-		onRender(width, height);
+		onRender(width, height, data);
 		setVisible(true);
+		
+		initHandlers();
+		
 		isInitialised = true;
 	}
 	
@@ -211,7 +220,7 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	
 	public abstract String getClassName();
 	
-	public abstract void onRender(int width, int height, List<DataValuePair> data);
+	public abstract void onRender(int width, int height, List<DataValuePairContainer> data);
 	
 	public abstract void onUpdate(int width, int height);
 }

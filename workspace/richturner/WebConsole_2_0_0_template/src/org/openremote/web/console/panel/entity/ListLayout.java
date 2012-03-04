@@ -9,7 +9,7 @@ public interface ListLayout {
    String getTop();
    String getDataSource();
    String getItemBindingObject();
-   ListItemLayout getItemtemplate();
+   ListItemLayout getItemTemplate();
 	
    void setHeight(String height);
    void setWidth(String width);
@@ -17,5 +17,5 @@ public interface ListLayout {
    void setTop(String top);
    void setDataSource(String dataSource);
    void setItemBindingObject(String bindingObject);
-   void setItemtemplate(ListItemLayout itemLayout);
+   void setItemTemplate(ListItemLayout itemLayout);
 }

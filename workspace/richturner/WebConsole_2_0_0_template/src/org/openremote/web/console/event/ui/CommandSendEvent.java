@@ -11,11 +11,11 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class CommandSendEvent extends GwtEvent<CommandSendHandler> {
 	private static final Type<CommandSendHandler> TYPE = new Type<CommandSendHandler>();
-	private int commandId;
+	private Integer commandId;
 	private String command;
 	private InteractiveConsoleComponent sender;
 	
-	public CommandSendEvent(int commandId, String command, InteractiveConsoleComponent sender) {
+	public CommandSendEvent(Integer commandId, String command, InteractiveConsoleComponent sender) {
 		this.commandId = commandId;
 		this.command = command;
 		this.sender = sender;

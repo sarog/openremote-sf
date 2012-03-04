@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.controller.EnumControllerCommand;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.Field;
 import org.openremote.web.console.panel.entity.FormButton;
 import org.openremote.web.console.panel.entity.FormLayout;
@@ -27,15 +29,40 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
+import com.google.web.bindery.autobean.shared.impl.AutoBeanCodexImpl.Coder;
+import com.google.web.bindery.autobean.shared.impl.SplittableList;
 
 public class FormPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "formPanelComponent";
 	private List<FormField> fields = new ArrayList<FormField>();
 	private List<FormButtonComponent> buttons = new ArrayList<FormButtonComponent>();
 	private String dataSource = null;
+	private String itemBindingObject = null;
+	private EnumFormSubmitAction action = null;
 	private FormHandler handler = null;
 	private AutoBean<?> inputObject = null;
 	private Splittable dataMap = null;
+	private Splittable objectMap = null;
+	private Integer objectIndex = null;
+	
+	public enum EnumFormSubmitAction {
+		ADD,
+		DELETE,
+		UPDATE;
+		
+	   @Override
+	   public String toString() {
+	      return super.toString().toLowerCase();
+	   }
+	   
+	   public static EnumFormSubmitAction enumValueOf(String submitActionTypeValue) {
+	   	EnumFormSubmitAction result = null;
+	      try {
+	         result = Enum.valueOf(EnumFormSubmitAction.class, submitActionTypeValue.toUpperCase());
+	      } catch (Exception e) {}
+	      return result;
+	   }
+	}	
 	
 	public FormPanelComponent() {
 		Grid grid = new Grid(1,1);
@@ -80,6 +107,23 @@ public class FormPanelComponent extends PanelComponent {
 		return dataSource;
 	}
 	
+	public void setItemBindingObject(String itemBindingObject) {
+		this.itemBindingObject = itemBindingObject;
+	}
+	
+	
+	public String getItemBindingObject() {
+		return itemBindingObject;
+	}
+	
+	public void setAction(EnumFormSubmitAction action) {
+		this.action = action;
+	}
+	
+	public EnumFormSubmitAction getAction() {
+		return action;
+	}
+	
 	public boolean isValid() {
 		boolean valid = true;
 		for (FormField field : fields) {
@@ -111,12 +155,11 @@ public class FormPanelComponent extends PanelComponent {
 	}
 	
 	@Override
-	public void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		Grid grid = (Grid)getWidget();
 		int rows = fields.size();
 		grid.resizeRows(rows + 1);
 		int rowHeight = (int)Math.round((double)height / (rows + 1));
-		
 		if (!isInitialised) {
 			for (int i=0; i<rows; i++) {
 				HTMLTable.CellFormatter formatter = grid.getCellFormatter();
@@ -134,13 +177,6 @@ public class FormPanelComponent extends PanelComponent {
 			buttonPanel.setWidth("100%");
 			buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			for (FormButtonComponent button : buttons) {
-				switch (button.getType()) {
-					case SUBMIT:
-						// button.addHandler(this, TapEvent.getType());
-						// button.setNavigate(null);
-						// button.setHasControlCommand(false);
-						break;						
-				}
 				buttonPanel.add((Widget)button);
 				button.onAdd(80, 35);
 			}
@@ -153,13 +189,56 @@ public class FormPanelComponent extends PanelComponent {
 			if (inputObject != null) {
 				dataMap = AutoBeanCodex.encode(inputObject);
 			}
+				
+			if (dataMap != null) {
+				if (itemBindingObject != null && !itemBindingObject.equals("")) {
+					if (!dataMap.isUndefined(itemBindingObject)) {
+						objectMap = dataMap.get(itemBindingObject);
+					}
+				} else {
+					objectMap = dataMap;
+				}
+				
+				// If object map is an indexed object then we need to know which index to use for binding
+				// this has to be specified by a DataValuePair called bindingItem
+				if (objectMap != null && objectMap.isIndexed() && data != null) {
+						// Look for BindingItem dvp
+						for (DataValuePairContainer dvpContainer : data) {
+							DataValuePair dvp = dvpContainer.getDataValuePair();
+							if (dvp.getName().equalsIgnoreCase("bindingitem")) {
+								String bindingItem = dvp.getValue();
+								String[] bindingItemKvp = bindingItem.split("=");
+								String fieldName = null;
+								String fieldValue = null;
+								if (bindingItemKvp.length == 2) {
+									fieldName = bindingItemKvp[0];
+									fieldValue = bindingItemKvp[1];
+									for (int i=0; i<objectMap.size(); i++) {
+										Splittable itemMap = objectMap.get(i);
+										String dataMapEntry = itemMap.get(fieldName).asString();
+										if(dataMapEntry != null && dataMapEntry.equalsIgnoreCase(fieldValue)) {
+											objectIndex = i;
+											break;
+										}
+									}
+								}
+								break;
+							}
+						}
+				}
+			}
 		}
+
 		
 		// Populate fields using binding data
+		Splittable itemMap = objectMap;
+		if (objectIndex != null) {
+			itemMap = objectMap.get(objectIndex);
+		}
 		for (FormField field : fields) {	
-			if (dataMap != null && field.getName() != null && !field.getName().equals("")) {
+			if (itemMap != null && field.getName() != null && !field.getName().equals("")) {
 				try {
-					Splittable fieldMap = dataMap.get(field.getName());
+					Splittable fieldMap = itemMap.get(field.getName());
 					field.setDefaultValue(fieldMap.asString());
 				} catch (Exception e) {}
 			}
@@ -181,19 +260,104 @@ public class FormPanelComponent extends PanelComponent {
 		}
 	}
 	
-	public void onSubmit() {
-		for (FormField field : fields) {
-			String name = field.getName();
-			if (dataMap != null && name != null) {
-				dataMap.setReified(name, field.getValue());
+	/*
+	 * This is called by the SUBMIT button before the Navigate Event is fired
+	 * button is passed in to allow removal of the navigate event if desired
+	 */
+	public void onSubmit(FormButtonComponent submitBtn) {
+		Splittable submitMap = null;
+		
+		// If no object map then just return
+		if (objectMap == null) {
+			return;
+		}
+		
+		if (objectMap.isIndexed() && objectIndex != null) {
+			submitMap = objectMap.get(objectIndex).deepCopy();
+		} else {
+			switch(action) {
+			case ADD:
+				if (itemBindingObject != null) {
+					AutoBean<?> bean = AutoBeanService.getInstance().getFactory().create(DataBindingService.getInstance().getClass(itemBindingObject));
+					submitMap = AutoBeanCodex.encode(bean);
+				}
+				break;
+			case UPDATE:
+				submitMap = objectMap.deepCopy();
+				break;
 			}
 		}
-		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(dataSource), dataMap);
-		Map<String, Object> diffMap = AutoBeanUtils.diff(inputObject, bean);
-		if (diffMap.size() > 0) {
-			DataBindingService.getInstance().setData(dataSource, bean);
+		
+		// Convert form fields into a splittable object
+		for (FormField field : fields) {
+			String name = field.getName();
+			if (name != null) {
+				submitMap.setReified(name, field.getValue());
+			}
 		}
-		WebConsole.getConsoleUnit().restart();
+		
+		boolean updateSource = false;
+		
+		// Perform form action using collected data
+		switch (action) {
+			case DELETE:
+				if (objectMap.isIndexed() && objectIndex != null) {
+				    int newSize = objectMap.size() - 1;
+				    for (int i = objectIndex; i < newSize; i++) {
+				      objectMap.get(i + 1).assign(objectMap, i);
+				    }
+				    objectMap.setSize(newSize);
+				} else {
+					inputObject = null;
+				}
+				if (itemBindingObject != null && !itemBindingObject.equals("")) {
+					objectMap.assign(dataMap, itemBindingObject);
+				} else {
+					dataMap = objectMap;
+				}
+				updateSource = true;
+				break;
+			case ADD:
+			case UPDATE:
+				// Convert submit map to an autobean to commit reified values
+				AutoBean<?> bindingBean = null;
+				if (itemBindingObject != null && !itemBindingObject.equals("")) {
+					bindingBean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(itemBindingObject), submitMap);
+				} else {
+					bindingBean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(dataSource), submitMap);
+				}
+				if (action == EnumFormSubmitAction.ADD && bindingBean != null) {
+					// Can only add to an array
+					if (objectMap.isIndexed()) {
+						int pos = objectMap.size();
+						//objectMap.setSize(pos+1);
+						AutoBeanCodex.encode(bindingBean).assign(objectMap, pos);
+					}					
+				}
+				if (action == EnumFormSubmitAction.UPDATE && bindingBean != null) {
+					// If objectIndex exists then we are editing an array entry so update the corresponding entry
+					if (objectMap.isIndexed() && objectIndex != null) {
+						AutoBeanCodex.encode(bindingBean).assign(objectMap, objectIndex);
+					} else {
+						objectMap = AutoBeanCodex.encode(bindingBean);
+					}
+				}
+				if (itemBindingObject != null && !itemBindingObject.equals("")) {
+					objectMap.assign(dataMap, itemBindingObject);
+				} else {
+					dataMap = objectMap;
+				}
+				updateSource = true;
+				break;
+		}
+		
+		// Update binding object source
+		if (dataMap != null && updateSource) {
+			AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(dataSource), dataMap);
+			if (bean != null) {
+				DataBindingService.getInstance().setData(dataSource, bean);
+			}
+		}
 	}
 	
 	// ---------------------------------------------------------------------------------
@@ -209,6 +373,8 @@ public class FormPanelComponent extends PanelComponent {
 		panel.setWidth(layout.getWidth());
 		panel.setPosition(layout.getLeft(),layout.getTop());
 		panel.setDataSource(layout.getDataSource());
+		panel.setItemBindingObject(layout.getItemBindingObject());
+		panel.setAction(FormPanelComponent.EnumFormSubmitAction.enumValueOf(layout.getAction()));
 		
 		// Add Fields
 		List<Field> fields = layout.getField();

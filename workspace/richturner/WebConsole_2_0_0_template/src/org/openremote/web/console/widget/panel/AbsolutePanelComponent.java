@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
 import org.openremote.web.console.panel.entity.component.LabelComponent;
@@ -41,7 +42,7 @@ public class AbsolutePanelComponent extends PanelComponent {
 	// ---------------------------------------------------------------------------------
 	
 	@Override
-	public void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		if (component != null) {
 			component.onAdd(width, height);
 		}

@@ -21,16 +21,20 @@ public class AutoBeanService {
 		return instance;
 	}
 	
-	public <T> String toJsonString(Class<T> clazz, AutoBean<T> obj) {
+	public String toJsonString(AutoBean<?> obj) {
 		return AutoBeanCodex.encode(obj).getPayload();
 	}
 	
-	public <T> String toJsonString(Class<T> clazz, T obj) {
-		AutoBean<T> bean = null;
+	public <T, U extends T> String toJsonString(U obj) {
+		return toJsonString((Class<T>)obj.getClass(), obj);
+	}
+	
+	public <T, U extends T> String toJsonString(Class<T> clazz,U obj) {
+		AutoBean<?> bean = null;
 		bean = AutoBeanUtils.getAutoBean(obj);
 		if (bean == null) {
 			bean = factory.create(clazz, obj);
-		}	    
+		}
 	   return AutoBeanCodex.encode(bean).getPayload();
 	}
 

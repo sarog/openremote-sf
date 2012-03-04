@@ -17,21 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.panel.entity;
+package org.openremote.web.console.service;
+
+import java.util.List;
+
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * This class is responsible for storing data about tabBarItem.
+ * The Interface IPAutoDiscoveryRPCService is for auto discovery controllers in the same network segment.
  */
-public interface TabBarItem {
-   String getName();
-   Integer getId();
-   Navigate getNavigate() ;
-   TabImage getImage();
-   Boolean getHasControlCommand();
+@RemoteServiceRelativePath("autodiscovery")
+public interface AutoDiscoveryRPCService extends RemoteService {
    
-   void setName(String name);
-   void setId(Integer id);
-	void setNavigate(Navigate navigate);
-	void setImage(TabImage image);
-	void setHasControlCommand(Boolean hasControlCommand);
+   /**
+    * Gets the auto discovery servers.
+    * 
+    * @return the auto discovery servers
+    */
+   List<String> getAutoDiscoveryServers();
 }

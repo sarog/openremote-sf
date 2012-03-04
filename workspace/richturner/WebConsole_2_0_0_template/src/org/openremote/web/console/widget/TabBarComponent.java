@@ -7,6 +7,7 @@ import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
@@ -59,16 +60,16 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
 		private TabBarItem item;
 		private EnumSystemTabItemType systemTabType;
+		boolean hasImage = false;
+		boolean hasText = false;
+		Image imageComponent = null;
+		Label nameComponent = null;
 		
 		public TabBarItemComponent(TabBarItem item) {
 			this(item, null);
 		}
 		
 		public TabBarItemComponent(TabBarItem item, EnumSystemTabItemType systemTabType) {
-			boolean hasImage = false;
-			boolean hasText = false;
-			Image imageComponent = null;
-			Label nameComponent = null;
 			this.item = item;
 			this.systemTabType = systemTabType;
 			setStylePrimaryName(TAB_ITEM_CLASS_NAME);
@@ -78,11 +79,18 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			
 			// Add Image
 			if (tabImage != null) {
+				boolean isSystemImage = false;
+				if (tabImage.getSystemImage()) isSystemImage = true;
 				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM);
 				imageComponent = new Image();
 				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
-				String controllerUrl = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-				imageComponent.setUrl(controllerUrl + "/" + tabImage.getSrc());
+				String imagePath = "";
+				if (isSystemImage) {
+					imagePath = BrowserUtils.getSystemImageDir() + "/" + tabImage.getSrc();
+				} else {
+					imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + "/" + tabImage.getSrc();
+				}
+				imageComponent.setUrl(imagePath);
 				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
 				imageComponent.setStylePrimaryName("tabBarItemImage");
 				DOM.setStyleAttribute(imageComponent.getElement(), "padding", "0px");
@@ -128,6 +136,8 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 					Navigate navigate = item.getNavigate();
 					if (navigate != null) {
 						eventBus.fireEvent(new NavigateEvent(navigate));
+					} else if (item.getHasControlCommand() != null && item.getHasControlCommand()) {
+						eventBus.fireEvent(new CommandSendEvent(item.getId(), "internal", null));
 					}
 				}
 			} else {
@@ -144,6 +154,12 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		
 		private TabBarItem getItem() {
 			return this.item;
+		}
+		
+		public void setImageSrc(String src) {
+			if (hasImage && imageComponent != null) {
+				imageComponent.setUrl(src);
+			}
 		}
 	}
 	
@@ -200,7 +216,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		for (TabBarItemComponent item : items) {
 			item.setWidth(widthPerItem + "px");
 			if (!isInitialised) {
-				if (item.getItem().getNavigate() != null) {
+				if (item.getItem().getNavigate() != null || (item.getItem().getHasControlCommand() != null) && item.getItem().getHasControlCommand()) {
 					addInteractiveChild(item);
 				}
 			}
@@ -307,6 +323,10 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		}
 		systemTabHandlers.add(component.addHandler(component, TapEvent.getType()));
 		return component;
+	}
+	
+	public List<TabBarItemComponent> getItems() {
+		return items;
 	}
 
 	@Override

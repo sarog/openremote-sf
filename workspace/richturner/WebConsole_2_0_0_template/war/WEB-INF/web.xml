@@ -11,4 +11,13 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
   
+  <!-- Controller AutoDiscovery Service -->
+  <servlet>
+    <servlet-name>controllerDiscoveryService</servlet-name>
+    <servlet-class>org.openremote.web.console.server.ControllerDiscoveryService</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>controllerDiscoveryService</servlet-name>
+    <url-pattern>/webconsole/autodiscovery</url-pattern>
+  </servlet-mapping>
 </web-app>

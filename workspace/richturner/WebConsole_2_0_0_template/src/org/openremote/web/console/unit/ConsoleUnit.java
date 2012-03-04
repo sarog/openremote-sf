@@ -1,6 +1,5 @@
 package org.openremote.web.console.unit;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +14,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
@@ -29,7 +30,7 @@ import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.SystemPanel;
-import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
@@ -38,19 +39,17 @@ import org.openremote.web.console.service.*;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
-import org.openremote.web.console.view.TestScreenView;
 import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
-import org.openremote.web.console.widget.panel.list.ListItem;
-
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class ConsoleUnit extends VerticalPanel implements RotationHandler, WindowResizeHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
-	public static final int MIN_WIDTH = 320;
+	public static final int MIN_WIDTH = 310;
 	public static final int MIN_HEIGHT = 460;
-	public static final int DEFAULT_DISPLAY_WIDTH = 320;
+	public static final int DEFAULT_DISPLAY_WIDTH = 310;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
 	public static final String DEFAULT_DISPLAY_COLOUR = "#000";
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
@@ -102,7 +101,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //TODO: System Screens - For now point everything to settings screen
 		
 		CONTROLLER_LIST(50, 2, "controllerlist"),
-		ADD_EDIT_CONTROLLER(54, 5, "editcontroller"),
+		EDIT_CONTROLLER(54, 5, "editcontroller"),
+		ADD_CONTROLLER(56, 7, "addcontroller"),
 		CONSOLE_SETTINGS(51, 3, "settings"),
 		LOGIN(51, 3, "login"),
 		LOGOUT(51, 3, "logout"),
@@ -498,7 +498,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		onAdd();
 	}
 	
-	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePair> data) {
+	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePairContainer> data) {
 		if (systemPanel == null) {
 			systemPanel = SystemPanel.get();
 		}
@@ -517,23 +517,23 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		Screen screen = panelService.getScreenById(systemScreen.getId());
 		
 		if (screen != null) {
-			loadDisplay(groupId, screen, null);
+			loadDisplay(groupId, screen, data);
 		}
 	}
 	
-	private void loadDisplay(Screen screen, List<DataValuePair> data) {
+	private void loadDisplay(Screen screen, List<DataValuePairContainer> data) {
 		loadDisplay(currentGroupId, screen, false, data);
 	}
 	
-	private void loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePair> data) {
+	private void loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
 		loadDisplay(currentGroupId, screen, orientationChanged, data);
 	}
 	
-	private void loadDisplay(Integer newGroupId, Screen screen, List<DataValuePair> data) {
+	private void loadDisplay(Integer newGroupId, Screen screen, List<DataValuePairContainer> data) {
 		loadDisplay(newGroupId, screen, false, data);
 	}
 	
-	private void loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePair> data) {
+	private void loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
 		boolean tabBarChanged = false;
@@ -691,41 +691,25 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		consoleDisplay.onAdd(width, height);
 
 		show();
-		// Create some dummy controllers in the cache
-//		List<ControllerCredentials> credList = new ArrayList<ControllerCredentials>();
-//		for (int i=1; i<=30; i++) {
-//			ControllerCredentials creds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
-//			creds.setUrl("http://controller.openremote.org/controller" + i + "/");
-//			creds.setDefaultPanel("My Home");
-//			credList.add(creds);
+		
+		// TODO: Check for default Controller in Settings
+//		controllerCreds = dataService.getDefaultControllerCredentials();
+//		if (controllerCreds != null) {
+//			panelName = controllerCreds.getDefaultPanel();
+//		} else {
+//			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
+//			controllerCreds.setUrl("http://controller.openremote.org/iphone/controller/");
+//			controllerCreds.setDefaultPanel("My Home");
+//			dataService.setDefaultControllerCredentials(controllerCreds);
 //		}
-//		ControllerCredentialsList list = AutoBeanService.getInstance().getFactory().create(ControllerCredentialsList.class).as();
-//		list.setControllerCredentials(credList);
-//		dataService.setControllerCredentialsList(list);
 //		
-//		consoleDisplay.setScreenView(new TestScreenView(), null);
-		
-		// Check for default Controller in Settings
-		controllerCreds = dataService.getDefaultControllerCredentials();
-		if (controllerCreds != null) {
-			panelName = controllerCreds.getDefaultPanel();
-		} else {
-			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
-			controllerCreds.setUrl("http://controller.openremote.org/iphone/controller/");
-			controllerCreds.setDefaultPanel("My Home");
-			dataService.setDefaultControllerCredentials(controllerCreds);
-		}
-		
-		if (panelName != null && !panelName.equals("")) {
-			loadControllerAndPanel(controllerCreds, panelName);
-		} else {
+//		if (panelName != null && !panelName.equals("")) {
+//			loadControllerAndPanel(controllerCreds, panelName);
+//		} else {
 			// Check for Last Controller and Panel in Cache
 			controllerCreds = dataService.getLastControllerCredentials();
 			if (controllerCreds != null) {
 				panelName = controllerCreds.getDefaultPanel();
-			}
-			if (panelName == null || panelName.equals("")) {
-				panelName = dataService.getLastPanelName();
 			}
 			
 			if (panelName != null && !panelName.equals("")) {
@@ -734,7 +718,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				// No panel or controller to load so go to settings
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 			}
-		}
+//		}
 	}
 	
 	@Override
@@ -827,7 +811,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			String to = navigate.getTo();
 			Integer toGroupId = navigate.getToGroup();
 			Integer toScreenId = navigate.getToScreen();
-			List<DataValuePair> data = navigate.getData();
+			List<DataValuePairContainer> data = navigate.getData();
 			
 			if (to != null && !to.equals("")) {
 				EnumSystemScreen screen = EnumSystemScreen.getSystemScreen(to);
@@ -844,14 +828,66 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	@Override
 	public void onCommandSend(CommandSendEvent event) {
 		if (event != null) {
-			controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
-				@Override
-				public void onSuccess(Boolean result) {
-					if (!result) {
-						Window.alert("Command Send Failed!");
-					}
-				}			
-			});
+			// Look for internal commands
+			if (event.getCommand().equalsIgnoreCase("internal")) {
+				switch (event.getCommandId()) {
+				case -1: //Controller Discovery
+					// Change tab bar search item image
+					String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_searching.gif";
+					consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
+					
+					// Do RPC
+					AutoDiscoveryRPCServiceAsync discoveryService = (AutoDiscoveryRPCServiceAsync) GWT.create(AutoDiscoveryRPCService.class);
+					AsyncControllerCallback<List<String>> callback = new AsyncControllerCallback<List<String>>() {
+						@Override
+						public void onSuccess(List<String> discoveredUrls) {
+							ControllerCredentialsList credsListObj = dataService.getControllerCredentialsList();
+							List<ControllerCredentials> credsList = credsListObj.getControllerCredentials();
+							for (String discoveredUrl : discoveredUrls) {
+								boolean alreadyExists = false;
+								for (ControllerCredentials creds : credsList) {
+									if (creds.getUrl().equalsIgnoreCase(discoveredUrl)) {
+										alreadyExists = true;
+										break;
+									}
+								}
+								if (!alreadyExists) {
+									AutoBean<ControllerCredentials> credentialsBean = AutoBeanService.getInstance().getFactory().controllerCredentials();
+									credentialsBean.as().setUrl(discoveredUrl);
+									credsList.add(credentialsBean.as());
+								}
+							}
+							credsListObj.setControllerCredentials(credsList);
+							dataService.setControllerCredentialsList(credsListObj);
+							resetTabItemImage();
+						}
+						@Override
+						public void onFailure(Throwable exception) {
+							resetTabItemImage();
+							super.onFailure(exception);
+						}
+						
+						private void resetTabItemImage() {
+							String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_search.png";
+							consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
+						}
+					};
+					discoveryService.getAutoDiscoveryServers(callback);
+					break;
+				default:
+					//TODO: Undefined internal command handling
+					
+				}
+			} else {
+				controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
+					@Override
+					public void onSuccess(Boolean result) {
+						if (!result) {
+							Window.alert("Command Send Failed!");
+						}
+					}			
+				});
+			}
 		}
 	}
 	

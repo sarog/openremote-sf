@@ -10,6 +10,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -247,7 +248,17 @@ import com.google.gwt.user.client.ui.RootPanel;
 			}
 			RootPanel.get().remove(label);
 			return retName;
-		}		
+		}
+		
+		public static String getSystemImageDir() {
+			String dir = "";
+			dir = Window.Location.getHost() + Window.Location.getPath();
+			dir = dir.replaceFirst("/+[a-z|A-Z|0-9]+\\.html*", "");
+			dir = dir.replaceFirst("^http://", "");
+			dir += "/resources/images";
+			dir = "http://" + dir;
+			return dir;
+		}
 		
 // -------------------------------------------------------------
 //			NATIVE METHODS BELOW HERE
