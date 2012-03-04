@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -24,20 +24,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class IpTunnelingReq extends IpMessage {
-  public static final int STI = 0x420;
-  private int             channelId;
-  private int             seqCounter;
-  private byte[]          cEmiFrame;
 
-  public IpTunnelingReq(int channelId, int seqCounter, byte[] cEmiFrame) {
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public class IpTunnelingReq extends IpMessage
+{
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static int STI = 0x420;
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private int channelId;
+  private int seqCounter;
+  private byte[] cEmiFrame;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public IpTunnelingReq(int channelId, int seqCounter, byte[] cEmiFrame)
+  {
     super(STI, 4 + cEmiFrame.length);
+
     this.channelId = channelId;
     this.seqCounter = seqCounter;
     this.cEmiFrame = cEmiFrame;
   }
 
-  public IpTunnelingReq(InputStream is, int length) throws IOException {
+  public IpTunnelingReq(InputStream is, int length) throws IOException
+  {
     super(STI, length);
 
     // TODO check structure length
@@ -50,18 +69,21 @@ public class IpTunnelingReq extends IpMessage {
     is.read(this.cEmiFrame);
   }
 
-  @Override
-  public Primitive getPrimitive() {
+
+  // IpMessage Override ---------------------------------------------------------------------------
+
+  @Override public Primitive getPrimitive()
+  {
     return Primitive.REQ;
   }
 
-  @Override
-  public int getSyncSendTimeout() {
+  @Override public int getSyncSendTimeout()
+  {
     return 10000;
   }
 
-  @Override
-  public void write(OutputStream os) throws IOException {
+  @Override public void write(OutputStream os) throws IOException
+  {
     super.write(os);
     os.write(4);
     os.write(this.channelId);
@@ -70,15 +92,24 @@ public class IpTunnelingReq extends IpMessage {
     os.write(this.cEmiFrame);
   }
 
-  public int getChannelId() {
+
+
+  // Instance Methods -----------------------------------------------------------------------------
+
+  public int getChannelId()
+  {
     return channelId;
   }
 
-  public int getSeqCounter() {
+  public int getSeqCounter()
+  {
     return seqCounter;
   }
 
-  public byte[] getcEmiFrame() {
+  public byte[] getcEmiFrame()
+  {
     return cEmiFrame;
   }
+  
 }
+
