@@ -442,9 +442,9 @@ public class IpTunnelClient implements IpProcessorListener
 
         if (cId == IpTunnelClient.this.channelId)
         {
-          int st = cr.getStatus();
+          IpConnectionStateResp.Status st = cr.getStatus();
 
-          if (st != IpConnectResp.OK)
+          if (st != IpConnectionStateResp.Status.NO_ERROR)
           {
             throw new KnxIpException(Code.RESPONSE_ERROR, "Monitor failed : " + st);
           }
