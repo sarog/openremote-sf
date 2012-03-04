@@ -98,7 +98,7 @@ public class IpConnectionStateReq extends IpMessage
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
-   * Connection channel identifier.
+   * Connection channel identifier this request is associated with.
    */
   private int channelId;
 
