@@ -28,7 +28,29 @@ import org.openremote.controller.utils.Strings;
 
 
 /**
- * TODO
+ * This is an implementation of a <tt>CONNECTIONSTATE_RESPONSE</tt> frame in KNXnet/IP v1.0 as
+ * defined in KNX 1.1 specifications Volume 3: System Specifications, Part 8: EIBnet/IP,
+ * Chapter 1: Overview and Chapter 2: Core. <p>
+ *
+ * The KNXnet/IP server sends this response frame to client's *control* endpoint address in
+ * response to the original {@link ServiceTypeIdentifier#CONNECTIONSTATE_REQUEST} frame. <p>
+ *
+ * The frame structure is as follows:
+ *
+ * <pre>
+ *   +-------- ... --------+--------+--------+
+ *   |   KNXnet/IP Header  |Channel | Status |
+ *   |                     |  ID    |        |
+ *   +-------- ... --------+--------+--------+
+ *           6 bytes         1 byte   1 byte
+ * </pre>
+ *
+ * The KNXnet/IP header structure details are in {@link IpMessage}. The communication channel ID
+ * is matched to the channel ID in the original connection state request. The status byte values
+ * are defined in {@link Status}.
+ *
+ *
+ * @see ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
