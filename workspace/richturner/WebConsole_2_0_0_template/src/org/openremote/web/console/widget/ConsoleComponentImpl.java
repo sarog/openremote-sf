@@ -11,6 +11,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openremote.web.console.event.ui.BindingDataChangeEvent;
+import org.openremote.web.console.event.ui.BindingDataChangeHandler;
+
 public abstract class ConsoleComponentImpl extends Composite implements ConsoleComponent {
 	protected boolean isInitialised = false;
 	protected Sensor sensor;
@@ -19,6 +22,7 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 	protected int height;
 	protected List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	protected boolean handlersRegistered = false;
+	protected boolean dataBindingActive = false;
 	
 	protected ConsoleComponentImpl(Widget container, String className) {
 		initWidget(container);
@@ -62,6 +66,10 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		setVisible(true);
 		isInitialised = true;
 		
+		initHandlers();
+	}
+	
+	protected void initHandlers() {
 		// Check that handlers have been registered if interactive if not register them on the top level widget
 		if (this instanceof InteractiveConsoleComponent) {
 			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;
@@ -77,11 +85,16 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		
 		// Initialise sensor if it is defined and this is an instance of Sensor Change Handler
 		if (sensor != null && this instanceof SensorChangeHandler) {
-			if (sensor != null && this instanceof SensorChangeHandler) {
-				SensorChangeHandler component = (SensorChangeHandler) this;
-				HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-				registerHandler(eventBus.addHandler(SensorChangeEvent.getType(), component));
-			}
+			SensorChangeHandler component = (SensorChangeHandler) this;
+			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+			registerHandler(eventBus.addHandler(SensorChangeEvent.getType(), component));
+		}
+		
+		// Attach Data Binding Change Handler
+		if (this instanceof BindingDataChangeHandler) {
+			BindingDataChangeHandler component = (BindingDataChangeHandler) this;
+			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+			registerHandler(eventBus.addHandler(BindingDataChangeEvent.getType(), component));
 		}
 	}
 	

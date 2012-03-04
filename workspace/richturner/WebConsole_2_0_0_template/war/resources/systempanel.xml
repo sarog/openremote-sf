@@ -7,6 +7,7 @@
       <include type="group" ref="4" />
       <include type="group" ref="5" />
       <include type="group" ref="6" />
+      <include type="group" ref="7" />
     </panel>
   </panels>
   <screens>
@@ -14,21 +15,21 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="108" fontSize="20" color="#FFFFFF" text="Controller List" />
       </absolute>
-      <list left="0" top="50" width="100%" height="410" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
-	<itemtemplate itemHeight="50">
+      <list left="0" top="50" width="100%" height="360" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
+	<itemTemplate itemHeight="50">
 	      <absolute left="0" top="0" width="270" height="50">
 		<label id="110" fontSize="13" color="#FFFFFF" text="${url}" />
 	      </absolute>
-	      <absolute left="275" top="0" width="40" height="50">
+	      <absolute left="275" top="10" width="30" height="30">
 		<button id="130" name=">">
 		  <navigate to="editcontroller">
 		     <data>
-			<dataValuePair name="url" value="${url}" />
+			<dataValuePair name="bindingItem" value="url=${url}" />
 		     </data>
 		  </navigate>
 		</button>
 	      </absolute>
-	</itemtemplate>
+	</itemTemplate>
       </list>
     </screen>
     <screen id="51" name="settings">
@@ -36,11 +37,13 @@
         <label id="108" fontSize="20" color="#FFFFFF" text="Settings" />
       </absolute>
       <form left="2%" top="55" width="95%" height="300" dataSource="defaultControllerCredentials">
-	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https)\://.+/.+$" name="url" />
+	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="SAVE"/>
+	<button type="submit" name="SAVE">
+	   <navigate to="controllerlist" />
+	</button>
 	<button type="cancel">
 	   <navigate to="controllerlist" />
 	</button>
@@ -58,10 +61,10 @@
     </screen>
     <screen id="54" name="editcontroller">
       <absolute left="0" top="0" width="100%" height="50">
-        <label id="100" fontSize="20" color="#FFFFFF" text="Edit/Add Controller" />
+        <label id="100" fontSize="20" color="#FFFFFF" text="Edit Controller" />
       </absolute>
-      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsByUrl">
-	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https)\://.+/.+$" name="url" />
+      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials" action="update">
+	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
@@ -81,15 +84,32 @@
         <label id="121" fontSize="14" color="#FFFFFF" text="PANEL LIST HERE" />
       </absolute>
     </screen>
+    <screen id="56" name="addcontroller">
+      <absolute left="0" top="0" width="100%" height="50">
+        <label id="100" fontSize="20" color="#FFFFFF" text="Add Controller" />
+      </absolute>
+      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials" action="add">
+	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
+	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
+	<field label="Username:" optional="true" inputType="textbox" name="username" />
+	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
+	<button type="submit" name="ADD">
+	   <navigate to="controllerlist" />
+	</button>
+	<button type="cancel">
+	   <navigate to="controllerlist" />
+	</button>
+      </form>
+    </screen>
   </screens>
   <groups>
     <group id="2" name="Default">
       <tabbar>
-        <item name="SEARCH">
-	   <navigate action="search" />
+        <item id="-1" name="SEARCH" hasControlCommand="true">
+	   <image src="controller_search.png" systemImage="true" />
 	</item>
-        <item name="+">
-	   <navigate to="editcontroller" />
+        <item name="ADD">
+	   <navigate to="addcontroller" />
 	</item>
         <item name="SETTINGS">
 	   <navigate to="settings" />
@@ -117,6 +137,9 @@
 	   <navigate to="settings" />
 	</item>
       </tabbar>
+    </group>
+    <group id="7" name="Add Controller">
+      <include type="screen" ref="56" />
     </group>
   </groups>
 </openremote>

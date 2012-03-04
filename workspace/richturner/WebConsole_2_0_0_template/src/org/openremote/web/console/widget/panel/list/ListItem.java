@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.ListItemLayout;
@@ -70,7 +71,7 @@ public class ListItem extends PanelComponent {
 	// ---------------------------------------------------------------------------------
 	
 	@Override
-	public void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		for (PanelComponent component : itemComponents) {
 			component.onAdd(width, height);
 		}

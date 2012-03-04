@@ -57,19 +57,19 @@ public class AddEditControllerScreenView extends ScreenViewImpl {
 		form.addField(fieldPassword);
 
 		// Add Buttons
-		FormButtonComponent submitBtn = new FormButtonComponent(form, EnumFormButtonType.SUBMIT);
-		form.addButton(submitBtn);
-		FormButtonComponent cancelBtn = new FormButtonComponent(form, EnumFormButtonType.CANCEL);
-		Navigate navigate = AutoBeanService.getInstance().getFactory().create(Navigate.class).as();
-		navigate.setTo("controllerlist");
-		List<DataValuePair> dataValues = new ArrayList<DataValuePair>();
-		DataValuePair pair = AutoBeanService.getInstance().getFactory().create(DataValuePair.class).as();
-		pair.setName("controllerName");
-		pair.setName("http://multimation.co.uk:8080/controller");
-		dataValues.add(pair);
-		navigate.setData(dataValues);
-		cancelBtn.setNavigate(navigate);
-		form.addButton(cancelBtn);
+//		FormButtonComponent submitBtn = new FormButtonComponent(form, EnumFormButtonType.SUBMIT);
+//		form.addButton(submitBtn);
+//		FormButtonComponent cancelBtn = new FormButtonComponent(form, EnumFormButtonType.CANCEL);
+//		Navigate navigate = AutoBeanService.getInstance().getFactory().create(Navigate.class).as();
+//		navigate.setTo("controllerlist");
+//		List<DataValuePair> dataValues = new ArrayList<DataValuePair>();
+//		DataValuePair pair = AutoBeanService.getInstance().getFactory().create(DataValuePair.class).as();
+//		pair.setName("controllerName");
+//		pair.setName("http://multimation.co.uk:8080/controller");
+//		dataValues.add(pair);
+//		navigate.setData(dataValues);
+//		cancelBtn.setNavigate(navigate);
+//		form.addButton(cancelBtn);
 		
 		// Add components to screen view
 		super.addPanelComponent(form);

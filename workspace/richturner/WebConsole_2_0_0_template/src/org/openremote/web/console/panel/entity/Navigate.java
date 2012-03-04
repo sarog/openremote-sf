@@ -10,10 +10,10 @@ public interface Navigate {
    String getTo();
    Integer getToGroup();
    Integer getToScreen();
-   List<DataValuePair> getData();
+   List<DataValuePairContainer> getData();
    
    void setTo(String to);
    void setToGroup(Integer toGroup);
    void setToScreen(Integer toScreen);
-   void setData(List<DataValuePair> dataValues);
+   void setData(List<DataValuePairContainer> dataValues);
 }

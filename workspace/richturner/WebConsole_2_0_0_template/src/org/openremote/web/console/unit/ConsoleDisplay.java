@@ -6,6 +6,7 @@ import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.view.LoadingScreenView;
@@ -195,7 +196,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
-	protected boolean setScreenView(ScreenViewImpl screen, List<DataValuePair> data) {
+	protected boolean setScreenView(ScreenViewImpl screen, List<DataValuePairContainer> data) {
 		boolean screenChanged = false;
 		
 		if (screen == null) {
@@ -310,6 +311,14 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	protected void doResize(int width, int height) {
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
+	}
+	
+	public TabBarComponent getTabBar() {
+		return currentTabBar;
+	}
+	
+	public ScreenViewImpl getScreen() {
+		return currentScreen;
 	}
 	
 	@Override

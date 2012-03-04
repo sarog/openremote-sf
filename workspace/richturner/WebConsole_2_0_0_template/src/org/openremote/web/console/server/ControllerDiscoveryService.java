@@ -19,35 +19,35 @@
 */
 package org.openremote.web.console.server;
 
-import java.util.ArrayList;
-
+import java.util.List;
+import org.openremote.web.console.service.AutoDiscoveryRPCService;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * Discover controllers in the same network segment.
  */
-public class ControllerDiscoveryService {
-   public static final String MULTICAST_ADDRESS = "224.0.1.100";
+public class ControllerDiscoveryService extends RemoteServiceServlet implements AutoDiscoveryRPCService {
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6401110830096756154L;
+	public static final String MULTICAST_ADDRESS = "224.0.1.100";
    public static final int MULTICAST_PORT = 3333;
    public static final int TCP_PORT = 2346;
-   
-   /**
-    * Not be Instantiated.
-    */
-   private ControllerDiscoveryService() {
-   }
    
    /**
     * Gets the auto discovery servers by start a Multicast UDP client broadcasting to request and a TCP server to receive response.
     * 
     * @return the auto servers
     */
-   public static ArrayList<String> getAutoServers() {
+	@Override
+	public List<String> getAutoDiscoveryServers() {
       new Thread(new ControllerDiscoveryServiceReceiver()).start();
       new Thread(new ControllerDiscoveryServiceSender()).start();
       try {
-         Thread.sleep(200);
+         Thread.sleep(5000);
       } catch (InterruptedException e) {
       }
       return ControllerDiscoveryServiceReceiver.autoServers;
-   }
+	}
 }

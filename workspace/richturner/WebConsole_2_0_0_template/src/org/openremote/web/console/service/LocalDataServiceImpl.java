@@ -1,55 +1,85 @@
 package org.openremote.web.console.service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.ui.BindingDataChangeEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.storage.client.Storage;
-import com.google.gwt.storage.client.StorageMap;
 import com.google.gwt.user.client.Cookies;
-import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class LocalDataServiceImpl implements LocalDataService {
 	private static LocalDataServiceImpl instance;
+	private static final String PREFIX = "ConsoleUnit";
 	private Storage dataStore = null;
-	private StorageMap dataStoreMap = null;
+//	private StorageMap dataStoreMap = null;
 	
 	private LocalDataServiceImpl() {
 		dataStore = Storage.getLocalStorageIfSupported();
-		if (dataStore != null) {
-			dataStoreMap = new StorageMap(dataStore);
-		}
+//		if (dataStore != null) {
+//			dataStoreMap = new StorageMap(dataStore);
+//		}
 	}
 	
 	public static synchronized LocalDataServiceImpl getInstance() {
 		if (instance == null) {
 			instance = new LocalDataServiceImpl();
+			instance.initData();
 		}
 		return instance;
 	}
 	
+	/*
+	 * Initialise each data item in the enumDataMap so the
+	 * AutoBean is correctly generated when requested
+	 */
+	private void initData() {
+		for (EnumDataMap map : EnumDataMap.values()) { 
+			if (map.getInitValue() != null && getData(map.getDataName()).equals("")) {
+				setData(map.getDataName(),map.getInitValue());
+			}
+		}
+	}
+	
+	private static String buildPathString(String object) {
+		return PREFIX + "." + object;
+	}
+	
 	private void setData(String dataName, String data) {
-		if (dataStore != null) {
-			dataStore.setItem(dataName, data);
-		} else {
-			Cookies.setCookie(dataName, data, new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365 * 100)));
+		String oldData = getObjectString(dataName);
+		if (!data.equals(oldData)) {
+			String dataNamePath = buildPathString(dataName);
+			if (dataStore != null) {
+				dataStore.removeItem(dataNamePath);
+				dataStore.setItem(dataNamePath, data);
+			} else {
+				Cookies.setCookie(dataNamePath, data, new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365 * 100)));
+			}
+			
+			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+			BindingDataChangeEvent event = new BindingDataChangeEvent(dataName);
+			eventBus.fireEvent(event);
 		}
 	}
 	
 	private String getData(String dataName) {
-		String data = "";
-		
+		dataName = buildPathString(dataName);
+		String data;
 		if (dataStore != null) {
 			data = dataStore.getItem(dataName);
 		} else {
 			data = Cookies.getCookie(dataName);
+		}
+		if (data == null || data.equals("null")) {
+			data = "";
 		}
 		return data;
 	}
 
 	@Override
 	public void clearData(String dataName) {
+		dataName = buildPathString(dataName);
 		if (dataStore != null) {
 			dataStore.removeItem(dataName);
 		} else {
@@ -68,62 +98,42 @@ public class LocalDataServiceImpl implements LocalDataService {
 	@Override
 	public ControllerCredentials getLastControllerCredentials() {
 		ControllerCredentials credentials = null;
-		String jsonString = getData("LocalDataService.LastControllerCredentials");
-
-		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
-			credentials = AutoBeanService.getInstance().fromJsonString(ControllerCredentials.class, jsonString).as();
-		}
+		EnumDataMap map = EnumDataMap.LAST_CONTROLLER_CREDENTIALS;
+		credentials = (ControllerCredentials) AutoBeanService.getInstance().fromJsonString(map.getClazz(), getData(map.getDataName())).as();
 		return credentials;
 	}
 
 	@Override
 	public void setLastControllerCredentials(ControllerCredentials credentials) {
-		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentials.class, credentials);
-		setData("LocalDataService.LastControllerCredentials", data);
-	}
-
-	@Override
-	public String getLastPanelName() {
-		// TODO Auto-generated method stub
-		return getData("LocalDataService.LastPanelName");
-	}
-
-	@Override
-	public void setLastPanelName(String panelName) {
-		setData("LocalDataService.LastPanelName", panelName);
-	}
-	
-	@Override
-	public ControllerCredentials getDefaultControllerCredentials() {
-		ControllerCredentials credentials = null;
-		String jsonString = getData("LocalDataService.DefaultControllerCredentials");
-
-		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
-			credentials = AutoBeanService.getInstance().fromJsonString(ControllerCredentials.class, jsonString).as();
-		}
-		return credentials;
-	}
-
-	@Override
-	public void setDefaultControllerCredentials(ControllerCredentials credentials) {
-		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentials.class, credentials);
-		setData("LocalDataService.DefaultControllerCredentials", data);
+		EnumDataMap map = EnumDataMap.LAST_CONTROLLER_CREDENTIALS;
+		String data = AutoBeanService.getInstance().toJsonString(credentials);
+		setData(map.getDataName(), data);
 	}
 
 	@Override
 	public ControllerCredentialsList getControllerCredentialsList() {
 		ControllerCredentialsList credentialsList = null;
-		String jsonString = getData("LocalDataService.ControllerCredentialsList");
-
-		if (jsonString != null && !jsonString.equals("null") && !jsonString.equals("")) {
-			credentialsList = AutoBeanService.getInstance().fromJsonString(ControllerCredentialsList.class, jsonString).as();
-		}
+		EnumDataMap map = EnumDataMap.CONTROLLER_CREDENTIALS_LIST;
+		credentialsList = (ControllerCredentialsList) AutoBeanService.getInstance().fromJsonString(map.getClazz(), getData(map.getDataName())).as();
 		return credentialsList;
 	}
 
 	@Override
 	public void setControllerCredentialsList(ControllerCredentialsList credentialsList) {
-		String data = AutoBeanService.getInstance().toJsonString(ControllerCredentialsList.class, credentialsList);
-		setData("LocalDataService.ControllerCredentialsList", data);
+		EnumDataMap map = EnumDataMap.CONTROLLER_CREDENTIALS_LIST;
+		String data = AutoBeanService.getInstance().toJsonString(credentialsList);
+		setData(map.getDataName(), data);
+	}
+
+	@Override
+	public String getObjectString(String objName) {
+		String obj = null;
+		obj = getData(objName);
+		return obj;
+	}
+
+	@Override
+	public void setObject(String objName, String obj) {
+		setData(objName, obj);
 	}
 }

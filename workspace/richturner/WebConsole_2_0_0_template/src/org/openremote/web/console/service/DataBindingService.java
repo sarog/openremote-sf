@@ -5,19 +5,33 @@ import java.util.List;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.press.PressStartEvent;
+import org.openremote.web.console.event.ui.BindingDataChangeEvent;
 import org.openremote.web.console.panel.entity.DataValuePair;
 
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.Splittable;
 
+/**
+ * Used as a crude way of providing data binding, bindable objects must
+ * be defined in the binding map, all bindable objects must exist in local
+ * data store and are referenced in the binding map and local data store
+ * using the same string literal 
+ *
+ * @author <a href="mailto:richard@openremote.org">Rich Turner</a>
+ */
 public class DataBindingService {
 	private static DataBindingService instance = null;
 	
 	private enum BindingMap {
-		DEFAULT_CONTROLLER(ControllerCredentials.class, "defaultControllerCredentials"),
-		CONTROLLER_LIST(ControllerCredentialsList.class, "controllerCredentialsList"),
-		CONTROLLER_BY_URL(ControllerCredentials.class, "controllerCredentialsByUrl");
+		CONTROLLER_CREDS_LIST(ControllerCredentialsList.class, "controllerCredentialsList"),
+		CONTROLLER_CREDS(ControllerCredentials.class, "controllerCredentials");
 		
-		private Class clazz;
+		private Class<?> clazz;
 		private String dataSource;
 		
 		private BindingMap(Class<?> clazz, String dataSource) {
@@ -29,7 +43,7 @@ public class DataBindingService {
 			return dataSource;
 		}
 		
-		public Class getClazz() {
+		public Class<?> getClazz() {
 			return clazz;
 		}
 		
@@ -55,8 +69,8 @@ public class DataBindingService {
 		return instance;
 	}
 	
-	public Class getClass(String dataSource) {
-		Class clazz = null;
+	public Class<?> getClass(String dataSource) {
+		Class<?> clazz = null;
 		BindingMap map = BindingMap.getBindingMap(dataSource);
 		if (map != null) {
 			clazz = map.getClazz();
@@ -72,46 +86,12 @@ public class DataBindingService {
 	public AutoBean<?> getData(String dataSource, List<DataValuePair> data) {
 		BindingMap map = BindingMap.getBindingMap(dataSource);
 		AutoBean<?> bean = null;
-		
 		if (map != null) {
-			switch(map) {
-			case DEFAULT_CONTROLLER:
-				ControllerCredentials credentials = WebConsole.getConsoleUnit().getLocalDataService().getDefaultControllerCredentials();
-				if (credentials != null) {
-					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), credentials);
-				} else {
-					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());
-				}
-				break;
-			case CONTROLLER_LIST:
-				ControllerCredentialsList credentialsList = WebConsole.getConsoleUnit().getLocalDataService().getControllerCredentialsList();
-				if (credentialsList != null) {
-					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), credentialsList);
-				} else {
-					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());
-				}
-				break;
-			case CONTROLLER_BY_URL:
-				ControllerCredentialsList credentialsList2 = WebConsole.getConsoleUnit().getLocalDataService().getControllerCredentialsList();
-				String url = null;
-				if (data != null) {
-					for (DataValuePair dvp : data) {
-						if (dvp.getName().equalsIgnoreCase("url")) {
-							url = dvp.getValue();
-						}
-					}
-				}
-				if (url != null) {
-					for (ControllerCredentials creds : credentialsList2.getControllerCredentials()) {
-						if (creds.getUrl().equalsIgnoreCase(url)) {
-							bean = AutoBeanService.getInstance().getFactory().create(map.getClazz(), creds);
-							break;
-						}
-					}
-				} else {
-					bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());
-				}
-				break;
+			String obj = WebConsole.getConsoleUnit().getLocalDataService().getObjectString(map.getDataSource());
+			if (obj != null) {
+				bean = AutoBeanService.getInstance().fromJsonString(map.getClazz(), obj);
+			} else {
+				bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());
 			}
 		}
 		return bean;
@@ -119,17 +99,7 @@ public class DataBindingService {
 	
 	public void setData(String dataSource, AutoBean<?> bean) {
 		BindingMap map = BindingMap.getBindingMap(dataSource);
-		if (map != null) {
-			try {
-				switch(map) {
-				case DEFAULT_CONTROLLER:
-					WebConsole.getConsoleUnit().getLocalDataService().setDefaultControllerCredentials(((AutoBean<ControllerCredentials>)bean).as());
-					break;
-				case CONTROLLER_LIST:
-					WebConsole.getConsoleUnit().getLocalDataService().setControllerCredentialsList(((AutoBean<ControllerCredentialsList>)bean).as());
-					break;
-				}
-			} catch (Exception e) {}
-		}
-	}	
+		String dataStr = AutoBeanService.getInstance().toJsonString(bean);
+		WebConsole.getConsoleUnit().getLocalDataService().setObject(map.getDataSource(), dataStr);
+	}
 }

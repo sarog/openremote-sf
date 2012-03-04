@@ -75,7 +75,7 @@ public class FormButtonComponent extends ButtonComponent {
 		switch (btn.getType()) {
 			case SUBMIT:
 				if (parentForm.isValid()) {
-					parentForm.onSubmit();
+					parentForm.onSubmit(this);
 					super.onTap(event);
 				} else {
 					//TODO: Handle invalid submit

@@ -25,6 +25,8 @@ public interface MyFactory extends AutoBeanFactory {
 	AutoBean<Group> group();
 	AutoBean<Screen> screen();
 	AutoBean<Navigate> navigate();
+	AutoBean<DataValuePairContainer> dvpContainer();
+	AutoBean<DataValuePair> dvp();	
 	AutoBean<Link> link();
 	AutoBean<LabelComponent> label();
 	AutoBean<ScreenRef> screenRef();

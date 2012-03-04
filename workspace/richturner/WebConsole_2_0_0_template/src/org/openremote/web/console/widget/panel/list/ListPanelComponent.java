@@ -3,44 +3,30 @@ package org.openremote.web.console.widget.panel.list;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
-import org.openremote.web.console.event.drag.DragMoveHandler;
 import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
-import org.openremote.web.console.event.tap.TapEvent;
-import org.openremote.web.console.event.tap.TapHandler;
-import org.openremote.web.console.event.ui.NavigateEvent;
-import org.openremote.web.console.panel.entity.DataValuePair;
-import org.openremote.web.console.panel.entity.Field;
-import org.openremote.web.console.panel.entity.FormButton;
-import org.openremote.web.console.panel.entity.FormLayout;
+import org.openremote.web.console.event.ui.BindingDataChangeEvent;
+import org.openremote.web.console.event.ui.BindingDataChangeHandler;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.ListItemLayout;
 import org.openremote.web.console.panel.entity.ListLayout;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.Interactive;
 import org.openremote.web.console.widget.panel.PanelComponent;
-import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
-import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
 import org.openremote.web.console.widget.Sensor;
-
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -50,23 +36,14 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
 
-public class ListPanelComponent extends PanelComponent implements Draggable, Interactive {
+public class ListPanelComponent extends PanelComponent implements Draggable, Interactive, BindingDataChangeHandler {
 	private static final String CLASS_NAME = "listPanelComponent";
-	//private static final String BINDING_FIELD_REGEX = "^.*\\$\\{(.*)\\}.*$";
 	private static final String BINDING_FIELD_REGEX = "\\$\\{(\\w+)\\}";
 	private String dataSource = null;
 	private String itemBindingObject = null;
@@ -131,6 +108,55 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		return this.itemTemplate;
 	}
 	
+	public List<ListItem> generateListItems() {
+		List<ListItem> listItems = new ArrayList<ListItem>();
+		
+		inputObject = DataBindingService.getInstance().getData(dataSource);
+		if (inputObject != null) {
+			dataMap = AutoBeanCodex.encode(inputObject);
+			
+			// Populate list using binding data
+			if (dataMap != null && itemBindingObject != null && !itemBindingObject.equals("")) {
+				dataBindingActive = true;
+				// Create List Items
+				try {
+					Splittable listArrMap = dataMap.get(itemBindingObject);
+					if (listArrMap != null) {
+						String templateStr = AutoBeanService.getInstance().toJsonString(ListItemLayout.class, itemTemplate);		
+						for (int i=0; i< listArrMap.size(); i++) {
+							String instanceStr = templateStr;
+							Splittable fieldMap = listArrMap.get(i);
+							if (fieldMap != null) {
+								RegExp regex = RegExp.compile(BINDING_FIELD_REGEX, "g");
+								for (MatchResult result = regex.exec(templateStr); result != null; result = regex.exec(templateStr)) {
+									instanceStr = instanceStr.replace(result.getGroup(0), fieldMap.get(result.getGroup(1)).asString());
+								}
+								AutoBean<ListItemLayout> instanceBean = AutoBeanService.getInstance().fromJsonString(ListItemLayout.class, instanceStr);
+								ListItemLayout layout = instanceBean.as();
+								ListItem item = ListItem.build(layout);
+								item.setWidth(this.width);
+								listItems.add(item);
+							}
+						}
+					}
+				} catch (Exception e) {
+					// TODO: Problem binding to data source do something
+				}
+			}
+		}
+		
+		return listItems;
+	}
+	
+	private void refreshListItems() {
+		for (ListItem item : items) {
+			item.onRemove();
+			container.remove(item);
+		}
+		items.removeAll(items);
+		items = generateListItems();
+	}
+	
 	private void registerHandlers() {
 		if(BrowserUtils.isMobile) {
 			registerHandler(this.addDomHandler(this, TouchStartEvent.getType()));
@@ -173,7 +199,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	}
 	
 	@Override
-	public void onRender(int width, int height, List<DataValuePair> data) {
+	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		// Set Scroll Panel Size and Vertical Panel Width
 //		ScrollPanel panel = (ScrollPanel)getWidget();
 //		setHeight(height + "px");
@@ -185,47 +211,16 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 
 		}
 		
-		// Get data source if it is defined
+		// Get data source if it is defined and generate list items
 		if (dataSource != null && !dataSource.equals("")) {
-			inputObject = DataBindingService.getInstance().getData(dataSource);
-			if (inputObject != null) {
-				dataMap = AutoBeanCodex.encode(inputObject);
-				
-				// Populate list using binding data
-				if (dataMap != null && itemBindingObject != null && !itemBindingObject.equals("")) {
-					// Create List Items
-					try {
-						Splittable ListArrMap = dataMap.get(itemBindingObject);
-						if (ListArrMap != null) {
-							String templateStr = AutoBeanService.getInstance().toJsonString(ListItemLayout.class, itemTemplate);		
-							for (int i=0; i< ListArrMap.size(); i++) {
-								String instanceStr = templateStr;
-								Splittable fieldMap = ListArrMap.get(i);
-								RegExp regex = RegExp.compile(BINDING_FIELD_REGEX, "g");
-								for (MatchResult result = regex.exec(templateStr); result != null; result = regex.exec(templateStr)) {
-									instanceStr = instanceStr.replace(result.getGroup(0), fieldMap.get(result.getGroup(1)).asString());
-								}
-								AutoBean<ListItemLayout> instanceBean = AutoBeanService.getInstance().fromJsonString(ListItemLayout.class, instanceStr);
-								ListItemLayout layout = instanceBean.as();
-								ListItem item = ListItem.build(layout);
-								item.setWidth(this.width);
-								items.add(item);
-							}
-						}
-					} catch (Exception e) {
-						// TODO: Problem binding to data source do something
-					}
-			
-					// Add items to container
-					for (ListItem item : items) {
-						if (item != null) {
-							container.add(item);
-//							item.setHeight(item.getItemHeight() + "px");
-//							item.setWidth("100%");
-							item.onAdd(width, height);
-						}
-					}
-				}
+			items = generateListItems();
+		}
+		
+		// Add items to container
+		for (ListItem item : items) {
+			if (item != null) {
+				container.add(item);
+				item.onAdd(width, height);
 			}
 		}
 		
@@ -251,6 +246,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 			container.remove(item);
 		}
 		items.removeAll(items);
+		super.onRemove();
 	}
 	
 	@Override
@@ -336,6 +332,23 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	}
 	
 
+	@Override
+	public void onBindingDataChange(BindingDataChangeEvent event) {
+		if (dataBindingActive) {
+//			refreshListItems();
+			List<ListItem> newItems = generateListItems();
+			
+			for (ListItem newItem : newItems) {
+				if (!items.contains(newItem)) {
+					container.add(newItem);
+					newItem.onAdd(width, height);
+					items.add(newItem);
+				}
+			}
+		}
+	}
+	
+
 	protected void reset() {
 		startEvent = null;
 		lastMoveEvent = null;
@@ -360,7 +373,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		
 		String dataSource = layout.getDataSource();
 		String itemBindingObject = layout.getItemBindingObject();
-		ListItemLayout itemLayout = layout.getItemtemplate();
+		ListItemLayout itemLayout = layout.getItemTemplate();
 		
 		if (dataSource != null) {
 			panel.setDataSource(dataSource);
