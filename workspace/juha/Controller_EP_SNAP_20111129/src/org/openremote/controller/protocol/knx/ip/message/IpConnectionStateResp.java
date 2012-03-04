@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.knx.ip.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
 import org.openremote.controller.utils.Strings;
@@ -68,6 +69,11 @@ public class IpConnectionStateResp extends IpMessage
    * indicates connect state request service.
    */
   public final static int STI = ServiceTypeIdentifier.CONNECTIONSTATE_RESPONSE.getValue();
+
+  /**
+   * Fixed size of the IP body of KNXnet/IP connection state response frame.
+   */
+  private final static int KNXNET_IP_10_CONNECTIONSTATE_RESPONSE_IPBODY_SIZE = 0x02;
 
 
   // Enums ----------------------------------------------------------------------------------------
@@ -137,6 +143,11 @@ public class IpConnectionStateResp extends IpMessage
       this.value = (byte)(value & 0xFF);
     }
 
+    byte getValue()
+    {
+      return value;
+    }
+
 
     private static class UnknownConnectionStateStatusException extends Exception
     {
@@ -164,6 +175,27 @@ public class IpConnectionStateResp extends IpMessage
 
 
   // Constructors ---------------------------------------------------------------------------------
+
+
+  /**
+   * Constructs an in-memory {@link ServiceTypeIdentifier@CONNECTIONSTATE_RESPONSE} frame.
+   *
+   * @param   channelID
+   *            connection channel identifier corresponding to the channel ID in the originating
+   *            connection state request
+   *
+   * @param   status
+   *            connection status, see {@link Status}
+   */
+  public IpConnectionStateResp(int channelID, Status status)
+  {
+    super(STI, KNXNET_IP_10_CONNECTIONSTATE_RESPONSE_IPBODY_SIZE);
+
+    this.channelId = channelID;
+
+    this.status = status;
+  }
+
 
   /**
    * Reads a KNXnet/IP {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE} from the given input
@@ -216,6 +248,22 @@ public class IpConnectionStateResp extends IpMessage
     return Primitive.RESP;
   }
 
+  /**
+   * Writes a {@link ServiceTypeIdentifier#CONNECTIONSTATE_RESPONSE} KNXnet/IP frame to a given
+   * output stream.
+   *
+   * @param out   output stream to write the KNXnet/IP frame to
+   *
+   * @throws IOException  if there was an I/O error writing the frame
+   */
+  @Override public void write(OutputStream out) throws IOException
+  {
+    super.write(out);
+
+    out.write((byte)(channelId & 0xFF));
+    out.write(status.getValue());
+
+  }
 
   // Instance Methods -----------------------------------------------------------------------------
 
