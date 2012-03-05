@@ -24,9 +24,10 @@ import java.util.List;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -42,8 +43,7 @@ public class DelayWindow extends FormWindow {
    /** The Constant DELAY. */
    public static final String DELAY = "delay";
    
-   /** The command delay model. */
-   private BeanModel commandDelayModel = null;
+   MacroItemDetailsDTO macroItem;
 
    /**
     * Instantiates a new delay window.
@@ -51,7 +51,8 @@ public class DelayWindow extends FormWindow {
    public DelayWindow() {
       super();
       initial("Add Delay");
-      show();
+      macroItem = new MacroItemDetailsDTO(); // Important that this is after initial call, as macroItem == null means field is not populated
+      macroItem.setType(MacroItemType.Delay);
    }
    
    /**
@@ -59,11 +60,10 @@ public class DelayWindow extends FormWindow {
     * 
     * @param commandDelayModel the command delay model
     */
-   public DelayWindow(BeanModel commandDelayModel) {
+   public DelayWindow(MacroItemDetailsDTO macroItem) {
       super();
-      this.commandDelayModel = commandDelayModel;
+      this.macroItem = macroItem;
       initial("Edit Delay");
-      show();
    }
    
    /**
@@ -73,27 +73,18 @@ public class DelayWindow extends FormWindow {
     */
    private void initial(String heading) {
       setHeading(heading);
-      setSize(280, 120);
+      setSize(280, 140);
 
-      Button addBtn = new Button("OK");
-      
+      Button addBtn = new Button("OK");      
       addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
-      
       form.addButton(addBtn);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-
          public void handleEvent(FormEvent be) {
             List<Field<?>> list = form.getFields();
             String delay = list.get(0).getValue().toString();
-            if (commandDelayModel == null) {
-               CommandDelay commandDelay = new CommandDelay(delay);
-               commandDelayModel = commandDelay.getBeanModel();
-            } else {
-               commandDelayModel.set("delaySecond", delay);
-            }
-            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(commandDelayModel));
-         }
-         
+            macroItem.setDelay(Integer.parseInt(delay));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(DTOHelper.getBeanModel(macroItem)));
+         }         
       });
       createField();
       add(form);
@@ -110,8 +101,8 @@ public class DelayWindow extends FormWindow {
       delayField.setAutoWidth(true);
       delayField.setRegex("^[1-9][0-9]*$");
       delayField.getMessages().setRegexText("The delay must be a positive integer");
-      if (commandDelayModel != null) {
-         delayField.setValue(Integer.valueOf(commandDelayModel.get("delaySecond").toString()));
+      if (macroItem != null) {
+         delayField.setValue(macroItem.getDelay());
       }
       form.add(delayField);
    }

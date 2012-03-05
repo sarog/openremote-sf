@@ -115,7 +115,9 @@ public class MacroPanel extends ContentPanel {
             macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
-                  afterCreateDeviceMacro(be.<DeviceMacro> getData());
+//                  afterCreateDeviceMacro(be.<DeviceMacro> getData());
+                 
+                 // TODO: just have an event on bus to refresh macro tree 
                   macroWindow.hide();
                }
             });
