@@ -38,13 +38,14 @@ import flexjson.JSON;
  * @author Javen
  * 
  */
-@SuppressWarnings("serial")
 
 // TODO EBR : remove BeanModelTag when appropriate
 
 public abstract class UIComponent extends BusinessEntity implements BeanModelTag {
 
-   private transient boolean removed = false;
+  private static final long serialVersionUID = -2311643498267814551L;
+  
+  private transient boolean removed = false;
 
    public UIComponent() {
    }
