@@ -44,6 +44,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -277,16 +278,17 @@ public class MacroPanel extends ContentPanel {
     * On edit device macro btn clicked.
     */
    private void onEditDeviceMacroBtnClicked() {
-      if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof DeviceMacro) {
-         final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
+      if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof MacroDTO) {
+//         final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
          final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
          macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
+// TODO               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
                macroWindow.hide();
             }
          });
+         macroWindow.show();
       }
    }
 

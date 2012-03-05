@@ -28,6 +28,7 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -80,6 +81,10 @@ public interface DeviceMacroRPCService extends RemoteService {
    
    ArrayList<MacroDTO> loadAllDTOs();
  
+   MacroDetailsDTO loadMacroDetails(long id);
+
    void saveNewMacro(MacroDetailsDTO macro);
+
+   void updateMacroWithDTO(MacroDetailsDTO macro);
 
 }
