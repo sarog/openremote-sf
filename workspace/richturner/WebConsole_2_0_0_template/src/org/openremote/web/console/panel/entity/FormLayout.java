@@ -15,7 +15,6 @@ public interface FormLayout {
    String getTop();
    String getDataSource();
    String getItemBindingObject();
-   String getAction();
    List<Field> getField();
    List<FormButton> getButton();
 	
@@ -25,7 +24,6 @@ public interface FormLayout {
    void setTop(String top);
    void setDataSource(String dataSource);
    void setItemBindingObject(String itemBindingObject);
-   void setAction(String action);
    void setField(List<Field> field);
    void setButton(List<FormButton> button);
 }

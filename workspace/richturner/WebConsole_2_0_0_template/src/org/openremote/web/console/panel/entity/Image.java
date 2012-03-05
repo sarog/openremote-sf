@@ -1,13 +1,15 @@
 package org.openremote.web.console.panel.entity;
 
-/**
- * Forwards to screen or do other logical functions.
- * Includes to group, to screen, to previous screen , to next screen, back, login, logout and setting.
- */
 public interface Image {
+	Integer getId();
 	String getSrc();
 	Boolean getSystemImage();
+	Link getLink();
+	Include getInclude();
 	
+	void setId(Integer id);
 	void setSrc(String src);
 	void setSystemImage(Boolean systemImage);
+	void setLink(Link link);
+	void setInclude(Include include);
 }

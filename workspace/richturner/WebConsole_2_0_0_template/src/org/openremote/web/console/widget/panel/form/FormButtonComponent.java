@@ -7,9 +7,10 @@ import com.google.gwt.user.client.Window;
 
 public class FormButtonComponent extends ButtonComponent {
 	public static final String CLASS_NAME = "formButtonComponent";
-	private EnumFormButtonType buttonType;
-	private FormPanelComponent parentForm;
-
+	private EnumFormButtonType buttonType = null;
+	private FormPanelComponent parentForm = null;
+	private EnumFormButtonAction action = null;
+	
 	public enum EnumFormButtonType {
 		SUBMIT("submit","SUBMIT"),
 		CLEAR("clear","CLEAR"),
@@ -41,7 +42,26 @@ public class FormButtonComponent extends ButtonComponent {
 			}
 			return result;
 		}
-	}	
+	}
+	
+	public enum EnumFormButtonAction {
+		ADD,
+		DELETE,
+		UPDATE;
+		
+	   @Override
+	   public String toString() {
+	      return super.toString().toLowerCase();
+	   }
+	   
+	   public static EnumFormButtonAction enumValueOf(String submitActionTypeValue) {
+	   	EnumFormButtonAction result = null;
+	      try {
+	         result = Enum.valueOf(EnumFormButtonAction.class, submitActionTypeValue.toUpperCase());
+	      } catch (Exception e) {}
+	      return result;
+	   }
+	}
 	
 	public FormButtonComponent(FormPanelComponent parent, EnumFormButtonType type) {
 		this(parent, type, type.getText());
@@ -67,6 +87,14 @@ public class FormButtonComponent extends ButtonComponent {
 	
 	public EnumFormButtonType getType() {
 		return buttonType;
+	}
+	
+	public void setAction(EnumFormButtonAction action) {
+		this.action = action;
+	}
+	
+	public EnumFormButtonAction getAction() {
+		return action;
 	}
 	
 	@Override
