@@ -95,6 +95,7 @@ public class SwitchWindow extends FormWindow {
        public void onSuccess(BeanModel result) {
          SwitchWindow.this.switchDTO = result.getBean();
          createField();
+         populateSensorFieldStore();
          setHeight(300); // Somehow setting the height here is required for the autoheight calculation to work when layout is called 
          layout();
        }
