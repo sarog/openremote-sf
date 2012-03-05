@@ -33,6 +33,8 @@ import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 import flexjson.JSON;
 
 /**

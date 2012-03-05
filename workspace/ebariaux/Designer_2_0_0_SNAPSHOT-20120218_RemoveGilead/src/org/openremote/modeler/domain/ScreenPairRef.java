@@ -23,13 +23,16 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 /**
  * The ScreenRef is linked screenpair and group, it make a screenpair be share in different group.
  */
-@SuppressWarnings("serial")
-public class ScreenPairRef extends BusinessEntity {
+public class ScreenPairRef extends BusinessEntity implements BeanModelTag {
 
-   private ScreenPair screen;
+  private static final long serialVersionUID = 4005175737682443437L;
+
+  private ScreenPair screen;
    
    private Group group;
 
