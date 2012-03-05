@@ -30,9 +30,9 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -173,14 +173,19 @@ public class DeviceMacroBeanModelProxy {
             });
    }
    
-   
+   public static void loadMacroDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
+     AsyncServiceFactory.getDeviceMacroServiceAsync().loadMacroDetails(((MacroDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<MacroDetailsDTO>() {
+       public void onSuccess(MacroDetailsDTO result) {
+         asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
+       }
+     });
+   }
    
    public static void saveNewMacro(final MacroDetailsDTO macro, final AsyncSuccessCallback<Void> callback) {
      AsyncServiceFactory.getDeviceMacroServiceAsync().saveNewMacro(macro, callback);
    }
-   /*
-   public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
-     AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
-   }*/
+   public static void updateMacroWithDTO(final MacroDetailsDTO macro, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceMacroServiceAsync().updateMacroWithDTO(macro, callback);
+   }
 
 }

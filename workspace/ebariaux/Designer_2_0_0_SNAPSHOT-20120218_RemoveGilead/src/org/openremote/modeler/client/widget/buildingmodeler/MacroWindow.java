@@ -113,9 +113,6 @@ public class MacroWindow extends FormWindow {
   /** The right macro item list view. */
   private ListView<BeanModel> rightMacroItemListView = null;
 
-  /** The Constant MACRO_ITEM_LIST_DISPLAY_FIELD. */
-  private static final String MACRO_ITEM_LIST_DISPLAY_FIELD = "macro_item_label";
-
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
 
@@ -135,11 +132,18 @@ public class MacroWindow extends FormWindow {
    * @param deviceMacroModel the device macro
    */
   public MacroWindow(BeanModel deviceMacroModel) {
-    this.deviceMacroBeanModel = deviceMacroModel;
     setHeading("Edit Macro");
     edit = true;
-    setup();
-    show();
+    
+    DeviceMacroBeanModelProxy.loadMacroDetails(deviceMacroModel, new AsyncSuccessCallback<BeanModel>() {
+      public void onSuccess(BeanModel result) {
+        Info.display("INFO", "Back from macro details");
+        MacroWindow.this.macro = result.getBean();
+        setup();
+        Info.display("INFO", "Setup done");
+        layout();
+      }
+    });
   }
 
   /**
@@ -170,8 +174,9 @@ public class MacroWindow extends FormWindow {
    */
   private void createFormElement() {
     macroNameField = new TextField<String>();
-    if (deviceMacroBeanModel != null) {
-      // TODO macroNameField.setValue(((MacroDTO) deviceMacroBeanModel.getBean()).getName());
+    
+    if (edit) {
+      macroNameField.setValue(macro.getName());
     }
     macroNameField.setAllowBlank(false);
     macroNameField.setFieldLabel("Macro Name");
@@ -431,49 +436,29 @@ public class MacroWindow extends FormWindow {
    * Before form submit.
    */
   private void beforeFormSubmit() {
-    AsyncSuccessCallback<DeviceMacro> submitSuccessListener = new AsyncSuccessCallback<DeviceMacro>() {
+    AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
       @Override
-      public void onSuccess(DeviceMacro result) {
-        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
+      public void onSuccess(Void result) {
+        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(null)); // TODO pass macro
       }
     };
-    if (edit) {
 
-      // TODO ((MacroDTO) deviceMacroBeanModel.getBean()).setDisplayName(macroNameField.getValue()); // must be name
-      DeviceMacroBeanModelProxy.updateDeviceMacro(deviceMacroBeanModel, rightMacroItemListView.getStore().getModels(), // TODO
-              submitSuccessListener);
-    } else {
-      macro.setName(macroNameField.getValue());
-      ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
-      
-      
-      
-      // TODO: review as this won't work for edit, all objects in right hand side store must be MacroItemDetailsDTO as we must keep track of oid of existing objects
-      // Or can we just re-created everything ? To be seen
-      
-
-      
-      for (BeanModel bm : rightMacroItemListView.getStore().getModels()) {
-        if (bm.getBean() instanceof DeviceCommandDTO) {
-          items.add(new MacroItemDetailsDTO(null, MacroItemType.Command, new DTOReference(((DeviceCommandDTO) bm.getBean()).getOid())));
-        } else if (bm.getBean() instanceof MacroDTO) {
-          items.add(new MacroItemDetailsDTO(null, MacroItemType.Macro, new DTOReference(((MacroDTO) bm.getBean()).getOid())));
-        } else if (bm.getBean() instanceof MacroItemDetailsDTO) {
-          items.add((MacroItemDetailsDTO) bm.getBean());
-        }
+    macro.setName(macroNameField.getValue());
+    ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
+    for (BeanModel bm : rightMacroItemListView.getStore().getModels()) {
+      if (bm.getBean() instanceof DeviceCommandDTO) {
+        items.add(new MacroItemDetailsDTO(null, MacroItemType.Command, null, new DTOReference(((DeviceCommandDTO) bm.getBean()).getOid()))); // We don't care about the name for saving
+      } else if (bm.getBean() instanceof MacroDTO) {
+        items.add(new MacroItemDetailsDTO(null, MacroItemType.Macro, null, new DTOReference(((MacroDTO) bm.getBean()).getOid()))); // We don't care about the name for saving
+      } else if (bm.getBean() instanceof MacroItemDetailsDTO) {
+        items.add((MacroItemDetailsDTO) bm.getBean());
       }
-      macro.setItems(items);
-      DeviceMacroBeanModelProxy.saveNewMacro(macro, new AsyncSuccessCallback<Void>() {
-
-        @Override
-        public void onSuccess(Void result) {
-
-          Info.display("INFO", "Back from save");
-          // TODO
-          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(null)); // TODO pass macro
-
-        }
-      });
+    }
+    macro.setItems(items);
+    if (edit) {
+      DeviceMacroBeanModelProxy.updateMacroWithDTO(macro, callback);
+    } else {
+      DeviceMacroBeanModelProxy.saveNewMacro(macro, callback);
     }
 
   }

@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
@@ -121,7 +122,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
          } else if (dmi instanceof DeviceCommandRef) {
            itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
          } else if (dmi instanceof CommandDelay) {
-           itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + "s)", MacroItemType.Delay));
+           itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
          }
        }
        dto.setItems(itemDTOs);
@@ -130,35 +131,67 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      return dtos;
    }
    
+   public MacroDetailsDTO loadMacroDetails(long id) {
+     DeviceMacro macroBean = deviceMacroService.loadById(id);
+     
+     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
+     for (DeviceMacroItem dmi : macroBean.getDeviceMacroItems()) {
+       if (dmi instanceof DeviceMacroRef) {
+         DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
+         items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
+       } else if (dmi instanceof DeviceCommandRef) {
+         DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
+         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
+       } else if (dmi instanceof CommandDelay) {
+         items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
+       }
+     }
+     return new MacroDetailsDTO(macroBean.getOid(), macroBean.getName(), items);
+   }
+
+   
    public void saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
      macroBean.setName(macro.getName());
      macroBean.setAccount(userService.getAccount());
      
-     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
-     for (MacroItemDetailsDTO item : macro.getItems()) {
-       DeviceMacroItem itemBean = null;
-       switch(item.getType()) {
-         case Command:
-           DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
-           itemBean = new DeviceCommandRef(dc);
-           break;
-         case Macro:
-           DeviceMacro dm = deviceMacroService.loadById(item.getDto().getId());
-           itemBean = new DeviceMacroRef(dm);
-           break;
-         case Delay:
-           itemBean = new CommandDelay(Integer.toString(item.getDelay()));
-           break;
-       }
-       if (itemBean != null) {
-         macroItemBeans.add(itemBean);
-         itemBean.setParentDeviceMacro(macroBean);
-       }
-     }
+     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
      
      macroBean.setDeviceMacroItems(macroItemBeans);
      deviceMacroService.saveDeviceMacro(macroBean);
+   }
+
+   public void updateMacroWithDTO(MacroDetailsDTO macro) {
+     DeviceMacro macroBean = deviceMacroService.loadById(macro.getOid());
+     macroBean.setName(macro.getName());
+
+     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
+     deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans);
+   }
+
+   protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
+     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
+      for (MacroItemDetailsDTO item : macro.getItems()) {
+        DeviceMacroItem itemBean = null;
+        switch(item.getType()) {
+          case Command:
+            DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
+            itemBean = new DeviceCommandRef(dc);
+            break;
+          case Macro:
+            DeviceMacro dm = deviceMacroService.loadById(item.getDto().getId());
+            itemBean = new DeviceMacroRef(dm);
+            break;
+          case Delay:
+            itemBean = new CommandDelay(Integer.toString(item.getDelay()));
+            break;
+        }
+        if (itemBean != null) {
+          macroItemBeans.add(itemBean);
+          itemBean.setParentDeviceMacro(macroBean);
+        }
+      }
+     return macroItemBeans;
    }
 
 }

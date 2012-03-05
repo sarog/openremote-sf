@@ -6,6 +6,7 @@ public class MacroItemDetailsDTO implements DTO {
 
   private Long oid;
   private MacroItemType type;
+  private String displayName;
   private Integer delay;
   private DTOReference dto;
   
@@ -18,12 +19,14 @@ public class MacroItemDetailsDTO implements DTO {
     this.oid = oid;
     this.delay = delay;
     this.type = MacroItemType.Delay;
+    this.displayName = "Delay " + delay + " ms";
   }
 
-  public MacroItemDetailsDTO(Long oid, MacroItemType type, DTOReference dto) {
+  public MacroItemDetailsDTO(Long oid, MacroItemType type, String displayName, DTOReference dto) {
     super();
     this.oid = oid;
     this.type = type;
+    this.displayName = displayName;
     this.dto = dto;
   }
 
@@ -59,23 +62,12 @@ public class MacroItemDetailsDTO implements DTO {
     this.type = type;
   }
 
-  
-  // TODO: this will not work when editing existing macro, review
   public String getDisplayName() {
-    switch(type) {
-      case Delay:
-        return "Delay " + delay + " ms";
-      case Macro:
-        if (dto == null) {
-          return "";
-        }
-        if (dto.getDto() == null) {
-          return "";
-        }
-        return "TODO";
-      case Command:
-        return "TODO";
-    }
-    return "";
+    return displayName;
   }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
 }

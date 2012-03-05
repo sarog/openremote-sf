@@ -26,6 +26,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -71,9 +72,14 @@ public interface DeviceMacroRPCServiceAsync {
     void loadDeviceMacroItems(DeviceMacro deviceMacro, AsyncCallback<List<DeviceMacroItem>> async);
 
     
+    
+    
     void loadAllDTOs(AsyncCallback<ArrayList<MacroDTO>> async);
 
-    
+    void loadMacroDetails(long id, AsyncCallback<MacroDetailsDTO> callback);
+        
     void saveNewMacro(MacroDetailsDTO macro, AsyncCallback<Void> callback);
+
+    void updateMacroWithDTO(MacroDetailsDTO macro, AsyncCallback<Void> callback);
 
 }
