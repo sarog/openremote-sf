@@ -155,6 +155,14 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		}
 		items.removeAll(items);
 		items = generateListItems();
+		
+		// Add items to container
+		for (ListItem item : items) {
+			if (item != null) {
+				container.add(item);
+				item.onAdd(width, height);
+			}
+		}
 	}
 	
 	private void registerHandlers() {
@@ -335,16 +343,17 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	@Override
 	public void onBindingDataChange(BindingDataChangeEvent event) {
 		if (dataBindingActive) {
-//			refreshListItems();
-			List<ListItem> newItems = generateListItems();
+			refreshListItems();
 			
-			for (ListItem newItem : newItems) {
-				if (!items.contains(newItem)) {
-					container.add(newItem);
-					newItem.onAdd(width, height);
-					items.add(newItem);
-				}
-			}
+//			List<ListItem> newItems = generateListItems();
+//			
+//			for (ListItem newItem : newItems) {
+//				if (!items.contains(newItem)) {
+//					container.add(newItem);
+//					newItem.onAdd(width, height);
+//					items.add(newItem);
+//				}
+//			}
 		}
 	}
 	

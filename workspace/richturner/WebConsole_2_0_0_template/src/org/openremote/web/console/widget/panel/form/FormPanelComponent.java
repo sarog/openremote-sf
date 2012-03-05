@@ -16,6 +16,7 @@ import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
+import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonAction;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
 import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
 import org.openremote.web.console.widget.Sensor;
@@ -38,31 +39,11 @@ public class FormPanelComponent extends PanelComponent {
 	private List<FormButtonComponent> buttons = new ArrayList<FormButtonComponent>();
 	private String dataSource = null;
 	private String itemBindingObject = null;
-	private EnumFormSubmitAction action = null;
 	private FormHandler handler = null;
 	private AutoBean<?> inputObject = null;
 	private Splittable dataMap = null;
 	private Splittable objectMap = null;
 	private Integer objectIndex = null;
-	
-	public enum EnumFormSubmitAction {
-		ADD,
-		DELETE,
-		UPDATE;
-		
-	   @Override
-	   public String toString() {
-	      return super.toString().toLowerCase();
-	   }
-	   
-	   public static EnumFormSubmitAction enumValueOf(String submitActionTypeValue) {
-	   	EnumFormSubmitAction result = null;
-	      try {
-	         result = Enum.valueOf(EnumFormSubmitAction.class, submitActionTypeValue.toUpperCase());
-	      } catch (Exception e) {}
-	      return result;
-	   }
-	}	
 	
 	public FormPanelComponent() {
 		Grid grid = new Grid(1,1);
@@ -109,19 +90,10 @@ public class FormPanelComponent extends PanelComponent {
 	
 	public void setItemBindingObject(String itemBindingObject) {
 		this.itemBindingObject = itemBindingObject;
-	}
-	
+	}	
 	
 	public String getItemBindingObject() {
 		return itemBindingObject;
-	}
-	
-	public void setAction(EnumFormSubmitAction action) {
-		this.action = action;
-	}
-	
-	public EnumFormSubmitAction getAction() {
-		return action;
 	}
 	
 	public boolean isValid() {
@@ -266,6 +238,7 @@ public class FormPanelComponent extends PanelComponent {
 	 */
 	public void onSubmit(FormButtonComponent submitBtn) {
 		Splittable submitMap = null;
+		EnumFormButtonAction action = submitBtn.getAction();
 		
 		// If no object map then just return
 		if (objectMap == null) {
@@ -326,7 +299,7 @@ public class FormPanelComponent extends PanelComponent {
 				} else {
 					bindingBean = AutoBeanService.getInstance().fromJsonString(DataBindingService.getInstance().getClass(dataSource), submitMap);
 				}
-				if (action == EnumFormSubmitAction.ADD && bindingBean != null) {
+				if (action == EnumFormButtonAction.ADD && bindingBean != null) {
 					// Can only add to an array
 					if (objectMap.isIndexed()) {
 						int pos = objectMap.size();
@@ -334,7 +307,7 @@ public class FormPanelComponent extends PanelComponent {
 						AutoBeanCodex.encode(bindingBean).assign(objectMap, pos);
 					}					
 				}
-				if (action == EnumFormSubmitAction.UPDATE && bindingBean != null) {
+				if (action == EnumFormButtonAction.UPDATE && bindingBean != null) {
 					// If objectIndex exists then we are editing an array entry so update the corresponding entry
 					if (objectMap.isIndexed() && objectIndex != null) {
 						AutoBeanCodex.encode(bindingBean).assign(objectMap, objectIndex);
@@ -374,7 +347,6 @@ public class FormPanelComponent extends PanelComponent {
 		panel.setPosition(layout.getLeft(),layout.getTop());
 		panel.setDataSource(layout.getDataSource());
 		panel.setItemBindingObject(layout.getItemBindingObject());
-		panel.setAction(FormPanelComponent.EnumFormSubmitAction.enumValueOf(layout.getAction()));
 		
 		// Add Fields
 		List<Field> fields = layout.getField();
@@ -402,6 +374,7 @@ public class FormPanelComponent extends PanelComponent {
 					buttonComp = new FormButtonComponent(panel, EnumFormButtonType.getButtonType(button.getType()));
 				}
 				buttonComp.setNavigate(button.getNavigate());
+				buttonComp.setAction(EnumFormButtonAction.enumValueOf(button.getAction()));
 				panel.addButton(buttonComp);
 			}
 		}

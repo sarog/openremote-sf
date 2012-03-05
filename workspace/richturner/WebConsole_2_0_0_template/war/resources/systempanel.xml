@@ -63,12 +63,15 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="100" fontSize="20" color="#FFFFFF" text="Edit Controller" />
       </absolute>
-      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials" action="update">
+      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
 	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="SAVE">
+	<button type="submit" name="SAVE" action="update">
+	   <navigate to="controllerlist" />
+	</button>
+	<button type="submit" name="DELETE" action="delete">
 	   <navigate to="controllerlist" />
 	</button>
 	<button type="cancel">
@@ -109,9 +112,11 @@
 	   <image src="controller_search.png" systemImage="true" />
 	</item>
         <item name="ADD">
+	   <image src="controller_add.png" systemImage="true" />
 	   <navigate to="addcontroller" />
 	</item>
         <item name="SETTINGS">
+	   <image src="settings.png" systemImage="true" />
 	   <navigate to="settings" />
 	</item>
       </tabbar>
