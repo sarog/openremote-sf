@@ -21,14 +21,10 @@ package org.openremote.modeler.client.rpc;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -40,45 +36,12 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceMacroRPCService extends RemoteService {
 
    /**
-    * Save device macro.
-    * 
-    * @param deviceMacro the device macro
-    * 
-    * @return the device macro
-    */
-   DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
-
-
-   /**
-    * Update device macro.
-    * 
-    * @param deviceMacro the device macro
-    * @param items the device macro items to use to update the macro
-    * 
-    * @return the device macro
-    */
-   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items);
-
-
-   /**
     * Delete device macro by id.
     * 
     * @param id the id
     */
    void deleteDeviceMacro(long id);
 
-
-   /**
-    * Load all device macro items under a device macro.
-    * 
-    * @param deviceMacro the device macro
-    * 
-    * @return the list< device macro item>
-    */
-   List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
-
-
-   
    ArrayList<MacroDTO> loadAllDTOs();
  
    MacroDetailsDTO loadMacroDetails(long id);

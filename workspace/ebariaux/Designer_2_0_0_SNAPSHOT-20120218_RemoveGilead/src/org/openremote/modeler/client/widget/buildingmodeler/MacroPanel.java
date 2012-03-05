@@ -298,7 +298,7 @@ public class MacroPanel extends ContentPanel {
    private void onDeleteDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItems().size() > 0) {
          for (final BeanModel data : macroTree.getSelectionModel().getSelectedItems()) {
-            if (data.getBean() instanceof DeviceMacro) {
+            if (data.getBean() instanceof MacroDTO) {
                DeviceMacroBeanModelProxy.deleteDeviceMacro(data, new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {

@@ -65,38 +65,11 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#save(org.openremote.modeler.domain.DeviceMacro)
-    */
-   public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
-      return deviceMacroService.saveDeviceMacro(deviceMacro);
-   }
-
-
-   /**
-    * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro, List<org.openremote.modeler.domain.DeviceMacroItem> items)
-    */
-   public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items) {
-     
-      return deviceMacroService.updateDeviceMacro(deviceMacro, items);
-   }
-
-
-   /**
-    * {@inheritDoc}
     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#deleteDeviceMacro(long)
     */
    public void deleteDeviceMacro(long id) {
       deviceMacroService.deleteDeviceMacro(id);
    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadDeviceMacroItems(org.openremote.modeler.domain.DeviceMacro)
-     */
-    public List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) {
-        return deviceMacroService.loadByDeviceMacro(deviceMacro.getOid());
-    }
 
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
