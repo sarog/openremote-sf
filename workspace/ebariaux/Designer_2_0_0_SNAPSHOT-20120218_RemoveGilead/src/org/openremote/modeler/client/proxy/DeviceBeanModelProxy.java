@@ -127,29 +127,23 @@ public class DeviceBeanModelProxy {
    }
    
    public static void loadDeviceAndCommand(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
-            public void onSuccess(List<Device> result) {
-               List<BeanModel> beanModels = Device.createModels(result);
-               BeanModelDataBase.deviceTable.insertAll(beanModels);
-               callback.onSuccess(beanModels);
-            }
-            
-         });
-      } else if(beanModel.getBean() instanceof Device){
-         final List<BeanModel> beanModels = new ArrayList<BeanModel>();
-         Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
 
-            @Override
-            public void onSuccess(Device result) {
-               List<BeanModel> commandBeans = DeviceCommand.createModels(result.getDeviceCommands());
-               beanModels.addAll(commandBeans);
-               BeanModelDataBase.deviceCommandTable.insertAll(commandBeans);
-               callback.onSuccess(beanModels);
-            }
-            
-         });
+     if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+         public void onSuccess(ArrayList<DeviceDTO> result) {
+           List<BeanModel> beanModels = DTOHelper.createModels(result);
+            callback.onSuccess(beanModels);
+         }        
+       });
+     } else if(beanModel.getBean() instanceof DeviceDTO) {
+       DeviceDTO device = (DeviceDTO) beanModel.getBean();
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() { // TODO : have method to only return commands as children
+
+          @Override
+          public void onSuccess(DeviceWithChildrenDTO result) {
+             callback.onSuccess(DTOHelper.createModels(result.getDeviceCommands()));
+          }
+       });
       }
    }
 

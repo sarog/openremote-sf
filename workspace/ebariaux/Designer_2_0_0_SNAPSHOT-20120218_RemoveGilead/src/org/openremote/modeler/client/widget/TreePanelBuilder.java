@@ -152,7 +152,7 @@ public class TreePanelBuilder {
       TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
          @Override
          public boolean hasChildren(BeanModel beanModel) {
-            if (beanModel.getBean() instanceof Device) {
+            if (beanModel.getBean() instanceof DeviceDTO) {
                return true;
             }
             return false;
@@ -176,15 +176,14 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
                return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Device) {
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
             } else {
                return ICON.folder();
             }
          }
-
       });
       return tree;
    }

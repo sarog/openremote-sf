@@ -24,14 +24,18 @@ import java.util.List;
 
 import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
 
 /**
@@ -42,6 +46,8 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    
    /** The device macro service. */
    private DeviceMacroService deviceMacroService;
+   
+   private DeviceCommandService deviceCommandService;
    
    /** The user service. */
    private UserService userService;
@@ -91,8 +97,11 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
         return deviceMacroService.loadByDeviceMacro(deviceMacro.getOid());
     }
 
+   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+      this.deviceCommandService = deviceCommandService;
+    }
 
-   /**
+  /**
     * Sets the user service.
     * 
     * @param userService the new user service
@@ -120,4 +129,36 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      }
      return dtos;
    }
+   
+   public void saveNewMacro(MacroDetailsDTO macro) {
+     DeviceMacro macroBean = new DeviceMacro();
+     macroBean.setName(macro.getName());
+     macroBean.setAccount(userService.getAccount());
+     
+     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
+     for (MacroItemDetailsDTO item : macro.getItems()) {
+       DeviceMacroItem itemBean = null;
+       switch(item.getType()) {
+         case Command:
+           DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
+           itemBean = new DeviceCommandRef(dc);
+           break;
+         case Macro:
+           DeviceMacro dm = deviceMacroService.loadById(item.getDto().getId());
+           itemBean = new DeviceMacroRef(dm);
+           break;
+         case Delay:
+           itemBean = new CommandDelay(Integer.toString(item.getDelay()));
+           break;
+       }
+       if (itemBean != null) {
+         macroItemBeans.add(itemBean);
+         itemBean.setParentDeviceMacro(macroBean);
+       }
+     }
+     
+     macroBean.setDeviceMacroItems(macroItemBeans);
+     deviceMacroService.saveDeviceMacro(macroBean);
+   }
+
 }
