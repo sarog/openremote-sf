@@ -94,6 +94,7 @@ public class SliderWindow extends FormWindow {
         public void onSuccess(BeanModel result) {
           SliderWindow.this.sliderDTO = result.getBean();
           createField();
+          populateSensorFieldStore();
           setHeight(300); // Somehow setting the height her is required for the autoheight calculation to work when layout is called 
           layout();
         }
