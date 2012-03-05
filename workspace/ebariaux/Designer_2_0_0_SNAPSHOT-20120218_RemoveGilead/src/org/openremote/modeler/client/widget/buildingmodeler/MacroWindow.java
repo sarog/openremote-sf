@@ -36,7 +36,6 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
@@ -60,7 +59,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -88,9 +86,6 @@ public class MacroWindow extends FormWindow {
   private MacroDetailsDTO macro;
 
   private boolean edit;
-
-  /** The _device macro. */
-  private BeanModel deviceMacroBeanModel = null;
 
   /** The Constant MACRO_DND_GROUP. */
   private static final String MACRO_DND_GROUP = "macro";
@@ -137,10 +132,8 @@ public class MacroWindow extends FormWindow {
     
     DeviceMacroBeanModelProxy.loadMacroDetails(deviceMacroModel, new AsyncSuccessCallback<BeanModel>() {
       public void onSuccess(BeanModel result) {
-        Info.display("INFO", "Back from macro details");
         MacroWindow.this.macro = result.getBean();
         setup();
-        Info.display("INFO", "Setup done");
         layout();
       }
     });
@@ -304,8 +297,7 @@ public class MacroWindow extends FormWindow {
         if (!(beanModel.getBean() instanceof MacroDTO)) {
           e.setCancelled(true);
           e.getStatus().setStatus(false);
-        }
-        if (beanModel.equals(deviceMacroBeanModel)) { // when edit macro, can not dnd oneself.
+        } else if (((MacroDTO)beanModel.getBean()).getOid() == macro.getOid()) { // when edit macro, can not dnd oneself.
           e.setCancelled(true);
           e.getStatus().setStatus(false);
         }
