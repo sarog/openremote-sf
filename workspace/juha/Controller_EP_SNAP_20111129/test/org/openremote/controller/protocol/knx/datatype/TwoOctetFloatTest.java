@@ -27,7 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * TODO
+ * Unit tests for {@link org.openremote.controller.protocol.knx.datatype.TwoOctetFloat} class.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -399,18 +399,18 @@ public class TwoOctetFloatTest
 
   @Test public void testBasicValuesWithExponent()
   {
-    // value 100.0 translates to 10000 which is broken down to 965 (0x3C5) in mantissa
-    // (0.04 precision) and exponent of 2, hibyte should be 0x13 == 0001 0011 == 0x3 + 0x2 << 3
-    // and lobyte should be 0xC5
+    // value 100.0 translates to 10000 which is broken down to 1250 (0x4E2) in mantissa
+    // (0.04 precision) and exponent of 3, hibyte should be 0x1C == 0001 1100 == 0x4 + 0x3 << 3
+    // and lobyte should be 0xE2
     //
     // note that Java's signed byte means the most significant bit when set is translated as
     // negative value
     TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 100);
     byte[] data = knxFloat.getData();
 
-    Assert.assertTrue("Expected 5, got " + (data[1] & 0xF), (data[1] & 0xF) == 5);
-    Assert.assertTrue("Expected 12, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 12);
-    Assert.assertTrue("Expected 3, got " + (data[0] & 0xF), (data[0] & 0xF) == 3);
+    Assert.assertTrue("Expected 2, got " + (data[1] & 0xF), (data[1] & 0xF) == 2);
+    Assert.assertTrue("Expected 14, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 14);
+    Assert.assertTrue("Expected 12, got " + (data[0] & 0xF), (data[0] & 0xF) == 12);
     Assert.assertTrue("Expected 1, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 1);
 
     // translate back to Java float...
@@ -426,16 +426,16 @@ public class TwoOctetFloatTest
 
 
 
-    // value 1000.0 translates to 100000 which is broken down to 1142 (0x476) in mantissa
-    // (0.32 precision) and exponent of 5, hibyte should be 0x2C  == 0010 1100 == 0x4 + 0x5 << 3
-    // and lobyte should be 0x76
+    // value 1000.00 translates to 100000 which is broken down to 1563 (0x61B) in mantissa
+    // (0.64 precision) and exponent of 6, hibyte should be 0x36  == 0011 0110 == 0x6 + 0x6 << 3
+    // and lobyte should be 0x1B
     knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 1000);
     data = knxFloat.getData();
 
-    Assert.assertTrue("Expected 6, got " + (data[1] & 0xF), (data[1] & 0xF) == 0x6);
-    Assert.assertTrue("Expected 7, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0x7);
-    Assert.assertTrue("Expected 12, got " + (data[0] & 0xF), (data[0] & 0xF) == 0xC);
-    Assert.assertTrue("Expected 2, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 2);
+    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xB);
+    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0x1);
+    Assert.assertTrue("Expected 6, got " + (data[0] & 0xF), (data[0] & 0xF) == 0x6);
+    Assert.assertTrue("Expected 3, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 0x3);
 
     // translate back to Java float...
 
@@ -443,21 +443,21 @@ public class TwoOctetFloatTest
     value = knxFloat.resolve();
 
     Assert.assertTrue(
-        "Expected 1000.00 +- 0.16, got " + value,
-        value.compareTo(new BigDecimal(999.84)) >= 0 &&
-        value.compareTo(new BigDecimal(1000.16)) <= 0
+        "Expected 1000.00 +- 0.32, got " + value,
+        value.compareTo(new BigDecimal(999.68)) >= 0 &&
+        value.compareTo(new BigDecimal(1000.32)) <= 0
     );
 
 
-    // value 2000.0 translates to 200000 which is broken down to 1110 (0x456) in mantissa
-    // (0.64 precision) and exponent of 6, hibyte should be 0x34 == 0011 0100 == 0x4 + 0x6 << 3
-    // and lobyte should be 0x56
+    // value 2000.0 translates to 200000 which is broken down to 1563 (0x61B) in mantissa
+    // (1.28 precision) and exponent of 7, hibyte should be 0x3E == 0011 1110 == 0x6 + 0x7 << 3
+    // and lobyte should be 0x1B
     knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 2000);
     data = knxFloat.getData();
 
-    Assert.assertTrue("Expected 6, got " + (data[1] & 0xF), (data[1] & 0xF) == 6);
-    Assert.assertTrue("Expected 5, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 5);
-    Assert.assertTrue("Expected 4, got " + (data[0] & 0xF), (data[0] & 0xF) == 4);
+    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xB);
+    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 1);
+    Assert.assertTrue("Expected 14, got " + (data[0] & 0xF), (data[0] & 0xF) == 0xE);
     Assert.assertTrue("Expected 3, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 3);
 
     // translate back to Java float...
@@ -466,41 +466,19 @@ public class TwoOctetFloatTest
     value = knxFloat.resolve();
 
     Assert.assertTrue(
-        "Expected 2000.00 +- 0.32, got " + value,
-        value.compareTo(new BigDecimal(1999.68)) >= 0 &&
-        value.compareTo(new BigDecimal(2000.32)) <= 0
+        "Expected 2000.00 +- 0.64, got " + value,
+        value.compareTo(new BigDecimal(1999.36)) >= 0 &&
+        value.compareTo(new BigDecimal(2000.64)) <= 0
     );
 
-    // value 10000.0 translates to 1,000,000 which is broken down to 1867 (0x74B) in mantissa
-    // (2.56 precision) and exponent of 8, hibyte should be 0x47 == 0100 0111 == 0x7 + 0x8 << 3
-    // and lobyte should be 0x4B
+    // value 10000.0 translates to 1,000,000 which is broken down to 1953 (0x7A1) in mantissa
+    // (5.12 precision) and exponent of 9, hibyte should be 0x4F == 0100 1111 == 0x7 + 0x9 << 3
+    // and lobyte should be 0xA1
     knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 10000);
     data = knxFloat.getData();
 
-    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xB);
-    Assert.assertTrue("Expected 4, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 4);
-    Assert.assertTrue("Expected 7, got " + (data[0] & 0xF), (data[0] & 0xF) == 7);
-    Assert.assertTrue("Expected 4, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 4);
-
-    // translate back to Java float...
-
-    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-    value = knxFloat.resolve();
-
-    Assert.assertTrue(
-        "Expected 10000.00 +- 1.28, got " + value,
-        value.compareTo(new BigDecimal(9998.72)) >= 0 &&
-        value.compareTo(new BigDecimal(10001.28)) <= 0
-    );
-
-    // value 20000.0 translates to 2,000,000 which is broken down to 1863 (0x747) in mantissa
-    // (5.12 precision) and exponent of 9, hibyte should be 0x4F == 0100 1111 == 0x7 + 0x9 << 3
-    // and lobyte should be 0x47
-    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 20000);
-    data = knxFloat.getData();
-
-    Assert.assertTrue("Expected 7, got " + (data[1] & 0xF), (data[1] & 0xF) == 7);
-    Assert.assertTrue("Expected 4, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 4);
+    Assert.assertTrue("Expected 1, got " + (data[1] & 0xF), (data[1] & 0xF) == 0x1);
+    Assert.assertTrue("Expected 10, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0xA);
     Assert.assertTrue("Expected 15, got " + (data[0] & 0xF), (data[0] & 0xF) == 0xF);
     Assert.assertTrue("Expected 4, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 4);
 
@@ -510,9 +488,31 @@ public class TwoOctetFloatTest
     value = knxFloat.resolve();
 
     Assert.assertTrue(
-        "Expected 20000.00 +- 2.56, got " + value,
-        value.compareTo(new BigDecimal(19997.44)) >= 0 &&
-        value.compareTo(new BigDecimal(20002.56)) <= 0
+        "Expected 10000.00 +- 2.56, got " + value,
+        value.compareTo(new BigDecimal(9998.44)) >= 0 &&
+        value.compareTo(new BigDecimal(10002.56)) <= 0
+    );
+
+    // value 20000.0 translates to 2,000,000 which is broken down to 1953 (0x7A1) in mantissa
+    // (10.24 precision) and exponent of 10, hibyte should be 0x57 == 0101 0111 == 0x7 + 0xA << 3
+    // and lobyte should be 0xA1
+    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 20000);
+    data = knxFloat.getData();
+
+    Assert.assertTrue("Expected 1, got " + (data[1] & 0xF), (data[1] & 0xF) == 1);
+    Assert.assertTrue("Expected 10, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0xA);
+    Assert.assertTrue("Expected 7, got " + (data[0] & 0xF), (data[0] & 0xF) == 7);
+    Assert.assertTrue("Expected 5, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 5);
+
+    // translate back to Java float...
+
+    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
+    value = knxFloat.resolve();
+
+    Assert.assertTrue(
+        "Expected 20000.00 +- 5.12, got " + value,
+        value.compareTo(new BigDecimal(19994.88)) >= 0 &&
+        value.compareTo(new BigDecimal(20005.12)) <= 0
     );
 
   }
@@ -643,138 +643,6 @@ public class TwoOctetFloatTest
 
 
 
-
-
-//  @Test public void testBasicValuesWithExponent()
-//  {
-//
-//    // value 100.0 translates to 10000 which is broken down to 1250 (0x4E2) in mantissa
-//    // (0.01 precision) and exponent of 3, hibyte should be 0x1C == 0001 1100 == 0x4 + 0x3 << 3
-//    // and lobyte should be 0xE2
-//    //
-//    // note that Java's signed byte means the most significant bit when set is translated as
-//    // negative value
-//    TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 100);
-//    byte[] data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 2, got " + (data[1] & 0xF), (data[1] & 0xF) == 2);
-//    Assert.assertTrue("Expected 14, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 14);
-//    Assert.assertTrue("Expected 12, got " + (data[0] & 0xF), (data[0] & 0xF) == 12);
-//    Assert.assertTrue("Expected 1, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 1);
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    int value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected 100, got " + value, value == 100);
-//
-//    // value 1000.0 translates to 100000 which is broken down to 1563 (0x61B) in mantissa
-//    // (0.01 precision) and exponent of 6, hibyte should be 0x36  ==  0011 0110 == 0x6 + 0x6 << 3
-//    // and lobyte should be 0x1B
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 1000);
-//    data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 11);
-//    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 1);
-//    Assert.assertTrue("Expected 6, got " + (data[0] & 0xF), (data[0] & 0xF) == 6);
-//    Assert.assertTrue("Expected 3, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 3);
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected 100, got " + value, value == 1000);
-//
-//
-//    // value 2000.0 translates to 200000 which is broken down to 1563 (0x61B) in mantissa
-//    // (0.01 precision) and exponent of 7, hibyte should be 0x3E == 0011 1110 == 0x6 + 0x7 << 3
-//    // and lobyte should be 0x1B
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 2000);
-//    data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 11);
-//    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 1);
-//    Assert.assertTrue("Expected 14, got " + (data[0] & 0xF), (data[0] & 0xF) == 14);
-//    Assert.assertTrue("Expected 3, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 3);
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected 100, got " + value, value == 2000);
-//  }
-
-
-//
-//  @Test public void testBasicNegativeValuesWithExponent()
-//  {
-//
-//    // value -100.0 translates to 10000 which is broken down to 1250 (0x4E2) in mantissa
-//    // (0.01 precision) and exponent of 3, hibyte should be 0x9C == 1001 1100 == 0x80 + 0x4 + 0x3 << 3
-//    // and lobyte should be 0xE2
-//    //
-//    // note that Java's signed byte means the most significant bit when set is translated as
-//    // negative value
-//    TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, -100);
-//    byte[] data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 2, got " + (data[1] & 0xF), (data[1] & 0xF) == 2);
-//    Assert.assertTrue("Expected 14, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 14);
-//    Assert.assertTrue("Expected 12, got " + (data[0] & 0xF), (data[0] & 0xF) == 12);
-//    Assert.assertTrue("Expected 9, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 9);
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    int value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected 100, got " + value, value == -100);
-//
-//
-//    // value -1000.0 translates to 100000 which is broken down to 1563 (0x61B) in mantissa
-//    // (0.01 precision) and exponent of 6, hibyte should be 0xB6  ==  1011 0110 == 0x80 + 0x6 + 0x6 << 3
-//    // and lobyte should be 0x1B
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, -1000);
-//    data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 11);
-//    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 1);
-//    Assert.assertTrue("Expected 6, got " + (data[0] & 0xF), (data[0] & 0xF) == 6);
-//    Assert.assertTrue("Expected 11, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 11);
-//
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected -1000, got " + value, value == -1000);
-//
-//
-//    // value -2000.0 translates to 200000 which is broken down to 1563 (0x61B) in mantissa
-//    // (0.01 precision) and exponent of 7, hibyte should be 0xBE == 1011 1110 == 0x80 + 0x6 + 0x7 << 3
-//    // and lobyte should be 0x1B
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, -2000);
-//    data = knxFloat.getData();
-//
-//    Assert.assertTrue("Expected 11, got " + (data[1] & 0xF), (data[1] & 0xF) == 11);
-//    Assert.assertTrue("Expected 1, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 1);
-//    Assert.assertTrue("Expected 14, got " + (data[0] & 0xF), (data[0] & 0xF) == 14);
-//    Assert.assertTrue("Expected 11, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 11);
-//
-//    // translate back to Java float...
-//
-//    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-//    value = knxFloat.resolve().intValue();
-//
-//    Assert.assertTrue("Expected -2000, got " + value, value == -2000);
-//
-//  }
-//
-//
 
   @Test public void testPositiveZeroExponentRange()
   {
