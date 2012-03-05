@@ -28,13 +28,15 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 import flexjson.JSON;
 
 /**
  * The ScreenPair includes two screens, portrait screen and landscape screen.
  * It can have one or two of them.
  */
-public class ScreenPair extends RefedEntity {
+public class ScreenPair extends RefedEntity implements BeanModelTag {
 
    private static final long serialVersionUID = 2501415029050801917L;
 
