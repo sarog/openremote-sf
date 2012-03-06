@@ -58,15 +58,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
       return sensorService.deleteSensor(id);
    }
 
-   public List<Sensor> loadAll() {
-      return sensorService.loadAll(userService.getAccount());
-   }
-
-   public Sensor saveSensor(Sensor sensor) {
-      sensor.setAccount(userService.getAccount());
-      return sensorService.saveSensor(sensor);
-   }
-
    public void setSensorService(SensorService sensorService) {
       this.sensorService = sensorService;
    }
@@ -83,15 +74,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
     this.deviceCommandService = deviceCommandService;
   }
 
-  public Sensor getById(long id) {
-      return sensorService.loadById(id);
-   }
-
-
-   public List<Sensor> saveAll(List<Sensor> sensorList) {
-       return sensorService.saveAllSensors(sensorList, userService.getAccount());
-   }
-   
    @Override   
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
