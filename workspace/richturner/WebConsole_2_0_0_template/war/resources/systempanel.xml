@@ -22,6 +22,9 @@
 	      </absolute>
 	      <absolute left="275" top="10" width="30" height="30">
 		<button id="130" name=">">
+		  <default>
+	  	     <image src="controller_edit.png" systemImage="true" />
+		  </default>
 		  <navigate to="editcontroller">
 		     <data>
 			<dataValuePair name="bindingItem" value="url=${url}" />
