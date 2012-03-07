@@ -30,6 +30,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	private String name;
 	private Label label; 
 	private Image img;
+	private boolean isSystemImage = false;
 	private boolean srcExists = false;
 	
 	protected ButtonComponent() {
@@ -69,9 +70,17 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	}
 	
 	public void setImage(String src) {
-		String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-		url += "/" + src;
-		img.setUrl(url);
+		String imagePath = "";
+		if (isSystemImage) {
+			imagePath = BrowserUtils.getSystemImageDir() + "/" + src;
+		} else {
+			imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + "/" + src;
+		}
+		img.setUrl(imagePath);
+	}
+	
+	private void setIsSystemImage(boolean isSystemImage) {
+		this.isSystemImage = isSystemImage;
 	}
 	
 	public void showImage() {
@@ -142,7 +151,11 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		ButtonDefault buttonDefault = entity.getDefault();
 		Boolean hasControl = entity.getHasControlCommand();
 		if (buttonDefault != null) {
-			component.setImage(buttonDefault.getImage().getSrc());
+			boolean isSystemImage = false;
+			org.openremote.web.console.panel.entity.Image img = buttonDefault.getImage();
+			if (img.getSystemImage()) isSystemImage = true;			
+			component.setIsSystemImage(isSystemImage);
+			component.setImage(img.getSrc());
 		}
 		if (hasControl != null && hasControl) {
 			component.setHasControlCommand(hasControl);

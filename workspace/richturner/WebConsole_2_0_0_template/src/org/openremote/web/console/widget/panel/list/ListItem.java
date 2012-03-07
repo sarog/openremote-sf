@@ -113,28 +113,24 @@ public class ListItem extends PanelComponent {
 			}
 			
 			// Cycle through absolute and grid panels and create components
-			try {
-				List<AbsoluteLayout> absoluteElems = listLayout.getAbsolute();
-				
-				if (absoluteElems != null) {
-					for (AbsoluteLayout layout : absoluteElems) {
-						// Create Absolute Panel Component
-						AbsolutePanelComponent absComponent = AbsolutePanelComponent.build(layout);
-						item.addComponentToListItem(absComponent);
-					}
+			List<AbsoluteLayout> absoluteElems = listLayout.getAbsolute();
+			
+			if (absoluteElems != null) {
+				for (AbsoluteLayout layout : absoluteElems) {
+					// Create Absolute Panel Component
+					AbsolutePanelComponent absComponent = AbsolutePanelComponent.build(layout);
+					item.addComponentToListItem(absComponent);
 				}
-				
-				List<GridLayout> gridElems = listLayout.getGrid();
-				
-				if (gridElems != null) {
-					for (GridLayout layout : gridElems) {
-						// Create Grid Panel Component
-						GridPanelComponent gridComponent = GridPanelComponent.build(layout);
-						item.addComponentToListItem(gridComponent);
-					}
+			}
+			
+			List<GridLayout> gridElems = listLayout.getGrid();
+			
+			if (gridElems != null) {
+				for (GridLayout layout : gridElems) {
+					// Create Grid Panel Component
+					GridPanelComponent gridComponent = GridPanelComponent.build(layout);
+					item.addComponentToListItem(gridComponent);
 				}
-			} catch (Exception e) {
-				return null;
 			}
 			
 			return item;
