@@ -16,7 +16,7 @@
         <label id="108" fontSize="20" color="#FFFFFF" text="Controller List" />
       </absolute>
       <list left="0" top="50" width="100%" height="360" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
-	<itemTemplate itemHeight="50">
+	<itemTemplate id="-2" itemHeight="50" onTap="command" commandString="${url}">
 	      <absolute left="0" top="0" width="270" height="50">
 		<label id="110" fontSize="13" color="#FFFFFF" text="${url}" />
 	      </absolute>
@@ -39,18 +39,16 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="108" fontSize="20" color="#FFFFFF" text="Settings" />
       </absolute>
-      <form left="2%" top="55" width="95%" height="300" dataSource="defaultControllerCredentials">
-	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
-	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
-	<field label="Username:" optional="true" inputType="textbox" name="username" />
-	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="SAVE">
-	   <navigate to="controllerlist" />
+      <absolute left="0" top="60" width="100%" height="50">
+        <label id="108" fontSize="20" color="#FFFFFF" text="Clear Cache" />
+      </absolute>
+      <absolute left="260" top="70" width="30" height="30">
+        <button id="-3" name=">" hasControlCommand="true">
+	  <default>
+  	     <image src="controller_edit.png" systemImage="true" />
+	  </default>
 	</button>
-	<button type="cancel">
-	   <navigate to="controllerlist" />
-	</button>
-      </form>
+      </absolute>
     </screen>
     <screen id="52" name="login">
       <absolute left="0" top="0" width="100%" height="50">
@@ -86,20 +84,26 @@
       <absolute left="0" top="0" width="100%" height="50">
         <label id="120" fontSize="20" color="#FFFFFF" text="Select Panel" />
       </absolute>
-      <absolute left="0" top="55" width="100%" height="300">
-        <label id="121" fontSize="14" color="#FFFFFF" text="PANEL LIST HERE" />
+      <absolute left="0" top="55" width="100%" height="50">
+        <label id="121" fontSize="14" color="#FFFFFF" text="Sorry not yet implemented." />
+      </absolute>
+      <absolute left="0" top="105" width="100%" height="50">
+        <label id="122" fontSize="14" color="#FFFFFF" text="Please manually specify panel" />
+      </absolute>
+      <absolute left="0" top="155" width="100%" height="50">
+        <label id="123" fontSize="14" color="#FFFFFF" text="By editing the controller" />
       </absolute>
     </screen>
     <screen id="56" name="addcontroller">
       <absolute left="0" top="0" width="100%" height="50">
         <label id="100" fontSize="20" color="#FFFFFF" text="Add Controller" />
       </absolute>
-      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials" action="add">
+      <form left="2%" top="55" width="95%" height="300" dataSource="controllerCredentialsList" itemBindingObject="controllerCredentials">
 	<field label="Controller URL:" optional="false" inputType="textbox" validationString="^(http|https|HTTP|HTTPS)\://.+/.+$" name="url" />
 	<field label="Default Panel Name:" optional="true" inputType="textbox" name="defaultPanel" />
 	<field label="Username:" optional="true" inputType="textbox" name="username" />
 	<field label="Password:" optional="true" inputType="password" validationString="^(\w|\d)+$" name="password" />
-	<button type="submit" name="ADD">
+	<button type="submit" name="ADD" action="add">
 	   <navigate to="controllerlist" />
 	</button>
 	<button type="cancel">
@@ -127,6 +131,11 @@
     </group>
     <group id="3" name="Edit Settings">
       <include type="screen" ref="51" />
+      <tabbar>
+        <item name="CONTROLLER LIST">
+	   <navigate to="controllerlist" />
+	</item>
+      </tabbar>
     </group>
     <group id="4" name="Login Logout">
       <include type="screen" ref="52" />

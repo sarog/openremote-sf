@@ -134,6 +134,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 								AutoBean<ListItemLayout> instanceBean = AutoBeanService.getInstance().fromJsonString(ListItemLayout.class, instanceStr);
 								ListItemLayout layout = instanceBean.as();
 								ListItem item = ListItem.build(layout);
+								item.setParentList(this);
 								item.setWidth(this.width);
 								listItems.add(item);
 							}
@@ -336,7 +337,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
-		this.fireEvent(new PressCancelEvent(event));
+		// DO NOTHING HERE
 	}
 	
 

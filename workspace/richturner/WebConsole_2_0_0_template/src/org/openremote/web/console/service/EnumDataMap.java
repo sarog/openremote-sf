@@ -2,10 +2,12 @@ package org.openremote.web.console.service;
 
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
+import org.openremote.web.console.panel.entity.WelcomeFlag;
 
 public enum EnumDataMap {
 	CONTROLLER_CREDENTIALS_LIST("controllerCredentialsList", ControllerCredentialsList.class, "{\"controllerCredentials\":[]}"),
 	CONTROLLER_CREDENTIALS("controllerCredentials", ControllerCredentials.class),
+	WELCOME_FLAG("welcomeFlag", WelcomeFlag.class, "{\"welcomeDone\":false}"),
 	LAST_CONTROLLER_CREDENTIALS("lastControllerCredentials", ControllerCredentials.class);
 	
 	private Class<?> clazz;

@@ -44,6 +44,10 @@ public abstract class PressEvent<H extends EventHandler> extends GwtEvent<H> {
 		return source;
 	}
 	
+	public void setSource(Widget source) {
+		this.source = source;
+	}
+	
 	public long getTime() {
 		return time;
 	}

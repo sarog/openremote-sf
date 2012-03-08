@@ -153,7 +153,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		if (buttonDefault != null) {
 			boolean isSystemImage = false;
 			org.openremote.web.console.panel.entity.Image img = buttonDefault.getImage();
-			if (img.getSystemImage()) isSystemImage = true;			
+			if (img.getSystemImage() != null) isSystemImage = true;			
 			component.setIsSystemImage(isSystemImage);
 			component.setImage(img.getSrc());
 		}
