@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.knx.datatype;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.math.BigInteger;
 
 
 /**
@@ -91,35 +92,24 @@ public class TwoOctetFloat implements DataType
     mantissa &= 0xFF;
     mantissa += (data[0] & 0x7) << 8;
 
+    int sign = ((data[0] & 0x80) == 0x80) ? -1 : 1;
 
-    double d = 0.01 * mantissa * Math.pow(2, exponent);
+    if (sign == -1)
+    {
+      mantissa = (mantissa ^ 0x7FF) + 1;
+    }
+    
+    double d = 0.01 * mantissa * Math.pow(2, exponent) * sign;
 
     BigDecimal bigD = new BigDecimal(d).setScale(2, RoundingMode.HALF_UP);
 
-    return (((data[0]) & 0x80) == 0x80) ? bigD.negate() : bigD;
-
-//    BigDecimal sign = ((data[0] & 0x80) == 0x80)
-//        ? BigDecimal.ONE.negate()
-//        : BigDecimal.ONE;
-//
-//    BigDecimal base = (exponent == 0)
-//        ? BigDecimal.ZERO
-//        : basevalues[exponent-1];
-//
-//    BigDecimal m = new BigDecimal(mantissa).multiply(KNX_FLOAT_MAXIMUM_PRECISION);
-//
-//    BigDecimal value = new BigDecimal(Math.pow(2, exponent))
-//        .multiply(m)
-//        .add(base)
-//        .multiply(sign);
-//
-//    return value.setScale(2, RoundingMode.HALF_UP);
+    return bigD;
+//    return (((data[0]) & 0x80) == 0x80) ? bigD.negate() : bigD;
   }
 
 
   
   // Private Instance Methods ---------------------------------------------------------------------
-
 
 
   private byte[] convertToKNXFloat(BigDecimal value)
@@ -131,27 +121,47 @@ public class TwoOctetFloat implements DataType
 
     if (value.compareTo(BigDecimal.ZERO) < 0)
     {
-      value = value.multiply(BigDecimal.ONE.negate());
       sign = 0x8000;
     }
 
     int exponent = 0;
 
-    for (int i = 0 ; i < 16; ++i)
+    if (sign == 0)
     {
-      BigDecimal boundary = new BigDecimal(20.47*Math.pow(2, i)).setScale(2, RoundingMode.HALF_UP);
-
-      if (boundary.compareTo(value) >= 0)
+      for (int i = 0 ; i < 16; ++i)
       {
-        exponent = i;
-        break;
+        BigDecimal boundary = new BigDecimal(20.47*Math.pow(2, i)).setScale(2, RoundingMode.HALF_UP);
+
+        if (boundary.compareTo(value) >= 0)
+        {
+          exponent = i;
+          break;
+        }
       }
+
+      bits = (value.floatValue() > 20.47)
+          ? (int)Math.round((value.doubleValue() / Math.pow(2, exponent))*100)
+          : Math.round(value.multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).floatValue());
     }
 
-    bits = (value.floatValue() > 20.47)
-        ? (int)Math.round((value.doubleValue() / Math.pow(2, exponent))*100)
-        : Math.round(value.multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).floatValue());
+    else
+    {
+      for (int i = 0; i < 16; i++)
+      {
+        BigDecimal base = new BigDecimal("-20.48");
+        BigDecimal boundary = base.multiply(new BigDecimal(Integer.toString((int)Math.pow(2, i))));
+
+        if (boundary.compareTo(value) <= 0)
+        {
+          exponent = i;
+          break;
+        }
+      }
+
+      bits = (int)Math.round(value.doubleValue() / Math.pow(2, exponent) * 100);
+    }
     
+    bits &= 0x7FF;
     bits += exponent << 11;
     
     return new byte[] { (byte)(((bits + sign) & 0xFF00) >> 8), (byte)(bits & 0xFF) };

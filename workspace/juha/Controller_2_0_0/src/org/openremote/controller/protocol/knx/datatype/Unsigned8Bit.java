@@ -108,12 +108,12 @@ public class Unsigned8Bit implements DataType
   {
     if (dpt == DataPointType.Unsigned8BitValue.SCALING)
     {
-      return (int)(value / 2.55);
+      return (int)(Math.round(value / 2.55));
     }
 
     else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
     {
-      return (int)(value * 1.411764705882352);
+      return (int)(Math.round(value * 1.411764705882352));
     }
 
     else if (dpt == DataPointType.Unsigned8BitValue.RELPOS_VALVE)
