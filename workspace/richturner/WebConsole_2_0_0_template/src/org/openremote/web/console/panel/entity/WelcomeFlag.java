@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,23 +19,9 @@
 */
 package org.openremote.web.console.panel.entity;
 
-import java.util.List;
+public interface WelcomeFlag {
 
-/**
- * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
- */
-public interface ListItemLayout {
-   List<AbsoluteLayout> getAbsolute();
-   List<GridLayout> getGrid();
-   String getItemHeight();
-   String getOnTap();
-   String getCommandString();
-   Integer getId();
-   
-   void setAbsolute(List<AbsoluteLayout> layouts);
-   void setGrid(List<GridLayout> layouts);
-   void setItemHeight(String itemHeight);
-   void setOnTap(String ontap);
-   void setCommandString(String commandString);
-   void setId(Integer id);
+   public void setWelcomeDone(Boolean welcomeDone);
+
+   public Boolean getWelcomeDone();
 }

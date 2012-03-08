@@ -85,7 +85,9 @@ public class LocalDataServiceImpl implements LocalDataService {
 		} else {
 			Cookies.removeCookie(dataName);
 		}
+		initData();
 	}
+	
 	@Override
 	public void clearAllData() {
 		if (dataStore != null) {
@@ -93,6 +95,7 @@ public class LocalDataServiceImpl implements LocalDataService {
 		} else {
 			// TODO: Clear out cookies
 		}
+		initData();
 	}
 	
 	@Override

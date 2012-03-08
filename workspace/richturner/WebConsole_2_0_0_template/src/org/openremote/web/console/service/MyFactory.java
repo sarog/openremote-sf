@@ -37,4 +37,5 @@ public interface MyFactory extends AutoBeanFactory {
 	AutoBean<StatusList> statuses();
 	AutoBean<Status> status();
 	AutoBean<ListItemLayout> listItem();
+	AutoBean<WelcomeFlag> welcomeFlag();
 }

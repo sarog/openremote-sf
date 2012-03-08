@@ -35,6 +35,7 @@ import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
+import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.*;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.PollingHelper;
@@ -103,10 +104,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		CONTROLLER_LIST(50, 2, "controllerlist"),
 		EDIT_CONTROLLER(54, 5, "editcontroller"),
 		ADD_CONTROLLER(56, 7, "addcontroller"),
+		CONSOLE_SETTING(51, 3, "setting"),
 		CONSOLE_SETTINGS(51, 3, "settings"),
-		LOGIN(51, 3, "login"),
-		LOGOUT(51, 3, "logout"),
-		PANEL_SELECTION(50, 2, "panelselection");
+		LOGIN(50, 2, "login"),
+		LOGOUT(50, 2, "logout"),
+		PANEL_SELECTION(55, 6, "panelselection");
 		
 		private final int id;
 		private final int groupId;
@@ -378,20 +380,22 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 	}
 	
-	private void loadControllerAndPanel(ControllerCredentials controllerCreds, String panelName) {
+	private void loadController(ControllerCredentials controllerCreds) {
 		if (controllerCreds == null) {
 			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		} else {
 			// Instantiate controller from credentials and check it is alive then load the panel by name
 			currentControllerCredentials = controllerCreds;
-			currentPanelName = panelName;
 			controllerService.setController(new Controller(controllerCreds));
 			controllerService.isAlive(new AsyncControllerCallback<Boolean>() {
 				@Override
 				public void onSuccess(Boolean isAlive) {
 					if (isAlive) {
+						currentPanelName = currentControllerCredentials.getDefaultPanel();
+						
 						// If current panel name set try and load it otherwise prompt for panel to load
 						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
+							dataService.setLastControllerCredentials(currentControllerCredentials);
 							loadPanel(currentPanelName);
 						} else {
 							loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
@@ -487,7 +491,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		Timer reloadTimer = new Timer() {
 			@Override
 			public void run() {
-				loadControllerAndPanel(currentControllerCredentials, currentPanelName);
+				loadController(currentControllerCredentials);
 			}
 		};
 		reloadTimer.schedule(2000);
@@ -689,7 +693,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		// Configure display
 		consoleDisplay.onAdd(width, height);
-
+		
 		show();
 		
 		// TODO: Check for default Controller in Settings
@@ -706,16 +710,28 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //		if (panelName != null && !panelName.equals("")) {
 //			loadControllerAndPanel(controllerCreds, panelName);
 //		} else {
+		
+		// Display Welcome message
+		String welcomeString = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
+		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeString);
+		WelcomeFlag flag = (WelcomeFlag)bean.as();
+		if (!flag.getWelcomeDone()) {
+			Window.alert("Welcome to the latest Web Console!\n\nUnfortunately it's still not 100% complete!\n\nMost things should work but please check the forums " +
+							"regularly for information about updates, to request features and report bugs.\n\n" +
+							"Some Pointers: - \n\n" +
+							"- Use the Search button or manually add Controllers (at present you have to manually specify the name of the Panel to load).\n" +
+							"- Hold down on the background at any time to go back to the Controller List screen.\n" +
+							"- Unfortunately security is not supported in this version");
+			flag.setWelcomeDone(true);
+			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(flag));
+		}
+		
 			// Check for Last Controller and Panel in Cache
 			controllerCreds = dataService.getLastControllerCredentials();
-			if (controllerCreds != null) {
-				panelName = controllerCreds.getDefaultPanel();
-			}
-			
-			if (panelName != null && !panelName.equals("")) {
-				loadControllerAndPanel(controllerCreds, panelName);
+			if (controllerCreds != null && controllerCreds.getUrl() != null) {
+				loadController(controllerCreds);
 			} else {
-				// No panel or controller to load so go to settings
+				// No controller to load so go to settings
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 			}
 //		}
@@ -828,57 +844,65 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	@Override
 	public void onCommandSend(CommandSendEvent event) {
 		if (event != null) {
-			// Look for internal commands
-			if (event.getCommand().equalsIgnoreCase("internal")) {
-				switch (event.getCommandId()) {
-				case -1: //Controller Discovery
-					// Change tab bar search item image
-					String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_searching.gif";
-					consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
-					
-					// Do RPC
-					AutoDiscoveryRPCServiceAsync discoveryService = (AutoDiscoveryRPCServiceAsync) GWT.create(AutoDiscoveryRPCService.class);
-					AsyncControllerCallback<List<String>> callback = new AsyncControllerCallback<List<String>>() {
-						@Override
-						public void onSuccess(List<String> discoveredUrls) {
-							ControllerCredentialsList credsListObj = dataService.getControllerCredentialsList();
-							List<ControllerCredentials> credsList = credsListObj.getControllerCredentials();
-							for (String discoveredUrl : discoveredUrls) {
-								boolean alreadyExists = false;
-								for (ControllerCredentials creds : credsList) {
-									if (creds.getUrl().equalsIgnoreCase(discoveredUrl)) {
-										alreadyExists = true;
-										break;
-									}
-								}
-								if (!alreadyExists) {
-									AutoBean<ControllerCredentials> credentialsBean = AutoBeanService.getInstance().getFactory().controllerCredentials();
-									credentialsBean.as().setUrl(discoveredUrl);
-									credsList.add(credentialsBean.as());
+			switch (event.getCommandId()) {
+			case -1: //Controller Discovery
+				// Change tab bar search item image
+				String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_searching.gif";
+				consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
+				
+				// Do RPC
+				AutoDiscoveryRPCServiceAsync discoveryService = (AutoDiscoveryRPCServiceAsync) GWT.create(AutoDiscoveryRPCService.class);
+				AsyncControllerCallback<List<String>> callback = new AsyncControllerCallback<List<String>>() {
+					@Override
+					public void onSuccess(List<String> discoveredUrls) {
+						ControllerCredentialsList credsListObj = dataService.getControllerCredentialsList();
+						List<ControllerCredentials> credsList = credsListObj.getControllerCredentials();
+						for (String discoveredUrl : discoveredUrls) {
+							boolean alreadyExists = false;
+							for (ControllerCredentials creds : credsList) {
+								if (creds.getUrl().equalsIgnoreCase(discoveredUrl)) {
+									alreadyExists = true;
+									break;
 								}
 							}
-							credsListObj.setControllerCredentials(credsList);
-							dataService.setControllerCredentialsList(credsListObj);
-							resetTabItemImage();
+							if (!alreadyExists) {
+								AutoBean<ControllerCredentials> credentialsBean = AutoBeanService.getInstance().getFactory().controllerCredentials();
+								credentialsBean.as().setUrl(discoveredUrl);
+								credsList.add(credentialsBean.as());
+							}
 						}
-						@Override
-						public void onFailure(Throwable exception) {
-							resetTabItemImage();
-							super.onFailure(exception);
-						}
-						
-						private void resetTabItemImage() {
-							String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_search.png";
-							consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
-						}
-					};
-					discoveryService.getAutoDiscoveryServers(callback);
-					break;
-				default:
-					//TODO: Undefined internal command handling
+						credsListObj.setControllerCredentials(credsList);
+						dataService.setControllerCredentialsList(credsListObj);
+						resetTabItemImage();
+					}
+					@Override
+					public void onFailure(Throwable exception) {
+						resetTabItemImage();
+						super.onFailure(exception);
+					}
 					
+					private void resetTabItemImage() {
+						String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_search.png";
+						consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
+					}
+				};
+				discoveryService.getAutoDiscoveryServers(callback);
+				break;
+			case -2: // Load Controller
+				String loadUrl = event.getCommand();
+				ControllerCredentialsList credsList =  dataService.getControllerCredentialsList();
+				for (ControllerCredentials creds : credsList.getControllerCredentials()) {
+					if (creds.getUrl().equalsIgnoreCase(loadUrl)) {
+						loadController(creds);
+						break;
+					}
 				}
-			} else {
+				break;
+			case -3: // Clear Cache
+				dataService.clearAllData();
+				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+				break;
+			default:
 				controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
 					@Override
 					public void onSuccess(Boolean result) {

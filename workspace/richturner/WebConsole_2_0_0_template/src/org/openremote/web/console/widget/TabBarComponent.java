@@ -42,8 +42,8 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 	public static final int TAB_BAR_HEIGHT = 46;
 	public static final int TAB_TEXT_HEIGHT = 12;
 	public static final int PADDING_TOP = 2;
-	public static final int PADDING_BOTTOM = 2;
-	public static final int PADDING_BETWEEN_IMAGE_AND_TEXT = 2;
+	public static final int PADDING_BOTTOM = 1;
+	public static final int PADDING_BETWEEN_IMAGE_AND_TEXT = 4;
 	private static final int TAB_ITEM_MIN_WIDTH = 60;
 	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
 	private int pageCount = 0;
@@ -122,7 +122,9 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			// If image and text add padding between them and adjust image size
 			if (hasImage && hasText) {
 				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM + TAB_TEXT_HEIGHT + PADDING_BETWEEN_IMAGE_AND_TEXT);
-				DOM.setStyleAttribute(imageComponent.getElement(), "marginBottom", PADDING_BETWEEN_IMAGE_AND_TEXT/2 + "px");
+				imageComponent.getElement().getStyle().clearMargin();
+				DOM.setStyleAttribute(imageComponent.getElement(), "position", "relative");
+				DOM.setStyleAttribute(imageComponent.getElement(), "top", PADDING_TOP + "px");
 				DOM.setStyleAttribute(nameComponent.getElement(), "marginTop", PADDING_BETWEEN_IMAGE_AND_TEXT/2 + "px");
 				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
 			}

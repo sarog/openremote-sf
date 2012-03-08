@@ -94,6 +94,7 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
+		//eventBus.fireEvent(new PressCancelEvent(event));
 		this.fireEvent(new PressCancelEvent(event));
 	}
 
