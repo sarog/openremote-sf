@@ -311,8 +311,11 @@ public class RuleEngine extends EventProcessor
    */
   @Override public void stop()
   {
-    knowledgeSession.dispose();
-
+    if (knowledgeSession != null)
+    {
+      knowledgeSession.dispose();
+    }
+    
     kb = null;
   }
 
