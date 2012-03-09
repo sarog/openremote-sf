@@ -26,6 +26,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -61,6 +62,10 @@ public class SensorBeanModelProxy {
         asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
       }
     });
+  }
+  
+  public static void loadAllSensorWithInfosDTO(AsyncSuccessCallback<ArrayList<SensorWithInfoDTO>> callback) {
+    AsyncServiceFactory.getSensorRPCServiceAsync().loadAllSensorWithInfosDTO(callback);
   }
   
   public static void updateSensorWithDTO(final SensorDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {

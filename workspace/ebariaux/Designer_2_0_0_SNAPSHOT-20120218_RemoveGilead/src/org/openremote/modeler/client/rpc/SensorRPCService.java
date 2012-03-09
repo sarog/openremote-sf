@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -41,7 +42,9 @@ public interface SensorRPCService extends RemoteService {
     * @return the boolean
     */
    Boolean deleteSensor(long id);   
-   
+
+  ArrayList<SensorWithInfoDTO> loadAllSensorWithInfosDTO();
+
   ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id);
 
   SensorDetailsDTO loadSensorDetails(long id);

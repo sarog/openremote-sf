@@ -29,6 +29,7 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.SensorLink.LinkerChild;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
 
@@ -40,7 +41,7 @@ import flexjson.JSON;
  * corresponding with the sensor state and the label has been specified,
  * show the label's state on the component.
  */
-public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwner {
+public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner, ImageSourceOwner {
 
    private static final long serialVersionUID = -4114009124680167066L;
 
@@ -50,6 +51,8 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
 
    /** The ui image can change display image by the sensor. */
    private Sensor sensor = null;
+   
+   private SensorWithInfoDTO sensorDTO;
 
    /** The ui image can display the label's sensor text. */
    private UILabel label = null;
@@ -97,7 +100,15 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
       }
    }
    
-   public UILabel getLabel() {
+   public SensorWithInfoDTO getSensorDTO() {
+    return sensorDTO;
+  }
+
+  public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+    this.sensorDTO = sensorDTO;
+  }
+
+  public UILabel getLabel() {
       return label;
    }
 

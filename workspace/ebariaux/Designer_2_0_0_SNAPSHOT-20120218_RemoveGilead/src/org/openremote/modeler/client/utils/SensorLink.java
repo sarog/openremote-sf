@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
 /**
@@ -43,6 +44,9 @@ public class SensorLink extends BusinessEntity {
    private static final long serialVersionUID = 4070183628030926123L;
    
    private Sensor sensor = null;
+   
+   private SensorWithInfoDTO sensorDTO;
+   
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
    
    public SensorLink() {
@@ -122,9 +126,18 @@ public class SensorLink extends BusinessEntity {
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
    }
-
    
-   public Set<LinkerChild> getLinkerChildren() {
+   public SensorWithInfoDTO getSensorDTO() {
+    return sensorDTO;
+  }
+
+
+  public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+    this.sensorDTO = sensorDTO;
+  }
+
+
+  public Set<LinkerChild> getLinkerChildren() {
       return linkerChildren;
    }
 

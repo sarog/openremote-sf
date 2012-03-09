@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
@@ -37,7 +36,8 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -106,11 +106,10 @@ public class LabelPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  SensorDetailsDTO sensorDTO = dataModel.getBean();
-                  Sensor sensor = BeanModelDataBase.sensorTable.get(sensorDTO.getOid()).getBean();
-                  uiLabel.setSensorAndInitSensorLink(sensor);
-                  sensorSelectBtn.setText(sensor.getDisplayName());
-                  if (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM) {
+                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                  uiLabel.setSensorDTOAndInitSensorLink(sensorDTO);
+                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
+                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM) {
                      statesPanel.show();
                      createSensorStates();
                   } else {
@@ -121,8 +120,8 @@ public class LabelPropertyForm extends PropertyForm {
             });
          }
       });
-      if(screenLabel.getUiLabel().getSensor()!=null){
-         sensorSelectBtn.setText(screenLabel.getUiLabel().getSensor().getDisplayName());
+      if(screenLabel.getUiLabel().getSensorDTO() != null){
+         sensorSelectBtn.setText(screenLabel.getUiLabel().getSensorDTO().getDisplayName());
       }
       final Button colorSelectBtn = new Button("Select");
       colorSelectBtn.setStyleAttribute("border", "2px solid #"+screenLabel.getUiLabel().getColor());
@@ -173,7 +172,7 @@ public class LabelPropertyForm extends PropertyForm {
       statesPanel.removeAll();
       SensorLink sensorLink = screenLabel.getUiLabel().getSensorLink();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
-      if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType()==SensorType.SWITCH){
+      if(screenLabel.getUiLabel().getSensorDTO()!=null && screenLabel.getUiLabel().getSensorDTO().getType()==SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
         final TextField<String> offField = new TextField<String>();
         
@@ -214,7 +213,7 @@ public class LabelPropertyForm extends PropertyForm {
        
         statesPanel.add(onField);
         statesPanel.add(offField);
-      } else if(screenLabel.getUiLabel().getSensor()!=null && screenLabel.getUiLabel().getSensor().getType() == SensorType.CUSTOM){
+      } else if(screenLabel.getUiLabel().getSensorDTO()!=null && screenLabel.getUiLabel().getSensorDTO().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenLabel.getUiLabel().getSensor();
          List<State> states = customSensor.getStates();
          for(final State state: states){
