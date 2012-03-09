@@ -19,11 +19,14 @@
 */
 package org.openremote.modeler.client.proxy;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -53,6 +56,10 @@ public class SwitchBeanModelProxy {
          asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
        }
      });
+   }
+   
+   public static void loadAllSwitchWithInfosDTO(AsyncSuccessCallback<ArrayList<SwitchWithInfoDTO>> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().loadAllSwitchWithInfosDTO(callback);
    }
    
    public static void updateSwitchWithDTO(final SwitchDetailsDTO switchDTO, AsyncSuccessCallback<Void> callback) {

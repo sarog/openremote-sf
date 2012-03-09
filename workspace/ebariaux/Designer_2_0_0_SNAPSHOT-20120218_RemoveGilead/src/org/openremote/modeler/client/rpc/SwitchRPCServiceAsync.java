@@ -19,7 +19,10 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -28,6 +31,8 @@ public interface SwitchRPCServiceAsync {
    void delete(long id, AsyncCallback<Void> callback);
 
    void loadSwitchDetails(long id, AsyncCallback<SwitchDetailsDTO> callback);
+
+   void loadAllSwitchWithInfosDTO(AsyncCallback<ArrayList<SwitchWithInfoDTO>> callback);
 
    void updateSwitchWithDTO(SwitchDetailsDTO switchDTO, AsyncCallback<Void> callback);
 

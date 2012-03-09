@@ -19,9 +19,12 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.SwitchBeanModelTable;
+import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -70,14 +73,13 @@ public class SelectSwitchWindow extends Dialog {
       // overflow-auto style is for IE hack.
       switchListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();
-      
-      
-      store.add(((SwitchBeanModelTable)BeanModelDataBase.switchTable).loadAllAsDTOs());
-      
-      
-      
-      
+      final ListStore<BeanModel> store = new ListStore<BeanModel>();
+      SwitchBeanModelProxy.loadAllSwitchWithInfosDTO(new AsyncSuccessCallback<ArrayList<SwitchWithInfoDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SwitchWithInfoDTO> result) {
+          store.add(DTOHelper.createModels(result));
+        }
+      });
       switchList.setStore(store);
       switchList.setDisplayProperty("displayName");
       switchList.setStyleAttribute("overflow", "auto");

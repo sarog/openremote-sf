@@ -81,6 +81,7 @@ import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Gesture;
@@ -105,12 +106,14 @@ import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.server.SensorController;
 import org.openremote.modeler.server.SliderController;
+import org.openremote.modeler.server.SwitchController;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
+import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
@@ -146,6 +149,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private SensorService sensorService;
   private SliderService sliderService;
+  private SwitchService switchService;
 
   private VelocityEngine velocity;
 
@@ -560,6 +564,10 @@ public class ResourceServiceImpl implements ResourceService {
     this.sliderService = sliderService;
   }
 
+  public void setSwitchService(SwitchService switchService) {
+    this.switchService = switchService;
+  }
+
   /**
    * @deprecated looks unused
    */
@@ -892,8 +900,14 @@ public class ResourceServiceImpl implements ResourceService {
             uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
           } 
           uiSlider.setSlider(null);
-          
-        }        
+        }
+        if (component instanceof UISwitch) {
+          UISwitch uiSwitch = (UISwitch)component;
+          if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+            uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(uiSwitch.getSwitchCommand()));
+            uiSwitch.setSwitchCommand(null);
+          }
+        }
       }
       
       // TODO: continue
@@ -955,6 +969,14 @@ public class ResourceServiceImpl implements ResourceService {
           uiSlider.setSlider(slider);
           uiSlider.setSliderDTO(null);
         }        
+      }
+      if (component instanceof UISwitch) {
+        UISwitch uiSwitch = (UISwitch)component;
+        if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
+          Switch sw = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+          uiSwitch.setSwitchCommand(sw);
+          uiSwitch.setSwitchDTO(null);
+        }
       }
       
       
