@@ -108,6 +108,16 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
     this.sensorDTO = sensorDTO;
   }
 
+  public void setSensorDTOAndInitSensorLink(SensorWithInfoDTO sensorDTO) {
+    this.sensorDTO = sensorDTO;
+    if (sensorDTO != null) {
+      this.sensorLink = new SensorLink();
+      this.sensorLink.setSensorDTO(sensorDTO);
+    } else {
+       sensorLink.clear();
+    }
+ }
+
   public UILabel getLabel() {
       return label;
    }
