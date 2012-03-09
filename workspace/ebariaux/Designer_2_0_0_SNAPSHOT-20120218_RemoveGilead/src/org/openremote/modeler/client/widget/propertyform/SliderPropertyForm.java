@@ -77,7 +77,7 @@ public class SliderPropertyForm extends PropertyForm {
 
                   @Override
                   public void onFailure(Throwable caught) {
-                     Info.display("Error", "falid to rotate images");
+                     Info.display("Error", "Failed to rotate images");
                   }
 
                   @Override
