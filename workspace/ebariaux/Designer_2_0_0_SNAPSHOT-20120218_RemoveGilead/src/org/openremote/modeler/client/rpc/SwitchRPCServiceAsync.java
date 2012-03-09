@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,8 +26,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SwitchRPCServiceAsync {
 
    void delete(long id, AsyncCallback<Void> callback);
-
-   void save(Switch switchToggle, AsyncCallback<Switch> callback);
 
    void loadSwitchDetails(long id, AsyncCallback<SwitchDetailsDTO> callback);
 
