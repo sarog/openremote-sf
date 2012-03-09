@@ -23,7 +23,6 @@ package org.openremote.modeler.shared.dto;
 import java.util.ArrayList;
 
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 
 public class SensorWithInfoDTO implements DTO {
 
