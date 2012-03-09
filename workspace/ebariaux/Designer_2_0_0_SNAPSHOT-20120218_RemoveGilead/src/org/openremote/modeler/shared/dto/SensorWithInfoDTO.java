@@ -109,6 +109,9 @@ public class SensorWithInfoDTO implements DTO {
   }
 
   public String getStatesInfo() {
+    if (stateNames == null) {
+      return null;
+    }
     StringBuffer states = new StringBuffer("");
     for (String stateName : stateNames) {
        states.append(stateName);
