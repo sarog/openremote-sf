@@ -46,7 +46,7 @@ import org.openremote.controller.statuscache.StatusCache;
 public class StatusPollingServiceImpl implements StatusPollingService {
 
   // TODO : use one of the controller runtime categories
-  private final static Logger logger = Logger.getLogger(StatusPollingService.class.getName());
+  private final static Logger logger = Logger.getLogger(Constants.RUNTIME_STATECACHE_LOG_CATEGORY);
 
    private ChangedStatusTable changedStatusTable;
    private Deployer deployer;
