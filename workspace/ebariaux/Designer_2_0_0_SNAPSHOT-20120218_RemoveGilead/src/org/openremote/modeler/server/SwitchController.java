@@ -47,12 +47,6 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
       switchService.delete(id);
    }
 
-   @Override
-   public Switch save(Switch switchToggle) {
-      switchToggle.setAccount(userService.getAccount());
-      return switchService.save(switchToggle);
-   }
-
    public void setSwitchService(SwitchService switchService) {
       this.switchService = switchService;
    }

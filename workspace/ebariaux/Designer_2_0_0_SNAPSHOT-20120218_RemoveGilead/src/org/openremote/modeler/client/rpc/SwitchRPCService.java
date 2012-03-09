@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -30,15 +29,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("switch.smvc")
 public interface SwitchRPCService extends RemoteService {
-   
-   /**
-    * Save switch into database.
-    * 
-    * @param switchToggle the switch toggle
-    * 
-    * @return the switch
-    */
-   Switch save(Switch switchToggle);
    
    /**
     * Delete switch by id.
