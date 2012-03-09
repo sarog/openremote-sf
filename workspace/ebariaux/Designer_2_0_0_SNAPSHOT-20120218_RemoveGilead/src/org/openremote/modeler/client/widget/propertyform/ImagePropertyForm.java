@@ -27,7 +27,6 @@ import java.util.Map;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.ComboBoxExt;
@@ -44,7 +43,7 @@ import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -79,8 +78,8 @@ public class ImagePropertyForm extends PropertyForm {
       final UIImage uiImage = screenImage.getUiImage();
       
       final Button sensorSelectBtn = new Button("Select");
-      if(screenImage.getUiImage().getSensor()!=null){
-         sensorSelectBtn.setText(screenImage.getUiImage().getSensor().getDisplayName());
+      if(screenImage.getUiImage().getSensorDTO()!=null){
+         sensorSelectBtn.setText(screenImage.getUiImage().getSensorDTO().getDisplayName());
       }
       sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -90,11 +89,10 @@ public class ImagePropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  SensorDetailsDTO sensorDTO = dataModel.getBean();
-                  Sensor sensor = BeanModelDataBase.sensorTable.get(sensorDTO.getOid()).getBean();
-                  uiImage.setSensorAndInitSensorLink(sensor);
-                  sensorSelectBtn.setText(sensor.getDisplayName());
-                  if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
+                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                  uiImage.setSensorDTOAndInitSensorLink(sensorDTO);
+                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
+                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType()==SensorType.CUSTOM) {
                      statesPanel.show();
                      createSensorStates();
                   } else {
@@ -193,7 +191,7 @@ public class ImagePropertyForm extends PropertyForm {
    private void createSensorStates(){
       statesPanel.removeAll();
       final SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
-      if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType()==SensorType.SWITCH){
+      if(screenImage.getUiImage().getSensorDTO()!=null && screenImage.getUiImage().getSensorDTO().getType()==SensorType.SWITCH){
         final ImageSelectAdapterField onImageUploadField = new ImageSelectAdapterField("on");
         onImageUploadField.addSelectionListener(new SelectionListener<ButtonEvent>() {
            @Override
@@ -256,7 +254,7 @@ public class ImagePropertyForm extends PropertyForm {
         
          statesPanel.add(onImageUploadField);
          statesPanel.add(offImageUploadField);
-      }else if(screenImage.getUiImage().getSensor()!=null && screenImage.getUiImage().getSensor().getType() == SensorType.CUSTOM){
+      }else if(screenImage.getUiImage().getSensorDTO()!=null && screenImage.getUiImage().getSensorDTO().getType() == SensorType.CUSTOM){
          CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
          List<State> states = customSensor.getStates();
          for(final State state: states){

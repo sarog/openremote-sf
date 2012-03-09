@@ -250,7 +250,7 @@ public class ProfilePanelPresenter implements Presenter {
                    }
                 }
              }
-             panelTree.expandAll();               
+             panelTree.expandAll();
              eventBus.fireEvent(new ScreenTableLoadedEvent());
           } else {
              panelTree.unmask();
@@ -289,7 +289,7 @@ public class ProfilePanelPresenter implements Presenter {
              }
              BeanModelDataBase.panelTable.insert(panel.getBeanModel());
           }
-
+          
           for (Group group : groups) {
              List<ScreenPairRef> screenRefs = group.getScreenRefs();
              for (ScreenPairRef screenRef : screenRefs) {
@@ -298,7 +298,6 @@ public class ProfilePanelPresenter implements Presenter {
              }
              BeanModelDataBase.groupTable.insert(group.getBeanModel());
           }
-          
        }
     });
     
