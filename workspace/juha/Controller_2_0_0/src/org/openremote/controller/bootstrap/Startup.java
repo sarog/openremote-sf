@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -262,7 +262,6 @@ public class Startup
 
 
 
-    private static boolean systemWarningOnTraceLevelMapping = false;
     private static boolean systemWarningOnUnmappedLevel = false;
 
     private org.apache.log4j.Level mapToLog4jLevel(Level level)
@@ -294,32 +293,7 @@ public class Startup
 
       else if (level == Level.FINER || level == Level.FINEST)
       {
-        // TODO :
-        //   update to log4j 1.2.12 to get TRACE level out-of-the-box, not hacking it in as
-        //   a custom level for now, we're not tracing anywhere yet
-        //                                                                            [JPL]
-        //
-        //log4jLevel = org.apache.log4j.Level.TRACE;
-
-        if (!systemWarningOnTraceLevelMapping)
-        {
-          System.err.println(
-              "\n\n" +
-              "-----------------------------------------------------------------------------" +
-              "\n\n" +
-
-              "  System is using TRACE level logging which has not yet been mapped. \n" +
-              "  Defaulting to DEBUG level." +
-
-              "\n\n" +
-              "-----------------------------------------------------------------------------" +
-              "\n\n"
-          );
-
-          systemWarningOnTraceLevelMapping = true;
-        }
-
-        return org.apache.log4j.Level.DEBUG;
+        return org.apache.log4j.Level.TRACE;
       }
 
       else if (level == Level.ALL)

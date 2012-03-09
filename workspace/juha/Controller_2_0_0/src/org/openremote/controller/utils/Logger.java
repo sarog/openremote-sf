@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -371,8 +371,6 @@ public class Logger extends java.util.logging.Logger
 
   /**
    * Synonymous to using {@link java.util.logging.Logger#finer}.
-   *
-   * TODO : see ORCJAVA-114
    *
    * @param msg   log message
    */

@@ -697,8 +697,8 @@ OpenRemote Sub-components:
   3.0.
 * JDOM library is licensed under the terms included below.
 * Jaxen library is licensed under the terms included below.
-* Log4j library is licensed under Apache License Version 2.0, see license
-  below.
+* Log4j 1.2.12 library is licensed under Apache License Version 2.0, see 
+  license below.
 * Sunrise/Sunset library is licensed under Apache License Version 2.0, see
   license below.
 * Jakarta Standard Tag Library is licensed under Apache License Version 2.0,
