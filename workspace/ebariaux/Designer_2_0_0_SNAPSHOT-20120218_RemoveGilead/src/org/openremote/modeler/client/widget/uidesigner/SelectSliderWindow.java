@@ -19,9 +19,12 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.SliderBeanModelTable;
+import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -70,8 +73,14 @@ public class SelectSliderWindow extends Dialog {
       // overflow-auto style is for IE hack.
       sliderListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();      
-      store.add(((SliderBeanModelTable)BeanModelDataBase.sliderTable).loadAllAsDTOs());
+      final ListStore<BeanModel> store = new ListStore<BeanModel>();
+      SliderBeanModelProxy.loadAllSliderWithInfosDTO(new AsyncSuccessCallback<ArrayList<SliderWithInfoDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SliderWithInfoDTO> result) {
+          store.add(DTOHelper.createModels(result));
+
+        }
+      });
       sliderList.setStore(store);
       sliderList.setDisplayProperty("displayName");
       sliderList.setStyleAttribute("overflow", "auto");

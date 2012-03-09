@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.SliderRPCService;
@@ -31,6 +32,7 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 /**
  * The server side implementation of the RPC service <code>SliderRPCService</code>.
@@ -82,6 +84,22 @@ public class SliderController extends BaseGWTSpringController implements SliderR
      DeviceCommand command = slider.getSetValueCmd().getDeviceCommand();
      return new SliderDetailsDTO(slider.getOid(), slider.getName(), new DTOReference(slider.getSliderSensorRef().getSensor().getOid()), new DTOReference(command.getOid()), command.getDisplayName());
    }
+
+  @Override
+  public ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO() {
+    ArrayList<SliderWithInfoDTO> dtos = new ArrayList<SliderWithInfoDTO>();
+    for (Slider slider : sliderService.loadAll()) {
+      dtos.add(createSliderWithInfoDTO(slider));
+    }
+    return dtos;    
+  }
+
+  public static SliderWithInfoDTO createSliderWithInfoDTO(Slider slider) {
+    return new SliderWithInfoDTO(slider.getOid(), slider.getDisplayName(),
+            (slider.getSetValueCmd() != null)?slider.getSetValueCmd().getDisplayName():null,
+            (slider.getSliderSensorRef() != null)?slider.getSliderSensorRef().getDisplayName():null,
+            slider.getDevice().getDisplayName());
+  }
 
   @Override
    public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
