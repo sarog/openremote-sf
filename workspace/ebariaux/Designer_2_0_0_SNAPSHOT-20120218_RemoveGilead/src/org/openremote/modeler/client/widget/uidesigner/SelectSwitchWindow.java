@@ -71,7 +71,13 @@ public class SelectSwitchWindow extends Dialog {
       switchListContainer.addStyleName("overflow-auto");
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
+      
+      
       store.add(((SwitchBeanModelTable)BeanModelDataBase.switchTable).loadAllAsDTOs());
+      
+      
+      
+      
       switchList.setStore(store);
       switchList.setDisplayProperty("displayName");
       switchList.setStyleAttribute("overflow", "auto");

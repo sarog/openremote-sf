@@ -20,7 +20,6 @@
 package org.openremote.modeler.server;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openremote.modeler.client.rpc.SliderRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -50,17 +49,6 @@ public class SliderController extends BaseGWTSpringController implements SliderR
    public void delete(long id) {
       sliderService.delete(id);
    }
-
-   @Override
-   public Slider save(Slider slider) {
-      slider.setAccount(userService.getAccount());
-      return sliderService.save(slider);
-   }
-
-   @Override
-   public List<Slider> saveAll(List<Slider> sliderList) {
-     return sliderService.saveAllSliders(sliderList, userService.getAccount());
- }
 
    public void setSliderService(SliderService switchService) {
       this.sliderService = switchService;
