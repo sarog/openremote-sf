@@ -20,7 +20,10 @@
  */
 package org.openremote.modeler.shared.dto;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 
 public class SensorWithInfoDTO implements DTO {
 
@@ -31,14 +34,14 @@ public class SensorWithInfoDTO implements DTO {
   private String commandName;
   private String minValue;
   private String maxValue;
-  private String statesInfo;
+  private ArrayList<String> stateNames;
   private Long oid;
   
   public SensorWithInfoDTO() {
     super();
   }
 
-  public SensorWithInfoDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, String statesInfo) {
+  public SensorWithInfoDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, ArrayList<String> stateNames) {
     super();
     this.oid = oid;
     this.displayName = displayName;
@@ -46,7 +49,7 @@ public class SensorWithInfoDTO implements DTO {
     this.commandName = commandName;
     this.minValue = minValue;
     this.maxValue = maxValue;
-    this.statesInfo = statesInfo;
+    this.stateNames = stateNames;
   }
 
   public String getDisplayName() {
@@ -89,12 +92,12 @@ public class SensorWithInfoDTO implements DTO {
     this.maxValue = maxValue;
   }
 
-  public String getStatesInfo() {
-    return statesInfo;
+  public ArrayList<String> getStateNames() {
+    return stateNames;
   }
 
-  public void setStatesInfo(String statesInfo) {
-    this.statesInfo = statesInfo;
+  public void setStateNames(ArrayList<String> stateNames) {
+    this.stateNames = stateNames;
   }
 
   public Long getOid() {
@@ -104,5 +107,13 @@ public class SensorWithInfoDTO implements DTO {
   public void setOid(Long oid) {
     this.oid = oid;
   }
-  
+
+  public String getStatesInfo() {
+    StringBuffer states = new StringBuffer("");
+    for (String stateName : stateNames) {
+       states.append(stateName);
+       states.append(". ");
+    }
+    return states.toString();
+  }
 }

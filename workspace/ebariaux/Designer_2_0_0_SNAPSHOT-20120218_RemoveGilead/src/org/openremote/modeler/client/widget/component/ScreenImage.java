@@ -29,11 +29,11 @@ import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.Image;
@@ -102,7 +102,7 @@ public class ScreenImage extends ScreenComponent {
    }
    
    public void onStateChange() {
-      Sensor sensor = uiImage.getSensor();
+      SensorWithInfoDTO sensor = uiImage.getSensorDTO();
       if (sensor != null && states.isEmpty()) {
          String resourcePath = Cookies.getCookie(Constants.CURRETN_RESOURCE_PATH);
          if (resourcePath != null) {
@@ -115,9 +115,9 @@ public class ScreenImage extends ScreenComponent {
                }
             } else if (sensor.getType() == SensorType.CUSTOM) {
                SensorLink sensorLink = uiImage.getSensorLink();
-               for (State state : ((CustomSensor)sensor).getStates()) {
-                  if (!"".equals(uiImage.getSensorLink().getStateValueByStateName(state.getName()))) {
-                     states.add(resourcePath + sensorLink.getStateValueByStateName(state.getName()));
+               for (String stateName : sensor.getStateNames()) {
+                  if (!"".equals(uiImage.getSensorLink().getStateValueByStateName(stateName))) {
+                     states.add(resourcePath + sensorLink.getStateValueByStateName(stateName));
                   }
                }
             }
