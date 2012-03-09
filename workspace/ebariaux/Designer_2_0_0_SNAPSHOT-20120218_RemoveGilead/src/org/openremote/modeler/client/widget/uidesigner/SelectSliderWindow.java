@@ -78,7 +78,6 @@ public class SelectSliderWindow extends Dialog {
         @Override
         public void onSuccess(ArrayList<SliderWithInfoDTO> result) {
           store.add(DTOHelper.createModels(result));
-
         }
       });
       sliderList.setStore(store);

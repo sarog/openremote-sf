@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.rpc.SwitchRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
@@ -29,6 +31,7 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 /**
  * The server side implementation of the RPC service <code>SwitchRPCService</code>.
@@ -70,8 +73,25 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
              new DTOReference(sw.getSwitchCommandOnRef().getDeviceCommand().getOid()), sw.getSwitchCommandOnRef().getDeviceCommand().getDisplayName(),
              new DTOReference(sw.getSwitchCommandOffRef().getDeviceCommand().getOid()), sw.getSwitchCommandOffRef().getDeviceCommand().getDisplayName());
    }
-
+   
    @Override
+   public ArrayList<SwitchWithInfoDTO> loadAllSwitchWithInfosDTO() {
+     ArrayList<SwitchWithInfoDTO> dtos = new ArrayList<SwitchWithInfoDTO>();
+     for (Switch sw : switchService.loadAll()) {
+       dtos.add(createSwitchWithInfoDTO(sw));
+     }
+     return dtos;    
+   }
+
+  public static SwitchWithInfoDTO createSwitchWithInfoDTO(Switch aSwitch) {
+    return new SwitchWithInfoDTO(aSwitch.getOid(), aSwitch.getDisplayName(),
+                  (aSwitch.getSwitchCommandOnRef() != null)?aSwitch.getSwitchCommandOnRef().getDisplayName():null,
+                  (aSwitch.getSwitchCommandOffRef() != null)?aSwitch.getSwitchCommandOffRef().getDisplayName():null,
+                  (aSwitch.getSwitchSensorRef() != null)?aSwitch.getSwitchSensorRef().getDisplayName():null,
+                  aSwitch.getDevice().getDisplayName());
+  }
+
+  @Override
    public void updateSwitchWithDTO(SwitchDetailsDTO switchDTO) {
      Switch sw = switchService.loadById(switchDTO.getOid());
      sw.setName(switchDTO.getName());
