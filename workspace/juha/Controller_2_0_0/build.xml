@@ -29,10 +29,16 @@
  |  Author: Jerome Velociter
  |  Author: Dan Cong
  +-->
-<project name = "controller" default = "war" basedir = ".">
+<project name = "controller" default = "package" basedir = ".">
 
+  <!--
+   | Load local build properties for quick'n'easy changes to build behavior.
+   +-->
   <property file = "build.properties"/>
+
+
   <property file = "config/config.properties"/>
+
 
   <!--
    | Project name used for packaging the binary, etc.
@@ -48,6 +54,9 @@
   <property name = "build.dir" value = "build"/>
   <property name = "classes.dir" value = "${build.dir}/classes"/>
   <property name = "output.dir" value = "output"/>
+  <property name = "output.controller.dir" value = "${output.dir}/OpenRemote-Controller-${version}/webapps/controller"/>
+  <property name = "runtime.dir" value = "runtime/apache-tomcat-6.0.18"/>
+  <property name = "runtime.controller.dir" value = "${runtime.dir}/webapps/controller"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "web.dir" value = "web"/>
   <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
@@ -77,7 +86,6 @@
   <property name = "checkstyle.reports.dir" location = "build/checkstyle_report"/>
   <property name = "cobertura.report.dir" location = "build/cobertura_report"/>
   <property name = "cobertura.datafile" value = "${build.dir}/cobertura.ser"/>
-  <property name = "version" value = "0.1-SNAPSHOT"/>
   <property name = "sql.dir" value = "sql"/>
 
   <!--
@@ -139,24 +147,27 @@
 
 
 
-  <!--
+  <!-- =======================================================================================
 
 
         PUBLIC TARGET TASKS
 
 
-   -->
+       ======================================================================================= -->
 
 
   
   <!--
     | CLEAN:
     |
+    |  Clobber all data.
+    |
     +-->
   <target name = "clean" description = "deletes all generated files">
     <delete dir = "${build.dir}"/>
     <delete dir = "${output.dir}"/>
-    <delete dir = "${webapp.classes.dir}" />
+    <delete dir = "${webapp.classes.dir}"/>
+    <delete dir = "${runtime.controller.dir}"/>
   </target>
 
   <!--
@@ -190,12 +201,18 @@
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/json">
-    	<include name = "*.jar"/>
+    	  <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/onewire">
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/sunrise">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/clink">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/drools-5.1.1">
         <include name = "*.jar"/>
       </fileset>
     </copy>
@@ -283,17 +300,63 @@
   </target>
 
 
+  <!--
+   | PACKAGE:
+   |
+   | Packages the controller app with runtime container and zips it up.
+   +-->
+  <target name = "package" depends = "compile"
+          description = "Package controller with runtime distributable.">
 
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Creating Controller Runtime..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <mkdir dir = "${output.dir}/OpenRemote-Controller-${version}"/>
+
+    <!--
+     | Copy the pre-configured runtime...
+     +-->
+    <copy todir = "${output.dir}/OpenRemote-Controller-${version}">
+      <fileset dir = "${runtime.dir}"/>
+    </copy>
+
+    <!--
+     | Copy the preconfigured controller web directory into runtime...
+     +-->
+    <copy todir = "${output.controller.dir}">
+      <fileset dir = "${web.dir}"/>
+    </copy>
+
+    <!--
+     | Copy compiled classes into the controller web app...
+     +-->
+    <copy todir = "${output.controller.dir}/WEB-INF/classes">
+      <fileset dir = "${classes.dir}"/>
+    </copy>
+
+    <!--
+     | Copy libs into controller web app...
+     +-->
+    <copy todir = "${output.controller.dir}/WEB-INF/lib">
+      <fileset dir = "${build.dir}/lib"/>
+    </copy>
+
+  </target>
+
+  
   <!--
     | WAR:
     |
     | Pack the war.
     +-->
-  <target name = "war" depends = "compile" description = "package application to war">
+  <!--
+  <target name = "war" depends = "compile" description = "">
 
-    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = "===================================================================="/>
     <echo message = " Packing war..."/>
-    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = "===================================================================="/>
     <echo message = ""/>
 
     <war warfile = "${output.dir}/${project.name}.war" webxml = "web/WEB-INF/web.xml">
@@ -310,6 +373,9 @@
       <classes dir = "${classes.dir}"/>
     </war>
   </target>
+-->
+
+
 
 
   <!--
@@ -652,20 +718,6 @@
   </target>
 
 
-  <!--
-    | DEPLOY:
-    |
-    | Deploy the project to a directory.
-    +-->
-  <target name = "deploy" depends = "war">
-    <echo message = "--------------------------------------------------------------------"/>
-    <echo message = " Deploying project..."/>
-    <echo message = "--------------------------------------------------------------------"/>
-    <echo message = ""/>
-    <delete quiet="true" file="${deploy.dir}/controller.war"/>
-<!--    <delete dir="${deploy.dir}/controller"/> -->
-    <copy todir="${deploy.dir}" file="${output.dir}/${project.name}.war"/>
-  </target>
 
   <!--
    |
