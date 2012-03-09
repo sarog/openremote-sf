@@ -28,6 +28,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
 
@@ -236,6 +237,16 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       }
    }
 
+   @Override
+   public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+     // TODO EBR : Just to comply to interface, but this class should not implement this interface, never has direct access to sensor, only through Slider
+   }
+   
+   public SensorWithInfoDTO getSensorDTO() {
+     return null;
+     // TODO EBR : As above
+   }
+   
    @Override
    @JSON(include = false)
    public Collection<ImageSource> getImageSources() {

@@ -20,6 +20,8 @@
 package org.openremote.modeler.domain.component;
 
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.dto.DTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 /**
  * This interface is primarily used for get a Sensor just by judging whether the instance has implemented it, without knowing the specific class.
  * This interface is very convenient for export sensors to a xml file by velocity 
@@ -29,4 +31,7 @@ import org.openremote.modeler.domain.Sensor;
 public interface SensorOwner {
    Sensor getSensor();
    void setSensor(Sensor sensor);
+   
+   SensorWithInfoDTO getSensorDTO();
+   void setSensorDTO(SensorWithInfoDTO sensorDTO);
 }
