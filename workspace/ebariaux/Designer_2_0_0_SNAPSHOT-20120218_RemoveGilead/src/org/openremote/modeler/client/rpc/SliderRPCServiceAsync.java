@@ -20,9 +20,7 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
@@ -30,11 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SliderRPCServiceAsync {
 
-   void save(Slider slider, AsyncCallback<Slider> callback);
-
    void delete(long id, AsyncCallback<Void> callback);
-
-   void saveAll(List<Slider> sliderList, AsyncCallback<List<Slider>> async);
 
    void loadSliderDetails(long id, AsyncCallback<SliderDetailsDTO> async);
    
