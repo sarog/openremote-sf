@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -57,6 +59,8 @@ public interface SliderRPCService extends RemoteService {
    List<Slider> saveAll(List<Slider> sliderList);
 
    SliderDetailsDTO loadSliderDetails(long id);
+
+   ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO();
 
    void updateSliderWithDTO(SliderDetailsDTO sliderDTO);
    

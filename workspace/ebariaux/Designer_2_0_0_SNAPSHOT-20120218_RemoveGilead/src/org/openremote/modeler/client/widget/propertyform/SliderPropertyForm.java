@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
@@ -30,7 +29,6 @@ import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
-import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
@@ -106,15 +104,14 @@ public class SliderPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                  BeanModel dataModel = be.<BeanModel> getData();
                  SliderWithInfoDTO sliderDTO = dataModel.getBean();
-                 Slider slider = BeanModelDataBase.sliderTable.get(sliderDTO.getOid()).getBean();
-                  screenSlider.setSlider(slider);
-                  command.setText(slider.getName());
+                  screenSlider.setSliderDTO(sliderDTO);
+                  command.setText(sliderDTO.getDisplayName());
                }
             });
          }
       });
-      if (screenSlider.getSlider() != null) {
-         command.setText(screenSlider.getSlider().getName());
+      if (screenSlider.getSliderDTO() != null) {
+         command.setText(screenSlider.getSliderDTO().getDisplayName());
       }
       AdapterField adapterCommand = new AdapterField(command);
       adapterCommand.setFieldLabel("SliderCommand");

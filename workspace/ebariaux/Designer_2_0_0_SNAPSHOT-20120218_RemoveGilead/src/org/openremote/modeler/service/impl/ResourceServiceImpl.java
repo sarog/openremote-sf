@@ -80,6 +80,7 @@ import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Gesture;
@@ -103,11 +104,13 @@ import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.server.SensorController;
+import org.openremote.modeler.server.SliderController;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
@@ -142,6 +145,7 @@ public class ResourceServiceImpl implements ResourceService {
   private DeviceMacroService deviceMacroService;
 
   private SensorService sensorService;
+  private SliderService sliderService;
 
   private VelocityEngine velocity;
 
@@ -551,6 +555,10 @@ public class ResourceServiceImpl implements ResourceService {
   public void setSensorService(SensorService sensorService) {
     this.sensorService = sensorService;
   }
+  
+  public void setSliderService(SliderService sliderService) {
+    this.sliderService = sliderService;
+  }
 
   /**
    * @deprecated looks unused
@@ -875,6 +883,18 @@ public class ResourceServiceImpl implements ResourceService {
           }
         }
       }
+      if (component instanceof UISlider) {
+        UISlider uiSlider = (UISlider)component;
+        if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
+          // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+          Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
+          if (slider != null) { // Just in case we have dangling pointer
+            uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+          } 
+          uiSlider.setSlider(null);
+          
+        }        
+      }
       
       // TODO: continue
     }
@@ -927,6 +947,14 @@ public class ResourceServiceImpl implements ResourceService {
             ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
           }
         }
+      }
+      if (component instanceof UISlider) {
+        UISlider uiSlider = (UISlider)component;
+        if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
+          Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+          uiSlider.setSlider(slider);
+          uiSlider.setSliderDTO(null);
+        }        
       }
       
       
