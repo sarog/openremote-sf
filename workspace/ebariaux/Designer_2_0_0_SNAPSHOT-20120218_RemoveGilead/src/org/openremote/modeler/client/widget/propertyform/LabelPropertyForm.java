@@ -159,7 +159,7 @@ public class LabelPropertyForm extends PropertyForm {
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
       
-      Sensor sensor = screenLabel.getUiLabel().getSensor();
+      SensorWithInfoDTO sensor = screenLabel.getUiLabel().getSensorDTO();
       if (sensor == null) {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
@@ -214,14 +214,14 @@ public class LabelPropertyForm extends PropertyForm {
         statesPanel.add(onField);
         statesPanel.add(offField);
       } else if(screenLabel.getUiLabel().getSensorDTO()!=null && screenLabel.getUiLabel().getSensorDTO().getType() == SensorType.CUSTOM){
-         CustomSensor customSensor = (CustomSensor) screenLabel.getUiLabel().getSensor();
-         List<State> states = customSensor.getStates();
-         for(final State state: states){
+        SensorWithInfoDTO customSensor = screenLabel.getUiLabel().getSensorDTO();
+         List<String> stateNames = customSensor.getStateNames();
+         for(final String stateName: stateNames){
            final TextField<String> stateTextField = new TextField<String>();
-           stateTextField.setFieldLabel(state.getDisplayName());
+           stateTextField.setFieldLabel(stateName);
            stateTextField.setAllowBlank(false);
            if(sensorLink!=null){
-              stateTextField.setValue(sensorLink.getStateValueByStateName(state.getName()));
+              stateTextField.setValue(sensorLink.getStateValueByStateName(stateName));
            }
            stateTextField.addListener(Events.Blur, new Listener<BaseEvent>(){
 
@@ -229,7 +229,7 @@ public class LabelPropertyForm extends PropertyForm {
             public void handleEvent(BaseEvent be) {
                String stateText = stateTextField.getValue();
                if(stateText!=null&&!stateText.trim().isEmpty()){
-                  sensorAttrs.put("name", state.getName());
+                  sensorAttrs.put("name", stateName);
                   sensorAttrs.put("value", stateText);
                   screenLabel.getUiLabel().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }

@@ -121,7 +121,7 @@ public class ImagePropertyForm extends PropertyForm {
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
-      Sensor sensor = screenImage.getUiImage().getSensor();
+      SensorWithInfoDTO sensor = screenImage.getUiImage().getSensorDTO();
       if (sensor == null) {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
@@ -255,38 +255,37 @@ public class ImagePropertyForm extends PropertyForm {
          statesPanel.add(onImageUploadField);
          statesPanel.add(offImageUploadField);
       }else if(screenImage.getUiImage().getSensorDTO()!=null && screenImage.getUiImage().getSensorDTO().getType() == SensorType.CUSTOM){
-         CustomSensor customSensor = (CustomSensor) screenImage.getUiImage().getSensor();
-         List<State> states = customSensor.getStates();
-         for(final State state: states){
-           
-           final ImageSelectAdapterField imageUploaderField = new ImageSelectAdapterField(state.getName());
+        SensorWithInfoDTO customSensor = screenImage.getUiImage().getSensorDTO();
+        List<String> stateNames = customSensor.getStateNames();
+        for(final String stateName: stateNames){
+           final ImageSelectAdapterField imageUploaderField = new ImageSelectAdapterField(stateName);
            imageUploaderField.addSelectionListener(new SelectionListener<ButtonEvent>() {
               @Override
               public void componentSelected(ButtonEvent ce) {
-                ImageAssetPicker imageAssetPicker = new ImageAssetPicker((sensorLink != null)?sensorLink.getStateValueByStateName(state.getName()):null);
+                ImageAssetPicker imageAssetPicker = new ImageAssetPicker((sensorLink != null)?sensorLink.getStateValueByStateName(stateName):null);
                 imageAssetPicker.show();
                 imageAssetPicker.center();
                 imageAssetPicker.setListener(new ImageAssetPickerListener() {
                  @Override
                  public void imagePicked(String imageURL) {
                    Map<String,String> sensorAttrMap = new HashMap<String,String>();
-                   sensorAttrMap.put("name", state.getName());
+                   sensorAttrMap.put("name", stateName);
                    sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
                    SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
                    sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                    screenImage.clearSensorStates();
-                   imageUploaderField.setText(sensorLink.getStateValueByStateName(state.getName()));
+                   imageUploaderField.setText(sensorLink.getStateValueByStateName(stateName));
                  }             
                 });
               }
            });
            imageUploaderField.addDeleteListener(new SelectionListener<ButtonEvent>() {
              public void componentSelected(ButtonEvent ce) {
-               removeSensorImage(state.getName());
+               removeSensorImage(stateName);
              }
           });
            if(sensorLink!=null) {
-             imageUploaderField.setText(sensorLink.getStateValueByStateName(state.getName()));
+             imageUploaderField.setText(sensorLink.getStateValueByStateName(stateName));
           }
             statesPanel.add(imageUploaderField);
             
