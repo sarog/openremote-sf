@@ -266,6 +266,11 @@ abstract class KNXCommand implements Command
   @Override public String toString()
   {
 
+    if (apdu == null)
+    {
+      return "[FRAME] null";
+    }
+    
     // TODO : need to adjust for CEMI frames that come with additional info fields...
 
     Byte[] frame = getCEMIFrame();
@@ -308,9 +313,14 @@ abstract class KNXCommand implements Command
   void write(GroupValueWrite command)
   {
     KNXConnection connection = connectionManager.getCurrentConnection();
-    if(connection == null) {
-      log.error("Unable to send " + this + ", no connection available");
-    } else {
+
+    if (connection == null)
+    {
+      log.info("No KNX connection available, did not send " + command);
+    }
+
+    else
+    {
       connection.send(command);
     }
   }
@@ -319,7 +329,7 @@ abstract class KNXCommand implements Command
   /**
    * Relay a read command to an open KNX/IP connection.
    *
-   * TODO : call semantics on return value
+   * TODO : call semantics on return value 
    *
    * @param command   KNX read command
    *
@@ -332,10 +342,16 @@ abstract class KNXCommand implements Command
   ApplicationProtocolDataUnit read(GroupValueRead command)
   {
     KNXConnection connection = connectionManager.getCurrentConnection();
-    if(connection == null) {
-       log.error("Unable to send " + this + ", no available connection");
+
+    if (connection == null)
+    {
+       log.info("KNX connection not available.");
+
        return null;
-    } else {
+    }
+
+    else
+    {
       return connection.read(command);
     }
   }
