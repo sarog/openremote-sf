@@ -208,7 +208,27 @@ public class Startup
 
       // translate to log4j log category (1 to 1 name mapping)...
 
-      org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger(category);
+      org.apache.log4j.Logger log4j;
+
+      try
+      {
+        log4j = org.apache.log4j.Logger.getLogger(category);
+      }
+
+      catch (NullPointerException e)
+      {
+        // Seeing an occasional NPE from log4j call during shutdown -- handling it here
+        // to keep unrelated stack traces out of logs
+
+        System.out.println(level + ": [" + category + "] - " + MessageFormat.format(msg, params));
+
+        if (thrown != null)
+        {
+          thrown.printStackTrace();
+        }
+
+        return;
+      }
 
       // mapping from JUL level to log4j levels...
 
