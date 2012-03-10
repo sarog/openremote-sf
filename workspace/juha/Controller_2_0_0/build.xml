@@ -56,7 +56,6 @@
   <property name = "output.dir" value = "output"/>
   <property name = "output.controller.dir" value = "${output.dir}/OpenRemote-Controller-${version}/webapps/controller"/>
   <property name = "runtime.dir" value = "runtime/apache-tomcat-6.0.18"/>
-  <property name = "runtime.controller.dir" value = "${runtime.dir}/webapps/controller"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "web.dir" value = "web"/>
   <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
@@ -167,7 +166,6 @@
     <delete dir = "${build.dir}"/>
     <delete dir = "${output.dir}"/>
     <delete dir = "${webapp.classes.dir}"/>
-    <delete dir = "${runtime.controller.dir}"/>
   </target>
 
   <!--
@@ -342,6 +340,15 @@
     <copy todir = "${output.controller.dir}/WEB-INF/lib">
       <fileset dir = "${build.dir}/lib"/>
     </copy>
+
+    <!--
+     | Zip it up...
+     +-->
+    <zip basedir = "${output.dir}"
+         destfile = "${output.dir}/OpenRemote-Controller-${version}.zip"
+         whenempty = "fail">
+
+    </zip> 
 
   </target>
 
