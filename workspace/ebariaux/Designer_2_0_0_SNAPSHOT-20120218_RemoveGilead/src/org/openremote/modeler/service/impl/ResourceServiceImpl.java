@@ -879,49 +879,51 @@ public class ResourceServiceImpl implements ResourceService {
 
   private void populateDTOReferences(Screen screen) {
     for (Absolute absolute : screen.getAbsolutes()) {
-      UIComponent component = absolute.getUiComponent();
-      if (component instanceof SensorOwner) {
-        SensorOwner owner = (SensorOwner) component;
-        if (owner.getSensorDTO() == null && owner.getSensor() != null) {
-          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(owner.getSensor()));
-          owner.setSensor(null);
-          if (owner instanceof SensorLinkOwner) {
-            ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
-            ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
-          }
-        }
-      }
-      if (component instanceof UISlider) {
-        UISlider uiSlider = (UISlider)component;
-        if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
-          // We must load slider because referenced sensor / command are not serialized, this reloads from DB
-          Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
-          if (slider != null) { // Just in case we have dangling pointer
-            uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
-          } 
-          uiSlider.setSlider(null);
-        }
-        if (component instanceof UISwitch) {
-          UISwitch uiSwitch = (UISwitch)component;
-          if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
-            uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(uiSwitch.getSwitchCommand()));
-            uiSwitch.setSwitchCommand(null);
-          }
-        }
-      }
-      
-      // TODO: continue
+      populateDTOReferences(absolute.getUiComponent());
     }
-
     for (UIGrid grid : screen.getGrids()) {
       for (Cell cell : grid.getCells()) {
-        cell.getUiComponent();
+        populateDTOReferences(cell.getUiComponent());
       }
     }
 
     for (Gesture gesture : screen.getGestures()) {
       // uiComponentBox.add(gesture);
     }
+  }
+
+  private void populateDTOReferences(UIComponent component) {
+    if (component instanceof SensorOwner) {
+      SensorOwner owner = (SensorOwner) component;
+      if (owner.getSensorDTO() == null && owner.getSensor() != null) {
+        owner.setSensorDTO(SensorController.createSensorWithInfoDTO(owner.getSensor()));
+        owner.setSensor(null);
+        if (owner instanceof SensorLinkOwner) {
+          ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
+          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
+        }
+      }
+    }
+    if (component instanceof UISlider) {
+      UISlider uiSlider = (UISlider)component;
+      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
+        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
+        if (slider != null) { // Just in case we have dangling pointer
+          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+        } 
+        uiSlider.setSlider(null);
+      }
+      if (component instanceof UISwitch) {
+        UISwitch uiSwitch = (UISwitch)component;
+        if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(uiSwitch.getSwitchCommand()));
+          uiSwitch.setSwitchCommand(null);
+        }
+      }
+    }
+    
+    // TODO: continue
   }
 
   /**
@@ -949,43 +951,11 @@ public class ResourceServiceImpl implements ResourceService {
 
   private void resolveDTOReferences(Screen screen) {
     for (Absolute absolute : screen.getAbsolutes()) {
-      UIComponent component = absolute.getUiComponent();
-      if (component instanceof SensorOwner) {
-        SensorOwner owner = (SensorOwner) component;
-        if (owner.getSensor() == null && owner.getSensorDTO() != null) {
-          Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
-          owner.setSensor(sensor);
-          owner.setSensorDTO(null);
-          if (owner instanceof SensorLinkOwner) {
-            ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
-            ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
-          }
-        }
-      }
-      if (component instanceof UISlider) {
-        UISlider uiSlider = (UISlider)component;
-        if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
-          Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
-          uiSlider.setSlider(slider);
-          uiSlider.setSliderDTO(null);
-        }        
-      }
-      if (component instanceof UISwitch) {
-        UISwitch uiSwitch = (UISwitch)component;
-        if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
-          Switch sw = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
-          uiSwitch.setSwitchCommand(sw);
-          uiSwitch.setSwitchDTO(null);
-        }
-      }
-      
-      
-      // TODO: continue
+      resolvedDTOReferences(absolute.getUiComponent());
     }
-
     for (UIGrid grid : screen.getGrids()) {
       for (Cell cell : grid.getCells()) {
-        cell.getUiComponent();
+        resolvedDTOReferences(cell.getUiComponent());
       }
     }
 
@@ -993,6 +963,40 @@ public class ResourceServiceImpl implements ResourceService {
       // uiComponentBox.add(gesture);
     }
 
+  }
+
+  protected void resolvedDTOReferences(UIComponent component) {
+    if (component instanceof SensorOwner) {
+      SensorOwner owner = (SensorOwner) component;
+      if (owner.getSensor() == null && owner.getSensorDTO() != null) {
+        Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
+        owner.setSensor(sensor);
+        owner.setSensorDTO(null);
+        if (owner instanceof SensorLinkOwner) {
+          ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
+          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
+        }
+      }
+    }
+    if (component instanceof UISlider) {
+      UISlider uiSlider = (UISlider)component;
+      if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
+        Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+        uiSlider.setSlider(slider);
+        uiSlider.setSliderDTO(null);
+      }        
+    }
+    if (component instanceof UISwitch) {
+      UISwitch uiSwitch = (UISwitch)component;
+      if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
+        Switch sw = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+        uiSwitch.setSwitchCommand(sw);
+        uiSwitch.setSwitchDTO(null);
+      }
+    }
+    
+    
+    // TODO: continue
   }
 
   //
