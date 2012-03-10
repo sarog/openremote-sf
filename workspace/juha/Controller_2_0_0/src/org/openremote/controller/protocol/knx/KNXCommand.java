@@ -20,11 +20,11 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
