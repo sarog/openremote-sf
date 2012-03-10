@@ -217,15 +217,12 @@ public class Startup
 
       catch (NullPointerException e)
       {
-        // Seeing an occasional NPE from log4j call during shutdown -- handling it here
-        // to keep unrelated stack traces out of logs
+        // Seeing an occasional NPE from log4j call during shutdown. These may be caused by
+        // undefined or incorrect shutdown hook execution order and/or thread shutdown ordering
+        // issues -- catching here and attempt to print on the output console (for information
+        // purposes)...
 
-        System.out.println(level + ": [" + category + "] - " + MessageFormat.format(msg, params));
-
-        if (thrown != null)
-        {
-          thrown.printStackTrace();
-        }
+        printWhatWeCan(level, category, msg, params, thrown);
 
         return;
       }
@@ -342,6 +339,43 @@ public class Startup
         }
 
         return org.apache.log4j.Level.INFO;
+      }
+    }
+
+    private void printWhatWeCan(Level level, String category, String message, Object[] params,
+                                Throwable thrown)
+    {
+      StringBuffer[] paramStrings = new StringBuffer[params.length];
+
+      int index = 0;
+
+      for (Object param : params)
+      {
+        try
+        {
+          paramStrings[index] = new StringBuffer().append(param);
+        }
+
+        catch (NullPointerException e)
+        {
+          paramStrings[index] = new StringBuffer().append("<null>");
+        }
+
+        finally
+        {
+          index++;
+        }
+      }
+
+      System.out.println(
+          "Unhandled Log Messages (may occur due to undefined or incorrect shutdown order):\n" +
+          "--------------------------------------------------------------------------------\n" +
+          level + " [" + category + "]: " + MessageFormat.format(message, (Object[])paramStrings)
+      );
+
+      if (thrown != null)
+      {
+        thrown.printStackTrace();
       }
     }
   }
