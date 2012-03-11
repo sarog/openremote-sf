@@ -368,7 +368,7 @@
 
             <p>
               In order to use all the latest Designer features, make sure you've
-              <a href = "">installed OpenRemote Controller 2.0 or later</a>.
+              <a href = "http://download.openremote.org/2.0">installed OpenRemote Controller 2.0 or later</a>.
             </p>
 
 <!--
