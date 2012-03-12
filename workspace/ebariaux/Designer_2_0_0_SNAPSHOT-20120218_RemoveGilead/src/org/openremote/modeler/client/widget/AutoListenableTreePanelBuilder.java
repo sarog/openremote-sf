@@ -32,6 +32,8 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
@@ -84,9 +86,9 @@ public class AutoListenableTreePanelBuilder {
                   } else if (Constants.MACROS.equals(treeFolderBean.getType())) {
                      return BeanModelDataBase.deviceMacroTable;
                   }
-               } else if (beanModel.getBean() instanceof Device) {
+               } else if (beanModel.getBean() instanceof DeviceDTO) {
                   return BeanModelDataBase.deviceCommandTable;
-               } else if (beanModel.getBean() instanceof DeviceMacro) {
+               } else if (beanModel.getBean() instanceof MacroDTO) {
                   return BeanModelDataBase.deviceMacroItemTable;
                }
                return null;

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
@@ -50,6 +51,7 @@ import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.proxy.TemplateProxy;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
@@ -59,7 +61,6 @@ import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabI
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -76,17 +77,14 @@ import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
 import org.openremote.modeler.shared.dto.SensorDTO;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
-import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -97,7 +95,6 @@ import com.extjs.gxt.ui.client.data.TreeLoader;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
@@ -123,6 +120,9 @@ public class TreePanelBuilder {
    private static TreeStore<BeanModel> deviceTreeStore = null;
 
    private static TreeStore<BeanModel> deviceAndCmdTreeStore = null;
+   
+   private static TreeStore<BeanModel> commandsAndMacrosTreeStore = null;
+
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
 
@@ -133,6 +133,7 @@ public class TreePanelBuilder {
 
    /**
     * Builds a device command tree.
+    * It list all devices on top level and when expanded, each device lists its commands.
     * 
     * @return the a new device command tree
     */
@@ -141,7 +142,6 @@ public class TreePanelBuilder {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-           Info.display("INFO", "loadDeviceRPCProxy");
             DeviceBeanModelProxy.loadDeviceAndCommand((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                public void onSuccess(List<BeanModel> result) {
                   listAsyncCallback.onSuccess(result);
@@ -188,12 +188,99 @@ public class TreePanelBuilder {
       return tree;
    }
 
+   /**
+    * Builds a device command tree.
+    * It list all devices on top level and when expanded, each device lists its commands.
+    * 
+    * @return the a new device command tree
+    */
+   public static TreePanel<BeanModel> buildCommandAndMacroTree() {
+      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
+         @Override
+         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+           BeanModel beanModel = (BeanModel)o;
+           
+           
+           if (beanModel.getBean() instanceof TreeFolderBean) {
+             TreeFolderBean treeFolderBean = (TreeFolderBean)beanModel.getBean();
+             if (treeFolderBean.getType() == Constants.DEVICES) {
+               AsyncServiceFactory.getDeviceServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+                 public void onSuccess(ArrayList<DeviceDTO> result) {
+                   listAsyncCallback.onSuccess(DTOHelper.createModels(result));
+                 }        
+               });
+             } else if (treeFolderBean.getType() == Constants.MACROS) {
+               AsyncServiceFactory.getDeviceMacroServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<MacroDTO>>() {
+                @Override
+                public void onSuccess(ArrayList<MacroDTO> result) {
+                  listAsyncCallback.onSuccess(DTOHelper.createModels(result));
+                }
+               });
+             }
+           } else if(beanModel.getBean() instanceof DeviceDTO) {
+               DeviceDTO device = (DeviceDTO) beanModel.getBean();
+               AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() { // TODO : have method to only return commands as children
+  
+                  @Override
+                  public void onSuccess(DeviceWithChildrenDTO result) {
+                    listAsyncCallback.onSuccess(DTOHelper.createModels(result.getDeviceCommands()));
+                  }
+               });
+           }
+         }
+      };
+      TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+         @Override
+         public boolean hasChildren(BeanModel beanModel) {
+            if (beanModel.getBean() instanceof TreeFolderBean || beanModel.getBean() instanceof DeviceDTO) {
+               return true;
+            }
+            return false;
+         }
+      };
+      commandsAndMacrosTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+
+      TreeFolderBean devicesBean = new TreeFolderBean();
+      devicesBean.setDisplayName("Devices");
+      devicesBean.setType(Constants.DEVICES);
+      TreeFolderBean macrosBean = new TreeFolderBean();
+      macrosBean.setDisplayName("Macros");
+      macrosBean.setType(Constants.MACROS);
+      commandsAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
+      commandsAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+      
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandsAndMacrosTreeStore);
+      tree.setBorders(false);
+      tree.setStateful(true);
+      tree.setDisplayProperty("displayName");
+      tree.setStyleAttribute("overflow", "auto");
+      tree.setHeight("100%");
+      tree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
+               return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
+               return ICON.device();
+            } else if (thisModel.getBean() instanceof MacroDTO) {
+                 return ICON.macroIcon();
+            } else {
+               return ICON.folder();
+            }
+         }
+      });
+      return tree;
+   }
+
+   /**
+    * Builds a tree that list all devices on top level. When expanded, a device lists all its children : commands, sensors, switches and sliders.
+    * 
+    * @return
+    */
    public static TreePanel<BeanModel> buildDeviceTree() {
       if (deviceTreeStore == null) {
          RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
             @Override
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-              Info.display("INFO", "Will load devices");
                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
                   public void onSuccess(List<BeanModel> result) {
                      listAsyncCallback.onSuccess(result);
@@ -204,7 +291,7 @@ public class TreePanelBuilder {
          final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
-               if (beanModel.getBean() instanceof DeviceCommandDTO || beanModel.getBean() instanceof UICommand) {
+               if (beanModel.getBean() instanceof DeviceCommandDTO || beanModel.getBean() instanceof UICommand) { // TODO EBR : can there be UICommand here ?
                   return false;
                }
                return true;
@@ -262,7 +349,7 @@ public class TreePanelBuilder {
                return ICON.switchIcon();
             } else if (thisModel.getBean() instanceof SliderDTO) {
                return ICON.sliderIcon();
-            } else if (thisModel.getBean() instanceof UICommand) {
+            } else if (thisModel.getBean() instanceof UICommand) { // TODO EBR : can there be UICommand here ?
                return ICON.deviceCmd();
             } else {
                return ICON.folder();
@@ -601,9 +688,6 @@ public class TreePanelBuilder {
                if (model.getBean() instanceof TreeFolderBean) {
                   TreeFolderBean folderBean = model.getBean();
                   if (folderBean.getDisplayName().contains("rivate")) {
-                    
-                    Info.display("INFO", "Loading private templates");
-
                      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
@@ -613,9 +697,6 @@ public class TreePanelBuilder {
 
                      });
                   } else {
-                    
-                    Info.display("INFO", "Loading public templates");
-
                      TemplateProxy.getTemplates(false, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
