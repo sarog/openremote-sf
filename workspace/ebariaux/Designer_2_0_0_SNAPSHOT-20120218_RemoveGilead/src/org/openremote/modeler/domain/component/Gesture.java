@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import flexjson.JSON;
 
@@ -37,6 +38,7 @@ public class Gesture extends UIControl {
    private GestureType type;
    private Navigate navigate = new Navigate();
    private UICommand uiCommand;
+   private UICommandDTO uiCommandDTO;
 
    public Gesture() {
    }
@@ -54,8 +56,16 @@ public class Gesture extends UIControl {
    public UICommand getUiCommand() {
       return uiCommand;
    }
-
-   public void setType(GestureType type) {
+   
+  public UICommandDTO getUiCommandDTO() {
+    return uiCommandDTO;
+  }
+  
+  public void setUiCommandDTO(UICommandDTO uiCommandDTO) {
+    this.uiCommandDTO = uiCommandDTO;
+  }
+  
+  public void setType(GestureType type) {
       this.type = type;
    }
 

@@ -889,14 +889,15 @@ public class ResourceServiceImpl implements ResourceService {
         populateDTOReferences(cell.getUiComponent());
       }
     }
-
     for (Gesture gesture : screen.getGestures()) {
-      // uiComponentBox.add(gesture);
+      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
+        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
+        gesture.setUiCommand(null);
+      }
     }
   }
 
-  private void populateDTOReferences(UIComponent component) {
-    if (component instanceof SensorOwner) {
+  private void populateDTOReferences(UIComponent component) {    if (component instanceof SensorOwner) {
       SensorOwner owner = (SensorOwner) component;
       if (owner.getSensorDTO() == null && owner.getSensor() != null) {
         owner.setSensorDTO(SensorController.createSensorWithInfoDTO(owner.getSensor()));
@@ -935,8 +936,6 @@ public class ResourceServiceImpl implements ResourceService {
         uiButton.setUiCommand(null);
       }
     }
-    
-    // TODO: continue
   }
 
   private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
@@ -982,11 +981,12 @@ public class ResourceServiceImpl implements ResourceService {
         resolvedDTOReferences(cell.getUiComponent());
       }
     }
-
     for (Gesture gesture : screen.getGestures()) {
-      // uiComponentBox.add(gesture);
+      if (gesture.getUiCommand() == null && gesture.getUiCommandDTO() != null) {        
+        gesture.setUiCommand(lookupUiCommandFromDTO(gesture.getUiCommandDTO()));
+        gesture.setUiCommandDTO(null);
+      }
     }
-
   }
 
   protected void resolvedDTOReferences(UIComponent component) {
@@ -1025,25 +1025,17 @@ public class ResourceServiceImpl implements ResourceService {
         uiButton.setUiCommandDTO(null);
       }
     }
-    
-    // TODO: continue
   }
 
   private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
-    DeviceMacroItem item = null;
     if (uiCommandDTO instanceof DeviceCommandDTO) {
       DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
-      item =  (dc != null)?new DeviceCommandRef(dc):null;
+      return  (dc != null)?new DeviceCommandRef(dc):null;
     } else if (uiCommandDTO instanceof MacroDTO) {
       DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
-      item = (dm != null)?new DeviceMacroRef(dm):null;
-    } else {
-      throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+      return (dm != null)?new DeviceMacroRef(dm):null;
     }
-    if (item != null) {
-//      deviceMacroItemService.save(item);
-    }
-    return item;
+    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
   }
 
   //

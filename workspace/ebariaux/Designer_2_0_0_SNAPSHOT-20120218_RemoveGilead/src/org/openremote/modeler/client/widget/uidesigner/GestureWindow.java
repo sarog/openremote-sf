@@ -29,6 +29,7 @@ import org.openremote.modeler.client.gxtextends.CheckBoxListViewExt;
 import org.openremote.modeler.client.utils.DeviceAndMacroTree;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -38,6 +39,7 @@ import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -179,7 +181,7 @@ public class GestureWindow extends Dialog {
       commandTreeContainer.setLayout(new FitLayout());
       commandTreeContainer.setScrollMode(Scroll.AUTO);
       if (devicesAndMacrosTree == null) {
-         devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
+        devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree();
          commandTreeContainer.add(devicesAndMacrosTree);
       }
       devicesAndMacrosTree.collapseAll();
@@ -190,17 +192,9 @@ public class GestureWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel commandModel = se.getSelectedItem();
             if (commandModel.getBean() != null) {
-               UICommand uiCommand = null;
-               String commandName = SELECTED_COMMAND;
-               if (commandModel.getBean() instanceof DeviceCommand) {
-                  uiCommand = new DeviceCommandRef((DeviceCommand) commandModel.getBean());
-                  commandName = SELECTED_COMMAND + uiCommand.getDisplayName();
-               } else if (commandModel.getBean() instanceof DeviceMacro) {
-                  uiCommand = new DeviceMacroRef((DeviceMacro) commandModel.getBean());
-                  commandName = SELECTED_COMMAND + uiCommand.getDisplayName();
-               }
-               selectedCommand.setText(commandName);
-               selectedGesture.setUiCommand(uiCommand);
+               UICommandDTO uiCommand = commandModel.getBean();
+               selectedCommand.setText(SELECTED_COMMAND + uiCommand.getDisplayName());
+               selectedGesture.setUiCommandDTO(uiCommand);
             }
          }
       });
@@ -238,13 +232,8 @@ public class GestureWindow extends Dialog {
             if (!gesture.equals(selectedGesture)) {
                selectedGesture = gesture;
                devicesAndMacrosTree.collapseAll();
-               if (selectedGesture.getUiCommand() != null) {
-                  UICommand uiCommnad = selectedGesture.getUiCommand();
-                  if (uiCommnad instanceof DeviceCommandRef) {
-                     selectedCommand.setText(SELECTED_COMMAND + ((DeviceCommandRef) uiCommnad).getDisplayName());
-                  } else if (uiCommnad instanceof DeviceMacroRef) {
-                     selectedCommand.setText(SELECTED_COMMAND + ((DeviceMacroRef) uiCommnad).getDisplayName());
-                  }
+               if (selectedGesture.getUiCommandDTO() != null) {
+                  selectedCommand.setText(SELECTED_COMMAND + selectedGesture.getUiCommandDTO().getDisplayName());
                } else {
                   selectedCommand.setText(SELECTED_COMMAND);
                }
