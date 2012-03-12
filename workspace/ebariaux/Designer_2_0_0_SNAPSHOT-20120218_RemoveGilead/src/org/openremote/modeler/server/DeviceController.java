@@ -82,25 +82,6 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    public void deleteDevice(long id) {
       deviceService.deleteDevice(id);
    }
-
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadById(long)
-    */
-   public Device loadById(long id) {
-      return deviceService.loadById(id);
-   }
-
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll()
-    */
-   public List<Device> loadAll() {
-      return deviceService.loadAll(userService.getAccount());
-   }
-
    /**
     * Sets the user service.
     * 
@@ -108,15 +89,6 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
     */
    public void setUserService(UserService userService) {
       this.userService = userService;
-   }
-
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll(org.openremote.modeler.domain.Account)
-    */
-   public List<Device> loadAll(Account account) {
-      return null;
    }
 
    public ArrayList<DeviceDTO> loadAllDTOs() {
