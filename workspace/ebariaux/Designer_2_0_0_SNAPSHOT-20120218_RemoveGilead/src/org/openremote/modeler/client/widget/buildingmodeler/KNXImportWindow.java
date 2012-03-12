@@ -29,12 +29,11 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
 import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.knx.KNXImportResultOverlay;
-import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.utils.AutoCommitCheckColumnConfig;
 import org.openremote.modeler.client.utils.NoButtonsRowEditor;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.knx.ImportKNXConfigAction;
 import org.openremote.modeler.shared.knx.ImportKNXConfigResult;
 
@@ -54,7 +53,6 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
@@ -83,7 +81,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class KNXImportWindow extends FormWindow {
 
-    private Device device;
+    private DeviceDTO device;
     private Button importBtn;
     private final KNXImportWindow importWindow;
     private MemoryProxy<String> proxy;
@@ -116,7 +114,7 @@ public class KNXImportWindow extends FormWindow {
         setSize(800, 600);
         initial("Import ETS4 project or ETS3 group export CSV file");
         this.ensureDebugId(DebugId.IMPORT_WINDOW);
-        this.device = (Device) deviceBeanModel.getBean();
+        this.device = (DeviceDTO) deviceBeanModel.getBean();
         show();
     }
 

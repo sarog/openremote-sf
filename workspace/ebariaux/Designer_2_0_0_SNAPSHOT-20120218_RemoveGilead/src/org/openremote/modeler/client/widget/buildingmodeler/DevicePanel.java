@@ -50,7 +50,6 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
@@ -63,6 +62,7 @@ import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -509,11 +509,11 @@ public class DevicePanel extends ContentPanel {
       BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
       if (selectedModel != null) {
          Object obj = selectedModel.getBean();
-         if (obj instanceof Device) {
+         if (obj instanceof DeviceDTO) {
             return selectedModel;
-         } else if (obj instanceof DeviceCommand || obj instanceof Sensor || obj instanceof Switch || obj instanceof Slider) {
+         } else if (obj instanceof DeviceCommandDTO || obj instanceof SensorDTO || obj instanceof SwitchDTO || obj instanceof SliderDTO) {
             selectedModel = tree.getStore().getParent(selectedModel);
-         } else if (obj instanceof UICommand) {
+         } else if (obj instanceof UICommandDTO) {
             selectedModel = tree.getStore().getParent(tree.getStore().getParent(selectedModel));
          }
       } else {
@@ -894,7 +894,7 @@ public class DevicePanel extends ContentPanel {
     */
    private void importKNXCommand() {
        final BeanModel deviceModel = getDeviceModel();
-       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
           final KNXImportWindow knxImportWindow = new KNXImportWindow(deviceModel);
           knxImportWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
              @Override
@@ -906,7 +906,7 @@ public class DevicePanel extends ContentPanel {
                 }
                 tree.setExpanded(deviceModel, true);
                 */
-                eventBus.fireEvent(new DeviceUpdatedEvent((Device)deviceModel.getBean()));
+                eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean()));
 
                
                 knxImportWindow.hide();
@@ -920,9 +920,8 @@ public class DevicePanel extends ContentPanel {
     */
    private void importLutronCommand() {    
      final BeanModel deviceModel = getDeviceModel();
-     if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-       
-       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean(), eventBus);
+     if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {       
+       LutronImportWizard importWizard = new LutronImportWizard((DeviceDTO) deviceModel.getBean(), eventBus);
        importWizard.show();
        importWizard.center();
        
