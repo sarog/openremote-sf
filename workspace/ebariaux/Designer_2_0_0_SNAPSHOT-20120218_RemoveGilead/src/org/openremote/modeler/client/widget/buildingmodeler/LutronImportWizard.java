@@ -35,7 +35,7 @@ import org.openremote.modeler.client.lutron.importmodel.RoomOverlay;
 import org.openremote.modeler.client.utils.ArrayOverlay;
 import org.openremote.modeler.client.utils.CheckboxCellHeader;
 import org.openremote.modeler.client.utils.CheckboxCellHeader.ChangeValue;
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.lutron.ImportConfig;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigAction;
 import org.openremote.modeler.shared.lutron.ImportLutronConfigResult;
@@ -75,7 +75,7 @@ public class LutronImportWizard extends DialogBox {
   
   private EventBus eventBus;
   
-  private Device device;
+  private DeviceDTO deviceDTO;
   
   private final MultiSelectionModel<OutputImportConfig> selectionModel = new MultiSelectionModel<OutputImportConfig>();
 
@@ -88,9 +88,9 @@ public class LutronImportWizard extends DialogBox {
     return this;
   }
 
-  public LutronImportWizard(final Device device, final EventBus eventBus) {
+  public LutronImportWizard(final DeviceDTO deviceDTO, final EventBus eventBus) {
     this.eventBus = eventBus;
-    this.device = device;
+    this.deviceDTO = deviceDTO;
 
     uiBinder.createAndBindUi(this);
     importButton.setEnabled(false);
@@ -265,7 +265,7 @@ public class LutronImportWizard extends DialogBox {
     importConfig.setOutputs(new HashSet<OutputImportConfig>(selectionModel.getSelectedSet()));
     
     ImportLutronConfigAction action = new ImportLutronConfigAction(importConfig);
-    action.setDevice(this.device);
+    action.setDevice(this.deviceDTO);
     
     dispatcher.execute(action, new AsyncCallback<ImportLutronConfigResult>() {
 
@@ -276,7 +276,7 @@ public class LutronImportWizard extends DialogBox {
 
       @Override
       public void onSuccess(ImportLutronConfigResult result) {
-         eventBus.fireEvent(new DeviceUpdatedEvent(LutronImportWizard.this.device));
+         eventBus.fireEvent(new DeviceUpdatedEvent(LutronImportWizard.this.deviceDTO));
          /*
           * Not use for now as issue with serialiazation of Hibernate beans (Gilead + gwt-dispatch)
           * 
