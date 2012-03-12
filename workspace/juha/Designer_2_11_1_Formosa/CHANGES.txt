@@ -1,3 +1,13 @@
+Designer 2.11.1 (2012-03-12 Formosa)
+====================================
+
+Bug fix release.
+
+ - Make inclusion of Designer serialization data optional in save (user
+   may not have made any changes yet when auto-save runs for the first
+   time)
+
+
 Designer 2.11 (2012-02-25 Formosa)
 ==================================
 
