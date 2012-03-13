@@ -20,10 +20,7 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.HashSet;
-import java.util.Set;
 
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -33,14 +30,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * The Interface ControllerConfigRPCService.
  */
 @RemoteServiceRelativePath("controllerConfig.smvc")
-public interface ControllerConfigRPCService extends RemoteService{
-   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs);
-   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName);
-   public Set<ControllerConfig> getConfigsByCategory(String categoryName,Account account);
-   public ControllerConfig update(ControllerConfig config);
-   public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName);
-//   public Set<ConfigCategory> getCategories(); 
-   
+public interface ControllerConfigRPCService extends RemoteService{   
    
    HashSet<ControllerConfigDTO> getConfigDTOsByCategoryForCurrentAccount(String categoryName);
 

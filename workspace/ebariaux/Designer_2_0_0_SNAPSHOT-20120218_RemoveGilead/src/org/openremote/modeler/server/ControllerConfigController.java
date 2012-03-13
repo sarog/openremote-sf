@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.rpc.ControllerConfigRPCService;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
@@ -35,43 +34,11 @@ import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 @SuppressWarnings("serial")
 public class ControllerConfigController extends BaseGWTSpringController implements ControllerConfigRPCService{
    private ControllerConfigService controllerConfigService = null;
-   @Override
-   public Set<ControllerConfig> getConfigsByCategory(String categoryName, Account account) {
-      return controllerConfigService.listAllConfigsByCategoryNameForAccount(categoryName, account);
-   }
-
-   @Override
-   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName) {
-      return controllerConfigService.listAllConfigsByCategory(categoryName);
-   }
-
-   @Override
-   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs) {
-      return controllerConfigService.saveAll(cfgs);
-   }
-
-   @Override
-   public ControllerConfig update(ControllerConfig config) {
-      return controllerConfigService.update(config);
-   }
-
-   /*@Override
-   public Set<ConfigCategory> getCategories() {
-      return controllerConfigService.listAllCategory();
-   }*/
-   
-   @Override
-   public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName) {
-      return controllerConfigService.listMissedConfigsByCategoryName(categoryName);
-   }
 
    public void setControllerConfigService(ControllerConfigService controllerConfigService) {
       this.controllerConfigService = controllerConfigService;
    }
 
-   
-   
-   
    @Override
    public HashSet<ControllerConfigDTO> getConfigDTOsByCategoryForCurrentAccount(String categoryName) {
      return createDTOsFromBeans(controllerConfigService.listAllConfigsByCategory(categoryName));
