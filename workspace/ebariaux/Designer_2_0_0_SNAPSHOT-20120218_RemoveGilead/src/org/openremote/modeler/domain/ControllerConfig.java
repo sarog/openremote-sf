@@ -45,7 +45,6 @@ public class ControllerConfig extends BusinessEntity{
    public static final String VALUE_XML_ATTRIBUTE_NAME = "value";
    public static final String VALIDATION_XML_ATTRIBUTE_NAME = "validation";
    public static final String OPTION_XML_ATTRIBUTE_NAME = "options";
-   public static final String OPTION_SPLIT_SEPARATOR = ",";
    
    public static final String HINT_XML_NODE_NAME = "hint";
    public static final String XML_NODE_NAME = "config";
@@ -132,12 +131,6 @@ public class ControllerConfig extends BusinessEntity{
 
    public void setOptions(String options) {
       this.options = options;
-   }
-   
-   @Transient
-   @JSON(include=false)
-   public String[] optionsArray(){
-      return options.split(OPTION_SPLIT_SEPARATOR);
    }
    
    @Transient

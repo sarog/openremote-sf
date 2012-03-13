@@ -19,12 +19,14 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.rpc.ControllerConfigRPCService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.ControllerConfigService;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 /**
  * The controller for configuring the Controller. 
  * @author javen
@@ -67,5 +69,30 @@ public class ControllerConfigController extends BaseGWTSpringController implemen
       this.controllerConfigService = controllerConfigService;
    }
 
+   
+   
+   
+   @Override
+   public HashSet<ControllerConfigDTO> getConfigDTOsByCategoryForCurrentAccount(String categoryName) {
+     return createDTOsFromBeans(controllerConfigService.listAllConfigsByCategory(categoryName));
+   }
+
+   @Override
+   public HashSet<ControllerConfigDTO> listAllMissedConfigDTOsByCategoryName(String categoryName) {
+     return createDTOsFromBeans(controllerConfigService.listMissedConfigsByCategoryName(categoryName));
+   }
+
+   private HashSet<ControllerConfigDTO> createDTOsFromBeans(Set<ControllerConfig> configs) {
+     HashSet<ControllerConfigDTO> dtos = new HashSet<ControllerConfigDTO>();
+     for (ControllerConfig cc : configs) {
+       dtos.add(new ControllerConfigDTO(cc.getOid(), cc.getCategory(), cc.getName(), cc.getValue(), cc.getHint(), cc.getValidation(), cc.getOptions()));
+     }
+     return dtos;
+   }
+
+   @Override
+   public HashSet<ControllerConfigDTO> saveAllDTOs(HashSet<ControllerConfigDTO> configs) {
+     return createDTOsFromBeans(controllerConfigService.saveAllDTOs(configs));
+   }
 
 }

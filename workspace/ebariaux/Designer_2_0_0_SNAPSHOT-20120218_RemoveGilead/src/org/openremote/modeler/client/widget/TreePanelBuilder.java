@@ -636,7 +636,6 @@ public class TreePanelBuilder {
             }
          });
       }
-
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore) {
          @Override
          public void onBrowserEvent(Event event) {

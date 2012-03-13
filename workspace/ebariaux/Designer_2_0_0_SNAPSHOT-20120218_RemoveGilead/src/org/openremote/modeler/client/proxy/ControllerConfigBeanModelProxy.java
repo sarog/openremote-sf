@@ -21,12 +21,14 @@ package org.openremote.modeler.client.proxy;
 
 
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -82,4 +84,39 @@ public class ControllerConfigBeanModelProxy {
 
             });
    }
+   
+   
+   
+   
+   
+   public static void getConfigDTOs(final ConfigCategory category, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+     AsyncServiceFactory.getControllerConfigPRCServiceAsync().getConfigDTOsByCategoryForCurrentAccount(
+           category.getName(), new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
+
+              @Override
+              public void onSuccess(HashSet<ControllerConfigDTO> result) {
+                 callback.onSuccess(result);
+              }
+
+           });
+  }
+   
+   public static void listAllMissingConfigDTOs(final String categoryName, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+        AsyncServiceFactory.getControllerConfigPRCServiceAsync().listAllMissedConfigDTOsByCategoryName(categoryName, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
+          @Override
+          public void onSuccess(HashSet<ControllerConfigDTO> result) {
+            callback.onSuccess(result);
+          }
+        });
+     }
+   
+   public static void saveAllConfigDTOs(final HashSet<ControllerConfigDTO> configs, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+      AsyncServiceFactory.getControllerConfigPRCServiceAsync().saveAllDTOs(configs, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
+        @Override
+        public void onSuccess(HashSet<ControllerConfigDTO> result) {
+          callback.onSuccess(result);
+        }
+      });
+   }
+
 }

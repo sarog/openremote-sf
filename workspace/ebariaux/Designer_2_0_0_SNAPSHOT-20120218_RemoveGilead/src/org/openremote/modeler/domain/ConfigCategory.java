@@ -18,13 +18,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.modeler.domain;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 /**
  * A domain class for describing the category of controller configurations. 
  * @author javen
  *
  */
 @SuppressWarnings("serial")
-public class ConfigCategory extends BusinessEntity{
+public class ConfigCategory extends BusinessEntity implements BeanModelTag {
    public static final String XML_NODE_NAME = "category";
    public static final String NAME_XML_ATRIBUTE_NAME = "name";
    public static final String DESCRIBTION_NODE_NAME = "description";
