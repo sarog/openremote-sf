@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
@@ -42,4 +44,13 @@ public interface ControllerConfigRPCServiceAsync {
    public void listAllMissedConfigsByCategoryName(String categoryName,AsyncCallback<Set<ControllerConfig>> callback);
    
 //   public void getCategories(AsyncCallback<Set<ConfigCategory>> callback);
+   
+   
+   
+   void getConfigDTOsByCategoryForCurrentAccount(String categoryName, AsyncCallback<HashSet<ControllerConfigDTO>>callback);
+   
+   void listAllMissedConfigDTOsByCategoryName(String categoryName,AsyncCallback<HashSet<ControllerConfigDTO>> callback);
+   
+   void saveAllDTOs(HashSet<ControllerConfigDTO> configs, AsyncCallback<HashSet<ControllerConfigDTO>>callback);
+
 }

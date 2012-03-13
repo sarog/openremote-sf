@@ -37,7 +37,7 @@ public class ConfigCategoryBeanModelProxy {
       AsyncServiceFactory.getConfigCategoryRPCServiceAsync().getCategories(new AsyncSuccessCallback<Set<ConfigCategory>>(){
          @Override
          public void onSuccess(Set<ConfigCategory> result) {
-            BeanModelDataBase.configCategoryTable.insertAll(ConfigCategory.createModels(result));
+//            BeanModelDataBase.configCategoryTable.insertAll(ConfigCategory.createModels(result));
             callback.onSuccess(result);
          }
          
