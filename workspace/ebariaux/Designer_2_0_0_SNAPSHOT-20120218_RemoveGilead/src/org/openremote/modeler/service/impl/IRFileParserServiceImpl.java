@@ -71,9 +71,9 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * .modeler.irfileparser.BrandInfo)
     */
    @Override
-   public List<DeviceInfo> getDevices(BrandInfo brand) {
+   public ArrayList<DeviceInfo> getDevices(BrandInfo brand) {
 
-      List<DeviceInfo> deviceInfo = new ArrayList<DeviceInfo>();
+     ArrayList<DeviceInfo> deviceInfo = new ArrayList<DeviceInfo>();
       Brand b = new Brand(brand.getBrandName());
 
       List<Device> devices = prontoFileParser.getDevices(b);
@@ -92,8 +92,8 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * .modeler.irfileparser.DeviceInfo)
     */
    @Override
-   public List<CodeSetInfo> getCodeSets(DeviceInfo di) {
-      List<CodeSetInfo> codeSetInfo = new ArrayList<CodeSetInfo>();
+   public ArrayList<CodeSetInfo> getCodeSets(DeviceInfo di) {
+     ArrayList<CodeSetInfo> codeSetInfo = new ArrayList<CodeSetInfo>();
 
       Device d = new Device(new Brand(di.getBrandInfo().getBrandName()),
             di.getModelName());
@@ -114,9 +114,9 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.IRFileParserService#getBrands()
     */
    @Override
-   public List<BrandInfo> getBrands() {
+   public ArrayList<BrandInfo> getBrands() {
       if (prontoFileParser != null) {
-         List<BrandInfo> brandInfo = new ArrayList<BrandInfo>();
+        ArrayList<BrandInfo> brandInfo = new ArrayList<BrandInfo>();
          List<Brand> brands = prontoFileParser.getBrands();
          for (Brand brand : brands) {
             brandInfo.add(new BrandInfo(brand.getBrandName()));
@@ -134,8 +134,8 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * openremote.modeler.irfileparser.CodeSetInfo)
     */
    @Override
-   public List<IRCommandInfo> getIRCommands(CodeSetInfo csi) {
-      List<IRCommandInfo> iRCommandInfo = new ArrayList<IRCommandInfo>();
+   public ArrayList<IRCommandInfo> getIRCommands(CodeSetInfo csi) {
+     ArrayList<IRCommandInfo> iRCommandInfo = new ArrayList<IRCommandInfo>();
       Device d = new Device(new Brand(csi.getDeviceInfo().getBrandInfo()
             .getBrandName()), csi.getDeviceInfo().getModelName());
       List<IRCommand> iRcommands = prontoFileParser.getCodeSets(d)
