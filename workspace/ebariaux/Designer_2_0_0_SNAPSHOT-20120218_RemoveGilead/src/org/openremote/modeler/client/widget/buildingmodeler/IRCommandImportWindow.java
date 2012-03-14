@@ -26,6 +26,7 @@ import org.openremote.modeler.client.widget.CommonWindow;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.google.gwt.event.shared.EventBus;
 
 
 /**

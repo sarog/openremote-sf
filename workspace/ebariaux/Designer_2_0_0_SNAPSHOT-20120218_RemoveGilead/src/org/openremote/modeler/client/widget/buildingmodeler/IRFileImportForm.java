@@ -25,11 +25,11 @@ import java.util.List;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -44,7 +44,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.Component;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -67,7 +66,7 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 public class IRFileImportForm extends CommonForm {
 
    /** The device. */
-   protected Device device = null;
+   protected DeviceDTO device = null;
 
    /** The select container. */
    private LayoutContainer selectContainer = new LayoutContainer();
@@ -95,8 +94,6 @@ public class IRFileImportForm extends CommonForm {
    ListStore<IRCommandInfo> listStore;
 
    protected Component wrapper;
-
-   protected IRFileImportToProtocolForm protocolChooserForm;
 
    /**
     * Instantiates a new iR command file import form.
@@ -127,7 +124,7 @@ public class IRFileImportForm extends CommonForm {
       commandContainer.setLayoutOnChange(true);
       add(commandContainer, new RowData(1, 1));
       
-      device = (Device) deviceBeanModel.getBean();
+      device = (DeviceDTO) deviceBeanModel.getBean();
       
       cleanBrandComboBox();
       cleanCodeGrid();
@@ -145,7 +142,6 @@ public class IRFileImportForm extends CommonForm {
    protected void onSubmit(final Component wrapper) {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-
          }
       });
    }
@@ -158,7 +154,7 @@ public class IRFileImportForm extends CommonForm {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-           protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
+           IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
            protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
            protocolChooserForm.setVisible(true);
            protocolChooserForm.show();
