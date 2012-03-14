@@ -54,6 +54,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
+import org.hibernate.ObjectNotFoundException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -940,11 +941,21 @@ public class ResourceServiceImpl implements ResourceService {
 
   private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
     if (uiCommand instanceof DeviceCommandRef) {
-      DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
-      return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+      try {
+        DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
+        return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+      } catch (ObjectNotFoundException e) {
+        serviceLog.warn("Button is referencing inexistent command with id " + ((DeviceCommandRef)uiCommand).getDeviceCommand().getOid(), e);
+        return null;
+      }
     } else if (uiCommand instanceof DeviceMacroRef) {
-      DeviceMacro dm = deviceMacroService.loadById(((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid());
-      return (dm != null)?new MacroDTO(dm.getOid(), dm.getDisplayName()):null;
+      try {
+        DeviceMacro dm = deviceMacroService.loadById(((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid());
+        return (dm != null)?new MacroDTO(dm.getOid(), dm.getDisplayName()):null;
+      } catch (ObjectNotFoundException e) {
+        serviceLog.warn("Button is referencing inexistent macro with id " + ((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid(), e);
+        return null;
+      }
     }
     throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
   }
