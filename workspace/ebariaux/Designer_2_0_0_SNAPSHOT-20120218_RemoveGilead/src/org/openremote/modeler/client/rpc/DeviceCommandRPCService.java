@@ -20,9 +20,7 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
@@ -34,15 +32,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("deviceCommand.smvc")
 public interface DeviceCommandRPCService extends RemoteService {
-   
-   /**
-    * Save all.
-    * 
-    * @param deviceCommands the device commands
-    * 
-    * @return the list< device command>
-    */
-   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
    
    /**
     * Delete command.
