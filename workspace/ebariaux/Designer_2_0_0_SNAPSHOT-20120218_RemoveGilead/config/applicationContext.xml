@@ -95,6 +95,8 @@
   <bean id="importLutronConfigActionHandler" class="org.openremote.modeler.server.lutron.ImportLutronConfigActionHandler"></bean>
   <bean id="createRussoundDeviceActionHandler" class="org.openremote.modeler.server.russound.CreateRussoundDeviceActionHandler"></bean>
   <bean id="importKNXConfigActionHandler" class="org.openremote.modeler.server.knx.ImportKNXConfigActionHandler"></bean>
+  <bean id="importLIRCCommandsActionHandler" class="org.openremote.modeler.server.lirc.ImportLIRCCommandsActionHandler"></bean>
+  <bean id="generateIRCommandsActionHandler" class="org.openremote.modeler.server.ir.GenerateIRCommandsActionHandler"></bean>
         
   <bean id="registry" class="net.customware.gwt.dispatch.server.DefaultActionHandlerRegistry">
     <property name="actionHandlers">
@@ -102,6 +104,8 @@
             <ref bean="importLutronConfigActionHandler"/>
             <ref bean="createRussoundDeviceActionHandler"/>
             <ref bean="importKNXConfigActionHandler"/>
+            <ref bean="importLIRCCommandsActionHandler"/>
+            <ref bean="generateIRCommandsActionHandler"/>
         </list>
     </property>
   </bean>
