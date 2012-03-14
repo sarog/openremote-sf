@@ -404,19 +404,16 @@ class DesignerState
       }
 
 
-      // had backup state but couldn't find anything to restore...
+      // TODO :
+      //
+      //  If no designer serialization state is found, we assume that the account is ok,
+      //  just that nothing has been saved in the designer yet.
+      //
+      //  This assumption is brittle, it would be better to save even an empty designer
+      //  serialization data (for example, in the XML format once it is added) leaving it
+      //  clear that complete lack of any serialization information indicates a system error.
 
-      haltAccount(
-          MessageFormat.format(
-              "Could not restore account state (Acct ID : {0})", user.getAccount().getOid()
-          ),
-
-          "There has been an error in restoring the designer state from your account data. " +
-          "The system administrators have been notified of this issue. As a precaution, " +
-          "further modifications of your data has been disabled. Do not make changes to " +
-          "your designs or configuration during this period, as these changes may get lost. " +
-          "For further assistance, contact support."
-      );
+      return;
     }
 
     catch (ConfigurationException e)
@@ -551,6 +548,41 @@ class DesignerState
 
           for (String imageName : imageNames)
           {
+
+            // ----- 8< ----- UGLY HACK BEGIN -----------------------------------------------------
+
+
+            // TODO :
+            //
+            //   Certain image sources still include path in their names (although they should
+            //   not anymore) based on the runtime error logs. Unclear whether this is caused
+            //   by pre-existing serialization data from older versions that included paths or
+            //   if the API to set image source names still includes path somewhere.
+            //
+            //   This ugly hack is a stop-gap measure for the runtime errors caused by the paths
+            //   in image source names and based on the file pattern revealed by runtime logs
+            //   (/[cache folder]/[account id]/[image name])
+            //
+            //   It would be better placed into the domain model to strip incorrect path names
+            //   at the source (e.g. in Panel.getallImageNames() method) but before moving there
+            //   should add sufficient unit test coverage to ensure there's no regression on
+            //   this issue.
+            //                                                                            [JPL]
+
+
+            if (imageName.startsWith(PathConfig.RESOURCEFOLDER + "/" + user.getAccount().getOid() + "/"))
+            {
+              saveLog.warn("Found ''{0}'' -- there should be no path included...", imageName);
+
+              imageName = imageName.substring(imageName.lastIndexOf("/") + 1, imageName.length());
+
+              saveLog.warn("Truncated image name to ''{0}''.", imageName);
+            }
+            
+            // ----- UGLY HACK END ------ >8 ------------------------------------------------------
+
+
+
             imageFiles.add(new File(imageName));
 
             saveLog.debug(
