@@ -43,7 +43,6 @@ import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
@@ -68,13 +67,16 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -129,18 +131,28 @@ public class DevicePanel extends ContentPanel {
    
    private void bind() {
      eventBus.addHandler(DeviceUpdatedEvent.TYPE, new DeviceUpdatedEventHandler() {
-
       @Override
       public void onDeviceUpdated(DeviceUpdatedEvent event) {
+        final TreeStore<BeanModel> deviceTreeStore = tree.getStore();
+        final BeanModel bm = DTOHelper.getBeanModel(event.getUpdatedDevice());
         
-        Info.display("INFO", "Should expand device");
-        
-        // TODO: should lookup device model based on updated device from event
-        tree.getStore().getLoader().load(); // This reloads the all tree, collapsing all nodes (all those that were expanded)
-        
-//        tree.setExpanded(getDeviceModel(), true);
-      }
-       
+        // EBR : adding a load listener so we can expand the device once it has reloaded it's children
+        // removing it when the load is done. It works but I don't like this approach, feels like a hack to me.
+        final LoadListener ll = new LoadListener() {
+          @Override
+          public void loaderLoad(LoadEvent le) {
+            tree.getSelectionModel().select(bm, true);
+            tree.setExpanded(bm, true);
+            super.loaderLoad(le);
+            deviceTreeStore.getLoader().removeLoadListener(this);
+          }
+        };
+        if (deviceTreeStore.contains(bm)) {
+          deviceTreeStore.update(bm);
+          deviceTreeStore.getLoader().addLoadListener(ll);
+          deviceTreeStore.getLoader().loadChildren(bm);
+        }
+      }       
      });
    }
 
@@ -203,7 +215,7 @@ public class DevicePanel extends ContentPanel {
             return;
           }
           
-          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final DeviceDTO deviceDTO = (DeviceDTO)deviceBeanModel.getBean();
           final SwitchDetailsDTO newSwitch = new SwitchDetailsDTO();
           newSwitch.setSensor(new DTOReference(sensor.getOid()));
           newSwitch.setOnCommand(new DTOReference(onCmd.getOid()));
@@ -213,10 +225,10 @@ public class DevicePanel extends ContentPanel {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSwitch.setName(be.getValue());
                 
-                SwitchBeanModelProxy.saveNewSwitch(newSwitch, deviceId, new AsyncSuccessCallback<Void>() {
+                SwitchBeanModelProxy.saveNewSwitch(newSwitch, deviceDTO.getOid(), new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
-                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
+                    eventBus.fireEvent(new DeviceUpdatedEvent(deviceDTO));
                   };
                 });
               }
@@ -249,7 +261,7 @@ public class DevicePanel extends ContentPanel {
             MessageBox.alert("Wrong selection for Slider", "Make sure you have 1 Range-/Scale-Sensor and 1 command selected.", null);
             return;
           }
-          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final DeviceDTO deviceDTO = (DeviceDTO)deviceBeanModel.getBean();
           final SliderDetailsDTO newSlider = new SliderDetailsDTO();
           newSlider.setCommand(new DTOReference(setValuCmd.getOid()));
           newSlider.setSensor(new DTOReference(sensor.getOid()));
@@ -257,10 +269,10 @@ public class DevicePanel extends ContentPanel {
             public void handleEvent(MessageBoxEvent be) {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSlider.setName(be.getValue());
-                SliderBeanModelProxy.saveNewSlider(newSlider, deviceId, new AsyncSuccessCallback<Void>() {
+                SliderBeanModelProxy.saveNewSlider(newSlider, deviceDTO.getOid(), new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
-                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
+                    eventBus.fireEvent(new DeviceUpdatedEvent(deviceDTO));
                   };
                 });
               }
@@ -862,7 +874,7 @@ public class DevicePanel extends ContentPanel {
 				  }
 				  tree.setExpanded(deviceModel, true);
 				  */
-				  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO
+          eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
 				  selectIRFileWindow.hide();
 
 				}
@@ -887,7 +899,7 @@ public class DevicePanel extends ContentPanel {
                }
                tree.setExpanded(deviceModel, true);
                */
-              eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO
+              eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
                selectIRWindow.hide();
             }
          });
@@ -912,9 +924,7 @@ public class DevicePanel extends ContentPanel {
                 }
                 tree.setExpanded(deviceModel, true);
                 */
-                eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean()));
-
-               
+                eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
                 knxImportWindow.hide();
              }
           });
