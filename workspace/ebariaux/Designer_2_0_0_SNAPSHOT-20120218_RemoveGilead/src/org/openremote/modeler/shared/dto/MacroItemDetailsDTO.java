@@ -44,6 +44,7 @@ public class MacroItemDetailsDTO implements DTO {
 
   public void setDelay(Integer delay) {
     this.delay = delay;
+    this.displayName = "Delay " + delay + " ms";
   }
 
   public DTOReference getDto() {
