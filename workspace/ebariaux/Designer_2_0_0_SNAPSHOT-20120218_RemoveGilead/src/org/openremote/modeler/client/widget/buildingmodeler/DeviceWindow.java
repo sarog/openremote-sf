@@ -27,71 +27,67 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.CommonWindow;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.event.shared.EventBus;
 
-
 /**
- * The window to creates or updates a device.
+ * The window to edit a device, not used for creation.
  */
 public class DeviceWindow extends CommonWindow {
-   
-   /** The device form. */
-   private CommonForm deviceForm;
-   
-   /** The device model. */
-   protected BeanModel deviceModel = null;
-   
-   private EventBus eventBus;
-   
-   /**
-    * Instantiates a new device window.
-    * 
-    * @param deviceBeanModel the device model
-    */
-   public DeviceWindow(BeanModel deviceBeanModel, EventBus eventBus) {
-      super();
-      this.deviceModel = deviceBeanModel;
-      this.eventBus = eventBus;
-      initial(deviceBeanModel);
-   }
-   
+
+  /** The device form. */
+  private CommonForm deviceForm;
+
+  private EventBus eventBus;
+
+  /**
+   * Instantiates a new device window.
+   * 
+   * @param deviceBeanModel the device model
+   */
+  public DeviceWindow(DeviceDTO device, EventBus eventBus) {
+    super();
+    this.eventBus = eventBus;
+    initial(device);
+  }
+
   /**
     * Initial.
     * 
     * @param deviceBeanModel the device bean model
     */
-   protected void initial(final BeanModel deviceBeanModel) {
-      setSize(360, 200);
-      setHeading("Loading...");
-      // TODO EBR better indicate device is loading
+  protected void initial(final DeviceDTO device) {
+    setSize(360, 200);
+    setHeading("Loading...");
+    // TODO EBR better indicate device is loading
 
-      addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-       @Override
-        public void afterSubmit(SubmitEvent be) {
-           hide();
-           BeanModel deviceModel = be.getData();
-           eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : should pass DTO
-           Info.display("Info", "Edit device " + deviceModel.get("name") + " success.");
-       }
-      });
-      
-      DeviceBeanModelProxy.loadDeviceDetails(deviceBeanModel, new AsyncSuccessCallback<BeanModel>() {  
-        public void onSuccess(BeanModel result) {
-          
-          // TODO EBR : seems this is only used for edit, never new          
-          setHeading(((DeviceDetailsDTO) result.getBean()).getName() == null ? "New Device" : "Edit Device");
-          deviceForm = new DeviceInfoForm(DeviceWindow.this, result);
-          add(deviceForm);
-          setFocusWidget(deviceForm.getFields().get(0));
-          layout();
-        }
-      });
-      
-      ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
-   }
+    addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+      @Override
+      public void afterSubmit(SubmitEvent be) {
+        hide();
+        BeanModel deviceModel = be.getData();
+        DeviceDetailsDTO deviceDetails = deviceModel.getBean();
+        device.setDisplayName(deviceDetails.getName()); // Update the DeviceDTO so changes are displayed without the need to reload it
+        eventBus.fireEvent(new DeviceUpdatedEvent(device));
+        Info.display("Info", "Edit device " + deviceDetails.getName() + " success.");
+      }
+    });
+
+    DeviceBeanModelProxy.loadDeviceDetails(device, new AsyncSuccessCallback<BeanModel>() {
+      public void onSuccess(BeanModel result) {
+        setHeading("Edit Device");
+        deviceForm = new DeviceInfoForm(DeviceWindow.this, result);
+        add(deviceForm);
+        setFocusWidget(deviceForm.getFields().get(0));
+        layout();
+      }
+    });
+
+    ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
+  }
 
 }

@@ -616,7 +616,7 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editDevice(BeanModel selectedModel) {
-      final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel, eventBus);
+      final DeviceWindow editDeviceWindow = new DeviceWindow((DeviceDTO)selectedModel.getBean(), eventBus);
       editDeviceWindow.show();
    }
    
