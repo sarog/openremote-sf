@@ -28,7 +28,6 @@ import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
-
 /**
  * The is for managing deviceCommand.
  */
@@ -55,15 +54,9 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Boolean> callback) {
-      final DeviceCommandDTO deviceCommand = deviceCommnadModel.getBean();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Boolean>() {
-         public void onSuccess(Boolean result) {
-            if (result) {
-               BeanModelDataBase.deviceCommandTable.delete(deviceCommand.getOid());
-            }
-            callback.onSuccess(result);
-         }
-      });
+     if (deviceCommnadModel.getBean() != null && deviceCommnadModel.getBean() instanceof DeviceCommandDTO) {
+       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(((DeviceCommandDTO)deviceCommnadModel.getBean()).getOid(), callback);
+     }
    }
    
    public static void loadDeviceCommandsDTOFromDeviceId(final Long deviceId,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {

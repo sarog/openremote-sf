@@ -45,7 +45,6 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
@@ -53,15 +52,9 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.proxy.TemplateProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable.DeviceInsertListener;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.domain.ConfigCategory;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
@@ -314,23 +307,6 @@ public class TreePanelBuilder {
             removeStyleName("x-masked");
          }
       };
-      ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
-            .addDeviceInsertListener(new DeviceInsertListener<BeanModel>() {
-
-               @Override
-               public void handleInsert(BeanModel beanModel) {
-                  if (beanModel != null && beanModel.getBean() instanceof Device) {
-                     if (deviceTreeStore.contains(beanModel)) {
-                        tree.getStore().removeAll(beanModel);
-                        tree.getStore().remove(beanModel);
-                     }
-                     deviceTreeStore.add(beanModel, false);
-                     tree.getSelectionModel().select(beanModel, true);
-                     tree.getStore().getLoader().load();
-                  }
-               }
-
-            });
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -460,23 +436,6 @@ public class TreePanelBuilder {
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
          }
       };
-      ((DeviceMacroBeanModelTable) BeanModelDataBase.deviceMacroTable)
-            .addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel>() {
-
-               @Override
-               public void handleInsert(BeanModel beanModel) {
-                  if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
-                     if (macroTreeStore.contains(beanModel)) {
-                        tree.getStore().removeAll(beanModel);
-                        tree.getStore().remove(beanModel);
-                     }
-                     macroTreeStore.add(beanModel, false);
-                     tree.getSelectionModel().select(beanModel, true);
-                     tree.getStore().getLoader().load();
-                  }
-               }
-
-            });
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
