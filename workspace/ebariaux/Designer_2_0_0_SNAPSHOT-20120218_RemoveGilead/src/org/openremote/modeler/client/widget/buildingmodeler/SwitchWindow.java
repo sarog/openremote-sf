@@ -36,6 +36,7 @@ import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
@@ -68,7 +69,7 @@ public class SwitchWindow extends FormWindow {
    public static final String SWITCH_OFF_COMMAND_FIELD_NAME="command(off)";
    
    private EventBus eventBus;
-   private long deviceId;
+   private DeviceDTO device;
    protected SwitchDetailsDTO switchDTO;
 
    private TextField<String> nameField = new TextField<String>();
@@ -83,9 +84,9 @@ public class SwitchWindow extends FormWindow {
     * 
     * @param switchToggle the switch toggle
     */
-   public SwitchWindow(BeanModel switchModel, long deviceId, EventBus eventBus) {
+   public SwitchWindow(BeanModel switchModel, DeviceDTO device, EventBus eventBus) {
      super();
-     this.deviceId = deviceId;
+     this.device = device;
      this.eventBus = eventBus;
      this.setHeading("Edit Switch");
      edit = true;
@@ -105,9 +106,9 @@ public class SwitchWindow extends FormWindow {
    /**
     * Instantiates a window to create a switch.
     */
-   public SwitchWindow(long deviceId, EventBus eventBus) {
+   public SwitchWindow(DeviceDTO device, EventBus eventBus) {
      super();
-     this.deviceId = deviceId;
+     this.device = device;
      this.eventBus = eventBus;
      switchDTO = new SwitchDetailsDTO();
      edit = false;
@@ -119,7 +120,7 @@ public class SwitchWindow extends FormWindow {
 
    protected void populateSensorFieldStore() {
      final ListStore<ModelData> sensorStore = sensorField.getStore();
-     SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+     SensorBeanModelProxy.loadSensorDTOsByDeviceId(device.getOid(), new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
        @Override
        public void onSuccess(ArrayList<SensorDTO> result) {
          for (SensorDTO s : result) {
@@ -212,10 +213,10 @@ public class SwitchWindow extends FormWindow {
             }
          }
          if (!edit) {
-            SwitchBeanModelProxy.saveNewSwitch(switchDTO, deviceId, new AsyncSuccessCallback<Void>() {
+            SwitchBeanModelProxy.saveNewSwitch(switchDTO, device.getOid(), new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 eventBus.fireEvent(new DeviceUpdatedEvent(device));
                  hide();
                };
 
@@ -224,7 +225,7 @@ public class SwitchWindow extends FormWindow {
             SwitchBeanModelProxy.updateSwitchWithDTO(switchDTO, new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO : have event just for switch update
                  hide();
               };
             });
@@ -250,7 +251,7 @@ public class SwitchWindow extends FormWindow {
       }
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(deviceId);
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(device.getOid());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
