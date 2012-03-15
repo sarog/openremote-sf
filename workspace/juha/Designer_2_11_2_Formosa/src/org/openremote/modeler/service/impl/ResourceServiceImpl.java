@@ -166,6 +166,8 @@ public class ResourceServiceImpl implements ResourceService
 
       for (String name : imageNames)
       {
+        name = DesignerState.uglyImageSourcePathHack(userService.getCurrentUser(), name);
+        
         imageFiles.add(new File(name));
 
         serviceLog.debug("DownloadZipResource: Add image file ''{0}''.", name);
