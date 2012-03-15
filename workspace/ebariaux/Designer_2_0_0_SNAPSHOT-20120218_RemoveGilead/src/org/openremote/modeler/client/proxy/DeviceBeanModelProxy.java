@@ -243,8 +243,8 @@ public class DeviceBeanModelProxy {
       }
    }
    
-   public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
-       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
+   public static void loadDeviceDetails(DeviceDTO device, final AsyncSuccessCallback<BeanModel> callback) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(device.getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
          public void onSuccess(DeviceDetailsDTO result) {
            callback.onSuccess(DTOHelper.getBeanModel(result));
          }
