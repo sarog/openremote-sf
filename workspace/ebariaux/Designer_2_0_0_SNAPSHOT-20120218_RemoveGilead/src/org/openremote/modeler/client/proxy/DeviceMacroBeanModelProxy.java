@@ -26,7 +26,6 @@ import java.util.List;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
@@ -74,29 +73,23 @@ public class DeviceMacroBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDeviceMacro(final BeanModel deviceMacroBeanModel, final AsyncSuccessCallback<Void> callback) {
-      MacroDTO deviceMacro = deviceMacroBeanModel.getBean();
-      AsyncServiceFactory.getDeviceMacroServiceAsync().deleteDeviceMacro(deviceMacro.getOid(),
-            new AsyncSuccessCallback<Void>() {
-               @Override
-               public void onSuccess(Void result) {
-                  BeanModelDataBase.deviceMacroTable.delete(deviceMacroBeanModel);
-                  callback.onSuccess(result);
-               }
-            });
+      if (deviceMacroBeanModel != null && deviceMacroBeanModel.getBean() instanceof MacroDTO) {
+        AsyncServiceFactory.getDeviceMacroServiceAsync().deleteDeviceMacro(((MacroDTO)deviceMacroBeanModel.getBean()).getOid(), callback);
+      }
    }
    
-   public static void loadMacroDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
-     AsyncServiceFactory.getDeviceMacroServiceAsync().loadMacroDetails(((MacroDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<MacroDetailsDTO>() {
+   public static void loadMacroDetails(MacroDTO macro, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
+     AsyncServiceFactory.getDeviceMacroServiceAsync().loadMacroDetails(macro.getOid(), new AsyncSuccessCallback<MacroDetailsDTO>() {
        public void onSuccess(MacroDetailsDTO result) {
          asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
        }
      });
    }
    
-   public static void saveNewMacro(final MacroDetailsDTO macro, final AsyncSuccessCallback<Void> callback) {
+   public static void saveNewMacro(final MacroDetailsDTO macro, final AsyncSuccessCallback<MacroDTO> callback) {
      AsyncServiceFactory.getDeviceMacroServiceAsync().saveNewMacro(macro, callback);
    }
-   public static void updateMacroWithDTO(final MacroDetailsDTO macro, final AsyncSuccessCallback<Void> callback) {
+   public static void updateMacroWithDTO(final MacroDetailsDTO macro, final AsyncSuccessCallback<MacroDTO> callback) {
      AsyncServiceFactory.getDeviceMacroServiceAsync().updateMacroWithDTO(macro, callback);
    }
 

@@ -36,6 +36,5 @@ public class DevicesCreatedEvent extends GwtEvent<DevicesCreatedEventHandler> {
   protected void dispatch(DevicesCreatedEventHandler handler) {
     handler.onDevicesCreated(this);
   }
-
   
 }

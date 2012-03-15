@@ -150,6 +150,8 @@ public class DevicePanel extends ContentPanel {
           }
         };
         if (deviceTreeStore.contains(bm)) {
+          // Important : for this to work, the DTO & BeanModel used for update must be the same instance as the one in the store
+          // Current code in DevicePanel ensures that this is the case
           deviceTreeStore.update(bm);
           deviceTreeStore.getLoader().addLoadListener(ll);
           deviceTreeStore.getLoader().loadChildren(bm);
@@ -159,9 +161,8 @@ public class DevicePanel extends ContentPanel {
      eventBus.addHandler(DevicesCreatedEvent.TYPE, new DevicesCreatedEventHandler() {
       @Override
       public void onDevicesCreated(DevicesCreatedEvent event) {
-        final TreeStore<BeanModel> deviceTreeStore = tree.getStore();
         List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
-        deviceTreeStore.add(bms, true);
+        tree.getStore().add(bms, true);
       } 
      });
    }

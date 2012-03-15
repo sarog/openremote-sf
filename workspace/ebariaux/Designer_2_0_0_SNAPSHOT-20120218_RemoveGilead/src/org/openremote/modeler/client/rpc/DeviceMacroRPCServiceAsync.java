@@ -44,8 +44,8 @@ public interface DeviceMacroRPCServiceAsync {
 
     void loadMacroDetails(long id, AsyncCallback<MacroDetailsDTO> callback);
         
-    void saveNewMacro(MacroDetailsDTO macro, AsyncCallback<Void> callback);
+    void saveNewMacro(MacroDetailsDTO macro, AsyncCallback<MacroDTO> callback);
 
-    void updateMacroWithDTO(MacroDetailsDTO macro, AsyncCallback<Void> callback);
+    void updateMacroWithDTO(MacroDetailsDTO macro, AsyncCallback<MacroDTO> callback);
 
 }
