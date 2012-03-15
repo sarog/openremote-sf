@@ -36,6 +36,7 @@ import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
@@ -70,7 +71,7 @@ public class SliderWindow extends FormWindow {
    
    private EventBus eventBus;
    
-   private long deviceId;
+   private DeviceDTO device;
    protected SliderDetailsDTO sliderDTO;
    
    private TextField<String> nameField = new TextField<String>();
@@ -82,10 +83,10 @@ public class SliderWindow extends FormWindow {
    /**
     * Instantiates a window to edit a slider.
     */
-   public SliderWindow(BeanModel sliderModel, long deviceId, EventBus eventBus) {
+   public SliderWindow(BeanModel sliderModel, DeviceDTO device, EventBus eventBus) {
       super();
       this.eventBus = eventBus;
-      this.deviceId = deviceId;
+      this.device = device;
       this.setHeading("Edit Slider");
       edit = true;
       this.setSize(320, 240);
@@ -104,10 +105,10 @@ public class SliderWindow extends FormWindow {
    /**
     * Instantiates a window to create a new slider.
     */
-   public SliderWindow(long deviceId, EventBus eventBus) {
+   public SliderWindow(DeviceDTO device, EventBus eventBus) {
       super();
       this.eventBus = eventBus;
-      this.deviceId = deviceId;
+      this.device = device;
       sliderDTO = new SliderDetailsDTO();
       this.setHeading("New Slider");
       edit = false;
@@ -118,7 +119,7 @@ public class SliderWindow extends FormWindow {
    
    protected void populateSensorFieldStore() {
      final ListStore<ModelData> sensorStore = sensorField.getStore();
-     SensorBeanModelProxy.loadSensorDTOsByDeviceId(deviceId, new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
+     SensorBeanModelProxy.loadSensorDTOsByDeviceId(device.getOid(), new AsyncSuccessCallback<ArrayList<SensorDTO>>() {
        @Override
        public void onSuccess(ArrayList<SensorDTO> result) {
          for (SensorDTO s : result) {
@@ -205,10 +206,10 @@ public class SliderWindow extends FormWindow {
             }
          }
          if (!edit) {
-            SliderBeanModelProxy.saveNewSlider(sliderDTO, deviceId, new AsyncSuccessCallback<Void>(){
+            SliderBeanModelProxy.saveNewSlider(sliderDTO, device.getOid(), new AsyncSuccessCallback<Void>(){
                @Override
                public void onSuccess(Void result) {
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 eventBus.fireEvent(new DeviceUpdatedEvent(device));
                  hide();
                }
             });
@@ -216,7 +217,7 @@ public class SliderWindow extends FormWindow {
             SliderBeanModelProxy.updateSliderWithDTO(sliderDTO, new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : pass correct data
+                 eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO : have specific event for slider update
                  hide();
                }
             });
@@ -231,7 +232,7 @@ public class SliderWindow extends FormWindow {
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(deviceId);
+         final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(device.getOid());
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override

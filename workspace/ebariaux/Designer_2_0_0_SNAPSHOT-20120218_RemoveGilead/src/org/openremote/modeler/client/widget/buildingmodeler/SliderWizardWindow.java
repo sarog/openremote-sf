@@ -56,7 +56,7 @@ public class SliderWizardWindow extends SliderWindow {
   private ArrayList<DeviceCommandDetailsDTO> commands;
 
   public SliderWizardWindow(ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors) {
-      super(0L, null);
+      super(null, null);
       this.commands = commands;
       populateSensorFieldStore(sensors);
       addNewSensorButton();

@@ -56,7 +56,7 @@ public class SwitchWizardWindow extends SwitchWindow {
   private ArrayList<DeviceCommandDetailsDTO> commands;
   
    public SwitchWizardWindow(ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors) {
-      super(0L, null);
+      super(null, null);
       this.commands = commands;
       populateSensorFieldStore(sensors);
       addNewSensorButton();

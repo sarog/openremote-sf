@@ -40,6 +40,7 @@ import org.openremote.modeler.protocol.ProtocolValidator;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -72,7 +73,7 @@ public class DeviceCommandWindow extends FormWindow {
    
    private EventBus eventBus;
    
-   private long deviceId;
+   private DeviceDTO device;
    protected DeviceCommandDetailsDTO deviceCommand = null;
    
    protected boolean hideWindow = true;
@@ -84,9 +85,9 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param device the device
     */
-   public DeviceCommandWindow(long deviceId, EventBus eventBus) {
+   public DeviceCommandWindow(DeviceDTO device, EventBus eventBus) {
       super();
-      this.deviceId = deviceId;
+      this.device = device;
       this.eventBus = eventBus;
       setHeading("New command");
       this.deviceCommand = new DeviceCommandDetailsDTO();
@@ -99,8 +100,9 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param command the command
     */
-   public DeviceCommandWindow(final DeviceCommandDTO command, EventBus eventBus) {
+   public DeviceCommandWindow(final DeviceCommandDTO command, DeviceDTO device, EventBus eventBus) {
       super();
+      this.device = device;
       this.eventBus = eventBus;
       setHeading("Edit command");
       AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandDetailsDTO(command.getOid(),
@@ -158,7 +160,7 @@ public class DeviceCommandWindow extends FormWindow {
             AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
               @Override
               public void onSuccess(Void result) {
-                eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO should pass device DTO
+                eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO have a specific event for command update
                  if (hideWindow) {
                     hide();
                  } else {
@@ -170,7 +172,7 @@ public class DeviceCommandWindow extends FormWindow {
               }
            };
            if (deviceCommand.getOid() == null) {
-              DeviceCommandBeanModelProxy.saveNewDeviceCommand(deviceCommand, deviceId, callback);
+              DeviceCommandBeanModelProxy.saveNewDeviceCommand(deviceCommand, device.getOid(), callback);
             } else {              
               DeviceCommandBeanModelProxy.updateDeviceCommandWithDTO(deviceCommand, callback);
             }
