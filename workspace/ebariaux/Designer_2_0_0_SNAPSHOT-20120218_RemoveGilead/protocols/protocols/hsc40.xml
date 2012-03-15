@@ -41,12 +41,6 @@
       </validations>
     </attr>
 
-    <attr name="deviceId" label="Hex-Value of device eg. 0x11">
-      <validations>
-        <allowBlank>false</allowBlank>
-      </validations>
-    </attr>
-
     <attr name="portId" label="Hex-Value of port eg. 0x01">
       <validations>
         <allowBlank>false</allowBlank>
