@@ -254,8 +254,37 @@ class DesignerState
   }
 
 
+  protected static String uglyImageSourcePathHack(User user, String str)
+  {
+    // TODO :
+    //
+    //   Certain image sources still include path in their names (although they should
+    //   not anymore) based on the runtime error logs. Unclear whether this is caused
+    //   by pre-existing serialization data from older versions that included paths or
+    //   if the API to set image source names still includes path somewhere.
+    //
+    //   This ugly hack is a stop-gap measure for the runtime errors caused by the paths
+    //   in image source names and based on the file pattern revealed by runtime logs
+    //   (/[cache folder]/[account id]/[image name])
+    //
+    //   It would be better placed into the domain model to strip incorrect path names
+    //   at the source (e.g. in Panel.getallImageNames() method) but before moving there
+    //   should add sufficient unit test coverage to ensure there's no regression on
+    //   this issue.
+    //                                                                            [JPL]
 
 
+    if (str.startsWith(PathConfig.RESOURCEFOLDER + "/" + user.getAccount().getOid() + "/"))
+    {
+      saveLog.warn("Found ''{0}'' -- there should be no path included...", str);
+
+      str = str.substring(str.lastIndexOf("/") + 1, str.length());
+
+      saveLog.warn("Truncated image name to ''{0}''.", str);
+    }
+
+    return str;
+  }
 
 
 
@@ -548,40 +577,7 @@ class DesignerState
 
           for (String imageName : imageNames)
           {
-
-            // ----- 8< ----- UGLY HACK BEGIN -----------------------------------------------------
-
-
-            // TODO :
-            //
-            //   Certain image sources still include path in their names (although they should
-            //   not anymore) based on the runtime error logs. Unclear whether this is caused
-            //   by pre-existing serialization data from older versions that included paths or
-            //   if the API to set image source names still includes path somewhere.
-            //
-            //   This ugly hack is a stop-gap measure for the runtime errors caused by the paths
-            //   in image source names and based on the file pattern revealed by runtime logs
-            //   (/[cache folder]/[account id]/[image name])
-            //
-            //   It would be better placed into the domain model to strip incorrect path names
-            //   at the source (e.g. in Panel.getallImageNames() method) but before moving there
-            //   should add sufficient unit test coverage to ensure there's no regression on
-            //   this issue.
-            //                                                                            [JPL]
-
-
-            if (imageName.startsWith(PathConfig.RESOURCEFOLDER + "/" + user.getAccount().getOid() + "/"))
-            {
-              saveLog.warn("Found ''{0}'' -- there should be no path included...", imageName);
-
-              imageName = imageName.substring(imageName.lastIndexOf("/") + 1, imageName.length());
-
-              saveLog.warn("Truncated image name to ''{0}''.", imageName);
-            }
-            
-            // ----- UGLY HACK END ------ >8 ------------------------------------------------------
-
-
+            imageName = uglyImageSourcePathHack(user, imageName);
 
             imageFiles.add(new File(imageName));
 
