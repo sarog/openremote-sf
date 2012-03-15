@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -34,13 +33,9 @@ import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.PanelTreeStoreChangeListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -407,18 +402,6 @@ public class ProfilePanel extends ContentPanel {
                      screenRef.setGroup(groupRef.getGroup());
                      updatePanelTree(screenRef);
                      BeanModelDataBase.screenTable.insert(screen.getBeanModel());
-                     // ----------rebuild command
-                     Set<Device> devices = screenFromTemplate.getDevices();
-                     for (Device device : devices) {
-                        ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
-                              .insertAndNotifyDeviceInsertListener(device.getBeanModel());
-                     }
-
-                     Set<DeviceMacro> macros = screenFromTemplate.getMacros();
-                     for (DeviceMacro macro : macros) {
-                        ((DeviceMacroBeanModelTable) BeanModelDataBase.deviceMacroTable)
-                              .insertAndNotifyMacroInsertListener(macro.getBeanModel());
-                     }
                   }
                }
 

@@ -22,14 +22,10 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.ArrayList;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.SensorDTO;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;

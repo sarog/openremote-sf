@@ -37,7 +37,6 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
@@ -59,9 +58,7 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -214,7 +211,6 @@ public class MacroPanel extends ContentPanel {
                macroTree = TreePanelBuilder.buildMacroTree();
                selectionService.addListener(new SourceSelectionChangeListenerExt(macroTree.getSelectionModel()));
                selectionService.register(macroTree.getSelectionModel());
-               addTreeStoreEventListener();
                macroListContainer.add(macroTree);
             }
             add(macroTree);
@@ -233,78 +229,6 @@ public class MacroPanel extends ContentPanel {
       macroListContainer.setLayoutOnChange(true);
       macroListContainer.setHeight("100%");
       add(macroListContainer);
-   }
-
-   /**
-    * Adds the tree store event listener.
-    */
-   private void addTreeStoreEventListener() {
-      macroTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-   }
-
-   /**
-    * Adds the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void addChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getDragSourceBeanModelChangeListener(beanModel));
-         }
-      }
-   }
-
-   /**
-    * Removes the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void removeChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         changeListenerMap.remove(beanModel);
-      }
    }
 
    /**

@@ -182,7 +182,6 @@ public class DevicePanel extends ContentPanel {
          }
          
       };
-      addTreeStoreEventListener();
       treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
    // overflow-auto style is for IE hack.
       treeContainer.addStyleName("overflow-auto");
@@ -930,134 +929,7 @@ public class DevicePanel extends ContentPanel {
        LutronImportWizard importWizard = new LutronImportWizard((DeviceDTO) deviceModel.getBean(), eventBus);
        importWizard.show();
        importWizard.center();
-       
-
-       
-       /*
-        * TODO: check to replace this with an event bus, import wizard posts notification that device changed
-        * and tree does expand (and reload if required)
-        * 
-       final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
-       importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-           List<BeanModel> allModels = be.getData();
-           for (BeanModel model : allModels) {
-              tree.getStore().add(deviceModel, model, false);
-           }
-           tree.setExpanded(deviceModel, true);
-           importWizardWindow.hide();
-         }
-       });
-       */
-       
-       
-       
      }
-   }
-
-   private void addTreeStoreEventListener() {
-      tree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDeviceTree(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDeviceTree(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-   }
-   
-   private void addChangeListenerToDeviceTree(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         Object o = beanModel.getBean();
-         if (beanModel.getBean() instanceof CommandRefItem) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getDragSourceBeanModelChangeListener(beanModel));
-         } else if (o instanceof Slider) {
-            Slider slider = (Slider)o;
-            if (slider.getSliderSensorRef() != null) {
-               Sensor s = slider.getSliderSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
-            }
-         } else if (o instanceof Switch) {
-            Switch swh = (Switch)o;
-            if (swh.getSwitchSensorRef() != null) {
-               Sensor s = swh.getSwitchSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
-            }
-         }
-      }
-   }
-   
-   private void removeChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof CommandRefItem) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         changeListenerMap.remove(beanModel);
-      }
-   }
-   
-   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
-      if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
-      }
-      ChangeListener changeListener = changeListenerMap.get(target);
-      if (changeListener == null) {
-         changeListener = new ChangeListener() {
-            public void modelChanged(ChangeEvent changeEvent) {
-               if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  tree.getStore().remove(target);
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof DeviceCommand) {
-                     DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     CommandRefItem cmdRefItem = target.getBean();
-                     cmdRefItem.setDeviceCommand(deviceCommand);
-                  } /*else if (source.getBean() instanceof Device) {
-                     Device device = (Device) source.getBean();
-                     CommandRefItem targetCmdRefItem = target.getBean();
-                     targetCmdRefItem.setDeviceName(device.getName());
-                  }*/
-                  else if (source.getBean() instanceof Sensor) {
-                     Sensor s = source.getBean();
-                     if (target.getBean() instanceof Switch) {
-                        Switch swh = target.getBean();
-                        swh.getSwitchSensorRef().setSensor(s);
-                     } else if (target.getBean() instanceof Slider) {
-                        Slider sld = target.getBean();
-                        sld.getSliderSensorRef().setSensor(s);
-                     }
-                  }
-                  tree.getStore().update(target);
-               }
-            }
-         };
-         changeListenerMap.put(target, changeListener);
-      }
-      return changeListener;
    }
    
    public TreePanel<BeanModel> getTree() {
