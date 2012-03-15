@@ -46,8 +46,8 @@ public interface DeviceMacroRPCService extends RemoteService {
  
    MacroDetailsDTO loadMacroDetails(long id);
 
-   void saveNewMacro(MacroDetailsDTO macro);
+   MacroDTO saveNewMacro(MacroDetailsDTO macro);
 
-   void updateMacroWithDTO(MacroDetailsDTO macro);
+   MacroDTO updateMacroWithDTO(MacroDetailsDTO macro);
 
 }

@@ -83,7 +83,8 @@ import com.google.gwt.core.client.GWT;
  */
 public class MacroWindow extends FormWindow {
 
-  private MacroDetailsDTO macro;
+  private MacroDTO macro;
+  private MacroDetailsDTO macroDetails;
 
   private boolean edit;
 
@@ -117,7 +118,7 @@ public class MacroWindow extends FormWindow {
   public MacroWindow() {
     setHeading("New Macro");
     setup();
-    macro = new MacroDetailsDTO();
+    macroDetails = new MacroDetailsDTO();
     show();
   }
 
@@ -126,13 +127,14 @@ public class MacroWindow extends FormWindow {
    * 
    * @param deviceMacroModel the device macro
    */
-  public MacroWindow(BeanModel deviceMacroModel) {
+  public MacroWindow(MacroDTO macro) {
+    this.macro = macro;
     setHeading("Edit Macro");
     edit = true;
     
-    DeviceMacroBeanModelProxy.loadMacroDetails(deviceMacroModel, new AsyncSuccessCallback<BeanModel>() {
+    DeviceMacroBeanModelProxy.loadMacroDetails(macro, new AsyncSuccessCallback<BeanModel>() {
       public void onSuccess(BeanModel result) {
-        MacroWindow.this.macro = result.getBean();
+        MacroWindow.this.macroDetails = result.getBean();
         setup();
         layout();
       }
@@ -169,7 +171,7 @@ public class MacroWindow extends FormWindow {
     macroNameField = new TextField<String>();
     
     if (edit) {
-      macroNameField.setValue(macro.getName());
+      macroNameField.setValue(macroDetails.getName());
     }
     macroNameField.setAllowBlank(false);
     macroNameField.setFieldLabel("Macro Name");
@@ -297,7 +299,7 @@ public class MacroWindow extends FormWindow {
         if (!(beanModel.getBean() instanceof MacroDTO)) {
           e.setCancelled(true);
           e.getStatus().setStatus(false);
-        } else if (((MacroDTO)beanModel.getBean()).getOid() == macro.getOid()) { // when edit macro, can not dnd oneself.
+        } else if (((MacroDTO)beanModel.getBean()).getOid() == macroDetails.getOid()) { // when edit macro, can not dnd oneself.
           e.setCancelled(true);
           e.getStatus().setStatus(false);
         }
@@ -416,8 +418,8 @@ public class MacroWindow extends FormWindow {
 
     rightMacroItemListView.setStore(store);
     rightMacroItemListView.setHeight(203);
-    if (macro != null) {
-      for (MacroItemDetailsDTO item : macro.getItems()) {
+    if (macroDetails != null) {
+      for (MacroItemDetailsDTO item : macroDetails.getItems()) {
         rightMacroItemListView.getStore().add(DTOHelper.getBeanModel(item));
       }
     }
@@ -428,14 +430,20 @@ public class MacroWindow extends FormWindow {
    * Before form submit.
    */
   private void beforeFormSubmit() {
-    AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
+    AsyncSuccessCallback<MacroDTO> callback = new AsyncSuccessCallback<MacroDTO>() {
       @Override
-      public void onSuccess(Void result) {
-        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(null)); // TODO pass macro
+      public void onSuccess(MacroDTO result) {
+        if (macro == null) {
+          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
+        } else {
+          macro.setDisplayName(result.getDisplayName());
+          macro.setItems(result.getItems());
+          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(macro));
+        }
       }
     };
 
-    macro.setName(macroNameField.getValue());
+    macroDetails.setName(macroNameField.getValue());
     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
     for (BeanModel bm : rightMacroItemListView.getStore().getModels()) {
       if (bm.getBean() instanceof DeviceCommandDTO) {
@@ -446,11 +454,11 @@ public class MacroWindow extends FormWindow {
         items.add((MacroItemDetailsDTO) bm.getBean());
       }
     }
-    macro.setItems(items);
+    macroDetails.setItems(items);
     if (edit) {
-      DeviceMacroBeanModelProxy.updateMacroWithDTO(macro, callback);
+      DeviceMacroBeanModelProxy.updateMacroWithDTO(macroDetails, callback);
     } else {
-      DeviceMacroBeanModelProxy.saveNewMacro(macro, callback);
+      DeviceMacroBeanModelProxy.saveNewMacro(macroDetails, callback);
     }
 
   }
