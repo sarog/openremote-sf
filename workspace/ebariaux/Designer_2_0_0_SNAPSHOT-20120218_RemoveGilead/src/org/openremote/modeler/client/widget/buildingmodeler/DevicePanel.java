@@ -736,7 +736,7 @@ public class DevicePanel extends ContentPanel {
    /**
     * Delete command.
     * 
-    * @param deviceCommnadModel the device commnad model
+    * @param deviceCommnadModel the device command model
     */
    private void deleteCommand(final BeanModel deviceCommnadModel) {
       DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Boolean>() {
@@ -746,7 +746,7 @@ public class DevicePanel extends ContentPanel {
                tree.getStore().remove(deviceCommnadModel);
                Info.display("Info", "Delete success.");
             } else {
-               MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
+               MessageBox.alert("Warn", "The command can't be delete, because it was referenced by other sensor, switch or slider.", null);
             }
          }
       });
@@ -760,7 +760,7 @@ public class DevicePanel extends ContentPanel {
                tree.getStore().remove(sensorBeanModel);
                Info.display("Info", "Delete success.");
             } else {
-               MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
+               MessageBox.alert("Warn", "The sensor can't be delete, because it was referenced by a switch or slider.", null);
             }
          }
          
