@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
 OpenRemote, the Home of the Digital Home.
-Copyright 2008-2011, OpenRemote Inc.
+Copyright 2008-2012, OpenRemote Inc.
 
 See the contributors.txt file in the distribution for a
 full listing of individual contributors.
@@ -139,6 +139,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			<fileset dir="${config.dir}" includes="**/**"/>
 			<fileset dir="protocols" includes="**/**"/>
 			<fileset dir="touchpanels" includes="**/**"/>
+
+      <filterchain><expandproperties/></filterchain>
 		</copy>
 	</target>
 
