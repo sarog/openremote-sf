@@ -40,16 +40,9 @@ public class SensorBeanModelProxy {
    }
    
    public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
-      SensorDTO sensor = beanModel.getBean();
-      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
-         public void onSuccess(Boolean result) {
-            if (result) {
-               BeanModelDataBase.sensorTable.delete(beanModel);
-            }
-            callback.onSuccess(result);
-         }
-         
-      });
+     if (beanModel != null && beanModel.getBean() instanceof SensorDTO) {
+      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(((SensorDTO)beanModel.getBean()).getOid(), callback);
+     }
    }
    
    public static void loadSensorDTOsByDeviceId(final long id, final AsyncSuccessCallback<ArrayList<SensorDTO>> callback) {
