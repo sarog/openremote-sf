@@ -26,6 +26,7 @@ import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -69,18 +70,21 @@ public class DeviceInfoForm extends CommonForm {
 
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {            
-            AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
-               @Override
-               public void onSuccess(Void result) {
-                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
-               }
-            };
-
             updateDeviceWithFieldValues();
             if (device.getOid() == null) {
-              DeviceBeanModelProxy.saveNewDevice(device, callback);
+              DeviceBeanModelProxy.saveNewDevice(device, new AsyncSuccessCallback<DeviceDTO>() {
+                @Override
+                public void onSuccess(DeviceDTO result) {
+                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
+                }
+             });
             } else {
-              DeviceBeanModelProxy.updateDeviceWithDTO(device, callback);
+              DeviceBeanModelProxy.updateDeviceWithDTO(device, new AsyncSuccessCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
+                }
+             });
             }
          }
 

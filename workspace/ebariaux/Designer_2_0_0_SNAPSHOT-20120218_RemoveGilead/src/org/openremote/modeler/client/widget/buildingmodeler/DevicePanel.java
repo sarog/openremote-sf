@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
+import org.openremote.modeler.client.event.DevicesCreatedEvent;
+import org.openremote.modeler.client.event.DevicesCreatedEventHandler;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -153,6 +155,14 @@ public class DevicePanel extends ContentPanel {
           deviceTreeStore.getLoader().loadChildren(bm);
         }
       }       
+     });
+     eventBus.addHandler(DevicesCreatedEvent.TYPE, new DevicesCreatedEventHandler() {
+      @Override
+      public void onDevicesCreated(DevicesCreatedEvent event) {
+        final TreeStore<BeanModel> deviceTreeStore = tree.getStore();
+        List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
+        deviceTreeStore.add(bms, true);
+      } 
      });
    }
 
@@ -371,23 +381,9 @@ public class DevicePanel extends ContentPanel {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   deviceWindow.hide();
-                  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : should pass DTO
-                  
-                  /*
-                  BeanModel deviceModel = be.getData();
-                  tree.getStore().add(deviceModel, true);
-                  
-                  for (BeanModel deviceCommandModel : DeviceCommand.createModels(((Device) deviceModel.getBean())
-                        .getDeviceCommands())) {
-                     tree.getStore().add(deviceModel, deviceCommandModel, false);
-                  }
-                  tree.setExpanded(deviceModel, true);
-                  
-                  //create and select it.
-                  tree.getSelectionModel().select(deviceModel, false);
-                  */
-//                  Info.display("Info", "Add device " + deviceModel.get("name") + " success."); // TODO based on DTO in event
-                  
+                  DeviceDTO deviceDTO = (DeviceDTO) be.getData();
+                  eventBus.fireEvent(new DevicesCreatedEvent(deviceDTO));
+                  Info.display("Info", "Add device " + deviceDTO.getDisplayName() + " success.");                  
                }
             });
          }
@@ -405,17 +401,10 @@ public class DevicePanel extends ContentPanel {
            deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
               @Override
               public void afterSubmit(SubmitEvent be) {
-                 deviceWindow.hide();
-                 
-//                 ArrayList<Device> devices = be.getData();
-                 // TODO: should indicate the devices that are updated
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null));
-
-                 /*
-                 List<BeanModel> deviceModels = be.getData();
-                 tree.getStore().add(deviceModels, true);
-                 */
-//                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
+                 deviceWindow.hide();                 
+                 ArrayList<DeviceDTO> devices = be.getData();
+                 eventBus.fireEvent(new DevicesCreatedEvent(devices));
+                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
               }
            });
         }

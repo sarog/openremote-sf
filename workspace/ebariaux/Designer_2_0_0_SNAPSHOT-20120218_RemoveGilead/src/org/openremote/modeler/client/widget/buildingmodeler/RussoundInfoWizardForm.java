@@ -24,7 +24,6 @@ import java.util.Arrays;
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
 import org.openremote.modeler.client.ModelerGinjector;
-import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.selenium.DebugId;
@@ -98,6 +97,9 @@ public class RussoundInfoWizardForm extends CommonForm {
 
             @Override
             public void onSuccess(CreateRussoundDeviceResult result) {
+              
+              // TODO: might have an error message in result, handle it
+              
               wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result.getDevices()));
             }            
           });

@@ -142,14 +142,16 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
    }
    
-   public void saveNewDevice(DeviceDetailsDTO device) {
+   @Override
+   public DeviceDTO saveNewDevice(DeviceDetailsDTO device) {
      Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
      deviceBean.setAccount(userService.getAccount());
      deviceService.saveDevice(deviceBean);
+     return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
    }
    
    @Override
-   public void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors,
+   public DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors,
                                          ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
      Account account = userService.getAccount();
      
@@ -226,6 +228,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      deviceBean.setSliders(sliderBeans);
      
      deviceService.saveDevice(deviceBean);
+     return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
    }
 
    public void updateDeviceWithDTO(DeviceDetailsDTO device) {
