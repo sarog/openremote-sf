@@ -22,7 +22,6 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceWizardEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
@@ -33,6 +32,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
@@ -220,18 +220,16 @@ public class DeviceContentWizardForm extends CommonForm {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
            
-            DeviceBeanModelProxy.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, new AsyncSuccessCallback<Void>() {
+            DeviceBeanModelProxy.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, new AsyncSuccessCallback<DeviceDTO>() {
                @Override
-               public void onSuccess(Void result) {
-                 wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(device));
+               public void onSuccess(DeviceDTO result) {
+                 wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
                }
             });
          }
          
       });
    }
-   
-
 
    /**
     * Add a listener to add deviceCommand to the device.

@@ -51,10 +51,10 @@ public interface DeviceRPCServiceAsync {
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
   
-  void saveNewDevice(DeviceDetailsDTO device, AsyncCallback<Void> callback);
+  void saveNewDevice(DeviceDetailsDTO device, AsyncCallback<DeviceDTO> callback);
   
   void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands,
-          ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders, AsyncCallback<Void> callback);
+          ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders, AsyncCallback<DeviceDTO> callback);
 
   void updateDeviceWithDTO(DeviceDetailsDTO device, AsyncCallback<Void> callback);
 }
