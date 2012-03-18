@@ -87,24 +87,32 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
             startOld.add(Calendar.HOUR_OF_DAY, -1);
          } else if (command.equalsIgnoreCase("startMinus1Month")) {
             startOld.add(Calendar.MONTH, -1);
+         } else if (command.equalsIgnoreCase("startMinus1Year")) {
+            startOld.add(Calendar.YEAR, -1);
          } else if (command.equalsIgnoreCase("endMinus1Hour")) {
             endOld.add(Calendar.HOUR_OF_DAY, -1);
          } else if (command.equalsIgnoreCase("endMinus1Day")) {
             endOld.add(Calendar.DAY_OF_MONTH, -1);
          } else if (command.equalsIgnoreCase("endMinus1Month")) {
             endOld.add(Calendar.MONTH, -1);
+         } else if (command.equalsIgnoreCase("endMinus1Year")) {
+            endOld.add(Calendar.YEAR, -1);
          } else if (command.equalsIgnoreCase("startPlus1Day")) {
             startOld.add(Calendar.DAY_OF_MONTH, 1);
          } else if (command.equalsIgnoreCase("startPlus1Hour")) {
             startOld.add(Calendar.HOUR_OF_DAY, 1);
          } else if (command.equalsIgnoreCase("startPlus1Month")) {
             startOld.add(Calendar.MONTH, 1);
+         } else if (command.equalsIgnoreCase("startPlus1Year")) {
+            startOld.add(Calendar.YEAR, 1);            
          } else if (command.equalsIgnoreCase("endPlus1Hour")) {
             endOld.add(Calendar.HOUR_OF_DAY, 1);
          } else if (command.equalsIgnoreCase("endPlus1Day")) {
             endOld.add(Calendar.DAY_OF_MONTH, 1);
          } else if (command.equalsIgnoreCase("endPlus1Month")) {
             endOld.add(Calendar.MONTH, 1);
+         } else if (command.equalsIgnoreCase("endPlus1Year")) {
+            endOld.add(Calendar.YEAR, 1);
          }
          tmp.start = df.format(startOld.getTime());
          tmp.end = df.format(endOld.getTime());
