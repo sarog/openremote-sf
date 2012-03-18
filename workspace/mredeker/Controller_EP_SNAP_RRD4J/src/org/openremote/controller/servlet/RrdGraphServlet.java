@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,11 +73,18 @@ public class RrdGraphServlet extends HttpServlet {
       try {
          RrdGraphDef gdef = temp.getRrdGraphDef();
          gdef.setFilename(a.getAbsolutePath());
+         Date startDate = null;
+         Date endDate = null;
          if (start != null) {
-            gdef.setStartTime(df.parse(start).getTime()/1000);
+            startDate = df.parse(start);
+            gdef.setStartTime(startDate.getTime()/1000);
          }
          if (end != null) {
-            gdef.setEndTime(df.parse(end).getTime()/1000);
+            endDate = df.parse(end);
+            if ((startDate != null) && endDate.before(startDate)) {
+               endDate = startDate;
+            }
+            gdef.setEndTime(endDate.getTime()/1000);
          }
          gdef.setWidth((width==null)?800:(Integer.parseInt(width)));
          gdef.setHeight((height==null)?400:(Integer.parseInt(height)));
