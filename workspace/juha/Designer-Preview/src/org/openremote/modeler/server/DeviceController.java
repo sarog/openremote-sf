@@ -77,6 +77,37 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    /**
     * {@inheritDoc}
     * 
+    * @see org.openremote.modeler.client.rpc.DeviceRPCService#saveDevice(java.util.Map)
+    */
+   public Device saveDevice(Device device) {
+      device.setAccount(userService.getAccount());
+      return deviceService.saveDevice(device);
+   }
+   
+
+   public ArrayList<Device> saveDevices(ArrayList<Device> devices)
+   {
+     ArrayList<Device> result = new ArrayList<Device>();
+     for (Device device : devices)
+     {
+       Device dev = saveDevice(device);
+       for (Sensor s : dev.getSensors()) {
+         s.setAccount(dev.getAccount());
+       }
+       for (Switch s : dev.getSwitchs()) {
+         s.setAccount(dev.getAccount());
+       }
+       for (Slider s : dev.getSliders()) {
+         s.setAccount(dev.getAccount());
+       }
+       result.add(dev);
+     }
+     return result;
+   }
+
+   /**
+    * {@inheritDoc}
+    * 
     * @see org.openremote.modeler.client.rpc.DeviceRPCService#removeDevice(org.openremote.modeler.domain.Device)
     */
    public void deleteDevice(long id) {

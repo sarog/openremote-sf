@@ -28,3 +28,4 @@ public interface TemplatePanel {
 
   void setPresenter(Presenter presenter);
 }
+

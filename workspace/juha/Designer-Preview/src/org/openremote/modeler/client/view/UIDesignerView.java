@@ -49,6 +49,11 @@ public class UIDesignerView extends TabItem {
    /** The screen panel is for DND widget in it. */
    private ScreenPanelImpl screenPanel;
 
+//   /** The auto_save_interval millisecond. */
+//   private static final int AUTO_SAVE_INTERVAL_MS = 300000;
+//
+//   private Timer timer;
+
    private ProfilePanel profilePanel = null;
    
    private TemplatePanelImpl templatePanel = null;
