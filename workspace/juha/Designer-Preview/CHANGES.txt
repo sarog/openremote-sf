@@ -1,6 +1,27 @@
+Designer 2.11 (2012-02-25 Formosa)
+==================================
 
-Designer 2.0 Alpha 10 (2011-12-26 Jolly Noel)
-=============================================
+- Rewrite of server-side save/restore with basic recovery (Juha Lindfors)
+- KNX Import Fix : support text/plain content type and display an error 
+  when content type is not supported (Marcus Redeker)
+- Russound Import Wizard (Marcus Redeker)
+- Fix for deleting commands in macros - MODELER-258 (Eric Bariaux)
+- Javascript performance improvements on adding sensors, sliders,
+  switches (Eric Bariaux)
+- Rule configuration (Marcus Redeker)
+- Command names are automatically included as properties in generated
+  controller.xml files for rule/script use (Marcus Redeker)
+- Defined sensors are included in generated controller.xml regardless
+  of whether they've been bound to UI widgets to enable rule/script
+  use
+- KNX Import Fix: accept mime types used by Microsoft Internet
+  Explorer (Marcus Redeker)
+- Universal Devices ISY-99 REST API protocol (Andrew Ball)
+- Set auto-save timeout to 5 minutes instead of 30 seconds
+
+
+Designer 2.10 (2011-12-26 Jolly Noel)
+=====================================
 
 - Update GWT to version 2.4.0 and GXT to version 2.2.5
   (R5440 - Eric Bariaux)
@@ -9,15 +30,15 @@ Designer 2.0 Alpha 10 (2011-12-26 Jolly Noel)
 - KNX Import bug fix on parsing DPTs (R5439 - Marcus Redeker)
 
 
-Designer 2.0 Alpha 9 (2011-12-19 Voldemort)
-===========================================
+Designer 2.9 (2011-12-19 Voldemort)
+===================================
 
 - KNX ETS4 Project Import (Marcus Redeker)
 - KNX ETS3 CSV Group Address Import (Marcus Redeker)
 
 
-Designer 2.0 Alpha SNAPSHOT 2011-12-05 (Diogenes)
-=================================================
+Designer 2.0 SNAPSHOT 2011-12-05 (Diogenes)
+===========================================
 
 - Fix for email verification issues (R4861 based on patch in R3133)
 - Switch to Spring AOP with @Transactional annotations instead of 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
  OpenRemote, the Home of the Digital Home.
- Copyright 2008-2011, OpenRemote Inc.
+ Copyright 2008-2012, OpenRemote Inc.
 
  See the contributors.txt file in the distribution for a
  full listing of individual contributors.
@@ -24,36 +25,27 @@
 -->
 
 <!--
-  Russound RNET Transport protocol. Complete rewrite to support dynmaic values, read and write
-
-  Author: Marcus Redeker
--->
-<openremote xmlns = "http://www.openremote.org" 
-            xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
-	    xsi:schemaLocation = "http://www.openremote.org protocol.xsd">
-
-  <protocol displayName="Russound RNET Protocol" tagName="russound">
-
-    <attr name="controller" label="Controller">
+ |  Universal Devices ISY-99 gateway configuration for OpenRemote Designer.
+ |
+ |  Author: Andrew Ball
+ +-->
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	
+  <protocol displayName="ISY-99" tagName="isy99">
+    <attr name="address" label="Address">
       <validations>
         <allowBlank>false</allowBlank>
-        <regex message = "Controller number (1-6)">.*</regex>
+        <regex message="Address is required">.*</regex>
       </validations>
     </attr>
 
-    <attr name="zone" label="Zone">
+    <attr name="command" label="Command">
       <validations>
         <allowBlank>false</allowBlank>
-        <regex message = "Zone number (1-6) or (1-8) depending on modell">.*</regex>
+        <regex message="Command is required">.*</regex>
       </validations>
     </attr>
-
-    <attr name="command" label="Russound Command">
-      <validations>
-        <allowBlank>false</allowBlank>
-        <regex message = "A Russound command as defined in RussCmdEnum">.*</regex>
-      </validations>
-    </attr>
-
   </protocol>
+
 </openremote>
