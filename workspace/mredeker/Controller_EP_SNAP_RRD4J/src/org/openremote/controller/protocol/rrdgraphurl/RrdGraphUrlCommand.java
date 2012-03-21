@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -163,15 +164,21 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
 
    private String createUrl(RrdGraphUrlCommand cmd) {
       if (cmd.ip == null) {
+         ControllerConfiguration configuration = ControllerConfiguration.readXML();
          try {
-            cmd.ip = InetAddress.getLocalHost().getHostAddress();
+            if ((configuration.getWebappIp() != null) && (!configuration.getWebappIp().isEmpty())) {
+               cmd.ip = configuration.getWebappIp();
+            } else {
+               cmd.ip = InetAddress.getLocalHost().getHostAddress();               
+            }
          } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
          }
       }
       if (cmd.port == null) {
-         cmd.port = "8080";
+         ControllerConfiguration configuration = ControllerConfiguration.readXML();
+         cmd.port = "" + configuration.getWebappPort();
       }
       String url = "http://" + cmd.ip + ":" + cmd.port + "/controller/graph?name=" + cmd.graphName 
          + "&amp;start=" + cmd.start 
