@@ -483,7 +483,22 @@ public class LocalFileCache implements ResourceCache<File>
     exportFiles.addAll(this.imageFiles);
     exportFiles.add(panelXMLFile);
     exportFiles.add(controllerXMLFile);
-    exportFiles.add(panelsObjFile);
+
+    try
+    {
+      if (new File(cacheFolder, panelsObjFile.getPath()).exists())
+      {
+        exportFiles.add(panelsObjFile);
+      }
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager denied read access to file ''{0}'' (Account : {1}) : {2}",
+          e, panelsObjFile.getAbsolutePath(), account.getOid(), e.getMessage()
+      );
+    }
 
     try
     {
@@ -1426,10 +1441,10 @@ public class LocalFileCache implements ResourceCache<File>
           cacheLog.debug("Added new export zip entry ''{0}''.", file.getPath());
 
           int count, total = 0;
-          int buffer = 2048;
-          byte[] data = new byte[buffer];
+          final int BUFFER_SIZE = 2048;
+          byte[] data = new byte[BUFFER_SIZE];
 
-          while ((count = fileInput.read(data, 0, buffer)) != -1)
+          while ((count = fileInput.read(data, 0, BUFFER_SIZE)) != -1)
           {
             zipOutput.write(data, 0, count);
 
