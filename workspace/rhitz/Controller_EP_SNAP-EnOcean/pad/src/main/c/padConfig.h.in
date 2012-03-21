@@ -1,0 +1,3 @@
+// the configured options and settings for Tutorial
+#define pad_VERSION_MAJOR @pad_VERSION_MAJOR@
+#define pad_VERSION_MINOR @pad_VERSION_MINOR@
