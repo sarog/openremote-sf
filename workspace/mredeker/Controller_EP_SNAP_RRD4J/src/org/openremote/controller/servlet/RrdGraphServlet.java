@@ -82,7 +82,8 @@ public class RrdGraphServlet extends HttpServlet {
          if (end != null) {
             endDate = df.parse(end);
             if ((startDate != null) && endDate.before(startDate)) {
-               endDate = startDate;
+               response.getWriter().print("End-Date has to be after Start-Date");
+               return;
             }
             gdef.setEndTime(endDate.getTime()/1000);
          }
