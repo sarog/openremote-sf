@@ -114,9 +114,11 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
          } else if (command.equalsIgnoreCase("endPlus1Year")) {
             endOld.add(Calendar.YEAR, 1);
          }
-         tmp.start = df.format(startOld.getTime());
-         tmp.end = df.format(endOld.getTime());
-         tmp.sensor.update(createUrl(tmp));
+         if (endOld.before(startOld)) {
+            tmp.start = df.format(startOld.getTime());
+            tmp.end = df.format(endOld.getTime());
+            tmp.sensor.update(createUrl(tmp));
+         }
       } catch (ParseException e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
