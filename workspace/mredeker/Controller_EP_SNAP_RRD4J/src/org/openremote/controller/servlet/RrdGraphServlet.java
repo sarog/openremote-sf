@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger;
+import org.openremote.controller.utils.Strings;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
 import org.rrd4j.graph.RrdGraphDefTemplate;
@@ -75,13 +76,26 @@ public class RrdGraphServlet extends HttpServlet {
          gdef.setFilename(a.getAbsolutePath());
          Date startDate = null;
          Date endDate = null;
+         Date now = new Date();
          if (start != null) {
-            startDate = df.parse(start);
+            if (start.startsWith("+") || start.startsWith(" ")) {
+               startDate = new Date(now.getTime()+Strings.convertPollingIntervalString(start.substring(1)));
+            } else if (start.startsWith("-")) {
+               startDate = new Date(now.getTime()-Strings.convertPollingIntervalString(start.substring(1)));
+            } else {
+               startDate = df.parse(start);
+            }
             gdef.setStartTime(startDate.getTime()/1000);
          }
          if (end != null) {
-            endDate = df.parse(end);
-            if ((startDate != null) && endDate.before(startDate)) {
+            if (end.startsWith("+") || end.startsWith(" ")) {
+               endDate = new Date(now.getTime()+Strings.convertPollingIntervalString(end.substring(1)));
+            } else if (end.startsWith("-")) {
+               endDate = new Date(now.getTime()-Strings.convertPollingIntervalString(end.substring(1)));
+            } else {
+               endDate = df.parse(end);
+            }
+            if ((startDate != null) && (endDate.compareTo(startDate) <= 0)) {
                response.getWriter().print("End-Date has to be after Start-Date");
                return;
             }
