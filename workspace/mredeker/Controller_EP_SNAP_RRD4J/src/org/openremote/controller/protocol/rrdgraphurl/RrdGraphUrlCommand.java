@@ -16,9 +16,12 @@
  */
 package org.openremote.controller.protocol.rrdgraphurl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,10 +30,11 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
- * OpenRemote rrdGraphUrl command implementation.
- * This is a virtual command which is used to manipulate the graph url for the RRD4j grap servlet.
+ * OpenRemote rrdGraphUrl command implementation. This is a virtual command which is used to manipulate the graph url
+ * for the RRD4j grap servlet.
  * <p>
  * 
  * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
@@ -44,8 +48,7 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
     */
    private final static Logger log = Logger.getLogger(RrdGraphUrlCommandBuilder.LOG_CATEGORY);
 
-   private final static Map<String, RrdGraphUrlCommand> graphUrls = new ConcurrentHashMap<String, RrdGraphUrlCommand>(
-         20);
+   private final static Map<String, RrdGraphUrlCommand> graphUrls = new ConcurrentHashMap<String, RrdGraphUrlCommand>(20);
 
    private final static SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HH-mm");
 
@@ -57,19 +60,24 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
    private String height = null;
    private String start = null;
    private String end = null;
+   private String ip = null;
+   private String port = null;
 
    /** The sensor which is updated */
    private Sensor sensor;
 
    // Constructors ---------------------------------------------------------------------------------
 
-   public RrdGraphUrlCommand(String graphName, String command, String width, String height, String start, String end) {
+   public RrdGraphUrlCommand(String graphName, String command, String width, String height, String start, String end,
+         String ip, String port) {
       this.graphName = graphName;
       this.command = command;
       this.width = width;
       this.height = height;
       this.start = start;
       this.end = end;
+      this.ip = ip;
+      this.port = port;
    }
 
    // Implements ExecutableCommand -----------------------------------------------------------------
@@ -79,8 +87,22 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
       try {
          GregorianCalendar startOld = new GregorianCalendar();
          GregorianCalendar endOld = new GregorianCalendar();
-         startOld.setTime(df.parse(tmp.start));
-         endOld.setTime(df.parse(tmp.end));
+         Date now = new Date();
+         if (tmp.start.startsWith("+")) {
+            startOld.setTime(new Date(now.getTime() + Strings.convertPollingIntervalString(tmp.start.substring(1))));
+         } else if (tmp.start.startsWith("-")) {
+            startOld.setTime(new Date(now.getTime() - Strings.convertPollingIntervalString(tmp.start.substring(1))));
+         } else {
+            startOld.setTime(df.parse(tmp.start));
+         }
+         if (tmp.end.startsWith("+")) {
+            endOld.setTime(new Date(now.getTime()+Strings.convertPollingIntervalString(tmp.end.substring(1))));
+         } else if (tmp.end.startsWith("-")) {
+            endOld.setTime(new Date(now.getTime()-Strings.convertPollingIntervalString(tmp.end.substring(1))));
+         } else {
+            endOld.setTime(df.parse(tmp.end));
+         }
+         
          if (command.equalsIgnoreCase("startMinus1Day")) {
             startOld.add(Calendar.DAY_OF_MONTH, -1);
          } else if (command.equalsIgnoreCase("startMinus1Hour")) {
@@ -104,7 +126,7 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
          } else if (command.equalsIgnoreCase("startPlus1Month")) {
             startOld.add(Calendar.MONTH, 1);
          } else if (command.equalsIgnoreCase("startPlus1Year")) {
-            startOld.add(Calendar.YEAR, 1);            
+            startOld.add(Calendar.YEAR, 1);
          } else if (command.equalsIgnoreCase("endPlus1Hour")) {
             endOld.add(Calendar.HOUR_OF_DAY, 1);
          } else if (command.equalsIgnoreCase("endPlus1Day")) {
@@ -115,10 +137,11 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
             endOld.add(Calendar.YEAR, 1);
          }
          if (endOld.before(startOld)) {
-            tmp.start = df.format(startOld.getTime());
-            tmp.end = df.format(endOld.getTime());
-            tmp.sensor.update(createUrl(tmp));
+            return;
          }
+         tmp.start = df.format(startOld.getTime());
+         tmp.end = df.format(endOld.getTime());
+         tmp.sensor.update(createUrl(tmp));
       } catch (ParseException e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
@@ -139,11 +162,22 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
    }
 
    private String createUrl(RrdGraphUrlCommand cmd) {
-      String url = "http://192.168.100.30:8080/controller/graph?name=" + cmd.graphName + 
-         "&amp;start=" + cmd.start +
-         "&amp;end=" + cmd.end +
-         "&amp;width=" + cmd.width +
-         "&amp;height=" + cmd.height;
+      if (cmd.ip == null) {
+         try {
+            cmd.ip = InetAddress.getLocalHost().getHostAddress();
+         } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+      if (cmd.port == null) {
+         cmd.port = "8080";
+      }
+      String url = "http://" + cmd.ip + ":" + cmd.port + "/controller/graph?name=" + cmd.graphName 
+         + "&amp;start=" + cmd.start 
+         + "&amp;end=" + cmd.end 
+         + "&amp;width=" + cmd.width 
+         + "&amp;height=" + cmd.height;
       return url;
    }
 }
