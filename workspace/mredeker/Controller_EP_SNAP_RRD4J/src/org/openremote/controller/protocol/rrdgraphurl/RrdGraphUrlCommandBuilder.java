@@ -49,8 +49,16 @@ public class RrdGraphUrlCommandBuilder implements CommandBuilder {
     *   <property name = "start" value = "20120210-10-00"/>
     *   <property name = "end" value = "20120211-10-00"/>
     *   <property name = "command" value = "getUrl"/>
+    *   <property name = "ip" value = "localhost"/>
+    *   <property name = "port" value = "8080"/>
     * </command>
     * }</pre>
+    * 
+    * It is also possible to say "-10m" for start and "+10m" for end. 
+    * This is the offset in minutes (h=hour is also possible) relative to the time when the graph is generated.<br>
+    * Once this is changed with the modifications commands like "startPlus1Hour" the new calculated times will be used
+    * and not the relative offset anymore.
+    *  
     */
    public final static String XML_GRAPHNAME = "graphname";
    public final static String XML_WIDTH = "width";
@@ -58,6 +66,8 @@ public class RrdGraphUrlCommandBuilder implements CommandBuilder {
    public final static String XML_COMMAND = "command";
    public final static String XML_START = "start";
    public final static String XML_END = "end";
+   public final static String XML_IP = "ip";
+   public final static String XML_PORT = "port";
 
 
    // Class Members --------------------------------------------------------------------------------
@@ -89,6 +99,8 @@ public class RrdGraphUrlCommandBuilder implements CommandBuilder {
      String command = null;
      String start = null;
      String end = null;
+     String ip = null;
+     String port = null;
 
      // Properties come in as child elements...
 
@@ -126,6 +138,14 @@ public class RrdGraphUrlCommandBuilder implements CommandBuilder {
        {
          end = propertyValue;
        }
+       else if (XML_IP.equalsIgnoreCase(propertyName))
+       {
+         ip = propertyValue;
+       }
+       else if (XML_PORT.equalsIgnoreCase(propertyName))
+       {
+         port = propertyValue;
+       }
        else
        {
          log.warn(
@@ -153,7 +173,7 @@ public class RrdGraphUrlCommandBuilder implements CommandBuilder {
      }
 
 
-     Command cmd = new RrdGraphUrlCommand(graphName, command, width, height, start, end);
+     Command cmd = new RrdGraphUrlCommand(graphName, command, width, height, start, end, ip, port);
      return cmd;
    }
 
