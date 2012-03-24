@@ -277,7 +277,7 @@
           <div class="inner-boundary">
             <div class="inner-border">
 
-              <p class="title">Login to OpenRemote Designer 11 (Formosa)</p>
+              <p class="title">Login to OpenRemote Designer (@VERSION.NAME@)</p>
 
               <c:if test = "${isActivated ne null and isActivated}">
                 <p class="pass"><b>${username}</b> has been activated, please login.</p>
