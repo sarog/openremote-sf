@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -34,5 +35,7 @@ public interface SliderRPCServiceAsync {
    void update(Slider slider, AsyncCallback<Slider> callback);
 
    void loadAll(AsyncCallback<List<Slider>> callback);
+
+   void saveAll(List<Slider> sliderList, AsyncCallback<List<Slider>> async);
 
 }

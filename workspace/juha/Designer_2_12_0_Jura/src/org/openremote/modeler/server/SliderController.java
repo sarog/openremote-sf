@@ -22,6 +22,7 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.SliderRPCService;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
@@ -53,7 +54,11 @@ public class SliderController extends BaseGWTSpringControllerWithHibernateSuppor
       return sliderService.save(slider);
    }
 
-   
+   @Override
+   public List<Slider> saveAll(List<Slider> sliderList) {
+     return sliderService.saveAllSliders(sliderList, userService.getAccount());
+ }
+
    @Override
    public Slider update(Slider slider) {
       slider.setAccount(userService.getAccount());

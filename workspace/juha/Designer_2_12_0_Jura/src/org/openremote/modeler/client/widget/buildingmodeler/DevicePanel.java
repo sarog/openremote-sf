@@ -273,6 +273,7 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSliderMenuItem = createNewSliderMenu();
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
+      final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
       
       newMenu.add(newCommandMemuItem);
       newMenu.add(importCommandMemuItem);
@@ -280,6 +281,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
+      newMenu.add(newLutronImportMenuItem);
       
       // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -296,6 +298,7 @@ public class DevicePanel extends ContentPanel {
             newSliderMenuItem.setEnabled(enabled);
             newSwitchMenuItem.setEnabled(enabled);
             importKnxCommandMemuItem.setEnabled(enabled);
+            newLutronImportMenuItem.setEnabled(enabled);
          }
          
       });
@@ -428,6 +431,24 @@ public class DevicePanel extends ContentPanel {
       });
       return newCommandItem;
    }
+   
+   /**
+    * Creates the import knx menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createNewLutronImportMenu() {
+      MenuItem importCommandItem = new MenuItem("Import Lutron Commands from XML");
+      importCommandItem.setIcon(icon.importFromDB());
+      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            importLutronCommand();
+         }
+
+      });
+      return importCommandItem;
+   }
+
    /**
     * Creates the device command.
     */
@@ -789,6 +810,7 @@ public class DevicePanel extends ContentPanel {
       }
    }
    
+
    /**
     * Import KNX command.
     */
@@ -810,6 +832,27 @@ public class DevicePanel extends ContentPanel {
        }
    }
    
+   /**
+    * Import Lutron command.
+    */
+   private void importLutronCommand() {    
+     final BeanModel deviceModel = getDeviceModel();
+     if (deviceModel != null && deviceModel.getBean() instanceof Device) {       
+       final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
+       importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+           List<BeanModel> allModels = be.getData();
+           for (BeanModel model : allModels) {
+              tree.getStore().add(deviceModel, model, false);
+           }
+           tree.setExpanded(deviceModel, true);
+           importWizardWindow.hide();
+         }
+       });
+     }
+   }
+
    private void addTreeStoreEventListener() {
       tree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
          public void handleEvent(TreeStoreEvent<BeanModel> be) {
