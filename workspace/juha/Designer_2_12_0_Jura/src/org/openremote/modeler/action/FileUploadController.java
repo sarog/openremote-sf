@@ -32,10 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.openremote.modeler.client.lutron.importmodel.Project;
 import org.openremote.modeler.domain.KnxGroupAddress;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
+import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
+import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
@@ -112,15 +113,18 @@ public class FileUploadController extends MultiActionController {
     public void importLutron(HttpServletRequest request, HttpServletResponse response) throws IOException {
       MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "lutron");
 
+      LutronImportResult importResult = new LutronImportResult();
+
       try {
         Project project = LutronHomeworksImporter.importXMLConfiguration(multipartFile.getInputStream());
-        JSONSerializer serializer = new JSONSerializer();
-        response.getWriter().println(serializer.exclude("*.class").deepSerialize(project));
+        importResult.setProject(project);
       } catch (ImportException e) {
         LOGGER.error("Import file error.", e);
-        response.getWriter().println("{\"ERROR\":\"" + e.getMessage() + "\"}");
-        
+        importResult.setErrorMessage(e.getMessage());        
       }
+      JSONSerializer serializer = new JSONSerializer();
+      System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importResult) + "<");
+      response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
     
     /**
