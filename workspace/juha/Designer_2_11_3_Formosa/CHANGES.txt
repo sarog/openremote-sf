@@ -1,4 +1,12 @@
 
+Designer 2.11.3 (2012-03-25 Formosa)
+====================================
+
+Bug fix release.
+
+ - Export commands that are not referenced from buttons or sensors
+ 
+
 Designer 2.11.2 (2012-03-13 Formosa)
 ====================================
 
