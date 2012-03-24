@@ -665,6 +665,7 @@ public class ResourceServiceImpl implements ResourceService
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
       eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
+      addDataBaseCommands(eventContainer, maxId);
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
 
       Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
