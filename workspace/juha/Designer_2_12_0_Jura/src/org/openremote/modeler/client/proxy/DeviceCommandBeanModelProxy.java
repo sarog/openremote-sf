@@ -132,13 +132,13 @@ public class DeviceCommandBeanModelProxy {
    }
    
    /**
-    * Save all KNX device commands from KNX import
+    * Save all device commands
     * 
     * @param device the device
     * @param datas the datas
     * @param callback the callback
     */
-   public static void saveAllKnxDeviceCommands(List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
+   public static void saveDeviceCommandList(List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
       AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
          public void onSuccess(List<DeviceCommand> deviceCommands) {
             List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
