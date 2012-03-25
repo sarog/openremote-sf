@@ -124,6 +124,7 @@ public class FileUploadController extends MultiActionController {
       }
       JSONSerializer serializer = new JSONSerializer();
       System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importResult) + "<");
+      response.setHeader("content-type", "text/html");
       response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
     

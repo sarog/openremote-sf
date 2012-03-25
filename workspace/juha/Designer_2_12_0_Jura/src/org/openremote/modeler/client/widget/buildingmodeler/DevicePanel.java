@@ -837,7 +837,12 @@ public class DevicePanel extends ContentPanel {
     */
    private void importLutronCommand() {    
      final BeanModel deviceModel = getDeviceModel();
-     if (deviceModel != null && deviceModel.getBean() instanceof Device) {       
+     if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+       
+       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean());
+       importWizard.show();
+       importWizard.center();
+       /*
        final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
        importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
@@ -850,6 +855,10 @@ public class DevicePanel extends ContentPanel {
            importWizardWindow.hide();
          }
        });
+       */
+       
+       
+       
      }
    }
 
