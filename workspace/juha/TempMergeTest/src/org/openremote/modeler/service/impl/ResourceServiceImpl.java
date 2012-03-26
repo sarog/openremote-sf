@@ -23,6 +23,7 @@ package org.openremote.modeler.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -102,6 +103,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -333,6 +335,25 @@ public class ResourceServiceImpl implements ResourceService
 
     return uploadFile(inputStream, file);
   }
+
+
+   public List<GraphicalAssetDTO>getUserImagesURLs() {
+     File userFolder = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()));
+     String[] imageFiles = userFolder.list(new FilenameFilter() {      
+       @Override
+       public boolean accept(File dir, String name) {
+         String lowercaseName = name.toLowerCase();
+         return (lowercaseName.endsWith("png") || lowercaseName.endsWith("gif") || lowercaseName.endsWith("jpg") || lowercaseName.endsWith("jpeg"));
+       }
+     });
+     List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
+     if (imageFiles != null) { // Seems we sometimes get a null (got it when tomcat was still starting)
+       for (int i = 0; i < imageFiles.length; i++) {
+         assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
+       }
+     }
+     return assets;
+   }
 
 
   //
@@ -1233,6 +1254,23 @@ public class ResourceServiceImpl implements ResourceService
   }
 
 
+   @Override
+   public File getTempDirectory(String sessionId) {
+
+        File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+       if (tmpDir.exists() && tmpDir.isDirectory()) {
+          try {
+             FileUtils.deleteDirectory(tmpDir);
+          } catch (IOException e) {
+             throw new FileOperationException("Error in deleting temp dir", e);
+          }
+       }
+       new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs(); 
+        return tmpDir;
+   }
+   
+
+
   /**
    * This method is calling by controllerXML.vm, to export sensors which from database.
    */
@@ -1311,4 +1349,15 @@ public class ResourceServiceImpl implements ResourceService
       }
    }
 
+   
+   public void deleteImage(String imageName) {
+     
+     // TODO: make it fail to test UI reporting
+     
+     File image = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + imageName);
+     if (!image.delete()) {
+       // TODO: handle correctly
+       throw new RuntimeException("Could not delete file");
+     }
+   }
 }

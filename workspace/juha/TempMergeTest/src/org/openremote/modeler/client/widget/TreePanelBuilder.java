@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
-import org.openremote.modeler.client.event.PropertyEditEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.SubmitListener;
@@ -41,9 +40,7 @@ import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
-import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
-import org.openremote.modeler.client.widget.uidesigner.TemplatePanel;
+import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
@@ -52,7 +49,6 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -438,50 +434,11 @@ public class TreePanelBuilder {
       return widgetTree;
    }
 
-   public static TreePanel<BeanModel> buildPanelTree(final ScreenPanel screenPanel) {
+   public static TreePanel<BeanModel> buildPanelTree() {
       if (panelTreeStore == null) {
          panelTreeStore = new TreeStore<BeanModel>();
       }
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(panelTreeStore) {
-         @SuppressWarnings("unchecked")
-         @Override
-         protected void onClick(TreePanelEvent tpe) {
-            super.onClick(tpe);
-            BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-            if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
-               ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
-               screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-               screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
-               ScreenTab screenTabItem = screenPanel.getScreenItem();
-               if (screenTabItem != null) {
-                  if (screen == screenTabItem.getScreenPair()) {
-                     screenTabItem.updateTouchPanel();
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                  } else {
-                     screenTabItem = new ScreenTab(screen);
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                     screenPanel.setScreenItem(screenTabItem);
-                  }
-               } else {
-                  screenTabItem = new ScreenTab(screen);
-                  screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                  screenPanel.setScreenItem(screenTabItem);
-               }
-               screenTabItem.updateScreenIndicator();
-            }
-            if (beanModel != null) {
-               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
-                     .getPropertyEditable(beanModel, this)));
-            }
-         }
-
-         @SuppressWarnings("unchecked")
-         @Override
-         protected void onDoubleClick(TreePanelEvent tpe) {
-            super.onDoubleClick(tpe);
-            this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
-         }
-
          @Override
          protected void afterRender() {
             super.afterRender();
@@ -592,7 +549,7 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel) {
+   public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanelImpl templatePanel) {
 
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
       privateTemplatesBean.setDisplayName("My private templates");
@@ -608,7 +565,7 @@ public class TreePanelBuilder {
                BeanModel model = (BeanModel) loadConfig;
                if (model.getBean() instanceof TreeFolderBean) {
                   TreeFolderBean folderBean = model.getBean();
-                  if (folderBean.getDisplayName().contains("Private")) {
+                  if (folderBean.getDisplayName().contains("rivate")) {
                      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
@@ -651,20 +608,22 @@ public class TreePanelBuilder {
       //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
-         @Override
-         public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            if (event.getTypeInt() == Event.ONCLICK) {
-               BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               if (beanModel != null && beanModel.getBean() instanceof Template) {
-                  Template template = beanModel.getBean();
-                  // if (! template.equals(templatePanel.getTemplateInEditing())) {
-                  templatePanel.setTemplateInEditing(template);
-                  // }
-               }
-            }
-         }
-      };
+        @Override
+        public void onBrowserEvent(Event event) {
+           super.onBrowserEvent(event);
+           if (event.getTypeInt() == Event.ONCLICK) {
+              BeanModel beanModel = this.getSelectionModel().getSelectedItem();
+              if (beanModel != null && beanModel.getBean() instanceof Template) {
+                // When template is already selected in tree, user then goes on to select a screen,
+                // comes back to templates and clicks on a template to display it
+                // If template still selected, no selection event -> must "simulate" one
+                // This call will eventually fire on event on the event bus
+                templatePanel.templateClicked((Template)beanModel.getBean());
+              }
+           }
+        }
+     };
+
 
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {

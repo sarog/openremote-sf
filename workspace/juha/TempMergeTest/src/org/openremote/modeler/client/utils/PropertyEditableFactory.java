@@ -27,7 +27,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * A factory to provide PropertyEditable instance. 
@@ -35,16 +35,16 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  *
  */
 public class PropertyEditableFactory {
-   public static PropertyEditable getPropertyEditable(BeanModel beanModel,TreePanel<BeanModel> profileTree) {
+   public static PropertyEditable getPropertyEditable(BeanModel beanModel, EventBus eventBus) {
       if(beanModel.getBean() instanceof ScreenPairRef ) {
          ScreenPairRef screenPairRef = beanModel.getBean(); 
-         return new ScreenPropertyEditable(screenPairRef,profileTree);
+         return new ScreenPropertyEditable(screenPairRef, eventBus);
       } else if (beanModel.getBean() instanceof GroupRef ){
          GroupRef groupRef = beanModel.getBean();
-         return new GroupPropertyEditable(groupRef,profileTree);
+         return new GroupPropertyEditable(groupRef, eventBus);
       } else if (beanModel.getBean() instanceof Panel){
          Panel panel = beanModel.getBean();
-         return new PanelPropertyEditable(panel,profileTree);
+         return new PanelPropertyEditable(panel, eventBus);
       }
       
       return null;

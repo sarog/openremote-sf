@@ -21,9 +21,10 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.ScreenPair;
-import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -40,20 +41,20 @@ public class ScreenTab extends TabPanel {
    
    private ScreenPair screenPair;
    
-   public ScreenTab(ScreenPair screenPair) {
+   public ScreenTab(ScreenPair screenPair, final WidgetSelectionUtil widgetSelectionUtil) {
       setTabPosition(TabPosition.BOTTOM);
       this.screenPair = screenPair;
       if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getPortraitScreen()));
+         add(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil));
       } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+         add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
       } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
-         add(new ScreenTabItem(screenPair.getPortraitScreen()));
-         add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+         add(new ScreenTabItem(screenPair.getPortraitScreen(), widgetSelectionUtil));
+         add(new ScreenTabItem(screenPair.getLandscapeScreen(), widgetSelectionUtil));
       }
       this.addListener(Events.Select, new Listener<TabPanelEvent>(){
          public void handleEvent(TabPanelEvent be) {
-            WidgetSelectionUtil.setSelectWidget(null);
+            widgetSelectionUtil.resetSelection();
          }
          
       });
@@ -100,5 +101,9 @@ public class ScreenTab extends TabPanel {
       } if (this.getItemByItemId(Constants.LANDSCAPE) != null) {
          ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateScreenIndicator();
       }
+   }
+   
+   public void onUIElementEdited(BusinessEntity element) {
+     ((ScreenTabItem)getSelectedItem()).onUIElementEdited(element);
    }
 }

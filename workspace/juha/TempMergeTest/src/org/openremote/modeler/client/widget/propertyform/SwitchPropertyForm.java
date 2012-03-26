@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,14 +19,13 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.dto.SwitchDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.widget.IconPreviewWidget;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
-import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
 import org.openremote.modeler.domain.Switch;
@@ -44,8 +43,8 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
  */
 public class SwitchPropertyForm extends PropertyForm {
 
-   public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch) {
-      super(screenSwitch);
+   public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenSwitch, widgetSelectionUtil);
       setLabelWidth(90);
       addFields(screenSwitch, uiSwitch);
       super.addDeleteButton();
@@ -59,21 +58,23 @@ public class SwitchPropertyForm extends PropertyForm {
       imageONField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final ImageSource onImage = uiSwitch.getOnImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, onImage), screenSwitch.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageOnUrl = be.getData();
-                  if (onImage != null) {
-                     onImage.setSrc(imageOnUrl);
-                  } else {
-                     uiSwitch.setOnImage(new ImageSource(imageOnUrl));
-                  }
-                  imageONField.setText(uiSwitch.getOnImage().getImageFileName());
-                  screenSwitch.setIcon(imageOnUrl);
-               }
-            });
+           final ImageSource image = uiSwitch.getOnImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiSwitch.setOnImage(new ImageSource(imageURL));
+              }
+              imageONField.setText(uiSwitch.getOnImage().getImageFileName());
+              screenSwitch.setIcon(imageURL);
+            }             
+           });
          }
       });
       imageONField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -94,21 +95,22 @@ public class SwitchPropertyForm extends PropertyForm {
       imageOFFField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final ImageSource offImage = uiSwitch.getOffImage();
-            ChangeIconWindow selectImageOFFWindow = new ChangeIconWindow(createIconPreviewWidget(screenSwitch, offImage), screenSwitch.getWidth());
-            selectImageOFFWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageOffUrl = be.getData();
-                  if (offImage != null) {
-                     offImage.setSrc(imageOffUrl);
-                  } else {
-                     uiSwitch.setOffImage(new ImageSource(imageOffUrl));
-                  }
-                  imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
-               }
-            });
-
+           final ImageSource image = uiSwitch.getOffImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiSwitch.setOffImage(new ImageSource(imageURL));
+              }
+              imageOFFField.setText(uiSwitch.getOffImage().getImageFileName());
+            }             
+           });
          }
       });
       imageOFFField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -152,9 +154,8 @@ public class SwitchPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  if (dataModel.getBean() instanceof SwitchDTO) {
-                     SwitchDTO switchDTO = dataModel.getBean();
-                     Switch switchCommand = BeanModelDataBase.switchTable.get(switchDTO.getOid()).getBean();
+                  if (dataModel.getBean() instanceof Switch) {
+                     Switch switchCommand = dataModel.getBean();
                      uiSwitch.setSwitchCommand(switchCommand);
                      command.setText(switchCommand.getDisplayName());
                   }
@@ -165,20 +166,6 @@ public class SwitchPropertyForm extends PropertyForm {
       };
    }
 
-   /**
-    * @param screenSwitch
-    * @param imageSource
-    * @return
-    */
-   private IconPreviewWidget createIconPreviewWidget(ScreenSwitch screenSwitch, ImageSource imageSource) {
-      IconPreviewWidget previewWidget = new IconPreviewWidget(screenSwitch.getWidth(), screenSwitch.getHeight());
-      previewWidget.setText("Switch");
-      if (imageSource != null) {
-         previewWidget.setIcon(imageSource.getSrc());
-      }
-      return previewWidget;
-   }
-   
    @Override
    protected void afterRender() {
       super.afterRender();

@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
@@ -33,33 +34,28 @@ import org.openremote.modeler.domain.component.UITabbar;
  * ScreenControl as the component's super class.
  */
 public abstract class ScreenComponent extends ComponentContainer {
-   public ScreenComponent(ScreenCanvas screenCanvas) {
-      super(screenCanvas);
+   public ScreenComponent(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
    }
-
-   /**
-    * Sets the display name.
-    */
-   public abstract void setName(String name);
 
    public abstract String getName();
 
    /**
     * Builds the ScreenControl according to uiControl type.
     */
-   public static ScreenComponent build(ScreenCanvas canvas, UIComponent uiComponent) {
+   public static ScreenComponent build(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil, UIComponent uiComponent) {
       if (uiComponent instanceof UIButton) {
-         return new ScreenButton(canvas, (UIButton) uiComponent);
+         return new ScreenButton(canvas, (UIButton) uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UISwitch) {
-         return new ScreenSwitch(canvas, (UISwitch) uiComponent);
+         return new ScreenSwitch(canvas, (UISwitch) uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UISlider) {
-         return new ScreenSlider(canvas,(UISlider)uiComponent);
+         return new ScreenSlider(canvas,(UISlider)uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UILabel) {
-         return new ScreenLabel(canvas, (UILabel) uiComponent);
+         return new ScreenLabel(canvas, (UILabel) uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UIImage) {
-         return new ScreenImage(canvas, (UIImage) uiComponent);
+         return new ScreenImage(canvas, (UIImage) uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UITabbar) {
-         return new ScreenTabbar(canvas,(UITabbar)uiComponent);
+         return new ScreenTabbar(canvas, (UITabbar)uiComponent, widgetSelectionUtil);
       }
       return null;
    }

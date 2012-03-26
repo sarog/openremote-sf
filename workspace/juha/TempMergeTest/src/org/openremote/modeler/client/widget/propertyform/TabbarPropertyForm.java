@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
@@ -36,8 +37,8 @@ public class TabbarPropertyForm extends PropertyForm {
    
    private ScreenTabbar tabbar = null;
    
-   public TabbarPropertyForm(ScreenTabbar tabbar) {
-      super(tabbar);
+   public TabbarPropertyForm(ScreenTabbar tabbar, WidgetSelectionUtil widgetSelectionUtil) {
+      super(tabbar, widgetSelectionUtil);
       this.tabbar = tabbar;
       setLayout(new FormLayout());
       addFields();
