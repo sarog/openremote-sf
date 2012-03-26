@@ -405,12 +405,49 @@ public class LocalFileCache implements ResourceCache<File>
   /**
    * TODO : See Javadoc on interface definition. This exists to support earlier API patterns.
    */
-  @Override public void markInUseImages(Set<File> imageFiles)
+  @Override public void markInUseImages(Set<File> markedImageFiles)
   {
-    this.imageFiles = imageFiles;
+    for (File file : markedImageFiles)
+    {
+      try
+      {
+        // TODO :
+        //
+        //   There are still bugs in the implementation and/or previous designer serialized state
+        //   that cause the domain model to reference images that are not present in the cache.
+        //
+        //   This is a workaround to prevent later errors occuring due to missing cache
+        //   resources -- if the image being marked as 'in-use' does not exist, do not include it,
+        //   instead log an error.
+        //                                                                            [JPL]
+
+        File cacheResource = new File(cacheFolder, file.getName());
+
+        if (!cacheResource.exists())
+        {
+          cacheLog.error(
+              "BUG: domain model references image {0} ({1}) which was not found in cache folder.",
+              file, cacheResource
+          );
+        }
+
+        else
+        {
+          imageFiles.add(file);
+        }
+      }
+
+      catch (SecurityException e)
+      {
+        cacheLog.error(
+            "Security manager denied read access to ''{0}'' : {1}",
+            new File(cacheFolder, file.getName()).getAbsolutePath(), e.getMessage()
+        );
+      }
+    }
   }
 
-  private Set<File> imageFiles;
+  private Set<File> imageFiles = new HashSet<File>();
 
 
 
