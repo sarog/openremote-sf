@@ -5,6 +5,20 @@ Designer 2.12.0 (2012-XX-XX Jura)
 - TODO
 
 
+Designer 2.11.3 (2012-03-25 Formosa)
+====================================
+
+Bug fix release.
+
+ - Export all commands even if not referenced from buttons or sensors.
+
+ - Domain model from previous Designer version's serialized state
+   may reference image objects that are no longer present in the
+   saved state (stale references). Mark these as errors and then
+   ignore the references instead of causing a permanent save error
+   alert.
+
+
 Designer 2.11.2 (2012-03-13 Formosa)
 ====================================
 
