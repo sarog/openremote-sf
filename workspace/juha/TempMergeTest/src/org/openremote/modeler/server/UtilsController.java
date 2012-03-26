@@ -47,6 +47,7 @@ import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.cache.LocalFileCache;
@@ -382,5 +383,13 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
    
    public String getOnLineTestURL () {
       return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
+   }
+   
+   public List<GraphicalAssetDTO>getUserImagesURLs() {
+     return resourceService.getUserImagesURLs();
+   }
+   
+   public void deleteImage(String imageName) {
+     resourceService.deleteImage(imageName);
    }
 }

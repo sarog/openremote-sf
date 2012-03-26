@@ -148,4 +148,21 @@ public class Protocol extends BusinessEntity {
       } else if (!(attributes.containsAll(other.attributes) && other.attributes.containsAll(attributes))) return false;
       return true;
    }
+   
+   /**
+    * Adds the given key/value pair as an attribute for this protocol
+    * 
+    * @param key
+    * @param value
+    */
+   public void addProtocolAttribute(String key, String value) {
+     ProtocolAttr protocolAttr = new ProtocolAttr();
+     protocolAttr.setName(key);
+     protocolAttr.setValue(value);
+     protocolAttr.setProtocol(this);
+     getAttributes().add(protocolAttr);
+   }
+   
+
+   
 }

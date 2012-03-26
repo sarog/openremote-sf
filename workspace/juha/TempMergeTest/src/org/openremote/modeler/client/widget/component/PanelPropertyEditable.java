@@ -19,14 +19,14 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.PanelPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Panel;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class make the panel be edit in property form.
@@ -37,15 +37,14 @@ public class PanelPropertyEditable implements PropertyEditable {
 
    private Panel panel = null;
    
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
+   private EventBus eventBus;
 
    public PanelPropertyEditable() {
    }
 
-   public PanelPropertyEditable(Panel panel, TreePanel<BeanModel> profileTree) {
+   public PanelPropertyEditable(Panel panel, EventBus eventBus) {
       this.panel = panel;
-      this.profileTree = profileTree;
+      this.eventBus = eventBus;
    }
 
    public void setName(String name) {
@@ -69,7 +68,7 @@ public class PanelPropertyEditable implements PropertyEditable {
    }
 
    private void updatePanel() {
-      this.profileTree.getStore().update(panel.getBeanModel());
+     eventBus.fireEvent(new UIElementEditedEvent(panel));     
       BeanModelDataBase.panelTable.update(panel.getBeanModel());
    }
 

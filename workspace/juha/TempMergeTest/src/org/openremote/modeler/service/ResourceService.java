@@ -28,6 +28,7 @@ import java.util.List;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 /**
  * TODO : this interface is on the way out
@@ -62,6 +63,8 @@ public interface ResourceService
    */
   @Deprecated File uploadImage(InputStream inputStream, String fileName);
 
+  List<GraphicalAssetDTO>getUserImagesURLs();
+
   String getRelativeResourcePath(String sessionId, String fileName);
 
   String getRelativeResourcePathByCurrentAccount(String fileName);
@@ -95,4 +98,9 @@ public interface ResourceService
   void downloadResourcesForTemplate(long templateOid);
 
   File getTemplateResource(Template template);
+   
+   File getTempDirectory(String sessionId);
+   
+   void deleteImage(String imageName);
 }
+

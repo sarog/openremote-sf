@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
@@ -37,8 +38,8 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    public static final String GRID_DISTANCE_NAME = "gridDistance";
    private GridLayoutContainer gridlayoutContainer = null;
 
-   public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer) {
-      super(canvas);
+   public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.gridlayoutContainer = gridlayoutContainer;
       setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       setStyleAttribute("position", "absolute");
@@ -68,18 +69,12 @@ public class GridLayoutContainerHandle extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new GridPropertyForm(this);
+      return new GridPropertyForm(this, widgetSelectionUtil);
    }
 
    @Override
    public String getName() {
       return "gridContainer";
-   }
-
-   @Override
-   public void setName(String name) {
-      // TODO Auto-generated method stub
-      
    }
    
    public void update() {

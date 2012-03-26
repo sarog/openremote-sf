@@ -9,6 +9,9 @@
   <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='net.sf.gilead.Gilead4Gwt'/>
   
+  <inherits name="com.google.gwt.inject.Inject" />
+  <inherits name='net.customware.gwt.dispatch.Dispatch' />
+
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->
   <inherits name="com.google.gwt.user.Debug"/>
@@ -26,6 +29,7 @@
 	<source path='auth'/>
 	<source path='selenium'/>
 	<source path="exception" />
+	<source path='irfileparser'/>
 	<source path='utils'>
 	  <include name="String*"/>
 	</source>

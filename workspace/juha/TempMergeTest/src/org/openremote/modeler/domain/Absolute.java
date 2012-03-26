@@ -27,7 +27,7 @@ import flexjson.JSON;
 /**
  * Define a absolute position and size in screen, store a uiComponent.
  */
-public class Absolute extends BusinessEntity {
+public class Absolute extends BusinessEntity implements PositionableAndSizable {
 
    private static final long serialVersionUID = -114340249340271840L;
 

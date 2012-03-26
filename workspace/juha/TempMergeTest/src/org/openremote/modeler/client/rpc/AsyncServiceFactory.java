@@ -63,6 +63,8 @@ public class AsyncServiceFactory {
    
    private static UserRPCServiceAsync userRPCServiceAsync = null;
    
+   private static IRFileParserRPCServiceAsync iRFileParserRPCSreviceAsync;
+   
    /**
     * Gets the device macro service async.
     * 
@@ -172,4 +174,14 @@ public class AsyncServiceFactory {
       
       return userRPCServiceAsync;
    }
+
+   public static IRFileParserRPCServiceAsync getiRFileParserRPCServiceAsync() {
+      if(iRFileParserRPCSreviceAsync == null){
+    	  iRFileParserRPCSreviceAsync = GWT.create(IRFileParserRPCService.class);
+      }
+	   
+      return iRFileParserRPCSreviceAsync;
+   }
+
+
 }
