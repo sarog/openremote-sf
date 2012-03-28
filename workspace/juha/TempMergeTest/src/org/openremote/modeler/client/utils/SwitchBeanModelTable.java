@@ -22,10 +22,8 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -37,11 +35,10 @@ import com.extjs.gxt.ui.client.data.BeanModelLookup;
  */
 public class SwitchBeanModelTable extends BeanModelTable {
 
+  /*
    public SwitchBeanModelTable() {
       super();
-      /*
-       * initialize the Database.  
-       */
+      // initialize the Database. 
       SwitchBeanModelProxy.loadAll(null, new AsyncSuccessCallback<List<BeanModel>>(){
 
          @Override
@@ -52,14 +49,15 @@ public class SwitchBeanModelTable extends BeanModelTable {
       });
       
    }
+   */
    
    public List<BeanModel> loadAllAsDTOs() {
-     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SwitchDTO.class);
+     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SwitchWithInfoDTO.class);
 
       List<BeanModel> beanModelList = new ArrayList<BeanModel>();
       for (Long key : map.keySet()) {
         Switch aSwitch = (Switch)map.get(key).getBean(); 
-        beanModelList.add(beanModelFactory.createModel(new SwitchDTO(aSwitch.getOid(), aSwitch.getDisplayName(),
+        beanModelList.add(beanModelFactory.createModel(new SwitchWithInfoDTO(aSwitch.getOid(), aSwitch.getDisplayName(),
                 (aSwitch.getSwitchCommandOnRef() != null)?aSwitch.getSwitchCommandOnRef().getDisplayName():null,
                 (aSwitch.getSwitchCommandOffRef() != null)?aSwitch.getSwitchCommandOffRef().getDisplayName():null,
                 (aSwitch.getSwitchSensorRef() != null)?aSwitch.getSwitchSensorRef().getDisplayName():null,

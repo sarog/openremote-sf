@@ -19,10 +19,10 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,34 +32,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface DeviceMacroRPCServiceAsync {
 
-
-    /**
-     * Load all.
-     * 
-     * @param async the async
-     * 
-     */
-    void loadAll(AsyncCallback<List<DeviceMacro>> async);
-
-    /**
-     * Save device macro.
-     * 
-     * @param deviceMacro the device macro
-     * @param async the async
-     * 
-     */
-    void saveDeviceMacro(DeviceMacro deviceMacro, AsyncCallback<DeviceMacro> async);
-
-    /**
-     * Update device macro.
-     * 
-     * @param deviceMacro the device macro
-     * @param items the device macro items to use to update the macro
-     * @param async the async
-     * 
-     */
-    void updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items, AsyncCallback<DeviceMacro> async);
-
     /**
      * Delete device macro.
      * 
@@ -68,12 +40,12 @@ public interface DeviceMacroRPCServiceAsync {
      */
     void deleteDeviceMacro(long id, AsyncCallback<Void> async);
 
-    /**
-     * Load device macro items.
-     * 
-     * @param deviceMacro the device macro
-     * @param async the async
-     */
-    void loadDeviceMacroItems(DeviceMacro deviceMacro, AsyncCallback<List<DeviceMacroItem>> async);
+    void loadAllDTOs(AsyncCallback<ArrayList<MacroDTO>> async);
+
+    void loadMacroDetails(long id, AsyncCallback<MacroDetailsDTO> callback);
+        
+    void saveNewMacro(MacroDetailsDTO macro, AsyncCallback<Void> callback);
+
+    void updateMacroWithDTO(MacroDetailsDTO macro, AsyncCallback<Void> callback);
 
 }

@@ -27,7 +27,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
@@ -66,25 +66,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    }
 
    @Transactional public Sensor updateSensor(Sensor sensor) {
-      Sensor old = null;
-      
-      if (SensorType.RANGE == sensor.getType()) {
-         old = genericDAO.loadById(RangeSensor.class, sensor.getOid());
-         RangeSensor rangeSensor = (RangeSensor)sensor;
-         ((RangeSensor) old).setMax(rangeSensor.getMax());
-         ((RangeSensor) old).setMin(rangeSensor.getMin());
-      } else if (SensorType.CUSTOM == sensor.getType()) {
-         old = genericDAO.loadById(CustomSensor.class, sensor.getOid());
-         genericDAO.deleteAll(((CustomSensor)old).getStates());
-         ((CustomSensor)old).setStates(((CustomSensor) sensor).getStates());
-      } else {
-         old = genericDAO.loadById(Sensor.class, sensor.getOid());
-      }
-      
-      old.setName(sensor.getName());
-      genericDAO.delete(old.getSensorCommandRef());
-      old.setSensorCommandRef(sensor.getSensorCommandRef());
-      return old;
+     genericDAO.saveOrUpdate(sensor);
+     return sensor;
    }
 
    public Sensor loadById(long id) {
@@ -95,12 +78,11 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensor;
    }
 
-  /* @Override
-   public List<Sensor> loadByDevice(Device device) {
-      Device dvic = genericDAO.loadById(Device.class, device.getOid());
-      return dvic.getSensors();
+   public List<Sensor> loadByDeviceId(long deviceId) {
+      Device device = genericDAO.loadById(Device.class, deviceId);
+      return device.getSensors();
    }
-*/
+   
    public List<Sensor> loadSameSensors(Sensor sensor) {
       List<Sensor> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
