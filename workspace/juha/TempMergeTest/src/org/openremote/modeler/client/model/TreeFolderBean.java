@@ -19,12 +19,15 @@
 */
 package org.openremote.modeler.client.model;
 
-import org.openremote.modeler.domain.BusinessEntity;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 /**
  * Indicates a node on tree, and not the leaf node.
  */
-public class TreeFolderBean extends BusinessEntity {
+public class TreeFolderBean implements BeanModelTag {
 
    private static final long serialVersionUID = -8480046408027493475L;
 
@@ -68,4 +71,9 @@ public class TreeFolderBean extends BusinessEntity {
    /** The type. */
    private String type;
 
+   public BeanModel getBeanModel() {
+      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(getClass());
+      return beanModelFactory.createModel(this);
+   }
+   
 }

@@ -65,7 +65,6 @@ public interface DeviceMacroService {
     */
    DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items);
    
-   
    /**
     * Delete device macro.
     * 

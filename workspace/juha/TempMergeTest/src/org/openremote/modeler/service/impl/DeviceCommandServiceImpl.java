@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -77,7 +78,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    @Transactional
    public DeviceCommand save(DeviceCommand deviceCommand) {
       genericDAO.save(deviceCommand);
-      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+//      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
       return deviceCommand;
    }
 
@@ -154,5 +155,19 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          }
       }
       return tmpResult;
+   }
+   
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.DeviceCommandService#loadComandsDTOByDevice(long)
+    */
+   public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
+      Device device = genericDAO.loadById(Device.class, id);
+      ArrayList<DeviceCommandDTO> dtos = new ArrayList<DeviceCommandDTO>();
+      List<DeviceCommand> dcs = device.getDeviceCommands();
+      for (DeviceCommand deviceCommand : dcs) {
+        dtos.add(new DeviceCommandDTO(deviceCommand.getOid(), deviceCommand.getDisplayName(), deviceCommand.getProtocol().getType()));
+      }
+      return dtos;
    }
 }

@@ -22,30 +22,31 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.SliderRPCService;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>SliderRPCService</code>.
  */
 @SuppressWarnings("serial")
-public class SliderController extends BaseGWTSpringControllerWithHibernateSupport implements SliderRPCService {
+public class SliderController extends BaseGWTSpringController implements SliderRPCService {
 
    private SliderService sliderService;
+   private SensorService sensorService;
+   private DeviceCommandService deviceCommandService;
    
    private UserService userService;
    
    @Override
    public void delete(long id) {
       sliderService.delete(id);
-   }
-
-   @Override
-   public List<Slider> loadAll() {
-      return sliderService.loadAll();
    }
 
    @Override
@@ -59,12 +60,6 @@ public class SliderController extends BaseGWTSpringControllerWithHibernateSuppor
      return sliderService.saveAllSliders(sliderList, userService.getAccount());
  }
 
-   @Override
-   public Slider update(Slider slider) {
-      slider.setAccount(userService.getAccount());
-      return sliderService.update(slider);
-   }
-
    public void setSliderService(SliderService switchService) {
       this.sliderService = switchService;
    }
@@ -73,5 +68,47 @@ public class SliderController extends BaseGWTSpringControllerWithHibernateSuppor
       this.userService = userService;
    }
 
-   
+   public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  @Override
+  public SliderDetailsDTO loadSliderDetails(long id) {
+     Slider slider = sliderService.loadById(id);
+     DeviceCommand command = slider.getSetValueCmd().getDeviceCommand();
+     return new SliderDetailsDTO(slider.getOid(), slider.getName(), new DTOReference(slider.getSliderSensorRef().getSensor().getOid()), new DTOReference(command.getOid()), command.getDisplayName());
+   }
+
+  @Override
+   public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
+     Slider slider = sliderService.loadById(sliderDTO.getOid());
+     slider.setName(sliderDTO.getName());
+
+     if (slider.getSliderSensorRef().getSensor().getOid() != sliderDTO.getSensor().getId()) {
+       Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
+       slider.getSliderSensorRef().setSensor(sensor);
+     }
+     
+     if (slider.getSetValueCmd().getDeviceCommand().getOid() != sliderDTO.getCommand().getId()) {
+       DeviceCommand dc = deviceCommandService.loadById(sliderDTO.getCommand().getId());
+       slider.getSetValueCmd().setDeviceCommand(dc);
+     }
+     
+     sliderService.update(slider);
+   }
+
+  public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
+    Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
+    DeviceCommand command = deviceCommandService.loadById(sliderDTO.getCommand().getId());
+
+    Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+    slider.setAccount(userService.getAccount());
+    
+    sliderService.save(slider);
+  }
+
 }

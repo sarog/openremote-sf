@@ -19,12 +19,14 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.Map;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -49,9 +51,7 @@ public class DeviceInfoForm extends CommonForm {
    /** The Constant DEVICE_MODEL. */
    public static final String DEVICE_MODEL = "model";
    
-   
-   /** The device bean model. */
-   protected BeanModel deviceBeanModel = null;
+   protected DeviceDetailsDTO device = null;
    
    /** The wrapper. */
    protected Component wrapper;
@@ -64,21 +64,23 @@ public class DeviceInfoForm extends CommonForm {
     */
    public DeviceInfoForm(final Component wrapper, final BeanModel deviceBeanModel) {
       super();
-      this.deviceBeanModel = deviceBeanModel;
+      this.device = (DeviceDetailsDTO) deviceBeanModel.getBean();
       this.wrapper = wrapper;
+
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-         public void handleEvent(FormEvent be) {
-            
-            AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
+         public void handleEvent(FormEvent be) {            
+            AsyncSuccessCallback<Void> callback = new AsyncSuccessCallback<Void>() {
                @Override
-               public void onSuccess(BeanModel deviceModel) {
-                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceModel));
+               public void onSuccess(Void result) {
+                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceBeanModel));
                }
             };
-            if (((Device) deviceBeanModel.getBean()).getName() == null) {
-               DeviceBeanModelProxy.saveDevice(getFieldMap(), callback);
+
+            updateDeviceWithFieldValues();
+            if (device.getOid() == null) {
+              DeviceBeanModelProxy.saveNewDevice(device, callback);
             } else {
-               DeviceBeanModelProxy.updateDevice(deviceBeanModel, getFieldMap(), callback);
+              DeviceBeanModelProxy.updateDeviceWithDTO(device, callback);
             }
          }
 
@@ -86,9 +88,13 @@ public class DeviceInfoForm extends CommonForm {
       createFields();
    }
 
-
-
-
+  public void updateDeviceWithFieldValues() {
+    Map<String,String> map = getFieldMap();
+    device.setName(map.get(DEVICE_NAME));
+    device.setVendor(map.get(DEVICE_VENDOR));
+    device.setModel(map.get(DEVICE_MODEL));
+  }
+  
    /**
     * Creates the fields.
     */
@@ -110,18 +116,14 @@ public class DeviceInfoForm extends CommonForm {
       modelField.setFieldLabel("Model");
       modelField.ensureDebugId(DebugId.DEVICE_MODEL_FIELD);
       modelField.setAllowBlank(false);
-      
-      if (deviceBeanModel != null) {
-         Device device = deviceBeanModel.getBean();
-         nameField.setValue(device.getName());
-         vendorField.setValue(device.getVendor());
-         modelField.setValue(device.getModel());
-      }
-      
+
+     nameField.setValue(device.getName());
+     vendorField.setValue(device.getVendor());
+     modelField.setValue(device.getModel());
+
       add(nameField);
       add(vendorField);
       add(modelField);
    }
-   
    
 }

@@ -28,16 +28,25 @@ import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -59,31 +68,37 @@ public class DeviceBeanModelProxy {
     */
    public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
       if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
-            public void onSuccess(List<Device> result) {
+         AsyncServiceFactory.getDeviceServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+            public void onSuccess(ArrayList<DeviceDTO> result) {
+              
+              /*
                List<BeanModel> beanModels = Device.createModels(result);
                BeanModelDataBase.deviceTable.insertAll(beanModels);
+               */
+              
+              List<BeanModel> beanModels = DTOHelper.createModels(result);
                callback.onSuccess(beanModels);
             }
             
          });
-      } else if(beanModel.getBean() instanceof Device){
+      } else if(beanModel.getBean() instanceof DeviceDTO){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
-         Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
+         DeviceDTO device = (DeviceDTO) beanModel.getBean();
+         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() {
 
             @Override
-            public void onSuccess(Device result) {
-               List<BeanModel> cmdBeanModels = DeviceCommand.createModels(result.getDeviceCommands());
-               List<BeanModel> sensorBeanModels = Sensor.createModels(result.getSensors());
-               List<BeanModel> sliderBeanModels = Slider.createModels(result.getSliders());
-               List<BeanModel> switchBeanModels = Switch.createModels(result.getSwitchs());
+            public void onSuccess(DeviceWithChildrenDTO result) {
+               List<BeanModel> cmdBeanModels = DTOHelper.createModels(result.getDeviceCommands());
+               List<BeanModel> sensorBeanModels = DTOHelper.createModels(result.getSensors());
+               List<BeanModel> sliderBeanModels = DTOHelper.createModels(result.getSliders());
+               List<BeanModel> switchBeanModels = DTOHelper.createModels(result.getSwitches());
                
+               /*
                BeanModelDataBase.deviceCommandTable.insertAll(cmdBeanModels);
                BeanModelDataBase.sensorTable.insertAll(sensorBeanModels);
                BeanModelDataBase.sliderTable.insertAll(sliderBeanModels);
                BeanModelDataBase.switchTable.insertAll(switchBeanModels);
-               
+               */
                beanModels.addAll(cmdBeanModels);
                beanModels.addAll(sensorBeanModels);
                beanModels.addAll(sliderBeanModels);
@@ -92,142 +107,57 @@ public class DeviceBeanModelProxy {
             }
             
          });
-      }else if(beanModel.getBean() instanceof Sensor){
-         Sensor sensor = beanModel.getBean();
+      }else if(beanModel.getBean() instanceof SensorDTO) {
+         SensorDTO sensor = beanModel.getBean();
          List<BeanModel> sensorBenModels = new ArrayList<BeanModel>();
-         sensorBenModels.add(sensor.getSensorCommandRef().getBeanModel());
+         sensorBenModels.add(DTOHelper.getBeanModel(sensor.getCommand()));
          callback.onSuccess(sensorBenModels);
-      } else if(beanModel.getBean() instanceof Slider){
-         Slider slider = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SliderDTO) {
+         SliderDTO slider = beanModel.getBean();
          List<BeanModel> sliderModels = new ArrayList<BeanModel>();
-         if (slider.getSetValueCmd() != null) {
-            sliderModels.add(slider.getSetValueCmd().getBeanModel());
-         }
+         sliderModels.add(DTOHelper.getBeanModel(slider.getCommand()));
          callback.onSuccess(sliderModels);
-      } else if(beanModel.getBean() instanceof Switch){
-         Switch swh = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SwitchDTO) {
+         SwitchDTO swh = beanModel.getBean();
          List<BeanModel> switchBeanModels = new ArrayList<BeanModel>();
-         switchBeanModels.add(swh.getSwitchCommandOnRef().getBeanModel());
-         switchBeanModels.add(swh.getSwitchCommandOffRef().getBeanModel());
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOnCommand()));
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOffCommand()));
          callback.onSuccess(switchBeanModels);
       }
    }
    
    public static void loadDeviceAndCommand(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
-            public void onSuccess(List<Device> result) {
-               List<BeanModel> beanModels = Device.createModels(result);
-               BeanModelDataBase.deviceTable.insertAll(beanModels);
-               callback.onSuccess(beanModels);
-            }
-            
-         });
-      } else if(beanModel.getBean() instanceof Device){
-         final List<BeanModel> beanModels = new ArrayList<BeanModel>();
-         Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
 
-            @Override
-            public void onSuccess(Device result) {
-               List<BeanModel> commandBeans = DeviceCommand.createModels(result.getDeviceCommands());
-               beanModels.addAll(commandBeans);
-               BeanModelDataBase.deviceCommandTable.insertAll(commandBeans);
-               callback.onSuccess(beanModels);
-            }
-            
-         });
+     if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+         public void onSuccess(ArrayList<DeviceDTO> result) {
+           List<BeanModel> beanModels = DTOHelper.createModels(result);
+            callback.onSuccess(beanModels);
+         }        
+       });
+     } else if(beanModel.getBean() instanceof DeviceDTO) {
+       DeviceDTO device = (DeviceDTO) beanModel.getBean();
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() { // TODO : have method to only return commands as children
+
+          @Override
+          public void onSuccess(DeviceWithChildrenDTO result) {
+             callback.onSuccess(DTOHelper.createModels(result.getDeviceCommands()));
+          }
+       });
       }
    }
-   
-   /**
-    * Save device.
-    * 
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void saveDevice(Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      Device device = new Device();
-      setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
-   /**
-    * Save device with commands.
-    * 
-    * @param device
-    *           the device
-    * @param datas
-    *           the datas
-    * @param callback
-    *           the callback
-    */
-   public static void saveDeviceWithCommands(final Device device, List<ModelData> datas, final AsyncSuccessCallback<BeanModel> callback) {
-      device.setDeviceCommands(DeviceCommandBeanModelProxy.convertToIrDeviceCommand(device, datas));
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-   
-   /**
-    * Save device.
-    * 
-    * @param device
-    *           the device
-    * @param callback
-    *           the callback
-    */
-   public static void saveDevice(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
 
-   
-   /**
-    * Update device.
-    * 
-    * @param deviceModel the device model
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      Device device = deviceModel.getBean();
-      setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModelDataBase.deviceTable.update(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
+   public static void saveNewDevice(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().saveNewDevice(device, callback);
    }
    
-   /**
-    * Sets the attrs to device.
-    * 
-    * @param map the map
-    * @param device the device
-    */
-   private static void setAttrsToDevice(Map<String, String> map, Device device) {
-      device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
-      device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
-      device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
+   public static void saveNewDeviceWithChildren(final DeviceDetailsDTO device, final ArrayList<DeviceCommandDetailsDTO> commands,
+           final ArrayList<SensorDetailsDTO> sensors, final ArrayList<SwitchDetailsDTO> switches, final ArrayList<SliderDetailsDTO> sliders, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, callback);
+   }
+   
+   public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
    }
    
    /**
@@ -237,7 +167,7 @@ public class DeviceBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDevice(BeanModel deviceModel, final AsyncSuccessCallback<Void> callback) {
-      final Device device = deviceModel.getBean();
+      final DeviceDTO device = deviceModel.getBean();
       /*AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>() {
          @Override
          public void onSuccess(List<DeviceCommand> result) {
@@ -248,6 +178,8 @@ public class DeviceBeanModelProxy {
             }*/
             AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
+                 
+                 /* TODO
                   //1, remove switches and sliders.
                   removeAllSwitchsForDevice(device);
                   removeAllSlidersForDevice(device);
@@ -257,6 +189,8 @@ public class DeviceBeanModelProxy {
                   removeAllDeviceCommandsForDevice(device);
                   //4, remove device
                   BeanModelDataBase.deviceTable.delete(device.getOid());
+                  
+                  */
                   callback.onSuccess(result);
                }
             });
@@ -312,56 +246,12 @@ public class DeviceBeanModelProxy {
       }
    }
    
-   public static void saveDeviceWithContents(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            List<BeanModel> sensorModels = Sensor.createModels(result.getSensors());
-            BeanModelDataBase.sensorTable.insertAll(sensorModels);
-            List<BeanModel> switchModels = Switch.createModels(result.getSwitchs());
-            BeanModelDataBase.switchTable.insertAll(switchModels);
-            List<BeanModel> sliderModels = Slider.createModels(result.getSliders());
-            BeanModelDataBase.sliderTable.insertAll(sliderModels);
-            callback.onSuccess(deviceModel);
+   public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
+         public void onSuccess(DeviceDetailsDTO result) {
+           callback.onSuccess(DTOHelper.getBeanModel(result));
          }
-      });
+       });
    }
    
-   public static void saveDevicesWithContents(ArrayList<Device> devices, final AsyncSuccessCallback<ArrayList<BeanModel>> callback) {
-     AsyncServiceFactory.getDeviceServiceAsync().saveDevices(devices, new AsyncSuccessCallback<ArrayList<Device>>() {
-        public void onSuccess(ArrayList<Device> result) {
-          ArrayList<BeanModel> deviceModels = new ArrayList<BeanModel>();
-          for (Device device : result)
-          {
-            BeanModel deviceModel = device.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            List<BeanModel> sensorModels = Sensor.createModels(device.getSensors());
-            BeanModelDataBase.sensorTable.insertAll(sensorModels);
-            List<BeanModel> switchModels = Switch.createModels(device.getSwitchs());
-            BeanModelDataBase.switchTable.insertAll(switchModels);
-            List<BeanModel> sliderModels = Slider.createModels(device.getSliders());
-            BeanModelDataBase.sliderTable.insertAll(sliderModels);
-            deviceModels.add(deviceModel);
-          }
-          callback.onSuccess(deviceModels);
-        }
-     });
-  }
-   
-   public static void getAccount(final AsyncCallback<Account> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncSuccessCallback <Account>() {
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-         public void onSuccess(Account result) {
-            callback.onSuccess(result);
-         }
-      });
-   }
 }

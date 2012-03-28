@@ -21,16 +21,16 @@ package org.openremote.modeler.client.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.buildingmodeler.DeviceCommandWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -46,72 +46,15 @@ public class DeviceCommandBeanModelProxy {
     */
    private DeviceCommandBeanModelProxy() {
    }
-
-   /**
-    * Save device command.
-    * 
-    * @param device the device
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void saveDeviceCommand(Device device, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      DeviceCommand deviceCommand = new DeviceCommand();
-      deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
-      deviceCommand.setDevice(device);
-      deviceCommand.setProtocol(careateProtocol(map, deviceCommand));
-      device.getDeviceCommands().add(deviceCommand);
-      
-      AsyncServiceFactory.getDeviceCommandServiceAsync().save(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand deviceCommand) {
-            BeanModel deviceCommandModel = deviceCommand.getBeanModel();
-            BeanModelDataBase.deviceCommandTable.insert(deviceCommandModel);
-            callback.onSuccess(deviceCommandModel);
-         }
-      });
-   }
-
-   /**
-    * @param map
-    * @param deviceCommand
-    * @return
-    */
-   public static Protocol careateProtocol(Map<String, String> map, DeviceCommand deviceCommand) {
-      Protocol protocol = new Protocol();
-      protocol.setType(map.get(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL));
-      protocol.setDeviceCommand(deviceCommand);
-      
-      for (String key : map.keySet()) {
-         if (DeviceCommandWindow.DEVICE_COMMAND_NAME.equals(key) || DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL.equals(key)) {
-            continue;
-         }
-         ProtocolAttr protocolAttr = new ProtocolAttr();
-         protocolAttr.setName(key);
-         protocolAttr.setValue((map.get(key)));
-         protocolAttr.setProtocol(protocol);
-         protocol.getAttributes().add(protocolAttr);
-      }
-      return protocol;
+   
+   public static void updateDeviceCommandWithDTO(final DeviceCommandDetailsDTO deviceCommand, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().updateDeviceCommandWithDTO(deviceCommand, callback);
    }
    
-   /**
-    * Update device command.
-    * 
-    * @param deviceCommand the device command
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDeviceCommand(final DeviceCommand deviceCommand, Map<String, String> map,
-         final AsyncSuccessCallback<BeanModel> callback) {
-      deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
-      deviceCommand.setProtocol(careateProtocol(map, deviceCommand));
-      AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand result) {
-            BeanModel deviceCommandModel = result.getBeanModel();
-            BeanModelDataBase.deviceCommandTable.update(deviceCommandModel);
-            callback.onSuccess(deviceCommandModel);
-         }
-      });
+   public static void saveNewDeviceCommand(final DeviceCommandDetailsDTO deviceCommand, final long deviceId, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().saveNewDeviceCommand(deviceCommand, deviceId, callback);
    }
+   
    
    /**
     * Save all ir device commands from IR import form
@@ -130,25 +73,6 @@ public class DeviceCommandBeanModelProxy {
          }
       });
    }
-   
-   /**
-    * Save all device commands
-    * 
-    * @param device the device
-    * @param datas the datas
-    * @param callback the callback
-    */
-   public static void saveDeviceCommandList(List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
-         public void onSuccess(List<DeviceCommand> deviceCommands) {
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceCommandModels);
-         }
-      });
-   }
-   
-   
    
    /**
     * Convert to IR device command.
@@ -200,7 +124,7 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Boolean> callback) {
-      final DeviceCommand deviceCommand = deviceCommnadModel.getBean();
+      final DeviceCommandDTO deviceCommand = deviceCommnadModel.getBean();
       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
             if (result) {
@@ -227,4 +151,9 @@ public class DeviceCommandBeanModelProxy {
          
       });
    }
+   
+   public static void loadDeviceCommandsDTOFromDeviceId(final Long deviceId,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(deviceId, callback);
+  }
+   
 }
