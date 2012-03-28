@@ -260,7 +260,7 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
 
       default:
 
-        return "";
+        return state==null?"":state;
     }
   }
 }
