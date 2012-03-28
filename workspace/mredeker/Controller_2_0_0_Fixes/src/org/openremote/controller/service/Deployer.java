@@ -141,7 +141,8 @@ public class Deployer
    */
   private Map<ModelBuilder.SchemaVersion, ModelBuilder> builders;
 
-
+  private Map<Integer, Element> controllerXMLElementCache = new HashMap<Integer, Element>();
+  
   /**
    * Model builders are sequences of actions to construct the controller's object model (a.k.a
    * strategy pattern). Different model builders may therefore act on differently
@@ -531,9 +532,15 @@ public class Deployer
     //   This method is a potential performance bottleneck. The performance issue can be
     //   resolved by completing the reactoring tasks above. However, for a quick temporary
     //   fix it is possible to implement the solution described in ORCJAVA-190
+    
+    //Quick fix to cache parsed XML elements. See ORCJAVA-190
+    Element tmp = controllerXMLElementCache.get(id); 
+    if ( tmp == null) {
+       tmp = ((Version20ModelBuilder)modelBuilder).queryElementById(id);
+       controllerXMLElementCache.put(id, tmp);
+    }
 
-
-    return ((Version20ModelBuilder)modelBuilder).queryElementById(id);
+    return tmp;
   }
 
   /**
@@ -693,7 +700,8 @@ public class Deployer
     // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
 
     deviceStateCache.shutdown();
-
+    controllerXMLElementCache.clear();
+    
     modelBuilder = null;                // null here indicates to other services that this deployer
                                         // installer currently has no object model deployed
     
