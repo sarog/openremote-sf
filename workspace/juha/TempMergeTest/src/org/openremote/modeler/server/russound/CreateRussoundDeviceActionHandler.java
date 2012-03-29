@@ -23,6 +23,7 @@ import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.russound.CreateRussoundDeviceAction;
 import org.openremote.modeler.shared.russound.CreateRussoundDeviceResult;
 
@@ -59,8 +60,11 @@ public class CreateRussoundDeviceActionHandler implements ActionHandler<CreateRu
   public CreateRussoundDeviceResult execute(CreateRussoundDeviceAction action, ExecutionContext context) throws DispatchException {
     CreateRussoundDeviceResult result = new CreateRussoundDeviceResult();
     
-    createRussoundDevices(action.getDeviceName(), action.getModel(), action.getControllerCount());
-    
+    ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
+    for (Device dev : createRussoundDevices(action.getDeviceName(), action.getModel(), action.getControllerCount())) {
+      dtos.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+    result.setDevices(dtos);
     return result;
   }
 

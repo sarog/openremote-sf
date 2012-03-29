@@ -20,21 +20,13 @@
 package org.openremote.modeler.client.proxy;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ModelData;
-
 
 /**
  * The is for managing deviceCommand.
@@ -55,68 +47,6 @@ public class DeviceCommandBeanModelProxy {
      AsyncServiceFactory.getDeviceCommandServiceAsync().saveNewDeviceCommand(deviceCommand, deviceId, callback);
    }
    
-   
-   /**
-    * Save all ir device commands from IR import form
-    * 
-    * @param device the device
-    * @param datas the datas
-    * @param callback the callback
-    */
-   public static void saveAllIrDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      List<DeviceCommand> deviceCommands = convertToIrDeviceCommand(device, datas);
-      AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
-         public void onSuccess(List<DeviceCommand> deviceCommands) {
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
-            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            callback.onSuccess(deviceCommandModels);
-         }
-      });
-   }
-   
-   /**
-    * Convert to IR device command.
-    * 
-    * @param device
-    *           the device
-    * @param datas
-    *           the datas
-    * 
-    * @return the list< device command>
-    */
-   public static List<DeviceCommand> convertToIrDeviceCommand(Device device, List<ModelData> datas) {
-      List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
-      for (ModelData m : datas) {
-         Protocol protocol = new Protocol();
-         protocol.setType(Constants.INFRARED_TYPE);
-
-         ProtocolAttr nameAttr = new ProtocolAttr();
-         nameAttr.setName("name");
-         nameAttr.setValue(m.get("remoteName").toString());
-         nameAttr.setProtocol(protocol);
-         protocol.getAttributes().add(nameAttr);
-
-         ProtocolAttr commandAttr = new ProtocolAttr();
-         commandAttr.setName("command");
-         commandAttr.setValue(m.get("name").toString());
-         commandAttr.setProtocol(protocol);
-         protocol.getAttributes().add(commandAttr);
-
-         DeviceCommand deviceCommand = new DeviceCommand();
-         deviceCommand.setDevice(device);
-         deviceCommand.setProtocol(protocol);
-         deviceCommand.setName(m.get("name").toString());
-         deviceCommand.setSectionId(m.get("sectionId").toString());
-
-         protocol.setDeviceCommand(deviceCommand);
-
-         device.getDeviceCommands().add(deviceCommand);
-
-         deviceCommands.add(deviceCommand);
-      }
-      return deviceCommands;
-   }
-   
    /**
     * Delete device command.
     * 
@@ -124,32 +54,9 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void deleteDeviceCommand(BeanModel deviceCommnadModel, final AsyncSuccessCallback<Boolean> callback) {
-      final DeviceCommandDTO deviceCommand = deviceCommnadModel.getBean();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(deviceCommand.getOid(), new AsyncSuccessCallback<Boolean>() {
-         public void onSuccess(Boolean result) {
-            if (result) {
-               BeanModelDataBase.deviceCommandTable.delete(deviceCommand.getOid());
-            }
-            callback.onSuccess(result);
-         }
-      });
-   }
-   
-   /**
-    * Load all the device commands a device has. 
-    * @param device
-    * @param callback
-    */
-   public static void loadDeviceCmdFromDevice(Device device,final AsyncSuccessCallback<List<DeviceCommand>>callback){
-      AsyncServiceFactory.getDeviceCommandServiceAsync().loadByDevice(device.getOid(), new AsyncSuccessCallback<List<DeviceCommand>>(){
-
-         @Override
-         public void onSuccess(List<DeviceCommand> result) {
-            BeanModelDataBase.deviceCommandTable.insertAll(DeviceCommand.createModels(result));
-            callback.onSuccess(result);
-         }
-         
-      });
+     if (deviceCommnadModel.getBean() != null && deviceCommnadModel.getBean() instanceof DeviceCommandDTO) {
+       AsyncServiceFactory.getDeviceCommandServiceAsync().deleteCommand(((DeviceCommandDTO)deviceCommnadModel.getBean()).getOid(), callback);
+     }
    }
    
    public static void loadDeviceCommandsDTOFromDeviceId(final Long deviceId,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {

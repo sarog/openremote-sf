@@ -96,7 +96,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public Device loadById(long id) {
+   @Transactional public Device loadById(long id) {
       Device device = super.loadById(id);
       if (device.getAccount() != null) {
          Hibernate.initialize(device.getAccount().getConfigs());

@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -48,8 +47,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class IRFileImportWindow extends FormWindow {
 
-   @SuppressWarnings("unused")
-   private Device device;
    private final IRFileImportWindow importWindow;
    private FileUploadField fileUploadField;
    private IRFileImportForm importForm;
@@ -65,7 +62,6 @@ public class IRFileImportWindow extends FormWindow {
       setSize(800, 610);
       initial("Import IR Command from file");
       this.ensureDebugId(DebugId.IMPORT_WINDOW);
-      this.device = (Device) deviceBeanModel.getBean();
       importForm = new IRFileImportForm(this, deviceBeanModel);
       deviceChooser.add(importForm);
       deviceChooser.setLayoutData(new FillLayout());
@@ -116,7 +112,6 @@ public class IRFileImportWindow extends FormWindow {
             if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
                reportError(be.getResultHtml());
             } else {
-
                errorLabel.setVisible(false);
                importForm.setVisible(true);
                importWindow.unmask();
@@ -186,7 +181,6 @@ public class IRFileImportWindow extends FormWindow {
       fileUploadField.setStyleAttribute("overflow", "hidden");
       fileUploadPanel.setSpacing(3);
       fileUploadPanel.add(fileUploadField);
-
    }
 
 }

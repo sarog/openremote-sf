@@ -10,6 +10,7 @@ import net.customware.gwt.dispatch.server.ExecutionContext;
 import net.customware.gwt.dispatch.shared.DispatchException;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
@@ -18,6 +19,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.shared.knx.ImportKNXConfigAction;
 import org.openremote.modeler.shared.knx.ImportKNXConfigResult;
@@ -26,26 +28,13 @@ import com.extjs.gxt.ui.client.data.ModelData;
 
 public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConfigAction, ImportKNXConfigResult> {
 
-  
-  // TODO !!!! define in just one place, now defined here and in client
-  public static final Map<String, String> COMMAND_DPT_MAP;
-
-  static {
-      COMMAND_DPT_MAP = new TreeMap<String, String>();
-      COMMAND_DPT_MAP.put("Switch", "1.001");
-      COMMAND_DPT_MAP.put("Switch Status", "1.001");
-      COMMAND_DPT_MAP.put("Dim/Scale 0-100%", "5.001");
-      COMMAND_DPT_MAP.put("Dim/Scale Status", "5.001");
-      COMMAND_DPT_MAP.put("Dimmer/Blind Step", "3.007");
-      COMMAND_DPT_MAP.put("Range 0-255", "5.010");
-      COMMAND_DPT_MAP.put("Range Status", "5.010");
-      COMMAND_DPT_MAP.put("Play Scene", "17.001");
-      COMMAND_DPT_MAP.put("Store Scene", "18.001");
-      COMMAND_DPT_MAP.put("N/A", "N/A");
-  }
-
+  protected DeviceService deviceService;
   protected DeviceCommandService deviceCommandService;
   protected SensorService sensorService;
+  
+  public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
@@ -58,7 +47,8 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
   @Override
   public ImportKNXConfigResult execute(ImportKNXConfigAction action, ExecutionContext context) throws DispatchException {
     ImportKNXConfigResult result = new ImportKNXConfigResult();
-    createKNXObjects(action.getDevice(), action.getConfig());
+    Device device = deviceService.loadById(action.getDevice().getOid());
+    createKNXObjects(device, action.getConfig());
     return result;
   }
 
@@ -106,6 +96,9 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
         } else if ("5.010".equals(dpt)) {
           Sensor sensor = createSensor(device, SensorType.RANGE, deviceCommand);
           result.add(sensor);
+        } else if ("9.001".equals(dpt)) {
+          Sensor sensor = createSensor(device, SensorType.CUSTOM, deviceCommand);
+          result.add(sensor);
         }
       }
     }
@@ -118,6 +111,8 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
       sensor = new RangeSensor();
       ((RangeSensor) sensor).setMin(0);
       ((RangeSensor) sensor).setMax(255);
+    } else if (type == SensorType.CUSTOM) {
+      sensor = new CustomSensor();
     } else {
       sensor = new Sensor();
     }
@@ -139,7 +134,7 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
       String name = importData.get("Name");
       String groupAddress = importData.get("GroupAddress");
       String commandType = importData.get("commandType");
-      String dpt = COMMAND_DPT_MAP.get(commandType);
+      String dpt = ImportKNXConfigAction.COMMAND_DPT_MAP.get(commandType);
       if (commandType.indexOf("Status") != -1) {
         deviceCommand = createKNXDeviceCommand(device, name, groupAddress, "status", dpt);
         result.add(deviceCommand);
@@ -166,6 +161,9 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
       } else if ("Store Scene".equals(commandType)) {
         String sceneNo = importData.get("SceneNumber");
         deviceCommand = createKNXDeviceCommand(device, name, groupAddress, "learn_scene " + sceneNo, dpt);
+        result.add(deviceCommand);
+      } else if ("Temperature".equals(commandType)) {
+        deviceCommand = createKNXDeviceCommand(device, name, groupAddress, "temp", dpt);
         result.add(deviceCommand);
       }
     }

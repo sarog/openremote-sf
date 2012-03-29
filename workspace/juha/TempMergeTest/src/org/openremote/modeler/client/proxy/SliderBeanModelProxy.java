@@ -20,15 +20,13 @@
 package org.openremote.modeler.client.proxy;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -42,44 +40,9 @@ public class SliderBeanModelProxy {
    
    public static void delete(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
       if (beanModel != null && beanModel.getBean() instanceof SliderDTO) {
-         AsyncServiceFactory.getSliderRPCServiceAsync().delete(((SliderDTO) (beanModel.getBean())).getOid(),
-               new AsyncSuccessCallback<Void>() {
-                  @Override
-                  public void onSuccess(Void result) {
-                     BeanModelDataBase.sliderTable.delete(beanModel);
-                     callback.onSuccess(result);
-                  }
-               });
+         AsyncServiceFactory.getSliderRPCServiceAsync().delete(((SliderDTO) (beanModel.getBean())).getOid(), callback);
       }
    }
-   
-   public static void save(final BeanModel beanModel,final AsyncSuccessCallback<Slider>callback){
-      if (beanModel != null && beanModel.getBean() instanceof Slider) {
-         AsyncServiceFactory.getSliderRPCServiceAsync().save((Slider) (beanModel.getBean()),
-               new AsyncSuccessCallback<Slider>() {
-
-                  @Override
-                  public void onSuccess(Slider result) {
-                     BeanModelDataBase.sliderTable.insert(result.getBeanModel());
-                     callback.onSuccess(result);
-                  }
-
-               });
-      }
-   }
-   
-   public static void saveSliderList(List<Slider> sliderList, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
-     AsyncServiceFactory.getSliderRPCServiceAsync().saveAll(sliderList, new AsyncSuccessCallback<List<Slider>>() {
-         public void onSuccess(List<Slider> sliderList) {
-            List<BeanModel> sliderModels = Slider.createModels(sliderList);
-            BeanModelDataBase.sliderTable.insertAll(sliderModels);
-            asyncSuccessCallback.onSuccess(sliderModels);
-         }
-      });
- }
-   
-   
-   
    
    public static void loadSliderDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
      AsyncServiceFactory.getSliderRPCServiceAsync().loadSliderDetails(((SliderDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SliderDetailsDTO>() {
@@ -87,6 +50,10 @@ public class SliderBeanModelProxy {
         asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
       }
     });
+   }
+   
+   public static void loadAllSliderWithInfosDTO(AsyncSuccessCallback<ArrayList<SliderWithInfoDTO>> callback) {
+     AsyncServiceFactory.getSliderRPCServiceAsync().loadAllSliderWithInfosDTO(callback);
    }
    
    public static void updateSliderWithDTO(final SliderDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {

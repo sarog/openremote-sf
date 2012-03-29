@@ -20,9 +20,7 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
@@ -32,14 +30,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The async counterpart of <code>DeviceCommandRPCService</code>.
  */
 public interface DeviceCommandRPCServiceAsync {
-   
-   /**
-    * Save all.
-    * 
-    * @param deviceCommands the device commands
-    * @param callback the callback
-    */
-   void saveAll(List<DeviceCommand> deviceCommands, AsyncCallback<List<DeviceCommand>> callback);
 
    /**
     * Delete command.
@@ -50,14 +40,6 @@ public interface DeviceCommandRPCServiceAsync {
     *           the callback
     */
    void deleteCommand(long id, AsyncCallback<Boolean> callback);
-
-   /**
-    * Load by device.
-    * 
-    * @param id the id
-    * @param asyncCallback the async callback
-    */
-   void loadByDevice(long id, AsyncCallback<List<DeviceCommand>> asyncCallback);
    
    void loadCommandsDTOByDevice(long id, AsyncCallback<ArrayList<DeviceCommandDTO>> asyncCallback);
 

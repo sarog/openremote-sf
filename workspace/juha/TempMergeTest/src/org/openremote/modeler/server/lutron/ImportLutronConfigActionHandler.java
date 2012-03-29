@@ -34,6 +34,7 @@ import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.shared.lutron.ImportConfig;
@@ -45,9 +46,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutronConfigAction, ImportLutronConfigResult> {
 
+  protected DeviceService deviceService;
   protected DeviceCommandService deviceCommandService;
   protected SensorService sensorService;
   protected SliderService sliderService;
+
+  public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
@@ -64,8 +70,8 @@ public class ImportLutronConfigActionHandler implements ActionHandler<ImportLutr
   @Override
   public ImportLutronConfigResult execute(ImportLutronConfigAction action, ExecutionContext context) throws DispatchException {
     ImportLutronConfigResult result = new ImportLutronConfigResult();
-
-    result.setDeviceCommands(createDeviceElements(action.getDevice(), action.getConfig()));
+    Device device = deviceService.loadById(action.getDevice().getOid());
+    result.setDeviceCommands(createDeviceElements(device, action.getConfig()));
     
     
     // TODO: handle potential errors and return error message

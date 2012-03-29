@@ -96,6 +96,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     LogFacade log = LogFacade.getInstance(LogFacade.Category.EXPORT);
 
+    resourceService.resolveDTOReferences(panelList);
+
     // TODO : this call should be internalized, see MODELER-287
     resourceService.initResources(panelList, maxId);
 

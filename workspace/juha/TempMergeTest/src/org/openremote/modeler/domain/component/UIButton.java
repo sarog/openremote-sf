@@ -26,6 +26,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.StringUtils;
 
 import flexjson.JSON;
@@ -55,6 +56,8 @@ public class UIButton extends UIControl implements ImageSourceOwner{
 
    /** If click the button, send the uicommand. */
    private UICommand uiCommand;
+   
+   private UICommandDTO uiCommandDTO;
 
    /**
     * Instantiates a new uI button.
@@ -97,7 +100,16 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    public void setUiCommand(UICommand uiCommand) {
       this.uiCommand = uiCommand;
    }
-   @Override
+   
+   public UICommandDTO getUiCommandDTO() {
+    return uiCommandDTO;
+  }
+
+   public void setUiCommandDTO(UICommandDTO uiCommandDTO) {
+    this.uiCommandDTO = uiCommandDTO;
+  }
+   
+  @Override
    public String getName() {
       return name;
    }
