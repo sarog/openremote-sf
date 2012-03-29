@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openremote.modeler.client.model.AutoListenableTreeStore;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.BusinessEntity;
 
@@ -35,7 +34,6 @@ import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSource;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 
 /**
  * For store BeanModel in Frontend.<br/> Every operation to the table will notify the listener on it.<br/>
@@ -98,15 +96,6 @@ public class BeanModelTable {
       changeListeners.put(id, listeners);
    }
    
-   /**
-    * Adds the change listener.
-    * 
-    * @param that the that
-    * @param be the be
-    */
-   @SuppressWarnings("unchecked")
-   public void addChangeListener(final AutoListenableTreeStore that, TreeStoreEvent<BeanModel> be) {}
-
    /**
     * Sets the insert listener for the given id.
     * There can only be one listener at a time for a given id.

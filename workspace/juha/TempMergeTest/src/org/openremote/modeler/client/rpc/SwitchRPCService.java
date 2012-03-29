@@ -19,8 +19,10 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import org.openremote.modeler.domain.Switch;
+import java.util.ArrayList;
+
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -32,15 +34,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface SwitchRPCService extends RemoteService {
    
    /**
-    * Save switch into database.
-    * 
-    * @param switchToggle the switch toggle
-    * 
-    * @return the switch
-    */
-   Switch save(Switch switchToggle);
-   
-   /**
     * Delete switch by id.
     * 
     * @param id the id
@@ -48,6 +41,8 @@ public interface SwitchRPCService extends RemoteService {
    void delete(long id);
    
    SwitchDetailsDTO loadSwitchDetails(long id);
+
+   ArrayList<SwitchWithInfoDTO> loadAllSwitchWithInfosDTO();
 
    void updateSwitchWithDTO(SwitchDetailsDTO switchDTO);
 

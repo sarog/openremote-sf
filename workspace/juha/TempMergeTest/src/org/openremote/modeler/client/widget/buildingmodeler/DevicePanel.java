@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
+import org.openremote.modeler.client.event.DevicesCreatedEvent;
+import org.openremote.modeler.client.event.DevicesCreatedEventHandler;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -43,14 +45,12 @@ import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
@@ -63,18 +63,22 @@ import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -129,18 +133,37 @@ public class DevicePanel extends ContentPanel {
    
    private void bind() {
      eventBus.addHandler(DeviceUpdatedEvent.TYPE, new DeviceUpdatedEventHandler() {
-
       @Override
       public void onDeviceUpdated(DeviceUpdatedEvent event) {
+        final TreeStore<BeanModel> deviceTreeStore = tree.getStore();
+        final BeanModel bm = DTOHelper.getBeanModel(event.getUpdatedDevice());
         
-        Info.display("INFO", "Should expand device");
-        
-        // TODO: should lookup device model based on updated device from event
-        tree.getStore().getLoader().load(); // This reloads the all tree, collapsing all nodes (all those that were expanded)
-        
-//        tree.setExpanded(getDeviceModel(), true);
-      }
-       
+        // EBR : adding a load listener so we can expand the device once it has reloaded it's children
+        // removing it when the load is done. It works but I don't like this approach, feels like a hack to me.
+        final LoadListener ll = new LoadListener() {
+          @Override
+          public void loaderLoad(LoadEvent le) {
+            tree.getSelectionModel().select(bm, true);
+            tree.setExpanded(bm, true);
+            super.loaderLoad(le);
+            deviceTreeStore.getLoader().removeLoadListener(this);
+          }
+        };
+        if (deviceTreeStore.contains(bm)) {
+          // Important : for this to work, the DTO & BeanModel used for update must be the same instance as the one in the store
+          // Current code in DevicePanel ensures that this is the case
+          deviceTreeStore.update(bm);
+          deviceTreeStore.getLoader().addLoadListener(ll);
+          deviceTreeStore.getLoader().loadChildren(bm);
+        }
+      }       
+     });
+     eventBus.addHandler(DevicesCreatedEvent.TYPE, new DevicesCreatedEventHandler() {
+      @Override
+      public void onDevicesCreated(DevicesCreatedEvent event) {
+        List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
+        tree.getStore().add(bms, true);
+      } 
      });
    }
 
@@ -159,7 +182,6 @@ public class DevicePanel extends ContentPanel {
          }
          
       };
-      addTreeStoreEventListener();
       treeContainer.ensureDebugId(DebugId.DEVICE_TREE_CONTAINER);
    // overflow-auto style is for IE hack.
       treeContainer.addStyleName("overflow-auto");
@@ -203,7 +225,7 @@ public class DevicePanel extends ContentPanel {
             return;
           }
           
-          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final DeviceDTO deviceDTO = (DeviceDTO)deviceBeanModel.getBean();
           final SwitchDetailsDTO newSwitch = new SwitchDetailsDTO();
           newSwitch.setSensor(new DTOReference(sensor.getOid()));
           newSwitch.setOnCommand(new DTOReference(onCmd.getOid()));
@@ -213,10 +235,10 @@ public class DevicePanel extends ContentPanel {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSwitch.setName(be.getValue());
                 
-                SwitchBeanModelProxy.saveNewSwitch(newSwitch, deviceId, new AsyncSuccessCallback<Void>() {
+                SwitchBeanModelProxy.saveNewSwitch(newSwitch, deviceDTO.getOid(), new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
-                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
+                    eventBus.fireEvent(new DeviceUpdatedEvent(deviceDTO));
                   };
                 });
               }
@@ -249,7 +271,7 @@ public class DevicePanel extends ContentPanel {
             MessageBox.alert("Wrong selection for Slider", "Make sure you have 1 Range-/Scale-Sensor and 1 command selected.", null);
             return;
           }
-          final Long deviceId = ((DeviceDTO)deviceBeanModel.getBean()).getOid();
+          final DeviceDTO deviceDTO = (DeviceDTO)deviceBeanModel.getBean();
           final SliderDetailsDTO newSlider = new SliderDetailsDTO();
           newSlider.setCommand(new DTOReference(setValuCmd.getOid()));
           newSlider.setSensor(new DTOReference(sensor.getOid()));
@@ -257,10 +279,10 @@ public class DevicePanel extends ContentPanel {
             public void handleEvent(MessageBoxEvent be) {
               if (be.getButtonClicked().getItemId().equals(Dialog.OK)) {
                 newSlider.setName(be.getValue());
-                SliderBeanModelProxy.saveNewSlider(newSlider, deviceId, new AsyncSuccessCallback<Void>() {
+                SliderBeanModelProxy.saveNewSlider(newSlider, deviceDTO.getOid(), new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
-                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO pass correct parameter
+                    eventBus.fireEvent(new DeviceUpdatedEvent(deviceDTO));
                   };
                 });
               }
@@ -359,23 +381,9 @@ public class DevicePanel extends ContentPanel {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   deviceWindow.hide();
-                  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO : should pass DTO
-                  
-                  /*
-                  BeanModel deviceModel = be.getData();
-                  tree.getStore().add(deviceModel, true);
-                  
-                  for (BeanModel deviceCommandModel : DeviceCommand.createModels(((Device) deviceModel.getBean())
-                        .getDeviceCommands())) {
-                     tree.getStore().add(deviceModel, deviceCommandModel, false);
-                  }
-                  tree.setExpanded(deviceModel, true);
-                  
-                  //create and select it.
-                  tree.getSelectionModel().select(deviceModel, false);
-                  */
-//                  Info.display("Info", "Add device " + deviceModel.get("name") + " success."); // TODO based on DTO in event
-                  
+                  DeviceDTO deviceDTO = (DeviceDTO) be.getData();
+                  eventBus.fireEvent(new DevicesCreatedEvent(deviceDTO));
+                  Info.display("Info", "Add device " + deviceDTO.getDisplayName() + " success.");                  
                }
             });
          }
@@ -393,17 +401,10 @@ public class DevicePanel extends ContentPanel {
            deviceWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
               @Override
               public void afterSubmit(SubmitEvent be) {
-                 deviceWindow.hide();
-                 
-//                 ArrayList<Device> devices = be.getData();
-                 // TODO: should indicate the devices that are updated
-                 eventBus.fireEvent(new DeviceUpdatedEvent(null));
-
-                 /*
-                 List<BeanModel> deviceModels = be.getData();
-                 tree.getStore().add(deviceModels, true);
-                 */
-//                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
+                 deviceWindow.hide();                 
+                 ArrayList<DeviceDTO> devices = be.getData();
+                 eventBus.fireEvent(new DevicesCreatedEvent(devices));
+                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
               }
            });
         }
@@ -488,7 +489,7 @@ public class DevicePanel extends ContentPanel {
    private void createDeviceCommand() {
       final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
-         DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(((DeviceDTO)deviceModel.getBean()), eventBus);
          
          // TODO deviceCommandWindow.show()
          /*
@@ -509,11 +510,11 @@ public class DevicePanel extends ContentPanel {
       BeanModel selectedModel = tree.getSelectionModel().getSelectedItem();
       if (selectedModel != null) {
          Object obj = selectedModel.getBean();
-         if (obj instanceof Device) {
+         if (obj instanceof DeviceDTO) {
             return selectedModel;
-         } else if (obj instanceof DeviceCommand || obj instanceof Sensor || obj instanceof Switch || obj instanceof Slider) {
+         } else if (obj instanceof DeviceCommandDTO || obj instanceof SensorDTO || obj instanceof SwitchDTO || obj instanceof SliderDTO) {
             selectedModel = tree.getStore().getParent(selectedModel);
-         } else if (obj instanceof UICommand) {
+         } else if (obj instanceof UICommandDTO) {
             selectedModel = tree.getStore().getParent(tree.getStore().getParent(selectedModel));
          }
       } else {
@@ -524,7 +525,7 @@ public class DevicePanel extends ContentPanel {
    private void createSensor() {
       final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
-         final SensorWindow sensorWindow = new SensorWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         final SensorWindow sensorWindow = new SensorWindow(((DeviceDTO)deviceModel.getBean()), eventBus);
          sensorWindow.show();
          /*
          sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -543,7 +544,7 @@ public class DevicePanel extends ContentPanel {
    private void createSlider() {
       final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
-         final SliderWindow sliderWindow = new SliderWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         final SliderWindow sliderWindow = new SliderWindow(((DeviceDTO)deviceModel.getBean()), eventBus);
          sliderWindow.show();
          /*
          sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -563,7 +564,7 @@ public class DevicePanel extends ContentPanel {
       final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
         
-         final SwitchWindow switchWindow = new SwitchWindow(((DeviceDTO)deviceModel.getBean()).getOid(), eventBus);
+         final SwitchWindow switchWindow = new SwitchWindow(((DeviceDTO)deviceModel.getBean()), eventBus);
          switchWindow.show();
          
          /*
@@ -604,7 +605,7 @@ public class DevicePanel extends ContentPanel {
     * @param selectedModel the selected model
     */
    private void editDevice(BeanModel selectedModel) {
-      final DeviceWindow editDeviceWindow = new DeviceWindow(selectedModel, eventBus);
+      final DeviceWindow editDeviceWindow = new DeviceWindow((DeviceDTO)selectedModel.getBean(), eventBus);
       editDeviceWindow.show();
    }
    
@@ -613,19 +614,19 @@ public class DevicePanel extends ContentPanel {
     * 
     * @param selectedModel the selected model
     */
-   private void editCommand(BeanModel selectedModel) {
+   private void editCommand(BeanModel selectedModel, final BeanModel parentModel) {
       DeviceCommandDTO cmd = selectedModel.getBean();
       if (cmd.getProtocolType().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
          MessageBox.alert("Warn", "Infrared command can not be edited", null);
          return;
       }
 
-      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd, eventBus);
+      final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow(cmd, ((DeviceDTO)parentModel.getBean()), eventBus);
       // deviceCommandWindow.show(); // TODO EBR : this should be the correct way to do it, but having the show here messes up the size of the displayed window
    }
    
-   private void editSensor(final BeanModel selectedModel) {
-      final SensorWindow sensorWindow = new SensorWindow(selectedModel, eventBus);
+   private void editSensor(final BeanModel selectedModel, final BeanModel parentModel) {
+      final SensorWindow sensorWindow = new SensorWindow(selectedModel, ((DeviceDTO)parentModel.getBean()), eventBus);
       sensorWindow.show();
       
   /*    
@@ -643,7 +644,7 @@ public class DevicePanel extends ContentPanel {
    }
    
    private void editSlider(final BeanModel selectedModel, final BeanModel parentModel) {
-      final SliderWindow sliderWindow = new SliderWindow(selectedModel, ((DeviceDTO)parentModel.getBean()).getOid(), eventBus);
+      final SliderWindow sliderWindow = new SliderWindow(selectedModel, ((DeviceDTO)parentModel.getBean()), eventBus);
       sliderWindow.show();
       
       /*
@@ -666,7 +667,7 @@ public class DevicePanel extends ContentPanel {
    }
    
    private void editSwitch(final BeanModel selectedModel, final BeanModel parentModel) {     
-      final SwitchWindow switchWindow = new SwitchWindow(selectedModel, ((DeviceDTO)parentModel.getBean()).getOid(), eventBus);
+      final SwitchWindow switchWindow = new SwitchWindow(selectedModel, ((DeviceDTO)parentModel.getBean()), eventBus);
       switchWindow.show();
       /*
       switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -735,7 +736,7 @@ public class DevicePanel extends ContentPanel {
    /**
     * Delete command.
     * 
-    * @param deviceCommnadModel the device commnad model
+    * @param deviceCommnadModel the device command model
     */
    private void deleteCommand(final BeanModel deviceCommnadModel) {
       DeviceCommandBeanModelProxy.deleteDeviceCommand(deviceCommnadModel, new AsyncSuccessCallback<Boolean>() {
@@ -745,7 +746,7 @@ public class DevicePanel extends ContentPanel {
                tree.getStore().remove(deviceCommnadModel);
                Info.display("Info", "Delete success.");
             } else {
-               MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
+               MessageBox.alert("Warn", "The command can't be delete, because it was referenced by other sensor, switch or slider.", null);
             }
          }
       });
@@ -759,7 +760,7 @@ public class DevicePanel extends ContentPanel {
                tree.getStore().remove(sensorBeanModel);
                Info.display("Info", "Delete success.");
             } else {
-               MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);
+               MessageBox.alert("Warn", "The sensor can't be delete, because it was referenced by a switch or slider.", null);
             }
          }
          
@@ -849,19 +850,22 @@ public class DevicePanel extends ContentPanel {
    
    private void importIRCommandFile() {
 		 final BeanModel deviceModel = getDeviceModel();
-		 if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+		 if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
 			 final IRFileImportWindow selectIRFileWindow = new IRFileImportWindow(deviceModel);
 			 selectIRFileWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 				
 				@Override
 				public void afterSubmit(SubmitEvent be) {
-					List<BeanModel> deviceCommandModels = be.getData();
-		               for (BeanModel deviceCommandModel : deviceCommandModels) {
-		                  tree.getStore().add(deviceModel, deviceCommandModel, false);
-		               }
-		               tree.setExpanded(deviceModel, true);
-		               selectIRFileWindow.hide();
-					
+				  /*
+				  List<BeanModel> deviceCommandModels = be.getData();
+				  for (BeanModel deviceCommandModel : deviceCommandModels) {
+				    tree.getStore().add(deviceModel, deviceCommandModel, false);
+				  }
+				  tree.setExpanded(deviceModel, true);
+				  */
+          eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
+				  selectIRFileWindow.hide();
+
 				}
 			});
 			 
@@ -872,16 +876,19 @@ public class DevicePanel extends ContentPanel {
     */
    private void importIRCommand() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
          final IRCommandImportWindow selectIRWindow = new IRCommandImportWindow(deviceModel);
          selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
+              /*
                List<BeanModel> deviceCommandModels = be.getData();
                for (BeanModel deviceCommandModel : deviceCommandModels) {
                   tree.getStore().add(deviceModel, deviceCommandModel, false);
                }
                tree.setExpanded(deviceModel, true);
+               */
+              eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
                selectIRWindow.hide();
             }
          });
@@ -894,7 +901,7 @@ public class DevicePanel extends ContentPanel {
     */
    private void importKNXCommand() {
        final BeanModel deviceModel = getDeviceModel();
-       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+       if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
           final KNXImportWindow knxImportWindow = new KNXImportWindow(deviceModel);
           knxImportWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
              @Override
@@ -906,9 +913,7 @@ public class DevicePanel extends ContentPanel {
                 }
                 tree.setExpanded(deviceModel, true);
                 */
-                eventBus.fireEvent(new DeviceUpdatedEvent((Device)deviceModel.getBean()));
-
-               
+                eventBus.fireEvent(new DeviceUpdatedEvent((DeviceDTO)deviceModel.getBean())); // TODO review
                 knxImportWindow.hide();
              }
           });
@@ -920,139 +925,11 @@ public class DevicePanel extends ContentPanel {
     */
    private void importLutronCommand() {    
      final BeanModel deviceModel = getDeviceModel();
-     if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-       
-       LutronImportWizard importWizard = new LutronImportWizard((Device) deviceModel.getBean(), eventBus);
+     if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {       
+       LutronImportWizard importWizard = new LutronImportWizard((DeviceDTO) deviceModel.getBean(), eventBus);
        importWizard.show();
        importWizard.center();
-       
-
-       
-       /*
-        * TODO: check to replace this with an event bus, import wizard posts notification that device changed
-        * and tree does expand (and reload if required)
-        * 
-       final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
-       importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         @Override
-         public void afterSubmit(SubmitEvent be) {
-           List<BeanModel> allModels = be.getData();
-           for (BeanModel model : allModels) {
-              tree.getStore().add(deviceModel, model, false);
-           }
-           tree.setExpanded(deviceModel, true);
-           importWizardWindow.hide();
-         }
-       });
-       */
-       
-       
-       
      }
-   }
-
-   private void addTreeStoreEventListener() {
-      tree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDeviceTree(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDeviceTree(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      tree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-   }
-   
-   private void addChangeListenerToDeviceTree(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         Object o = beanModel.getBean();
-         if (beanModel.getBean() instanceof CommandRefItem) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getDragSourceBeanModelChangeListener(beanModel));
-         } else if (o instanceof Slider) {
-            Slider slider = (Slider)o;
-            if (slider.getSliderSensorRef() != null) {
-               Sensor s = slider.getSliderSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
-            }
-         } else if (o instanceof Switch) {
-            Switch swh = (Switch)o;
-            if (swh.getSwitchSensorRef() != null) {
-               Sensor s = swh.getSwitchSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
-            }
-         }
-      }
-   }
-   
-   private void removeChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof CommandRefItem) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalCommandRefItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         changeListenerMap.remove(beanModel);
-      }
-   }
-   
-   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
-      if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
-      }
-      ChangeListener changeListener = changeListenerMap.get(target);
-      if (changeListener == null) {
-         changeListener = new ChangeListener() {
-            public void modelChanged(ChangeEvent changeEvent) {
-               if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  tree.getStore().remove(target);
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof DeviceCommand) {
-                     DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     CommandRefItem cmdRefItem = target.getBean();
-                     cmdRefItem.setDeviceCommand(deviceCommand);
-                  } /*else if (source.getBean() instanceof Device) {
-                     Device device = (Device) source.getBean();
-                     CommandRefItem targetCmdRefItem = target.getBean();
-                     targetCmdRefItem.setDeviceName(device.getName());
-                  }*/
-                  else if (source.getBean() instanceof Sensor) {
-                     Sensor s = source.getBean();
-                     if (target.getBean() instanceof Switch) {
-                        Switch swh = target.getBean();
-                        swh.getSwitchSensorRef().setSensor(s);
-                     } else if (target.getBean() instanceof Slider) {
-                        Slider sld = target.getBean();
-                        sld.getSliderSensorRef().setSensor(s);
-                     }
-                  }
-                  tree.getStore().update(target);
-               }
-            }
-         };
-         changeListenerMap.put(target, changeListener);
-      }
-      return changeListener;
    }
    
    public TreePanel<BeanModel> getTree() {
@@ -1068,12 +945,22 @@ public class DevicePanel extends ContentPanel {
       if (selectedModel != null && selectedModel.getBean() instanceof DeviceDTO) {
          editDevice(selectedModel);
       } else if (selectedModel != null && selectedModel.getBean() instanceof DeviceCommandDTO) {
-         editCommand(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof SensorDTO){
-         editSensor(selectedModel);
-      } else if (selectedModel != null && selectedModel.getBean() instanceof SliderDTO){
+        BeanModel parent = tree.getStore().getParent(selectedModel);
+        if (!(parent.getBean() instanceof DeviceDTO)) {
+          // We're in a sensor, slider or switch, need to go one level higher
+          parent = tree.getStore().getParent(parent);
+        }
+        editCommand(selectedModel, parent);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SensorDTO) {
+        BeanModel parent = tree.getStore().getParent(selectedModel);
+        if (!(parent.getBean() instanceof DeviceDTO)) {
+          // We're in a slider or switch, need to go one level higher
+          parent = tree.getStore().getParent(parent);
+        }
+        editSensor(selectedModel, parent);
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SliderDTO) {
          editSlider(selectedModel, tree.getStore().getParent(selectedModel));
-      } else if (selectedModel != null && selectedModel.getBean() instanceof SwitchDTO){
+      } else if (selectedModel != null && selectedModel.getBean() instanceof SwitchDTO) {
          editSwitch(selectedModel, tree.getStore().getParent(selectedModel));
       }
    }

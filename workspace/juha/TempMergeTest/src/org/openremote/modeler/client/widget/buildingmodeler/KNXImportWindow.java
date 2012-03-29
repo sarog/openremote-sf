@@ -29,12 +29,11 @@ import net.customware.gwt.dispatch.client.DispatchAsync;
 import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.knx.KNXImportResultOverlay;
-import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.utils.AutoCommitCheckColumnConfig;
 import org.openremote.modeler.client.utils.NoButtonsRowEditor;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.knx.ImportKNXConfigAction;
 import org.openremote.modeler.shared.knx.ImportKNXConfigResult;
 
@@ -54,7 +53,6 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
@@ -83,29 +81,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class KNXImportWindow extends FormWindow {
 
-    private Device device;
+    private DeviceDTO device;
     private Button importBtn;
     private final KNXImportWindow importWindow;
     private MemoryProxy<String> proxy;
     private BaseListLoader<ListLoadResult<ModelData>> loader;
     private FileUploadField fileUploadField;
     private ListStore<ModelData> store;
-
-    public static final Map<String, String> COMMAND_DPT_MAP;
-
-    static {
-        COMMAND_DPT_MAP = new TreeMap<String, String>();
-        COMMAND_DPT_MAP.put("Switch", "1.001");
-        COMMAND_DPT_MAP.put("Switch Status", "1.001");
-        COMMAND_DPT_MAP.put("Dim/Scale 0-100%", "5.001");
-        COMMAND_DPT_MAP.put("Dim/Scale Status", "5.001");
-        COMMAND_DPT_MAP.put("Dimmer/Blind Step", "3.007");
-        COMMAND_DPT_MAP.put("Range 0-255", "5.010");
-        COMMAND_DPT_MAP.put("Range Status", "5.010");
-        COMMAND_DPT_MAP.put("Play Scene", "17.001");
-        COMMAND_DPT_MAP.put("Store Scene", "18.001");
-        COMMAND_DPT_MAP.put("N/A", "N/A");
-    }
 
     /**
      * Instantiates a new import window.
@@ -116,7 +98,7 @@ public class KNXImportWindow extends FormWindow {
         setSize(800, 600);
         initial("Import ETS4 project or ETS3 group export CSV file");
         this.ensureDebugId(DebugId.IMPORT_WINDOW);
-        this.device = (Device) deviceBeanModel.getBean();
+        this.device = (DeviceDTO) deviceBeanModel.getBean();
         show();
     }
 
@@ -200,7 +182,7 @@ public class KNXImportWindow extends FormWindow {
         combo.setForceSelection(true);
         combo.setEditable(false);
         combo.setTriggerAction(TriggerAction.ALL);
-        combo.add(new ArrayList<String>(COMMAND_DPT_MAP.keySet()));
+        combo.add(new ArrayList<String>(ImportKNXConfigAction.COMMAND_DPT_MAP.keySet()));
 
         final CellEditor editor = new CellEditor(combo) {
             @Override

@@ -66,7 +66,7 @@ public class BuildingModelerView extends TabItem {
       west.setBodyBorder(false);
       west.setHeaderVisible(false);
       west.add(new DevicePanel(eventBus));
-      west.add(new MacroPanel());
+      west.add(new MacroPanel(eventBus));
       west.add(new ConfigPanel(this));
 
       westData.setMargins(new Margins(0, 2, 0, 0));

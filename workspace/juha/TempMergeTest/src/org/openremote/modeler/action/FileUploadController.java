@@ -32,7 +32,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.KnxGroupAddress;

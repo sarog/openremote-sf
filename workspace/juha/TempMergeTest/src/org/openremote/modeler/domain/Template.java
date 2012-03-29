@@ -1,6 +1,8 @@
 package org.openremote.modeler.domain;
 
-public class Template extends BusinessEntity {
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
+public class Template extends BusinessEntity implements BeanModelTag {
    private static final long serialVersionUID = -4719734393235222900L;
    
    public static final long PRIVATE = -1L;
@@ -99,7 +101,7 @@ public class Template extends BusinessEntity {
    }
    
    public String getDisplayName() {
-      return name + "( " +keywords +" )";
+      return name + " ( " + keywords +" )";
    }
 
    @Override

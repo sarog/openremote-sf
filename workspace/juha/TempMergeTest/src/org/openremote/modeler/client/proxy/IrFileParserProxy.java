@@ -20,20 +20,16 @@
 
 package org.openremote.modeler.client.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
-import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
-import org.openremote.modeler.irfileparser.IRTrans;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -53,12 +49,12 @@ public class IrFileParserProxy {
     * 
     * @param callback
     */
-   public static void loadBrands(final AsyncCallback<List<BrandInfo>> callback) {
+   public static void loadBrands(final AsyncCallback<ArrayList<BrandInfo>> callback) {
 
       AsyncServiceFactory.getiRFileParserRPCServiceAsync().getBrands(
-            new AsyncSuccessCallback<List<BrandInfo>>() {
+            new AsyncSuccessCallback<ArrayList<BrandInfo>>() {
                @Override
-               public void onSuccess(List<BrandInfo> result) {
+               public void onSuccess(ArrayList<BrandInfo> result) {
                   callback.onSuccess(result);
                }
             });
@@ -71,13 +67,13 @@ public class IrFileParserProxy {
     * @param callback
     */
    public static void loadModels(BrandInfo brand,
-         final AsyncCallback<List<DeviceInfo>> callback) {
+         final AsyncCallback<ArrayList<DeviceInfo>> callback) {
 
       AsyncServiceFactory.getiRFileParserRPCServiceAsync().getDevices(brand,
-            new AsyncSuccessCallback<List<DeviceInfo>>() {
+            new AsyncSuccessCallback<ArrayList<DeviceInfo>>() {
 
                @Override
-               public void onSuccess(List<DeviceInfo> result) {
+               public void onSuccess(ArrayList<DeviceInfo> result) {
                   callback.onSuccess(result);
 
                }
@@ -92,12 +88,12 @@ public class IrFileParserProxy {
     * @param callback
     */
    public static void loadCodeSets(DeviceInfo device,
-         final AsyncCallback<List<CodeSetInfo>> callback) {
+         final AsyncCallback<ArrayList<CodeSetInfo>> callback) {
       AsyncServiceFactory.getiRFileParserRPCServiceAsync().getCodeSets(device,
-            new AsyncSuccessCallback<List<CodeSetInfo>>() {
+            new AsyncSuccessCallback<ArrayList<CodeSetInfo>>() {
 
                @Override
-               public void onSuccess(List<CodeSetInfo> result) {
+               public void onSuccess(ArrayList<CodeSetInfo> result) {
                   callback.onSuccess(result);
                }
             });
@@ -110,49 +106,16 @@ public class IrFileParserProxy {
     * @param callback
     */
    public static void loadIRCommands(CodeSetInfo codeSet,
-         final AsyncCallback<List<IRCommandInfo>> callback) {
+         final AsyncCallback<ArrayList<IRCommandInfo>> callback) {
 
       AsyncServiceFactory.getiRFileParserRPCServiceAsync().getIRCommands(
-            codeSet, new AsyncSuccessCallback<List<IRCommandInfo>>() {
+            codeSet, new AsyncSuccessCallback<ArrayList<IRCommandInfo>>() {
 
                @Override
-               public void onSuccess(List<IRCommandInfo> result) {
+               public void onSuccess(ArrayList<IRCommandInfo> result) {
                   callback.onSuccess(result);
                }
             });
-   }
-
-   /**
-    * imports user selected Ir commands into database.
-    * 
-    * @param device
-    * @param selectedFunctions
-    * @param globalCache
-    * @param irTrans
-    * @param callback
-    */
-   public static void saveCommands(Device device,
-         final List<IRCommandInfo> selectedFunctions, GlobalCache globalCache,
-         IRTrans irTrans, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,
-            globalCache, irTrans, selectedFunctions,
-            new AsyncSuccessCallback<List<DeviceCommand>>() {
-
-               @Override
-               public void onSuccess(List<DeviceCommand> deviceCommands) {
-                  List<BeanModel> deviceCommandModels = DeviceCommand
-                        .createModels(deviceCommands);
-                  BeanModelDataBase.deviceCommandTable
-                        .insertAll(deviceCommandModels);
-                  callback.onSuccess(deviceCommandModels);
-               }
-
-               @Override
-               public void onFailure(Throwable caught) {
-                  callback.onFailure(caught);
-               }
-            });
-
    }
 
 }

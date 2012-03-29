@@ -31,7 +31,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 public class DeviceCommandWizardWindow extends DeviceCommandWindow {
 
    public DeviceCommandWizardWindow() {
-     super(0L, null); // No need for this here, provide dummy info
+     super(null, null); // No need for this here, provide dummy info
       form.removeAllListeners();
       onSubmit();
    }

@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
+import org.openremote.modeler.client.event.MacroUpdatedEvent;
+import org.openremote.modeler.client.event.MacroUpdatedEventHandler;
+import org.openremote.modeler.client.event.MacrosCreatedEvent;
+import org.openremote.modeler.client.event.MacrosCreatedEventHandler;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -33,7 +37,6 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
@@ -41,20 +44,21 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeEventSupport;
 import com.extjs.gxt.ui.client.data.ChangeListener;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.Store;
-import com.extjs.gxt.ui.client.store.TreeStoreEvent;
+import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -63,6 +67,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Element;
 
 /**
@@ -71,6 +76,8 @@ import com.google.gwt.user.client.Element;
  */
 public class MacroPanel extends ContentPanel {
 
+  private EventBus eventBus;
+  
    /** The icons. */
    private Icons icons = GWT.create(Icons.class);
 
@@ -89,7 +96,9 @@ public class MacroPanel extends ContentPanel {
    /**
     * Instantiates a new macro panel.
     */
-   public MacroPanel() {
+   public MacroPanel(EventBus eventBus) {
+     this.eventBus = eventBus;
+     bind();
       setHeading("Macros");
       setLayout(new FitLayout());
       selectionService = new SelectionServiceExt<BeanModel>();
@@ -99,6 +108,41 @@ public class MacroPanel extends ContentPanel {
       getHeader().ensureDebugId(DebugId.DEVICE_MACRO_PANEL_HEADER);
    }
 
+   private void bind() {
+     eventBus.addHandler(MacroUpdatedEvent.TYPE, new MacroUpdatedEventHandler() {
+      @Override
+      public void onMacroUpdated(MacroUpdatedEvent event) {
+        final TreeStore<BeanModel> macroTreeStore = macroTree.getStore();
+        final BeanModel bm = DTOHelper.getBeanModel(event.getMacro());
+
+        // EBR : adding a load listener so we can expand the macro once it has reloaded it's children
+        // removing it when the load is done. It works but I don't like this approach, feels like a hack to me.
+        final LoadListener ll = new LoadListener() {
+          @Override
+          public void loaderLoad(LoadEvent le) {
+            macroTree.getSelectionModel().select(bm, true);
+            macroTree.setExpanded(bm, true);
+            super.loaderLoad(le);
+            macroTreeStore.getLoader().removeLoadListener(this);
+          }
+        };
+        if (macroTreeStore.contains(bm)) {
+          // Important : for this to work, the DTO & BeanModel used for update must be the same instance as the one in the store
+          // Current code in MacroWindow ensures that this is the case
+          macroTreeStore.update(bm);
+          macroTreeStore.getLoader().addLoadListener(ll);
+          macroTreeStore.getLoader().loadChildren(bm);
+        }
+      }       
+     });
+     eventBus.addHandler(MacrosCreatedEvent.TYPE, new MacrosCreatedEventHandler() {
+      @Override
+      public void onMacrosCreated(MacrosCreatedEvent event) {
+        List<BeanModel> bms = DTOHelper.createModels(event.getMacros());
+        macroTree.getStore().add(bms, true);
+      } 
+     });
+   }
    /**
     * Creates the menu.
     */
@@ -116,9 +160,7 @@ public class MacroPanel extends ContentPanel {
             macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
-//                  afterCreateDeviceMacro(be.<DeviceMacro> getData());
-                 
-                 // TODO: just have an event on bus to refresh macro tree 
+                 eventBus.fireEvent(new MacrosCreatedEvent((MacroDTO) be.getData()));
                   macroWindow.hide();
                }
             });
@@ -169,7 +211,6 @@ public class MacroPanel extends ContentPanel {
                macroTree = TreePanelBuilder.buildMacroTree();
                selectionService.addListener(new SourceSelectionChangeListenerExt(macroTree.getSelectionModel()));
                selectionService.register(macroTree.getSelectionModel());
-               addTreeStoreEventListener();
                macroListContainer.add(macroTree);
             }
             add(macroTree);
@@ -191,100 +232,16 @@ public class MacroPanel extends ContentPanel {
    }
 
    /**
-    * Adds the tree store event listener.
-    */
-   private void addTreeStoreEventListener() {
-      macroTree.getStore().addListener(Store.Add, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.DataChanged, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            addChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.Clear, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-      macroTree.getStore().addListener(Store.Remove, new Listener<TreeStoreEvent<BeanModel>>() {
-         public void handleEvent(TreeStoreEvent<BeanModel> be) {
-            removeChangeListenerToDragSource(be.getChildren());
-         }
-      });
-   }
-
-   /**
-    * Adds the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void addChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         } else if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.addChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-            BeanModelDataBase.deviceTable.addChangeListener(BeanModelDataBase.getSourceBeanModelId(beanModel),
-                  getDragSourceBeanModelChangeListener(beanModel));
-         }
-      }
-   }
-
-   /**
-    * Removes the change listener to drag source.
-    * 
-    * @param models
-    *           the models
-    */
-   private void removeChangeListenerToDragSource(List<BeanModel> models) {
-      if (models == null) {
-         return;
-      }
-      for (BeanModel beanModel : models) {
-         if (beanModel.getBean() instanceof DeviceMacroRef) {
-            BeanModelDataBase.deviceMacroTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         if (beanModel.getBean() instanceof DeviceCommandRef) {
-            BeanModelDataBase.deviceCommandTable.removeChangeListener(BeanModelDataBase
-                  .getOriginalDeviceMacroItemBeanModelId(beanModel), getDragSourceBeanModelChangeListener(beanModel));
-         }
-         changeListenerMap.remove(beanModel);
-      }
-   }
-
-   /**
-    * After create device macro.
-    * 
-    * @param deviceMacro
-    *           the device macro
-    */
-   private void afterCreateDeviceMacro(DeviceMacro deviceMacro) {
-      BeanModel deviceBeanModel = deviceMacro.getBeanModel();
-      macroTree.getStore().add(deviceBeanModel, false);
-      macroTree.setExpanded(deviceBeanModel, true);
-   }
-
-   /**
     * On edit device macro btn clicked.
     */
    private void onEditDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof MacroDTO) {
-//         final BeanModel oldModel = macroTree.getSelectionModel().getSelectedItem();
-         final MacroWindow macroWindow = new MacroWindow(macroTree.getSelectionModel().getSelectedItem());
+        MacroDTO macro = macroTree.getSelectionModel().getSelectedItem().getBean();
+         final MacroWindow macroWindow = new MacroWindow(macro);
          macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
-// TODO               afterUpdateDeviceMacroSubmit(oldModel, be.<DeviceMacro> getData());
+              eventBus.fireEvent(new MacroUpdatedEvent((MacroDTO) be.getData()));
                macroWindow.hide();
             }
          });
@@ -310,31 +267,6 @@ public class MacroPanel extends ContentPanel {
 
          }
       }
-   }
-
-   /**
-    * After update device macro submit.
-    * 
-    * @param dataModel
-    *           the data model
-    * @param deviceMacro
-    *           the device macro
-    */
-   private void afterUpdateDeviceMacroSubmit(final BeanModel dataModel, DeviceMacro deviceMacro) {
-      DeviceMacro old = dataModel.getBean();
-      old.setName(deviceMacro.getName());
-      if (old.getDeviceMacroItems() != null) {
-         for (DeviceMacroItem item: old.getDeviceMacroItems()) {
-            BeanModelDataBase.deviceMacroItemTable.delete(item.getBeanModel());
-         }
-      }
-      if (deviceMacro != null) {
-         BeanModelDataBase.deviceMacroItemTable.insertAll(DeviceMacroItem.createModels(deviceMacro.getDeviceMacroItems()));
-      }
-      old.setDeviceMacroItems(deviceMacro.getDeviceMacroItems());
-      macroTree.getStore().removeAll(dataModel);
-      macroTree.getStore().remove(dataModel);
-      macroTree.getStore().getLoader().load();
    }
 
    /**

@@ -22,7 +22,6 @@ package org.openremote.modeler.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
@@ -61,15 +60,6 @@ public class DeviceCommandController extends BaseGWTSpringController implements
       this.deviceService = deviceService;
     }
 
-  /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#saveAll(java.util.List)
-    */
-   public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
-      return deviceCommandService.saveAll(deviceCommands);
-   }
-
    /**
     * {@inheritDoc}
     * 
@@ -77,15 +67,6 @@ public class DeviceCommandController extends BaseGWTSpringController implements
     */
    public Boolean deleteCommand(long id) {
       return deviceCommandService.deleteCommand(id);
-   }
-
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadByDevice(long)
-    */
-   public List<DeviceCommand> loadByDevice(long id) {
-      return deviceCommandService.loadByDevice(id);
    }
 
    @Override

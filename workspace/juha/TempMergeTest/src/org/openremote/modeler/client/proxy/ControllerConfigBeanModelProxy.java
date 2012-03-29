@@ -19,14 +19,12 @@
 */
 package org.openremote.modeler.client.proxy;
 
-
-
-import java.util.Set;
+import java.util.HashSet;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.ConfigCategory;
-import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -35,51 +33,34 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class ControllerConfigBeanModelProxy {
    
-   public static void getConfigs(final ConfigCategory category, final AsyncCallback<Set<ControllerConfig>> callback) {
-      AsyncServiceFactory.getControllerConfigPRCServiceAsync().getConfigsByCategoryForCurrentAccount(
-            category.getName(), new AsyncSuccessCallback<Set<ControllerConfig>>() {
+   public static void getConfigDTOs(final ConfigCategory category, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+     AsyncServiceFactory.getControllerConfigPRCServiceAsync().getConfigDTOsByCategoryForCurrentAccount(
+           category.getName(), new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
 
-               @Override
-               public void onSuccess(Set<ControllerConfig> result) {
-                  callback.onSuccess(result);
-               }
+              @Override
+              public void onSuccess(HashSet<ControllerConfigDTO> result) {
+                 callback.onSuccess(result);
+              }
 
-            });
-   }
+           });
+  }
    
-   public static void saveAllConfigs(final Set<ControllerConfig> configs,
-         final AsyncCallback<Set<ControllerConfig>> callback) {
-      AsyncServiceFactory.getControllerConfigPRCServiceAsync().saveAll(configs,
-            new AsyncSuccessCallback<Set<ControllerConfig>>() {
-
-               @Override
-               public void onSuccess(Set<ControllerConfig> result) {
-                  callback.onSuccess(result);
-               }
-
-               @Override
-               public void onFailure(Throwable caught) {
-                  callback.onFailure(caught);
-               }
-
-            });
-   }
+   public static void listAllMissingConfigDTOs(final String categoryName, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+        AsyncServiceFactory.getControllerConfigPRCServiceAsync().listAllMissedConfigDTOsByCategoryName(categoryName, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
+          @Override
+          public void onSuccess(HashSet<ControllerConfigDTO> result) {
+            callback.onSuccess(result);
+          }
+        });
+     }
    
-   public static void listAllMissingConfigs(final String categoryName,
-         final AsyncCallback<Set<ControllerConfig>> callback) {
-      AsyncServiceFactory.getControllerConfigPRCServiceAsync().listAllMissedConfigsByCategoryName(categoryName,
-            new AsyncCallback<Set<ControllerConfig>>() {
-
-               @Override
-               public void onFailure(Throwable caught) {
-                  callback.onFailure(caught);
-               }
-
-               @Override
-               public void onSuccess(Set<ControllerConfig> result) {
-                  callback.onSuccess(result);
-               }
-
-            });
+   public static void saveAllConfigDTOs(final HashSet<ControllerConfigDTO> configs, final AsyncCallback<HashSet<ControllerConfigDTO>> callback) {
+      AsyncServiceFactory.getControllerConfigPRCServiceAsync().saveAllDTOs(configs, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
+        @Override
+        public void onSuccess(HashSet<ControllerConfigDTO> result) {
+          callback.onSuccess(result);
+        }
+      });
    }
+
 }

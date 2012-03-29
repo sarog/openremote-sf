@@ -22,15 +22,20 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
+import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.NestedJsonLoadResultReader;
-import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.rpc.ConfigurationRPCService;
 import org.openremote.modeler.client.rpc.ConfigurationRPCServiceAsync;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.client.widget.RemoteJsonComboBox;
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.lirc.ImportLIRCCommandsAction;
+import org.openremote.modeler.shared.lirc.ImportLIRCCommandsResult;
+import org.openremote.modeler.shared.lirc.LIRCCommand;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -60,10 +65,11 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
+import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * IR Command Import Form.
@@ -80,7 +86,7 @@ public class IRCommandImportForm extends CommonForm {
          .create(ConfigurationRPCService.class);
    
    /** The device. */
-   protected Device device = null;
+   protected DeviceDTO device = null;
    
    /** The select container. */
    private LayoutContainer selectContainer = new LayoutContainer();
@@ -139,7 +145,7 @@ public class IRCommandImportForm extends CommonForm {
       commandContainer.setLayoutOnChange(true);
       add(commandContainer, new RowData(1, 1));
 
-      device = (Device) deviceBeanModel.getBean();
+      device = (DeviceDTO) deviceBeanModel.getBean();
       if (beehiveLircRestUrl == null) {
          configurationService.beehiveRESTRootUrl(new AsyncSuccessCallback<String>() {
             @Override
@@ -172,16 +178,27 @@ public class IRCommandImportForm extends CommonForm {
                if (modelDatas.isEmpty()) {
                   modelDatas = codeGrid.getStore().getModels();
                }
-               for (ModelData modelData : modelDatas) {
-                  modelData.set("sectionId", sectionId);
-               }
-               DeviceCommandBeanModelProxy.saveAllIrDeviceCommands(device, modelDatas, new AsyncSuccessCallback<List<BeanModel>>() {
-                  @Override
-                  public void onSuccess(List<BeanModel> deviceCommandModels) {
-                     wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModels));
-                  }
-               });
                
+               ArrayList<LIRCCommand> commands = new ArrayList<LIRCCommand>();
+               for (ModelData modelData : modelDatas) {
+                 commands.add(new LIRCCommand(modelData.get("name").toString(), modelData.get("remoteName").toString()));
+               }
+               ImportLIRCCommandsAction action = new ImportLIRCCommandsAction(device, sectionId, commands);
+               ModelerGinjector injector = GWT.create(ModelerGinjector.class);
+               DispatchAsync dispatcher = injector.getDispatchAsync();
+
+               dispatcher.execute(action, new AsyncCallback<ImportLIRCCommandsResult>() {
+
+                 @Override
+                 public void onFailure(Throwable caught) {
+                   // TODO
+                 }
+
+                 @Override
+                 public void onSuccess(ImportLIRCCommandsResult result) {
+                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent()); // TODO : param
+                 }
+               });
             } else {
                MessageBox.alert("Warn", "Please select vendor, model first.", null);
                wrapper.unmask();
@@ -506,43 +523,6 @@ public class IRCommandImportForm extends CommonForm {
       codeGrid.reconfigure(listStore, cm);
       loader.load();
       importButton.setEnabled(true);
-   }
-
-   /**
-    * Gets the device.
-    * 
-    * @return the device
-    */
-   public Device getDevice() {
-      return device;
-   }
-
-   /**
-    * Sets the device.
-    * 
-    * @param device the new device
-    */
-   public void setDevice(Device device) {
-      this.device = device;
-   }
-
-   /**
-    * Gets the section id.
-    * 
-    * @return the section id
-    */
-   public String getSectionId() {
-      return sectionId;
-   }
-
-   /**
-    * Sets the section id.
-    * 
-    * @param sectionId the new section id
-    */
-   public void setSectionId(String sectionId) {
-      this.sectionId = sectionId;
-   }
-   
+   }   
 
 }

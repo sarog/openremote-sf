@@ -130,9 +130,9 @@ public class SensorController extends BaseGWTSpringController implements SensorR
                Integer.toString(((RangeSensor)sensor).getMax()), null);
     } else if (sensor.getType() == SensorType.CUSTOM) {
        CustomSensor customSensor = (CustomSensor)sensor;
-       String states = "";
+       ArrayList<String> states = new ArrayList<String>();
        for (State state : customSensor.getStates()) {
-          states = states + state.getName() + ". ";
+         states.add(state.getName());
        }
        return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
                sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states);

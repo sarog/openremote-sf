@@ -19,17 +19,12 @@
  */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
-import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
-import org.openremote.modeler.irfileparser.IRTrans;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -46,14 +41,14 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param device
     * @return List<CodeSetInfo>
     */
-   List<CodeSetInfo> getCodeSets(DeviceInfo device);
+   ArrayList<CodeSetInfo> getCodeSets(DeviceInfo device);
 
    /**
     * Returns the brands
     * 
     * @return List<BrandInfo>
     */
-   List<BrandInfo> getBrands();
+   ArrayList<BrandInfo> getBrands();
 
    /**
     * Returns the devices linked to a brand
@@ -61,7 +56,7 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param brand
     * @return List<DeviceInfo>
     */
-   List<DeviceInfo> getDevices(BrandInfo brand);
+   ArrayList<DeviceInfo> getDevices(BrandInfo brand);
 
    /**
     * Returns the IR commands from a code set
@@ -69,19 +64,6 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param codeset
     * @return List<IRCommandInfo>
     */
-   List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
+   ArrayList<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 
-   /**
-    * Export the selected commands to the database.
-    * 
-    * @param device
-    * @param globalCache
-    * @param irTrans
-    * @param selectedFunctions
-    * @return List<DeviceCommand>
-    * @throws IrFileParserException
-    */
-   List<DeviceCommand> saveCommands(Device device, GlobalCache globalCache,
-         IRTrans irTrans, List<IRCommandInfo> selectedFunctions)
-         throws IrFileParserException;
 }

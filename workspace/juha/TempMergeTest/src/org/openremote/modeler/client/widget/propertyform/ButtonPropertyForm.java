@@ -32,16 +32,12 @@ import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.DeviceMacro;
-import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
-import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -100,20 +96,15 @@ public class ButtonPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  UICommand uiCommand = null;
-                  if (dataModel.getBean() instanceof DeviceCommand) {
-                     uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
-                  } else if (dataModel.getBean() instanceof DeviceMacro) {
-                     uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
-                  }
-                  uiButton.setUiCommand(uiCommand);
-                  command.setText(uiCommand.getDisplayName());
+                  UICommandDTO dto = dataModel.getBean();
+                  uiButton.setUiCommandDTO(dto);
+                  command.setText(dto.getDisplayName());
                }
             });
          }
       });
-      if (uiButton.getUiCommand() != null) {
-         command.setText(uiButton.getUiCommand().getDisplayName());
+      if (uiButton.getUiCommandDTO() != null) {
+         command.setText(uiButton.getUiCommandDTO().getDisplayName());
       }
       AdapterField adapterCommand = new AdapterField(command);
       adapterCommand.setFieldLabel("Command");

@@ -4,21 +4,21 @@ import java.util.ArrayList;
 
 import net.customware.gwt.dispatch.shared.Result;
 
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 public class CreateRussoundDeviceResult implements Result {
 
-  private ArrayList<Device> devices;
+  private ArrayList<DeviceDTO> devices;
 
   public CreateRussoundDeviceResult() {
     super();
   }
 
-  public ArrayList<Device> getDevices() {
+  public ArrayList<DeviceDTO> getDevices() {
     return devices;
   }
 
-  public void setDevices(ArrayList<Device> devices) {
+  public void setDevices(ArrayList<DeviceDTO> devices) {
     this.devices = devices;
   }
   
