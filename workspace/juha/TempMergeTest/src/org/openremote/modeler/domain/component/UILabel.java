@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.utils.StringUtils;
 
 /**
@@ -31,7 +32,7 @@ import org.openremote.modeler.utils.StringUtils;
  * 
  * @author Javen
  */
-public class UILabel extends UIComponent implements SensorOwner {
+public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner {
 
    private static final long serialVersionUID = 1170515762454958893L;
    
@@ -46,6 +47,8 @@ public class UILabel extends UIComponent implements SensorOwner {
    /** The ui label can change display image by the sensor. */
    private Sensor sensor;
 
+   private SensorWithInfoDTO sensorDTO;
+   
    /** The sensor link is for recording the properties of the sensor. */
    private SensorLink sensorLink;
 
@@ -126,7 +129,27 @@ public class UILabel extends UIComponent implements SensorOwner {
       this.sensorLink = sensorLinker;
    }
 
-   @Transient
+   
+   public SensorWithInfoDTO getSensorDTO() {
+    return sensorDTO;
+  }
+
+  public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+    this.sensorDTO = sensorDTO;
+  }
+
+  public void setSensorDTOAndInitSensorLink(SensorWithInfoDTO sensorDTO) {
+    this.sensorDTO = sensorDTO;
+    if (sensorDTO != null) {
+       this.sensorLink = new SensorLink();
+       this.sensorLink.setSensorDTO(sensorDTO);
+    } else {
+       sensorLink.clear();
+    }
+ }
+
+  
+  @Transient
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();

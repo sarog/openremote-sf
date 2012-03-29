@@ -28,6 +28,7 @@ import javax.persistence.Transient;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
 
@@ -152,6 +153,16 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       }
    }
    
+   @Override
+   public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+     // TODO EBR : Just to comply to interface, but this class should not implement this interface, never has direct access to sensor, only through Switch
+   }
+   
+   public SensorWithInfoDTO getSensorDTO() {
+     return null;
+     // TODO EBR : As above
+   }
+
    public boolean canUseImage(){
       return onImage != null && offImage != null;
    }
