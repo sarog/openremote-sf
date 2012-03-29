@@ -30,6 +30,12 @@ public class DTOReference implements Serializable {
     this.id = id;
   }
 
+  public DTOReference(DTO dto, Long id) {
+    super();
+    this.dto = dto;
+    this.id = id;
+  }
+
   public DTO getDto() {
     return dto;
   }

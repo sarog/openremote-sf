@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -33,6 +34,8 @@ public interface SensorRPCServiceAsync {
    void loadSensorDTOsByDeviceId(long id, AsyncCallback<ArrayList<SensorDTO>> async);
    
    void loadSensorDetails(long id, AsyncCallback<SensorDetailsDTO> async);
+
+   void loadAllSensorWithInfosDTO(AsyncCallback<ArrayList<SensorWithInfoDTO>> callback);
 
    void updateSensorWithDTO(SensorDetailsDTO sensor, AsyncCallback<Void> async);
 

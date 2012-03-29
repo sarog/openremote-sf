@@ -40,6 +40,7 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 /**
  * The server side implementation of the RPC service <code>SensorRPCService</code>.
@@ -110,6 +111,35 @@ public class SensorController extends BaseGWTSpringController implements SensorR
        dto.setCommand(new DTOReference(sensor.getSensorCommandRef().getDeviceCommand().getOid()));
      }
     return dto;
+  }
+   
+   @Override
+  public ArrayList<SensorWithInfoDTO> loadAllSensorWithInfosDTO() {
+     ArrayList<SensorWithInfoDTO> dtos = new ArrayList<SensorWithInfoDTO>();
+     for (Sensor sensor : sensorService.loadAll(userService.getAccount())) {
+       dtos.add(createSensorWithInfoDTO(sensor));
+     }
+     return dtos;    
+  }
+
+  public static SensorWithInfoDTO createSensorWithInfoDTO(Sensor sensor) {
+    if (sensor.getType() == SensorType.RANGE) {
+       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
+               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(),
+               Integer.toString(((RangeSensor)sensor).getMin()),
+               Integer.toString(((RangeSensor)sensor).getMax()), null);
+    } else if (sensor.getType() == SensorType.CUSTOM) {
+       CustomSensor customSensor = (CustomSensor)sensor;
+       String states = "";
+       for (State state : customSensor.getStates()) {
+          states = states + state.getName() + ". ";
+       }
+       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
+               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states);
+    } else {
+      return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
+              sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null);
+    }
   }
    
    @Override
