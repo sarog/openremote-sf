@@ -113,28 +113,17 @@ public class IRFileImportWindow extends FormWindow {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             importForm.hideComboBoxes();
-
-            // We should get an id back from IRService and pass that to importForm so brands can be loaded
-            
+            // We get an id back from IRService and pass that to importForm so brands can be loaded            
             if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
                reportError(be.getResultHtml());
             } else {
                errorLabel.setVisible(false);
                importForm.setVisible(true);
                importWindow.unmask();
-               importForm.enable();
-               
-               importForm.setProntoFileHandle(be.getResultHtml());
-               
-               
+               importForm.enable();               
+               importForm.setProntoFileHandle(be.getResultHtml());               
                importForm.showBrands();
             }
-
-            
-            
-            
-            
-            
          }
       });
    }
