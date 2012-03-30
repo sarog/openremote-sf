@@ -19,6 +19,7 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,11 @@ import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.data.MediaType;
+import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -44,6 +50,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -58,6 +65,9 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 
 /**
  * IR File Command Import Form.
@@ -94,6 +104,9 @@ public class IRFileImportForm extends CommonForm {
    ListStore<IRCommandInfo> listStore;
 
    protected Component wrapper;
+   
+   
+   private String prontoFileHandle;
 
    /**
     * Instantiates a new iR command file import form.
@@ -166,47 +179,52 @@ public class IRFileImportForm extends CommonForm {
    /**
     * populates and shows the brand combo box
     */
-   public void showBrands() {
-      IrFileParserProxy.loadBrands(new AsyncSuccessCallback<ArrayList<BrandInfo>>() {
+   public void showBrands() {     
+    ClientResource clientResource = new ClientResource("/irservice/rest/" + prontoFileHandle + "/brands"); // TODO : get base URL from some configuration
+    clientResource.setOnResponse(new Uniform() {
+      public void handle(Request request, Response response) {
+        try {
+          String jsonString = response.getEntity().getText();
+          Info.display("INFO", "Received > " + jsonString + "<");
 
-         @Override
-         public void onSuccess(final ArrayList<BrandInfo> brands) {
+          if (brandInfos == null) {
+            brandInfos = new ListStore<BrandInfo>();
+            brandInfoList = new ComboBox<BrandInfo>();
+            brandInfoList.setEmptyText("Please select Brand...");
+            brandInfoList.setDisplayField("brandName");
+            brandInfoList.setWidth(150);
+            brandInfoList.setStore(brandInfos);
+            brandInfoList.setTriggerAction(TriggerAction.ALL);
+            brandInfoList.setEditable(false);
+            selectContainer.add(brandInfoList);
+            setStyleOfComboBox(brandInfoList);
+            brandInfoList.addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
+              @Override
+              public void selectionChanged(SelectionChangedEvent<BrandInfo> se) {
+                showDevices(se.getSelectedItem());
+              }
+            });
 
-            if (brandInfos == null) {
-               brandInfos = new ListStore<BrandInfo>();
-               brandInfoList = new ComboBox<BrandInfo>();
-               brandInfoList.setEmptyText("Please select Brand...");
-               brandInfoList.setDisplayField("brandName");
-               brandInfoList.setWidth(150);
-               brandInfoList.setStore(brandInfos);
-               brandInfoList.setTriggerAction(TriggerAction.ALL);
-               brandInfoList.setEditable(false);
-               selectContainer.add(brandInfoList);
-               brandInfos.add(brands);
-               setStyleOfComboBox(brandInfoList);
-               brandInfoList
-                     .addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
-                        @Override
-                        public void selectionChanged(
-                              SelectionChangedEvent<BrandInfo> se) {
-                           showDevices(se.getSelectedItem());
-                        }
-                     });
+          } else {
+            cleanCodeGrid();
+            cleanDeviceComboBox();
+            cleanCodeSetComboBox();
+            cleanBrandComboBox();
+          }
+          JSONArray brands = JSONParser.parse(jsonString).isArray();
+          for (int i = 0; i < brands.size(); i++) {
+            JSONObject brand = brands.get(i).isObject();
+            brandInfos.add(new BrandInfo(brand.get("brandName").isString().stringValue()));
+          }
+          brandInfoList.setVisible(true);
 
-            } else {
-               brandInfoList.setVisible(true);
-               cleanCodeGrid();
-               cleanDeviceComboBox();
-               cleanCodeSetComboBox();
-               cleanBrandComboBox();
-               brandInfos.add(brands);
-               brandInfoList.setVisible(true);
-            }
-
-         }
-
-      });
-   }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    clientResource.get(MediaType.APPLICATION_JSON);
+  }
 
    /**
     * populates and shows the devices combobox for the currently selected brand
@@ -476,4 +494,9 @@ public class IRFileImportForm extends CommonForm {
       box.setMaxHeight(250);
 
    }
+
+  public void setProntoFileHandle(String prontoFileHandle) {
+    this.prontoFileHandle = prontoFileHandle;
+  }
+      
 }
