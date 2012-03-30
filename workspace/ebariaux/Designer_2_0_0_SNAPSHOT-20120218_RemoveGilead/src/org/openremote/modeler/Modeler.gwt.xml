@@ -10,6 +10,7 @@
   
   <inherits name="com.google.gwt.inject.Inject" />
   <inherits name='net.customware.gwt.dispatch.Dispatch' />
+  <inherits name='org.restlet.Restlet' />
 
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->

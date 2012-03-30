@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
@@ -37,7 +38,6 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -77,8 +77,12 @@ public class IRFileImportWindow extends FormWindow {
     */
    private void initial(String heading) {
       setHeading(heading);
-      form.setAction(GWT.getModuleBaseURL()
-            + "fileUploadController.htm?method=importIRFile");
+      
+//      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importIRFile");
+
+      // TODO: have this coming from some configuration
+      form.setAction("/irservice/rest/ProntoFile");
+      
       form.setEncoding(Encoding.MULTIPART);
       form.setMethod(Method.POST);
 
@@ -109,6 +113,9 @@ public class IRFileImportWindow extends FormWindow {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             importForm.hideComboBoxes();
+
+            // We should get an id back from IRService and pass that to importForm so brands can be loaded
+            
             if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
                reportError(be.getResultHtml());
             } else {
@@ -116,9 +123,18 @@ public class IRFileImportWindow extends FormWindow {
                importForm.setVisible(true);
                importWindow.unmask();
                importForm.enable();
+               
+               importForm.setProntoFileHandle(be.getResultHtml());
+               
+               
                importForm.showBrands();
             }
 
+            
+            
+            
+            
+            
          }
       });
    }
@@ -175,7 +191,7 @@ public class IRFileImportWindow extends FormWindow {
     */
    private void createFileUploadField() {
       fileUploadField = new FileUploadField();
-      fileUploadField.setName("file");
+      fileUploadField.setName("fileToUpload");
       fileUploadField.setAllowBlank(false);
       fileUploadField.setFieldLabel("File");
       fileUploadField.setStyleAttribute("overflow", "hidden");
