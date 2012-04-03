@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.http;
 
 import java.io.ByteArrayInputStream;
-import java.net.URL;
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,8 +63,8 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
 
   
   // Instance Fields ------------------------------------------------------------
-  /** The url to perform the http get request on */
-  private URL url;
+  /** The uri to perform the http get request on */
+  private URI uri;
 
   /** The username which is used for basic authentication */
   private String username;
@@ -91,17 +91,17 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
-  public HttpGetCommand(URL url, String xpathExpression, String regex, Integer pollingInterval)
+  public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval)
   {
-    this.url = url;
+    this.uri = uri;
     this.xpathExpression = xpathExpression;
     this.regex = regex;
     this.pollingInterval = pollingInterval;
   }
 
-  public HttpGetCommand(URL url, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval)
+  public HttpGetCommand(URI uri, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval)
   {
-    this(url, xpath, regex, pollingInterval);
+    this(uri, xpath, regex, pollingInterval);
     this.username = username;
     this.password = pwd;
   }
@@ -109,9 +109,9 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   // Public Instance Methods
   // ----------------------------------------------------------------------
 
-  public URL getUrl()
+  public URI getUri()
   {
-    return url;
+    return uri;
   }
 
   public String getUsername()
@@ -168,7 +168,7 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
       client.setCredentialsProvider(cred);
     }
 
-    HttpGet httpget = new HttpGet(url.toExternalForm());
+    HttpGet httpget = new HttpGet(uri);
     String resp = "";
     try
     {
