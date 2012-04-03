@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.http;
 
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,29 +31,25 @@ import javax.servlet.http.HttpServletResponse;
 import junit.framework.Assert;
 
 import org.jdom.Element;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.model.sensor.StateSensor.DistinctStates;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.utils.Strings;
-import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
@@ -144,8 +140,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Tests basic constructor access and property setting is done correctly.
+ * @throws MalformedURLException 
    */
-  @Test public void testBasicConstruction()
+  @Test public void testBasicConstruction() throws MalformedURLException
   {
     final String URL = "http://www.openremote.org";
 
@@ -155,9 +152,26 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue(URL.equals(httpCommand.getUrl().toExternalForm()));
+    Assert.assertTrue(URL.equals(httpCommand.getUri().toURL().toExternalForm()));
   }
 
+  
+  /**
+   * Tests basic constructor access and property setting is done correctly when URL contains parameter with spaces
+ * @throws MalformedURLException 
+   */
+  @Test public void testBasicConstructionWithParameter() throws MalformedURLException
+  {
+    final String URL = "http://www.openremote.org?cmd=turn on";
+
+    Command cmd = getHttpCommand(URL);
+
+    Assert.assertTrue(cmd instanceof HttpGetCommand);
+
+    HttpGetCommand httpCommand = (HttpGetCommand)cmd;
+
+    Assert.assertTrue("http://www.openremote.org?cmd=turn%20on".equals(httpCommand.getUri().toURL().toExternalForm()));
+  }
 
 
   // Variable ${param} Tests ----------------------------------------------------------------------
@@ -167,8 +181,9 @@ public class HttpGetCommandBuilderTest
    * it should be replaced with a value given in the command's XML element attribute (denoted
    * with {@link Command#DYNAMIC_VALUE_ATTR_NAME} attribute) in the HTTP command's builder
    * implementation.
+ * @throws MalformedURLException 
    */
-  @Test public void testParameterPlacement()
+  @Test public void testParameterPlacement() throws MalformedURLException
   {
     final String parameterizedURL = "http://www.openremote.org/command?param=";
 
@@ -178,7 +193,7 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue((parameterizedURL + "100").equals(httpCommand.getUrl().toExternalForm()));
+    Assert.assertTrue((parameterizedURL + "100").equals(httpCommand.getUri().toURL().toExternalForm()));
   }
 
   /**
@@ -186,8 +201,9 @@ public class HttpGetCommandBuilderTest
    * is used somewhere within the configured URL, it should be replaced with a value given in the
    * command's XML element attribute (denoted with {@link Command#DYNAMIC_VALUE_ATTR_NAME}
    * attribute) in the HTTP command's builder implementation.
+ * @throws MalformedURLException 
    */
-  @Test public void testParameterPlacementMultiple()
+  @Test public void testParameterPlacementMultiple() throws MalformedURLException
   {
     final String parameterizedURL = "http://www.openremote.org/command?param=${param}&another=${param}";
     final String finalURL = "http://www.openremote.org/command?param=10000&another=10000";
@@ -199,8 +215,8 @@ public class HttpGetCommandBuilderTest
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
     Assert.assertTrue(
-        "Expected '" + finalURL + "', got '" + httpCommand.getUrl() + "'.",
-        "http://www.openremote.org/command?param=10000&another=10000".equals(httpCommand.getUrl().toExternalForm())
+        "Expected '" + finalURL + "', got '" + httpCommand.getUri().toURL() + "'.",
+        "http://www.openremote.org/command?param=10000&another=10000".equals(httpCommand.getUri().toURL().toExternalForm())
     );
   }
 
@@ -211,8 +227,9 @@ public class HttpGetCommandBuilderTest
    * value given in the command's XML element attribute
    * (denoted with {@link Command#DYNAMIC_VALUE_ATTR_NAME} attribute) in the HTTP command's builder
    * implementation.
+ * @throws MalformedURLException 
    */
-  @Test public void testParameterPlacementMiddle()
+  @Test public void testParameterPlacementMiddle() throws MalformedURLException
   {
     final String parameterizedURL = "http://www.openremote.org/command?param=${param}&another=foo";
     final String finalURL = "http://www.openremote.org/command?param=XXX&another=foo";
@@ -225,8 +242,8 @@ public class HttpGetCommandBuilderTest
 
 
     Assert.assertTrue(
-        "Expected '" + finalURL + "', got '" + httpCommand.getUrl() + "'.",
-        "http://www.openremote.org/command?param=XXX&another=foo".equals(httpCommand.getUrl().toExternalForm())
+        "Expected '" + finalURL + "', got '" + httpCommand.getUri().toURL() + "'.",
+        "http://www.openremote.org/command?param=XXX&another=foo".equals(httpCommand.getUri().toURL().toExternalForm())
     );
   }
 
