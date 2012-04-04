@@ -400,4 +400,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
    public void deleteImage(String imageName) {
      resourceService.deleteImage(imageName);
    }
+   
+   public String getIrServiceRestRootURL() {
+     return configuration.getIrServiceRESTRootUrl();
+   }
 }

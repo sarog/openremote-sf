@@ -20,6 +20,8 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.selenium.DebugId;
 
@@ -60,9 +62,9 @@ public class IRFileImportWindow extends FormWindow {
       super();
       importWindow = this;
       setSize(800, 610);
+      importForm = new IRFileImportForm(this, deviceBeanModel);
       initial("Import IR Command from file");
       this.ensureDebugId(DebugId.IMPORT_WINDOW);
-      importForm = new IRFileImportForm(this, deviceBeanModel);
       deviceChooser.add(importForm);
       deviceChooser.setLayoutData(new FillLayout());
       add(deviceChooser);
@@ -78,11 +80,13 @@ public class IRFileImportWindow extends FormWindow {
    private void initial(String heading) {
       setHeading(heading);
       
-//      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importIRFile");
-
-      // TODO: have this coming from some configuration
-      form.setAction("/irservice/rest/ProntoFile");
-      
+      UtilsProxy.getIrServiceRestRootUrl(new AsyncSuccessCallback<String>() {        
+        @Override
+        public void onSuccess(String result) {
+          form.setAction(result + "ProntoFile");
+          importForm.setIrServiceRootRestURL(result);
+        }
+      });
       form.setEncoding(Encoding.MULTIPART);
       form.setMethod(Method.POST);
 
@@ -113,8 +117,10 @@ public class IRFileImportWindow extends FormWindow {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             importForm.hideComboBoxes();
-            // We get an id back from IRService and pass that to importForm so brands can be loaded            
-            if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
+            // We get an id back from IRService and pass that to importForm so brands can be loaded
+            if (be.getResultHtml() == null) {
+              reportError("Communication error");
+            } else if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
                reportError(be.getResultHtml());
             } else {
                errorLabel.setVisible(false);

@@ -93,5 +93,7 @@ public interface UtilsRPCServiceAsync {
    void getUserImagesURLs(AsyncCallback<List<GraphicalAssetDTO>> callback);
    
    void deleteImage(String imageName, AsyncCallback<Void> callback);
+   
+   void getIrServiceRestRootURL(AsyncCallback<String> callback);
 
 }

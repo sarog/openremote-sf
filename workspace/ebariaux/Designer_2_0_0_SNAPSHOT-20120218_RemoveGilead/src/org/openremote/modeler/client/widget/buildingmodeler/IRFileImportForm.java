@@ -106,7 +106,7 @@ public class IRFileImportForm extends CommonForm {
 
    protected Component wrapper;
    
-   
+   private String irServiceRootRestURL;   
    private String prontoFileHandle;
 
    /**
@@ -181,7 +181,7 @@ public class IRFileImportForm extends CommonForm {
     * populates and shows the brand combo box
     */
    public void showBrands() {     
-    ClientResource clientResource = new ClientResource("/irservice/rest/" + prontoFileHandle + "/brands"); // TODO : get base URL from some configuration
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brands");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
         try {
@@ -232,7 +232,7 @@ public class IRFileImportForm extends CommonForm {
     * @param brandInfo
     */
   private void showDevices(final BrandInfo brandInfo) {
-    ClientResource clientResource = new ClientResource("/irservice/rest/" + prontoFileHandle + "/brand/" + brandInfo.getBrandName() + "/devices"); // TODO : get base URL from some configuration
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + brandInfo.getBrandName() + "/devices");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
         try {
@@ -287,7 +287,7 @@ public class IRFileImportForm extends CommonForm {
     * @param device
     */
   private void showCodeSets(final DeviceInfo device) {
-    ClientResource clientResource = new ClientResource("/irservice/rest/" + prontoFileHandle + "/brand/" + device.getBrandInfo().getBrandName() + "/device/" + device.getModelName() + "/codeSets"); // TODO : get base URL from some configuration
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + device.getBrandInfo().getBrandName() + "/device/" + device.getModelName() + "/codeSets");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
         try {
@@ -345,8 +345,8 @@ public class IRFileImportForm extends CommonForm {
     * @param selectedItem
     */
   private void showGrid(final CodeSetInfo selectedItem) {
-    ClientResource clientResource = new ClientResource("/irservice/rest/" + prontoFileHandle + "/brand/" + selectedItem.getDeviceInfo().getBrandInfo().getBrandName() + "/device/" + selectedItem.getDeviceInfo().getModelName() + "/codeSet/"
-            + selectedItem.getIndex() + "/IRCommands"); // TODO : get base URL from some configuration
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + selectedItem.getDeviceInfo().getBrandInfo().getBrandName() + "/device/" + selectedItem.getDeviceInfo().getModelName() + "/codeSet/"
+            + selectedItem.getIndex() + "/IRCommands");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
         try {
@@ -512,5 +512,9 @@ public class IRFileImportForm extends CommonForm {
   public void setProntoFileHandle(String prontoFileHandle) {
     this.prontoFileHandle = prontoFileHandle;
   }
-      
+
+  public void setIrServiceRootRestURL(String irServiceRootRestURL) {
+    this.irServiceRootRestURL = irServiceRootRestURL;
+  }
+  
 }

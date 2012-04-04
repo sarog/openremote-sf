@@ -17,6 +17,7 @@
 	</bean>
 	<bean id="configuration" class="org.openremote.modeler.client.Configuration">
 		<property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+		<property name="irServiceRESTRootUrl" value="${irService.REST.Root.Url}" />
 		<property name="panelXsdPath" value="${panel.xsd.path}" />
 		<property name="controllerXsdPath" value="${controller.xsd.path}" />
 		<property name="webappServerRoot" value="${webapp.server.root}" />
