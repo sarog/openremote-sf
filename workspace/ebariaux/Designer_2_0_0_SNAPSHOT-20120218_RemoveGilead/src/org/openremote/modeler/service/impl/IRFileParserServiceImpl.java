@@ -22,6 +22,8 @@ package org.openremote.modeler.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.ir.domain.GlobalCache;
+import org.openremote.ir.domain.IRTrans;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
@@ -29,9 +31,7 @@ import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
-import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
-import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.IRFileParserService;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,6 +165,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * .modeler.domain.Device, org.openremote.modeler.irfileparser.GlobalCache,
     * org.openremote.modeler.irfileparser.IRTrans, java.util.List)
     */
+   /*
    @Override
    @Transactional
    public List<DeviceCommand> saveCommands(
@@ -235,7 +236,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       for (IRCommand commands : currentIRCommands) {
          if (commands.getName().equals(irCommandInfo.getName())
                && commands.getOriginalCodeString().equals(
-                     irCommandInfo.getOriginalCodeString())) {
+                     irCommandInfo.getOriginalCode())) {
             currentCom = commands.getCode();
             break;
          }
@@ -374,5 +375,5 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       }
 
    }
-
+*/
 }

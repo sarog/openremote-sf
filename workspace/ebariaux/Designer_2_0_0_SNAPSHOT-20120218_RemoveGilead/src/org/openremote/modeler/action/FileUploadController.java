@@ -22,22 +22,18 @@ package org.openremote.modeler.action;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.KnxGroupAddress;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
-import org.openremote.modeler.server.IRFileParserController;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
 import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
@@ -49,13 +45,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
-import com.tinsys.ir.representations.IRCodeRepresentationFactory;
-import com.tinsys.ir.representations.pronto.NecIRCodeRepresentationHandler;
-import com.tinsys.ir.representations.pronto.RC5IRCodeRepresentationHandler;
-import com.tinsys.ir.representations.pronto.RC5xIRCodeRepresentationHandler;
-import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
-import com.tinsys.pronto.irfiles.ProntoFileParser;
 
 import flexjson.JSONSerializer;
 
@@ -149,59 +138,7 @@ public class FileUploadController extends MultiActionController implements BeanF
       response.setCharacterEncoding("UTF-8");
       response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
-    
-    /**
-     * import commands from an IrFile
-     * 
-     * @param request
-     * @param response
-     * @throws IOException
-     */
-    public void importIRFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "importIRFile");
-      File f = new File(resourceService.getTempDirectory(request.getSession().getId()) + File.separator
-              + multipartFile.getOriginalFilename());
-      ZipFile zip;
-      ProntoFileParser prontoParser= new ProntoFileParser();
-      String responseContent;
-      try {
-        FileOutputStream fos = new FileOutputStream(f);
-        fos.write(multipartFile.getBytes());
-        fos.flush();
-        fos.close();
-          try {
-            zip = new ZipFile(f);
-            IRCodeRepresentationFactory factory = new IRCodeRepresentationFactory();
-            new RC5IRCodeRepresentationHandler().registerWithFactory(factory);
-            new RC5xIRCodeRepresentationHandler().registerWithFactory(factory);
-            new RawIRCodeRepresentationHandler().registerWithFactory(factory);
-            new NecIRCodeRepresentationHandler().registerWithFactory(factory);
-            prontoParser.setFactory(factory);
-            // serialize the objects
-              try {
-                prontoParser.parseFile(zip);
-                JSONSerializer serializer = new JSONSerializer();
-                response.setCharacterEncoding("UTF-8");
-                  responseContent = serializer.exclude("*.class").include("brands").serialize(prontoParser);
-                } catch (Exception e) {
-                  responseContent = Constants.IRFILE_UPLOAD_ERROR + "Couldn't parse file : " + e.getMessage();
-                }
-          } catch (Exception e) {
-              responseContent = Constants.IRFILE_UPLOAD_ERROR + "Couldn't open temporary file on server :"
-                      + e.getMessage();
-            }
-      } catch (Exception e) {
-          responseContent = Constants.IRFILE_UPLOAD_ERROR + "Couldn't upload file to server :" + e.getMessage();
-      }
-      IRFileParserController iRFileParserController = (IRFileParserController) beanFactory
-            .getBean("irFileParserController");
-      iRFileParserController.setProntoFileParser(prontoParser);
-      response.getWriter().println(responseContent);
-    }
-    
-    
-    
-    
+
     /**
      * Sets the resource service.
      * 

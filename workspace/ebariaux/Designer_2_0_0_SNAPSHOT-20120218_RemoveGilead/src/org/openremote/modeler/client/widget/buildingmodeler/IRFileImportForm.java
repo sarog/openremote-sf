@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.proxy.IrFileParserProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
@@ -39,6 +37,8 @@ import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -89,20 +89,20 @@ public class IRFileImportForm extends CommonForm {
    protected Button nextButton;
 
    /** The code grid. */
-   protected Grid<IRCommandInfo> codeGrid = null;
+   protected Grid<BeanModel> codeGrid = null;
 
    private ColumnModel cm = null;
 
-   protected ListStore<BrandInfo> brandInfos = null;
-   protected ComboBox<BrandInfo> brandInfoList = null;
+   protected ListStore<BeanModel> brandInfos = null;
+   protected ComboBox<BeanModel> brandInfoList = null;
 
-   protected ListStore<DeviceInfo> deviceInfos = null;
-   protected ComboBox<DeviceInfo> deviceInfoList = null;
+   protected ListStore<BeanModel> deviceInfos = null;
+   protected ComboBox<BeanModel> deviceInfoList = null;
 
-   protected ListStore<CodeSetInfo> codeSetInfos = null;
-   protected ComboBox<CodeSetInfo> codeSetInfoList = null;
+   protected ListStore<BeanModel> codeSetInfos = null;
+   protected ComboBox<BeanModel> codeSetInfoList = null;
 
-   ListStore<IRCommandInfo> listStore;
+   ListStore<BeanModel> listStore;
 
    protected Component wrapper;
    
@@ -186,11 +186,9 @@ public class IRFileImportForm extends CommonForm {
       public void handle(Request request, Response response) {
         try {
           String jsonString = response.getEntity().getText();
-          Info.display("INFO", "Received > " + jsonString + "<");
-
           if (brandInfos == null) {
-            brandInfos = new ListStore<BrandInfo>();
-            brandInfoList = new ComboBox<BrandInfo>();
+            brandInfos = new ListStore<BeanModel>();
+            brandInfoList = new ComboBox<BeanModel>();
             brandInfoList.setEmptyText("Please select Brand...");
             brandInfoList.setDisplayField("brandName");
             brandInfoList.setWidth(150);
@@ -199,10 +197,10 @@ public class IRFileImportForm extends CommonForm {
             brandInfoList.setEditable(false);
             selectContainer.add(brandInfoList);
             setStyleOfComboBox(brandInfoList);
-            brandInfoList.addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
+            brandInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
               @Override
-              public void selectionChanged(SelectionChangedEvent<BrandInfo> se) {
-                showDevices(se.getSelectedItem());
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showDevices((BrandInfo) se.getSelectedItem().getBean());
               }
             });
 
@@ -213,8 +211,9 @@ public class IRFileImportForm extends CommonForm {
             cleanBrandComboBox();
           }
           JSONArray brands = JSONParser.parse(jsonString).isArray();
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(BrandInfo.class);
           for (int i = 0; i < brands.size(); i++) {
-            brandInfos.add(new BrandInfo(brands.get(i).isString().stringValue()));
+            brandInfos.add(beanModelFactory.createModel(new BrandInfo(brands.get(i).isString().stringValue())));
           }
           brandInfoList.setVisible(true);
 
@@ -237,11 +236,9 @@ public class IRFileImportForm extends CommonForm {
       public void handle(Request request, Response response) {
         try {
           String jsonString = response.getEntity().getText();
-          Info.display("INFO", "Received > " + jsonString + "<");
-
           if (deviceInfos == null) {
-            deviceInfos = new ListStore<DeviceInfo>();
-            deviceInfoList = new ComboBox<DeviceInfo>();
+            deviceInfos = new ListStore<BeanModel>();
+            deviceInfoList = new ComboBox<BeanModel>();
             deviceInfoList.setEmptyText("Please select Device...");
             deviceInfoList.setDisplayField("modelName");
             deviceInfoList.setWidth(150);
@@ -250,11 +247,11 @@ public class IRFileImportForm extends CommonForm {
             deviceInfoList.setEditable(false);
             selectContainer.add(deviceInfoList);
             setStyleOfComboBox(deviceInfoList);
-            deviceInfoList.addSelectionChangedListener(new SelectionChangedListener<DeviceInfo>() {
+            deviceInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
 
               @Override
-              public void selectionChanged(SelectionChangedEvent<DeviceInfo> se) {
-                showCodeSets(se.getSelectedItem());
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showCodeSets((DeviceInfo) se.getSelectedItem().getBean());
 
               }
 
@@ -265,8 +262,9 @@ public class IRFileImportForm extends CommonForm {
             cleanDeviceComboBox();
           }
           JSONArray devices = JSONParser.parse(jsonString).isArray();
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(DeviceInfo.class);
           for (int i = 0; i < devices.size(); i++) {
-            deviceInfos.add(new DeviceInfo(brandInfo, devices.get(i).isString().stringValue()));
+            deviceInfos.add(beanModelFactory.createModel(new DeviceInfo(brandInfo, devices.get(i).isString().stringValue())));
           }
 
           deviceInfoList.setVisible(true);
@@ -292,10 +290,9 @@ public class IRFileImportForm extends CommonForm {
       public void handle(Request request, Response response) {
         try {
           String jsonString = response.getEntity().getText();
-          Info.display("INFO", "Received > " + jsonString + "<");
           if (codeSetInfos == null) {
-            codeSetInfos = new ListStore<CodeSetInfo>();
-            codeSetInfoList = new ComboBox<CodeSetInfo>();
+            codeSetInfos = new ListStore<BeanModel>();
+            codeSetInfoList = new ComboBox<BeanModel>();
             codeSetInfoList.setEmptyText("Please select CodeSet...");
             codeSetInfoList.setDisplayField("index");
             codeSetInfoList.setSimpleTemplate("{category}");
@@ -307,12 +304,12 @@ public class IRFileImportForm extends CommonForm {
 
             selectContainer.add(codeSetInfoList);
             setStyleOfComboBox(codeSetInfoList);
-            codeSetInfoList.addSelectionChangedListener(new SelectionChangedListener<CodeSetInfo>() {
+            codeSetInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
 
               @Override
-              public void selectionChanged(SelectionChangedEvent<CodeSetInfo> se) {
-                showGrid(se.getSelectedItem());
-                codeSetInfoList.setRawValue(se.getSelectedItem().getCategory());
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showGrid((CodeSetInfo) se.getSelectedItem().getBean());
+                codeSetInfoList.setRawValue(((CodeSetInfo)se.getSelectedItem().getBean()).getCategory());
               }
 
             });
@@ -323,10 +320,11 @@ public class IRFileImportForm extends CommonForm {
           }
 
           JSONArray codeSets = JSONParser.parse(jsonString).isArray();
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(CodeSetInfo.class);
           for (int i = 0; i < codeSets.size(); i++) {
             JSONObject codeSet = codeSets.get(i).isObject();
             JSONString description = codeSet.get("description").isString();
-            codeSetInfos.add(new CodeSetInfo(device, (description != null)?description.stringValue():"", codeSet.get("category").isString().stringValue(), (int) codeSet.get("index").isNumber().doubleValue()));
+            codeSetInfos.add(beanModelFactory.createModel(new CodeSetInfo(device, (description != null)?description.stringValue():"", codeSet.get("category").isString().stringValue(), (int) codeSet.get("index").isNumber().doubleValue())));
           }
 
           codeSetInfoList.setVisible(true);
@@ -354,7 +352,7 @@ public class IRFileImportForm extends CommonForm {
           Info.display("INFO", "Received > " + jsonString + "<");
 
           if (listStore == null) {
-            listStore = new ListStore<IRCommandInfo>();
+            listStore = new ListStore<BeanModel>();
           } else {
             listStore.removeAll();
           }
@@ -368,7 +366,7 @@ public class IRFileImportForm extends CommonForm {
           }
 
           if (codeGrid == null) {
-            codeGrid = new Grid<IRCommandInfo>(listStore, cm);
+            codeGrid = new Grid<BeanModel>(listStore, cm);
 
             GridView gv = new GridView();
             codeGrid.setView(gv);
@@ -391,15 +389,16 @@ public class IRFileImportForm extends CommonForm {
 
             codeGrid.setLoadMask(true);
             codeGrid.setHeight(400);
-            codeGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<IRCommandInfo>() {
+            codeGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
               // if trying to select invalid line,
               // remove it from selection
               @Override
-              public void selectionChanged(SelectionChangedEvent<IRCommandInfo> se) {
-                List<IRCommandInfo> selectedItems = se.getSelection();
-                for (IRCommandInfo irCommandInfo : selectedItems) {
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                List<BeanModel> selectedItems = se.getSelection();
+                for (BeanModel bm : selectedItems) {
+                  IRCommandInfo irCommandInfo = bm.getBean();
                   if (irCommandInfo.getCode() == null) {
-                    codeGrid.getSelectionModel().deselect(irCommandInfo);
+                    codeGrid.getSelectionModel().deselect(bm);
                   }
                 }
                 if (codeGrid.getSelectionModel().getSelectedItems().size() > 0) {
@@ -417,10 +416,12 @@ public class IRFileImportForm extends CommonForm {
           }
           
           JSONArray irCommands = JSONParser.parse(jsonString).isArray();
+          
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(IRCommandInfo.class);
           for (int i = 0; i < irCommands.size(); i++) {
             JSONObject irCommand = irCommands.get(i).isObject();
             JSONString comment = irCommand.get("comment").isString();            
-            codeGrid.getStore().add(new IRCommandInfo(irCommand.get("name").isString().stringValue(), irCommand.get("code").isString().stringValue(), irCommand.get("originalCode").isString().stringValue(), (comment != null)?comment.stringValue():"", selectedItem));
+            codeGrid.getStore().add(beanModelFactory.createModel(new IRCommandInfo(irCommand.get("name").isString().stringValue(), irCommand.get("code").isString().stringValue(), irCommand.get("originalCode").isString().stringValue(), (comment != null)?comment.stringValue():"", selectedItem)));
           }
           wrapper.unmask();
         } catch (IOException e) {

@@ -5,11 +5,15 @@ import net.customware.gwt.dispatch.server.ExecutionContext;
 import net.customware.gwt.dispatch.shared.DispatchException;
 
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.IRFileParserService;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
+import flexjson.JSONSerializer;
 
 public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIRCommandsAction, GenerateIRCommandsResult> {
 
@@ -18,7 +22,12 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   
   @Override
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
+    
+    Representation r = new ClientResource("http://localhost:8080/irservice/rest/GenerateDeviceCommands").post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
+    System.out.println(r);
+    
     Device device = deviceService.loadById(action.getDevice().getOid());
+    /*
     try {
       iRFileParserService.saveCommands(device, action.getGlobalCache(), action.getIrTrans(), action.getCommands());
     } catch (IrFileParserException e) {
@@ -27,6 +36,7 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    */
     return new GenerateIRCommandsResult();
   }
 
