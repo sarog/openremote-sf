@@ -33,4 +33,6 @@ public interface PanelService {
 	PanelSize getPanelSize();
 
 	List<Integer> getGroupScreenIds(Integer groupId);
+	
+	List<Integer> getGroupScreenIdsWithSameOrientation(Integer screenId, Integer groupId);
 }

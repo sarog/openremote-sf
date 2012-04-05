@@ -10,9 +10,9 @@ public interface ScreenView {
 	
 	public Set<Integer> getSensorIds();
 	
-	public void setIsLandscape(boolean isLandscape);
+	public void setIsLandscape(Boolean isLandscape);
 	
-	public boolean isLandscape();
+	public Boolean isLandscape();
 	
 	public void onAdd(int width, int height, List<DataValuePairContainer> data);
 }

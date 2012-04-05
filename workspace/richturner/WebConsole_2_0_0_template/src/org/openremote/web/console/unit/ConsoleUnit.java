@@ -79,6 +79,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
 	private PopupPanel alertPopup;
 	private HorizontalPanel logoPanel;
+	private boolean invalidWarningDisplayed = false;
+	
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
 		@Override
 		public void onSuccess(Map<Integer, String> result) {
@@ -442,6 +444,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	
 	private void initialisePanel() {
 		if (panelService.isInitialized()) {
+			// Reset warning flag
+			invalidWarningDisplayed = false;
+			
 			// Get default group ID
 			Integer defaultGroupId = panelService.getDefaultGroupId();
 			Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
@@ -544,6 +549,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		Integer oldScreenId = currentScreenId;
 		
 		if (screen == null || newGroupId == null) {
+			onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR);
 			return;
 		}
 		
@@ -570,36 +576,41 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //			}
 			
 			// Setting screen should return true at this point
-			ScreenViewImpl screenView = screenViewService.getScreenView(screen);
-			if (consoleDisplay.setScreenView(screenView, data)) {
-				// Configure gestures
-				setGestureMap(screen.getGesture());
-				
-				// Stop previous polling
-				if (pollingHelperMap.containsKey(oldScreenId)) {
-					PollingHelper pollingHelper = pollingHelperMap.get(oldScreenId);
-					if (pollingHelper != null) {
-						pollingHelper.stopMonitoring();
-					}
-				}
-				// Start new polling
-				if (!pollingHelperMap.containsKey(newScreenId)) {
-					Set<Integer> sensorIds = screenView.getSensorIds();
-					if (sensorIds == null || sensorIds.size() == 0) {
-						pollingHelperMap.put(newScreenId, null);
-					} else {
-						pollingHelperMap.put(newScreenId, new PollingHelper(sensorIds, pollingCallback));
-					}
-				}
-				PollingHelper pollingHelper = pollingHelperMap.get(newScreenId);
-				if (pollingHelper != null) {
-					pollingHelper.startSensorMonitoring();
-				}
-				currentScreenId = newScreenId;
-			} else {
-				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+			ScreenViewImpl currentScreenView = consoleDisplay.getScreen();
+			try {
+				ScreenViewImpl screenView = screenViewService.getScreenView(screen);
+				consoleDisplay.setScreenView(screenView, data);
+				currentScreenView = screenView;
+			} catch (Exception e) {
+				consoleDisplay.setScreenView(currentScreenView, data);
+				onError(EnumConsoleErrorCode.SCREEN_ERROR, "Screen ID = " + newScreenId);
 				return;
 			}
+			
+			// Configure gestures
+			setGestureMap(screen.getGesture());
+			
+			// Stop previous polling
+			if (pollingHelperMap.containsKey(oldScreenId)) {
+				PollingHelper pollingHelper = pollingHelperMap.get(oldScreenId);
+				if (pollingHelper != null) {
+					pollingHelper.stopMonitoring();
+				}
+			}
+			// Start new polling
+			if (!pollingHelperMap.containsKey(newScreenId)) {
+				Set<Integer> sensorIds = currentScreenView.getSensorIds();
+				if (sensorIds == null || sensorIds.size() == 0) {
+					pollingHelperMap.put(newScreenId, null);
+				} else {
+					pollingHelperMap.put(newScreenId, new PollingHelper(sensorIds, pollingCallback));
+				}
+			}
+			PollingHelper pollingHelper = pollingHelperMap.get(newScreenId);
+			if (pollingHelper != null) {
+				pollingHelper.startSensorMonitoring();
+			}
+			currentScreenId = newScreenId;
 		}
 		
 		if (groupChanged) {
@@ -607,16 +618,20 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			// Get Tab Bar for this group
 			TabBar tabBar = panelService.getTabBar(newGroupId);
 			if (tabBar != null && tabBar.getItem() != null) {
-				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
-				tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
-				tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(currentScreenId));
+				try {
+					TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
+					tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
+					tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId));
+				} catch (Exception e) {
+					onError(EnumConsoleErrorCode.TABBAR_ERROR);
+				}
 			}
 			// Get Screen ID List and create screenIndicator
-			List<Integer> screenIds = panelService.getGroupScreenIds(newGroupId);
+			List<Integer> screenIds = panelService.getGroupScreenIdsWithSameOrientation(newScreenId, newGroupId);
 			if (screenIds != null && screenIds.size() > 1) {
 				ScreenIndicator screenIndicator = new ScreenIndicator(screenIds);
 				consoleDisplay.setScreenIndicator(screenIndicator);
-				screenIndicator.onScreenViewChange(new ScreenViewChangeEvent(currentScreenId));
+				screenIndicator.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId));
 			} else {
 				consoleDisplay.removeScreenIndicator();
 			}
@@ -624,7 +639,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 		
 		if (screenChanged) {
-			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(currentScreenId));		
+			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(newScreenId, newGroupId));		
 		}
 	}
 	
@@ -794,7 +809,22 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 			
 			if (navigate != null) {
-				if (navigate.getToGroup() != currentGroupId || navigate.getToScreen() != currentScreenId) {
+				if (navigate.getTo() != null) {
+					if (navigate.getTo().equalsIgnoreCase("previousscreen")) {
+						gestureHandled = true;
+						Screen prevScreen = panelService.getPreviousScreen(currentGroupId, currentScreenId);
+						if (prevScreen != null) {
+							loadDisplay(prevScreen, null);
+						}
+					} else if (navigate.getTo().equalsIgnoreCase("nextscreen")) {
+						gestureHandled = true;
+						Screen nextScreen = panelService.getNextScreen(currentGroupId, currentScreenId);
+						if (nextScreen != null) {
+							loadDisplay(nextScreen, null);
+						}
+					}					
+				}
+				if (!gestureHandled && (navigate.getToGroup() != currentGroupId || navigate.getToScreen() != currentScreenId)) {
 					gestureHandled = true;
 					eventBus.fireEvent(new NavigateEvent(navigate));
 				}
@@ -811,11 +841,15 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		switch (event.getDirection()) {
 			case LEFT:
 				Screen nextScreen = panelService.getNextScreen(currentGroupId, currentScreenId);
-				loadDisplay(nextScreen, null);
+				if (nextScreen != null) {
+					loadDisplay(nextScreen, null);
+				}
 				break;
 			case RIGHT:
 				Screen prevScreen = panelService.getPreviousScreen(currentGroupId, currentScreenId);
-				loadDisplay(prevScreen, null);
+				if (prevScreen != null) {
+					loadDisplay(prevScreen, null);
+				}
 				break;
 		}
 	}
@@ -834,8 +868,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				if (screen != null) {
 					loadSettings(screen, data);
 				}
-			} else if(toGroupId != null && toScreenId != null) {
-				Screen screen = panelService.getScreenById(toScreenId);
+			} else if(toGroupId != null) {
+				Screen screen = null;
+				if (toScreenId == null) {
+					screen = panelService.getDefaultScreen(toGroupId);
+				} else {
+					screen = panelService.getScreenById(toScreenId);
+				}
 				loadDisplay(toGroupId, screen, data);
 			}
 		}
@@ -923,11 +962,31 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				break;
 			case COMPONENT_INVALID:
 				// TODO: display message in alert popup
-				Window.alert("Some component IDs are invalid and some sensors will not work");
+				if (!invalidWarningDisplayed) {
+					Window.alert("Polling Failed\n\nAt least one command ID has not been recognised.");
+					invalidWarningDisplayed = true;
+				}
 				break;
 			default:
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
-				break;
+		}
+	}
+	
+	public void onError(EnumConsoleErrorCode errorCode) {
+		onError(errorCode, null);
+	}
+	
+	public void onError(EnumConsoleErrorCode errorCode, String additionalInfo) {
+		//TODO: Console unit error handling
+		String errorStr = errorCode.getDescription();
+		
+		if (additionalInfo != null && !additionalInfo.equals("")) {
+			errorStr += "\n\nAdditional Info: " + additionalInfo;
+		}
+		switch(errorCode) {
+		default:
+			Window.alert("Console Error: " + errorStr);
+			currentScreenId = 0;
 		}
 	}
 }

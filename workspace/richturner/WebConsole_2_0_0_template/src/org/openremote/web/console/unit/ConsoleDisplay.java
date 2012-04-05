@@ -196,13 +196,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
-	protected boolean setScreenView(ScreenViewImpl screen, List<DataValuePairContainer> data) {
-		boolean screenChanged = false;
-		
-		if (screen == null) {
-			return screenChanged;
-		}
-		
+	protected void setScreenView(ScreenViewImpl screen, List<DataValuePairContainer> data) {
 		if (currentScreen != screen) {
 			hideLoadingScreen();
 			if (currentScreen != null) {
@@ -219,9 +213,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 			screen.onAdd(getWidth(), getHeight(), data);
 			
 			currentScreen = screen;
-			screenChanged = true;
 		}
-		return screenChanged;
 	}
 	
 	protected boolean setTabBar(TabBarComponent tabBar) {

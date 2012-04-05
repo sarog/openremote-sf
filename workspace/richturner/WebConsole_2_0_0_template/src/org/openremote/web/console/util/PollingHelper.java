@@ -4,7 +4,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.service.AsyncControllerCallback;
+
+import com.google.gwt.user.client.Window;
 
 public class PollingHelper {
 	private Set<Integer> monitoredSensorIds = new HashSet<Integer>();

@@ -10,9 +10,11 @@ import com.google.gwt.event.shared.GwtEvent;
 public class ScreenViewChangeEvent extends GwtEvent<ScreenViewChangeHandler> {
 	private static final Type<ScreenViewChangeHandler> TYPE = new Type<ScreenViewChangeHandler>();
 	private int screenId;
+	private int groupId;
 	
-	public ScreenViewChangeEvent(int screenId) {
+	public ScreenViewChangeEvent(int screenId, int groupId) {
 		this.screenId = screenId;
+		this.groupId = groupId;
 	}
 	
 	@Override
@@ -31,5 +33,9 @@ public class ScreenViewChangeEvent extends GwtEvent<ScreenViewChangeHandler> {
 	
 	public int getNewScreenId() {
 		return screenId;
+	}
+	
+	public int getNewGroupId() {
+		return groupId;
 	}
 }

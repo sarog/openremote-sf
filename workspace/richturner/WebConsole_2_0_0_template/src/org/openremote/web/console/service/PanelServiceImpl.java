@@ -292,6 +292,7 @@ public class PanelServiceImpl implements PanelService {
 		return size;
 	}
 
+	
 	@Override
 	public List<Integer> getGroupScreenIds(Integer groupId) {
 		List<Integer> screenIds = new ArrayList<Integer>();
@@ -302,17 +303,36 @@ public class PanelServiceImpl implements PanelService {
 				List<ScreenRef> screenRefs = group.getInclude();
 				if (screenRefs != null) {
 					for(ScreenRef ref : screenRefs) { 
-						if (ref != null) {
-							Screen screen = getScreenById(ref.getRef());
-							if (screen != null && screen.getLandscape() == null) {
-								screenIds.add(ref.getRef());
-							}
-						}
+							screenIds.add(ref.getRef());
+					}
+				}
+			}
+		}
+		return screenIds;
+	}
+	
+	@Override
+	public List<Integer> getGroupScreenIdsWithSameOrientation(Integer screenId, Integer groupId) {
+		List<Integer> screenIds = getGroupScreenIds(groupId);
+		List<Integer> filteredScreenIds = new ArrayList<Integer>();
+		boolean isScreenLandscape = false;
+		
+		if (screenIds.size() > 0) {
+			Screen screen = getScreenById(screenId);
+			boolean isCompareScreenLandscape = false;
+			if (screen.getLandscape() != null && screen.getLandscape()) isScreenLandscape = true; 
+			for(int id : screenIds) { 
+				Screen scrn = getScreenById(id);
+				
+				if (scrn != null) {
+					if (scrn.getLandscape() != null && scrn.getLandscape()) isCompareScreenLandscape = true;
+					if (isCompareScreenLandscape == isScreenLandscape) {
+						filteredScreenIds.add(id);
 					}
 				}
 			}
 		}
 		
-		return screenIds;
+		return filteredScreenIds;
 	}
 }
