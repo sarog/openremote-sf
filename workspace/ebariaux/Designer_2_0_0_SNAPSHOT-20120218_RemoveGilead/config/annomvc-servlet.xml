@@ -50,7 +50,6 @@
                 <prop key="/modeler/deviceMacro.smvc">deviceMacroController</prop>
                 <prop key="/modeler/config.smvc">configurationController</prop>
                 <prop key="/modeler/utils.smvc">utilsController</prop>
-                <prop key="/modeler/irfile.smvc">irFileParserController</prop>
                 <prop key="/modeler/switch.smvc">switchController</prop>
                 <prop key="/modeler/slider.smvc">sliderController</prop>
                 <prop key="/account.htm">accountController</prop>
@@ -90,5 +89,4 @@
     <bean id="configCategory" class="org.openremote.modeler.server.ConfigCategoryController"></bean>
     <bean id="templateController" class="org.openremote.modeler.server.TemplateController"></bean>
     <bean id="userController" class="org.openremote.modeler.server.UserController"></bean>
-    <bean id="irFileParserController" class ="org.openremote.modeler.server.IRFileParserController"/>
 </beans>

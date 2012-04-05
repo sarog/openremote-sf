@@ -21,6 +21,8 @@
   
   <inherits name='com.extjs.gxt.themes.Themes' />
 
+  <inherits name="org.openremote.Commons" />
+
 	<source path='domain'/>
 	<source path='client'/>
 	<source path='shared'/>

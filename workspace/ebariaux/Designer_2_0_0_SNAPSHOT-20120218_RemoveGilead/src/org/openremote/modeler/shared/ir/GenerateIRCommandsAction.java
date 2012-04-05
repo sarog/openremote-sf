@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import net.customware.gwt.dispatch.shared.Action;
 
-import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.ir.domain.GlobalCache;
+import org.openremote.ir.domain.IRTrans;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
-import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 
 public class GenerateIRCommandsAction implements Action<GenerateIRCommandsResult> {
