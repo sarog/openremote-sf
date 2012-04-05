@@ -18,7 +18,7 @@ public enum EnumControllerResponseCode {
 	NO_RESPONSE (430, "No Response from Controller"),
 	XML_CHANGED (506, "Controller XML has Changed"),
 	XML_JSON_PARSING_ERROR (520, "XML to JSON Parsing Error"),
-	UNKNOWN_ERROR (9999, "Unkown Controller Error");	
+	UNKNOWN_ERROR (999, "Unkown Controller Error");	
 	
 	private final int code;
 	private final String description;

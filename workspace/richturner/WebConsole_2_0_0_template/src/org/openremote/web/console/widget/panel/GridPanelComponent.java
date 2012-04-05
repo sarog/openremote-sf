@@ -101,8 +101,10 @@ public class GridPanelComponent extends PanelComponent {
 	
 	@Override
 	public void onUpdate(int width, int height) {
+		int colWidth = (int)Math.round((double)width / cols);
+		int rowHeight = (int)Math.round((double)height / rows);
 		for (ConsoleComponent component : components) {
-			component.onUpdate(width, height);
+			component.onUpdate(colWidth, rowHeight);
 		}
 	}
 	
@@ -188,7 +190,9 @@ public class GridPanelComponent extends PanelComponent {
 				} else if (buttonComponent != null) {
 					component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
 				} else {
-					return null;
+					org.openremote.web.console.widget.LabelComponent lblComponent = new org.openremote.web.console.widget.LabelComponent();
+					lblComponent.setText("COMPONENT TYPE NOT SUPPORTED.");
+					component = lblComponent;
 				}
 				
 				if (component != null) {

@@ -115,7 +115,10 @@ public class AbsolutePanelComponent extends PanelComponent {
 		} else if (buttonComponent != null) {
 			component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
 		} else {
-			return null;
+			org.openremote.web.console.widget.LabelComponent lblComponent = new org.openremote.web.console.widget.LabelComponent();
+			lblComponent.setText("COMPONENT TYPE NOT SUPPORTED.");
+			lblComponent.setColor("#FFF");
+			component = lblComponent;
 		}
 		
 		if (component != null) {

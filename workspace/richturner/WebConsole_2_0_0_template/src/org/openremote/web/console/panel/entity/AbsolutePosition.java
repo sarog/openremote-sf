@@ -20,25 +20,12 @@
 package org.openremote.web.console.panel.entity;
 
 /**
- * The background of screen, which contains background position in screen.
- * The position include absolute position and relative position.
- * 
+ * Absolute Position layout for defining an elements position
  */
-public interface Background {
-
-   public void setFillScreen(Boolean fillScreen);
-
-	public void setImage(Image backgroundImage);
+public interface AbsolutePosition {
+   Integer getLeft();
+   Integer getTop();
 	
-	public void setRelative(String relative);
-	
-	public void setAbsolute(AbsolutePosition absPos);
-
-   public Boolean getFillScreen();
-   
-   public String getRelative();
-   
-   public Image getImage();
-   
-   public AbsolutePosition getAbsolute();
+   void setLeft(Integer left);
+   void setTop(Integer top);
 }

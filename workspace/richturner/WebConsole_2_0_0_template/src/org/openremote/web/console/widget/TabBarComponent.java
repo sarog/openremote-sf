@@ -80,7 +80,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			// Add Image
 			if (tabImage != null) {
 				boolean isSystemImage = false;
-				if (tabImage.getSystemImage()) isSystemImage = true;
+				if (tabImage.getSystemImage() != null && tabImage.getSystemImage()) isSystemImage = true;
 				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM);
 				imageComponent = new Image();
 				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
@@ -346,6 +346,15 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 						item.addStyleName("selected");
 					} else {
 						item.removeStyleName("selected");
+					}
+				} else {
+					Integer toGroup = navigate.getToGroup();
+					if (toGroup != null) {
+						if (toGroup == event.getNewGroupId()) {
+							item.addStyleName("selected");
+						} else {
+							item.removeStyleName("selected");
+						}
 					}
 				}
 			}
