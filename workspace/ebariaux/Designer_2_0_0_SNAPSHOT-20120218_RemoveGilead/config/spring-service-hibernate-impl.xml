@@ -91,7 +91,6 @@
 	<bean id="sensorService" class="org.openremote.modeler.service.impl.SensorServiceImpl" parent="abstractService"></bean>
 	<bean id="controllerConfigService" class="org.openremote.modeler.service.impl.ControllerConfigServiceImpl" parent="abstractService"/>
 	<bean id="templateService" class="org.openremote.modeler.service.impl.TemplateServiceImpl" parent="abstractService"/>
-	<bean id="iRFileParserService" class="org.openremote.modeler.service.impl.IRFileParserServiceImpl" parent="abstractService"/>
 	
 </beans>
 
