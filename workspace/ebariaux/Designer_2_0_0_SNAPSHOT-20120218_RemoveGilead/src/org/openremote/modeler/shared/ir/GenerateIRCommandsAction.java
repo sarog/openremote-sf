@@ -12,6 +12,7 @@ import org.openremote.modeler.shared.dto.DeviceDTO;
 public class GenerateIRCommandsAction implements Action<GenerateIRCommandsResult> {
   
   private DeviceDTO device;
+  private String prontoFileHandle;
   private ArrayList<IRCommandInfo> commands;
   private GlobalCache globalCache;
   private IRTrans irTrans;
@@ -20,9 +21,10 @@ public class GenerateIRCommandsAction implements Action<GenerateIRCommandsResult
     super();
   }
   
-  public GenerateIRCommandsAction(DeviceDTO device, ArrayList<IRCommandInfo> commands, GlobalCache globalCache, IRTrans irTrans) {
+  public GenerateIRCommandsAction(DeviceDTO device, String prontoFileHandle, ArrayList<IRCommandInfo> commands, GlobalCache globalCache, IRTrans irTrans) {
     super();
     this.device = device;
+    this.prontoFileHandle = prontoFileHandle;
     this.commands = commands;
     this.globalCache = globalCache;
     this.irTrans = irTrans;
@@ -36,6 +38,14 @@ public class GenerateIRCommandsAction implements Action<GenerateIRCommandsResult
     this.device = device;
   }
   
+  public String getProntoFileHandle() {
+    return prontoFileHandle;
+  }
+
+  public void setProntoFileHandle(String prontoFileHandle) {
+    this.prontoFileHandle = prontoFileHandle;
+  }
+
   public ArrayList<IRCommandInfo> getCommands() {
     return commands;
   }

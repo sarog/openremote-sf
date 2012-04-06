@@ -168,7 +168,7 @@ public class IRFileImportForm extends CommonForm {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-           IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
+           IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper, prontoFileHandle, device);
            protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
            protocolChooserForm.setVisible(true);
            protocolChooserForm.show();

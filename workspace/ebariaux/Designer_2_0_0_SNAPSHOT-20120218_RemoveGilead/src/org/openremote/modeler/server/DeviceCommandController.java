@@ -102,11 +102,16 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    
    @Override
    public void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId) {
-     DeviceCommand dc = new DeviceCommand();
+     DeviceCommand dc = createDeviceCommandFromDTO(dto);
 
      Device device = deviceService.loadById(deviceId);
      dc.setDevice(device);
-     
+
+     deviceCommandService.save(dc);
+   }
+
+   public static DeviceCommand createDeviceCommandFromDTO(DeviceCommandDetailsDTO dto) {
+     DeviceCommand dc = new DeviceCommand();     
      dc.setName(dto.getName());
      Protocol protocol = new Protocol();
      protocol.setDeviceCommand(dc);
@@ -115,7 +120,7 @@ public class DeviceCommandController extends BaseGWTSpringController implements
      for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
        protocol.addProtocolAttribute(e.getKey(), e.getValue());
      }
-     deviceCommandService.save(dc);
+     return dc;
    }
-
+   
 }

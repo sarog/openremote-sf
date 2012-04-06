@@ -64,6 +64,9 @@ import com.google.gwt.user.client.ui.ListBox;
 public class IRFileImportToProtocolForm extends FormWindow {
 
    private DeviceDTO device = null;
+   
+   private String prontoFileHandle;
+   
    private VerticalPanel gCPanel;
    private TextField<String> gCip;
    private TextField<String> tcpPort;
@@ -96,8 +99,9 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param device
     *           the device
     */
-   public IRFileImportToProtocolForm(Component wrapper, DeviceDTO device) {
+   public IRFileImportToProtocolForm(Component wrapper, String prontoFileHandle, DeviceDTO device) {
       super();
+      this.prontoFileHandle = prontoFileHandle;
       this.device = device;
       this.wrapper = wrapper;
       setHeading("New command");
@@ -146,7 +150,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
             ModelerGinjector injector = GWT.create(ModelerGinjector.class);
             DispatchAsync dispatcher = injector.getDispatchAsync();
 
-            GenerateIRCommandsAction action = new GenerateIRCommandsAction(device, selectedFunctions, globalCache, irTrans);
+            GenerateIRCommandsAction action = new GenerateIRCommandsAction(device, prontoFileHandle, selectedFunctions, globalCache, irTrans);
             dispatcher.execute(action, new AsyncCallback<GenerateIRCommandsResult>() {
 
               @Override
