@@ -21,12 +21,7 @@
 package org.openremote.modeler.service;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.ir.domain.GlobalCache;
-import org.openremote.ir.domain.IRTrans;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
