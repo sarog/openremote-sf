@@ -20,6 +20,8 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.ir.ProntoFileImportResultOverlay;
+import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
@@ -120,15 +122,18 @@ public class IRFileImportWindow extends FormWindow {
             // We get an id back from IRService and pass that to importForm so brands can be loaded
             if (be.getResultHtml() == null) {
               reportError("Communication error");
-            } else if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
-               reportError(be.getResultHtml());
             } else {
-               errorLabel.setVisible(false);
-               importForm.setVisible(true);
-               importWindow.unmask();
-               importForm.enable();               
-               importForm.setProntoFileHandle(be.getResultHtml());               
-               importForm.showBrands();
+              ProntoFileImportResultOverlay importResult = ProntoFileImportResultOverlay.fromJSONString(be.getResultHtml());
+              if (importResult.getErrorMessage() != null) {
+                 reportError(importResult.getErrorMessage());
+              } else {
+                 errorLabel.setVisible(false);
+                 importForm.setVisible(true);
+                 importWindow.unmask();
+                 importForm.enable();               
+                 importForm.setProntoFileHandle(importResult.getProntoFileHandle());               
+                 importForm.showBrands();
+              }
             }
          }
       });
