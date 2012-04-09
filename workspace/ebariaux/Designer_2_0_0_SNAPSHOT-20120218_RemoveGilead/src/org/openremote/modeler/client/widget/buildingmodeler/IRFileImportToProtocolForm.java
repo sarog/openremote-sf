@@ -36,6 +36,10 @@ import org.openremote.modeler.irfileparser.IRLed;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -43,6 +47,7 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -99,20 +104,20 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param device
     *           the device
     */
-   public IRFileImportToProtocolForm(Component wrapper, String prontoFileHandle, DeviceDTO device) {
+   public IRFileImportToProtocolForm(Component wrapper, String irServiceRootRestURL, String prontoFileHandle, DeviceDTO device) {
       super();
       this.prontoFileHandle = prontoFileHandle;
       this.device = device;
       this.wrapper = wrapper;
       setHeading("New command");
-      initial();
+      initial(irServiceRootRestURL);
       show();
    }
 
    /**
     * Initial.
     */
-   private void initial() {
+   private void initial(final String irServiceRootRestURL) {
       setWidth(380);
       setAutoHeight(true);
       setLayout(new FlowLayout());
@@ -165,9 +170,20 @@ public class IRFileImportToProtocolForm extends FormWindow {
               public void onSuccess(GenerateIRCommandsResult result) {
                 
                 // TODO: have an error message in result and check for that
-                
+
+                // Clean-up imported Pronto file as we're done importing
+                ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
+                // Even if empty, the onReponse handler is required or call does not go through
+                clientResource.setOnResponse(new Uniform() {
+                  public void handle(Request request, Response response) {
+                  }
+                });
+                clientResource.delete();
+
                 IRFileImportToProtocolForm.this.hide();                
                 wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+
+                
               }
             });
          }
