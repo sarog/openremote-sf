@@ -43,19 +43,19 @@ public class IRCommandBuilder implements CommandBuilder {
       IRCommand irCommand = new IRCommand();
       String command = "";
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-      String name = "";
+      String remotename = "";
       for(Element ele : propertyEles){
-         if("name".equals(ele.getAttributeValue("name"))){
-            name = ele.getAttributeValue("value");
+         if("remotename".equals(ele.getAttributeValue("name"))){
+            remotename = ele.getAttributeValue("value");
          } else if ("command".equals(ele.getAttributeValue("name"))) {
             command = ele.getAttributeValue("value");
          }
       }
-      if ("".equals(command.trim()) || "".equals(name.trim())) {
-         throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
+      if ("".equals(command.trim()) || "".equals(remotename.trim())) {
+         throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",remotename=" + remotename);
       } else {
          irCommand.setCommand(CommandUtil.parseStringWithParam(element, command));
-         irCommand.setName(name);
+         irCommand.setRemotename(remotename);
       }
       return irCommand;
    }
