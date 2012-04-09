@@ -57,9 +57,12 @@ public class HttpGetCommandBuilder implements CommandBuilder
   public final static String HTTP_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "http";
 
   private final static String STR_ATTRIBUTE_NAME_URL = "url";
+  private final static String STR_ATTRIBUTE_NAME_METHOD = "method";
+  private final static String STR_ATTRIBUTE_NAME_WORKLOAD = "workload";
   private final static String STR_ATTRIBUTE_NAME_USERNAME = "username";
   private final static String STR_ATTRIBUTE_NAME_PASSWORD = "password";
   private final static String STR_ATTRIBUTE_NAME_XPATH = "xpath";
+  private final static String STR_ATTRIBUTE_NAME_JSONPATH = "jsonpath";
   private final static String STR_ATTRIBUTE_NAME_REGEX = "regex";
   private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
   // Class Members
@@ -78,12 +81,15 @@ public class HttpGetCommandBuilder implements CommandBuilder
   {
     logger.debug("Building HttGetCommand");
     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-
+    int parserCount = 0;
     String urlAsString = null;
+    String method = null;
+    String workload = null;
     String username = null;
     String password = null;
     String xpath = null;
     String regex = null;
+    String jsonpath = null;
     String interval = null;
     Integer intervalInMillis = null;
 
@@ -98,6 +104,14 @@ public class HttpGetCommandBuilder implements CommandBuilder
       {
         urlAsString = CommandUtil.parseStringWithParam(element, elementValue);
         logger.debug("HttpGetCommand: url = " + urlAsString);
+      } else if (STR_ATTRIBUTE_NAME_METHOD.equals(elementName))
+      {
+        method = elementValue;
+        logger.debug("HttpGetCommand: method = " + method);
+      } else if (STR_ATTRIBUTE_NAME_WORKLOAD.equals(elementName))
+      {
+        workload = CommandUtil.parseStringWithParam(element, elementValue);
+        logger.debug("HttpGetCommand: workload = " + workload);
       } else if (STR_ATTRIBUTE_NAME_USERNAME.equals(elementName))
       {
         username = elementValue;
@@ -121,19 +135,28 @@ public class HttpGetCommandBuilder implements CommandBuilder
       } else if (STR_ATTRIBUTE_NAME_REGEX.equals(elementName))
       {
         regex = elementValue;
+        parserCount++;
         logger.debug("HttpGetCommand: regex = " + regex);
       } else if (STR_ATTRIBUTE_NAME_XPATH.equals(elementName))
       {
         xpath = elementValue;
+        parserCount++;
         logger.debug("HttpGetCommand: xpath = " + xpath);
+      } else if (STR_ATTRIBUTE_NAME_JSONPATH.equals(elementName))
+      {
+        jsonpath = elementValue;
+        parserCount++;
+        logger.debug("HttpGetCommand: jsonpath = " + xpath);
       }
     }
 
-    if (null != xpath && null != regex)
+    if (parserCount > 1)
     {
-      throw new NoSuchCommandException("Unable to create HttpGet command, only one of either Regex or Xpath allowed!");
+      throw new NoSuchCommandException("Unable to create HttpGet command, only one of either Regex, Xpath or JSONpath allowed!");
     }
-    
+    if ((method == null) || (method.trim().length() == 0)) {
+       method = "GET";
+    }
     try
     {
       if (null != interval) {
@@ -159,10 +182,10 @@ public class HttpGetCommandBuilder implements CommandBuilder
 
     if (null != username && null != password)
     {
-      return new HttpGetCommand(uri, username, password.getBytes(), xpath, regex, intervalInMillis);
+      return new HttpGetCommand(uri, username, password.getBytes(), xpath, regex, intervalInMillis, method, workload, jsonpath);
     } else
     {
-      return new HttpGetCommand(uri, xpath, regex, intervalInMillis);
+      return new HttpGetCommand(uri, xpath, regex, intervalInMillis, method, workload, jsonpath);
     }
   }
 
