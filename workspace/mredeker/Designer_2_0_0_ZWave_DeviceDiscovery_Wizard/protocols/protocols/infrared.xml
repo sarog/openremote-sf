@@ -2,7 +2,7 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 	<protocol displayName="Infrared" tagName="ir">
-		<attr name="name" label="Name">
+		<attr name="remotename" label="Remotename">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
