@@ -19,9 +19,7 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.ir.ProntoFileImportResultOverlay;
-import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
@@ -34,7 +32,6 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
@@ -131,7 +128,7 @@ public class IRFileImportWindow extends FormWindow {
                  importForm.setVisible(true);
                  importWindow.unmask();
                  importForm.enable();               
-                 importForm.setProntoFileHandle(importResult.getProntoFileHandle());               
+                 importForm.setProntoFileHandle(importResult.getResult());               
                  importForm.showBrands();
               }
             }
