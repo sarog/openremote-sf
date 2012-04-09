@@ -36,7 +36,7 @@ public class IRCommand implements ExecutableCommand {
    private static Logger logger = Logger.getLogger(IRCommand.class.getName());
    
    /** The remote device name. This name MUST be the name defined in lircd.conf */
-   private String name;
+   private String remotename;
    
    /** The button command. Such as menu, play etc. */
    private String command;
@@ -77,7 +77,7 @@ public class IRCommand implements ExecutableCommand {
     */
    private void irsend(String sendType) {
       String cmd = configuration.getIrsendPath() + " " 
-          + sendType + " " + getName() + " " + getCommand();
+          + sendType + " " + getRemotename() + " " + getCommand();
       try {
          Process pro = Runtime.getRuntime().exec(cmd);
          logger.info(cmd);
@@ -117,21 +117,21 @@ public class IRCommand implements ExecutableCommand {
    }
 
    /**
-    * Gets the name.
+    * Gets the remotename.
     * 
-    * @return the name
+    * @return the remotename
     */
-   public String getName() {
-      return name;
+   public String getRemotename() {
+      return remotename;
    }
 
    /**
-    * Sets the name.
+    * Sets the remotename.
     * 
-    * @param name the new name
+    * @param name the new remotename
     */
-   public void setName(String name) {
-      this.name = name;
+   public void setRemotename(String remotename) {
+      this.remotename = remotename;
    }
 
    
