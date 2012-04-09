@@ -17,6 +17,7 @@ import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
+import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -33,20 +34,26 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   @Override
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
     Representation r = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands").post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
-    List<DeviceCommandDetailsDTO> dtos = null;
+    GenericResourceResultWithErrorMessage result = null;
     try {
-      dtos = new JSONDeserializer<List<DeviceCommandDetailsDTO>>().use(null, ArrayList.class).use("values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
+      result = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     };
     
-    Device device = deviceService.loadById(action.getDevice().getOid());    
+    // TODO: check for error and return
+    // TODO: correctly handle return values -> in case of success for what to update and in error for error message 
+    
+    Device device = deviceService.loadById(action.getDevice().getOid());
+    @SuppressWarnings("unchecked")
+    List<DeviceCommandDetailsDTO> dtos = (List<DeviceCommandDetailsDTO>) result.getResult();
     for (DeviceCommandDetailsDTO dto : dtos) {
       DeviceCommand dc = DeviceCommandController.createDeviceCommandFromDTO(dto);
       dc.setDevice(device);
       deviceCommandService.save(dc);
-    }  
+    }
+    
     return new GenerateIRCommandsResult();
   }
   

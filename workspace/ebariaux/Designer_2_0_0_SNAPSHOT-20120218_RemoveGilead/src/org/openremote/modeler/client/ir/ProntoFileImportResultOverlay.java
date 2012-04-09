@@ -29,7 +29,7 @@ public class ProntoFileImportResultOverlay extends JavaScriptObject {
   // Typically, methods on overlay types are JSNI
   public final native String getErrorMessage() /*-{ return this.errorMessage; }-*/;
 
-  public final native String getProntoFileHandle() /*-{ return this.prontoFileHandle; }-*/;
+  public final native String getResult() /*-{ return this.result; }-*/;
 
   public static native ProntoFileImportResultOverlay fromJSONString(String jsonString) /*-{
     return eval('(' + jsonString + ')');
