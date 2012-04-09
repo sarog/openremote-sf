@@ -46,7 +46,7 @@ public class IRCommandBuilderTest {
    public void testRightIRCommandBuilder() {
       IRCommand cmd = getCommand("testName", "VL++");
 
-      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("testName", cmd.getRemotename());
       Assert.assertEquals("VL++", cmd.getCommand());
    }
    
@@ -54,7 +54,7 @@ public class IRCommandBuilderTest {
    public void testIRCommandWithParam() {
       IRCommand cmd = getCommand("testName", "VL${param}");
       
-      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("testName", cmd.getRemotename());
       Assert.assertEquals("VL++", cmd.getCommand());
    }
 
