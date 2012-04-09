@@ -43,8 +43,25 @@
       <validations>
         <allowBlank>false</allowBlank>
         <maxLength>1000</maxLength>
-
         <regex message = "Enter valid HTTP URL">.*</regex>
+      </validations>
+    </attr>
+   
+    <!--
+     |  Optional definition of the HTTP method to use. This is useful if a REST API is called. Default: GET
+     +-->
+    <attr name = "method" label = "HTTP Method" options="GET,POST,PUT,DELETE">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+    
+    <!--
+     |  Data which is added to Post and Put methods as workload. For JSON REST API's this can be the JSON data
+     +-->
+    <attr name = "workload" label = "Workload">
+      <validations>
+        <allowBlank>true</allowBlank>
       </validations>
     </attr>
     
@@ -94,7 +111,11 @@
       </validations>
     </attr>
 
-
+    <attr name="jsonpath" label="JSONPath Expression to parse value out of JSON result">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
     
   </protocol>
 </openremote>
