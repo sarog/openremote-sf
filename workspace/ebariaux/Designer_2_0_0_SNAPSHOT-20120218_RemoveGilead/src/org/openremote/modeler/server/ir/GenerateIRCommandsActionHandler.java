@@ -11,6 +11,7 @@ import net.customware.gwt.dispatch.shared.DispatchException;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.server.DeviceCommandController;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceService;
@@ -27,34 +28,41 @@ import flexjson.JSONSerializer;
 
 public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIRCommandsAction, GenerateIRCommandsResult> {
 
+  private final static LogFacade log = LogFacade.getInstance(LogFacade.Category.ROOT);
+  
   private DeviceService deviceService;
   private DeviceCommandService deviceCommandService;
   private Configuration configuration;
   
   @Override
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
+    GenerateIRCommandsResult actionResult = new GenerateIRCommandsResult();
+    
     Representation r = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands").post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
     GenericResourceResultWithErrorMessage result = null;
     try {
       result = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.error("Communication error with IRService", e);
+      actionResult.setErrorMessage("Communication error with IRService");
     };
     
-    // TODO: check for error and return
-    // TODO: correctly handle return values -> in case of success for what to update and in error for error message 
-    
-    Device device = deviceService.loadById(action.getDevice().getOid());
-    @SuppressWarnings("unchecked")
-    List<DeviceCommandDetailsDTO> dtos = (List<DeviceCommandDetailsDTO>) result.getResult();
-    for (DeviceCommandDetailsDTO dto : dtos) {
-      DeviceCommand dc = DeviceCommandController.createDeviceCommandFromDTO(dto);
-      dc.setDevice(device);
-      deviceCommandService.save(dc);
+    if (result.getErrorMessage() != null) {
+      actionResult.setErrorMessage(result.getErrorMessage());
+    } else {
+      Device device = deviceService.loadById(action.getDevice().getOid());
+      @SuppressWarnings("unchecked")
+      List<DeviceCommandDetailsDTO> dtos = (List<DeviceCommandDetailsDTO>) result.getResult();
+      for (DeviceCommandDetailsDTO dto : dtos) {
+        DeviceCommand dc = DeviceCommandController.createDeviceCommandFromDTO(dto);
+        dc.setDevice(device);
+        deviceCommandService.save(dc);
+      }
+      
+      // TODO: populate return value with appropriate objects for client side UI update
     }
     
-    return new GenerateIRCommandsResult();
+    return actionResult;
   }
   
   @Override

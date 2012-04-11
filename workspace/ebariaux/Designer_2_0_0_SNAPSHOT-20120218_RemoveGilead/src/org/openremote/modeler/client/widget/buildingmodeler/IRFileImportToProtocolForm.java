@@ -92,7 +92,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
    private ArrayList<IRCommandInfo> selectedFunctions;
    @SuppressWarnings("unused")
    private ComboBox<IRLed> IRLed;
-   private Component wrapper;
+   private IRFileImportWindow wrapper;
    private Button submitBtn;
    protected static final String INFO_FIELD = "infoField";
 
@@ -104,7 +104,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param device
     *           the device
     */
-   public IRFileImportToProtocolForm(Component wrapper, String irServiceRootRestURL, String prontoFileHandle, DeviceDTO device) {
+   public IRFileImportToProtocolForm(IRFileImportWindow wrapper, String irServiceRootRestURL, String prontoFileHandle, DeviceDTO device) {
       super();
       this.prontoFileHandle = prontoFileHandle;
       this.device = device;
@@ -160,30 +160,33 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
               @Override
               public void onFailure(Throwable caught) {
-                form.unmask();
-                info.setText("Error : " + caught.getMessage());
-                info.setVisible(true);
-                submitBtn.setEnabled(true);
+                reportError(caught.getMessage());
               }
 
               @Override
               public void onSuccess(GenerateIRCommandsResult result) {
-                
-                // TODO: have an error message in result and check for that
-
-                // Clean-up imported Pronto file as we're done importing
-                ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
-                // Even if empty, the onReponse handler is required or call does not go through
-                clientResource.setOnResponse(new Uniform() {
-                  public void handle(Request request, Response response) {
-                  }
-                });
-                clientResource.delete();
-
-                IRFileImportToProtocolForm.this.hide();                
-                wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
-
-                
+                if (result.getErrorMessage() != null) {
+                  reportError(result.getErrorMessage());
+                } else {
+                  // Clean-up imported Pronto file as we're done importing
+                  ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
+                  clientResource.setOnResponse(new Uniform() {
+                    // Even if empty, the onReponse handler is required or call does not go through
+                    public void handle(Request request, Response response) {
+                    }
+                  });
+                  clientResource.delete();
+  
+                  IRFileImportToProtocolForm.this.hide();                
+                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+                }
+              }
+              
+              protected void reportError(String message) {
+                form.unmask();
+                info.setText("Error : " + message);
+                info.setVisible(true);
+                submitBtn.setEnabled(true);
               }
             });
          }
