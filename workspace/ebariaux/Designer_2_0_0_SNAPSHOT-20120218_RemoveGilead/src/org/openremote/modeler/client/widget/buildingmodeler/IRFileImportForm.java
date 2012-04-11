@@ -71,10 +71,6 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
 
 /**
  * IR File Command Import Form.
@@ -110,7 +106,7 @@ public class IRFileImportForm extends CommonForm {
 
    ListStore<BeanModel> listStore;
 
-   protected Component wrapper;
+   protected IRFileImportWindow wrapper;
    
    private String irServiceRootRestURL;   
    private String prontoFileHandle;
@@ -123,7 +119,7 @@ public class IRFileImportForm extends CommonForm {
     * @param deviceBeanModel
     *           the device bean model
     */
-   public IRFileImportForm(final Component wrapper, BeanModel deviceBeanModel) {
+   public IRFileImportForm(final IRFileImportWindow wrapper, BeanModel deviceBeanModel) {
 
       super();
 
@@ -194,7 +190,7 @@ public class IRFileImportForm extends CommonForm {
           String jsonString = response.getEntity().getText();
           BrandsResultOverlay importResult = BrandsResultOverlay.fromJSONString(jsonString);
           if (importResult.getErrorMessage() != null) {
-            // TODO : reportError(importResult.getErrorMessage());
+            wrapper.setErrorMessage(importResult.getErrorMessage());
          } else {
           if (brandInfos == null) {
             brandInfos = new ListStore<BeanModel>();
@@ -228,7 +224,7 @@ public class IRFileImportForm extends CommonForm {
           brandInfoList.setVisible(true);
          }
         } catch (IOException e) {
-          e.printStackTrace(); // TODO
+          wrapper.setErrorMessage("Error connecting to server");
         }
       }
     });
@@ -248,7 +244,7 @@ public class IRFileImportForm extends CommonForm {
           String jsonString = response.getEntity().getText();
           DevicesResultOverlay importResult = DevicesResultOverlay.fromJSONString(jsonString);
           if (importResult.getErrorMessage() != null) {
-            // TODO : reportError(importResult.getErrorMessage());
+            wrapper.setErrorMessage(importResult.getErrorMessage());
          } else {
           if (deviceInfos == null) {
             deviceInfos = new ListStore<BeanModel>();
@@ -283,8 +279,7 @@ public class IRFileImportForm extends CommonForm {
           deviceInfoList.setVisible(true);
          }
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          wrapper.setErrorMessage("Error connecting to server");
         }
       }
     });
@@ -305,7 +300,7 @@ public class IRFileImportForm extends CommonForm {
           String jsonString = response.getEntity().getText();
           CodeSetsResultOverlay importResult = CodeSetsResultOverlay.fromJSONString(jsonString);
           if (importResult.getErrorMessage() != null) {
-            // TODO : reportError(importResult.getErrorMessage());
+            wrapper.setErrorMessage(importResult.getErrorMessage());
          } else {
           if (codeSetInfos == null) {
             codeSetInfos = new ListStore<BeanModel>();
@@ -345,8 +340,7 @@ public class IRFileImportForm extends CommonForm {
           codeSetInfoList.setVisible(true);
          }
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          wrapper.setErrorMessage("Error connecting to server");
         }
       }
     });
@@ -367,7 +361,7 @@ public class IRFileImportForm extends CommonForm {
           String jsonString = response.getEntity().getText();
           IRCommandsResultOverlay importResult = IRCommandsResultOverlay.fromJSONString(jsonString);
           if (importResult.getErrorMessage() != null) {
-            // TODO : reportError(importResult.getErrorMessage());
+            wrapper.setErrorMessage(importResult.getErrorMessage());
          } else {
           if (listStore == null) {
             listStore = new ListStore<BeanModel>();
@@ -441,8 +435,7 @@ public class IRFileImportForm extends CommonForm {
           wrapper.unmask();
          }
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          wrapper.setErrorMessage("Error connecting to server");
         }
       }
     });
