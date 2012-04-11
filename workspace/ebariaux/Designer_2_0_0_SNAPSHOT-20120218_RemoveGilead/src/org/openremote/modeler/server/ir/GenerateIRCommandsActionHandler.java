@@ -19,13 +19,19 @@ import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.userdetails.UserDetails;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIRCommandsAction, GenerateIRCommandsResult> {
 
   private final static LogFacade log = LogFacade.getInstance(LogFacade.Category.ROOT);
@@ -38,7 +44,17 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
     GenerateIRCommandsResult actionResult = new GenerateIRCommandsResult();
     
-    Representation r = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands").post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
+    ClientResource resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");    
+    
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    UserDetails userDetails = null;
+    if (principal instanceof UserDetails) {
+      userDetails = (UserDetails) principal;
+      resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userDetails.getUsername(), userDetails.getPassword());
+    }
+
+    Representation r = resource.post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
+    
     GenericResourceResultWithErrorMessage result = null;
     try {
       result = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
