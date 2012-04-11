@@ -146,8 +146,12 @@ public class IRFileImportWindow extends FormWindow {
       form.clear();
       form.clearState();
       loadBtn.enable();
-      errorLabel.setText(errorMessage);
-      errorLabel.setVisible(true);
+      setErrorMessage(errorMessage);
+   }
+   
+   public void setErrorMessage(String errorMessage) {
+     errorLabel.setText(errorMessage);
+     errorLabel.setVisible(true);
    }
 
    /**
