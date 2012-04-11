@@ -24,6 +24,10 @@ import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.selenium.DebugId;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -31,6 +35,8 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -56,6 +62,7 @@ public class IRFileImportWindow extends FormWindow {
    private LabelField errorLabel;
    private Button loadBtn;
    private Button resetBtn;
+   private String prontoFileHandle;
 
    public IRFileImportWindow(BeanModel deviceBeanModel) {
       super();
@@ -70,7 +77,7 @@ public class IRFileImportWindow extends FormWindow {
       importForm.disable();
       show();
    }
-
+   
    /**
     * Initialize the window
     * 
@@ -81,9 +88,27 @@ public class IRFileImportWindow extends FormWindow {
       
       UtilsProxy.getIrServiceRestRootUrl(new AsyncSuccessCallback<String>() {        
         @Override
-        public void onSuccess(String result) {
+        public void onSuccess(final String result) {
           form.setAction(result + "ProntoFile");
           importForm.setIrServiceRootRestURL(result);
+          
+          addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowHide(WindowEvent we) {
+              if (prontoFileHandle != null) {
+                // Clean-up imported Pronto file as we're done importing
+                ClientResource clientResource = new ClientResource(result + "ProntoFile/" + prontoFileHandle);
+                clientResource.setOnResponse(new Uniform() {
+                  // Even if empty, the onReponse handler is required or call does not go through
+                  public void handle(Request request, Response response) {
+                  }
+                });
+                clientResource.delete();
+              }
+              super.windowHide(we);
+            }            
+          });
         }
       });
       form.setEncoding(Encoding.MULTIPART);
@@ -128,7 +153,8 @@ public class IRFileImportWindow extends FormWindow {
                  importForm.setVisible(true);
                  importWindow.unmask();
                  importForm.enable();               
-                 importForm.setProntoFileHandle(importResult.getResult());               
+                 prontoFileHandle = importResult.getResult();
+                 importForm.setProntoFileHandle(prontoFileHandle);               
                  importForm.showBrands();
               }
             }
