@@ -65,5 +65,6 @@
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet-jse.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
 	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
+	<classpathentry kind="lib" path="lib/core/gxt3/gxt-3.0.0-rc.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
