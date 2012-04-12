@@ -30,6 +30,8 @@ import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
@@ -89,6 +91,15 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
                   (aSwitch.getSwitchCommandOffRef() != null)?aSwitch.getSwitchCommandOffRef().getDisplayName():null,
                   (aSwitch.getSwitchSensorRef() != null)?aSwitch.getSwitchSensorRef().getDisplayName():null,
                   aSwitch.getDevice().getDisplayName());
+  }
+  
+  public static SwitchDTO createSwitchDTO(Switch aSwitch) {
+    SwitchDTO switchDTO = new SwitchDTO(aSwitch.getOid(), aSwitch.getDisplayName());
+    DeviceCommand dc = aSwitch.getSwitchCommandOnRef().getDeviceCommand();
+    switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+    dc = aSwitch.getSwitchCommandOffRef().getDeviceCommand();
+    switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+    return switchDTO;
   }
 
   @Override
