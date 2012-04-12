@@ -137,6 +137,19 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      return deviceDTO;
    }
 
+   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
+     Device device = deviceService.loadById(oid);
+     
+     // TODO: have common code (with above method) in utility method
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
+     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
+     for (DeviceCommand dc : device.getDeviceCommands()) {
+       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+     }
+     deviceDTO.setDeviceCommands(dcDTOs);
+     return deviceDTO;
+   }
+   
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());

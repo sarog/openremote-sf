@@ -193,7 +193,6 @@ public class TreePanelBuilder {
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
            BeanModel beanModel = (BeanModel)o;
            
-           
            if (beanModel.getBean() instanceof TreeFolderBean) {
              TreeFolderBean treeFolderBean = (TreeFolderBean)beanModel.getBean();
              if (treeFolderBean.getType() == Constants.DEVICES) {
@@ -212,7 +211,7 @@ public class TreePanelBuilder {
              }
            } else if(beanModel.getBean() instanceof DeviceDTO) {
                DeviceDTO device = (DeviceDTO) beanModel.getBean();
-               AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() { // TODO : have method to only return commands as children
+               AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithCommandChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() {
   
                   @Override
                   public void onSuccess(DeviceWithChildrenDTO result) {
