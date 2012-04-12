@@ -369,7 +369,7 @@ public class TreePanelBuilder {
            if (selectedCommandId != null) {
              for (BeanModel bm : ((List<BeanModel>)le.getData())) {
                DeviceCommandDTO dto = bm.getBean();
-               if (dto.getOid() == selectedCommandId) {
+               if (dto.getOid().equals(selectedCommandId)) {
                  tree.getSelectionModel().select(bm, false);
                }
              }
