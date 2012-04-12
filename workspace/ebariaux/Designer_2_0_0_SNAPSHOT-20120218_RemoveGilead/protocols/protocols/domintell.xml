@@ -39,7 +39,7 @@
 				<regex message="Known module types : BIR, DMR, TRP, DIM, D10, TSB, TE1, TE2, LC3, PBL">BIR|DMR|TRP|DIM|D10|TSB|TE1|TE2|LC3|PBL</regex>
 			</validations>
 		</attr>
-		<attr name="address" label="Address">
+		<attr name="address" label="Address" tooltipMessage="Address of the module to control">
 			<validations>
 				<allowBlank>false</allowBlank>
 				<!-- message is option -->
