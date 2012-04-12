@@ -78,6 +78,8 @@ public class ProtocolParser {
    /** The Constant NAME_ATTR_NAME. */
    private static final String NAME_ATTR_NAME = "name";
    
+   private static final String TOOLTIP_MESSAGE_ATTR_NAME = "tooltipMessage";
+   
    /** The Constant VALUE_ATTR_NAME for the attr default value. */
    private static final String VALUE_ATTR_NAME = "value";
    
@@ -162,6 +164,7 @@ public class ProtocolParser {
          ProtocolAttrDefinition attrDefinition = new ProtocolAttrDefinition();
          attrDefinition.setLabel(attr.attributeValue(LABEL_ATTR_NAME));
          attrDefinition.setName(attr.attributeValue(NAME_ATTR_NAME));
+         attrDefinition.setTooltipMessage(attr.attributeValue(TOOLTIP_MESSAGE_ATTR_NAME));
          attrDefinition.setValue(attr.attributeValue(VALUE_ATTR_NAME));
          String options = attr.attributeValue(OPTIONS_ATTR_NAME);
          if (options != null && !"".endsWith(options)) {
