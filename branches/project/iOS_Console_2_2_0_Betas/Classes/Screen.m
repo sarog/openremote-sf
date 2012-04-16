@@ -52,11 +52,11 @@
 }
 
 - (NSArray *)pollingComponentsIds {
-	NSMutableArray *ids = [[[NSMutableArray alloc] init] autorelease];
+	NSMutableSet *ids = [[[NSMutableSet alloc] init] autorelease];
 	for (LayoutContainer *layout in self.layouts) {		
 		[ids addObjectsFromArray:[layout pollingComponentsIds]];
 	}
-	return ids;
+	return [ids allObjects];
 }
 
 - (int)screenIdForOrientation:(UIDeviceOrientation)orientation {
