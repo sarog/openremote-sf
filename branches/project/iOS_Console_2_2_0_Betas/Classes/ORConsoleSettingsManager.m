@@ -104,9 +104,13 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
         if (!consoleSettings) {
             NSLog(@"Console settings non existant in DB, creating one");
             consoleSettings = [[NSEntityDescription insertNewObjectForEntityForName:@"ORConsoleSettings" inManagedObjectContext:self.managedObjectContext] retain];
-            
-            
-            // TODO: should have http://controller.openremote.org/ipad/controller as default server
+
+            // We add the public default controller to the list but we don't select it
+            // For now, we let the user choose the controller to use
+            // TODO: Final goal is use the local controller is auto-discovered, use the public one otherwise
+            ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
+            controller.primaryURL = @"http://controller.openremote.org/ipad/controller";
+            [consoleSettings addController:controller];
             
             [self saveConsoleSettings];
         }
