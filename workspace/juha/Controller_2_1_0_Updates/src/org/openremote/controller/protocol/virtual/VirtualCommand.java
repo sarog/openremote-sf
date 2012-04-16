@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -69,7 +69,9 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    */
   private String command = null;
 
-
+  /**
+   * TODO
+   */
   private String commandParam = null;
 
 
@@ -82,9 +84,12 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    * When this command's {@link #send()} method is called, the command name is stored as a
    * virtual device state value for the given device address.
    *
-   * @param address   arbitrary address string that is used to store the command value in memory
-   * @param command   arbitrary command string that is stored in memory and can be later retrieved
-   *                  via invoking {@link #read}.
+   * @param address
+   *            arbitrary address string that is used to store the command value in memory
+   *
+   * @param command
+   *            arbitrary command string that is stored in memory and can be later retrieved
+   *            via invoking {@link #read}.
    */
   public VirtualCommand(String address, String command)
   {
@@ -101,7 +106,7 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    *
    * @param address       arbitrary address string that is used to store the command parameter in
    *                      memory
-   * @param command       command name (not used)
+   * @param command       command name TODO (not used)
    * @param commandParam  command parameter value -- stored as a virtual device state value in
    *                      memory and can be later retrieved using this command's {@link #read}
    *                      method.
@@ -163,10 +168,13 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    * TODO: Sensors with 'custom' type have not been implemented yet.
    *
    *
-   * @param sensorType  type of the sensor that is associated to this command: 'switch', 'level'
-   *                    'range', 'custom', etc.
-   * @param sensorProperties  additional properties passed by the sensor to this read command
-   *                          implementation, if any
+   * @param sensorType
+   *          type of the sensor that is associated to this command: 'switch', 'level'
+   *          'range', 'custom', etc.
+   *
+   * @param sensorProperties
+   *          additional properties passed by the sensor to this read command
+   *          implementation, if any
    *
    *
    * @return    the value stored for this command's address (in memory) or a default value based
@@ -198,7 +206,9 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
 
         else
         {
-          log.warn("Was expecting either 'on' or 'off' for 'switch' type sensor, got " + state);
+          log.warn(
+              "Was expecting either 'on' or 'off' for 'switch' type sensor, got ''{0}''.", state
+          );
 
           return "off";
         }
@@ -218,16 +228,20 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
             int value = Integer.parseInt(state.trim());
 
             if (value > 100)
+            {
               return "100";
+            }
 
             if (value < 0)
+            {
               return "0";
+            }
 
             return "" + value;
           }
           catch (NumberFormatException e)
           {
-            log.warn("Can't parse LEVEL sensor value into a valid number: " + e.getMessage(), e);
+            log.warn("Can't parse LEVEL sensor value into a valid number: {0}", e, e.getMessage());
 
             return "0";
           }
@@ -249,9 +263,10 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
 
             return "" + value;
           }
+
           catch (NumberFormatException e)
           {
-            log.warn("Can't parse RANGE sensor value into a valid number: " + e.getMessage(), e);
+            log.warn("Can't parse RANGE sensor value into a valid number: {0}", e, e.getMessage());
 
             return "0";
           }
