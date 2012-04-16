@@ -69,6 +69,10 @@
         sipController = [[SipController alloc] init];
     #endif
 	
+    // First try to use local cache so the user can directly interact with the UI, and trigger the check for update after that
+    [updateController useLocalCache];
+    [self didUpdate]; // TODO: not really a good idea to send that ourself, but will do for now
+    
     // Delay so that loading message is displayed
     [self performSelector:@selector(checkConfigAndUpdate) withObject:nil afterDelay:0.0];
 }
@@ -98,14 +102,18 @@
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	log4Info(@"----------updateDidFinished------");
+    NSLog(@"Is App Launching %d", ([defaultViewController isAppLaunching]));
 
 	if ([defaultViewController isAppLaunching]) {//blocked from app launching, should refresh all groups.
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
+        
+        // EBR : this is what makes the UI display in the first place
+        
 		[defaultViewController initGroups];
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	} else {//blocked from sending command, should refresh command.
 		[defaultViewController refreshPolling];
 	}
+    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }
 
 #pragma mark delegate method of updateController
