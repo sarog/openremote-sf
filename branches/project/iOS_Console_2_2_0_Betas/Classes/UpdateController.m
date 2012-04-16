@@ -185,6 +185,11 @@
 	}
 }
 
+- (void)useLocalCache
+{
+    [definitionManager useLocalCacheDirectly];
+}
+
 #pragma mark call the delegate method which the the delegate implemented.
 - (void)didUpdate {
     NSLog(@">>UpdateController.didUpdate");

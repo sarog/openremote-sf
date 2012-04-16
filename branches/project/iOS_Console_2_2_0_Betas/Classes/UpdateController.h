@@ -59,4 +59,6 @@
 
 - (void)checkConfigAndUpdate;
 
+- (void)useLocalCache;
+
 @end
