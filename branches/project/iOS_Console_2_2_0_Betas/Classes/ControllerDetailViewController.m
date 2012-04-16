@@ -103,6 +103,20 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
     
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)] autorelease];
+        
+    UIView *footerView  = [[UIView alloc] init];
+    footerView.frame = CGRectMake(0, 0, self.view.frame.size.width, 50);
+    UIButton *deleteInstallBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];     
+    [deleteInstallBtn setFrame:CGRectMake(0, 0, 280, 44)];
+    [deleteInstallBtn setTitle:@"Delete" forState:UIControlStateNormal];
+    [deleteInstallBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:20]];
+    [deleteInstallBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [deleteInstallBtn addTarget:self action:@selector(deleteController:) forControlEvents:UIControlEventTouchUpInside];
+    UIImage *deleteGradient = [[UIImage imageNamed:@"delete_button.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(1, 5, 1, 5)];
+    [deleteInstallBtn setBackgroundImage:deleteGradient forState:UIControlStateNormal];    
+    [footerView addSubview:deleteInstallBtn];
+    deleteInstallBtn.center = footerView.center;
+    self.tableView.tableFooterView = footerView;    
     
     [self updateTableViewHeaderForGroupMemberFetchStatus];
 }
@@ -417,6 +431,20 @@
 - (void)refreshGroupMemberTableViewSection
 {
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)deleteController:(id)sender
+{
+    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Delete controller" message:@"Are you sure you want to delete this controller?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", nil];
+    [av show];
+    [av release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	if (buttonIndex == 1) {
+        [self.delegate didDeleteController:self.controller];
+	} 
 }
 
 @synthesize delegate;

@@ -28,11 +28,12 @@
 
 - (void)didAddController:(ORController *)controller;
 - (void)didEditController:(ORController *)controller;
+- (void)didDeleteController:(ORController *)controller;
 - (void)didFailToAddController;
 
 @end
 
-@interface ControllerDetailViewController : UITableViewController <UITextFieldDelegate> {
+@interface ControllerDetailViewController : UITableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
     
 }
 
