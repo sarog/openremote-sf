@@ -446,6 +446,8 @@
 		60EC86361410C68A003F5432 /* SliderSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86351410C68A003F5432 /* SliderSubController.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
+		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
+		60FA5DC6153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
@@ -999,6 +1001,7 @@
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScreen+ORAdditions.m"; sourceTree = "<group>"; };
+		60FA5DC4153C506500FA245E /* delete_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete_button.png; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = URLConnectionHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
@@ -1349,6 +1352,7 @@
 				60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */,
 				60950D9613CB115400B983E7 /* CheckMark.png */,
 				60950D9713CB115400B983E7 /* CheckMark@2x.png */,
+				60FA5DC4153C506500FA245E /* delete_button.png */,
 				60A61A821355FC8100A7C87E /* oldphone-mono.wav */,
 				60A61A831355FC8100A7C87E /* ringback.wav */,
 				60A61A861355FD1E00A7C87E /* linphonerc */,
@@ -2321,6 +2325,7 @@
 				6055688E13CF184E0035CC1A /* ControllerNOK@2x.png in Resources */,
 				6055689213CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */,
 				6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */,
+				60FA5DC5153C506500FA245E /* delete_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2364,6 +2369,7 @@
 				60366B8C144DCB9C004FED3B /* ControllerNOK@2x.png in Resources */,
 				60366B8D144DCB9C004FED3B /* ControllerRequiresAuthentication.png in Resources */,
 				60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */,
+				60FA5DC6153C506500FA245E /* delete_button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2871,7 +2877,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2907,7 +2913,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2941,7 +2947,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2975,7 +2981,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3094,7 +3100,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3148,7 +3154,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CD821073-D2FA-4F21-A9F0-E9FD849DC2E3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

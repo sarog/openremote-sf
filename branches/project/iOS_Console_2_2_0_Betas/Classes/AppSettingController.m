@@ -535,6 +535,15 @@
     [controller fetchGroupMembers];
 }
 
+- (void)didDeleteController:(ORController *)controller
+{
+    [self.navigationController popViewControllerAnimated:YES];
+
+    NSUInteger controllerIndex = [settingsManager.consoleSettings.controllers indexOfObject:controller];
+    [settingsManager.consoleSettings removeControllerAtIndex:controllerIndex];
+    [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:controllerIndex inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
 - (void)didFailToAddController
 {
     [self.navigationController popViewControllerAnimated:YES];
