@@ -1,0 +1,9 @@
+
+Controller 2.1.0 (2012-04-18 Formosa)
+=====================================
+
+  - Support 'Custom' sensor types with in-memory
+    virtual commands (ORCJAVA-217)
+
+ 
+
