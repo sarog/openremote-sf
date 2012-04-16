@@ -165,7 +165,7 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    *
    * Range behaves the same as 'level' but allows arbitrary integer to be stored. <p>
    *
-   * TODO: Sensors with 'custom' type have not been implemented yet.
+   * Sensor type 'custom' allows arbitrary string values to be returned from this implementation.
    *
    *
    * @param sensorType
@@ -273,9 +273,17 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
         }
 
 
+      case CUSTOM:
+
+        return (state == null) ? "" : state;
+
+
       default:
 
-        return "";
+        throw new Error(
+            "Unrecognized sensor type '" + sensorType + "'. Virtual command implementation must " +
+            "be updated to support this sensor type."
+        );
     }
   }
 }
