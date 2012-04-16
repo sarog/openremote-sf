@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -33,13 +33,12 @@ import org.openremote.controller.component.EnumSensorType;
 import org.jdom.Element;
 
 /**
- /**
-  * Test 'range' sensor state reads and writes on OpenRemote virtual room/device protocol.
-  *
-  * @see org.openremote.controller.protocol.virtual.VirtualCommand
-  *
-  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
-  */
+ * Test 'range' sensor state reads and writes on OpenRemote virtual room/device protocol.
+ *
+ * @see org.openremote.controller.protocol.virtual.VirtualCommand
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
 public class RangeStatusTest
 {
 
@@ -67,8 +66,7 @@ public class RangeStatusTest
    * Tests protocol read command behavior for 'range' sensor type when no explict command to
    * set state has been sent yet. Expecting a 'range' sensor to return '0' in such a case.
    */
-  @Test
-  public void testStatusDefaultValue()
+  @Test public void testStatusDefaultValue()
   {
     StatusCommand cmd = getReadCommand("test range default value");
 
