@@ -74,9 +74,12 @@ public class ScreenWebView extends ScreenComponent {
    protected void initial() {
       setLayout(new CenterLayout());
       center.setStyleAttribute("textAlign", "center");
-      center.setStyleAttribute("color", color);
+      center.setStyleAttribute("color", "#" + color);
       center.setStyleAttribute("fontSize", fontSize + "px");
       center.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
+      
+      setStyleAttribute("background-color", "#000000");
+      
       add(center);
       layout();
    }
