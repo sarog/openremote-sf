@@ -7,16 +7,13 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.utils.StringUtils;
 
-//Added by Selva
 public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwner {
 	
-   	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4815544266807672921L;;
-	private String url = "URL";
-	   private String userid = "";
-	   private String password = "";
+	private static final long serialVersionUID = -4815544266807672921L;
+	
+	private String url = "";
+	private String userid = "";
+	private String password = "";
 	
 	
 	   /** The ui label can change display image by the sensor. */
