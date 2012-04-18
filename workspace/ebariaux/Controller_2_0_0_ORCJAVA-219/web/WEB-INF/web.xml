@@ -293,7 +293,7 @@
   
  <servlet-mapping>  
     <servlet-name>restletServlet</servlet-name>  
-    <url-pattern>/rest2/*</url-pattern>
+    <url-pattern>/rest/capabilities</url-pattern>
   </servlet-mapping>
 
   <servlet>
