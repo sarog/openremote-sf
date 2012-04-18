@@ -9,12 +9,12 @@ public class ControllerApplication extends Application {
    @Override
    public synchronized Restlet createInboundRoot() {
 
-      System.out.println("Defining routes");
       // Create a router Restlet that routes each call to a new instance of HelloWorldResource.
        Router router = new Router(getContext());
 
-       // Defines only one route
-       router.attach("/capabilities", CapabilitiesResource.class);
+       // Route is what is after the servlet matching, this will be an issue with current configuration if we need more that one Restlet resource
+       // Either move all rest handling to Restlet, either create multiple applications 
+       router.attach("", CapabilitiesResource.class);
 
        return router;
    }
