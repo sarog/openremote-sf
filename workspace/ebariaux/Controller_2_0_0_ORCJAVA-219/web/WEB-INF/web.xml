@@ -291,6 +291,10 @@
     <servlet-name>controlRESTServlet</servlet-name>
     <url-pattern>/rest/control/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>controlRESTServlet</servlet-name>
+    <url-pattern>/rest/2.1/control/*</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>statusRESTServlet</servlet-name>
@@ -301,6 +305,10 @@
     <servlet-name>statusRESTServlet</servlet-name>
     <url-pattern>/rest/status/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>statusRESTServlet</servlet-name>
+    <url-pattern>/rest/2.1/status/*</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>StatusPollingRESTServlet</servlet-name>
@@ -310,6 +318,10 @@
   <servlet-mapping>
     <servlet-name>StatusPollingRESTServlet</servlet-name>
     <url-pattern>/rest/polling/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>StatusPollingRESTServlet</servlet-name>
+    <url-pattern>/rest/2.1/polling/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -381,6 +393,11 @@
 
   <servlet-mapping>
     <servlet-name>ListPanelIDs</servlet-name>
+    <url-pattern>/rest/2.1/panels</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ListPanelIDs</servlet-name>
     <url-pattern>/rest/panels/</url-pattern>
   </servlet-mapping>
 
@@ -392,6 +409,10 @@
   <servlet-mapping>
     <servlet-name>FindPanelByID</servlet-name>
     <url-pattern>/rest/panel/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>FindPanelByID</servlet-name>
+    <url-pattern>/rest/2.1/panel/*</url-pattern>
   </servlet-mapping>
 
 
