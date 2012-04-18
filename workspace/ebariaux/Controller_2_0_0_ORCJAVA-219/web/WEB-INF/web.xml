@@ -283,6 +283,20 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>restletServlet</servlet-name>
+      <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
+      <init-param>
+            <param-name>org.restlet.application</param-name>
+            <param-value>org.openremote.controller.rest.ControllerApplication</param-value>
+      </init-param>
+   </servlet>
+  
+ <servlet-mapping>  
+    <servlet-name>restletServlet</servlet-name>  
+    <url-pattern>/rest2/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>controlRESTServlet</servlet-name>
     <servlet-class>org.openremote.controller.rest.ControlCommandRESTServlet</servlet-class>
   </servlet>
