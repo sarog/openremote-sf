@@ -513,7 +513,7 @@ public class Deployer
    *   services like this method.
    *
    *   See ORCJAVA-143, ORCJAVA-144, ORCJAVA-151, ORCJAVA-152, ORCJAVA-153, ORCJAVA-155,
-   *       ORCJAVA-158, ORCJAVA-182, ORCJAVA-186, ORCJAVA-190
+   *       ORCJAVA-158, ORCJAVA-182, ORCJAVA-186
    *
    */
   public Element queryElementById(int id) throws InitializationException
@@ -697,7 +697,8 @@ public class Deployer
     // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
 
     deviceStateCache.shutdown();
-    controllerXMLElementCache.clear();
+
+    xmlElementCache.clear();
     
     modelBuilder = null;                // null here indicates to other services that this deployer
                                         // installer currently has no object model deployed
