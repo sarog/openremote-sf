@@ -64,6 +64,15 @@
             </validations>
         </attr>
 
+	    <!--
+	     |  Optional definition of the temperature scale to use. Default: Celsius
+	     +-->
+	    <attr name = "temperatureScale" label = "Temp. scale" options="Celsius,Fahrenheit,Kelvin,Rankine">
+	      <validations>
+	        <allowBlank>true</allowBlank>
+	      </validations>
+	    </attr>
+    
         <attr name="pollingInterval" label="Polling interval in form of (1s, 1m, 1h) or just milliseconds">
             <validations>
                 <allowBlank>false</allowBlank>
