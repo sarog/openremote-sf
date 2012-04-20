@@ -1,9 +1,11 @@
 
-Controller 2.1.0 (2012-04-18 Formosa)
-=====================================
+Controller 2.1.0 (2012-04-18 Twin Galaxies)
+===========================================
 
   - Support 'Custom' sensor types with in-memory
     virtual commands (ORCJAVA-217)
+  - Runtime performance optimization to avoid 
+    unnecessary XML parsing/XPath use (ORCJAVA-190)
 
  
 
