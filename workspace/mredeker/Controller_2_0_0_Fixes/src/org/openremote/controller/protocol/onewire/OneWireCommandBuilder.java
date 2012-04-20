@@ -20,15 +20,15 @@
  */
 package org.openremote.controller.protocol.onewire;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.utils.Logger;
-import org.openremote.controller.utils.Strings;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
-
-import java.util.List;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 
 /**
@@ -51,7 +51,8 @@ public class OneWireCommandBuilder implements CommandBuilder
   private final static String STR_ATTRIBUTE_NAME_DEVICE_ADDRESS = "deviceAddress";
   private final static String STR_ATTRIBUTE_NAME_FILENAME = "filename";
   private final static String STR_ATTRIBUTE_NAME_POLLING_INTERVAL = "pollingInterval";
-
+  private final static String STR_ATTRIBUTE_NAME_TEMPERATURE_SCALE = "temperatureScale";
+  
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -61,7 +62,9 @@ public class OneWireCommandBuilder implements CommandBuilder
 
   // Implements CommandBuilder --------------------------------------------------------------------
 
-  @Override public Command build(Element element)
+  @SuppressWarnings("unchecked")
+  @Override 
+  public Command build(Element element)
   {
       logger.debug("Building 1-Wire command");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
@@ -71,6 +74,7 @@ public class OneWireCommandBuilder implements CommandBuilder
       int port = INT_DEFAULT_OWSERVER_PORT;
       String deviceAddress = null;
       String filename = null;
+      String tempScaleStr = null;
       String pollingIntervalStr = null;
       int pollingInterval = 0;
 
@@ -110,10 +114,22 @@ public class OneWireCommandBuilder implements CommandBuilder
           pollingIntervalStr = elementValue;
           logger.debug("OneWire Command: pollingInterval = " + pollingIntervalStr);
         }
+        
+        else if (STR_ATTRIBUTE_NAME_TEMPERATURE_SCALE.equals(elementName))
+        {
+           tempScaleStr = elementValue;
+          logger.debug("OneWire Command: temperatureScale = " + tempScaleStr);
+        }
       }
 
       // process/parse values
-
+      TemperatureScale tempScale = null;
+      if ((tempScaleStr == null) || (tempScaleStr.trim().length() == 0)) {
+         tempScale = TemperatureScale.Celsius;
+      } else {
+         tempScale = TemperatureScale.valueOf(tempScaleStr.trim());
+      }
+      
       try
       {
           port = Integer.parseInt(portStr);
@@ -149,6 +165,6 @@ public class OneWireCommandBuilder implements CommandBuilder
 
       logger.debug("OneWire Command created successfully");
       
-      return new OneWireCommand(hostname, port, deviceAddress, filename, pollingInterval);
+      return new OneWireCommand(hostname, port, deviceAddress, filename, pollingInterval, tempScale);
   }
 }
