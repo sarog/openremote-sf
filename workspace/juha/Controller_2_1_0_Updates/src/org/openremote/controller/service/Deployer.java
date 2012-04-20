@@ -193,6 +193,15 @@ public class Deployer
    */
   private boolean isPaused = false;
 
+  /**
+   * Flag to indicate if the controller has been started (is ready to deploy controller
+   * definitions).  <p>
+   *
+   * This is used internally to enforce API call requirements of {@link #startController}
+   * (should only be called once).
+   */
+  private boolean started = false;
+
 
   /**
    * Human readable service name for this deployer service. Useful for some logging and
@@ -263,9 +272,17 @@ public class Deployer
    *
    * @see #softRestart()
    */
-  public void startController()
+  public synchronized void startController()
   {
-    // TODO : ORCJAVA-179 -- make sure this can only be called once, see related ORCJAVA-180
+    if (started)
+    {
+      log.error(
+          "Method startController() should only be called once per VM process. Use softRestart() " +
+          "for hot-deploying new controller state."
+      );
+
+      return;
+    }
 
     try
     {
@@ -298,6 +315,8 @@ public class Deployer
 
     controllerDefinitionWatch.start();
 
+    started = true;
+    
     // TODO : ORCJAVA-180, register shutdown hook
   }
 
