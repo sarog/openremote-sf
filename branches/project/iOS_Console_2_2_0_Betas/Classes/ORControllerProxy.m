@@ -73,6 +73,14 @@
     return [panelsFetcher autorelease];
 }
 
+- (ORControllerCapabilitiesFetcher *)fetchCapabilitiesWithDelegate:(NSObject <ORControllerCapabilitiesFetcherDelegate> *)delegate
+{
+    ORControllerCapabilitiesFetcher *capabilitiesFetcher = [[ORControllerCapabilitiesFetcher alloc] initWithController:self.controller];
+    capabilitiesFetcher.delegate = delegate;
+    [capabilitiesFetcher fetch];
+    return [capabilitiesFetcher autorelease];
+}
+
 - (ORControllerGroupMembersFetcher *)fetchGroupMembersWithDelegate:(NSObject <ORControllerGroupMembersFetcherDelegate> *)delegate
 {
     ORControllerGroupMembersFetcher *groupMembersFetcher = [[ORControllerGroupMembersFetcher alloc] initWithController:self.controller];

@@ -148,7 +148,7 @@
 		60366BE6144DCB9C004FED3B /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
 		60366BE7144DCB9C004FED3B /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
 		60366BE8144DCB9C004FED3B /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
-		60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
+		60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2_0.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2_0.m */; };
 		60366BEA144DCB9C004FED3B /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
 		60366BEB144DCB9C004FED3B /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
 		60366BEC144DCB9C004FED3B /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
@@ -413,7 +413,7 @@
 		60A61A851355FC8100A7C87E /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A831355FC8100A7C87E /* ringback.wav */; };
 		60A61A871355FD1E00A7C87E /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
 		60A85C85131F965500C7918A /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
-		60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
+		60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2_0.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2_0.m */; };
 		60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
 		60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
 		60AFC7EC140E79320001B78F /* ScreenSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EB140E79320001B78F /* ScreenSubController.m */; };
@@ -448,6 +448,12 @@
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
 		60FA5DC6153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
+		60FAD470153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */; };
+		60FAD471153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */; };
+		60FAD47F154050B1008DA70E /* Capabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD47E154050B1008DA70E /* Capabilities.m */; };
+		60FAD480154050B1008DA70E /* Capabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD47E154050B1008DA70E /* Capabilities.m */; };
+		60FAD4841540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD4831540571E008DA70E /* ControllerVersionSelectAPI.m */; };
+		60FAD4851540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD4831540571E008DA70E /* ControllerVersionSelectAPI.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
@@ -934,8 +940,8 @@
 		60A61A861355FD1E00A7C87E /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
 		60A85C83131F965500C7918A /* Web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Web.h; sourceTree = "<group>"; };
 		60A85C84131F965500C7918A /* Web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Web.m; sourceTree = "<group>"; };
-		60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2.h; sourceTree = "<group>"; };
-		60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2.m; sourceTree = "<group>"; };
+		60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2_0.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ControllerButtonAPI_v2_0.h; sourceTree = "<group>"; };
+		60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2_0.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_0.m; sourceTree = "<group>"; };
 		60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2_1.h; sourceTree = "<group>"; };
 		60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_1.m; sourceTree = "<group>"; };
 		60AA14C213E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerGroupMembersFetchStatusIconProvider.h; sourceTree = "<group>"; };
@@ -1002,6 +1008,12 @@
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScreen+ORAdditions.m"; sourceTree = "<group>"; };
 		60FA5DC4153C506500FA245E /* delete_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete_button.png; sourceTree = "<group>"; };
+		60FAD46E153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerCapabilitiesFetcher.h; sourceTree = "<group>"; };
+		60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerCapabilitiesFetcher.m; sourceTree = "<group>"; };
+		60FAD47D154050B1008DA70E /* Capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capabilities.h; sourceTree = "<group>"; };
+		60FAD47E154050B1008DA70E /* Capabilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Capabilities.m; sourceTree = "<group>"; };
+		60FAD4821540571E008DA70E /* ControllerVersionSelectAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerVersionSelectAPI.h; sourceTree = "<group>"; };
+		60FAD4831540571E008DA70E /* ControllerVersionSelectAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerVersionSelectAPI.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = URLConnectionHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
@@ -1839,10 +1851,12 @@
 		60AA14B413E9651D008ACE4A /* API Implementation */ = {
 			isa = PBXGroup;
 			children = (
-				60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2.h */,
-				60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */,
+				60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2_0.h */,
+				60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2_0.m */,
 				60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */,
 				60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */,
+				60FAD4821540571E008DA70E /* ControllerVersionSelectAPI.h */,
+				60FAD4831540571E008DA70E /* ControllerVersionSelectAPI.m */,
 			);
 			name = "API Implementation";
 			sourceTree = "<group>";
@@ -1900,6 +1914,8 @@
 				60AFCEE813729AA400A811D4 /* ControllerRequest.m */,
 				6055687713CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.h */,
 				6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */,
+				60FAD46E153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.h */,
+				60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */,
 			);
 			name = "Controller communication";
 			sourceTree = "<group>";
@@ -2120,6 +2136,8 @@
 				608FBDD7132120D700C9089F /* LocalCommand.m */,
 				608FBDD9132120DD00C9089F /* LocalTask.h */,
 				608FBDDA132120DD00C9089F /* LocalTask.m */,
+				60FAD47D154050B1008DA70E /* Capabilities.h */,
+				60FAD47E154050B1008DA70E /* Capabilities.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -2527,7 +2545,7 @@
 				6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
 				6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
 				6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
-				60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
+				60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2_0.m in Sources */,
 				60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 				60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 				6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
@@ -2584,6 +2602,9 @@
 				60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */,
 				60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */,
 				606281121446F5F6001123BD /* RuntimeUtils.m in Sources */,
+				60FAD470153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */,
+				60FAD47F154050B1008DA70E /* Capabilities.m in Sources */,
+				60FAD4841540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2680,7 +2701,7 @@
 				60366BE6144DCB9C004FED3B /* ORControllerGroupMembersFetcher.m in Sources */,
 				60366BE7144DCB9C004FED3B /* NSURLRequest+ORAdditions.m in Sources */,
 				60366BE8144DCB9C004FED3B /* DataCapturingNSURLConnectionDelegate.m in Sources */,
-				60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2.m in Sources */,
+				60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2_0.m in Sources */,
 				60366BEA144DCB9C004FED3B /* ControllerButtonAPI_v2_1.m in Sources */,
 				60366BEB144DCB9C004FED3B /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 				60366BEC144DCB9C004FED3B /* StyleValue1TextEntryCell.m in Sources */,
@@ -2737,6 +2758,9 @@
 				60366C1F144DCB9C004FED3B /* UIImage+ORAdditions.m in Sources */,
 				60366C20144DCB9C004FED3B /* UIScreen+ORAdditions.m in Sources */,
 				60366C21144DCB9C004FED3B /* RuntimeUtils.m in Sources */,
+				60FAD471153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */,
+				60FAD480154050B1008DA70E /* Capabilities.m in Sources */,
+				60FAD4851540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

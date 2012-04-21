@@ -25,6 +25,7 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
+NSString *const kControllerFetchCapabilitiesPath = @"rest/capabilities";
 NSString *const kControllerControlPath = @"rest/control";
 NSString *const kControllerStatusPath = @"rest/status";
 NSString *const kControllerPollingPath = @"rest/polling";

@@ -23,6 +23,7 @@
 #import "ORControllerProxy.h"
 #import "NotificationConstant.h"
 #import "Definition.h"
+#import "Capabilities.h"
 
 @interface ORController ()
 
@@ -49,6 +50,17 @@
 
 // TODO EBR watch groupMembers change and reset activeGroupMember if required
 
+- (void)awakeFromFetch
+{
+    [super awakeFromFetch];
+    self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
+}
+
+- (void)awakeFromInsert
+{
+    [super awakeFromInsert];
+    self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
+}
 
 - (void)fetchGroupMembers
 {
@@ -83,6 +95,9 @@
     groupMembersFetchStatus = GroupMembersFetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
     self.groupMembersFetcher = nil;
+    
+    // Now get the capabilities, all group members are supposed to have the same
+    [self.proxy fetchCapabilitiesWithDelegate:self];
 }
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
@@ -101,6 +116,41 @@
     self.groupMembersFetcher = nil;
 }
 
+#pragma mark - ORControllerCapabilitiesFetcherDelegate
+
+- (void)fetchCapabilitiesDidSucceedWithCapabilities:(Capabilities *)capabilities
+{
+    // nil means server can not advertise -> use default API version
+    if (!capabilities) {
+        self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
+        return;
+    }
+    
+    // Find the versions in common between client and server
+    NSMutableSet *supportedVersions = [NSMutableSet setWithArray:capabilities.supportedVersions];
+    [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
+    
+    // Sort supported versions descending
+    NSArray *versions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
+
+    // First in the array is the best one
+    if ([versions count] > 0) {
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
+        self.controllerAPIVersion = [f stringFromNumber:[versions objectAtIndex:0]];
+        [f release];
+    }
+    
+    // TODO: use log4j    
+    NSLog(@"Selected version >%@<", self.controllerAPIVersion);
+}
+
+- (void)fetchCapabilitiesDidFailWithError:(NSError *)error
+{
+    // TODO
+    NSLog(@"fetch capabilities error %@", error);
+}
+
 #pragma mark -
 
 - (void)didTurnIntoFault
@@ -109,6 +159,7 @@
     proxy = nil;
     self.groupMembersFetcher = nil;
     self.definition = nil;
+    self.controllerAPIVersion = nil;
     [super didTurnIntoFault];
 }
 
@@ -173,5 +224,6 @@
 @synthesize groupMembersFetchStatus;
 @synthesize groupMembersFetcher;
 @synthesize definition;
+@synthesize controllerAPIVersion;
 
 @end

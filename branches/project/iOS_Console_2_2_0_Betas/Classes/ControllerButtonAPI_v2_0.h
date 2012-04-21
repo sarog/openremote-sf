@@ -21,6 +21,6 @@
 #import <Foundation/Foundation.h>
 #import "ButtonSubController.h"
 
-@interface ControllerButtonAPI_v2 : NSObject<ControllerButtonAPI>
+@interface ControllerButtonAPI_v2_0 : NSObject<ControllerButtonAPI>
 
 @end

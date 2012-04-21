@@ -22,6 +22,7 @@
 #import "ORControllerCommandSender.h"
 #import "ORControllerPollingSender.h"
 #import "ORControllerPanelsFetcher.h"
+#import "ORControllerCapabilitiesFetcher.h"
 #import "ORControllerGroupMembersFetcher.h"
 
 @class Component;
@@ -33,6 +34,7 @@
 @interface ORControllerProxy : NSObject {
 }
 
+- (ORControllerCapabilitiesFetcher *)fetchCapabilitiesWithDelegate:(NSObject <ORControllerCapabilitiesFetcherDelegate> *)delegate;
 - (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate;
 - (ORControllerPollingSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
 - (ORControllerPollingSender *)requestPollingForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;

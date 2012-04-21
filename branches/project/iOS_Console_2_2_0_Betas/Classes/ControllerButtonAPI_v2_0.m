@@ -18,9 +18,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "ControllerButtonAPI_v2.h"
+#import "ControllerButtonAPI_v2_0.h"
 
-@implementation ControllerButtonAPI_v2
+@implementation ControllerButtonAPI_v2_0
 
 - (void)sendPressCommand:(ButtonSubController *)sender {
 	[sender sendCommandRequest:@"click"];
