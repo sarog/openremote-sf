@@ -58,7 +58,7 @@
 }
 
 - (BOOL)canUseLocalCache {
-	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
+	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]]]];
 }
 
 
@@ -123,8 +123,8 @@
 - (void)downloadXml {
 	NSLog(@"start download xml");
 	[self changeLoadingMessage:@"download panel.xml ..."];
-	NSLog(@"download panel.xml from %@",[ServerDefinition panelXmlRESTUrl]);
-	[FileUtils downloadFromURL:[ServerDefinition panelXmlRESTUrl]  path:[DirectoryDefinition xmlCacheFolder]];
+	NSLog(@"download panel.xml from %@", [ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]);
+	[FileUtils downloadFromURL:[ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]  path:[DirectoryDefinition xmlCacheFolder]];
 	NSLog(@"xml file downloaded.");
 }
 

@@ -56,7 +56,7 @@
 
     controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
     controllerRequest.delegate = self;
-    [controllerRequest getRequestWithPath:kControllerFetchPanelsPath];
+    [controllerRequest getRequestWithPath:[ServerDefinition controllerFetchPanelsPathForController:self.controller]];
 }
 
 #pragma mark NSXMLParserDelegate implementation

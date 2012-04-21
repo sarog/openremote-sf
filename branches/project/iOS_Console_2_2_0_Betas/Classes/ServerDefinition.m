@@ -26,21 +26,57 @@
 #import "ORController.h"
 
 NSString *const kControllerFetchCapabilitiesPath = @"rest/capabilities";
-NSString *const kControllerControlPath = @"rest/control";
-NSString *const kControllerStatusPath = @"rest/status";
-NSString *const kControllerPollingPath = @"rest/polling";
-NSString *const kControllerFetchPanelsPath = @"rest/panels";
 NSString *const kControllerFetchGroupMembersPath = @"rest/servers";
 
+#define NO_VERSION_IN_REST_VERSION  @"2.0"
+
 @implementation ServerDefinition
+
++ (NSString *)controllerControlPathForController:(ORController *)aController
+{
+    if ([aController.controllerAPIVersion isEqualToString:NO_VERSION_IN_REST_VERSION]) {
+        return @"rest/control";
+    }
+    return [NSString stringWithFormat:@"rest/%@/control", aController.controllerAPIVersion];
+}
+
++ (NSString *)controllerStatusPathForController:(ORController *)aController
+{
+    if ([aController.controllerAPIVersion isEqualToString:NO_VERSION_IN_REST_VERSION]) {
+        return @"rest/status";
+    }
+    return [NSString stringWithFormat:@"rest/%@/status", aController.controllerAPIVersion];
+}
+
++ (NSString *)controllerPollingPathForController:(ORController *)aController
+{
+    if ([aController.controllerAPIVersion isEqualToString:NO_VERSION_IN_REST_VERSION]) {
+        return @"rest/polling";
+    }
+    return [NSString stringWithFormat:@"rest/%@/polling", aController.controllerAPIVersion];
+}
+
++ (NSString *)controllerFetchPanelsPathForController:(ORController *)aController
+{
+    if ([aController.controllerAPIVersion isEqualToString:NO_VERSION_IN_REST_VERSION]) {
+        return @"rest/panels";
+    }
+    return [NSString stringWithFormat:@"rest/%@/panels", aController.controllerAPIVersion];
+}
 
 + (NSString *)serverUrl {
     return ((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL;
 }
 
-+ (NSString *)panelXmlRESTUrl {
-	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",
-                          [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
++ (NSString *)panelXmlRESTUrlForController:(ORController *)aController {
+	NSString *panelUrl;
+
+    if ([aController.controllerAPIVersion isEqualToString:NO_VERSION_IN_REST_VERSION]) {
+        panelUrl = [NSString stringWithFormat:@"rest/panel/%@", aController.selectedPanelIdentity];
+    } else {
+        panelUrl = [NSString stringWithFormat:@"rest/%@/panel/%@", aController.controllerAPIVersion, aController.selectedPanelIdentity];
+    }
+    
 	NSString *panelXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:panelUrl];
 	return panelXmlUrl;
 }
