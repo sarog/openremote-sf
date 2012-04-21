@@ -24,11 +24,8 @@
 #import "Image.h"
 #import "ClippedUIImage.h"
 #import "NotificationConstant.h"
-#ifdef API_v2_1
-#import "ControllerButtonAPI_v2_1.h"
-#else
-#import "ControllerButtonAPI_v2.h"
-#endif
+
+#import "ControllerVersionSelectAPI.h"
 
 @interface ButtonSubController()
 
@@ -68,12 +65,10 @@
         [uiButton setTitle:self.button.name forState:UIControlStateNormal];
         self.view = uiButton;
         
-        // TODO: creating this here for backwards compatibility but should be injected from somewhere depending on controller capability
-#ifdef API_v2_1
-        self.controllerButtonAPI = [[[ControllerButtonAPI_v2_1 alloc] init] autorelease];    
-#else
-        self.controllerButtonAPI = [[[ControllerButtonAPI_v2 alloc] init] autorelease];    
-#endif
+
+        // TODO/ comment
+        self.controllerButtonAPI = (id <ControllerButtonAPI>)[[[ControllerVersionSelectAPI alloc] initWithAPIProtocol:@protocol(ControllerButtonAPI)] autorelease];
+        
     }
     return self;
 }

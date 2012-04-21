@@ -20,6 +20,7 @@
  */
 #import <UIKit/UIKit.h>
 
+extern NSString *const kControllerFetchCapabilitiesPath;
 extern NSString *const kControllerControlPath;
 extern NSString *const kControllerStatusPath;
 extern NSString *const kControllerPollingPath;

@@ -21,6 +21,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "ORControllerGroupMembersFetcher.h"
+#import "ORControllerCapabilitiesFetcher.h"
 
 @class ORConsoleSettings;
 @class ORGroupMember;
@@ -42,7 +43,7 @@ enum {
 typedef NSInteger ORControllerGroupMembersFetchStatus;
 
 
-@interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate> {
+@interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate, ORControllerCapabilitiesFetcherDelegate> {
 @private
     ORGroupMember *activeGroupMember;
     ORControllerProxy *proxy;
@@ -61,6 +62,8 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 @property (nonatomic, readonly) NSString *selectedPanelIdentityDisplayString;
 
 @property (nonatomic, assign) ORGroupMember *activeGroupMember;
+
+@property (nonatomic, retain) NSString *controllerAPIVersion;
 
 @property (nonatomic, readonly, retain) ORControllerProxy *proxy;
 @property (nonatomic, readonly) ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
