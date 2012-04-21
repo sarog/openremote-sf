@@ -32,6 +32,7 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "ServerDefinition.h"
 
 #define TIMEOUT_INTERVAL 120
 
@@ -91,6 +92,10 @@
 
     
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
+    
+    
+    // TODO EBR : Using this call is an issue if this is called from main thread, we're blocking everything !!!
+    // Must a least of alternative ways to check for controller (async)
 	[connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog(@"%@", [ServerDefinition serverUrl]);
 	[request release];
@@ -116,7 +121,8 @@
 
 	NSHTTPURLResponse *resp = nil;
 	NSError *error = nil;
-	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrl] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]; 
+	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]
+                                            stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]; 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
 	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
