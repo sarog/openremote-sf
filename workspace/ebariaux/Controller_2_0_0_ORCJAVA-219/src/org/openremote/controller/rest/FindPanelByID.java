@@ -66,7 +66,7 @@ public class FindPanelByID extends RESTAPI
   @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
     String url = request.getRequestURL().toString().trim();
-    String regexp = "rest\\/panel\\/(.*)";
+    String regexp = "rest/(\\d+\\.\\d+/)?panel/(.*)";
     Pattern pattern = Pattern.compile(regexp);
     Matcher matcher = pattern.matcher(url);
 
@@ -74,7 +74,7 @@ public class FindPanelByID extends RESTAPI
     {
       try
       {
-        String panelName = matcher.group(1);
+        String panelName = matcher.group(2);
         String decodedPanelName = panelName;
         decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
 
