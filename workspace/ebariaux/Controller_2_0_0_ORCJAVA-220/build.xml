@@ -55,7 +55,9 @@
   <property name = "classes.dir" value = "${build.dir}/classes"/>
   <property name = "output.dir" value = "output"/>
   <property name = "output.controller.dir" value = "${output.dir}/OpenRemote-Controller-${version}/webapps/controller"/>
+  <property name = "output.controller-sip.dir" value = "${output.dir}/OpenRemote-Controller-SIP-${version}/webapps/controller"/>
   <property name = "runtime.dir" value = "runtime/apache-tomcat-6.0.18"/>
+  <property name = "runtime-sip.dir" value = "runtime/apache-tomcat-6.0.18-SIP"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "web.dir" value = "web"/>
   <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
@@ -352,7 +354,62 @@
 
   </target>
 
-  
+
+  <!--
+   | PACKAGE-SIP:
+   |
+   | Packages the controller app with runtime container with SIP support and zips it up.
+   +-->
+  <target name = "package-sip" depends = "compile"
+          description = "Package controller with runtime with SIP support distributable.">
+
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Creating Controller Runtime..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <mkdir dir = "${output.dir}/OpenRemote-Controller-SIP-${version}"/>
+
+    <!--
+     | Copy the pre-configured runtime...
+     +-->
+    <copy todir = "${output.dir}/OpenRemote-Controller-SIP-${version}">
+      <fileset dir = "${runtime-sip.dir}"/>
+    </copy>
+
+    <!--
+     | Copy the preconfigured controller web directory into runtime...
+     +-->
+    <copy todir = "${output.controller-sip.dir}">
+      <fileset dir = "${web.dir}"/>
+    </copy>
+
+    <!--
+     | Copy compiled classes into the controller web app...
+     +-->
+    <copy todir = "${output.controller-sip.dir}/WEB-INF/classes">
+      <fileset dir = "${classes.dir}"/>
+    </copy>
+
+    <!--
+     | Copy libs into controller web app...
+     +-->
+    <copy todir = "${output.controller-sip.dir}/WEB-INF/lib">
+      <fileset dir = "${build.dir}/lib"/>
+    </copy>
+
+    <!--
+     | Zip it up...
+     +-->
+    <zip basedir = "${output.dir}"
+         destfile = "${output.dir}/OpenRemote-Controller-SIP-${version}.zip"
+         whenempty = "fail">
+
+    </zip> 
+
+  </target>
+
+ 
   <!--
     | WAR:
     |
