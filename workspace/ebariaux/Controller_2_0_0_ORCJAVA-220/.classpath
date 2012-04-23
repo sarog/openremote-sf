@@ -50,5 +50,6 @@
 	<classpathentry kind="lib" path="lib/core/restlet-jee-2.0.11/org.restlet.ext.servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jee-2.0.11/org.restlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jee-2.0.11/org.restlet.ext.xml.jar"/>
+	<classpathentry kind="lib" path="lib/compile/sipservlet-1_1-api.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
