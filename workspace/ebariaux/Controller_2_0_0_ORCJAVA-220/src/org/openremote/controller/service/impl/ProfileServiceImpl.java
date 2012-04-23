@@ -253,6 +253,16 @@ public class ProfileServiceImpl implements ProfileService
       }
     }
 
+    //Begin add locallogic.
+    Element locallogicEle = root.getChild("locallogic", root.getNamespace());
+    if (locallogicEle != null) {
+       Element cloneLocallogicEle = (Element) locallogicEle.clone();
+       cloneLocallogicEle.setNamespace(root.getNamespace());
+       newRoot.addContent(cloneLocallogicEle);
+    }
+    //End
+
+    
     return targetDocument;
   }
 
