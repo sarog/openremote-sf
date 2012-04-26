@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * @author Rainer Hitz
  */
-public abstract class EspComPortAdapterBase implements EspPort
+public abstract class AbstractEspComPortAdapter implements EspPort
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ public abstract class EspComPortAdapterBase implements EspPort
    * @param port           serial port
    * @param configuration  EnOcean Serial Protocol (ESP) port configuration
    */
-  public EspComPortAdapterBase(Port port, EspPortConfiguration configuration)
+  public AbstractEspComPortAdapter(Port port, EspPortConfiguration configuration)
   {
     if(port == null)
     {
@@ -236,12 +236,12 @@ public abstract class EspComPortAdapterBase implements EspPort
       );
     }
 
-    byte[] data = msg.getContent();
+    if(msg == null || msg.getContent() == null)
+    {
+      return new byte[] {};
+    }
 
-    if(null == data)
-      data = new byte[] {};
-
-    return data;
+    return msg.getContent();
   }
 
 

@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Rainer Hitz
  */
-public class Esp3ComPortAdapter extends EspComPortAdapterBase
+public class Esp3ComPortAdapter extends AbstractEspComPortAdapter
 {
 
   // Constructors -------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ public class Esp3ComPortAdapter extends EspComPortAdapterBase
   }
 
 
-  // Implements EspComPortAdapterBase -----------------------------------------------------------
+  // Implements AbstractEspComPortAdapter -------------------------------------------------------
 
   /**
    * {@inheritDoc}
