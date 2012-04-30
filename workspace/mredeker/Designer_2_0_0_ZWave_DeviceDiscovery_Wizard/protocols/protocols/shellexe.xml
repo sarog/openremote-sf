@@ -47,6 +47,18 @@
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
-
+        
+        <attr name="pollingInterval" label="Polling interval in form of (1s, 1m, 1h) or just milliseconds" >
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+        
+        <attr name="regex" label="RegularExpression to parse value out of result" >
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+        
     </protocol>
 </openremote>
