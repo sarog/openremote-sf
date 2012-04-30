@@ -41,6 +41,12 @@
                 <regex message="The KeyCode to sent to the TV">.*</regex>
             </validations>
         </attr>
+        
+        <attr name="ipAddress" label="IP-Address">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
 
     </protocol>
 </openremote>
