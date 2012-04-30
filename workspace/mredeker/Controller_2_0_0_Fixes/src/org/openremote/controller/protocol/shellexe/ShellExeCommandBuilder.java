@@ -94,7 +94,7 @@ public class ShellExeCommandBuilder implements CommandBuilder {
         }
       } catch (Exception e1)
       {
-        throw new NoSuchCommandException("Unable to create HttpGet command, pollingInterval could not be converted into milliseconds");
+        throw new NoSuchCommandException("Unable to create ShellExe command, pollingInterval could not be converted into milliseconds");
       }
       logger.debug("ShellExe Command created successfully");
 
