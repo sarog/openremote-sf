@@ -19,6 +19,8 @@ package org.openremote.controller.protocol.shellexe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,8 +49,8 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    /** The thread that is used to peridically update the sensor */
    private Thread pollingThread;
    
-   /** The sensor which is updated */
-   private Sensor sensor;
+   /** The list of sensors which all use the same command */
+   private List<Sensor> sensors;
    
    /** Boolean to indicate if polling thread should run */
    boolean doPoll = false;
@@ -64,6 +66,7 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
       this.commandParams = commandParams;
       this.regex = regex;
       this.pollingInterval = pollingInterval;
+      sensors = new ArrayList<Sensor>();
    }
 
    /**
@@ -81,17 +84,22 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
      if (pollingInterval == null) {
        throw new RuntimeException("Could not set sensor because no polling interval was given");
      }
-     this.sensor = sensor;
-     this.doPoll = true;
-     pollingThread = new Thread(this);
-     pollingThread.setName("Polling thread for sensor: " + sensor.getName());
-     pollingThread.start();
+     this.sensors.add(sensor);
+     if (sensors.size() == 1) {
+        this.doPoll = true;
+        pollingThread = new Thread(this);
+        pollingThread.setName("Polling thread for sensor: " + sensor.getName());
+        pollingThread.start();
+     }
    }
 
    @Override
    public void stop(Sensor sensor)
    {
-     this.doPoll = false;
+      this.sensors.remove(sensor);
+      if (sensors.size() == 0) {
+         this.doPoll = false;
+      }
    }
    
    private String executeCommand() {
@@ -119,22 +127,26 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    
    @Override
    public void run() {
-      logger.debug("Sensor thread started for sensor: " + sensor);
+      logger.debug("Thread started: " + pollingThread.getName());
       while (doPoll) {
          String readValue = this.executeCommand();
          if (regex != null) {
            Pattern regexPattern = Pattern.compile(regex);
            Matcher matcher = regexPattern.matcher(readValue);
            if (matcher.find()) {
-             String result = matcher.group();
-             logger.info("result of regex evaluation: " + result);
-             sensor.update(result);
+              for (int i = 0; i < sensors.size(); i++) {
+                 sensors.get(i).update(matcher.group(i+1));
+              }
            } else {
              logger.info("regex evaluation did not find a match");
-             sensor.update("N/A");
+             for (Sensor sensor : sensors) {
+               sensor.update("N/A");
+            }
            }
          } else {
-           sensor.update(readValue);
+            for (Sensor sensor : sensors) {
+               sensor.update(readValue);
+            }
          }
          try {
             Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
@@ -143,6 +155,6 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
             pollingThread.interrupt();
          }
       }
-      logger.debug("*** Out of run method: " + sensor);
+      logger.debug("*** Out of run method: " + pollingThread.getName());
    }
 }
