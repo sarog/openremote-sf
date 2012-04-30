@@ -41,6 +41,7 @@ import org.openremote.controller.model.sensor.Sensor;
  * @author Marcus Redeker 2009-4-26
  * @author Phillip Lavender
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Ivan Martinez
  */
 public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
 
@@ -170,8 +171,12 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       char[] buffer = new char[200];
       int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
-      String reply = new String(buffer, 0, readChars);
-      return reply;
+      if (readChars > 0) {
+         String reply = new String(buffer, 0, readChars);
+         return reply;
+      } else {
+         return "";
+      }
    }
 
 
