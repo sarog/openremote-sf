@@ -278,4 +278,23 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
       }
       logger.debug("*** Out of run method: " + sensor);
    }
+
+   
+   
+   // Getters used by testsuite -----------------------------------------------------------------------
+   
+   public String getCommand() {
+      return command;
+   }
+
+   public String getIp() {
+      return ip;
+   }
+
+   public Integer getPort() {
+      return port;
+   }
+   
+   
+   
 }
