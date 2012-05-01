@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.exec.CommandLine;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -88,7 +89,7 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
      if (sensors.size() == 1) {
         this.doPoll = true;
         pollingThread = new Thread(this);
-        pollingThread.setName("Polling thread for sensor: " + sensor.getName());
+        pollingThread.setName("Polling thread for sensor: " + sensor.getName()+ " " +sensor.getSensorID());
         pollingThread.start();
      }
    }
@@ -106,15 +107,18 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
       logger.debug("Will start shell command: " + commandPath + " and use params: " + commandParams);
       String result = "";
       try {
-         Process proc = null;
-         if (commandParams == null) {
-            proc = Runtime.getRuntime().exec(new String[] { commandPath });
-         } else {
-            proc = Runtime.getRuntime().exec(new String[] { commandPath, commandParams });
+         // Use the commons-exec to parse correctly the arguments, respecting quotes and spaces to separate parameters
+         final CommandLine cmdLine = new CommandLine(commandPath);
+         if (commandParams != null) {
+            cmdLine.addArguments(commandParams);
          }
-         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-         StringBuffer resultBuffer = new StringBuffer();
+         final Process proc = Runtime.getRuntime().exec(cmdLine.toStrings());
+         final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+         final StringBuffer resultBuffer = new StringBuffer();
+         boolean first = true;
          for (String tmp = reader.readLine(); tmp != null; tmp = reader.readLine()) {
+            if (!first) resultBuffer.append("\n");
+            first = false;
             resultBuffer.append(tmp);
          }
          result = resultBuffer.toString();
