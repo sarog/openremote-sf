@@ -26,6 +26,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -94,7 +95,7 @@ public class TelnetCommandBuilder implements CommandBuilder {
            logger.debug("Telnet Command: pollingInterval = " + interval);
          } else if (STR_ATTRIBUTE_NAME_COMMAND.equals(elementName))
          {
-           command = elementValue;
+           command = CommandUtil.parseStringWithParam(element, elementValue);
            logger.debug("Telnet Command: command = " + command);
          } else if (STR_ATTRIBUTE_NAME_TIMEOUT.equals(elementName))
          {
