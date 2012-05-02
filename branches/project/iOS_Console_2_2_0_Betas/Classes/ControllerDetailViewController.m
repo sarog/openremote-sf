@@ -25,6 +25,7 @@
 #import "TextFieldCell.h"
 #import "StyleValue1TextEntryCell.h"
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
+#import "NSURLHelper.h"
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
 #define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
@@ -221,24 +222,15 @@
 #pragma mark - UITextField delegate
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
-{
-    
-    NSString *url;
+{    
     if (textField == self.urlField) {
-        url = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (![url hasPrefix:@"http://"] && ![url hasPrefix:@"https://"]) {
-            url = [NSString stringWithFormat:@"http://%@", url];
-        }
-        
-        // TODO: have better validation and non intrusive error messages
-        // Following test does fail if what follows :// is totally wrong
-        
-        NSURL *nsUrl = [NSURL URLWithString:url];
-        if ([nsUrl scheme] == nil) {
+        NSURL *nsUrl = [NSURLHelper parseControllerURL:textField.text];
+        if (!nsUrl) {
             self.urlField.textColor = [UIColor redColor];
             self.controllerErrorLabel.text = @"Invalid controller URL";
             return NO;
         }
+        NSString *url = [nsUrl absoluteString];
         self.urlField.textColor = self.originalTextColor;
         self.controllerErrorLabel.text = @"";
         self.urlField.text = url;
@@ -251,6 +243,13 @@
     [self.controller cancelGroupMembersFetch];
     self.groupMembers = nil;
     [self.controller fetchGroupMembers];
+    return YES;
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    self.controllerErrorLabel.text = @"";
+    self.urlField.textColor = self.originalTextColor;
     return YES;
 }
 
