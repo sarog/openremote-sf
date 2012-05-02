@@ -444,6 +444,13 @@
 		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
 		60EC86311410C23E003F5432 /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
 		60EC86361410C68A003F5432 /* SliderSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86351410C68A003F5432 /* SliderSubController.m */; };
+		60F3867D15517AFE0089F8BD /* NSURLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3867C15517AFE0089F8BD /* NSURLHelper.m */; };
+		60F3867E15517AFE0089F8BD /* NSURLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3867C15517AFE0089F8BD /* NSURLHelper.m */; };
+		60F3867F15517AFE0089F8BD /* NSURLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3867C15517AFE0089F8BD /* NSURLHelper.m */; };
+		60F3868415517C030089F8BD /* NSURLHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3868315517C030089F8BD /* NSURLHelperTest.m */; };
+		60F3868A15517CFA0089F8BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
+		60F3868C15517D020089F8BD /* ORControllerCapabilitiesFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */; };
+		60F3868D15517D120089F8BD /* Capabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD47E154050B1008DA70E /* Capabilities.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
@@ -940,7 +947,7 @@
 		60A61A861355FD1E00A7C87E /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
 		60A85C83131F965500C7918A /* Web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Web.h; sourceTree = "<group>"; };
 		60A85C84131F965500C7918A /* Web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Web.m; sourceTree = "<group>"; };
-		60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2_0.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ControllerButtonAPI_v2_0.h; sourceTree = "<group>"; };
+		60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2_0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2_0.h; sourceTree = "<group>"; };
 		60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2_0.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_0.m; sourceTree = "<group>"; };
 		60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2_1.h; sourceTree = "<group>"; };
 		60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_1.m; sourceTree = "<group>"; };
@@ -1003,6 +1010,10 @@
 		60EC86301410C23E003F5432 /* ColorPickerSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerSubController.m; sourceTree = "<group>"; };
 		60EC86341410C68A003F5432 /* SliderSubController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderSubController.h; sourceTree = "<group>"; };
 		60EC86351410C68A003F5432 /* SliderSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderSubController.m; sourceTree = "<group>"; };
+		60F3867B15517AFE0089F8BD /* NSURLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSURLHelper.h; sourceTree = "<group>"; };
+		60F3867C15517AFE0089F8BD /* NSURLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSURLHelper.m; sourceTree = "<group>"; };
+		60F3868215517C030089F8BD /* NSURLHelperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSURLHelperTest.h; sourceTree = "<group>"; };
+		60F3868315517C030089F8BD /* NSURLHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSURLHelperTest.m; sourceTree = "<group>"; };
 		60F8A9CE143DCEBA00176004 /* UIImage+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
@@ -1920,6 +1931,15 @@
 			name = "Controller communication";
 			sourceTree = "<group>";
 		};
+		60F3868115517BEB0089F8BD /* helper */ = {
+			isa = PBXGroup;
+			children = (
+				60F3868215517C030089F8BD /* NSURLHelperTest.h */,
+				60F3868315517C030089F8BD /* NSURLHelperTest.m */,
+			);
+			name = helper;
+			sourceTree = "<group>";
+		};
 		8C267AB10FD27DE20054743E /* exception */ = {
 			isa = PBXGroup;
 			children = (
@@ -1936,6 +1956,7 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				60F3868115517BEB0089F8BD /* helper */,
 				6082FEA8139643C4005A75C2 /* ButtonTest.h */,
 				6082FEA9139643C4005A75C2 /* ButtonTest.m */,
 				8CEFDAEF11BF444100CEDC24 /* util */,
@@ -2015,6 +2036,8 @@
 				8CEB4E7E10B2827200A67721 /* LogoutHelper.m */,
 				33267E6F10E47C5B00E3AE42 /* NSDateHelper.h */,
 				33267E7010E47C5B00E3AE42 /* NSDateHelper.m */,
+				60F3867B15517AFE0089F8BD /* NSURLHelper.h */,
+				60F3867C15517AFE0089F8BD /* NSURLHelper.m */,
 			);
 			name = helper;
 			sourceTree = "<group>";
@@ -2605,6 +2628,7 @@
 				60FAD470153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */,
 				60FAD47F154050B1008DA70E /* Capabilities.m in Sources */,
 				60FAD4841540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
+				60F3867D15517AFE0089F8BD /* NSURLHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2761,6 +2785,7 @@
 				60FAD471153EFCF8008DA70E /* ORControllerCapabilitiesFetcher.m in Sources */,
 				60FAD480154050B1008DA70E /* Capabilities.m in Sources */,
 				60FAD4851540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
+				60F3867F15517AFE0089F8BD /* NSURLHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2768,6 +2793,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60F3868D15517D120089F8BD /* Capabilities.m in Sources */,
+				60F3868C15517D020089F8BD /* ORControllerCapabilitiesFetcher.m in Sources */,
+				60F3868A15517CFA0089F8BD /* RuntimeUtils.m in Sources */,
 				608D985D14190956001A7534 /* DeferredBinding.m in Sources */,
 				608D985E14190956001A7534 /* LabelDeferredBinding.m in Sources */,
 				608D985F14190956001A7534 /* ScreenDeferredBinding.m in Sources */,
@@ -2866,6 +2894,8 @@
 				609C57DE137430F60093C03A /* PanelXMLParsingTests.m in Sources */,
 				609C57DF137430F60093C03A /* ScreenTest.m in Sources */,
 				6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */,
+				60F3867E15517AFE0089F8BD /* NSURLHelper.m in Sources */,
+				60F3868415517C030089F8BD /* NSURLHelperTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
