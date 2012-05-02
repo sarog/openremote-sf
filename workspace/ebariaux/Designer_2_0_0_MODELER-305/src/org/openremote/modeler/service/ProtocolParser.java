@@ -90,7 +90,9 @@ public class ProtocolParser {
    private static final String DISPLAY_NAME_ATTR_NAME = "displayName";
    
    /** The Constant TAG_NAME_ATTR_NAME. */
-   private static final String TAG_NAME_ATTR_NAME = "tagName"; 
+   private static final String TAG_NAME_ATTR_NAME = "tagName";
+   
+   private static final String TAG_CLIENT_ATTR_NAME = "client";
    
    /** The Constant MESSAGE_ATTR_NAME. */
    private static final String MESSAGE_ATTR_NAME = "message";
@@ -141,6 +143,7 @@ public class ProtocolParser {
          protocolDefinition.setDisplayName(protocolElement.attributeValue(DISPLAY_NAME_ATTR_NAME));
          // set protocol tagName
          protocolDefinition.setTagName(protocolElement.attributeValue(TAG_NAME_ATTR_NAME));
+         protocolDefinition.setClientSide(Boolean.valueOf(protocolElement.attributeValue(TAG_CLIENT_ATTR_NAME)));
 
          // parse attr element start
          protocolDefinition.getAttrs().addAll(parseAttributs(protocolElement));

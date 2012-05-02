@@ -57,6 +57,9 @@ public class ProtocolDefinition implements Serializable {
    /** The tag name. */
    private String tagName;
    
+   /** Flag indicating if protocol is client side. */
+   private boolean clientSide;
+   
    /** The attrs. */
    private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();
 
@@ -96,7 +99,15 @@ public class ProtocolDefinition implements Serializable {
       this.tagName = tagName;
    }
 
-   /**
+   public boolean isClientSide() {
+    return clientSide;
+  }
+
+  public void setClientSide(boolean clientSide) {
+    this.clientSide = clientSide;
+  }
+
+  /**
     * Gets the attrs.
     * 
     * @return the attrs
@@ -134,6 +145,9 @@ public class ProtocolDefinition implements Serializable {
       if (tagName != null ? !tagName.equals(that.tagName) : that.tagName != null) {
          return false;
       }
+      if (clientSide != that.clientSide) {
+        return false;
+      }
       if (attrs == null && that.attrs == null) {
          return true;
       }
@@ -159,6 +173,7 @@ public class ProtocolDefinition implements Serializable {
    public int hashCode() {
       int result = (displayName != null) ? displayName.hashCode() : 0;
       result += (tagName != null) ? tagName.hashCode() : 0;
+      result += (clientSide)?17:0;
       return 31 * result + (attrs != null ? attrs.hashCode() : 0);
    }
 }
