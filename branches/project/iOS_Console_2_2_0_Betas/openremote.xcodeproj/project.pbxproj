@@ -451,6 +451,12 @@
 		60F3868A15517CFA0089F8BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
 		60F3868C15517D020089F8BD /* ORControllerCapabilitiesFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */; };
 		60F3868D15517D120089F8BD /* Capabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 60FAD47E154050B1008DA70E /* Capabilities.m */; };
+		60F3869C1552ACF00089F8BD /* LocalParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3869B1552ACF00089F8BD /* LocalParser.m */; };
+		60F3869D1552ACF00089F8BD /* LocalParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3869B1552ACF00089F8BD /* LocalParser.m */; };
+		60F3869E1552ACF00089F8BD /* LocalParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F3869B1552ACF00089F8BD /* LocalParser.m */; };
+		60F386A61552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
+		60F386A71552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
+		60F386A81552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
@@ -1014,6 +1020,10 @@
 		60F3867C15517AFE0089F8BD /* NSURLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSURLHelper.m; sourceTree = "<group>"; };
 		60F3868215517C030089F8BD /* NSURLHelperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSURLHelperTest.h; sourceTree = "<group>"; };
 		60F3868315517C030089F8BD /* NSURLHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSURLHelperTest.m; sourceTree = "<group>"; };
+		60F3869A1552ACF00089F8BD /* LocalParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalParser.h; sourceTree = "<group>"; };
+		60F3869B1552ACF00089F8BD /* LocalParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalParser.m; sourceTree = "<group>"; };
+		60F386A41552B6440089F8BD /* LocalController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalController.h; sourceTree = "<group>"; };
+		60F386A51552B6450089F8BD /* LocalController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalController.m; sourceTree = "<group>"; };
 		60F8A9CE143DCEBA00176004 /* UIImage+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
@@ -1514,6 +1524,8 @@
 				60987EBF1402B10600967DEA /* CommandParser.m */,
 				60987EC21402B14500967DEA /* TaskParser.h */,
 				60987EC31402B14C00967DEA /* TaskParser.m */,
+				60F3869A1552ACF00089F8BD /* LocalParser.h */,
+				60F3869B1552ACF00089F8BD /* LocalParser.m */,
 			);
 			name = Parser;
 			sourceTree = "<group>";
@@ -2159,6 +2171,8 @@
 				608FBDD7132120D700C9089F /* LocalCommand.m */,
 				608FBDD9132120DD00C9089F /* LocalTask.h */,
 				608FBDDA132120DD00C9089F /* LocalTask.m */,
+				60F386A41552B6440089F8BD /* LocalController.h */,
+				60F386A51552B6450089F8BD /* LocalController.m */,
 				60FAD47D154050B1008DA70E /* Capabilities.h */,
 				60FAD47E154050B1008DA70E /* Capabilities.m */,
 			);
@@ -2629,6 +2643,8 @@
 				60FAD47F154050B1008DA70E /* Capabilities.m in Sources */,
 				60FAD4841540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
 				60F3867D15517AFE0089F8BD /* NSURLHelper.m in Sources */,
+				60F3869C1552ACF00089F8BD /* LocalParser.m in Sources */,
+				60F386A61552B6470089F8BD /* LocalController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2786,6 +2802,8 @@
 				60FAD480154050B1008DA70E /* Capabilities.m in Sources */,
 				60FAD4851540571E008DA70E /* ControllerVersionSelectAPI.m in Sources */,
 				60F3867F15517AFE0089F8BD /* NSURLHelper.m in Sources */,
+				60F3869E1552ACF00089F8BD /* LocalParser.m in Sources */,
+				60F386A81552B6470089F8BD /* LocalController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2896,6 +2914,8 @@
 				6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */,
 				60F3867E15517AFE0089F8BD /* NSURLHelper.m in Sources */,
 				60F3868415517C030089F8BD /* NSURLHelperTest.m in Sources */,
+				60F3869D1552ACF00089F8BD /* LocalParser.m in Sources */,
+				60F386A71552B6470089F8BD /* LocalController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

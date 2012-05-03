@@ -44,6 +44,7 @@
 #import "SensorParser.h"
 #import "CommandParser.h"
 #import "TaskParser.h"
+#import "LocalParser.h"
 #import "XMLEntity.h"
 
 #ifdef API_v2_1
@@ -72,7 +73,7 @@
         [self.depRegistry registerParserClass:[ScreenParser class] endSelector:@selector(endScreenElement:) forTag:@"screen"];
         [self.depRegistry registerParserClass:[GroupParser class] endSelector:@selector(endGroupElement:) forTag:@"group"];
         [self.depRegistry registerParserClass:[TabBarParser class] endSelector:@selector(endTabBarElement:) forTag:@"tabbar"];
-        [self.depRegistry registerParserClass:[LocalLogicParser class] endSelector:@selector(endLocalLogicElement:) forTag:@"locallogic"];
+        [self.depRegistry registerParserClass:[LocalLogicParser class] endSelector:@selector(endLocalLogicElement:) forTag:@"locallogic"]; // TODO: remove
         [self.depRegistry registerParserClass:[AbsoluteLayoutContainerParser class] endSelector:@selector(endLayoutElement:) forTag:ABSOLUTE];
         [self.depRegistry registerParserClass:[GridLayoutContainerParser class] endSelector:@selector(endLayoutElement:) forTag:GRID];
         [self.depRegistry registerParserClass:[GestureParser class] endSelector:@selector(endGestureElement:) forTag:GESTURE];
@@ -92,10 +93,15 @@
         [self.depRegistry registerParserClass:[SwitchParser class] endSelector:@selector(endSwitchElement:) forTag:SWITCH];
         [self.depRegistry registerParserClass:[SliderParser class] endSelector:@selector(endSliderElement:) forTag:SLIDER];
         [self.depRegistry registerParserClass:[ColorPickerParser class] endSelector:@selector(endColorPickerElement:) forTag:COLORPICKER];
-        [self.depRegistry registerParserClass:[TabBarItemParser class] endSelector:@selector(endTabBarItemElement:) forTag:ITEM];        
-        [self.depRegistry registerParserClass:[SensorParser class] endSelector:@selector(endSensorElement:) forTag:SENSOR];        
+        [self.depRegistry registerParserClass:[TabBarItemParser class] endSelector:@selector(endTabBarItemElement:) forTag:ITEM];
+        
+        [self.depRegistry registerParserClass:[SensorParser class] endSelector:@selector(endSensorElement:) forTag:SENSOR];        // TODO: remove
         [self.depRegistry registerParserClass:[CommandParser class] endSelector:@selector(endCommandElement:) forTag:COMMAND];        
         [self.depRegistry registerParserClass:[TaskParser class] endSelector:@selector(endTaskElement:) forTag:TASK];
+        
+        
+        
+        [self.depRegistry registerParserClass:[LocalParser class] endSelector:@selector(endLocalElement:) forTag:@"local"];
     }
     return self;
 }
