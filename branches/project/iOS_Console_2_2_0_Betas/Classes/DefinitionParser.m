@@ -22,7 +22,8 @@
 #import "ScreenParser.h"
 #import "GroupParser.h"
 #import "TabBarParser.h"
-#import "LocalLogicParser.h"
+#import "LocalLogicParser.h" // TODO: remove
+#import "LocalParser.h"
 #import "Definition.h"
 #import "DefinitionElementParserRegister.h"
 
@@ -47,7 +48,8 @@
         [self addKnownTag:@"screen"];
         [self addKnownTag:@"group"];
         [self addKnownTag:@"tabbar"];
-        [self addKnownTag:@"locallogic"];
+        [self addKnownTag:@"local"];
+        [self addKnownTag:@"locallogic"]; // TODO: remove
         Definition *tmp;
         tmp = [[Definition alloc] init];
         self.definition = tmp;
@@ -72,9 +74,15 @@
     self.definition.tabBar = tabBarParser.tabBar;
 }
 
+// TODO: remove
 - (void)endLocalLogicElement:(LocalLogicParser *)localLogicParser
 {
     self.definition.localLogic = localLogicParser.localLogic;
+}
+
+- (void)endLocalElement:(LocalParser *)localParser
+{
+    
 }
 
 - (NSString *)handledTag
