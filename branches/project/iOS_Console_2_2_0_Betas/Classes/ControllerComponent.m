@@ -10,7 +10,7 @@
 
 @implementation ControllerComponent
 
-- (NSDictionary *)commandsPerAction
+- (NSDictionary *)commandsPerAction:(LocalController *)localController
 {
     return nil;
 }
