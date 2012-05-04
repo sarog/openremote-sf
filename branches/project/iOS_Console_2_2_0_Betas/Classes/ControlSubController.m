@@ -27,6 +27,7 @@
 #import "Definition.h"
 #import "Component.h"
 #import "AppDelegate.h"
+#import "LocalCommandExecutor.h"
 #import "ORControllerProxy.h"
 
 @implementation ControlSubController
@@ -37,15 +38,8 @@
 
 	// Check for local command first
 	NSArray *localCommands = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandsForComponentId:self.component.componentId action:commandType];
-	if (localCommands) {
-        NSLog(@"Should trigger local command %@", localCommands);
-/*
- TODO
- 
- Class clazz = NSClassFromString(localCommand.className);
-		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
-		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
- */
+	if (localCommands && ([localCommands count] > 0)) {
+        [LocalCommandExecutor executeCommands:localCommands];        
 	} else {
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:self.component delegate:nil];
 	}

@@ -460,6 +460,12 @@
 		60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
 		60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
 		60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
+		60F386E1155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
+		60F386E2155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
+		60F386E3155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
+		60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
+		60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
+		60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
@@ -1029,6 +1035,11 @@
 		60F386D41553DC590089F8BD /* ControllerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButton.m; sourceTree = "<group>"; };
 		60F386D81553F1510089F8BD /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 		60F386D91553F1530089F8BD /* IncludeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncludeParser.m; sourceTree = "<group>"; };
+		60F386DE1554017B0089F8BD /* ClientSideProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocol.h; sourceTree = "<group>"; };
+		60F386DF155401AC0089F8BD /* LocalCommandExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCommandExecutor.h; sourceTree = "<group>"; };
+		60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommandExecutor.m; sourceTree = "<group>"; };
+		60F386E41554034C0089F8BD /* SIPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIPProtocol.h; sourceTree = "<group>"; };
+		60F386E51554034C0089F8BD /* SIPProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SIPProtocol.m; sourceTree = "<group>"; };
 		60F8A9CE143DCEBA00176004 /* UIImage+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
@@ -1307,6 +1318,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				60F386DD155401620089F8BD /* Client Side Protocols */,
 				605393F51383FED200F3F5FC /* Local logic */,
 				60AFCED2137180AC00A811D4 /* Controller communication */,
 				608FBB74131FF8F900C9089F /* SIP */,
@@ -1957,6 +1969,18 @@
 				60F3868315517C030089F8BD /* NSURLHelperTest.m */,
 			);
 			name = helper;
+			sourceTree = "<group>";
+		};
+		60F386DD155401620089F8BD /* Client Side Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				60F386DE1554017B0089F8BD /* ClientSideProtocol.h */,
+				60F386DF155401AC0089F8BD /* LocalCommandExecutor.h */,
+				60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */,
+				60F386E41554034C0089F8BD /* SIPProtocol.h */,
+				60F386E51554034C0089F8BD /* SIPProtocol.m */,
+			);
+			name = "Client Side Protocols";
 			sourceTree = "<group>";
 		};
 		8C267AB10FD27DE20054743E /* exception */ = {
@@ -2653,6 +2677,8 @@
 				60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */,
+				60F386E1155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2813,6 +2839,8 @@
 				60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */,
+				60F386E3155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2926,6 +2954,8 @@
 				60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */,
+				60F386E2155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
