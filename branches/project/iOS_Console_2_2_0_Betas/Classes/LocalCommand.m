@@ -22,31 +22,37 @@
 
 @interface LocalCommand ()
 
-@property (nonatomic, copy, readwrite) NSString *className;
-@property (nonatomic, copy, readwrite) NSString *methodName;
+@property (nonatomic, copy, readwrite) NSString *protocol;
+@property (nonatomic, retain) NSMutableDictionary *properties;
 
 @end
 
 @implementation LocalCommand
 
-- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName
+- (id)initWithId:(int)anId protocol:(NSString *)aProtocol
 {
     self = [super init];
     if (self) {
         self.componentId = anId;
-        self.className = aClassName;
-        self.methodName = aMethodName;
+        self.protocol = aProtocol;
+        self.properties = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    self.className = nil;
-    self.methodName = nil;
+    self.protocol = nil;
+    self.properties = nil;
 	[super dealloc];
 }
 
-@synthesize className, methodName;
+- (void)addValue:(NSString *)value forKey:(NSString *)key
+{
+    [self.properties setValue:value forKey:key];
+}
+
+@synthesize protocol;
+@synthesize properties;
 
 @end

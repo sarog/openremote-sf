@@ -22,6 +22,15 @@
 
 @implementation Component
 
+- (id)initWithId:(int)anId
+{
+    self = [super init];
+    if (self) {
+        self.componentId = anId;
+    }
+    return self;
+}
+
 @synthesize componentId;
 
 @end

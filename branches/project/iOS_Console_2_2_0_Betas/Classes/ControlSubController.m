@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "ControlSubController.h"
-#import "LocalLogic.h"
+#import "LocalController.h"
 #import "LocalCommand.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
@@ -32,12 +32,20 @@
 @implementation ControlSubController
 
 - (void)sendCommandRequest:(NSString *)commandType {
+
+    // This is a lookup based on the command id, not the component that references the command !!!!
+
 	// Check for local command first
-	LocalCommand *localCommand = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localLogic commandForId:self.component.componentId];
-	if (localCommand) {
-		Class clazz = NSClassFromString(localCommand.className);
+	NSArray *localCommands = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandsForComponentId:self.component.componentId action:commandType];
+	if (localCommands) {
+        NSLog(@"Should trigger local command %@", localCommands);
+/*
+ TODO
+ 
+ Class clazz = NSClassFromString(localCommand.className);
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
 		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
+ */
 	} else {
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:self.component delegate:nil];
 	}

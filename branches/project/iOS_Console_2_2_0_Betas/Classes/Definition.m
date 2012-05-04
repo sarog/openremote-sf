@@ -40,7 +40,7 @@
     self.labels = nil;
     self.imageNames = nil;
     self.tabBar = nil;
-    self.localLogic = nil;
+    self.localController = nil;
     [super dealloc];
 }
 
@@ -138,6 +138,6 @@
     self.tabBar = nil;
 }
 
-@synthesize groups, screens, labels, tabBar, localLogic, imageNames;
+@synthesize groups, screens, labels, tabBar, localController, imageNames;
 
 @end

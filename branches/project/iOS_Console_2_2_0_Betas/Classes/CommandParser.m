@@ -20,6 +20,7 @@
  */
 #import "CommandParser.h"
 #import "LocalCommand.h"
+#import "PropertyParser.h"
 #import "XMLEntity.h"
 
 @interface CommandParser ()
@@ -40,11 +41,17 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        LocalCommand *tmp = [[LocalCommand alloc] initWithId:[[attributeDict objectForKey:ID] intValue] className:[attributeDict objectForKey:CLASS] methodName:[attributeDict objectForKey:METHOD]];
+        [self addKnownTag:@"ctrl:property"];
+        LocalCommand *tmp = [[LocalCommand alloc] initWithId:[[attributeDict objectForKey:ID] intValue] protocol:[attributeDict objectForKey:@"protocol"]];
         self.command = tmp;
         [tmp release];
     }
     return self;
+}
+
+- (void)endPropertyElement:(PropertyParser *)parser
+{
+    [self.command addValue:parser.value forKey:parser.name];
 }
 
 @synthesize command;
