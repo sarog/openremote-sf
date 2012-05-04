@@ -7,6 +7,7 @@
 //
 
 #import "ControllerButton.h"
+#import "LocalController.h"
 
 @interface ControllerButton()
 
@@ -37,9 +38,17 @@
 }
 
 // TODO: this is only valid for 2.0 API, must check for 2.1 (long button press support)
-- (NSDictionary *)commandsPerAction
+- (NSDictionary *)commandsPerAction:(LocalController *)localController;
 {
-    return [NSDictionary dictionaryWithObject:[NSArray arrayWithArray:commandRefs] forKey:@"click"];
+    NSMutableArray *tmpArray = [NSMutableArray array];
+    
+    // Collect only local commands;
+    for (NSNumber *commandId in commandRefs) {
+        if ([localController commandForId:[commandId intValue]]) {
+            [tmpArray addObject:commandId];
+        }
+    }
+    return [NSDictionary dictionaryWithObject:[NSArray arrayWithArray:tmpArray] forKey:@"click"];
 }
 
 @synthesize commandRefs;

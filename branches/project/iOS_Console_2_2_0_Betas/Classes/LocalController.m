@@ -75,7 +75,6 @@
  * Returns the list of client side commands for a given component id and action.
  * action is dependant on the component type (e.g. for switch it can be on or off).
  * If the cache of component id -> commands id is not yet build, do it know.
- * This also gets rid of all references to non client side command that might have been in the XML.
  */
 - (NSArray *)commandsForComponentId:(NSUInteger)anId action:(NSString *)action
 {
@@ -89,7 +88,7 @@
 {
     self.commandsPerComponents = [NSMutableDictionary dictionary];
     for (ControllerComponent *component in [self.components allValues]) {
-        [self.commandsPerComponents setObject:[component commandsPerAction] forKey:[NSNumber numberWithInt:component.componentId]];
+        [self.commandsPerComponents setObject:[component commandsPerAction:self] forKey:[NSNumber numberWithInt:component.componentId]];
     }
 }
 

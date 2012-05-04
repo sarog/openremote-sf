@@ -123,10 +123,8 @@
 		60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
 		60366BCE144DCB9C004FED3B /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
 		60366BCF144DCB9C004FED3B /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
-		60366BD0144DCB9C004FED3B /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
 		60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
-		60366BD3144DCB9C004FED3B /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
 		60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
 		60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A61A801355F85600A7C87E /* TimeManager.m */; };
 		60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
@@ -159,7 +157,6 @@
 		60366BF1144DCB9C004FED3B /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
 		60366BF2144DCB9C004FED3B /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
 		60366BF3144DCB9C004FED3B /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
-		60366BF4144DCB9C004FED3B /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
 		60366BF5144DCB9C004FED3B /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
 		60366BF6144DCB9C004FED3B /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
 		60366BF7144DCB9C004FED3B /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
@@ -181,7 +178,6 @@
 		60366C07144DCB9C004FED3B /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60366C08144DCB9C004FED3B /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
 		60366C09144DCB9C004FED3B /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
-		60366C0A144DCB9C004FED3B /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		60366C0B144DCB9C004FED3B /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
 		60366C0C144DCB9C004FED3B /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
 		60366C0D144DCB9C004FED3B /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
@@ -266,7 +262,6 @@
 		6068DE7F13744D58007746F1 /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
 		6068DE8013744D61007746F1 /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87310EB6E3300C0E1BB /* Screen.m */; };
 		6068DE8113744D6E007746F1 /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
-		6068DE8213744D76007746F1 /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
 		6068DE8313744D7D007746F1 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
 		6068DE8413744D8A007746F1 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
 		6068DE8513744DCB007746F1 /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
@@ -283,7 +278,6 @@
 		6068DE9013744E0E007746F1 /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
 		6068DE9113744E0E007746F1 /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		6068DE9213744E0E007746F1 /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
-		6068DE9313744E0E007746F1 /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
 		6068DE9413744E0E007746F1 /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
 		6068DE9513744E21007746F1 /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		6068DE9613744E2F007746F1 /* SensorState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87910EB6E3300C0E1BB /* SensorState.m */; };
@@ -328,19 +322,15 @@
 		608D987314190956001A7534 /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
 		608D987414190956001A7534 /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
 		608D987514190956001A7534 /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
-		608D987614190956001A7534 /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
 		608D987714190956001A7534 /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
 		608D987814190956001A7534 /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
 		608D987914190956001A7534 /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
 		608D987A14190956001A7534 /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
 		608D987B14190956001A7534 /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
-		608D987C14190956001A7534 /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
-		608FBDD113211DED00C9089F /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
 		608FBDD5132120D200C9089F /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		608FBDD8132120D700C9089F /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
-		608FBDDB132120DD00C9089F /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
 		60950D9813CB115400B983E7 /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
 		60950D9A13CB115400B983E7 /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
 		60950D9E13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
@@ -353,7 +343,6 @@
 		60987E5113FF0DA000967DEA /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
 		60987E5513FF8DA400967DEA /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
 		60987E5913FF8DBD00967DEA /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
-		60987E5D13FF8DD100967DEA /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
 		60987E6113FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
 		60987E6513FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
 		60987E6913FF8E1300967DEA /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
@@ -375,7 +364,6 @@
 		60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60987EBC1402B0C000967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
 		60987EC01402B11F00967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
-		60987EC41402B15800967DEA /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -457,6 +445,21 @@
 		60F386A61552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
 		60F386A71552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
 		60F386A81552B6470089F8BD /* LocalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386A51552B6450089F8BD /* LocalController.m */; };
+		60F386C61553D0980089F8BD /* PropertyParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386C51553D0970089F8BD /* PropertyParser.m */; };
+		60F386C71553D0980089F8BD /* PropertyParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386C51553D0970089F8BD /* PropertyParser.m */; };
+		60F386C81553D0980089F8BD /* PropertyParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386C51553D0970089F8BD /* PropertyParser.m */; };
+		60F386CB1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */; };
+		60F386CC1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */; };
+		60F386CD1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */; };
+		60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
+		60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
+		60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
+		60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
+		60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
+		60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
+		60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
+		60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
+		60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
@@ -647,14 +650,10 @@
 		608FBB75131FF90500C9089F /* SipController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SipController.h; sourceTree = "<group>"; };
 		608FBB76131FF90500C9089F /* SipController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SipController.m; sourceTree = "<group>"; };
 		608FBB9D131FF9C300C9089F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		608FBDCF13211DED00C9089F /* LocalLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalLogic.h; sourceTree = "<group>"; };
-		608FBDD013211DED00C9089F /* LocalLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalLogic.m; sourceTree = "<group>"; };
 		608FBDD3132120D200C9089F /* LocalSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalSensor.h; sourceTree = "<group>"; };
 		608FBDD4132120D200C9089F /* LocalSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalSensor.m; sourceTree = "<group>"; };
 		608FBDD6132120D700C9089F /* LocalCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCommand.h; sourceTree = "<group>"; };
 		608FBDD7132120D700C9089F /* LocalCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommand.m; sourceTree = "<group>"; };
-		608FBDD9132120DD00C9089F /* LocalTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalTask.h; sourceTree = "<group>"; };
-		608FBDDA132120DD00C9089F /* LocalTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalTask.m; sourceTree = "<group>"; };
 		60950D9613CB115400B983E7 /* CheckMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CheckMark.png; sourceTree = "<group>"; };
 		60950D9713CB115400B983E7 /* CheckMark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMark@2x.png"; sourceTree = "<group>"; };
 		60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CheckMarkBlankPlaceHolder.png; sourceTree = "<group>"; };
@@ -675,8 +674,6 @@
 		60987E5413FF8DA300967DEA /* GroupParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupParser.m; sourceTree = "<group>"; };
 		60987E5713FF8DBC00967DEA /* TabBarParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarParser.h; sourceTree = "<group>"; };
 		60987E5813FF8DBC00967DEA /* TabBarParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarParser.m; sourceTree = "<group>"; };
-		60987E5B13FF8DD000967DEA /* LocalLogicParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalLogicParser.h; sourceTree = "<group>"; };
-		60987E5C13FF8DD100967DEA /* LocalLogicParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalLogicParser.m; sourceTree = "<group>"; };
 		60987E5F13FF8DE600967DEA /* AbsoluteLayoutContainerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbsoluteLayoutContainerParser.h; sourceTree = "<group>"; };
 		60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbsoluteLayoutContainerParser.m; sourceTree = "<group>"; };
 		60987E6313FF8E0300967DEA /* GridLayoutContainerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayoutContainerParser.h; sourceTree = "<group>"; };
@@ -719,8 +716,6 @@
 		60987EBB1402B09500967DEA /* SensorParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorParser.m; sourceTree = "<group>"; };
 		60987EBE1402B0FE00967DEA /* CommandParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandParser.h; sourceTree = "<group>"; };
 		60987EBF1402B10600967DEA /* CommandParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandParser.m; sourceTree = "<group>"; };
-		60987EC21402B14500967DEA /* TaskParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskParser.h; sourceTree = "<group>"; };
-		60987EC31402B14C00967DEA /* TaskParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskParser.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A2D262140662B500A529ED /* DefinitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionManager.h; sourceTree = "<group>"; };
 		60A2D263140662BA00A529ED /* DefinitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionManager.m; sourceTree = "<group>"; };
@@ -1024,6 +1019,16 @@
 		60F3869B1552ACF00089F8BD /* LocalParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalParser.m; sourceTree = "<group>"; };
 		60F386A41552B6440089F8BD /* LocalController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalController.h; sourceTree = "<group>"; };
 		60F386A51552B6450089F8BD /* LocalController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalController.m; sourceTree = "<group>"; };
+		60F386C41553D0960089F8BD /* PropertyParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyParser.h; sourceTree = "<group>"; };
+		60F386C51553D0970089F8BD /* PropertyParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyParser.m; sourceTree = "<group>"; };
+		60F386C91553D9B70089F8BD /* ControllerButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonParser.h; sourceTree = "<group>"; };
+		60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonParser.m; sourceTree = "<group>"; };
+		60F386CE1553DC230089F8BD /* ControllerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerComponent.h; sourceTree = "<group>"; };
+		60F386CF1553DC230089F8BD /* ControllerComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerComponent.m; sourceTree = "<group>"; };
+		60F386D31553DC570089F8BD /* ControllerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButton.h; sourceTree = "<group>"; };
+		60F386D41553DC590089F8BD /* ControllerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButton.m; sourceTree = "<group>"; };
+		60F386D81553F1510089F8BD /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
+		60F386D91553F1530089F8BD /* IncludeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncludeParser.m; sourceTree = "<group>"; };
 		60F8A9CE143DCEBA00176004 /* UIImage+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
@@ -1510,22 +1515,24 @@
 				60987E5813FF8DBC00967DEA /* TabBarParser.m */,
 				60987EB61402ACFC00967DEA /* TabBarItemParser.h */,
 				60987EB71402AD0600967DEA /* TabBarItemParser.m */,
-				60987E5B13FF8DD000967DEA /* LocalLogicParser.h */,
-				60987E5C13FF8DD100967DEA /* LocalLogicParser.m */,
 				60987E941402538500967DEA /* NavigateParser.h */,
 				60987E951402538800967DEA /* NavigateParser.m */,
 				60987E9814025B7800967DEA /* SensorLinkParser.h */,
 				60987E9914025B7E00967DEA /* SensorLinkParser.m */,
 				60987E9C14025DB300967DEA /* SensorStateParser.h */,
 				60987E9D14025DB800967DEA /* SensorStateParser.m */,
-				60987EBA1402B08D00967DEA /* SensorParser.h */,
-				60987EBB1402B09500967DEA /* SensorParser.m */,
-				60987EBE1402B0FE00967DEA /* CommandParser.h */,
-				60987EBF1402B10600967DEA /* CommandParser.m */,
-				60987EC21402B14500967DEA /* TaskParser.h */,
-				60987EC31402B14C00967DEA /* TaskParser.m */,
 				60F3869A1552ACF00089F8BD /* LocalParser.h */,
 				60F3869B1552ACF00089F8BD /* LocalParser.m */,
+				60987EBE1402B0FE00967DEA /* CommandParser.h */,
+				60987EBF1402B10600967DEA /* CommandParser.m */,
+				60F386C41553D0960089F8BD /* PropertyParser.h */,
+				60F386C51553D0970089F8BD /* PropertyParser.m */,
+				60987EBA1402B08D00967DEA /* SensorParser.h */,
+				60987EBB1402B09500967DEA /* SensorParser.m */,
+				60F386C91553D9B70089F8BD /* ControllerButtonParser.h */,
+				60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */,
+				60F386D81553F1510089F8BD /* IncludeParser.h */,
+				60F386D91553F1530089F8BD /* IncludeParser.m */,
 			);
 			name = Parser;
 			sourceTree = "<group>";
@@ -2163,16 +2170,16 @@
 				8CECF88910EB6E3300C0E1BB /* XMLEntity.m */,
 				60A85C83131F965500C7918A /* Web.h */,
 				60A85C84131F965500C7918A /* Web.m */,
-				608FBDCF13211DED00C9089F /* LocalLogic.h */,
-				608FBDD013211DED00C9089F /* LocalLogic.m */,
 				608FBDD3132120D200C9089F /* LocalSensor.h */,
 				608FBDD4132120D200C9089F /* LocalSensor.m */,
 				608FBDD6132120D700C9089F /* LocalCommand.h */,
 				608FBDD7132120D700C9089F /* LocalCommand.m */,
-				608FBDD9132120DD00C9089F /* LocalTask.h */,
-				608FBDDA132120DD00C9089F /* LocalTask.m */,
 				60F386A41552B6440089F8BD /* LocalController.h */,
 				60F386A51552B6450089F8BD /* LocalController.m */,
+				60F386CE1553DC230089F8BD /* ControllerComponent.h */,
+				60F386CF1553DC230089F8BD /* ControllerComponent.m */,
+				60F386D31553DC570089F8BD /* ControllerButton.h */,
+				60F386D41553DC590089F8BD /* ControllerButton.m */,
 				60FAD47D154050B1008DA70E /* Capabilities.h */,
 				60FAD47E154050B1008DA70E /* Capabilities.m */,
 			);
@@ -2557,10 +2564,8 @@
 				8CEFDA8C11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */,
 				60A85C85131F965500C7918A /* Web.m in Sources */,
 				608FBB77131FF90500C9089F /* SipController.m in Sources */,
-				608FBDD113211DED00C9089F /* LocalLogic.m in Sources */,
 				608FBDD5132120D200C9089F /* LocalSensor.m in Sources */,
 				608FBDD8132120D700C9089F /* LocalCommand.m in Sources */,
-				608FBDDB132120DD00C9089F /* LocalTask.m in Sources */,
 				60A6195B1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */,
 				60A61A811355F85700A7C87E /* TimeManager.m in Sources */,
 				60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */,
@@ -2593,7 +2598,6 @@
 				60987E5113FF0DA000967DEA /* PanelDefinitionParser.m in Sources */,
 				60987E5513FF8DA400967DEA /* GroupParser.m in Sources */,
 				60987E5913FF8DBD00967DEA /* TabBarParser.m in Sources */,
-				60987E5D13FF8DD100967DEA /* LocalLogicParser.m in Sources */,
 				60987E6113FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */,
 				60987E6513FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */,
 				60987E6913FF8E1300967DEA /* GestureParser.m in Sources */,
@@ -2615,7 +2619,6 @@
 				60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */,
 				60987EBC1402B0C000967DEA /* SensorParser.m in Sources */,
 				60987EC01402B11F00967DEA /* CommandParser.m in Sources */,
-				60987EC41402B15800967DEA /* TaskParser.m in Sources */,
 				60A2D264140662C600A529ED /* DefinitionManager.m in Sources */,
 				60A2D2681407BE4F00A529ED /* DeferredBinding.m in Sources */,
 				6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */,
@@ -2645,6 +2648,11 @@
 				60F3867D15517AFE0089F8BD /* NSURLHelper.m in Sources */,
 				60F3869C1552ACF00089F8BD /* LocalParser.m in Sources */,
 				60F386A61552B6470089F8BD /* LocalController.m in Sources */,
+				60F386C61553D0980089F8BD /* PropertyParser.m in Sources */,
+				60F386CB1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
+				60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */,
+				60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */,
+				60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2716,10 +2724,8 @@
 				60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */,
 				60366BCE144DCB9C004FED3B /* Web.m in Sources */,
 				60366BCF144DCB9C004FED3B /* SipController.m in Sources */,
-				60366BD0144DCB9C004FED3B /* LocalLogic.m in Sources */,
 				60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */,
 				60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */,
-				60366BD3144DCB9C004FED3B /* LocalTask.m in Sources */,
 				60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */,
 				60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */,
 				60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */,
@@ -2752,7 +2758,6 @@
 				60366BF1144DCB9C004FED3B /* PanelDefinitionParser.m in Sources */,
 				60366BF2144DCB9C004FED3B /* GroupParser.m in Sources */,
 				60366BF3144DCB9C004FED3B /* TabBarParser.m in Sources */,
-				60366BF4144DCB9C004FED3B /* LocalLogicParser.m in Sources */,
 				60366BF5144DCB9C004FED3B /* AbsoluteLayoutContainerParser.m in Sources */,
 				60366BF6144DCB9C004FED3B /* GridLayoutContainerParser.m in Sources */,
 				60366BF7144DCB9C004FED3B /* GestureParser.m in Sources */,
@@ -2774,7 +2779,6 @@
 				60366C07144DCB9C004FED3B /* TabBarItemParser.m in Sources */,
 				60366C08144DCB9C004FED3B /* SensorParser.m in Sources */,
 				60366C09144DCB9C004FED3B /* CommandParser.m in Sources */,
-				60366C0A144DCB9C004FED3B /* TaskParser.m in Sources */,
 				60366C0B144DCB9C004FED3B /* DefinitionManager.m in Sources */,
 				60366C0C144DCB9C004FED3B /* DeferredBinding.m in Sources */,
 				60366C0D144DCB9C004FED3B /* ButtonParserAPI_v2.m in Sources */,
@@ -2804,6 +2808,11 @@
 				60F3867F15517AFE0089F8BD /* NSURLHelper.m in Sources */,
 				60F3869E1552ACF00089F8BD /* LocalParser.m in Sources */,
 				60F386A81552B6470089F8BD /* LocalController.m in Sources */,
+				60F386C81553D0980089F8BD /* PropertyParser.m in Sources */,
+				60F386CD1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
+				60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */,
+				60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */,
+				60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2839,13 +2848,11 @@
 				608D987314190956001A7534 /* GroupParser.m in Sources */,
 				608D987414190956001A7534 /* TabBarParser.m in Sources */,
 				608D987514190956001A7534 /* TabBarItemParser.m in Sources */,
-				608D987614190956001A7534 /* LocalLogicParser.m in Sources */,
 				608D987714190956001A7534 /* NavigateParser.m in Sources */,
 				608D987814190956001A7534 /* SensorLinkParser.m in Sources */,
 				608D987914190956001A7534 /* SensorStateParser.m in Sources */,
 				608D987A14190956001A7534 /* SensorParser.m in Sources */,
 				608D987B14190956001A7534 /* CommandParser.m in Sources */,
-				608D987C14190956001A7534 /* TaskParser.m in Sources */,
 				608D985B1419091E001A7534 /* DefinitionManager.m in Sources */,
 				608D985C1419091E001A7534 /* PanelDefinitionParser.m in Sources */,
 				60A2D2271403A92100A529ED /* ORControllerGroupMembersFetcher.m in Sources */,
@@ -2869,7 +2876,6 @@
 				6068DE9013744E0E007746F1 /* TabBarItem.m in Sources */,
 				6068DE9113744E0E007746F1 /* LocalSensor.m in Sources */,
 				6068DE9213744E0E007746F1 /* LocalCommand.m in Sources */,
-				6068DE9313744E0E007746F1 /* LocalTask.m in Sources */,
 				6068DE9413744E0E007746F1 /* CredentialUtil.m in Sources */,
 				6068DE8513744DCB007746F1 /* CheckNetworkException.m in Sources */,
 				6068DE8613744DCB007746F1 /* ControllerException.m in Sources */,
@@ -2882,7 +2888,6 @@
 				6068DE8D13744DCB007746F1 /* Web.m in Sources */,
 				6068DE8413744D8A007746F1 /* Group.m in Sources */,
 				6068DE8313744D7D007746F1 /* FileUtils.m in Sources */,
-				6068DE8213744D76007746F1 /* LocalLogic.m in Sources */,
 				6068DE8113744D6E007746F1 /* TabBar.m in Sources */,
 				6068DE8013744D61007746F1 /* Screen.m in Sources */,
 				6068DE7F13744D58007746F1 /* GridCell.m in Sources */,
@@ -2916,6 +2921,11 @@
 				60F3868415517C030089F8BD /* NSURLHelperTest.m in Sources */,
 				60F3869D1552ACF00089F8BD /* LocalParser.m in Sources */,
 				60F386A71552B6470089F8BD /* LocalController.m in Sources */,
+				60F386C71553D0980089F8BD /* PropertyParser.m in Sources */,
+				60F386CC1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
+				60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */,
+				60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */,
+				60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
