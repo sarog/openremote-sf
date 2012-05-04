@@ -22,9 +22,10 @@
 
 @interface LocalCommand : Component
 
-@property (nonatomic, copy, readonly) NSString *className;
-@property (nonatomic, copy, readonly) NSString *methodName;
+- (id)initWithId:(int)anId protocol:(NSString *)aProtocol;
 
-- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName;
+- (void)addValue:(NSString *)value forKey:(NSString *)key;
+
+@property (nonatomic, copy, readonly) NSString *protocol;
 
 @end

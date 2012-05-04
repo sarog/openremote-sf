@@ -20,11 +20,11 @@
  */
 #import <UIKit/UIKit.h>
 
-@class LocalLogic;
 @class TabBar;
 @class Label;
 @class Group;
 @class Screen;
+@class LocalController;
 
 /**
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
@@ -75,7 +75,7 @@
 @property (nonatomic, retain, readonly) NSMutableArray *screens;
 @property (nonatomic, retain) NSMutableArray *labels;
 @property (nonatomic, retain) TabBar *tabBar;
-@property (nonatomic, retain) LocalLogic *localLogic;
+@property (nonatomic, retain) LocalController *localController;
 @property (nonatomic, retain, readonly) NSMutableArray *imageNames;
 
 @end

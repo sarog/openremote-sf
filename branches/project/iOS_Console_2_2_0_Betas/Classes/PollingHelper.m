@@ -21,7 +21,7 @@
 #import "PollingHelper.h"
 #import "AppDelegate.h"
 #import "URLConnectionHelper.h"
-#import "LocalLogic.h"
+#import "LocalController.h"
 #import "LocalSensor.h"
 #import "PollingStatusParserDelegate.h"
 #import "ORConsoleSettingsManager.h"
@@ -57,12 +57,14 @@
 		NSMutableArray *remoteSensors = [NSMutableArray array];
 		NSMutableArray *tempLocalSensors = [NSMutableArray array];
 		for (NSString *anId in [ids componentsSeparatedByString:@","]) {
-			LocalSensor *sensor = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localLogic sensorForId:[anId intValue]];
+			LocalSensor *sensor = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController sensorForId:[anId intValue]];
+            /*
 			if (sensor) {
 				[tempLocalSensors addObject:sensor];
 			} else {
 				[remoteSensors addObject:anId];
 			}
+             */
 		}
 		if ([remoteSensors count] > 0) {
 			self.pollingStatusIds = [remoteSensors componentsJoinedByString:@","];

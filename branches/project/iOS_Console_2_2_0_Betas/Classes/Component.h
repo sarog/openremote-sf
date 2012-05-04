@@ -25,6 +25,8 @@
  */
 @interface Component : NSObject
 
+- (id)initWithId:(int)anId;
+
 @property (nonatomic, readwrite) int componentId;
 
 @end

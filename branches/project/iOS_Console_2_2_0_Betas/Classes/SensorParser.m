@@ -47,12 +47,14 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
+        /*
         LocalSensor *tmp = [[LocalSensor alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                        className:[attributeDict objectForKey:CLASS]
                                       methodName:[attributeDict objectForKey:METHOD]
                                      refreshRate:([attributeDict objectForKey:REFRESH_RATE]?[NSNumber numberWithInt:[[attributeDict objectForKey:REFRESH_RATE] intValue]]:nil)];
         self.sensor = tmp;
         [tmp release];
+         */
     }
     return self;
 }
