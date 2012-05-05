@@ -247,8 +247,9 @@
 	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
 	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
-	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60,61,62" isEqualToString:ids],@"expected 59,60,61,62, but %@",ids);
+    NSSet *ids = [NSSet setWithArray:[screen1 pollingComponentsIds]];
+    NSSet *expectedIds = [NSSet setWithObjects:@"59", @"60", @"61", @"62", nil];
+    STAssertEqualObjects(expectedIds, ids, @"expected 59,60,61,62, but got %@",ids);	
 	
 	[cells release];
     
@@ -426,9 +427,9 @@
 	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
 	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
-	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60,61,62" isEqualToString:ids],@"expected 59,60,61,62, but %@",ids);
-	
+    NSSet *ids = [NSSet setWithArray:[screen1 pollingComponentsIds]];
+    NSSet *expectedIds = [NSSet setWithObjects:@"59", @"60", @"61", @"62", nil];
+    STAssertEqualObjects(expectedIds, ids, @"expected 59,60,61,62, but got %@",ids);	
 	[cells release];
 
     [data release];
