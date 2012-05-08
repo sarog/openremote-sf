@@ -466,6 +466,10 @@
 		60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
+		60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
+		60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
+		60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
+		60F386F8155503820089F8BD /* SensorStatusCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386F7155503820089F8BD /* SensorStatusCacheTest.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60FA5DC5153C506500FA245E /* delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 60FA5DC4153C506500FA245E /* delete_button.png */; };
@@ -1040,6 +1044,17 @@
 		60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommandExecutor.m; sourceTree = "<group>"; };
 		60F386E41554034C0089F8BD /* SIPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIPProtocol.h; sourceTree = "<group>"; };
 		60F386E51554034C0089F8BD /* SIPProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SIPProtocol.m; sourceTree = "<group>"; };
+		60F386E915541CE90089F8BD /* SensorStatusCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorStatusCache.h; sourceTree = "<group>"; };
+		60F386EA15541CE90089F8BD /* SensorStatusCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorStatusCache.m; sourceTree = "<group>"; };
+		60F386F6155503820089F8BD /* SensorStatusCacheTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorStatusCacheTest.h; sourceTree = "<group>"; };
+		60F386F7155503820089F8BD /* SensorStatusCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorStatusCacheTest.m; sourceTree = "<group>"; };
+		60F3874215590F840089F8BD /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
+		60F3874315590F840089F8BD /* OCMArg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMArg.h; sourceTree = "<group>"; };
+		60F3874415590F840089F8BD /* OCMConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMConstraint.h; sourceTree = "<group>"; };
+		60F3874515590F840089F8BD /* OCMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMock.h; sourceTree = "<group>"; };
+		60F3874615590F840089F8BD /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
+		60F3874715590F840089F8BD /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
+		60F3874815590FC40089F8BD /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		60F8A9CE143DCEBA00176004 /* UIImage+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ORAdditions.h"; sourceTree = "<group>"; };
 		60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ORAdditions.m"; sourceTree = "<group>"; };
 		60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScreen+ORAdditions.h"; sourceTree = "<group>"; };
@@ -1353,6 +1368,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				60F3874815590FC40089F8BD /* libOCMock.a */,
 				60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */,
 				6068DEA413744ED0007746F1 /* SystemConfiguration.framework */,
 				6068DEA113744EBB007746F1 /* CFNetwork.framework */,
@@ -1983,6 +1999,19 @@
 			name = "Client Side Protocols";
 			sourceTree = "<group>";
 		};
+		60F3874115590F840089F8BD /* OCMock */ = {
+			isa = PBXGroup;
+			children = (
+				60F3874215590F840089F8BD /* NSNotificationCenter+OCMAdditions.h */,
+				60F3874315590F840089F8BD /* OCMArg.h */,
+				60F3874415590F840089F8BD /* OCMConstraint.h */,
+				60F3874515590F840089F8BD /* OCMock.h */,
+				60F3874615590F840089F8BD /* OCMockObject.h */,
+				60F3874715590F840089F8BD /* OCMockRecorder.h */,
+			);
+			path = OCMock;
+			sourceTree = "<group>";
+		};
 		8C267AB10FD27DE20054743E /* exception */ = {
 			isa = PBXGroup;
 			children = (
@@ -1999,6 +2028,7 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				60F3874115590F840089F8BD /* OCMock */,
 				60F3868115517BEB0089F8BD /* helper */,
 				6082FEA8139643C4005A75C2 /* ButtonTest.h */,
 				6082FEA9139643C4005A75C2 /* ButtonTest.m */,
@@ -2081,6 +2111,8 @@
 				33267E7010E47C5B00E3AE42 /* NSDateHelper.m */,
 				60F3867B15517AFE0089F8BD /* NSURLHelper.h */,
 				60F3867C15517AFE0089F8BD /* NSURLHelper.m */,
+				60F386E915541CE90089F8BD /* SensorStatusCache.h */,
+				60F386EA15541CE90089F8BD /* SensorStatusCache.m */,
 			);
 			name = helper;
 			sourceTree = "<group>";
@@ -2119,6 +2151,8 @@
 				60A619601354A92600A7C87E /* NSString+ORAdditionsTest.h */,
 				60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */,
 				8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */,
+				60F386F6155503820089F8BD /* SensorStatusCacheTest.h */,
+				60F386F7155503820089F8BD /* SensorStatusCacheTest.m */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -2679,6 +2713,7 @@
 				60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */,
 				60F386E1155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
 				60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */,
+				60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2841,6 +2876,7 @@
 				60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */,
 				60F386E3155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
 				60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */,
+				60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2956,6 +2992,8 @@
 				60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */,
 				60F386E2155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
 				60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */,
+				60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */,
+				60F386F8155503820089F8BD /* SensorStatusCacheTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3120,6 +3158,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3127,6 +3169,9 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-ObjC",
+					"-force_load",
+					libOCMock.a,
 				);
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
@@ -3152,6 +3197,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3159,6 +3208,9 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-ObjC",
+					"-force_load",
+					libOCMock.a,
 				);
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
@@ -3290,6 +3342,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = NOTAPI_v2_1;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3297,6 +3353,9 @@
 					SenTestingKit,
 					"-framework",
 					UIKit,
+					"-ObjC",
+					"-force_load",
+					libOCMock.a,
 				);
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
