@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 OpenRemote, Inc. All rights reserved.
 //
 
-#import "LocalCommandExecutor.h"
+#import "ClientSideRuntime.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
@@ -15,19 +15,40 @@
 #import "LocalCommand.h"
 #import "SIPProtocol.h"
 
-@implementation LocalCommandExecutor
+@interface ClientSideRuntime()
 
-+ (void)executeCommands:(NSArray *)commands
+@property (nonatomic, assign) ORController *controller;
+
+@end
+
+@implementation ClientSideRuntime
+
+- (id)initWithController:(ORController *)aController
+{
+    self = [super init];
+    if (self) {
+        self.controller = aController;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    self.controller = nil;
+    [super dealloc];
+}
+
+- (void)executeCommands:(NSArray *)commands
 {
     for (NSNumber *commandId in commands) {
-        LocalCommand *command = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandForId:[commandId intValue]];
+        LocalCommand *command = [controller.definition.localController commandForId:[commandId intValue]];
         if (command) {
             [self executeCommand:command];
         }
     }
 }
 
-+ (void)executeCommand:(LocalCommand *)command
+- (void)executeCommand:(LocalCommand *)command
 {
     
     // TODO Based on a registry, map protocol -> ClientSideProtocol implementation
@@ -39,5 +60,7 @@
         [protocol release];
     }
 }
+
+@synthesize controller;
 
 @end

@@ -28,6 +28,7 @@
 @class ORControllerProxy;
 @class Definition;
 @class SensorStatusCache;
+@class ClientSideRuntime;
 
 #define kORControllerGroupMembersFetchingNotification @"kORControllerGroupMembersFetchingNotification"
 #define kORControllerGroupMembersFetchSucceededNotification @"kORControllerGroupMembersFetchSucceededNotification"
@@ -81,5 +82,6 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 @property (nonatomic, retain) Definition *definition;
 
 @property (nonatomic, retain, readonly) SensorStatusCache *sensorStatusCache;
+@property (nonatomic, retain, readonly) ClientSideRuntime *clientSideRuntime;
 
 @end

@@ -25,6 +25,7 @@
 #import "Definition.h"
 #import "Capabilities.h"
 #import "SensorStatusCache.h"
+#import "ClientSideRuntime.h"
 
 @interface ORController ()
 
@@ -36,6 +37,7 @@
 @property (nonatomic, retain) ORControllerGroupMembersFetcher *groupMembersFetcher;
 
 @property (nonatomic, retain, readwrite) SensorStatusCache *sensorStatusCache;
+@property (nonatomic, retain, readwrite) ClientSideRuntime *clientSideRuntime;
 
 @end
 
@@ -58,6 +60,7 @@
     [super awakeFromFetch];
     self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
     self.sensorStatusCache = [[[SensorStatusCache alloc] initWithNotificationCenter:[NSNotificationCenter defaultCenter]] autorelease];
+    self.clientSideRuntime = [[[ClientSideRuntime alloc] initWithController:self] autorelease];
 }
 
 - (void)awakeFromInsert
@@ -65,6 +68,7 @@
     [super awakeFromInsert];
     self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
     self.sensorStatusCache = [[[SensorStatusCache alloc] initWithNotificationCenter:[NSNotificationCenter defaultCenter]] autorelease];
+    self.clientSideRuntime = [[[ClientSideRuntime alloc] initWithController:self] autorelease];
 }
 
 - (void)fetchGroupMembers
@@ -233,5 +237,6 @@
 @synthesize controllerAPIVersion;
 
 @synthesize sensorStatusCache;
+@synthesize clientSideRuntime;
 
 @end

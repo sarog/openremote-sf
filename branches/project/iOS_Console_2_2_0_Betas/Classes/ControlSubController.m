@@ -27,19 +27,21 @@
 #import "Definition.h"
 #import "Component.h"
 #import "AppDelegate.h"
-#import "LocalCommandExecutor.h"
+#import "ClientSideRuntime.h"
 #import "ORControllerProxy.h"
 
 @implementation ControlSubController
 
 - (void)sendCommandRequest:(NSString *)commandType {
 
+    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController;
+    
     // This is a lookup based on the command id, not the component that references the command !!!!
 
 	// Check for local command first
-	NSArray *localCommands = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandsForComponentId:self.component.componentId action:commandType];
+	NSArray *localCommands = [controller.definition.localController commandsForComponentId:self.component.componentId action:commandType];
 	if (localCommands && ([localCommands count] > 0)) {
-        [LocalCommandExecutor executeCommands:localCommands];        
+        [controller.clientSideRuntime executeCommands:localCommands];
 	} else {
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:self.component delegate:nil];
 	}

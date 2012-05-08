@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 
 @class LocalCommand;
+@class ORController;
 
-@interface LocalCommandExecutor : NSObject
+@interface ClientSideRuntime : NSObject
 
-+ (void)executeCommands:(NSArray *)commands;
-+ (void)executeCommand:(LocalCommand *)command;
+- (id)initWithController:(ORController *)aController;
+
+- (void)executeCommands:(NSArray *)commands;
+- (void)executeCommand:(LocalCommand *)command;
 
 @end
