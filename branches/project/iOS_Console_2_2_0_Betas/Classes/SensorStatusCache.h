@@ -12,8 +12,8 @@
 
 - (id)initWithNotificationCenter:(NSNotificationCenter *)aNotificationCenter;
 
-- (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId;
-- (NSString *)valueForSensorId:(NSString *)sensorId;
-- (void)clearStatusCacheRemovingObservers:(BOOL)removeObservers;
+- (void)publishNewValue:(NSString *)status forSensorId:(NSUInteger)sensorId;
+- (NSString *)valueForSensorId:(NSUInteger)sensorId;
+- (void)clearStatusCache;
 
 @end
