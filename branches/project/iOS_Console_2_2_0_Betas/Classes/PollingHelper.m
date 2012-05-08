@@ -23,7 +23,7 @@
 #import "URLConnectionHelper.h"
 #import "LocalController.h"
 #import "LocalSensor.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORControllerProxy.h"
 #import "ORConsoleSettings.h"
@@ -125,17 +125,7 @@
 	NSString *retValue = [clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
 
     if (retValue) {
-        // TODO: replace with status cache
-        
-        
-        
-        // TODO: review if can be improved, a bit stupid to create the ParserDelegate just to publish the value        
-        PollingStatusParserDelegate *delegate = [[PollingStatusParserDelegate alloc] init];
-        [delegate publishNewValue:retValue forSensorId:[NSString stringWithFormat:@"%d", sensor.componentId]];
-        [delegate release];
-        
-        
-        
+        [self.sensorStatusCache publishNewValue:retValue forSensorId:sensor.componentId];
     }	
 }
 
