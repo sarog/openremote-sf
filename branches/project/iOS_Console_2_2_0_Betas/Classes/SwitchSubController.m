@@ -22,7 +22,7 @@
 #import "Switch.h"
 #import "Image.h"
 #import "DirectoryDefinition.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "Sensor.h"
 #import "NotificationConstant.h"
 
@@ -89,9 +89,9 @@
 }
 
 - (void)setPollingStatus:(NSNotification *)notification {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	SensorStatusCache *statusCache = (SensorStatusCache *)[notification object];
 	int sensorId = self.sswitch.sensor.sensorId;
-	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d", sensorId]];
+	NSString *newStatus = [statusCache valueForSensorId:sensorId];
 	if ([[newStatus uppercaseString] isEqualToString:@"ON"]) {
 		[self setOn:YES];
 	} else if ([[newStatus uppercaseString] isEqualToString:@"OFF"]) {

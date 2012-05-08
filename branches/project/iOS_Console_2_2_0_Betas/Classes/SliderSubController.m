@@ -22,7 +22,7 @@
 #import "Slider.h"
 #import "Image.h"
 #import "DirectoryDefinition.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "Sensor.h"
 #import "NotificationConstant.h"
 
@@ -198,9 +198,9 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 // Override method of sensory view.
 - (void)setPollingStatus:(NSNotification *)notification {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	SensorStatusCache *statusCache = (SensorStatusCache *)[notification object];
 	int sensorId = self.slider.sensor.sensorId;
-	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
+	float newStatus = [[statusCache valueForSensorId:sensorId] floatValue];
     
     NSLog(@"Slider - setPollingStatus %d to %f", sensorId, newStatus);
     

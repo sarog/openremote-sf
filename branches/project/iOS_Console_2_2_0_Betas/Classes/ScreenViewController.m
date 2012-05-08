@@ -49,7 +49,8 @@
 	[screen release];
 	screen = s;
 	if ([[screen pollingComponentsIds] count] > 0 ) {
-		polling = [[PollingHelper alloc] initWithComponentIds:[[screen pollingComponentsIds] componentsJoinedByString:@","]];
+		polling = [[PollingHelper alloc] initWithController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController
+                                               componentIds:[[screen pollingComponentsIds] componentsJoinedByString:@","]];
 	}
 }
 

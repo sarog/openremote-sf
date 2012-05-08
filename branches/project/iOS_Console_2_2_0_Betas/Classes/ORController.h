@@ -27,6 +27,7 @@
 @class ORGroupMember;
 @class ORControllerProxy;
 @class Definition;
+@class SensorStatusCache;
 
 #define kORControllerGroupMembersFetchingNotification @"kORControllerGroupMembersFetchingNotification"
 #define kORControllerGroupMembersFetchSucceededNotification @"kORControllerGroupMembersFetchSucceededNotification"
@@ -78,5 +79,7 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 // TODO: re-check in model vs property
 // TODO: this is not persisted but should be lazy loaded (! parsing is required -> we want to be able to notifiy user of progress and let him cancel)
 @property (nonatomic, retain) Definition *definition;
+
+@property (nonatomic, retain, readonly) SensorStatusCache *sensorStatusCache;
 
 @end

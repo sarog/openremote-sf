@@ -24,6 +24,7 @@
 #import "NotificationConstant.h"
 #import "Definition.h"
 #import "Capabilities.h"
+#import "SensorStatusCache.h"
 
 @interface ORController ()
 
@@ -33,6 +34,8 @@
 - (void)removeGroupMembers:(NSSet *)value;
 
 @property (nonatomic, retain) ORControllerGroupMembersFetcher *groupMembersFetcher;
+
+@property (nonatomic, retain, readwrite) SensorStatusCache *sensorStatusCache;
 
 @end
 
@@ -54,12 +57,14 @@
 {
     [super awakeFromFetch];
     self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
+    self.sensorStatusCache = [[[SensorStatusCache alloc] initWithNotificationCenter:[NSNotificationCenter defaultCenter]] autorelease];
 }
 
 - (void)awakeFromInsert
 {
     [super awakeFromInsert];
     self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
+    self.sensorStatusCache = [[[SensorStatusCache alloc] initWithNotificationCenter:[NSNotificationCenter defaultCenter]] autorelease];
 }
 
 - (void)fetchGroupMembers
@@ -160,6 +165,7 @@
     self.groupMembersFetcher = nil;
     self.definition = nil;
     self.controllerAPIVersion = nil;
+    self.sensorStatusCache = nil;
     [super didTurnIntoFault];
 }
 
@@ -225,5 +231,7 @@
 @synthesize groupMembersFetcher;
 @synthesize definition;
 @synthesize controllerAPIVersion;
+
+@synthesize sensorStatusCache;
 
 @end

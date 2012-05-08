@@ -22,7 +22,7 @@
 #import "Component.h"
 #import "Label.h"
 #import "UIColor+ORAdditions.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "SensorState.h"
 #import "Sensor.h"
 
@@ -61,9 +61,9 @@
 
 - (void)setPollingStatus:(NSNotification *)notification
 {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	SensorStatusCache *statusCache = (SensorStatusCache *)[notification object];
 	int sensorId = self.label.sensorId;
-	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d", sensorId]];
+	NSString *newStatus = [statusCache valueForSensorId:sensorId];
 	
     UILabel *uiLabel = (UILabel *)self.view;
     NSString *stateValue = [self.label.sensor stateValueForName:newStatus];

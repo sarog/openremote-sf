@@ -21,7 +21,7 @@
 #import "WebSubController.h"
 #import "Web.h"
 #import "NSStringAdditions.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "Sensor.h"
 
 @interface WebSubController()
@@ -78,9 +78,9 @@
 
 - (void)setPollingStatus:(NSNotification *)notification
 {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	SensorStatusCache *statusCache = (SensorStatusCache *)[notification object];
 	int sensorId = self.web.sensor.sensorId;
-	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d", sensorId]];
+	NSString *newStatus = [statusCache valueForSensorId:sensorId];
     if (![self.oldStatus isEqualToString:newStatus]) {
         self.oldStatus = newStatus;
         [self loadRequestForURL:newStatus];
