@@ -18,6 +18,8 @@
 @interface ClientSideRuntime()
 
 @property (nonatomic, assign) ORController *controller;
+@property (nonatomic, retain) NSDictionary *protocolsRegistry;
+@property (nonatomic, retain) NSMutableDictionary *protocolsImplementation;
 
 @end
 
@@ -28,6 +30,8 @@
     self = [super init];
     if (self) {
         self.controller = aController;
+        self.protocolsRegistry = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"ClientSideProtocols" ofType:@"plist"]];
+        self.protocolsImplementation = [NSMutableDictionary dictionaryWithCapacity:[self.protocolsRegistry count]];
     }
     return self;
 }
@@ -35,6 +39,8 @@
 - (void)dealloc
 {
     self.controller = nil;
+    self.protocolsRegistry = nil;
+    self.protocolsImplementation = nil;
     [super dealloc];
 }
 
@@ -51,16 +57,41 @@
 - (void)executeCommand:(LocalCommand *)command
 {
     
-    // TODO Based on a registry, map protocol -> ClientSideProtocol implementation
-    if ([@"console_sip" isEqualToString:command.protocol]) {
-        
-        // TODO: have a mechanism to cache protocols and not always instantiate
-        id <ClientSideProtocol> protocol = [[SIPProtocol alloc] init];
-        [protocol executeCommand:command];
-        [protocol release];
+    id <ClientSideProtocol> protocol = [self implementationForProtocol:command.protocol];
+    [protocol executeCommand:command];
+}
+
+- (void)startUpdatingSensor:(LocalSensor *)sensor
+{
+    // TODO
+}
+
+- (void)stopUpdatingSensor:(LocalSensor *)sensor
+{
+    // TODO
+}
+
+- (id <ClientSideProtocol>)implementationForProtocol:(NSString *)protocolName
+{
+    id <ClientSideProtocol> protocol = [self.protocolsImplementation objectForKey:protocolName];
+    if (protocol) {
+        return protocol;
     }
+    NSString *protocolClassName = [self.protocolsRegistry objectForKey:protocolName];
+    if (protocolClassName) {
+        Class protocolClass = NSClassFromString(protocolClassName);
+        if (protocolClass) {
+            protocol = [[protocolClass alloc] init];
+            if (protocol) {
+                [self.protocolsImplementation setObject:protocol forKey:protocolName];
+            }
+        }
+    }
+    return protocol;
 }
 
 @synthesize controller;
+@synthesize protocolsRegistry;
+@synthesize protocolsImplementation;
 
 @end
