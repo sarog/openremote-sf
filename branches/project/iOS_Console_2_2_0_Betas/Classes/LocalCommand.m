@@ -23,7 +23,7 @@
 @interface LocalCommand ()
 
 @property (nonatomic, copy, readwrite) NSString *protocol;
-@property (nonatomic, retain) NSMutableDictionary *properties;
+@property (nonatomic, retain, readwrite) NSMutableDictionary *properties;
 
 @end
 
@@ -47,9 +47,14 @@
 	[super dealloc];
 }
 
-- (void)addValue:(NSString *)value forKey:(NSString *)key
+- (void)addPropertyValue:(NSString *)value forKey:(NSString *)key
 {
     [self.properties setValue:value forKey:key];
+}
+
+- (NSString *)propertyValueForKey:(NSString *)key
+{
+    return [self.properties objectForKey:key];
 }
 
 @synthesize protocol;

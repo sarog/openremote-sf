@@ -24,7 +24,8 @@
 
 - (id)initWithId:(int)anId protocol:(NSString *)aProtocol;
 
-- (void)addValue:(NSString *)value forKey:(NSString *)key;
+- (void)addPropertyValue:(NSString *)value forKey:(NSString *)key;
+- (NSString *)propertyValueForKey:(NSString *)key;
 
 @property (nonatomic, copy, readonly) NSString *protocol;
 

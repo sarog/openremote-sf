@@ -85,7 +85,7 @@
     if (protocolClassName) {
         Class protocolClass = NSClassFromString(protocolClassName);
         if (protocolClass) {
-            protocol = [[protocolClass alloc] init];
+            protocol = [[protocolClass alloc] initWithRuntime:self.controller.clientSideRuntime];
             if (protocol) {
                 [self.protocolsImplementation setObject:protocol forKey:protocolName];
                 [protocol release];
@@ -93,6 +93,11 @@
         }
     }
     return protocol;
+}
+
+- (SensorStatusCache *)sensorStatusCache
+{
+    return self.controller.sensorStatusCache;
 }
 
 @synthesize controller;

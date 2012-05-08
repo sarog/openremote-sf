@@ -1,22 +1,19 @@
 //
-//  ClientSideProtocol.h
+//  DeviceProtocolDateTimeCommand.h
 //  openremote
 //
-//  Created by Eric Bariaux on 04/05/12.
+//  Created by Eric Bariaux on 08/05/12.
 //  Copyright (c) 2012 OpenRemote, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@class LocalCommand;
 @class LocalSensor;
 @class ClientSideRuntime;
 
-@protocol ClientSideProtocol <NSObject>
+@interface DeviceProtocolDateTimeCommand : NSObject
 
 - (id)initWithRuntime:(ClientSideRuntime *)runtime;
-
-- (void)executeCommand:(LocalCommand *)command;
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor;
 - (void)stopUpdatingSensor:(LocalSensor *)sensor;
