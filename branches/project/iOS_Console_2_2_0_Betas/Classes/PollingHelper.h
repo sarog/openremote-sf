@@ -32,7 +32,7 @@
 /**
  * Construct polling helper with sensor ids.
  */
-- (id) initWithComponentIds:(NSString *)ids;
+- (id)initWithController:(ORController *)controller componentIds:(NSString *)ids;
 
 /**
  * Request the latest status of device and then start polling.

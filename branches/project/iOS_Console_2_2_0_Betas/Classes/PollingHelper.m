@@ -42,22 +42,26 @@
 @property (nonatomic, retain) ORControllerPollingSender *pollingSender;
 
 @property (nonatomic, retain) UpdateController *updateController;
-    
+
+@property (nonatomic, retain) SensorStatusCache *sensorStatusCache;
+
 @end
     
 @implementation PollingHelper
 
-- (id) initWithComponentIds:(NSString *)ids
+- (id)initWithController:(ORController *)controller componentIds:(NSString *)ids;
 {
     self = [super init];
 	if (self) {
 		self.isPolling = NO;
 		self.isError = NO;
+        
+        self.sensorStatusCache = controller.sensorStatusCache;
 		
 		NSMutableArray *remoteSensors = [NSMutableArray array];
 		NSMutableArray *tempLocalSensors = [NSMutableArray array];
 		for (NSString *anId in [ids componentsSeparatedByString:@","]) {
-			LocalSensor *sensor = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController sensorForId:[anId intValue]];
+			LocalSensor *sensor = [controller.definition.localController sensorForId:[anId intValue]];
             /*
 			if (sensor) {
 				[tempLocalSensors addObject:sensor];
@@ -121,9 +125,17 @@
 	NSString *retValue = [clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
 
     if (retValue) {
+        // TODO: replace with status cache
+        
+        
+        
+        // TODO: review if can be improved, a bit stupid to create the ParserDelegate just to publish the value        
         PollingStatusParserDelegate *delegate = [[PollingStatusParserDelegate alloc] init];
         [delegate publishNewValue:retValue forSensorId:[NSString stringWithFormat:@"%d", sensor.componentId]];
         [delegate release];
+        
+        
+        
     }	
 }
 
@@ -181,6 +193,7 @@
 
 - (void)dealloc
 {
+    self.sensorStatusCache = nil;
 	self.pollingSender = nil;
     self.pollingStatusIds = nil;
 	[self cancelLocalSensors];
@@ -216,6 +229,7 @@
 }
 
 @synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, localSensorTimers, updateController;
+@synthesize sensorStatusCache;
 
 - (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
 {

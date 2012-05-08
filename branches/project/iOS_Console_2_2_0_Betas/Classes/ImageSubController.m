@@ -22,7 +22,7 @@
 #import "Image.h"
 #import "Label.h"
 #import "DirectoryDefinition.h"
-#import "PollingStatusParserDelegate.h"
+#import "SensorStatusCache.h"
 #import "SensorState.h"
 #import "Sensor.h"
 #import "ORImageView.h"
@@ -60,9 +60,9 @@
 
 - (void)setPollingStatus:(NSNotification *)notification
 {
-	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	SensorStatusCache *statusCache = (SensorStatusCache *)[notification object];
 	int sensorId = self.image.sensorId;
-	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
+	NSString *newStatus = [statusCache valueForSensorId:sensorId];
     
     ORImageView *imageView = (ORImageView *)self.view;
     // If no state matching update is found in our states definition, fallback to display the label (if one is defined)

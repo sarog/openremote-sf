@@ -20,18 +20,19 @@
  */
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
+#import "SensorStatusCache.h"
 
 @interface PollingStatusParserDelegate()
 
 @property (nonatomic, retain) NSMutableString *statusValue;
-
+@property (nonatomic, retain) SensorStatusCache *sensorStatusCache;
 @end
 
 @implementation PollingStatusParserDelegate
 
-- (id)init {
+- (id)initWithSensorStatusCache:(SensorStatusCache *)cache {
 	if (self = [super init]) {
-		statusMap = [[NSMutableDictionary alloc] init];
+        self.sensorStatusCache = cache;
 	}
 	return self;
 }
@@ -59,28 +60,21 @@
         //assign lastest status to sensor id
         if (lastId && ![@"" isEqualToString:status]) {
             NSLog(@"change %@ to %@  !!!", lastId, status);
-            [statusMap setObject:status forKey:lastId];
-            
-            // notify latest sensor status to component listener by sensor id
-            [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
+            [self.sensorStatusCache publishNewValue:status forSensorId:[lastId intValue]];
         }
     }
 }
 
-- (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId {
-	[statusMap setObject:status forKey:sensorId];
-	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[sensorId intValue]] object:self];
-}
-
 - (void)dealloc {
     self.statusValue = nil;
-	[statusMap release];
+	self.sensorStatusCache = nil;
 	[lastId release];
 
 	[super dealloc];	
 }
 
-@synthesize lastId, statusMap;
+@synthesize lastId;
 @synthesize statusValue;
+@synthesize sensorStatusCache;
 
 @end

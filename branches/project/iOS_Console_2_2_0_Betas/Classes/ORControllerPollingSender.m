@@ -110,7 +110,7 @@
 	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	PollingStatusParserDelegate *parserDelegate = [[PollingStatusParserDelegate alloc] init];
+	PollingStatusParserDelegate *parserDelegate = [[PollingStatusParserDelegate alloc] initWithSensorStatusCache:self.controller.sensorStatusCache];
 	[xmlParser setDelegate:parserDelegate];
 	[xmlParser parse];
 	
