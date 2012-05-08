@@ -24,6 +24,7 @@
 #import "LocalController.h"
 #import "LocalSensor.h"
 #import "SensorStatusCache.h"
+#import "ClientSideRuntime.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORControllerProxy.h"
 #import "ORConsoleSettings.h"
@@ -38,12 +39,12 @@
 @property(nonatomic, readwrite) BOOL isError;
 @property(nonatomic, retain, readwrite) NSString *pollingStatusIds;
 @property (nonatomic, retain) NSArray *localSensors;
-@property (nonatomic, retain) NSMutableDictionary *localSensorTimers;
 @property (nonatomic, retain) ORControllerPollingSender *pollingSender;
 
 @property (nonatomic, retain) UpdateController *updateController;
 
-@property (nonatomic, retain) SensorStatusCache *sensorStatusCache;
+@property (nonatomic, assign) SensorStatusCache *sensorStatusCache;
+@property (nonatomic, assign) ClientSideRuntime *clientSideRuntime;
 
 @end
     
@@ -57,18 +58,17 @@
 		self.isError = NO;
         
         self.sensorStatusCache = controller.sensorStatusCache;
+        self.clientSideRuntime = controller.clientSideRuntime;
 		
 		NSMutableArray *remoteSensors = [NSMutableArray array];
 		NSMutableArray *tempLocalSensors = [NSMutableArray array];
 		for (NSString *anId in [ids componentsSeparatedByString:@","]) {
 			LocalSensor *sensor = [controller.definition.localController sensorForId:[anId intValue]];
-            /*
 			if (sensor) {
 				[tempLocalSensors addObject:sensor];
 			} else {
 				[remoteSensors addObject:anId];
 			}
-             */
 		}
 		if ([remoteSensors count] > 0) {
 			self.pollingStatusIds = [remoteSensors componentsJoinedByString:@","];
@@ -91,11 +91,8 @@
         self.pollingSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController requestStatusForIds:self.pollingStatusIds delegate:self];
 	}
 	
-	// For local sensors, schedule timers to handle calling the required method
-	self.localSensorTimers = [NSMutableDictionary dictionaryWithCapacity:[self.localSensors count]];
 	for (LocalSensor *sensor in self.localSensors) {
-		[self.localSensorTimers setObject:[NSTimer scheduledTimerWithTimeInterval:(sensor.refreshRate / 1000.0) target:self selector:@selector(handleLocalSensorForTimer:) userInfo:sensor repeats:YES]
-							  forKey:[NSNumber numberWithInt:sensor.componentId]];
+        [self.clientSideRuntime startUpdatingSensor:sensor];
 	}
 }
 
@@ -104,29 +101,15 @@
 }
 
 - (void)cancelLocalSensors {
-	// Cancel local sensors
-	for (NSTimer *timer in [self.localSensorTimers allValues]) {
-		[timer invalidate];
-	}
-	[self.localSensorTimers removeAllObjects];	
+    for (LocalSensor *sensor in self.localSensors) {
+        [self.clientSideRuntime stopUpdatingSensor:sensor];
+    }
 }
 
 - (void)cancelPolling {
 	self.isPolling = NO;
     [self.pollingSender cancel];
     [self cancelLocalSensors];
-}
-
-- (void)handleLocalSensorForTimer:(NSTimer*)theTimer {
-	LocalSensor *sensor = (LocalSensor *)[theTimer userInfo];
-
-	Class clazz = NSClassFromString(sensor.className);
-	SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", sensor.methodName]);
-	NSString *retValue = [clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
-
-    if (retValue) {
-        [self.sensorStatusCache publishNewValue:retValue forSensorId:sensor.componentId];
-    }	
 }
 
 #pragma mark ORControllerPollingSenderDelegate implementation
@@ -184,11 +167,11 @@
 - (void)dealloc
 {
     self.sensorStatusCache = nil;
+    self.clientSideRuntime = nil;
 	self.pollingSender = nil;
     self.pollingStatusIds = nil;
 	[self cancelLocalSensors];
     self.localSensors = nil;
-    self.localSensorTimers = nil;
     self.updateController = nil;
 	[super dealloc];
 }
@@ -218,8 +201,9 @@
 	}
 }
 
-@synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, localSensorTimers, updateController;
+@synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, updateController;
 @synthesize sensorStatusCache;
+@synthesize clientSideRuntime;
 
 - (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
 {

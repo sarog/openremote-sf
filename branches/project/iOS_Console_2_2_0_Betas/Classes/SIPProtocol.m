@@ -15,4 +15,14 @@
     NSLog(@"SIP executing command %@", command);
 }
 
+- (void)startUpdatingSensor:(LocalSensor *)sensor
+{
+    NSLog(@"SIP start update sensor %@", sensor);
+}
+
+- (void)stopUpdatingSensor:(LocalSensor *)sensor
+{
+    NSLog(@"SIP stop update sensor %@", sensor);
+}
+
 @end

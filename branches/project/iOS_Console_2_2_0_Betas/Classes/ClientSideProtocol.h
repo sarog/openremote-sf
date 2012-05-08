@@ -9,9 +9,13 @@
 #import <Foundation/Foundation.h>
 
 @class LocalCommand;
+@class LocalSensor;
 
 @protocol ClientSideProtocol <NSObject>
 
 - (void)executeCommand:(LocalCommand *)command;
+
+- (void)startUpdatingSensor:(LocalSensor *)sensor;
+- (void)stopUpdatingSensor:(LocalSensor *)sensor;
 
 @end
