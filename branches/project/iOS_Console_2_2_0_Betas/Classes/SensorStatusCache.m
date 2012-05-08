@@ -34,23 +34,20 @@
     [super dealloc];
 }
 
-- (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId
+- (void)publishNewValue:(NSString *)status forSensorId:(NSUInteger)sensorId
 {
-    [self.statusCache setObject:status forKey:sensorId];    
-    [self.notificationCenter postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat, [sensorId intValue]] object:self];
+    [self.statusCache setObject:status forKey:[NSString stringWithFormat:@"%d", sensorId]];    
+    [self.notificationCenter postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:self];
 }
 
-- (NSString *)valueForSensorId:(NSString *)sensorId
+- (NSString *)valueForSensorId:(NSUInteger)sensorId
 {
-    return [self.statusCache objectForKey:sensorId];
+    return [self.statusCache objectForKey:[NSString stringWithFormat:@"%d", sensorId]];
 }
 
-- (void)clearStatusCacheRemovingObservers:(BOOL)removeObservers
+- (void)clearStatusCache
 {
     [self.statusCache removeAllObjects];
-    if (removeObservers) {
-        // TODO, not sure we can do this
-    }
 }
 
 @synthesize statusCache;
