@@ -84,6 +84,7 @@
             protocol = [[protocolClass alloc] init];
             if (protocol) {
                 [self.protocolsImplementation setObject:protocol forKey:protocolName];
+                [protocol release];
             }
         }
     }
