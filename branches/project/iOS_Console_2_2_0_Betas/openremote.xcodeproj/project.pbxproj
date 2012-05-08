@@ -417,6 +417,8 @@
 		60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
 		60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
+		60BC25961559682C0048A2BD /* ClientSideProtocols.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60BC25951559682C0048A2BD /* ClientSideProtocols.plist */; };
+		60BC25971559682C0048A2BD /* ClientSideProtocols.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60BC25951559682C0048A2BD /* ClientSideProtocols.plist */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
 		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
@@ -990,6 +992,7 @@
 		60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerCommandSender.m; sourceTree = "<group>"; };
 		60AFCEE713729AA400A811D4 /* ControllerRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerRequest.h; sourceTree = "<group>"; };
 		60AFCEE813729AA400A811D4 /* ControllerRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerRequest.m; sourceTree = "<group>"; };
+		60BC25951559682C0048A2BD /* ClientSideProtocols.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ClientSideProtocols.plist; sourceTree = "<group>"; };
 		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
@@ -1040,7 +1043,7 @@
 		60F386D81553F1510089F8BD /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 		60F386D91553F1530089F8BD /* IncludeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncludeParser.m; sourceTree = "<group>"; };
 		60F386DE1554017B0089F8BD /* ClientSideProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocol.h; sourceTree = "<group>"; };
-		60F386DF155401AC0089F8BD /* ClientSideRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ClientSideRuntime.h; sourceTree = "<group>"; };
+		60F386DF155401AC0089F8BD /* ClientSideRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideRuntime.h; sourceTree = "<group>"; };
 		60F386E0155401AC0089F8BD /* ClientSideRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideRuntime.m; sourceTree = "<group>"; };
 		60F386E41554034C0089F8BD /* SIPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIPProtocol.h; sourceTree = "<group>"; };
 		60F386E51554034C0089F8BD /* SIPProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SIPProtocol.m; sourceTree = "<group>"; };
@@ -1439,6 +1442,7 @@
 				8C49724011B20D660039A293 /* InitViewController~iPhone.xib */,
 				8C4974C111B24B020039A293 /* ErrorViewController~iPhone.xib */,
 				60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */,
+				60BC25951559682C0048A2BD /* ClientSideProtocols.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2446,6 +2450,7 @@
 				6055689213CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */,
 				6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */,
 				60FA5DC5153C506500FA245E /* delete_button.png in Resources */,
+				60BC25961559682C0048A2BD /* ClientSideProtocols.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2490,6 +2495,7 @@
 				60366B8D144DCB9C004FED3B /* ControllerRequiresAuthentication.png in Resources */,
 				60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */,
 				60FA5DC6153C506500FA245E /* delete_button.png in Resources */,
+				60BC25971559682C0048A2BD /* ClientSideProtocols.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class LocalCommand;
+@class LocalSensor;
 @class ORController;
 
 @interface ClientSideRuntime : NSObject
@@ -17,5 +18,8 @@
 
 - (void)executeCommands:(NSArray *)commands;
 - (void)executeCommand:(LocalCommand *)command;
+
+- (void)startUpdatingSensor:(LocalSensor *)sensor;
+- (void)stopUpdatingSensor:(LocalSensor *)sensor;
 
 @end
