@@ -13,9 +13,12 @@
 #import "Definition.h"
 #import "LocalController.h"
 #import "LocalCommand.h"
+#import "LocalSensor.h"
 #import "SIPProtocol.h"
 
 @interface ClientSideRuntime()
+
+- (id <ClientSideProtocol>)implementationForProtocol:(NSString *)protocolName;
 
 @property (nonatomic, assign) ORController *controller;
 @property (nonatomic, retain) NSDictionary *protocolsRegistry;
@@ -56,19 +59,20 @@
 
 - (void)executeCommand:(LocalCommand *)command
 {
-    
     id <ClientSideProtocol> protocol = [self implementationForProtocol:command.protocol];
     [protocol executeCommand:command];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor
 {
-    // TODO
+    id <ClientSideProtocol> protocol = [self implementationForProtocol:sensor.command.protocol];
+    [protocol startUpdatingSensor:sensor];
 }
 
 - (void)stopUpdatingSensor:(LocalSensor *)sensor
 {
-    // TODO
+    id <ClientSideProtocol> protocol = [self implementationForProtocol:sensor.command.protocol];
+    [protocol stopUpdatingSensor:sensor];
 }
 
 - (id <ClientSideProtocol>)implementationForProtocol:(NSString *)protocolName

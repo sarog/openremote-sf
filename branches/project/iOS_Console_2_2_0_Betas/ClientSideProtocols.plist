@@ -4,5 +4,7 @@
 <dict>
 	<key>console_sip</key>
 	<string>SIPProtocol</string>
+	<key>console_device</key>
+	<string>DeviceProtocol</string>
 </dict>
 </plist>

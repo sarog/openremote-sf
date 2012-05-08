@@ -22,33 +22,33 @@
 
 @interface LocalSensor ()
 
-@property (nonatomic, copy, readwrite) NSString *className;
-@property (nonatomic, copy, readwrite) NSString *methodName;
-@property (nonatomic, readwrite) NSUInteger refreshRate;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, copy, readwrite) NSString *type;
 
 @end
 
 @implementation LocalSensor
 
-@synthesize className, methodName, refreshRate;
-
-- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName refreshRate:(NSNumber *)aRefreshRate
+- (id)initWithId:(int)anId name:(NSString *)sensorName type:(NSString *)sensorType
 {
-    self = [super init];
+    self = [super initWithId:anId];
     if (self) {
-        self.componentId = anId;
-        self.className = aClassName;
-        self.methodName = aMethodName;
-        self.refreshRate  = (aRefreshRate?[aRefreshRate intValue]:5000); // Default to 5 sec
+        self.name = sensorName;
+        self.type = sensorType;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    self.className = nil;
-    self.methodName = nil;
+    self.name = nil;
+    self.type = nil;
+    self.command = nil;
 	[super dealloc];
 }
+
+@synthesize name;
+@synthesize type;
+@synthesize command;
 
 @end

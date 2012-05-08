@@ -20,12 +20,14 @@
  */
 #import "Component.h"
 
+@class LocalCommand;
+
 @interface LocalSensor : Component
 
-@property (nonatomic, copy, readonly) NSString *className;
-@property (nonatomic, copy, readonly) NSString *methodName;
-@property (nonatomic, readonly) NSUInteger refreshRate;
+@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly) NSString *type; // TODO enum
+@property (nonatomic, retain) LocalCommand *command;
 
-- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName refreshRate:(NSNumber *)aRefreshRate;
+- (id)initWithId:(int)anId name:(NSString *)sensorName type:(NSString *)sensorType;
 
 @end

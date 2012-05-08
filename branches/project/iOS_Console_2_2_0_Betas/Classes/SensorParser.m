@@ -20,6 +20,8 @@
  */
 #import "SensorParser.h"
 #import "LocalSensor.h"
+#import "CommandDeferredBinding.h"
+#import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
 @interface SensorParser ()
@@ -47,16 +49,25 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        /*
         LocalSensor *tmp = [[LocalSensor alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
-                                       className:[attributeDict objectForKey:CLASS]
-                                      methodName:[attributeDict objectForKey:METHOD]
-                                     refreshRate:([attributeDict objectForKey:REFRESH_RATE]?[NSNumber numberWithInt:[[attributeDict objectForKey:REFRESH_RATE] intValue]]:nil)];
+                                                      name:[attributeDict objectForKey:@"name"]
+                                                      type:[attributeDict objectForKey:@"type"]];
         self.sensor = tmp;
         [tmp release];
-         */
     }
     return self;
+}
+
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
+{
+	if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
+        // This is a reference to another element, will be resolved later, put a standby in place for now
+        CommandDeferredBinding *standby = [[CommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.sensor];
+        standby.definition = self.depRegister.definition;
+        [self.depRegister addDeferredBinding:standby];
+        [standby release];
+	}
+    [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
 @synthesize sensor;
