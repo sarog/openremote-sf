@@ -51,7 +51,7 @@
 
 - (void)endPropertyElement:(PropertyParser *)parser
 {
-    [self.command addValue:parser.value forKey:parser.name];
+    [self.command addPropertyValue:parser.value forKey:parser.name];
 }
 
 @synthesize command;

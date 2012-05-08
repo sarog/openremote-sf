@@ -10,6 +10,7 @@
 
 @class LocalCommand;
 @class LocalSensor;
+@class SensorStatusCache;
 @class ORController;
 
 @interface ClientSideRuntime : NSObject
@@ -21,5 +22,7 @@
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor;
 - (void)stopUpdatingSensor:(LocalSensor *)sensor;
+
+@property (nonatomic, readonly) SensorStatusCache *sensorStatusCache;
 
 @end

@@ -423,6 +423,8 @@
 		60BC259C15596E8D0048A2BD /* DeviceProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC259A15596E8D0048A2BD /* DeviceProtocol.m */; };
 		60BC259F1559736D0048A2BD /* CommandDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */; };
 		60BC25A01559736D0048A2BD /* CommandDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */; };
+		60BC25A315598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */; };
+		60BC25A415598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
 		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
@@ -1001,6 +1003,8 @@
 		60BC259A15596E8D0048A2BD /* DeviceProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocol.m; sourceTree = "<group>"; };
 		60BC259D1559736C0048A2BD /* CommandDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandDeferredBinding.h; sourceTree = "<group>"; };
 		60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandDeferredBinding.m; sourceTree = "<group>"; };
+		60BC25A115598F2C0048A2BD /* DeviceProtocolDateTimeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceProtocolDateTimeCommand.h; sourceTree = "<group>"; };
+		60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolDateTimeCommand.m; sourceTree = "<group>"; };
 		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
@@ -2011,6 +2015,8 @@
 				60F386E51554034C0089F8BD /* SIPProtocol.m */,
 				60BC259915596E8D0048A2BD /* DeviceProtocol.h */,
 				60BC259A15596E8D0048A2BD /* DeviceProtocol.m */,
+				60BC25A115598F2C0048A2BD /* DeviceProtocolDateTimeCommand.h */,
+				60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */,
 			);
 			name = "Client Side Protocols";
 			sourceTree = "<group>";
@@ -2734,6 +2740,7 @@
 				60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 				60BC259B15596E8D0048A2BD /* DeviceProtocol.m in Sources */,
 				60BC259F1559736D0048A2BD /* CommandDeferredBinding.m in Sources */,
+				60BC25A315598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2899,6 +2906,7 @@
 				60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 				60BC259C15596E8D0048A2BD /* DeviceProtocol.m in Sources */,
 				60BC25A01559736D0048A2BD /* CommandDeferredBinding.m in Sources */,
+				60BC25A415598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
