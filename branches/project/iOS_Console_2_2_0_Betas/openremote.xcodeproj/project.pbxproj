@@ -460,9 +460,9 @@
 		60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
 		60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
 		60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D91553F1530089F8BD /* IncludeParser.m */; };
-		60F386E1155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
-		60F386E2155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
-		60F386E3155401AC0089F8BD /* LocalCommandExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */; };
+		60F386E1155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
+		60F386E2155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
+		60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
 		60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
@@ -1040,8 +1040,8 @@
 		60F386D81553F1510089F8BD /* IncludeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncludeParser.h; sourceTree = "<group>"; };
 		60F386D91553F1530089F8BD /* IncludeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncludeParser.m; sourceTree = "<group>"; };
 		60F386DE1554017B0089F8BD /* ClientSideProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocol.h; sourceTree = "<group>"; };
-		60F386DF155401AC0089F8BD /* LocalCommandExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCommandExecutor.h; sourceTree = "<group>"; };
-		60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommandExecutor.m; sourceTree = "<group>"; };
+		60F386DF155401AC0089F8BD /* ClientSideRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ClientSideRuntime.h; sourceTree = "<group>"; };
+		60F386E0155401AC0089F8BD /* ClientSideRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideRuntime.m; sourceTree = "<group>"; };
 		60F386E41554034C0089F8BD /* SIPProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIPProtocol.h; sourceTree = "<group>"; };
 		60F386E51554034C0089F8BD /* SIPProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SIPProtocol.m; sourceTree = "<group>"; };
 		60F386E915541CE90089F8BD /* SensorStatusCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorStatusCache.h; sourceTree = "<group>"; };
@@ -1991,8 +1991,8 @@
 			isa = PBXGroup;
 			children = (
 				60F386DE1554017B0089F8BD /* ClientSideProtocol.h */,
-				60F386DF155401AC0089F8BD /* LocalCommandExecutor.h */,
-				60F386E0155401AC0089F8BD /* LocalCommandExecutor.m */,
+				60F386DF155401AC0089F8BD /* ClientSideRuntime.h */,
+				60F386E0155401AC0089F8BD /* ClientSideRuntime.m */,
 				60F386E41554034C0089F8BD /* SIPProtocol.h */,
 				60F386E51554034C0089F8BD /* SIPProtocol.m */,
 			);
@@ -2711,7 +2711,7 @@
 				60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DA1553F1560089F8BD /* IncludeParser.m in Sources */,
-				60F386E1155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E1155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 			);
@@ -2874,7 +2874,7 @@
 				60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DC1553F1560089F8BD /* IncludeParser.m in Sources */,
-				60F386E3155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 			);
@@ -2990,7 +2990,7 @@
 				60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386DB1553F1560089F8BD /* IncludeParser.m in Sources */,
-				60F386E2155401AC0089F8BD /* LocalCommandExecutor.m in Sources */,
+				60F386E2155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 				60F386F8155503820089F8BD /* SensorStatusCacheTest.m in Sources */,
