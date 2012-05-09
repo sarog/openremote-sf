@@ -25,11 +25,12 @@
 
 @interface DeviceProtocolDateTimeCommand()
 
+- (void)refresh:(NSTimer *)timer;
+- (NSString *)sensorValue;
+
 @property (nonatomic, retain) NSTimer *refreshTimer;
 @property (nonatomic, retain) NSMutableSet *sensorIds;
 @property (nonatomic, retain) ClientSideRuntime *clientSideRuntime;
-
-- (void)refresh:(NSTimer *)timer;
 
 @end
 
@@ -59,6 +60,7 @@
     if (![self.sensorIds count]) {
         self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refresh:) userInfo:nil repeats:YES];
     }
+    [self.clientSideRuntime.sensorStatusCache publishNewValue:[self sensorValue] forSensorId:sensor.componentId];
     [self.sensorIds addObject:[NSNumber numberWithInt:sensor.componentId]];
 }
 
@@ -73,15 +75,20 @@
 
 - (void)refresh:(NSTimer *)timer
 {
+	NSString *dateTimeString = [self sensorValue];
+    for (NSNumber *sensorId in self.sensorIds) {
+        [self.clientSideRuntime.sensorStatusCache publishNewValue:dateTimeString forSensorId:[sensorId intValue]];
+    }
+}
+
+- (NSString *)sensorValue
+{
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
 	[dateFormatter setDateStyle:NSDateFormatterShortStyle];
 	NSString *dateTimeString = [dateFormatter stringFromDate:[NSDate date]];
 	[dateFormatter release];
-
-    for (NSNumber *sensorId in self.sensorIds) {
-        [self.clientSideRuntime.sensorStatusCache publishNewValue:dateTimeString forSensorId:[sensorId intValue]];
-    }
+    return dateTimeString;
 }
 
 @synthesize refreshTimer;
