@@ -58,11 +58,8 @@
 
 - (void)executeCommands:(NSArray *)commands
 {
-    for (NSNumber *commandId in commands) {
-        LocalCommand *command = [controller.definition.localController commandForId:[commandId intValue]];
-        if (command) {
-            [self executeCommand:command];
-        }
+    for (LocalCommand *command in commands) {
+        [self executeCommand:command];
     }
 }
 

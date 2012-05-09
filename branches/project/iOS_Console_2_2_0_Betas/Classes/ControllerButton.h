@@ -8,8 +8,8 @@
 
 #import "ControllerComponent.h"
 
-@interface ControllerButton : ControllerComponent
+@class LocalCommand;
 
-- (void)addCommandRef:(NSUInteger)ref;
+@interface ControllerButton : ControllerComponent
 
 @end

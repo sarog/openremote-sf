@@ -8,13 +8,12 @@
 
 #import "Component.h"
 
+@class LocalCommand;
 @class LocalController;
 
 @interface ControllerComponent : Component
 
-/**
- * Only return client side commands, filtering out server side ones that might have been in the XML.
- */
-- (NSDictionary *)commandsPerAction:(LocalController *)localController;
+- (void)addCommand:(LocalCommand *)aCommand forAction:(NSString *)anAction;
+- (NSDictionary *)commandsPerAction;
 
 @end

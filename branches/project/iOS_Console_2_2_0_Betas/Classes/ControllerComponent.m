@@ -10,7 +10,11 @@
 
 @implementation ControllerComponent
 
-- (NSDictionary *)commandsPerAction:(LocalController *)localController
+- (void)addCommand:(LocalCommand *)aCommand forAction:(NSString *)anAction
+{
+}
+
+- (NSDictionary *)commandsPerAction
 {
     return nil;
 }
