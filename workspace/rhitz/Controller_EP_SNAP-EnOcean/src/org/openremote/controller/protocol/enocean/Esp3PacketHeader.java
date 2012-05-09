@@ -118,7 +118,8 @@ public class Esp3PacketHeader
       }
 
       throw new UnknownPacketTypeException(
-          "Unknown ESP3 packet type value : " + Strings.byteToUnsignedHexString(packetTypeByte)
+          "Unknown ESP3 packet type value : " +
+          Strings.byteToUnsignedHexString(packetTypeByte)
       );
     }
 
@@ -260,6 +261,36 @@ public class Esp3PacketHeader
   }
 
 
+  /**
+   * Constructs a ESP3 header instance with given packet type and data length values.
+   *
+   * @param packetType  ESP3 packet type
+   * @param dataLength  length of data group with valid range: [0x0000..0xFFFF]
+   * @param optionalDataLength length of optional data group with valid range: [0x00..0xFF]
+   */
+  public Esp3PacketHeader(PacketType packetType, int dataLength, int optionalDataLength)
+  {
+    if(packetType == null)
+    {
+      throw new IllegalArgumentException("null packet type");
+    }
+
+    if(dataLength > 0xFFFF || dataLength < 0)
+    {
+      throw new IllegalArgumentException("Data length out of valid range.");
+    }
+
+    if(optionalDataLength > 0xFF || optionalDataLength < 0)
+    {
+      throw new IllegalArgumentException("Optional data length out of valid range.");
+    }
+
+    this.packetType = packetType;
+    this.dataLength = dataLength;
+    this.optionalDataLength = optionalDataLength;
+  }
+
+
   // Public Instance Methods ----------------------------------------------------------------------
 
   /**
@@ -316,6 +347,19 @@ public class Esp3PacketHeader
     headerBytes[ESP3_HEADER_CRC8_INDEX] = getCRC8Value(headerBytes);
 
     return headerBytes;
+  }
+
+  /**
+   * Returns size of a complete packet including first sync. byte and last CRC-8 value.
+   *
+   * @return packet size
+   */
+  public int getPacketSize()
+  {
+    return Esp3PacketHeader.ESP3_HEADER_SIZE +
+           getDataLength() +
+           getOptionalDataLength() +
+           1;  // last CRC-8 byte
   }
 
   // Private Instance Methods ---------------------------------------------------------------------

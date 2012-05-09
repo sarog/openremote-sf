@@ -99,6 +99,26 @@ public class DeviceIDTest
 
   }
 
+  @Test public void testCreateDeviceIDFromByteArray() throws Exception
+  {
+    byte[] deviceIDbytes = new byte[] {
+        (byte)0x01, (byte)0x00, (byte)0x80, (byte)0xFF
+    };
+
+    DeviceID id = DeviceID.fromByteArray(deviceIDbytes);
+
+    Assert.assertArrayEquals(deviceIDbytes, id.asByteArray());
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testInvalidDeviceIDArrayLength() throws Exception
+  {
+    byte[] deviceIDbytes = new byte[] {
+        (byte)0x01, (byte)0x02, (byte)0x03
+    };
+
+    DeviceID id = DeviceID.fromByteArray(deviceIDbytes);
+  }
 
   @Test (expected = InvalidDeviceIDException.class)
   public void testOutOfBoundsDeviceID1() throws InvalidDeviceIDException
