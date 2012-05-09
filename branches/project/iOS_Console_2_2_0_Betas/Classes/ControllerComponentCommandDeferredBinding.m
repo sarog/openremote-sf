@@ -35,7 +35,7 @@
 }
 
 - (void)bind
-{    
+{
     [((ControllerComponent *)self.enclosingObject) addCommand:[self.definition.localController commandForId:self.boundComponentId] forAction:self.action];
 }
 
