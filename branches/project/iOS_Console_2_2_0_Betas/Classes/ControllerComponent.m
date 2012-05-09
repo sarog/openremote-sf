@@ -33,7 +33,7 @@
 
 - (void)addCommand:(LocalCommand *)aCommand forAction:(NSString *)anAction
 {
-    NSMutableArray *commands = [self.commandsPerAction objectForKey:anAction];
+    NSMutableArray *commands = [self.commandsPerActionRegistry objectForKey:anAction];
     if (!commands) {
         commands = [NSMutableArray array];
         [self.commandsPerActionRegistry setObject:commands forKey:anAction];

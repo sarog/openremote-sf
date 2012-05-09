@@ -38,6 +38,7 @@
     self.components = nil;
     self.commands = nil;
     self.sensors = nil;
+    self.commandsPerComponents = nil;
 	[super dealloc];
 }
 
