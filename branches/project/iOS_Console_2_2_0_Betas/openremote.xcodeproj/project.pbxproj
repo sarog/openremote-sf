@@ -126,7 +126,6 @@
 		60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
 		60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
-		60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A61A801355F85600A7C87E /* TimeManager.m */; };
 		60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60366BD7144DCB9C004FED3B /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
 		60366BD8144DCB9C004FED3B /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
@@ -139,7 +138,6 @@
 		60366BDF144DCB9C004FED3B /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		60366BE0144DCB9C004FED3B /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		60366BE1144DCB9C004FED3B /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
-		60366BE2144DCB9C004FED3B /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
 		60366BE3144DCB9C004FED3B /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
 		60366BE4144DCB9C004FED3B /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
 		60366BE5144DCB9C004FED3B /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
@@ -229,7 +227,6 @@
 		60366C3C144DCB9C004FED3B /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A731355EFB000A7C87E /* libmsamr.a */; };
 		60366C3D144DCB9C004FED3B /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A741355EFB000A7C87E /* libmsilbc.a */; };
 		6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
-		605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
 		6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
 		6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
 		6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
@@ -396,7 +393,6 @@
 		60A61A7A1355F07E00A7C87E /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A791355F07E00A7C87E /* CoreAudio.framework */; };
 		60A61A7C1355F12400A7C87E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7B1355F12400A7C87E /* AVFoundation.framework */; };
 		60A61A7E1355F15000A7C87E /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7D1355F15000A7C87E /* libresolv.dylib */; };
-		60A61A811355F85700A7C87E /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A61A801355F85600A7C87E /* TimeManager.m */; };
 		60A61A841355FC8100A7C87E /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A821355FC8100A7C87E /* oldphone-mono.wav */; };
 		60A61A851355FC8100A7C87E /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A831355FC8100A7C87E /* ringback.wav */; };
 		60A61A871355FD1E00A7C87E /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
@@ -646,8 +642,6 @@
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
-		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
-		605393F71383FF0A00F3F5FC /* EnvironmentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnvironmentManager.m; sourceTree = "<group>"; };
 		6055687713CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerGroupMembersFetcher.h; sourceTree = "<group>"; };
 		6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerGroupMembersFetcher.m; sourceTree = "<group>"; };
 		6055687C13CDC4A20035CC1A /* NSURLRequest+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+ORAdditions.h"; sourceTree = "<group>"; };
@@ -965,8 +959,6 @@
 		60A61A791355F07E00A7C87E /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		60A61A7B1355F12400A7C87E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		60A61A7D1355F15000A7C87E /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
-		60A61A7F1355F85500A7C87E /* TimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeManager.h; sourceTree = "<group>"; };
-		60A61A801355F85600A7C87E /* TimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeManager.m; sourceTree = "<group>"; };
 		60A61A821355FC8100A7C87E /* oldphone-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "oldphone-mono.wav"; sourceTree = "<group>"; };
 		60A61A831355FC8100A7C87E /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringback.wav; sourceTree = "<group>"; };
 		60A61A861355FD1E00A7C87E /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
@@ -1364,7 +1356,6 @@
 			isa = PBXGroup;
 			children = (
 				60F386DD155401620089F8BD /* Client Side Protocols */,
-				605393F51383FED200F3F5FC /* Local logic */,
 				60AFCED2137180AC00A811D4 /* Controller communication */,
 				608FBB74131FF8F900C9089F /* SIP */,
 				8CC6364210BD35E2009C25C9 /* delegate */,
@@ -1594,17 +1585,6 @@
 				60F386D91553F1530089F8BD /* IncludeParser.m */,
 			);
 			name = Parser;
-			sourceTree = "<group>";
-		};
-		605393F51383FED200F3F5FC /* Local logic */ = {
-			isa = PBXGroup;
-			children = (
-				605393F61383FF0A00F3F5FC /* EnvironmentManager.h */,
-				605393F71383FF0A00F3F5FC /* EnvironmentManager.m */,
-				60A61A7F1355F85500A7C87E /* TimeManager.h */,
-				60A61A801355F85600A7C87E /* TimeManager.m */,
-			);
-			name = "Local logic";
 			sourceTree = "<group>";
 		};
 		608FBB74131FF8F900C9089F /* SIP */ = {
@@ -2697,7 +2677,6 @@
 				608FBDD5132120D200C9089F /* LocalSensor.m in Sources */,
 				608FBDD8132120D700C9089F /* LocalCommand.m in Sources */,
 				60A6195B1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */,
-				60A61A811355F85700A7C87E /* TimeManager.m in Sources */,
 				60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */,
 				60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
 				60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */,
@@ -2710,7 +2689,6 @@
 				60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */,
 				6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 				60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
-				605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 				60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 				60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
 				6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
@@ -2866,7 +2844,6 @@
 				60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */,
 				60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */,
 				60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */,
-				60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */,
 				60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */,
 				60366BD7144DCB9C004FED3B /* ColorPickerImageView.m in Sources */,
 				60366BD8144DCB9C004FED3B /* ORConsoleSettings.xcdatamodeld in Sources */,
@@ -2879,7 +2856,6 @@
 				60366BDF144DCB9C004FED3B /* ControllerRequest.m in Sources */,
 				60366BE0144DCB9C004FED3B /* ORControllerPollingSender.m in Sources */,
 				60366BE1144DCB9C004FED3B /* ORControllerPanelsFetcher.m in Sources */,
-				60366BE2144DCB9C004FED3B /* EnvironmentManager.m in Sources */,
 				60366BE3144DCB9C004FED3B /* UIColor+ORAdditions.m in Sources */,
 				60366BE4144DCB9C004FED3B /* ControllerDetailViewController.m in Sources */,
 				60366BE5144DCB9C004FED3B /* TableViewCellWithSelectionAndIndicator.m in Sources */,
