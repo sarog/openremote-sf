@@ -24,6 +24,11 @@
 #import "DirectoryDefinition.h"
 #import "SensorStatusCache.h"
 #import "Sensor.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
+#import "Definition.h"
+#import "LocalController.h"
 #import "NotificationConstant.h"
 
 #define MIN_SLIDE_VARIANT 1
@@ -207,6 +212,11 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     UISlider *uiSlider = ((UISlider *)self.view);
 	uiSlider.value = newStatus;
 	self.currentValue = [self sliderValue:uiSlider];
+}
+
+- (NSArray *)localCommandsForCommandType:(NSString *)commandType
+{
+	return [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandsForComponentId:self.component.componentId action:@"setValue"];
 }
 
 #pragma mark Private methods

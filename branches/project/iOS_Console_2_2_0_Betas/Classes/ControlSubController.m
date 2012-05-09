@@ -30,18 +30,29 @@
 #import "ClientSideRuntime.h"
 #import "ORControllerProxy.h"
 
+@interface ControlSubController ()
+
+- (NSArray *)localCommandsForCommandType:(NSString *)commandType;
+
+@end
+
 @implementation ControlSubController
 
 - (void)sendCommandRequest:(NSString *)commandType {
-    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController;
-    
+    NSLog(@"commandType %@", commandType);
+
 	// Check for local command first
-	NSArray *localCommands = [controller.definition.localController commandsForComponentId:self.component.componentId action:commandType];
-	if (localCommands && ([localCommands count] > 0)) {
-        [controller.clientSideRuntime executeCommands:localCommands];
+	NSArray *localCommands = [self localCommandsForCommandType:commandType];
+    if (localCommands && ([localCommands count] > 0)) {
+        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.clientSideRuntime executeCommands:localCommands]; // TODO: pass command type
 	} else {
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:self.component delegate:nil];
 	}
+}
+
+- (NSArray *)localCommandsForCommandType:(NSString *)commandType
+{
+	return [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localController commandsForComponentId:self.component.componentId action:commandType];
 }
 
 #pragma mark ORControllerCommandSenderDelegate implementation
