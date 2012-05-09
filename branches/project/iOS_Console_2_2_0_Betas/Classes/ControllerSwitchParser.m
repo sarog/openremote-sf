@@ -1,25 +1,31 @@
 //
-//  ControllerComponentParser.m
+//  ControllerSwitchParser.m
 //  openremote
 //
-//  Created by Eric Bariaux on 04/05/12.
+//  Created by Eric Bariaux on 09/05/12.
 //  Copyright (c) 2012 OpenRemote, Inc. All rights reserved.
 //
 
-#import "ControllerButtonParser.h"
-#import "ControllerButton.h"
+#import "ControllerSwitchParser.h"
+#import "ControllerComponent.h"
 #import "ControllerComponentCommandDeferredBinding.h"
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
-@implementation ControllerButtonParser
+@interface ControllerSwitchParser()
+
+@property (nonatomic, retain) NSString *action;
+
+@end
+
+@implementation ControllerSwitchParser
 
 - (id)initWithRegister:(DefinitionElementParserRegister *)aRegister attributes:(NSDictionary *)attributeDict;
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        ControllerButton *tmp = [[ControllerButton alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
-        self.button = tmp;
+        ControllerComponent *tmp = [[ControllerComponent alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        self.theSwitch = tmp;
         [tmp release];
     }
     return self;
@@ -27,18 +33,20 @@
 
 - (void)dealloc
 {
-    self.button = nil;
+    self.theSwitch = nil;
+    self.action = nil;
     [super dealloc];
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-	if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
+    if ([elementName isEqualToString:@"ctrl:on"]) {
+        self.action = @"on";
+    } else if ([elementName isEqualToString:@"ctrl:off"]) {
+        self.action = @"off";
+    } else if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
-        ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.button action:@"click"];
-        
-        // TODO: click is only valid for 2.0 API, must check for 2.1 (long button press support)
-        
+        ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.theSwitch action:self.action];
         standby.definition = self.depRegister.definition;
         [self.depRegister addDeferredBinding:standby];
         [standby release];
@@ -46,6 +54,7 @@
     [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
-@synthesize button;
+@synthesize theSwitch;
+@synthesize action;
 
 @end

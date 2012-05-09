@@ -440,6 +440,8 @@
 		60DEC3C6140FB62F000FF863 /* ORImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C5140FB62F000FF863 /* ORImageView.m */; };
 		60DEC3CA140FC081000FF863 /* WebSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C9140FC080000FF863 /* WebSubController.m */; };
 		60DEC3CE140FC884000FF863 /* SwitchSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3CD140FC883000FF863 /* SwitchSubController.m */; };
+		60DED43F155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */; };
+		60DED440155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */; };
 		60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
 		60EC86311410C23E003F5432 /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
@@ -1011,7 +1013,7 @@
 		60BC25B5155A66A30048A2BD /* ClientSideProtocolWriteCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolWriteCommand.h; sourceTree = "<group>"; };
 		60BC25B9155A693D0048A2BD /* DeviceProtocolBatteryLevelCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceProtocolBatteryLevelCommand.h; sourceTree = "<group>"; };
 		60BC25BA155A693D0048A2BD /* DeviceProtocolBatteryLevelCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolBatteryLevelCommand.m; sourceTree = "<group>"; };
-		60BC25BD155A71EE0048A2BD /* ControllerComponentCommandDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ControllerComponentCommandDeferredBinding.h; sourceTree = "<group>"; };
+		60BC25BD155A71EE0048A2BD /* ControllerComponentCommandDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerComponentCommandDeferredBinding.h; sourceTree = "<group>"; };
 		60BC25BE155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerComponentCommandDeferredBinding.m; sourceTree = "<group>"; };
 		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
@@ -1036,6 +1038,8 @@
 		60DEC3C9140FC080000FF863 /* WebSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebSubController.m; sourceTree = "<group>"; };
 		60DEC3CC140FC882000FF863 /* SwitchSubController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchSubController.h; sourceTree = "<group>"; };
 		60DEC3CD140FC883000FF863 /* SwitchSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchSubController.m; sourceTree = "<group>"; };
+		60DED43D155A89D500F5C0CD /* ControllerSwitchParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerSwitchParser.h; sourceTree = "<group>"; };
+		60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerSwitchParser.m; sourceTree = "<group>"; };
 		60E7A8E313696C8B00EA107A /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
 		60E7A8E413696C8B00EA107A /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
 		60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerImageView.h; sourceTree = "<group>"; };
@@ -1580,6 +1584,8 @@
 				60987EBB1402B09500967DEA /* SensorParser.m */,
 				60F386C91553D9B70089F8BD /* ControllerButtonParser.h */,
 				60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */,
+				60DED43D155A89D500F5C0CD /* ControllerSwitchParser.h */,
+				60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */,
 			);
 			name = Parser;
 			sourceTree = "<group>";
@@ -2769,6 +2775,7 @@
 				60BC25B1155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */,
 				60BC25BB155A693D0048A2BD /* DeviceProtocolBatteryLevelCommand.m in Sources */,
 				60BC25BF155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m in Sources */,
+				60DED43F155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2936,6 +2943,7 @@
 				60BC25B2155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */,
 				60BC25BC155A693D0048A2BD /* DeviceProtocolBatteryLevelCommand.m in Sources */,
 				60BC25C0155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m in Sources */,
+				60DED440155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
