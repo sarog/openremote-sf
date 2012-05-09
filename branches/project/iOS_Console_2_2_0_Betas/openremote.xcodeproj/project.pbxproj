@@ -1014,6 +1014,8 @@
 		60BC25AF155A5D3B0048A2BD /* ClientSideBeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideBeanManager.h; sourceTree = "<group>"; };
 		60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideBeanManager.m; sourceTree = "<group>"; };
 		60BC25B3155A60B30048A2BD /* ClientSideProtocolCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolCommand.h; sourceTree = "<group>"; };
+		60BC25B4155A668C0048A2BD /* ClientSideProtocolReadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolReadCommand.h; sourceTree = "<group>"; };
+		60BC25B5155A66A30048A2BD /* ClientSideProtocolWriteCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolWriteCommand.h; sourceTree = "<group>"; };
 		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
@@ -2021,6 +2023,8 @@
 				60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */,
 				60F386DE1554017B0089F8BD /* ClientSideProtocol.h */,
 				60BC25B3155A60B30048A2BD /* ClientSideProtocolCommand.h */,
+				60BC25B4155A668C0048A2BD /* ClientSideProtocolReadCommand.h */,
+				60BC25B5155A66A30048A2BD /* ClientSideProtocolWriteCommand.h */,
 				60F386DF155401AC0089F8BD /* ClientSideRuntime.h */,
 				60F386E0155401AC0089F8BD /* ClientSideRuntime.m */,
 				60BC25AB155A59F40048A2BD /* CommandCachingClientSideProtocol.h */,
