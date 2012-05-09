@@ -41,9 +41,9 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
     if ([elementName isEqualToString:@"ctrl:on"]) {
-        self.action = @"on";
+        self.action = @"ON";
     } else if ([elementName isEqualToString:@"ctrl:off"]) {
-        self.action = @"off";
+        self.action = @"OFF";
     } else if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
         ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.theSwitch action:self.action];
