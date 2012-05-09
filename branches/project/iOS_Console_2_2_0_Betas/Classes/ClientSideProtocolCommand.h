@@ -15,9 +15,4 @@
 
 - (id)initWithRuntime:(ClientSideRuntime *)runtime;
 
-- (void)execute; // TODO: should pass the LocalCommand
-
-- (void)startUpdatingSensor:(LocalSensor *)sensor;
-- (void)stopUpdatingSensor:(LocalSensor *)sensor;
-
 @end

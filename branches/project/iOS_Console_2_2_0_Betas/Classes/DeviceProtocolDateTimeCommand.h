@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "ClientSideProtocolCommand.h"
+#import "ClientSideProtocolReadCommand.h"
 
-@interface DeviceProtocolDateTimeCommand : NSObject <ClientSideProtocolCommand>
+@interface DeviceProtocolDateTimeCommand : NSObject <ClientSideProtocolReadCommand>
 
 @end

@@ -20,7 +20,8 @@
  */
 #import "CommandCachingClientSideProtocol.h"
 #import "ClientSideBeanManager.h"
-#import "ClientSideProtocolCommand.h"
+#import "ClientSideProtocolReadCommand.h"
+#import "ClientSideProtocolWriteCommand.h"
 #import "LocalCommand.h"
 #import "LocalSensor.h"
 
@@ -52,19 +53,19 @@
 
 - (void)executeCommand:(LocalCommand *)command
 {
-    id <ClientSideProtocolCommand> cmd = [self.beanManager beanForKey:[command propertyValueForKey:@"command"]];
+    id <ClientSideProtocolWriteCommand> cmd = [self.beanManager beanForKey:[command propertyValueForKey:@"command"]];
     [cmd execute];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor
 {
-    id <ClientSideProtocolCommand> cmd = [self.beanManager beanForKey:[sensor.command propertyValueForKey:@"command"]];
+    id <ClientSideProtocolReadCommand> cmd = [self.beanManager beanForKey:[sensor.command propertyValueForKey:@"command"]];
     [cmd startUpdatingSensor:sensor];
 }
 
 - (void)stopUpdatingSensor:(LocalSensor *)sensor
 {
-    id <ClientSideProtocolCommand> cmd = [self.beanManager beanForKey:[sensor.command propertyValueForKey:@"command"]];
+    id <ClientSideProtocolReadCommand> cmd = [self.beanManager beanForKey:[sensor.command propertyValueForKey:@"command"]];
     [cmd stopUpdatingSensor:sensor];
 }
 
