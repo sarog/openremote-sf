@@ -2007,6 +2007,37 @@
 			name = "Controller communication";
 			sourceTree = "<group>";
 		};
+		60BC25B6155A67D10048A2BD /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				60BC25AF155A5D3B0048A2BD /* ClientSideBeanManager.h */,
+				60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */,
+				60BC25AB155A59F40048A2BD /* CommandCachingClientSideProtocol.h */,
+				60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
+		60BC25B7155A67EC0048A2BD /* SIP */ = {
+			isa = PBXGroup;
+			children = (
+				60F386E41554034C0089F8BD /* SIPProtocol.h */,
+				60F386E51554034C0089F8BD /* SIPProtocol.m */,
+			);
+			name = SIP;
+			sourceTree = "<group>";
+		};
+		60BC25B8155A67F50048A2BD /* Device */ = {
+			isa = PBXGroup;
+			children = (
+				60BC259915596E8D0048A2BD /* DeviceProtocol.h */,
+				60BC259A15596E8D0048A2BD /* DeviceProtocol.m */,
+				60BC25A115598F2C0048A2BD /* DeviceProtocolDateTimeCommand.h */,
+				60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */,
+			);
+			name = Device;
+			sourceTree = "<group>";
+		};
 		60F3868115517BEB0089F8BD /* helper */ = {
 			isa = PBXGroup;
 			children = (
@@ -2019,22 +2050,15 @@
 		60F386DD155401620089F8BD /* Client Side Protocols */ = {
 			isa = PBXGroup;
 			children = (
-				60BC25AF155A5D3B0048A2BD /* ClientSideBeanManager.h */,
-				60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */,
 				60F386DE1554017B0089F8BD /* ClientSideProtocol.h */,
 				60BC25B3155A60B30048A2BD /* ClientSideProtocolCommand.h */,
 				60BC25B4155A668C0048A2BD /* ClientSideProtocolReadCommand.h */,
 				60BC25B5155A66A30048A2BD /* ClientSideProtocolWriteCommand.h */,
 				60F386DF155401AC0089F8BD /* ClientSideRuntime.h */,
 				60F386E0155401AC0089F8BD /* ClientSideRuntime.m */,
-				60BC25AB155A59F40048A2BD /* CommandCachingClientSideProtocol.h */,
-				60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */,
-				60F386E41554034C0089F8BD /* SIPProtocol.h */,
-				60F386E51554034C0089F8BD /* SIPProtocol.m */,
-				60BC259915596E8D0048A2BD /* DeviceProtocol.h */,
-				60BC259A15596E8D0048A2BD /* DeviceProtocol.m */,
-				60BC25A115598F2C0048A2BD /* DeviceProtocolDateTimeCommand.h */,
-				60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */,
+				60BC25B6155A67D10048A2BD /* Utility */,
+				60BC25B7155A67EC0048A2BD /* SIP */,
+				60BC25B8155A67F50048A2BD /* Device */,
 			);
 			name = "Client Side Protocols";
 			sourceTree = "<group>";
