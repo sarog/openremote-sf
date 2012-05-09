@@ -21,16 +21,16 @@
 package org.openremote.controller.protocol.enocean;
 
 /**
- * TODO
+ * EnOcean Serial Protocol packet interface.
  *
  * @author Rainer Hitz
  */
 public interface EspPacket
 {
   /**
-   * TODO
+   * Returns an EnOcean Serial Protocol packet as a byte array.
    *
-   * @return
+   * @return ESP packet as byte array
    */
   byte[] asByteArray();
 }

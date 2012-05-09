@@ -20,29 +20,146 @@
  */
 package org.openremote.controller.protocol.enocean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
- * TODO
+ * Represents an EnOcean Serial Protocol 3 (ESP3) packet. <p>
+ *
+ * The EnOcean Serial Protocol 3.0 Specification defines the generic ESP3 packet structure
+ * as follows: <p>
+ *
+ * <pre>
+ *   |----------------------   Header  --------------------|
+ *   +--------+-----------------+--------+--------+--------+----...-----+----...-----+--------+
+ *   |  Sync  |      Data       |Optional| Packet |  CRC8  |    Data    |  Optional  |  CRC8  |
+ *   |  Byte  |     Length      | Length |  Type  | Header |            |    Data    |  Data  |
+ *   +--------+-----------------+--------+--------+--------+-----...----+----...-----+--------+
+ *     1 byte       2 bytes       1 byte   1 byte   1 byte     n bytes      n bytes    1 byte
+ *</pre>
+ *
+ * Each ESP 3 packet starts with a header (see {@link Esp3PacketHeader}). The header is
+ * followed by the Data and Optional Data group. The content of these data groups is determined
+ * by the Packet Type inside the header (as defined in {@link Esp3PacketHeader.PacketType}).
+ * The packet is completed with a CRC-8 value at the end which verifies the validity of
+ * the Data and Optional Data group.
+ *
  *
  * @author Rainer Hitz
  */
 public class Esp3Packet implements EspPacket
 {
 
+  // Private Instance Fields ----------------------------------------------------------------------
+
   /**
-   * TODO
+   * Packet header.
+   */
+  private Esp3PacketHeader header;
+
+  /**
+   * Data group.
+   */
+  protected byte[] data;
+
+  /**
+   * Optional data group.
+   */
+  protected byte[] optionalData;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * Constructs a new ESP3 packet instance with a given packet type and packet data.
    *
-   * @return
+   * @see Esp3PacketHeader.PacketType
+   *
+   * @param packetType    ESP3 packet type
+   *
+   * @param data          data group as byte array
+   *
+   * @param optionalData  optional data group as byte array
+   */
+  public Esp3Packet(Esp3PacketHeader.PacketType packetType, byte[] data, byte[] optionalData)
+  {
+    if(packetType == null)
+    {
+      throw new IllegalArgumentException("null packet type");
+    }
+
+    this.data = (data == null) ? new byte[]{} : data;
+    this.optionalData = (optionalData == null) ? new byte[] {} : optionalData;
+
+    this.header = new Esp3PacketHeader(
+        packetType, this.data.length, this.optionalData.length
+    );
+  }
+
+  // Implements EspPacket -------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
    */
   @Override public byte[] asByteArray()
   {
-    throw new RuntimeException("Not implemented yet !");
+    int size = Esp3PacketHeader.ESP3_HEADER_SIZE + data.length + optionalData.length + 1;
+
+    byte[] packetBytes = new byte[size];
+
+    // Copy header ...
+
+    byte[] src = header.asByteArray();
+    byte[] dest = packetBytes;
+    int srcPos = 0;
+    int destPos = 0;
+    int length = src.length;
+
+    System.arraycopy(src, srcPos, dest, destPos, length);
+
+    // Copy data ...
+
+    destPos += length;
+    src = data;
+    length = data.length;
+
+    System.arraycopy(src, srcPos, dest, destPos, length);
+
+    // Copy optional data ...
+
+    destPos += length;
+    src = optionalData;
+    length = optionalData.length;
+
+    System.arraycopy(src, srcPos, dest, destPos, length);
+
+    // Data CRC-8 value ...
+
+    byte crc8 = CRC8.calculate(
+        packetBytes, Esp3PacketHeader.ESP3_HEADER_SIZE,
+        packetBytes.length - Esp3PacketHeader.ESP3_HEADER_SIZE - 1
+    );
+
+    packetBytes[packetBytes.length - 1] = crc8;
+
+    return packetBytes;
+  }
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  /**
+   * Returns ESP3 packet type.
+   *
+   * @return ESP3 packet type
+   */
+  public Esp3PacketHeader.PacketType getPacketType()
+  {
+    return header.getPacketType();
   }
 
 
   // Nested Classes -------------------------------------------------------------------------------
-
 
   /**
    * Class for calculating EnOcean Serial Protocol 3 (ESP3) Cyclic Redundancy Check (CRC) values
