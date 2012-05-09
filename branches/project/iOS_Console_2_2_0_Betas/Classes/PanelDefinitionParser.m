@@ -45,7 +45,6 @@
 #import "LocalParser.h"
 #import "PropertyParser.h"
 #import "ControllerButtonParser.h"
-#import "IncludeParser.h"
 #import "XMLEntity.h"
 
 #ifdef API_v2_1
@@ -97,7 +96,6 @@
         
         [self.depRegistry registerParserClass:[LocalParser class] endSelector:@selector(endLocalElement:) forTag:@"local"];
         [self.depRegistry registerParserClass:[ControllerButtonParser class] endSelector:@selector(endButtonElement:) forTag:@"ctrl:button"];
-        [self.depRegistry registerParserClass:[IncludeParser class] endSelector:@selector(endIncludeElement:) forTag:@"ctrl:include"];
         [self.depRegistry registerParserClass:[CommandParser class] endSelector:@selector(endCommandElement:) forTag:@"ctrl:command"];        
         [self.depRegistry registerParserClass:[PropertyParser class] endSelector:@selector(endPropertyElement:) forTag:@"ctrl:property"];
         [self.depRegistry registerParserClass:[SensorParser class] endSelector:@selector(endSensorElement:) forTag:@"ctrl:sensor"];

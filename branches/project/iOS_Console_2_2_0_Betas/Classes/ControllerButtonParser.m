@@ -8,7 +8,8 @@
 
 #import "ControllerButtonParser.h"
 #import "ControllerButton.h"
-#import "IncludeParser.h"
+#import "ControllerComponentCommandDeferredBinding.h"
+#import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
 @implementation ControllerButtonParser
@@ -17,7 +18,6 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        [self addKnownTag:@"ctrl:include"];
         ControllerButton *tmp = [[ControllerButton alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
         self.button = tmp;
         [tmp release];
@@ -25,11 +25,16 @@
     return self;
 }
 
-- (void)endIncludeElement:(IncludeParser *)parser
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-    if ([@"command" isEqualToString:parser.type]) {
-        [self.button addCommandRef:parser.ref];
-    }
+	if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
+        // This is a reference to another element, will be resolved later, put a standby in place for now
+        ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.button action:@"click"];
+        standby.definition = self.depRegister.definition;
+        [self.depRegister addDeferredBinding:standby];
+        [standby release];
+	}
+    [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
 @synthesize button;

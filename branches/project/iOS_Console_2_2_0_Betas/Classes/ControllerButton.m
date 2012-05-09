@@ -11,7 +11,7 @@
 
 @interface ControllerButton()
 
-@property (nonatomic, retain) NSMutableArray *commandRefs;
+@property (nonatomic, retain) NSMutableDictionary *commandsPerActionRegistry;
 
 @end
 
@@ -21,36 +21,33 @@
 {
     self = [super initWithId:anId];
     if (self) {
-        self.commandRefs = [NSMutableArray array];
+        self.commandsPerActionRegistry = [NSMutableDictionary dictionaryWithCapacity:1];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    self.commandRefs = nil;
+    self.commandsPerActionRegistry = nil;
     [super dealloc];
 }
 
-- (void)addCommandRef:(NSUInteger)ref
+- (void)addCommand:(LocalCommand *)aCommand forAction:(NSString *)anAction
 {
-    [commandRefs addObject:[NSNumber numberWithInt:ref]];
+    NSMutableArray *commands = [self.commandsPerAction objectForKey:anAction];
+    if (!commands) {
+        commands = [NSMutableArray array];
+        [self.commandsPerActionRegistry setObject:commands forKey:anAction];
+    }
+    [commands addObject:aCommand];
 }
 
 // TODO: this is only valid for 2.0 API, must check for 2.1 (long button press support)
-- (NSDictionary *)commandsPerAction:(LocalController *)localController;
+- (NSDictionary *)commandsPerAction
 {
-    NSMutableArray *tmpArray = [NSMutableArray array];
-    
-    // Collect only local commands;
-    for (NSNumber *commandId in commandRefs) {
-        if ([localController commandForId:[commandId intValue]]) {
-            [tmpArray addObject:commandId];
-        }
-    }
-    return [NSDictionary dictionaryWithObject:[NSArray arrayWithArray:tmpArray] forKey:@"click"];
+    return [NSDictionary dictionaryWithDictionary:self.commandsPerActionRegistry];
 }
 
-@synthesize commandRefs;
+@synthesize commandsPerActionRegistry;
 
 @end
