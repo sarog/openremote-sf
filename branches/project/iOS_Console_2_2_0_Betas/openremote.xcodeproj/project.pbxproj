@@ -452,6 +452,8 @@
 		60DED450155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */; };
 		60DED453155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED452155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m */; };
 		60DED454155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED452155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m */; };
+		60DED45C155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED45B155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m */; };
+		60DED45D155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED45B155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m */; };
 		60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
 		60EC86311410C23E003F5432 /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
@@ -1060,6 +1062,8 @@
 		60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolBrightnessCommand.m; sourceTree = "<group>"; };
 		60DED451155A9FE800F5C0CD /* ClientSideProtocolReadCommandBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolReadCommandBase.h; sourceTree = "<group>"; };
 		60DED452155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideProtocolReadCommandBase.m; sourceTree = "<group>"; };
+		60DED45A155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceProtocolSetBrightnessCommand.h; sourceTree = "<group>"; };
+		60DED45B155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolSetBrightnessCommand.m; sourceTree = "<group>"; };
 		60E7A8E313696C8B00EA107A /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
 		60E7A8E413696C8B00EA107A /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
 		60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerImageView.h; sourceTree = "<group>"; };
@@ -2051,6 +2055,8 @@
 				60BC25BA155A693D0048A2BD /* DeviceProtocolBatteryLevelCommand.m */,
 				60DED44D155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.h */,
 				60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */,
+				60DED45A155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.h */,
+				60DED45B155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m */,
 			);
 			name = Device;
 			sourceTree = "<group>";
@@ -2811,6 +2817,7 @@
 				60DED44B155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */,
 				60DED44F155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED453155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
+				60DED45C155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2984,6 +2991,7 @@
 				60DED44C155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */,
 				60DED450155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED454155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
+				60DED45D155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
