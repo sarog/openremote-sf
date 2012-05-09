@@ -18,8 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "CommandCachingClientSideProtocol.h"
+#import <Foundation/Foundation.h>
+#import "ClientSideProtocol.h"
 
-@interface DeviceProtocol : CommandCachingClientSideProtocol
+/**
+ * Implementation of ClientSideProtocol that:
+ * - holds a registry that maps command name -> command class
+ * - maintains a cache of commands per command name, instantiating as appropriate on first use
+ */
+@interface CommandCachingClientSideProtocol : NSObject <ClientSideProtocol>
 
 @end

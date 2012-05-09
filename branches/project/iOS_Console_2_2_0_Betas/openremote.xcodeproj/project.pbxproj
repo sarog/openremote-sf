@@ -425,6 +425,10 @@
 		60BC25A01559736D0048A2BD /* CommandDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */; };
 		60BC25A315598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */; };
 		60BC25A415598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */; };
+		60BC25AD155A59F40048A2BD /* CommandCachingClientSideProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */; };
+		60BC25AE155A59F40048A2BD /* CommandCachingClientSideProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */; };
+		60BC25B1155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */; };
+		60BC25B2155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
 		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
@@ -1005,6 +1009,11 @@
 		60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandDeferredBinding.m; sourceTree = "<group>"; };
 		60BC25A115598F2C0048A2BD /* DeviceProtocolDateTimeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceProtocolDateTimeCommand.h; sourceTree = "<group>"; };
 		60BC25A215598F2C0048A2BD /* DeviceProtocolDateTimeCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolDateTimeCommand.m; sourceTree = "<group>"; };
+		60BC25AB155A59F40048A2BD /* CommandCachingClientSideProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandCachingClientSideProtocol.h; sourceTree = "<group>"; };
+		60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandCachingClientSideProtocol.m; sourceTree = "<group>"; };
+		60BC25AF155A5D3B0048A2BD /* ClientSideBeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideBeanManager.h; sourceTree = "<group>"; };
+		60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideBeanManager.m; sourceTree = "<group>"; };
+		60BC25B3155A60B30048A2BD /* ClientSideProtocolCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolCommand.h; sourceTree = "<group>"; };
 		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
@@ -2008,9 +2017,14 @@
 		60F386DD155401620089F8BD /* Client Side Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				60BC25AF155A5D3B0048A2BD /* ClientSideBeanManager.h */,
+				60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */,
 				60F386DE1554017B0089F8BD /* ClientSideProtocol.h */,
+				60BC25B3155A60B30048A2BD /* ClientSideProtocolCommand.h */,
 				60F386DF155401AC0089F8BD /* ClientSideRuntime.h */,
 				60F386E0155401AC0089F8BD /* ClientSideRuntime.m */,
+				60BC25AB155A59F40048A2BD /* CommandCachingClientSideProtocol.h */,
+				60BC25AC155A59F40048A2BD /* CommandCachingClientSideProtocol.m */,
 				60F386E41554034C0089F8BD /* SIPProtocol.h */,
 				60F386E51554034C0089F8BD /* SIPProtocol.m */,
 				60BC259915596E8D0048A2BD /* DeviceProtocol.h */,
@@ -2741,6 +2755,8 @@
 				60BC259B15596E8D0048A2BD /* DeviceProtocol.m in Sources */,
 				60BC259F1559736D0048A2BD /* CommandDeferredBinding.m in Sources */,
 				60BC25A315598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */,
+				60BC25AD155A59F40048A2BD /* CommandCachingClientSideProtocol.m in Sources */,
+				60BC25B1155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2907,6 +2923,8 @@
 				60BC259C15596E8D0048A2BD /* DeviceProtocol.m in Sources */,
 				60BC25A01559736D0048A2BD /* CommandDeferredBinding.m in Sources */,
 				60BC25A415598F2D0048A2BD /* DeviceProtocolDateTimeCommand.m in Sources */,
+				60BC25AE155A59F40048A2BD /* CommandCachingClientSideProtocol.m in Sources */,
+				60BC25B2155A5D3C0048A2BD /* ClientSideBeanManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
