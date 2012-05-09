@@ -19,9 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "DeviceProtocol.h"
-#import "LocalSensor.h"
-#import "LocalCommand.h"
 #import "DeviceProtocolDateTimeCommand.h"
+#import "DeviceProtocolBatteryLevelCommand.h"
 #import "ClientSideBeanManager.h"
 #import "ClientSideRuntime.h"
 
@@ -38,6 +37,7 @@
     self = [super initWithRuntime:runtime];
     if (self) {
         [self.beanManager registerClass:[DeviceProtocolDateTimeCommand class] forKey:@"DATE_TIME"];
+        [self.beanManager registerClass:[DeviceProtocolBatteryLevelCommand class] forKey:@"BATTERY_LEVEL"];
     }
     return self;
 }
