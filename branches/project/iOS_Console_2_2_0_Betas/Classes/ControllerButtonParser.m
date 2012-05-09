@@ -30,6 +30,9 @@
 	if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
         ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.button action:@"click"];
+        
+        // TODO: click is only valid for 2.0 API, must check for 2.1 (long button press support)
+        
         standby.definition = self.depRegister.definition;
         [self.depRegister addDeferredBinding:standby];
         [standby release];
