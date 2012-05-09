@@ -27,14 +27,12 @@
 #import "LocalCommand.h"
 #import "LocalSensor.h"
 #import "SIPProtocol.h"
+#import "ClientSideBeanManager.h"
 
 @interface ClientSideRuntime()
 
-- (id <ClientSideProtocol>)implementationForProtocol:(NSString *)protocolName;
-
 @property (nonatomic, assign) ORController *controller;
-@property (nonatomic, retain) NSDictionary *protocolsRegistry;
-@property (nonatomic, retain) NSMutableDictionary *protocolsImplementation;
+@property (nonatomic, retain) ClientSideBeanManager *beanManager;
 
 @end
 
@@ -45,8 +43,8 @@
     self = [super init];
     if (self) {
         self.controller = aController;
-        self.protocolsRegistry = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"ClientSideProtocols" ofType:@"plist"]];
-        self.protocolsImplementation = [NSMutableDictionary dictionaryWithCapacity:[self.protocolsRegistry count]];
+        self.beanManager = [[[ClientSideBeanManager alloc] initWithRuntime:self] autorelease];
+        [self.beanManager loadRegistrationFromPropertyFile:[[NSBundle mainBundle] pathForResource:@"ClientSideProtocols" ofType:@"plist"]];
     }
     return self;
 }
@@ -54,8 +52,7 @@
 - (void)dealloc
 {
     self.controller = nil;
-    self.protocolsRegistry = nil;
-    self.protocolsImplementation = nil;
+    self.beanManager = nil;
     [super dealloc];
 }
 
@@ -71,40 +68,20 @@
 
 - (void)executeCommand:(LocalCommand *)command
 {
-    id <ClientSideProtocol> protocol = [self implementationForProtocol:command.protocol];
+    id <ClientSideProtocol> protocol = [self.beanManager beanForKey:command.protocol];
     [protocol executeCommand:command];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor
 {
-    id <ClientSideProtocol> protocol = [self implementationForProtocol:sensor.command.protocol];
+    id <ClientSideProtocol> protocol = [self.beanManager beanForKey:sensor.command.protocol];
     [protocol startUpdatingSensor:sensor];
 }
 
 - (void)stopUpdatingSensor:(LocalSensor *)sensor
 {
-    id <ClientSideProtocol> protocol = [self implementationForProtocol:sensor.command.protocol];
+    id <ClientSideProtocol> protocol = [self.beanManager beanForKey:sensor.command.protocol];
     [protocol stopUpdatingSensor:sensor];
-}
-
-- (id <ClientSideProtocol>)implementationForProtocol:(NSString *)protocolName
-{
-    id <ClientSideProtocol> protocol = [self.protocolsImplementation objectForKey:protocolName];
-    if (protocol) {
-        return protocol;
-    }
-    NSString *protocolClassName = [self.protocolsRegistry objectForKey:protocolName];
-    if (protocolClassName) {
-        Class protocolClass = NSClassFromString(protocolClassName);
-        if (protocolClass) {
-            protocol = [[protocolClass alloc] initWithRuntime:self.controller.clientSideRuntime];
-            if (protocol) {
-                [self.protocolsImplementation setObject:protocol forKey:protocolName];
-                [protocol release];
-            }
-        }
-    }
-    return protocol;
 }
 
 - (SensorStatusCache *)sensorStatusCache
@@ -113,7 +90,6 @@
 }
 
 @synthesize controller;
-@synthesize protocolsRegistry;
-@synthesize protocolsImplementation;
+@synthesize beanManager;
 
 @end

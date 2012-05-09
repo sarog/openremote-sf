@@ -71,6 +71,11 @@
     }
 }
 
+- (void)execute
+{
+    // TODO : might need to define optional, or have 2 protocols: one for read and one for write commands
+}
+
 - (void)refresh:(NSTimer *)timer
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];

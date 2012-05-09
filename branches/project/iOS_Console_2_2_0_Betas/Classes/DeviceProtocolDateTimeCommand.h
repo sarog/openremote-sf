@@ -19,15 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
+#import "ClientSideProtocolCommand.h"
 
-@class LocalSensor;
-@class ClientSideRuntime;
-
-@interface DeviceProtocolDateTimeCommand : NSObject
-
-- (id)initWithRuntime:(ClientSideRuntime *)runtime;
-
-- (void)startUpdatingSensor:(LocalSensor *)sensor;
-- (void)stopUpdatingSensor:(LocalSensor *)sensor;
+@interface DeviceProtocolDateTimeCommand : NSObject <ClientSideProtocolCommand>
 
 @end
