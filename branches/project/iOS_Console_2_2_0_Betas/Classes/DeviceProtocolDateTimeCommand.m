@@ -19,66 +19,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "DeviceProtocolDateTimeCommand.h"
-#import "LocalSensor.h"
-#import "ClientSideRuntime.h"
-#import "SensorStatusCache.h"
 
 @interface DeviceProtocolDateTimeCommand()
 
 - (void)refresh:(NSTimer *)timer;
-- (NSString *)sensorValue;
 
 @property (nonatomic, retain) NSTimer *refreshTimer;
-@property (nonatomic, retain) NSMutableSet *sensorIds;
-@property (nonatomic, retain) ClientSideRuntime *clientSideRuntime;
 
 @end
 
 @implementation DeviceProtocolDateTimeCommand
 
-- (id)initWithRuntime:(ClientSideRuntime *)runtime
-{
-    self = [super init];
-    if (self) {
-        self.sensorIds = [NSMutableSet set];
-        self.clientSideRuntime = runtime;
-    }
-    return self;
-}
-
 - (void)dealloc
 {
-    self.sensorIds = nil;
     [self.refreshTimer invalidate];
     self.refreshTimer = nil;
-    self.clientSideRuntime = nil;
     [super dealloc];
 }
 
-- (void)startUpdatingSensor:(LocalSensor *)sensor
+- (void)startUpdating
 {
-    if (![self.sensorIds count]) {
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refresh:) userInfo:nil repeats:YES];
-    }
-    [self.clientSideRuntime.sensorStatusCache publishNewValue:[self sensorValue] forSensorId:sensor.componentId];
-    [self.sensorIds addObject:[NSNumber numberWithInt:sensor.componentId]];
+    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refresh:) userInfo:nil repeats:YES];
 }
 
-- (void)stopUpdatingSensor:(LocalSensor *)sensor
+- (void)stopUpdating
 {
-    [self.sensorIds removeObject:[NSNumber numberWithInt:sensor.componentId]];
-    if (![self.sensorIds count]) {
-        [self.refreshTimer invalidate];
-        self.refreshTimer = nil;
-    }
+    [self.refreshTimer invalidate];
+    self.refreshTimer = nil;
 }
 
 - (void)refresh:(NSTimer *)timer
 {
-	NSString *dateTimeString = [self sensorValue];
-    for (NSNumber *sensorId in self.sensorIds) {
-        [self.clientSideRuntime.sensorStatusCache publishNewValue:dateTimeString forSensorId:[sensorId intValue]];
-    }
+    [self publishValue];
 }
 
 - (NSString *)sensorValue
@@ -92,7 +64,5 @@
 }
 
 @synthesize refreshTimer;
-@synthesize sensorIds;
-@synthesize clientSideRuntime;
 
 @end
