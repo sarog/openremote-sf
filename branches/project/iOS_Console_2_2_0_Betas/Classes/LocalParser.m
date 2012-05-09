@@ -32,6 +32,7 @@
         [self addKnownTag:@"ctrl:sensor"];
         [self addKnownTag:@"ctrl:button"];
         [self addKnownTag:@"ctrl:switch"];
+        [self addKnownTag:@"ctrl:slider"];
         LocalController *tmp = [[LocalController alloc] init];
         self.localController = tmp;
         [tmp release];
@@ -47,7 +48,6 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-    NSLog(@"Parser didStartElement >%@< namespaceURI >%@<", elementName, namespaceURI);
     [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
