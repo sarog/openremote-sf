@@ -118,7 +118,10 @@ class DeviceID
    */
   static final long ENOCEAN_MAX_BASE_ID_OFFSET = 127;
 
-
+  /**
+   * Length of an EnOcean device ID inside ESP protocol fields: {@value}
+   */
+  public static final int ENOCEAN_ESP_ID_LENGTH = 4;
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -175,6 +178,40 @@ class DeviceID
     }
 
     return newID;
+  }
+
+  /**
+   * Factory method for creating new device ID based on a byte array.
+   *
+   * @param deviceIDBytes device ID byte array with exactly
+   *                      {@value #ENOCEAN_ESP_ID_LENGTH} bytes
+   *
+   * @return a new device ID instance
+   */
+  static DeviceID fromByteArray(byte[] deviceIDBytes) throws InvalidDeviceIDException
+  {
+    if(deviceIDBytes == null)
+    {
+      throw new IllegalArgumentException("null device ID bytes");
+    }
+
+    if(deviceIDBytes.length != ENOCEAN_ESP_ID_LENGTH)
+    {
+      // TODO
+      throw new IllegalArgumentException(
+          "Expected " + ENOCEAN_ESP_ID_LENGTH + "device ID bytes, got " +
+          deviceIDBytes.length
+      );
+    }
+
+    long deviceIDValue = 0;
+
+    deviceIDValue += (((long)deviceIDBytes[0] & 0xFFL) << 24);
+    deviceIDValue += (((long)deviceIDBytes[1] & 0xFFL) << 16);
+    deviceIDValue += (((long)deviceIDBytes[2] & 0xFFL) << 8);
+    deviceIDValue += ((long)deviceIDBytes[3] & 0xFFL);
+
+    return new DeviceID(deviceIDValue);
   }
 
   /**

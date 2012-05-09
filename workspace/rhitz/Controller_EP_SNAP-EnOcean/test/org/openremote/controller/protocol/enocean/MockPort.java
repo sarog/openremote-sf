@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Configurable test double for mocking a {@link org.openremote.controller.protocol.port.Port}
@@ -65,8 +67,16 @@ public class MockPort implements Port
   private Exception sendException = null;
   private IOException receiveException = null;
 
+  private boolean requestResponseMode = false;
+
+  SynchronousQueue<Message> responseQueue = new SynchronousQueue<Message>();
 
   // Public Instance Methods ----------------------------------------------------------------------
+
+  public void setRequestResponseMode()
+  {
+    requestResponseMode = true;
+  }
 
   public void addExpectedMethodCall(Method method)
   {
@@ -166,12 +176,44 @@ public class MockPort implements Port
     {
       triggerException(sendException);
     }
+
+    if(requestResponseMode && messagesToReturn.size() > 0)
+    {
+      Message msg = messagesToReturn.removeFirst();
+
+      try
+      {
+        boolean  isOK = responseQueue.offer(msg, 1, TimeUnit.SECONDS);
+      }
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
+      }
+    }
   }
 
 
   @Override public Message receive() throws IOException
   {
-    Message msg = messagesToReturn.removeFirst();
+    Message msg = null;
+
+    if(requestResponseMode)
+    {
+      try
+      {
+        msg = responseQueue.poll(1, TimeUnit.SECONDS);
+      }
+
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
+      }
+    }
+    else
+    {
+      msg = messagesToReturn.removeFirst();
+    }
+
 
     if(null != receiveException)
     {

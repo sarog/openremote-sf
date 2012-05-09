@@ -56,13 +56,28 @@ public class Esp3PacketHeaderTest
 
   // Tests ----------------------------------------------------------------------------------------
 
-  @Test public void testBasicConstruction() throws Exception
+  @Test public void testBasicConstruction1() throws Exception
   {
     Esp3PacketHeader header = new Esp3PacketHeader(readBaseIDCommand);
 
     Assert.assertTrue(header.getDataLength() == 1);
     Assert.assertTrue(header.getOptionalDataLength() == 0);
     Assert.assertTrue(header.getPacketType() == Esp3PacketHeader.PacketType.COMMON_COMMAND);
+  }
+
+  @Test public void testBasicConstruction2() throws Exception
+  {
+    int dataLength = 0x07;
+    int optDataLength = 0x10;
+    Esp3PacketHeader.PacketType packetType = Esp3PacketHeader.PacketType.RADIO;
+
+    Esp3PacketHeader header = new Esp3PacketHeader(
+        packetType, dataLength, optDataLength
+    );
+
+    Assert.assertTrue(dataLength == header.getDataLength());
+    Assert.assertTrue(optDataLength == header.getOptionalDataLength());
+    Assert.assertTrue(header.getPacketType() == packetType);
   }
 
 
@@ -100,6 +115,25 @@ public class Esp3PacketHeaderTest
     Esp3PacketHeader header = new Esp3PacketHeader(null);
   }
 
+  @Test (expected = IllegalArgumentException.class)
+  public void testDataLengthOutOfRange() throws Exception
+  {
+    Esp3PacketHeader header = new Esp3PacketHeader(
+        Esp3PacketHeader.PacketType.RADIO,
+        0x1FFFF,
+        0x00
+    );
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testOptDataLengthOutOfRange() throws Exception
+  {
+    Esp3PacketHeader header = new Esp3PacketHeader(
+        Esp3PacketHeader.PacketType.RADIO,
+        0x00,
+        0x1FF
+    );
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidSyncByte() throws Exception
