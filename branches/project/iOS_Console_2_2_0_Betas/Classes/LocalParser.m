@@ -12,6 +12,8 @@
 #import "SensorParser.h"
 #import "ControllerButtonParser.h"
 #import "ControllerSwitchParser.h"
+#import "ControllerSliderParser.h"
+#import "ControllerSlider.h"
 #import "ControllerButton.h"
 
 @interface LocalParser ()
@@ -67,6 +69,11 @@
 - (void)endSwitchElement:(ControllerSwitchParser *)parser
 {
     [self.localController addComponent:parser.theSwitch];
+}
+
+- (void)endSliderElement:(ControllerSliderParser *)parser
+{
+    [self.localController addComponent:parser.slider];
 }
 
 @synthesize localController;
