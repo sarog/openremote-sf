@@ -11,6 +11,7 @@
 #import "CommandParser.h"
 #import "SensorParser.h"
 #import "ControllerButtonParser.h"
+#import "ControllerSwitchParser.h"
 #import "ControllerButton.h"
 
 @interface LocalParser ()
@@ -28,6 +29,7 @@
         [self addKnownTag:@"ctrl:command"];
         [self addKnownTag:@"ctrl:sensor"];
         [self addKnownTag:@"ctrl:button"];
+        [self addKnownTag:@"ctrl:switch"];
         LocalController *tmp = [[LocalController alloc] init];
         self.localController = tmp;
         [tmp release];
@@ -60,6 +62,11 @@
 - (void)endButtonElement:(ControllerButtonParser *)parser
 {
     [self.localController addComponent:parser.button];
+}
+
+- (void)endSwitchElement:(ControllerSwitchParser *)parser
+{
+    [self.localController addComponent:parser.theSwitch];
 }
 
 @synthesize localController;
