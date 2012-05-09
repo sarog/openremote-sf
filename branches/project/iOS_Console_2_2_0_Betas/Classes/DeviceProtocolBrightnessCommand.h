@@ -1,5 +1,5 @@
 //
-//  DeviceProtocolBatteryLevelCommand.h
+//  DeviceProtocolBrightnessCommand.h
 //  openremote
 //
 //  Created by Eric Bariaux on 09/05/12.
@@ -8,6 +8,6 @@
 
 #import "ClientSideProtocolReadCommandBase.h"
 
-@interface DeviceProtocolBatteryLevelCommand : ClientSideProtocolReadCommandBase
+@interface DeviceProtocolBrightnessCommand : ClientSideProtocolReadCommandBase
 
 @end
