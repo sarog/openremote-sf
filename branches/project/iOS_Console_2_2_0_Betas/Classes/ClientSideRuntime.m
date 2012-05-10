@@ -56,17 +56,17 @@
     [super dealloc];
 }
 
-- (void)executeCommands:(NSArray *)commands
+- (void)executeCommands:(NSArray *)commands commandType:(NSString *)commandType
 {
     for (LocalCommand *command in commands) {
-        [self executeCommand:command];
+        [self executeCommand:command commandType:commandType];
     }
 }
 
-- (void)executeCommand:(LocalCommand *)command
+- (void)executeCommand:(LocalCommand *)command commandType:(NSString *)commandType
 {
     id <ClientSideProtocol> protocol = [self.beanManager beanForKey:command.protocol];
-    [protocol executeCommand:command];
+    [protocol executeCommand:command commandType:commandType];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor

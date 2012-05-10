@@ -51,10 +51,10 @@
     [super dealloc];
 }
 
-- (void)executeCommand:(LocalCommand *)command
+- (void)executeCommand:(LocalCommand *)command commandType:(NSString *)commandType
 {
     id <ClientSideProtocolWriteCommand> cmd = [self.beanManager beanForKey:[command propertyValueForKey:@"command"]];
-    [cmd execute:command];
+    [cmd execute:command commandType:commandType];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor

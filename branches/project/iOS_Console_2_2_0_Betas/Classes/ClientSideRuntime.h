@@ -29,8 +29,8 @@
 
 - (id)initWithController:(ORController *)aController;
 
-- (void)executeCommands:(NSArray *)commands;
-- (void)executeCommand:(LocalCommand *)command;
+- (void)executeCommands:(NSArray *)commands commandType:(NSString *)commandType;
+- (void)executeCommand:(LocalCommand *)command commandType:(NSString *)commandType;
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor;
 - (void)stopUpdatingSensor:(LocalSensor *)sensor;

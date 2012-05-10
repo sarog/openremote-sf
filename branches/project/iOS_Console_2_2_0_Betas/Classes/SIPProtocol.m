@@ -44,7 +44,7 @@
     [super dealloc];
 }
 
-- (void)executeCommand:(LocalCommand *)command
+- (void)executeCommand:(LocalCommand *)command commandType:(NSString *)commandType
 {
     NSLog(@"SIP executing command %@", command);
 }
