@@ -47,10 +47,7 @@
 #ifdef INCLUDE_SIP_SUPPORT
 	SipController *sipController;
 #endif
-	NSMutableDictionary *localContext;
 }
-
-@property (readonly) NSMutableDictionary *localContext;
 
 @end
 

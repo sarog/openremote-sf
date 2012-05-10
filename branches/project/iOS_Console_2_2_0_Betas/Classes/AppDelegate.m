@@ -45,12 +45,8 @@
 
 @implementation AppDelegate
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {
-	
-    // EBR : This is currently used as a shared "memory" for local logic
-    //       Must be reviewed in the future when deciding on how logic on the console side is implemented
-	localContext = [[NSMutableDictionary alloc] init];
-
+- (void)applicationDidFinishLaunching:(UIApplication *)application
+{
 	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];
 
 	// Default window for the app
@@ -156,10 +152,7 @@
     #ifdef INCLUDE_SIP_SUPPORT
         [sipController release];
     #endif
-	[localContext release];
 	[super dealloc];
 }
-
-@synthesize localContext;
 
 @end

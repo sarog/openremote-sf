@@ -103,16 +103,24 @@ extern void libmsamr_init();
 	switch (new_state) {
 			
 		case LinphoneCallIncomingReceived:
+            /*
+             TODO: set on ourself and make available + publish notification and put in userInfo
+             
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Incoming" forKey:@"SIP_CallStatus"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:lUserName forKey:@"SIP_UserName"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:lDisplayName forKey:@"SIP_DisplayName"];
+             */
 			break;
 			
 		case LinphoneCallOutgoingInit: 
 			break;
 			
 		case LinphoneCallConnected:
+            /*
+             TODO: set on ourself and make available + publish notification and put in userInfo
+             
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Connected" forKey:@"SIP_CallStatus"];
+            */
 			break;
 			
 		case LinphoneCallError: { 
@@ -144,16 +152,23 @@ extern void libmsamr_init();
 												  otherButtonTitles:nil];
 			[error show];
             [error release];
+            /*
+             TODO: set on ourself and make available + publish notification and put in userInfo
+             
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Error" forKey:@"SIP_CallStatus"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_UserName"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_DisplayName"];
-
+             */
 			break;
 		}
 		case LinphoneCallEnd:
+            /*
+             TODO: set on ourself and make available + publish notification and put in userInfo
+             
 			[((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"End" forKey:@"SIP_CallStatus"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_UserName"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_DisplayName"];
+             */
 			break;
 		default:
 			break;
