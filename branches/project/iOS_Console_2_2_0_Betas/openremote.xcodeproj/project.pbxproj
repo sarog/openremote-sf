@@ -444,10 +444,6 @@
 		60DED440155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */; };
 		60DED443155A9AF800F5C0CD /* ControllerSliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED442155A9AF800F5C0CD /* ControllerSliderParser.m */; };
 		60DED444155A9AF800F5C0CD /* ControllerSliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED442155A9AF800F5C0CD /* ControllerSliderParser.m */; };
-		60DED447155A9B6D00F5C0CD /* ControllerSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED446155A9B6C00F5C0CD /* ControllerSlider.m */; };
-		60DED448155A9B6D00F5C0CD /* ControllerSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED446155A9B6C00F5C0CD /* ControllerSlider.m */; };
-		60DED44B155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED44A155A9C9600F5C0CD /* SensorDeferredBinding.m */; };
-		60DED44C155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED44A155A9C9600F5C0CD /* SensorDeferredBinding.m */; };
 		60DED44F155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */; };
 		60DED450155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */; };
 		60DED453155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DED452155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m */; };
@@ -480,9 +476,6 @@
 		60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
 		60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
 		60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386CF1553DC230089F8BD /* ControllerComponent.m */; };
-		60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
-		60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
-		60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386D41553DC590089F8BD /* ControllerButton.m */; };
 		60F386E1155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
 		60F386E2155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
 		60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
@@ -1054,10 +1047,6 @@
 		60DED43E155A89D500F5C0CD /* ControllerSwitchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerSwitchParser.m; sourceTree = "<group>"; };
 		60DED441155A9AF800F5C0CD /* ControllerSliderParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerSliderParser.h; sourceTree = "<group>"; };
 		60DED442155A9AF800F5C0CD /* ControllerSliderParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerSliderParser.m; sourceTree = "<group>"; };
-		60DED445155A9B6C00F5C0CD /* ControllerSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerSlider.h; sourceTree = "<group>"; };
-		60DED446155A9B6C00F5C0CD /* ControllerSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerSlider.m; sourceTree = "<group>"; };
-		60DED449155A9C9600F5C0CD /* SensorDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorDeferredBinding.h; sourceTree = "<group>"; };
-		60DED44A155A9C9600F5C0CD /* SensorDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorDeferredBinding.m; sourceTree = "<group>"; };
 		60DED44D155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceProtocolBrightnessCommand.h; sourceTree = "<group>"; };
 		60DED44E155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceProtocolBrightnessCommand.m; sourceTree = "<group>"; };
 		60DED451155A9FE800F5C0CD /* ClientSideProtocolReadCommandBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocolReadCommandBase.h; sourceTree = "<group>"; };
@@ -1086,8 +1075,6 @@
 		60F386CA1553D9B90089F8BD /* ControllerButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonParser.m; sourceTree = "<group>"; };
 		60F386CE1553DC230089F8BD /* ControllerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerComponent.h; sourceTree = "<group>"; };
 		60F386CF1553DC230089F8BD /* ControllerComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerComponent.m; sourceTree = "<group>"; };
-		60F386D31553DC570089F8BD /* ControllerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButton.h; sourceTree = "<group>"; };
-		60F386D41553DC590089F8BD /* ControllerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButton.m; sourceTree = "<group>"; };
 		60F386DE1554017B0089F8BD /* ClientSideProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideProtocol.h; sourceTree = "<group>"; };
 		60F386DF155401AC0089F8BD /* ClientSideRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSideRuntime.h; sourceTree = "<group>"; };
 		60F386E0155401AC0089F8BD /* ClientSideRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientSideRuntime.m; sourceTree = "<group>"; };
@@ -1638,8 +1625,6 @@
 				60BC259E1559736D0048A2BD /* CommandDeferredBinding.m */,
 				60BC25BD155A71EE0048A2BD /* ControllerComponentCommandDeferredBinding.h */,
 				60BC25BE155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m */,
-				60DED449155A9C9600F5C0CD /* SensorDeferredBinding.h */,
-				60DED44A155A9C9600F5C0CD /* SensorDeferredBinding.m */,
 			);
 			name = DeferredBinding;
 			sourceTree = "<group>";
@@ -2325,10 +2310,6 @@
 				60F386A51552B6450089F8BD /* LocalController.m */,
 				60F386CE1553DC230089F8BD /* ControllerComponent.h */,
 				60F386CF1553DC230089F8BD /* ControllerComponent.m */,
-				60F386D31553DC570089F8BD /* ControllerButton.h */,
-				60F386D41553DC590089F8BD /* ControllerButton.m */,
-				60DED445155A9B6C00F5C0CD /* ControllerSlider.h */,
-				60DED446155A9B6C00F5C0CD /* ControllerSlider.m */,
 				60FAD47D154050B1008DA70E /* Capabilities.h */,
 				60FAD47E154050B1008DA70E /* Capabilities.m */,
 			);
@@ -2800,7 +2781,6 @@
 				60F386C61553D0980089F8BD /* PropertyParser.m in Sources */,
 				60F386CB1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
 				60F386D01553DC230089F8BD /* ControllerComponent.m in Sources */,
-				60F386D51553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386E1155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */,
@@ -2813,8 +2793,6 @@
 				60BC25BF155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m in Sources */,
 				60DED43F155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */,
 				60DED443155A9AF800F5C0CD /* ControllerSliderParser.m in Sources */,
-				60DED447155A9B6D00F5C0CD /* ControllerSlider.m in Sources */,
-				60DED44B155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */,
 				60DED44F155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED453155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
 				60DED45C155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
@@ -2974,7 +2952,6 @@
 				60F386C81553D0980089F8BD /* PropertyParser.m in Sources */,
 				60F386CD1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
 				60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */,
-				60F386D71553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */,
@@ -2987,8 +2964,6 @@
 				60BC25C0155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m in Sources */,
 				60DED440155A89D500F5C0CD /* ControllerSwitchParser.m in Sources */,
 				60DED444155A9AF800F5C0CD /* ControllerSliderParser.m in Sources */,
-				60DED448155A9B6D00F5C0CD /* ControllerSlider.m in Sources */,
-				60DED44C155A9C9600F5C0CD /* SensorDeferredBinding.m in Sources */,
 				60DED450155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED454155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
 				60DED45D155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
@@ -3103,7 +3078,6 @@
 				60F386C71553D0980089F8BD /* PropertyParser.m in Sources */,
 				60F386CC1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
 				60F386D11553DC230089F8BD /* ControllerComponent.m in Sources */,
-				60F386D61553DC5C0089F8BD /* ControllerButton.m in Sources */,
 				60F386E2155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
 				60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */,

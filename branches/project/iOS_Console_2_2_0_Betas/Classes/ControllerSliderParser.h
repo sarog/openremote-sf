@@ -8,10 +8,10 @@
 
 #import "DefinitionElementParser.h"
 
-@class ControllerSlider;
+@class ControllerComponent;
 
 @interface ControllerSliderParser : DefinitionElementParser
 
-@property (nonatomic, retain) ControllerSlider *slider;
+@property (nonatomic, retain) ControllerComponent *slider;
 
 @end

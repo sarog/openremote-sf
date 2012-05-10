@@ -7,7 +7,7 @@
 //
 
 #import "ControllerSliderParser.h"
-#import "ControllerSlider.h"
+#import "ControllerComponent.h"
 #import "ControllerComponentCommandDeferredBinding.h"
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
@@ -18,7 +18,7 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        ControllerSlider *tmp = [[ControllerSlider alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        ControllerComponent *tmp = [[ControllerComponent alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
         self.slider = tmp;
         [tmp release];
     }

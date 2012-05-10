@@ -13,8 +13,6 @@
 #import "ControllerButtonParser.h"
 #import "ControllerSwitchParser.h"
 #import "ControllerSliderParser.h"
-#import "ControllerSlider.h"
-#import "ControllerButton.h"
 
 @interface LocalParser ()
 

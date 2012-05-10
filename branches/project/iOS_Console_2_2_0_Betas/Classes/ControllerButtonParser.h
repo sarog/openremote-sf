@@ -8,10 +8,10 @@
 
 #import "DefinitionElementParser.h"
 
-@class ControllerButton;
+@class ControllerComponent;
 
 @interface ControllerButtonParser : DefinitionElementParser
 
-@property (nonatomic, retain) ControllerButton *button;
+@property (nonatomic, retain) ControllerComponent *button;
 
 @end
