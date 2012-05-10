@@ -28,7 +28,7 @@
 
 - (id)initWithRuntime:(ClientSideRuntime *)runtime;
 
-- (void)executeCommand:(LocalCommand *)command;
+- (void)executeCommand:(LocalCommand *)command commandType:(NSString *)commandType;
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor;
 - (void)stopUpdatingSensor:(LocalSensor *)sensor;

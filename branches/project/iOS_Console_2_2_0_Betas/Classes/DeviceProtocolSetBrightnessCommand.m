@@ -32,16 +32,23 @@
     return self;
 }
 
-- (void)execute:(LocalCommand *)command
+- (void)execute:(LocalCommand *)command commandType:(NSString *)commandType
 {
     if ([[UIScreen mainScreen] respondsToSelector:@selector(setBrightness:)]) {
         NSString *brightness = [command propertyValueForKey:@"brightness"];
         
         if (!brightness) {
-                //        [UIScreen mainScreen].brightness = 1.0; // TODO: pick correct value from slider if available
-                
-        }
-        
+            // If command originated from a slider, commandType will contain slider value. So if commandType validates as a number, use it as parameter
+            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+            [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+            [formatter setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
+            NSNumber *result = nil;
+            NSError *error = nil;
+            NSRange range = NSMakeRange(0, commandType.length);
+            if ([formatter getObjectValue:&result forString:commandType range:&range error:&error]) {
+                brightness = commandType;
+            }
+        }        
         if (brightness) {
             [UIScreen mainScreen].brightness = ([brightness intValue] / 100.0);
             // Setting the brightness does not post a brightness change notification, so do post it ourself to make sure our sensor gets updated

@@ -24,6 +24,6 @@
 
 @protocol ClientSideProtocolWriteCommand <ClientSideProtocolCommand>
 
-- (void)execute:(LocalCommand *)command;
+- (void)execute:(LocalCommand *)command commandType:(NSString *)commandType;
 
 @end

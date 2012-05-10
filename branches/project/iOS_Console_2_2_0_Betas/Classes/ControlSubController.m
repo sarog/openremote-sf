@@ -44,7 +44,7 @@
 	// Check for local command first
 	NSArray *localCommands = [self localCommandsForCommandType:commandType];
     if (localCommands && ([localCommands count] > 0)) {
-        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.clientSideRuntime executeCommands:localCommands]; // TODO: pass command type
+        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.clientSideRuntime executeCommands:localCommands commandType:commandType];
 	} else {
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:self.component delegate:nil];
 	}
