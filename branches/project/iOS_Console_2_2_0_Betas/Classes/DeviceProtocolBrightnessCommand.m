@@ -36,7 +36,8 @@
 - (void)startUpdating
 {
     if ([[UIScreen mainScreen] respondsToSelector:@selector(setBrightness:)]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged::) name:UIScreenBrightnessDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessChanged
+                                                                                  :) name:UIScreenBrightnessDidChangeNotification object:nil];
     }
 }
 
