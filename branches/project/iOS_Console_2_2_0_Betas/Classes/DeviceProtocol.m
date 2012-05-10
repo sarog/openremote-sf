@@ -22,6 +22,7 @@
 #import "DeviceProtocolDateTimeCommand.h"
 #import "DeviceProtocolBatteryLevelCommand.h"
 #import "DeviceProtocolBrightnessCommand.h"
+#import "DeviceProtocolSetBrightnessCommand.h"
 #import "ClientSideBeanManager.h"
 #import "ClientSideRuntime.h"
 
@@ -40,6 +41,7 @@
         [self.beanManager registerClass:[DeviceProtocolDateTimeCommand class] forKey:@"DATE_TIME"];
         [self.beanManager registerClass:[DeviceProtocolBatteryLevelCommand class] forKey:@"BATTERY_LEVEL"];
         [self.beanManager registerClass:[DeviceProtocolBrightnessCommand class] forKey:@"SCREEN_BRIGHTNESS"];
+        [self.beanManager registerClass:[DeviceProtocolSetBrightnessCommand class] forKey:@"SET_SCREEN_BRIGHTNESS"];
     }
     return self;
 }
