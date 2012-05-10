@@ -7,7 +7,7 @@
 //
 
 #import "ControllerButtonParser.h"
-#import "ControllerButton.h"
+#import "ControllerComponent.h"
 #import "ControllerComponentCommandDeferredBinding.h"
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
@@ -18,7 +18,7 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        ControllerButton *tmp = [[ControllerButton alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        ControllerComponent *tmp = [[ControllerComponent alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
         self.button = tmp;
         [tmp release];
     }
