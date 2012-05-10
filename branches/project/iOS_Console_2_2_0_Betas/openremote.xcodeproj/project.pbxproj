@@ -3120,7 +3120,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3143,7 +3143,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3359,7 +3359,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3380,7 +3380,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3414,7 +3414,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3434,7 +3434,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
