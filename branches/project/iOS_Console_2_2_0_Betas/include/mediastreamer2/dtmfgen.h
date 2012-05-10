@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef dtmfgen_h
 #define dtmfgen_h
 
-#include "msfilter.h"
+#include <mediastreamer2/msfilter.h>
 
 #define MS_DTMF_GEN_PUT		MS_FILTER_METHOD(MS_DTMF_GEN_ID,0,const char)
 /** Plays dtmf tone given in argument with default duration*/
@@ -40,6 +40,7 @@ struct _MSDtmfGenCustomTone{
 	int duration;	/**<Duration of the tone in milliseconds*/
 	int frequency;	/**<Frequency of the tone to be played */
 	float amplitude; /**<Amplitude of the tone, 1.0 being the 0dbm normalized level*/
+	int interval;	/**<Interval 'between tones' in milliseconds*/
 };
 
 typedef struct _MSDtmfGenCustomTone MSDtmfGenCustomTone;

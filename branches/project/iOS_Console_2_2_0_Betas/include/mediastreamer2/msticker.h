@@ -21,9 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MS_TICKER_H
 #define MS_TICKER_H
 
-
-#include "msfilter.h"
-#include "mscommon.h"
+#include <mediastreamer2/msfilter.h>
 
 /**
  * @file msticker.h
@@ -47,6 +45,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 typedef uint64_t (*MSTickerTimeFunc)(void *);
 
+/**
+ * Enum for ticker priority
+**/
+enum _MSTickerPrio{
+	MS_TICKER_PRIO_NORMAL, /**<the default OS priority for threads*/
+	MS_TICKER_PRIO_HIGH, /**<Increased priority: done by setpriority() or sched_setschedparams() with SCHED_RR on linux/MacOS*/
+	MS_TICKER_PRIO_REALTIME /**<Topmost priority, running SCHED_FIFO on linux */
+};
+
+typedef enum _MSTickerPrio MSTickerPrio;
+
 struct _MSTicker
 {
 	ms_mutex_t lock;
@@ -61,10 +70,9 @@ struct _MSTicker
 	MSTickerTimeFunc get_cur_time_ptr;
 	void *get_cur_time_data;
 	char *name;
+	double av_load;	/*average load of the ticker */
+	MSTickerPrio prio;
 	bool_t run;       /* flag to indicate whether the ticker must be run or not */
-#ifdef WIN32_TIMERS
-	HANDLE TimeEvent;
-#endif
 };
 
 /**
@@ -73,6 +81,13 @@ struct _MSTicker
  */
 typedef struct _MSTicker MSTicker;
 
+
+struct _MSTickerParams{
+	MSTickerPrio prio;
+	const char *name;
+};
+
+typedef struct _MSTickerParams MSTickerParams;
 
 #ifdef __cplusplus
 extern "C"{
@@ -88,10 +103,23 @@ extern "C"{
 MS2_PUBLIC MSTicker *ms_ticker_new(void);
 
 /**
+ * Create a ticker that will be used to start
+ * and stop a graph.
+ *
+ * Returns: MSTicker * if successfull, NULL otherwise.
+ */
+MS2_PUBLIC MSTicker *ms_ticker_new_with_params(const MSTickerParams *params);
+	
+/**
  * Set a name to the ticker (used for logging)
 **/
 MS2_PUBLIC void ms_ticker_set_name(MSTicker *ticker, const char *name);
 
+/**
+ * Deprecated: Set priority to the ticker
+**/
+MS2_PUBLIC void ms_ticker_set_priority(MSTicker *ticker, MSTickerPrio prio);
+	
 /**
  * Attach a chain of filters to a ticker.
  * The processing chain will be executed until ms_ticker_detach
@@ -104,6 +132,18 @@ MS2_PUBLIC void ms_ticker_set_name(MSTicker *ticker, const char *name);
  */
 MS2_PUBLIC int ms_ticker_attach(MSTicker *ticker,MSFilter *f);
 
+/**
+ * Attach a chain of filters to a ticker.
+ * The processing chain will be executed until ms_ticker_detach
+ * will be called.
+ * This variadic can be used to attach multiple chains in a single call. The argument list MUST be NULL terminated.
+ *
+ * @param ticker  A #MSTicker object.
+ * @param f       A #MSFilter object.
+ *
+ * Returns: 0 if successfull, -1 otherwise.
+ */
+MS2_PUBLIC int ms_ticker_attach_multiple(MSTicker *ticker,MSFilter *f,...);
 /**
  * Dettach a chain of filters to a ticker.
  * The processing chain will no more be executed.
@@ -142,6 +182,15 @@ MS2_PUBLIC void ms_ticker_set_time_func(MSTicker *ticker, MSTickerTimeFunc func,
  */
 MS2_PUBLIC void ms_ticker_print_graphs(MSTicker *ticker);
 
+/**
+ * Get the average load of the ticker.
+ * It is expressed as the ratio between real time spent in processing all graphs for a tick divided by the
+ * tick interval (default is 10 ms).
+ * This value is averaged over several ticks to get consistent and useful value.
+ * A load greater than 100% clearly means that the ticker is over loaded and runs late.
+**/
+MS2_PUBLIC float ms_ticker_get_average_load(MSTicker *ticker);
+	
 /* private functions:*/
 
 #ifdef __cplusplus

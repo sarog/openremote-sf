@@ -18,8 +18,15 @@
  */                
 #ifndef __EXOSIP_TRANSPORT_HOOK_H__
 #define __EXOSIP_TRANSPORT_HOOK_H__
+#ifdef WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <sys/select.h>
+
+#endif
+
 typedef int (*eXosip_recvfrom_cb)(int socket, void * buffer, size_t length, int flags, struct sockaddr * address, socklen_t * address_len,void* userdata);
 typedef int (*eXosip_sendto_cb)(int socket, const void *buffer, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len,void* userdata);
 typedef int (*eXosip_select_cb)(int nfds, fd_set * readfds, fd_set * writefds, fd_set * errorfds, struct timeval * timeout,void* userdata);
@@ -39,12 +46,17 @@ typedef struct _eXosip_transport_hooks {
 	eXosip_select_cb select;
 } eXosip_transport_hooks_t;
 
+#ifdef IN_EXOSIP
 #define recvfrom eXosip_recvfrom
 #define sendto eXosip_sendto
 #define select eXosip_select
+#endif
+
 /**
  * use NULL to unregister
  */
 int eXosip_transport_hook_register(eXosip_transport_hooks_t* cbs);
+int eXosip_get_udp_socket(void);
+int eXosip_get_control_fd(void);
 
 #endif /*__EXOSIP_TRANSPORT_HOOK_H__*/

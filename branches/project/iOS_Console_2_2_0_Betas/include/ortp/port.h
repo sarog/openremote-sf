@@ -226,11 +226,17 @@ struct timeval {
 };
 #endif
 
+
+#ifdef __cplusplus
+extern "C"{
+#endif
 int gettimeofday (struct timeval *tv, void* tz);
 #ifdef _WORKAROUND_MINGW32_BUGS
 char * WSAAPI gai_strerror(int errnum);
 #endif
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
@@ -318,6 +324,13 @@ void ortp_shm_close(void *memory);
    #define VAR_DECLSPEC    extern
 #endif
 
+
+/*define __ios when we are compiling for ios.
+ The TARGET_OS_IPHONE macro is stupid, it is defined to 0 when compiling on mac os x.
+*/
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE==1
+#define __ios 1
+#endif
 
 #endif
 

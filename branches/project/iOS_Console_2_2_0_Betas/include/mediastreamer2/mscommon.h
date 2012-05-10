@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <ortp/ortp.h>
 #include <time.h>
+#if defined(__APPLE__) 
+#include "TargetConditionals.h"
+#endif
 
 #define ms_malloc	ortp_malloc
 #define ms_malloc0	ortp_malloc0
@@ -78,8 +81,6 @@ static inline void ms_debug(const char *fmt,...)
 #endif	
 #endif
 
-
-
 #define ms_message	ortp_message
 #define ms_warning	ortp_warning
 #define ms_error	ortp_error
@@ -95,6 +96,10 @@ static inline void ms_debug(const char *fmt,...)
 #define ms_thread_create 	ortp_thread_create
 #define ms_thread_join		ortp_thread_join
 
+typedef struct MSTimeSpec{
+	int64_t tv_sec;
+	int64_t tv_nsec;
+}MSTimeSpec;
 
 struct _MSList {
 	struct _MSList *next;
@@ -115,6 +120,7 @@ extern "C"{
 #endif
 
 void ms_thread_exit(void* ret_val);
+MS2_PUBLIC void ms_get_cur_time(MSTimeSpec *ret);
 MS2_PUBLIC MSList * ms_list_append(MSList *elem, void * data);
 MS2_PUBLIC MSList * ms_list_prepend(MSList *elem, void * data);
 MS2_PUBLIC MSList * ms_list_free(MSList *elem);
@@ -213,14 +219,42 @@ MS2_PUBLIC int ms_discover_mtu(const char *destination_host);
 **/
 MS2_PUBLIC void ms_set_mtu(int mtu);
 
+/**
+ * Declare how many cpu (cores) are available on the platform
+ */
+MS2_PUBLIC void ms_set_cpu_count(unsigned int c);
+ 
+MS2_PUBLIC unsigned int ms_get_cpu_count();
+
 /** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
+#ifdef MS2_INTERNAL
+#  ifdef HAVE_CONFIG_H
+#  include "mediastreamer-config.h" /*necessary to know if ENABLE_NLS is there*/
+#  endif
+
+#ifdef WIN32
+#include <malloc.h> //for alloca
+#ifdef _MSC_VER
+#define alloca _alloca
+#endif
+#endif
+
+#  if defined(ENABLE_NLS)
+#    include <libintl.h>
+#    define _(String) dgettext (GETTEXT_PACKAGE, String)
+#  else
+#    define _(String) (String)
+#  endif // ENABLE_NLS
+#define N_(String) (String)
+#endif // MS2_INTERNAL
 
 #ifdef ANDROID
 #include "mediastreamer2/msjava.h"
 #endif
 #endif
+

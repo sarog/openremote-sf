@@ -4,6 +4,9 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
+/* Define if wizard enabled */
+/* #undef BUILD_WIZARD */
+
 /* Tells whether localisation is possible */
 /* #undef ENABLE_NLS */
 
@@ -28,11 +31,14 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
-/* Defined when eXosip_get_socket is available */
-#define HAVE_EXOSIP_GET_SOCKET 1
-
 /* Defined when eXosip_get_version is available */
 #define HAVE_EXOSIP_GET_VERSION 1
+
+/* Defined when eXosip_tls_verify_certificate is available */
+#define HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE 1
+
+/* Defined when eXosip_get_socket is available */
+#define HAVE_EXOSIP_TRYLOCK 1
 
 /* If present, the getenv function allows fim to read environment variables.
    */
@@ -47,11 +53,14 @@
 /* Define to 1 if you have the `get_current_dir_name' function. */
 /* #undef HAVE_GET_CURRENT_DIR_NAME */
 
+/* Defined when gtk osx is used */
+/* #undef HAVE_GTK_OSX */
+
 /* Define to 1 if you have the <history.h> header file. */
 /* #undef HAVE_HISTORY_H */
 
 /* Define if you have the iconv() function. */
-#define HAVE_ICONV 1
+/* #undef HAVE_ICONV */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -59,8 +68,26 @@
 /* Define to 1 if you have the `eXosip2' library (-leXosip2). */
 #define HAVE_LIBEXOSIP2 1
 
+/* Define to 1 if you have the `osip2' library (-losip2). */
+/* #undef HAVE_LIBOSIP2 */
+
+/* Define to 1 if you have the `osipparser2' library (-losipparser2). */
+/* #undef HAVE_LIBOSIPPARSER2 */
+
+/* Define to 1 if you have the `udev' library (-ludev). */
+/* #undef HAVE_LIBUDEV */
+
+/* Define to 1 if you have the <libudev.h> header file. */
+/* #undef HAVE_LIBUDEV_H */
+
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
+
+/* NOTIFY1 support */
+/* #undef HAVE_NOTIFY1 */
+
+/* NOTIFY4 support */
+/* #undef HAVE_NOTIFY4 */
 
 /* Define to 1 if you have the <readline.h> header file. */
 /* #undef HAVE_READLINE_H */
@@ -105,16 +132,16 @@
 /* #undef HAVE_X11_XLIB_H */
 
 /* All supported languages */
-#define LINPHONE_ALL_LANGS "fr it de ja es pl cs nl sv pt_BR hu ru zh_CN"
+#define LINPHONE_ALL_LANGS "fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW"
 
 /* Windows appdata subdir where linphonerc can be found */
 #define LINPHONE_CONFIG_DIR "Linphone"
 
 /* path of liblinphone plugins, not mediastreamer2 plugins */
-#define LINPHONE_PLUGINS_DIR "./lib/liblinphone/plugins"
+#define LINPHONE_PLUGINS_DIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/lib/liblinphone/plugins"
 
 /* Linphone's version number */
-#define LINPHONE_VERSION "3.4.2"
+#define LINPHONE_VERSION "3.5.2"
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -130,19 +157,19 @@
 #define PACKAGE_BUGREPORT "linphone-developers@nongnu.org"
 
 /* Defines the place where data are found */
-#define PACKAGE_DATA_DIR "./share"
+#define PACKAGE_DATA_DIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/share"
 
 /* Defines the place where locales can be found */
-#define PACKAGE_LOCALE_DIR "./share/locale"
+#define PACKAGE_LOCALE_DIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/share/locale"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "linphone"
 
 /* Defines the place where linphone sounds are found */
-#define PACKAGE_SOUND_DIR "./share/sounds/linphone"
+#define PACKAGE_SOUND_DIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/share/sounds/linphone"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "linphone 3.4.2"
+#define PACKAGE_STRING "linphone 3.5.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "linphone"
@@ -151,7 +178,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.4.2"
+#define PACKAGE_VERSION "3.5.2"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -160,10 +187,10 @@
 /* #undef USE_BUILDDATE_VERSION */
 
 /* Version number of package */
-#define VERSION "3.4.2"
+#define VERSION "3.5.2"
 
 /* defined if video support is available */
-/* #undef VIDEO_ENABLED */
+#define VIDEO_ENABLED 1
 
 /* Tell whether RSVP support should be compiled. */
 /* #undef VINCENT_MAURY_RSVP */

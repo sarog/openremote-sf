@@ -67,12 +67,20 @@ typedef struct rtp_stats
 	uint64_t recv; 		/* bytes of payload received and delivered in time to the application */
 	uint64_t hw_recv;		/* bytes of payload received */
 	uint64_t packet_recv;	/* number of packets received */
-	uint64_t unavaillable;	/* totally useless*/
 	uint64_t outoftime;		/* number of packets that were received too late */
 	uint64_t cum_packet_loss; /* cumulative number of packet lost */
 	uint64_t bad;			/* packets that did not appear to be RTP */
 	uint64_t discarded;		/* incoming packets discarded because the queue exceeds its max size */
+	uint64_t sent_rtcp_packets;	/* sent RTCP packets counter (only packets that embed a report block are considered) */
 } rtp_stats_t;
+
+typedef struct jitter_stats
+{
+	uint32_t jitter;			/* interarrival jitter at last emitted sender report */
+	uint32_t max_jitter;		/* biggest interarrival jitter (value in stream clock unit) */
+	uint64_t sum_jitter;		/* sum of all interarrival jitter (value in stream clock unit) */
+	uint64_t max_jitter_ts;		/* date (in ms since Epoch) of the biggest interarrival jitter */
+} jitter_stats_t;
 
 #define RTP_TIMESTAMP_IS_NEWER_THAN(ts1,ts2) \
 	((uint32_t)((uint32_t)(ts1) - (uint32_t)(ts2))< (uint32_t)(1<<31))
@@ -98,7 +106,8 @@ extern "C"{
 void rtp_add_csrc(mblk_t *mp ,uint32_t csrc);
 #define rtp_set_payload_type(mp,pt)	((rtp_header_t*)((mp)->b_rptr))->paytype=(pt)
 
-#define rtp_get_markbit(mp)	(((rtp_header_t*)((mp)->b_rptr))->markbit)	
+#define rtp_get_markbit(mp)	(((rtp_header_t*)((mp)->b_rptr))->markbit)
+#define rtp_get_extbit(mp)	(((rtp_header_t*)((mp)->b_rptr))->extbit)
 #define rtp_get_timestamp(mp)	(((rtp_header_t*)((mp)->b_rptr))->timestamp)	
 #define rtp_get_seqnumber(mp)	(((rtp_header_t*)((mp)->b_rptr))->seq_number)
 #define rtp_get_payload_type(mp)	(((rtp_header_t*)((mp)->b_rptr))->paytype)
@@ -107,6 +116,7 @@ void rtp_add_csrc(mblk_t *mp ,uint32_t csrc);
 #define rtp_get_csrc(mp, idx)		(((rtp_header_t*)((mp)->b_rptr))->csrc[idx])
 
 int rtp_get_payload(mblk_t *packet, unsigned char **start);
+int rtp_get_extheader(mblk_t *packet, uint16_t *profile, uint8_t **start_ext);
 
 #ifdef __cplusplus
 }
