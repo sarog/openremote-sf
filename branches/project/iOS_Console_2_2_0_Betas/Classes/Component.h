@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- * Component is super class of all models in screen.
+ * Component is super class for all elements having an id.
  */
 @interface Component : NSObject
 
