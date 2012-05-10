@@ -18,11 +18,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.packet;
 
 import org.openremote.controller.utils.Strings;
-
-import java.util.Arrays;
 
 /**
  * This class represents the ESP3 packet header as defined in EnOcean Serial Protocol 3 V1.17
@@ -298,7 +296,7 @@ public class Esp3PacketHeader
    *
    * @return data length
    */
-  int getDataLength()
+  public int getDataLength()
   {
     return dataLength;
   }
@@ -308,7 +306,7 @@ public class Esp3PacketHeader
    *
    * @return optional data length
    */
-  int getOptionalDataLength()
+  public int getOptionalDataLength()
   {
     return optionalDataLength;
   }
@@ -318,7 +316,7 @@ public class Esp3PacketHeader
    *
    * @return packet type
    */
-  PacketType getPacketType()
+  public PacketType getPacketType()
   {
     return packetType;
   }
@@ -331,7 +329,7 @@ public class Esp3PacketHeader
    *
    * @return ESP3 packet header
    */
-  byte[] asByteArray()
+  public byte[] asByteArray()
   {
     byte[] headerBytes = new byte[ESP3_HEADER_SIZE];
 

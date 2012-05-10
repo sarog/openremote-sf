@@ -52,7 +52,7 @@ package org.openremote.controller.protocol.enocean;
  *
  * @author Rainer Hitz
  */
-class DeviceID
+public class DeviceID
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ class DeviceID
    * @throws  InvalidDeviceIDException if parsing the ID string fails or the ID is out of bounds
    *
    */
-  static DeviceID fromString(String deviceID) throws InvalidDeviceIDException
+  public static DeviceID fromString(String deviceID) throws InvalidDeviceIDException
   {
     return new DeviceID(parseDeviceID(deviceID));
   }
@@ -160,7 +160,7 @@ class DeviceID
    * @throws InvalidDeviceIDException
    *                 if parsing the ID string fails or the resulting ID is out of bounds
    */
-  static DeviceID fromStringWithBaseID(String offset, DeviceID baseID) throws InvalidDeviceIDException
+  public static DeviceID fromStringWithBaseID(String offset, DeviceID baseID) throws InvalidDeviceIDException
   {
     validateBaseID(baseID.deviceID);
 
@@ -188,7 +188,7 @@ class DeviceID
    *
    * @return a new device ID instance
    */
-  static DeviceID fromByteArray(byte[] deviceIDBytes) throws InvalidDeviceIDException
+  public static DeviceID fromByteArray(byte[] deviceIDBytes) throws InvalidDeviceIDException
   {
     if(deviceIDBytes == null)
     {
@@ -423,7 +423,7 @@ class DeviceID
   }
 
 
-  // Instance Methods -----------------------------------------------------------------------------
+  // Public Instance Methods ----------------------------------------------------------------------
 
   /**
    * Returns the device ID as a 4-byte array.
@@ -431,7 +431,7 @@ class DeviceID
    * @return  4-byte array where the most significant bits of the device ID are at index 0 and
    *          the least significant bits are at index 3 (big-endian serial protocol byte order)
    */
-  byte[] asByteArray()
+  public byte[] asByteArray()
   {
     byte[] deviceIDBytes = new byte[4];
 

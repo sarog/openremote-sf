@@ -18,8 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.port;
 
+import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.ConnectionException;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;

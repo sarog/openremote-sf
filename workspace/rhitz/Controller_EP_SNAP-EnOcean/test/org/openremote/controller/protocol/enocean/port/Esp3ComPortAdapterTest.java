@@ -18,16 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.port;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
+import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.ConnectionException;
 import org.openremote.controller.protocol.port.PortException;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Unit tests for {@link Esp3ComPortAdapter} class.

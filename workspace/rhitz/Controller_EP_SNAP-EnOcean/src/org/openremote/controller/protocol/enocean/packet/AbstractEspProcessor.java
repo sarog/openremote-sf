@@ -18,7 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.packet;
+
+import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.ConnectionException;
+import org.openremote.controller.protocol.enocean.port.EspPort;
 
 import java.util.Deque;
 import java.util.LinkedList;

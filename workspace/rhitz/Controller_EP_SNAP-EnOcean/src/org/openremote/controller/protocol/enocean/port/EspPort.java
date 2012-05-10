@@ -18,7 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.port;
+
+import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.ConnectionException;
 
 /**
  * The EnOcean Serial Protocol versions (ESP2, ESP3) have different COM port communications settings.
@@ -37,10 +40,10 @@ public interface EspPort
   /**
    * Configures the port and creates a port connection.
    *
-   * @throws ConnectionException
+   * @throws org.openremote.controller.protocol.enocean.ConnectionException
    *           if port connection creation failed
    *
-   * @throws ConfigurationException
+   * @throws org.openremote.controller.protocol.enocean.ConfigurationException
    *           if the port connection cannot be created because of an invalid configuration
    */
   void start() throws ConnectionException, ConfigurationException;
