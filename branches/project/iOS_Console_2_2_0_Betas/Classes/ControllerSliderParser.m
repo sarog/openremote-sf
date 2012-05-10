@@ -33,17 +33,14 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-	if ([elementName isEqualToString:@"ctrl:include"]) {
-        if ([@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
-            // This is a reference to another element, will be resolved later, put a standby in place for now
-            ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.slider action:@"setValue"];
-            standby.definition = self.depRegister.definition;
-            [self.depRegister addDeferredBinding:standby];
-            [standby release];
-        } else if ([@"sensor" isEqualToString:[attributeDict objectForKey:TYPE]]) {
-            
-        }
-	}
+	if ([elementName isEqualToString:@"ctrl:include"] && [@"command" isEqualToString:[attributeDict objectForKey:TYPE]]) {
+        // This is a reference to another element, will be resolved later, put a standby in place for now
+        ControllerComponentCommandDeferredBinding *standby = [[ControllerComponentCommandDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.slider action:@"setValue"];
+        standby.definition = self.depRegister.definition;
+        [self.depRegister addDeferredBinding:standby];
+        [standby release];
+    }
+    // We do not care about parsing the sensor information from this element, it is already included in the "UI" slider and parsed by the SliderParser
     [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
