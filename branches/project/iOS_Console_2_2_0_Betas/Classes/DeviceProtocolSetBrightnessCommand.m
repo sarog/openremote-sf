@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "DeviceProtocolSetBrightnessCommand.h"
+#import "LocalCommand.h"
 
 @implementation DeviceProtocolSetBrightnessCommand
 
@@ -31,10 +32,21 @@
     return self;
 }
 
-- (void)execute
+- (void)execute:(LocalCommand *)command
 {
     if ([[UIScreen mainScreen] respondsToSelector:@selector(setBrightness:)]) {
-        [UIScreen mainScreen].brightness = 1.0; // TODO: pick correct value
+        NSString *brightness = [command propertyValueForKey:@"brightness"];
+        
+        if (!brightness) {
+                //        [UIScreen mainScreen].brightness = 1.0; // TODO: pick correct value from slider if available
+                
+        }
+        
+        if (brightness) {
+            [UIScreen mainScreen].brightness = ([brightness intValue] / 100.0);
+            // Setting the brightness does not post a brightness change notification, so do post it ourself to make sure our sensor gets updated
+            [[NSNotificationCenter defaultCenter] postNotificationName:UIScreenBrightnessDidChangeNotification object:nil];
+        }
     }
 }
 

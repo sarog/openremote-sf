@@ -20,8 +20,10 @@
  */
 #import "ClientSideProtocolCommand.h"
 
+@class LocalCommand;
+
 @protocol ClientSideProtocolWriteCommand <ClientSideProtocolCommand>
 
-- (void)execute; // TODO: should pass the LocalCommand
+- (void)execute:(LocalCommand *)command;
 
 @end
