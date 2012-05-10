@@ -145,6 +145,7 @@
     // First in the array is the best one
     if ([versions count] > 0) {
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        [f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
         f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
         self.controllerAPIVersion = [f stringFromNumber:[versions objectAtIndex:0]];
         [f release];

@@ -62,6 +62,8 @@ typedef enum {
         int repeatDelay = 0, longPressDelay = 0;
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+        // TODO: double check if this is always US locale, maybe get locale from XML
+        [formatter setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
         NSNumber *result = nil;
         NSError *error = nil;
         NSString *input = [attributeDict objectForKey:@"repeatDelay"];
