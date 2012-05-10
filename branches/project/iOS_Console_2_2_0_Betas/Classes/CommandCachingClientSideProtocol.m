@@ -54,7 +54,7 @@
 - (void)executeCommand:(LocalCommand *)command
 {
     id <ClientSideProtocolWriteCommand> cmd = [self.beanManager beanForKey:[command propertyValueForKey:@"command"]];
-    [cmd execute];
+    [cmd execute:command];
 }
 
 - (void)startUpdatingSensor:(LocalSensor *)sensor
