@@ -18,11 +18,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.packet;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
+
+import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
+import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
+import org.openremote.controller.protocol.enocean.port.MockPort;
 
 /**
  * Unit tests for {@link Esp3Processor} class.

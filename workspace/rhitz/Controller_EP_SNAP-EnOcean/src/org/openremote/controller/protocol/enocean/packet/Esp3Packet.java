@@ -18,11 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+package org.openremote.controller.protocol.enocean.packet;
 
 /**
  * Represents an EnOcean Serial Protocol 3 (ESP3) packet. <p>
@@ -165,7 +161,7 @@ public class Esp3Packet implements EspPacket
    * Class for calculating EnOcean Serial Protocol 3 (ESP3) Cyclic Redundancy Check (CRC) values
    * according to EnOcean Serial Protocol Specification 3 V1.17 chapter 2.3: CRC8 calculation.
    */
-  static class CRC8
+  public static class CRC8
   {
 
     // Class Members ------------------------------------------------------------------------------
@@ -227,7 +223,7 @@ public class Esp3Packet implements EspPacket
      *
      * @return calculated CRC-8 value
      */
-    static byte calculate(byte[] data)
+    public static byte calculate(byte[] data)
     {
       if(data == null)
       {
@@ -250,7 +246,7 @@ public class Esp3Packet implements EspPacket
      *
      * @return calculated CRC-8 value
      */
-    static byte calculate(byte[] data, int offset , int length)
+    public static byte calculate(byte[] data, int offset , int length)
     {
       if(data == null)
       {

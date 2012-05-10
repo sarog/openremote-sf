@@ -18,8 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.enocean;
+package org.openremote.controller.protocol.enocean.packet;
 
+
+import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.ConnectionException;
 
 /**
  * Interface for sending EnOcean Serial Protocol (ESP) request and response packets
@@ -36,18 +39,24 @@ package org.openremote.controller.protocol.enocean;
 public interface EspProcessor<T extends EspPacket>
 {
   /**
-   * Starts ESP processor and the underlying port (see {@link EspPort}).
+   * Starts ESP processor and the underlying port.
    *
-   * @throws ConfigurationException
+   * @see org.openremote.controller.protocol.enocean.port.EspPort
+   *
+   *
+   * @throws org.openremote.controller.protocol.enocean.ConfigurationException
    *           if starting the underlying port failed because of a configuration error
    *
-   * @throws ConnectionException
+   * @throws org.openremote.controller.protocol.enocean.ConnectionException
    *           if a connection error occurred for any reason
    */
-  void start() throws  ConfigurationException, ConnectionException;
+  void start() throws ConfigurationException, ConnectionException;
 
   /**
-   * Stops ESP processor and the underlying port (see {@link EspPort}).
+   * Stops ESP processor and the underlying port.
+   *
+   * @see org.openremote.controller.protocol.enocean.port.EspPort
+   *
    *
    * @throws ConnectionException
    *           if stopping the underlying port failed because of a connection error
