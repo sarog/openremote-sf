@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef sndcard_h
 #define sndcard_h
 
-#include "mscommon.h"
+#include <mediastreamer2/mscommon.h>
 
 /**
  * @file mssndcard.h
@@ -131,6 +131,7 @@ struct _MSSndCard{
 	char *id;
 	unsigned int capabilities;
 	void *data;
+	int preferred_sample_rate;
 };
 
 /**
@@ -426,6 +427,26 @@ MS2_PUBLIC int ms_snd_card_set_control(MSSndCard *obj, MSSndCardControlElem e, i
 MS2_PUBLIC int ms_snd_card_get_control(MSSndCard *obj, MSSndCardControlElem e);
 
 /**
+ * Get preferred sample rate
+ *
+ * @param obj      A sound card object.
+ *
+ * Returns: return sample rate in khz
+ */
+MS2_PUBLIC int ms_snd_card_get_preferred_sample_rate(const MSSndCard *obj);
+
+/**
+ * set preferred sample rate. The underlying card will try to avoid any resampling for this samplerate.
+ *
+ * @param obj      A sound card object.
+ * @param rate     sampling rate. 
+ *
+ * Returns:  0 if successfull, <0 otherwise.
+ */
+MS2_PUBLIC int ms_snd_card_set_preferred_sample_rate(MSSndCard *obj,int rate);
+	
+
+/**
  * Create a alsa card with user supplied pcm name and mixer name.
  * @param pcmdev The pcm device name following alsa conventions (ex: plughw:0)
  * @param mixdev The mixer device name following alsa conventions.
@@ -434,6 +455,13 @@ MS2_PUBLIC int ms_snd_card_get_control(MSSndCard *obj, MSSndCardControlElem e);
  */
 MS2_PUBLIC MSSndCard * ms_alsa_card_new_custom(const char *pcmdev, const char *mixdev);
 
+
+/**
+ * Use supplied sample rate to open alsa devices (forced rate).
+ * Has no interest except workarouding driver bugs.
+ * Use -1 to revert to normal behavior.
+**/
+MS2_PUBLIC void ms_alsa_card_set_forced_sample_rate(int samplerate);
 
 /** @} */
 

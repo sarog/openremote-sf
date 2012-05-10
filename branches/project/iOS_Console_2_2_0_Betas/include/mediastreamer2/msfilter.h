@@ -71,10 +71,16 @@ struct _MSFilterMethod{
  * @var MSFilterMethod
  */
 typedef struct _MSFilterMethod MSFilterMethod;
-
+/**
+ * Filter's category
+ *
+ */
 enum _MSFilterCategory{
+	/**others*/
 	MS_FILTER_OTHER,
+	/**used by encoders*/
 	MS_FILTER_ENCODER,
+	/**used by decoders*/
 	MS_FILTER_DECODER
 };
 
@@ -102,7 +108,7 @@ struct _MSFilterStats{
 	unsigned int count; /*<number of time the filter is called for processing*/
 };
 
-typedef struct _MSFilterStats MSFilterStats; 
+typedef struct _MSFilterStats MSFilterStats;
 
 struct _MSFilterDesc{
 	MSFilterId id;	/* the id declared in allfilters.h */
@@ -141,7 +147,6 @@ struct _MSFilter{
 	uint32_t last_tick;
 	MSFilterStats *stats;
 	bool_t seen;
-	bool_t synchronous_notifies;
 };
 
 
@@ -224,6 +229,16 @@ MS2_PUBLIC MSFilterDesc * ms_filter_get_encoder(const char *mime);
 MS2_PUBLIC MSFilterDesc * ms_filter_get_decoder(const char *mime);
 
 /**
+ * Lookup a mediastreamer2 filter using its name.
+ * If found, the descriptor (MSFilterDesc) is returned.
+ * This descriptor can be used to instanciate the filter using ms_filter_new_from_desc()
+ * This function can be useful to query the presence of a filter loaded as a plugin, for example.
+ *
+ * @param name The filter name.
+**/
+MS2_PUBLIC MSFilterDesc *ms_filter_lookup_by_name(const char *filter_name);
+
+/**
  * Create encoder filter according to codec name.
  *
  * Internal supported codecs:
@@ -288,7 +303,7 @@ MS2_PUBLIC MSFilter *ms_filter_new_from_name(const char *name);
  *
  * The primary use is to create your own filter's in your
  * application and avoid registration inside mediastreamer2.
- * 
+ *
  * @param desc   A MSFilterDesc for the filter.
  *
  * Returns: a MSFilter if successfull, NULL otherwise.
@@ -337,11 +352,22 @@ MS2_PUBLIC int ms_filter_call_method(MSFilter *f, unsigned int id, void *arg);
  * Call a filter's method to set options.
  *
  * @param f    A MSFilter object.
- * @param id   A private filter ID for the option.
+ * @param id   A method ID.
  *
  * Returns: 0 if successfull, -1 otherwise.
  */
 MS2_PUBLIC int ms_filter_call_method_noarg(MSFilter *f, unsigned int id);
+
+
+/**
+ * Returns whether the filter implements a given method
+ *
+ * @param f    A MSFilter object.
+ * @param id   A method ID.
+ *
+ * Returns: 0 if successfull, -1 otherwise.
+ */
+MS2_PUBLIC bool_t ms_filter_has_method(MSFilter *f, unsigned int id);
 
 /**
  * Set a callback on filter's to be informed of private filter's event.
@@ -357,12 +383,6 @@ MS2_PUBLIC int ms_filter_call_method_noarg(MSFilter *f, unsigned int id);
  */
 MS2_PUBLIC void ms_filter_set_notify_callback(MSFilter *f, MSFilterNotifyFunc fn, void *userdata);
 
-/**
- * Forces the filter to synchronously send notifications, that is
- * the notify callback will be called from MSTicker thread instead of being
- * run by a MSEventQueue.
- */
-MS2_PUBLIC void ms_filter_enable_synchronous_notifcations(MSFilter *f, bool_t yesno);
 
 /**
  * Get MSFilterId's filter.
@@ -399,10 +419,10 @@ MS2_PUBLIC void ms_connection_helper_start(MSConnectionHelper *h);
 
 /**
  * \brief Enter a MSFilter to be connected into the MSConnectionHelper object.
- * 
+ *
  * This functions enters a MSFilter to be connected into the MSConnectionHelper
  * object and connects it to the last entered if not the first one.
- * The MSConnectionHelper is useful to reduce the amount of code necessary to create graphs in case 
+ * The MSConnectionHelper is useful to reduce the amount of code necessary to create graphs in case
  * the connections are made in an ordered manner and some filters are present conditionally in graphs.
  * For example, instead of writing
  * \code
@@ -426,11 +446,11 @@ MS2_PUBLIC void ms_connection_helper_start(MSConnectionHelper *h);
  * if (my_condition) ms_connection_helper_link(&h,f2,1,0);
  * \endcode
  *
- * @param h a connection helper 
+ * @param h a connection helper
  * @param f a MSFilter
  * @param inpin an input pin number with which the MSFilter needs to connect to previously entered MSFilter
  * @param outpin an output pin number with which the MSFilter needs to be connected to the next entered MSFilter
- * 
+ *
  * Returns: the return value of ms_filter_link() that is called internally to this function.
 **/
 MS2_PUBLIC int ms_connection_helper_link(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin);
@@ -438,7 +458,7 @@ MS2_PUBLIC int ms_connection_helper_link(MSConnectionHelper *h, MSFilter *f, int
 
 /**
  * \brief Enter a MSFilter to be disconnected into the MSConnectionHelper object.
- * Process exactly the same way as ms_connection_helper_link() but calls ms_filter_unlink() on the 
+ * Process exactly the same way as ms_connection_helper_link() but calls ms_filter_unlink() on the
  * entered filters.
 **/
 MS2_PUBLIC int ms_connection_helper_unlink(MSConnectionHelper *h, MSFilter *f, int inpin, int outpin);
@@ -456,7 +476,7 @@ MS2_PUBLIC void ms_filter_enable_statistics(bool_t enabled);
  *
 **/
 MS2_PUBLIC void ms_filter_reset_statistics(void);
-	
+
 /**
  * \brief Retrieves statistics for running filters.
  * Returns a list of MSFilterStats
@@ -465,7 +485,7 @@ MS2_PUBLIC const MSList * ms_filter_get_statistics(void);
 
 /**
  * \brief Logs runtime statistics for running filters.
- * 
+ *
 **/
 MS2_PUBLIC void ms_filter_log_statistics(void);
 
@@ -495,14 +515,33 @@ the method index (_cnt_) and the argument size */
 #define MS_FILTER_EVENT_NO_ARG(_id_,_count_)\
 	MS_FILTER_METHOD_ID(_id_,_count_,0)
 
-/* some MSFilter base generic methods:*/
+/**
+ *  some MSFilter base generic methods:
+ **/
+/**
+ * Set filter output/input sampling frequency in hertz
+ */
 #define MS_FILTER_SET_SAMPLE_RATE	MS_FILTER_BASE_METHOD(0,int)
+/**
+ * Get filter output/input sampling frequency in hertz
+ */
+
 #define MS_FILTER_GET_SAMPLE_RATE	MS_FILTER_BASE_METHOD(1,int)
+/**
+ * Set filter output network bitrate in bit per seconds, this value include IP+UDP+RTP overhead
+ */
 #define MS_FILTER_SET_BITRATE		MS_FILTER_BASE_METHOD(2,int)
+/**
+ * Get filter output network bitrate in bit per seconds, this value include IP+UDP+RTP overhead
+ */
 #define MS_FILTER_GET_BITRATE		MS_FILTER_BASE_METHOD(3,int)
 #define MS_FILTER_GET_NCHANNELS		MS_FILTER_BASE_METHOD(5,int)
 #define MS_FILTER_SET_NCHANNELS		MS_FILTER_BASE_METHOD(6,int)
+/**
+ * Set codec dependent attributes as taken from the SDP
+ */
 #define MS_FILTER_ADD_FMTP		MS_FILTER_BASE_METHOD(7,const char)
+
 #define MS_FILTER_ADD_ATTR		MS_FILTER_BASE_METHOD(8,const char)
 #define MS_FILTER_SET_MTU		MS_FILTER_BASE_METHOD(9,int)
 #define MS_FILTER_GET_MTU		MS_FILTER_BASE_METHOD(10,int)
@@ -516,7 +555,8 @@ enum _MSFilterInterfaceId{
 	MSFilterRecorderInterface,
 	MSFilterVideoDisplayInterface,
 	MSFilterEchoCancellerInterface,
-	MSFilterVideoDecoderInterface
+	MSFilterVideoDecoderInterface,
+	MSFilterVideoCaptureInterface,
 };
 
 typedef enum _MSFilterInterfaceId MSFilterInterfaceId;
@@ -537,6 +577,9 @@ typedef enum _MSFilterInterfaceId MSFilterInterfaceId;
 #define MS_FILTER_SET_VAD_PROB_START MS_FILTER_BASE_METHOD(23,int)
 #define MS_FILTER_SET_VAD_PROB_CONTINUE MS_FILTER_BASE_METHOD(24,int)
 #define MS_FILTER_SET_MAX_GAIN  MS_FILTER_BASE_METHOD(25,int)
+#define MS_VIDEO_CAPTURE_SET_AUTOFOCUS MS_FILTER_BASE_METHOD(26,int)
+/* pass value of type MSRtpPayloadPickerContext copied by the filter*/
+#define MS_FILTER_SET_RTP_PAYLOAD_PICKER MS_FILTER_BASE_METHOD(27,void*)	
 
 #define MS_CONF_SPEEX_PREPROCESS_MIC	MS_FILTER_EVENT(MS_CONF_ID, 1, void*)
 #define MS_CONF_CHANNEL_VOLUME	MS_FILTER_EVENT(MS_CONF_ID, 3, void*)
@@ -549,6 +592,7 @@ void ms_filter_preprocess(MSFilter *f, struct _MSTicker *t);
 void ms_filter_postprocess(MSFilter *f);
 bool_t ms_filter_inputs_have_data(MSFilter *f);
 void ms_filter_notify(MSFilter *f, unsigned int id, void *arg);
+void ms_filter_notify_synchronous(MSFilter *f, unsigned int id, void *arg);
 void ms_filter_notify_no_arg(MSFilter *f, unsigned int id);
 #define ms_filter_lock(f)	ms_mutex_lock(&(f)->lock)
 #define ms_filter_unlock(f)	ms_mutex_unlock(&(f)->lock)
@@ -562,8 +606,5 @@ void ms_filter_unregister_all(void);
 
 /* used by awk script in Makefile.am to generate alldescs.c */
 #define MS_FILTER_DESC_EXPORT(desc)
-
-/* xgettext markup */
-#define N_(String) String
 
 #endif

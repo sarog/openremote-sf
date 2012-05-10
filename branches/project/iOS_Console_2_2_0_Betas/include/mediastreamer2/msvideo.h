@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef msvideo_h
 #define msvideo_h
 
-#include "msfilter.h"
+#include <mediastreamer2/msfilter.h>
 
 /* some global constants for video MSFilter(s) */
 #define MS_VIDEO_SIZE_SQCIF_W 128
@@ -50,8 +50,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MS_VIDEO_SIZE_QQVGA_W 160
 #define MS_VIDEO_SIZE_QQVGA_H 120
 
+#define MS_VIDEO_SIZE_HQVGA_W 160
+#define MS_VIDEO_SIZE_HQVGA_H 240
+
 #define MS_VIDEO_SIZE_QVGA_W 320
 #define MS_VIDEO_SIZE_QVGA_H 240
+
+#define MS_VIDEO_SIZE_HVGA_W 320
+#define MS_VIDEO_SIZE_HVGA_H 480
 
 #define MS_VIDEO_SIZE_VGA_W 640
 #define MS_VIDEO_SIZE_VGA_H 480
@@ -67,6 +73,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MS_VIDEO_SIZE_SIF_W 352
 #define MS_VIDEO_SIZE_SIF_H 240
+
+#define MS_VIDEO_SIZE_IOS_MEDIUM_W 480
+#define MS_VIDEO_SIZE_IOS_MEDIUM_H 360
 
 #define MS_VIDEO_SIZE_ISIF_W 352
 #define MS_VIDEO_SIZE_ISIF_H 480
@@ -157,6 +166,13 @@ typedef struct MSRect{
 #define MS_VIDEO_SIZE_1024_H 768
 #define MS_VIDEO_SIZE_1024 MS_VIDEO_SIZE_XGA
 
+typedef enum{
+	MS_NO_MIRROR,
+	MS_HORIZONTAL_MIRROR, /*according to a vertical line in the center of buffer*/
+	MS_CENTRAL_MIRROR, /*both*/
+	MS_VERTICAL_MIRROR /*according to an horizontal line*/
+}MSMirrorType;
+
 typedef enum MSVideoOrientation{
 	MS_VIDEO_LANDSCAPE = 0,
 	MS_VIDEO_PORTRAIT =1
@@ -195,16 +211,29 @@ MS2_PUBLIC int ms_yuv_buf_init_from_mblk(MSPicture *buf, mblk_t *m);
 MS2_PUBLIC int ms_yuv_buf_init_from_mblk_with_size(MSPicture *buf, mblk_t *m, int w, int h);
 MS2_PUBLIC int ms_picture_init_from_mblk_with_size(MSPicture *buf, mblk_t *m, MSPixFmt fmt, int w, int h);
 MS2_PUBLIC mblk_t * ms_yuv_buf_alloc(MSPicture *buf, int w, int h);
-MS2_PUBLIC void ms_yuv_buf_copy(uint8_t *src_planes[], const int src_strides[], 
+MS2_PUBLIC mblk_t * ms_yuv_buf_alloc_from_buffer(int w, int h, mblk_t* buffer);
+MS2_PUBLIC void ms_yuv_buf_copy(uint8_t *src_planes[], const int src_strides[],
 		uint8_t *dst_planes[], const int dst_strides[3], MSVideoSize roi);
 MS2_PUBLIC void ms_yuv_buf_mirror(YuvBuf *buf);
+MS2_PUBLIC void ms_yuv_buf_mirrors(YuvBuf *buf,const MSMirrorType type);
 MS2_PUBLIC void rgb24_mirror(uint8_t *buf, int w, int h, int linesize);
 MS2_PUBLIC void rgb24_revert(uint8_t *buf, int w, int h, int linesize);
 MS2_PUBLIC void rgb24_copy_revert(uint8_t *dstbuf, int dstlsz,
 				const uint8_t *srcbuf, int srclsz, MSVideoSize roi);
 
 MS2_PUBLIC void ms_rgb_to_yuv(const uint8_t rgb[3], uint8_t yuv[3]);
-	
+
+
+#ifdef __arm__
+MS2_PUBLIC void rotate_plane_neon_clockwise(int wDest, int hDest, int full_width, uint8_t* src, uint8_t* dst);
+MS2_PUBLIC void rotate_plane_neon_anticlockwise(int wDest, int hDest, int full_width, uint8_t* src, uint8_t* dst);
+MS2_PUBLIC void rotate_cbcr_to_cr_cb(int wDest, int hDest, int full_width, uint8_t* cbcr_src, uint8_t* cr_dst, uint8_t* cb_dst,bool_t clockWise);
+MS2_PUBLIC void deinterlace_and_rotate_180_neon(uint8_t* ysrc, uint8_t* cbcrsrc, uint8_t* ydst, uint8_t* udst, uint8_t* vdst, int w, int h, int y_byte_per_row,int cbcr_byte_per_row);
+void deinterlace_down_scale_and_rotate_180_neon(uint8_t* ysrc, uint8_t* cbcrsrc, uint8_t* ydst, uint8_t* udst, uint8_t* vdst, int w, int h, int y_byte_per_row,int cbcr_byte_per_row,bool_t down_scale);
+	void deinterlace_down_scale_neon(uint8_t* ysrc, uint8_t* cbcrsrc, uint8_t* ydst, uint8_t* u_dst, uint8_t* v_dst, int w, int h, int y_byte_per_row,int cbcr_byte_per_row,bool_t down_scale);
+	mblk_t *copy_ycbcrbiplanar_to_true_yuv_with_rotation_and_down_scale_by_2(uint8_t* y, uint8_t * cbcr, int rotation, int w, int h, int y_byte_per_row,int cbcr_byte_per_row, bool_t uFirstvSecond, bool_t down_scale);
+#endif
+
 static inline bool_t ms_video_size_greater_than(MSVideoSize vs1, MSVideoSize vs2){
 	return (vs1.width>=vs2.width) && (vs1.height>=vs2.height);
 }
@@ -273,6 +302,29 @@ MS2_PUBLIC void ms_scaler_context_free(MSScalerContext *ctx);
 
 MS2_PUBLIC void ms_video_set_scaler_impl(MSScalerDesc *desc);
 
+MS2_PUBLIC mblk_t *copy_ycbcrbiplanar_to_true_yuv_with_rotation(uint8_t* y, uint8_t* cbcr, int rotation, int w, int h, int y_byte_per_row,int cbcr_byte_per_row, bool_t uFirstvSecond);
+
+/*** Encoder Helpers ***/
+/* Frame rate controller */
+struct _MSFrameRateController {
+	unsigned int start_time;
+	int th_frame_count;
+	float fps;
+};
+typedef struct _MSFrameRateController MSFrameRateController;
+MS2_PUBLIC void ms_video_init_framerate_controller(MSFrameRateController* ctrl, float fps);
+MS2_PUBLIC bool_t ms_video_capture_new_frame(MSFrameRateController* ctrl, uint32_t current_time);
+
+/* Average FPS calculator */
+struct _MSAverageFPS {
+	unsigned int last_frame_time, last_print_time;
+	float mean_inter_frame;
+	const char* context;
+};
+typedef struct _MSAverageFPS MSAverageFPS;
+MS2_PUBLIC void ms_video_init_average_fps(MSAverageFPS* afps, const char* context);
+MS2_PUBLIC bool_t ms_video_update_average_fps(MSAverageFPS* afps, uint32_t current_time);
+
 #ifdef __cplusplus
 }
 #endif
@@ -288,6 +340,5 @@ MS2_PUBLIC void ms_video_set_scaler_impl(MSScalerDesc *desc);
 
 /* request a video-fast-update (=I frame for H263,MP4V-ES) to a video encoder*/
 #define MS_FILTER_REQ_VFU		MS_FILTER_BASE_METHOD_NO_ARG(106)
-
 
 #endif

@@ -92,10 +92,23 @@ typedef struct _RtpTransport
 	int  (*t_sendto)(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 	int  (*t_recvfrom)(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
 	struct _RtpSession *session;//<back pointer to the owning session, set by oRTP
+	void  (*t_close)(struct _RtpTransport *transport, void *userData);
 }  RtpTransport;
 
+typedef struct _OrtpNetworkSimulatorParams{
+	int enabled;
+	float max_bandwidth; /*IP bandwidth, in bit/s*/
+	float loss_rate;
+}OrtpNetworkSimulatorParams;
 
-	
+typedef struct _OrtpNetworkSimulatorCtx{
+	OrtpNetworkSimulatorParams params;
+	int bit_budget;
+	int qsize;
+	queue_t q;
+	struct timeval last_check;
+}OrtpNetworkSimulatorCtx;
+
 typedef struct _RtpStream
 {
 	ortp_socket_t socket;
@@ -133,9 +146,6 @@ typedef struct _RtpStream
 	uint32_t last_rcv_SR_ts;     /* NTP timestamp (middle 32 bits) of last received SR */
 	struct timeval last_rcv_SR_time;   /* time at which last SR was received  */
 	uint16_t snd_seq; /* send sequence number */
-	uint32_t last_rtcp_report_snt_r;	/* the time of the last rtcp report sent, in recv timestamp unit */
-	uint32_t last_rtcp_report_snt_s;	/* the time of the last rtcp report sent, in send timestamp unit */
-	uint32_t rtcp_report_snt_interval; /* the interval in timestamp unit between rtcp report sent */
 	uint32_t last_rtcp_packet_count; /*the sender's octet count in the last sent RTCP SR*/
 	uint32_t sent_payload_bytes; /*used for RTCP sender reports*/
 	unsigned int sent_bytes; /* used for bandwidth estimation */
@@ -148,6 +158,7 @@ typedef struct _RtpStream
 	int snd_socket_size;
 	int rcv_socket_size;
 	int ssrc_changed_thres;
+	jitter_stats_t jitter_stats;
 }RtpStream;
 
 typedef struct _RtcpStream
@@ -162,6 +173,11 @@ typedef struct _RtcpStream
 	struct sockaddr_in rem_addr;
 #endif
 	int rem_addrlen;
+	int interval;
+	uint32_t last_rtcp_report_snt_r;	/* the time of the last rtcp report sent, in recv timestamp unit */
+	uint32_t last_rtcp_report_snt_s;	/* the time of the last rtcp report sent, in send timestamp unit */
+	uint32_t rtcp_report_snt_interval_r; /* the interval in timestamp unit for receive path between rtcp report sent */
+	uint32_t rtcp_report_snt_interval_s; /* the interval in timestamp unit for send path between rtcp report sent */
 	bool_t enabled; /*tells whether we can send RTCP packets */
 } RtcpStream;
 
@@ -180,12 +196,12 @@ struct _RtpSession
 {
 	RtpSession *next;	/* next RtpSession, when the session are enqueued by the scheduler */
 	int mask_pos;	/* the position in the scheduler mask of RtpSession : do not move this field: it is part of the ABI since the session_set macros use it*/
-        struct {
-	  RtpProfile *profile;
-	  int pt;
-	  unsigned int ssrc;
-	  WaitPoint wp;
-	  int telephone_events_pt;	/* the payload type used for telephony events */
+	struct {
+		RtpProfile *profile;
+		int pt;
+		unsigned int ssrc;
+		WaitPoint wp;
+		int telephone_events_pt;	/* the payload type used for telephony events */
 	} snd,rcv;
 	unsigned int inc_ssrc_candidate;
 	int inc_same_ssrc_count;
@@ -217,6 +233,11 @@ struct _RtpSession
 	mblk_t *current_tev;		/* the pending telephony events */
 	mblk_t *sd;
 	queue_t contributing_sources;
+	unsigned int lost_packets_test_vector;
+	unsigned int interarrival_jitter_test_vector;
+	unsigned int delay_test_vector;
+	float rtt;/*last round trip delay calculated*/
+	OrtpNetworkSimulatorCtx *net_sim_ctx;
 	bool_t symmetric_rtp;
 	bool_t permissive; /*use the permissive algorithm*/
 	bool_t use_connect; /* use connect() on the socket */
@@ -244,6 +265,8 @@ RtpProfile *rtp_session_get_recv_profile(RtpSession *session);
 int rtp_session_signal_connect(RtpSession *session,const char *signal_name, RtpCallback cb, unsigned long user_data);
 int rtp_session_signal_disconnect_by_callback(RtpSession *session,const char *signal_name, RtpCallback cb);
 void rtp_session_set_ssrc(RtpSession *session, uint32_t ssrc);
+uint32_t rtp_session_get_send_ssrc(RtpSession* session);
+uint32_t rtp_session_get_recv_ssrc(RtpSession *session);
 void rtp_session_set_seq_number(RtpSession *session, uint16_t seq);
 uint16_t rtp_session_get_seq_number(RtpSession *session);
 
@@ -304,6 +327,8 @@ void rtp_session_set_connected_mode(RtpSession *session, bool_t yesno);
 
 void rtp_session_enable_rtcp(RtpSession *session, bool_t yesno);
 
+void rtp_session_set_rtcp_report_interval(RtpSession *session, int value_ms);
+
 void rtp_session_set_ssrc_changed_threshold(RtpSession *session, int numpackets);
 
 /*low level recv and send functions */
@@ -336,6 +361,7 @@ void rtp_session_reset(RtpSession *session);
 void rtp_session_destroy(RtpSession *session);
 
 const rtp_stats_t * rtp_session_get_stats(const RtpSession *session);
+const jitter_stats_t * rtp_session_get_jitter_stats( const RtpSession *session );
 void rtp_session_reset_stats(RtpSession *session);
 
 void rtp_session_set_data(RtpSession *session, void *data);
@@ -371,6 +397,15 @@ void rtp_session_clear_send_error_code(RtpSession *session);
 int rtp_session_get_last_recv_error_code(RtpSession *session);
 void rtp_session_clear_recv_error_code(RtpSession *session);
 
+
+float rtp_session_get_round_trip_propagation(RtpSession *session);
+
+
+void rtp_session_enable_network_simulation(RtpSession *session, const OrtpNetworkSimulatorParams *params);
+void rtp_session_rtcp_set_lost_packet_value( RtpSession *session, const unsigned int value );
+void rtp_session_rtcp_set_jitter_value(RtpSession *session, const unsigned int value );
+void rtp_session_rtcp_set_delay_value(RtpSession *session, const unsigned int value );
+mblk_t * rtp_session_pick_with_cseq (RtpSession * session, const uint16_t sequence_number);
 /*private */
 void rtp_session_init(RtpSession *session, int mode);
 #define rtp_session_set_flag(session,flag) (session)->flags|=(flag)

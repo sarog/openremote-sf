@@ -23,7 +23,7 @@
 
 #include <ortp/port.h>
 
-#define RTCP_MAX_RECV_BUFSIZE 1024
+#define RTCP_MAX_RECV_BUFSIZE 1500
 
 #define RTCP_SENDER_INFO_SIZE 20
 #define RTCP_REPORT_BLOCK_SIZE 24
@@ -48,14 +48,14 @@ typedef enum {
 typedef struct rtcp_common_header
 {
 #ifdef ORTP_BIGENDIAN
-        uint16_t version:2;
-        uint16_t padbit:1;
-        uint16_t rc:5;
-        uint16_t packet_type:8;
+	uint16_t version:2;
+	uint16_t padbit:1;
+	uint16_t rc:5;
+	uint16_t packet_type:8;
 #else
-        uint16_t rc:5;
-        uint16_t padbit:1;
-        uint16_t version:2;
+	uint16_t rc:5;
+	uint16_t padbit:1;
+	uint16_t version:2;
 	uint16_t packet_type:8;
 #endif
         uint16_t length:16;
@@ -200,7 +200,8 @@ struct _RtpSession;
 void rtp_session_rtcp_process_send(struct _RtpSession *s);
 void rtp_session_rtcp_process_recv(struct _RtpSession *s);
 
-#define RTCP_DEFAULT_REPORT_INTERVAL 5
+
+#define RTCP_DEFAULT_REPORT_INTERVAL 5000 /*ms*/
 
 
 /* packet parsing api */

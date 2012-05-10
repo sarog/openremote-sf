@@ -47,6 +47,7 @@ extern "C"{
 #define PAYLOAD_AUDIO_CONTINUOUS 0
 #define PAYLOAD_AUDIO_PACKETIZED 1
 #define PAYLOAD_VIDEO 2
+#define PAYLOAD_TEXT 4
 #define PAYLOAD_OTHER 3  /* ?? */
 
 struct _PayloadType
@@ -175,6 +176,10 @@ VAR_DECLSPEC PayloadType payload_type_g726_40;
 VAR_DECLSPEC PayloadType payload_type_g726_32;
 VAR_DECLSPEC PayloadType payload_type_g726_24;
 VAR_DECLSPEC PayloadType payload_type_g726_16;
+VAR_DECLSPEC PayloadType payload_type_aal2_g726_40;
+VAR_DECLSPEC PayloadType payload_type_aal2_g726_32;
+VAR_DECLSPEC PayloadType payload_type_aal2_g726_24;
+VAR_DECLSPEC PayloadType payload_type_aal2_g726_16;
 VAR_DECLSPEC PayloadType payload_type_gsm;
 VAR_DECLSPEC PayloadType payload_type_lpc;
 VAR_DECLSPEC PayloadType payload_type_lpc1015;
@@ -187,8 +192,12 @@ VAR_DECLSPEC PayloadType payload_type_amrwb;
 VAR_DECLSPEC PayloadType payload_type_truespeech;
 VAR_DECLSPEC PayloadType payload_type_evrc0;
 VAR_DECLSPEC PayloadType payload_type_evrcb0;
+VAR_DECLSPEC PayloadType payload_type_silk_nb;	
+VAR_DECLSPEC PayloadType payload_type_silk_mb;
+VAR_DECLSPEC PayloadType payload_type_silk_wb;
+VAR_DECLSPEC PayloadType payload_type_silk_swb;
 
-/* video */
+	/* video */
 VAR_DECLSPEC PayloadType payload_type_mpv;
 VAR_DECLSPEC PayloadType payload_type_h261;
 VAR_DECLSPEC PayloadType payload_type_h263;
@@ -199,9 +208,13 @@ VAR_DECLSPEC PayloadType payload_type_theora;
 VAR_DECLSPEC PayloadType payload_type_h264;
 VAR_DECLSPEC PayloadType payload_type_x_snow;
 VAR_DECLSPEC PayloadType payload_type_jpeg;
+VAR_DECLSPEC PayloadType payload_type_vp8;
 
-VAR_DECLSPEC PayloadType payload_type_t140;
 VAR_DECLSPEC PayloadType payload_type_g722;
+
+/* text */
+VAR_DECLSPEC PayloadType payload_type_t140;
+VAR_DECLSPEC PayloadType payload_type_t140_red;
 
 /* non standard file transfer over UDP */
 VAR_DECLSPEC PayloadType payload_type_x_udpftp;

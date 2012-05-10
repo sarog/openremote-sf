@@ -74,8 +74,8 @@
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define ENGINESDIR "/usr/local/ssl/lib/engines"
-#define OPENSSLDIR "/usr/local/ssl"
+#define ENGINESDIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/lib/engines"
+#define OPENSSLDIR "/Users/ebr/Development/OpenRemote/linphone-iphone/submodules/build/..//../liblinphone-sdk/armv6-apple-darwin/ssl"
 #endif
 #endif
 
