@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseCommand;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.protocol.enocean.port.MockPort;
@@ -90,7 +91,7 @@ public class Esp3ProcessorTest
     processor.stop();
     processor.start();
 
-    Esp3CoRdIdBase cmd = new Esp3CoRdIdBase();
+    Esp3RdIDBaseCommand cmd = new Esp3RdIDBaseCommand();
 
     cmd.send(processor);
 
@@ -98,7 +99,7 @@ public class Esp3ProcessorTest
         new byte[] {(byte)0xFF, (byte)0x80, (byte)0x00, (byte)0x00}
     );
 
-    DeviceID receivedID = cmd.getDeviceID();
+    DeviceID receivedID = cmd.getBaseID();
 
     Assert.assertEquals(expectedID, receivedID);
   }

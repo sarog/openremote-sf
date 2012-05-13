@@ -27,7 +27,7 @@ package org.openremote.controller.protocol.enocean.packet;
  * as follows: <p>
  *
  * <pre>
- *   |----------------------   Header  --------------------|
+ *            |-------------   Header - ----------|
  *   +--------+-----------------+--------+--------+--------+----...-----+----...-----+--------+
  *   |  Sync  |      Data       |Optional| Packet |  CRC8  |    Data    |  Optional  |  CRC8  |
  *   |  Byte  |     Length      | Length |  Type  | Header |            |    Data    |  Data  |
@@ -154,6 +154,35 @@ public class Esp3Packet implements EspPacket
     return header.getPacketType();
   }
 
+  /**
+   * Returns a copy of the data group.
+   *
+   * @return data group copy
+   */
+  public byte[] getData()
+  {
+    if(data == null)
+    {
+      return new byte[] {};
+    }
+
+    return data.clone();
+  }
+
+  /**
+   * Returns a copy of the optional data group.
+   *
+   * @return optional data group copy
+   */
+  public byte[] getOptionalData()
+  {
+    if(optionalData == null)
+    {
+      return new byte[] {};
+    }
+
+    return optionalData.clone();
+  }
 
   // Nested Classes -------------------------------------------------------------------------------
 

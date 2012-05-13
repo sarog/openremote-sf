@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean.packet;
 
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.ConnectionException;
+import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.port.EspPort;
 
 import java.util.Deque;
@@ -141,8 +142,10 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
 
     if(response == null)
     {
-      // TODO : exception
-      return null;
+      throw new EspException(
+          EspException.ErrorCode.RESP_TIMEOUT,
+          "Failed to send request because of response timeout."
+      );
     }
 
     return response;

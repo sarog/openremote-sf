@@ -301,19 +301,11 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
      */
     private Esp3Packet createResponsePacket(byte[] data, byte[] optionalData)
     {
-      Esp3ResponsePacket responsePacket = null;
+      Esp3Packet responsePacket = null;
 
-      try
-      {
-        responsePacket = new Esp3ResponsePacket(data, optionalData);
-      }
-      catch (Esp3ResponsePacket.UnknownReturnCodeException e)
-      {
-        // TODO : log - new ProtocolException ?
-      }
+      responsePacket = new Esp3Packet(Esp3PacketHeader.PacketType.RESPONSE, data, optionalData);
 
       return responsePacket;
     }
   }
-
 }
