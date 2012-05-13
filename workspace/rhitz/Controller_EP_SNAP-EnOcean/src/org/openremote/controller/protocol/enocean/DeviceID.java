@@ -188,7 +188,7 @@ public class DeviceID
    *
    * @return a new device ID instance
    */
-  public static DeviceID fromByteArray(byte[] deviceIDBytes) throws InvalidDeviceIDException
+  public static DeviceID fromByteArray(byte[] deviceIDBytes)
   {
     if(deviceIDBytes == null)
     {
