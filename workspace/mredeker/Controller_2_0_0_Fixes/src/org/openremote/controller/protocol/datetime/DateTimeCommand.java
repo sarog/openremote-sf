@@ -173,7 +173,7 @@ public class DateTimeCommand implements EventListener, Runnable {
             sensor.update(readValue);
          }
          try {
-            Thread.sleep(1000); // We recalculate every second
+            Thread.sleep(60000); // We recalculate every minute
          } catch (InterruptedException e) {
             this.doPoll = false;
             pollingThread.interrupt();
