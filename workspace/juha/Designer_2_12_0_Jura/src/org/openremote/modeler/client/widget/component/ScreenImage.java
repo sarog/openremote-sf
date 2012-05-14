@@ -85,11 +85,6 @@ public class ScreenImage extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-      return;
-   }
-
-   @Override
    public String getName() {
       return uiImage.getName();
    }

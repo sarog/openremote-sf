@@ -125,12 +125,6 @@ public class ScreenTabbar extends ScreenComponent {
    }
 
    @Override
-   public void setName(String name) {
-      // TODO Auto-generated method stub
-      
-   }
-   
-   @Override
    public PropertyForm getPropertiesForm() {
       return new TabbarPropertyForm(this);
    }

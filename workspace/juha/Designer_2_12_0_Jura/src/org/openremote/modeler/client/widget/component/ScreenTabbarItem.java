@@ -71,7 +71,7 @@ public class ScreenTabbarItem extends ScreenComponent {
       return uiTabbarItem.getName();
    }
 
-   @Override
+   // TODO EBR : must get rid of this one to, review the PropertyForm for this
    public void setName(String name) {
       uiTabbarItem.setName(name);
       center.setText(name);

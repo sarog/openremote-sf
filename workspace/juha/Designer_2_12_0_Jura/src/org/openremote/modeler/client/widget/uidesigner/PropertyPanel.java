@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+
 import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.utils.PropertyEditable;
@@ -55,27 +57,35 @@ public class PropertyPanel extends ContentPanel {
    /**
     * Update the panel's content follow with different component.
     */
-   public void update(ComponentContainer component) {
-      if (component == null) {
+   private void update(List<ComponentContainer> components) {
+      if (components.isEmpty()) {
          removePropertiesForm();
          setHeading("Properties");
          layout();
          return;
       }
-      if (!component.equals(currentLayoutContainer)) {
-         currentLayoutContainer =  component;
-         if (component instanceof GridLayoutContainerHandle) {
-            addPropertiesForm(component);
-            currentLayoutContainer = null;
-         /*} else if (component.getParent() instanceof ScreenTabItem) {
-            addScreenPairPropertyForm(component);
-          */
-         }else {
-            addPropertiesForm(component);
-         } 
-         layout();
+      if (components.size() > 1) {
+        removePropertiesForm();
+        setHeading("Multiple selection");
+        layout();
+        return;
+      } else {
+        ComponentContainer component = components.get(0);
+        // TODO EBR : re-check this test, does not seem to work
+        if (!component.equals(currentLayoutContainer)) {
+           currentLayoutContainer =  component;
+           if (component instanceof GridLayoutContainerHandle) {
+              addPropertiesForm(component);
+              currentLayoutContainer = null;
+           /*} else if (component.getParent() instanceof ScreenTabItem) {
+              addScreenPairPropertyForm(component);
+            */
+           }else {
+              addPropertiesForm(component);
+           } 
+           layout();
+        }
       }
-
    }
    
    public void setPropertyForm(PropertyEditable propertyEditable) {

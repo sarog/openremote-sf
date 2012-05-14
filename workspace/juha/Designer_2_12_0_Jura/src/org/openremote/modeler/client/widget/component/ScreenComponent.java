@@ -37,11 +37,6 @@ public abstract class ScreenComponent extends ComponentContainer {
       super(screenCanvas);
    }
 
-   /**
-    * Sets the display name.
-    */
-   public abstract void setName(String name);
-
    public abstract String getName();
 
    /**

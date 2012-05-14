@@ -9,14 +9,8 @@
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate3.jar"/>
-	<classpathentry kind="lib" path="lib/core/jboss/archive-browsing/jboss-archive-browsing.jar"/>
-	<classpathentry kind="lib" path="lib/core/jboss/serialization/jboss-serialization.jar"/>
-	<classpathentry kind="lib" path="lib/core/mysql-connector/mysql-connector-java-5.0.3-bin.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-2.0.8.jar" sourcepath="E:/src/spring2.0"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/core/sun/activation.jar"/>
-	<classpathentry kind="lib" path="lib/core/sun/ejb3-persistence.jar"/>
-	<classpathentry kind="lib" path="lib/core/sun/jta.jar"/>
 	<classpathentry kind="lib" path="lib/core/trove/trove.jar"/>
 	<classpathentry kind="lib" path="lib/test/hsqldb/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit-4.5.jar"/>
@@ -24,8 +18,6 @@
 	<classpathentry kind="lib" path="lib/test/testng/testng-5.9-jdk15.jar" sourcepath="D:/Javen/src/testNG_source.jar"/>
 	<classpathentry kind="lib" path="lib/test/selenium/selenium-java-client-driver.jar"/>
 	<classpathentry kind="lib" path="lib/core/xmlparser/jaxen-1.1-beta-9.jar"/>
-	<classpathentry kind="lib" path="lib/core/xmlparser/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/core/xmlparser/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/core/velocity/velocity-1.6.2-dep.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
@@ -63,5 +55,7 @@
 	<classpathentry kind="lib" path="lib/core/apache-commons/logging-1.1/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/pool-1.2/commons-pool.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt/gxt-2.2.5-gwt22.jar"/>
+	<classpathentry kind="lib" path="lib/core/gwt-dispatch/gwt-dispatch-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/gin/gin-1.5-post-gwt-2.2.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

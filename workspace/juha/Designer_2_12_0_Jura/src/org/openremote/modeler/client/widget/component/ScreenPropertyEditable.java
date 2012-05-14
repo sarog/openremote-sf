@@ -19,16 +19,15 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyEditForm;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.event.shared.HandlerManager;
 
 /**
  * The class make the screenPair be edit in property form.
@@ -43,19 +42,15 @@ public class ScreenPropertyEditable implements PropertyEditable {
    private ScreenPair screen = null;
    private ScreenPairRef screenPairRef = null;
 
-   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
-   private TreePanel<BeanModel> profileTree = null;
+   private HandlerManager eventBus;
 
-   /** The screen tab is in the page center part for editing screen components. */
-   private ScreenTab screenTab = null;
-   
    public ScreenPropertyEditable() {
    }
 
-   public ScreenPropertyEditable(ScreenPairRef screenPairRef, TreePanel<BeanModel> profileTree) {
+   public ScreenPropertyEditable(ScreenPairRef screenPairRef, HandlerManager eventBus) {
       this.screenPairRef = screenPairRef;
       this.screen = screenPairRef.getScreen();
-      this.profileTree = profileTree;
+      this.eventBus = eventBus;
    }
 
    public void setName(String name) {
@@ -72,19 +67,15 @@ public class ScreenPropertyEditable implements PropertyEditable {
          return "";
       }
    }
-
-   public void setScreenTab(ScreenTab screenTab) {
-      this.screenTab = screenTab;
-   }
    
    @Override
    public PropertyForm getPropertiesForm() {
-      return new ScreenPropertyEditForm(this, screenPairRef.getScreen(), screenTab);
+      return new ScreenPropertyEditForm(this, screenPairRef.getScreen());
    }
 
-   private void updateScreen() {
-      profileTree.getStore().update(screenPairRef.getBeanModel());
-      BeanModelDataBase.screenTable.update(screen.getBeanModel());
+   public void updateScreen() {
+     eventBus.fireEvent(new UIElementEditedEvent(screenPairRef));     
+     BeanModelDataBase.screenTable.update(screen.getBeanModel());
    }
 
    @Override

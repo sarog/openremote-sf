@@ -55,7 +55,6 @@ public class ScreenPanel extends LayoutContainer {
       setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
       addListeners();
-      addInsertListener();
    }
 
    /**
@@ -111,30 +110,60 @@ public class ScreenPanel extends LayoutContainer {
                   remove(screenTab);
                   screenItem = null;
                } else if (event.getType() == BeanModelTable.UPDATE) {
-                  screenTab.updateTouchPanel();
+                 ScreenPair screenPair = ((BeanModel)event.getItem()).getBean();
+                 
+                 // Ensure tabs portrait/landscape are correct based on object model
+                 switch (screenPair.getOrientation()) {
+                   case PORTRAIT:
+                   {
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).disable();
+                     }
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) == null) {
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                     } else {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).enable();
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+                     break;
+                   }
+                   case LANDSCAPE:
+                   {
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).disable();
+                     }
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) == null) {
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                     } else {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.LANDSCAPE));
+                     break;
+                   }
+                   case BOTH:
+                   {
+                     if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
+                       screenTab.getItemByItemId(Constants.PORTRAIT).enable();
+                     } else {
+                       screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
+                     }
+                     if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
+                       screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
+                     } else {
+                       screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
+                     }
+                     screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+                     break;
+                   }                  
+                 }
+
+                 screenTab.updateTouchPanel();
                }
             }
          };
          changeListenerMap.put(screenTab, changeListener);
       }
       return changeListener;
-   }
-   
-   /**
-    * Adds the insert listener.
-    */
-   private void addInsertListener() {
-      BeanModelDataBase.screenTable.addInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
-         public void modelChanged(ChangeEvent event) {
-            if (event.getType() == BeanModelTable.ADD) {
-               BeanModel beanModel = (BeanModel) event.getItem();
-               if (beanModel.getBean() instanceof ScreenPair) {
-                  setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
-               }
-            }
-         }
-
-      });
    }
    
    /**
