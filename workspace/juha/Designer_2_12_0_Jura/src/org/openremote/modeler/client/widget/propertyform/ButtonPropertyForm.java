@@ -77,7 +77,14 @@ public class ButtonPropertyForm extends PropertyForm {
       name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            screenButton.setName(name.getValue());
+           // TODO - EBR : Setting the name on the screen button (displayed widget) so that the setter will modify
+           // the UIButton (object model) as a side effect is bad design.
+           // Call here should only change model and other visual representations should update because they listen to changes on the bus.
+//            screenButton.setName(name.getValue());
+            
+            
+            uiButton.setName(name.getValue());
+            screenButton.adjustTextLength();
          }
       });
       
@@ -235,12 +242,15 @@ public class ButtonPropertyForm extends PropertyForm {
       add(navigateSet);
       
    }
+
    /**
     * @param screenButton
     * @param imageSource
     * @return
     */
    private IconPreviewWidget createIconPreviewWidget(final ScreenButton screenButton, final ImageSource imageSource) {
+     // TODO EBR : UIButton should be passed instead of ScreenButton, but UIButton does not have width/height
+     // The Absolute it is part of has or it can compute it via Cell/Grid
       IconPreviewWidget previewWidget = new IconPreviewWidget(screenButton.getWidth(), screenButton.getHeight());
       previewWidget.setText(screenButton.getName());
       if (imageSource != null) {

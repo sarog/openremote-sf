@@ -19,11 +19,8 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
-import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
@@ -44,14 +41,12 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  */
 public class ScreenPropertyEditForm extends PropertyForm {
    private ScreenPropertyEditable editor = null;
-   private ScreenTab screenTab = null;
    private ScreenPair screenPair = null;
-   public ScreenPropertyEditForm(ScreenPropertyEditable editor, ScreenPair screenPair, ScreenTab screenTab) {
+   public ScreenPropertyEditForm(ScreenPropertyEditable editor, ScreenPair screenPair) {
       super(editor);
       setFieldWidth(130);
       this.editor = editor;
       this.screenPair = screenPair;
-      this.screenTab = screenTab;
       addFields();
       show();
    }
@@ -113,16 +108,8 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screen.setName(screenPair.getName());
                   screenPair.setPortraitScreen(screen);
                }
-               screenPair.getPortraitScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition());
-               if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
-                  screenTab.getItemByItemId(Constants.LANDSCAPE).disable();
-               }
-               if (screenTab.getItemByItemId(Constants.PORTRAIT) == null) {
-                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
-               } else {
-                  screenTab.getItemByItemId(Constants.PORTRAIT).enable();
-               }
-               screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+               screenPair.getPortraitScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition());               
+               editor.updateScreen();
             } else if (OrientationType.LANDSCAPE.toString().equals(radio.getValueAttribute())) {
                screenPair.setOrientation(OrientationType.LANDSCAPE);
                if (screenPair.getLandscapeScreen() == null) {
@@ -133,15 +120,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screenPair.setLandscapeScreen(screen);
                }
                screenPair.getLandscapeScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition().getHorizontalDefinition());
-               if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
-                  screenTab.getItemByItemId(Constants.PORTRAIT).disable();
-               }
-               if (screenTab.getItemByItemId(Constants.LANDSCAPE) == null) {
-                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
-               } else {
-                  screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
-               }
-               screenTab.setSelection(screenTab.getItemByItemId(Constants.LANDSCAPE));
+               editor.updateScreen();
             } else if (OrientationType.BOTH.toString().equals(radio.getValueAttribute())) {
                screenPair.setOrientation(OrientationType.BOTH);
                if (screenPair.getPortraitScreen() == null) {
@@ -157,18 +136,8 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screen.setName(screenPair.getName());
                   screenPair.setLandscapeScreen(screen);
                }
-               screenPair.getLandscapeScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition().getHorizontalDefinition());
-               if (screenTab.getItemByItemId(Constants.PORTRAIT) != null) {
-                  screenTab.getItemByItemId(Constants.PORTRAIT).enable();
-               } else {
-                  screenTab.insert(new ScreenTabItem(screenPair.getPortraitScreen()), 0);
-               }
-               if (screenTab.getItemByItemId(Constants.LANDSCAPE) != null) {
-                  screenTab.getItemByItemId(Constants.LANDSCAPE).enable();
-               } else {
-                  screenTab.add(new ScreenTabItem(screenPair.getLandscapeScreen()));
-               }
-               screenTab.setSelection(screenTab.getItemByItemId(Constants.PORTRAIT));
+               screenPair.getLandscapeScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition().getHorizontalDefinition());               
+               editor.updateScreen();
             }
             screenPair.clearInverseScreenIds();
          }

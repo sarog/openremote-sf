@@ -80,11 +80,6 @@ public class ScreenLabel extends ScreenComponent {
       adjustTextLength();
    }
 
-   @Override
-   public void setName(String name) {
-      return;
-   }
-
    public UILabel getUiLabel() {
       return uiLabel;
    }

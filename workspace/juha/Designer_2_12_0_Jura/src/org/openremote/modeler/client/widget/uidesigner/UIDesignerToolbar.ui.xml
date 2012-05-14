@@ -1,0 +1,44 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.toolbarButtons {
+			float: left;
+			margin: 0px 4px 0px 4px;
+		}
+	</ui:style>
+	<ui:with field='resources'
+		type='org.openremote.modeler.client.icon.IconResources' />
+	<g:FlowPanel>
+		<g:PushButton ui:field="horizontalLeftAlignButton" width="32px"
+			addStyleNames='{style.toolbarButtons}'>
+			<g:upFace image='{resources.horizontalLeftAlignIcon}' />
+			<g:downFace image='{resources.horizontalLeftAlignIcon}' />
+		</g:PushButton>
+		<g:PushButton ui:field="horizontalCenterAlignButton" width="32px"
+			addStyleNames='{style.toolbarButtons}'>
+			<g:upFace image='{resources.horizontalCenterAlignIcon}' />
+			<g:downFace image='{resources.horizontalCenterAlignIcon}' />
+		</g:PushButton>
+    <g:PushButton ui:field="horizontalRightAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.horizontalRightAlignIcon}' />
+      <g:downFace image='{resources.horizontalRightAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalTopAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalTopAlignIcon}' />
+      <g:downFace image='{resources.verticalTopAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalCenterAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalCenterAlignIcon}' />
+      <g:downFace image='{resources.verticalCenterAlignIcon}' />
+    </g:PushButton>
+    <g:PushButton ui:field="verticalBottomAlignButton" width="32px"
+      addStyleNames='{style.toolbarButtons}'>
+      <g:upFace image='{resources.verticalBottomAlignIcon}' />
+      <g:downFace image='{resources.verticalBottomAlignIcon}' />
+    </g:PushButton>
+	</g:FlowPanel>
+</ui:UiBinder> 
