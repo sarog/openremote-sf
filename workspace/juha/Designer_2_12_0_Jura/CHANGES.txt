@@ -2,7 +2,17 @@
 Designer 2.12.0 (2012-XX-XX Jura)
 =================================
 
-- TODO
+ - Fix for an UI issue where elements in a template
+   tree were not shown on first time the window
+   was opened (MODELER-262)
+ - Multiple elements in the UI designer can be selected
+   at the same time (using SHIFT key) for aggregate
+   operations
+ - Selected elements can be moved with arrow keys instead
+   of mouse drag for more precise control (MODELER-272, MODELER-273)
+ - UI Designer view has a toolbar for component alignment
+   functions (MODELER-276)
+ - 
 
 
 Designer 2.11.3 (2012-03-25 Formosa)
