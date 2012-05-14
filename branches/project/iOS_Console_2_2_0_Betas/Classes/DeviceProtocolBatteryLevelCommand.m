@@ -48,6 +48,7 @@
 
 - (NSString *)sensorValue
 {
+    // ! The batteryLevel property value has a 5% precision and the change notifications is only sent when that value changes
     return [NSString stringWithFormat:@"%d", (int)([UIDevice currentDevice].batteryLevel * 100.0)];
 }
 
