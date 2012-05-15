@@ -49,8 +49,8 @@ public class TabbarItemPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;
    private ScreenTabbarItem screenTabbarItem = null;
    
-   public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem) {
-      super(screenTabbarItem);
+   public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenTabbarItem, widgetSelectionUtil);
       this.screenTabbarItem = screenTabbarItem;
       addFields();
       addSubmitListenersToForm();
@@ -82,8 +82,8 @@ public class TabbarItemPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             if (screenTabbarItem.getImageSource().getSrc() != null) {
                screenTabbarItem.removeImage();
-               WidgetSelectionUtil.setSelectWidget(null);
-               WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
+//               WidgetSelectionUtil.setSelectWidget(null);
+               widgetSelectionUtil.setSelectWidget(screenTabbarItem);
             }
          }
          

@@ -27,7 +27,7 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class make the group be edit in property form.
@@ -42,12 +42,12 @@ public class GroupPropertyEditable implements PropertyEditable {
    private Group group = null;
    private GroupRef groupRef = null;
 
-   private HandlerManager eventBus;
+   private EventBus eventBus;
    
    public GroupPropertyEditable() {
    }
 
-   public GroupPropertyEditable(GroupRef groupRef, HandlerManager eventBus) {
+   public GroupPropertyEditable(GroupRef groupRef, EventBus eventBus) {
       this.groupRef = groupRef;
       this.group = groupRef.getGroup();
       this.eventBus = eventBus;

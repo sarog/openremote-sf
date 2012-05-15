@@ -59,14 +59,14 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 public class ProfilePanelPresenter implements Presenter {
   
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   private ProfilePanel view;
   
-  public ProfilePanelPresenter(HandlerManager eventBus, ProfilePanel view) {
+  public ProfilePanelPresenter(EventBus eventBus, ProfilePanel view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

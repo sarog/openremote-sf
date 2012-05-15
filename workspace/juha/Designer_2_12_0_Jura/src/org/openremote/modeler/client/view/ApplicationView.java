@@ -35,6 +35,7 @@ import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Role;
@@ -63,7 +64,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -81,7 +82,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class ApplicationView implements View {
 
   /** Event bus used for communication throughout application */
-  private HandlerManager eventBus;
+  private EventBus eventBus;
 
    /** The viewport. */
    private Viewport viewport;
@@ -104,7 +105,7 @@ public class ApplicationView implements View {
    
    private Button exportButton;
    
-   public ApplicationView(HandlerManager eventBus) {
+   public ApplicationView(EventBus eventBus) {
     super();
     this.eventBus = eventBus;
   }
@@ -386,10 +387,11 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
+      WidgetSelectionUtil widgetSelectionUtil = new WidgetSelectionUtil(eventBus);
       if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
          this.buildingModelerView = new BuildingModelerView(eventBus);
-         this.uiDesignerView = new UIDesignerView();
-         this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
+         this.uiDesignerView = new UIDesignerView(widgetSelectionUtil);
+         this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView, widgetSelectionUtil);
          if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
             modelerContainer.add(uiDesignerView);
          } else {
@@ -399,8 +401,8 @@ public class ApplicationView implements View {
          this.buildingModelerView = new BuildingModelerView(eventBus);
          modelerContainer.add(buildingModelerView);
       } else if(roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
-        this.uiDesignerView = new UIDesignerView();
-        this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView);
+        this.uiDesignerView = new UIDesignerView(widgetSelectionUtil);
+        this.uiDesignerPresenter = new UIDesignerPresenter(eventBus, this.uiDesignerView, widgetSelectionUtil);
          modelerContainer.add(uiDesignerView);
       }
       

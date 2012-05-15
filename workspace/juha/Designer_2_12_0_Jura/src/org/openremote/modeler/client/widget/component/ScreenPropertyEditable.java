@@ -27,7 +27,7 @@ import org.openremote.modeler.client.widget.propertyform.ScreenPropertyEditForm;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class make the screenPair be edit in property form.
@@ -42,12 +42,12 @@ public class ScreenPropertyEditable implements PropertyEditable {
    private ScreenPair screen = null;
    private ScreenPairRef screenPairRef = null;
 
-   private HandlerManager eventBus;
+   private EventBus eventBus;
 
    public ScreenPropertyEditable() {
    }
 
-   public ScreenPropertyEditable(ScreenPairRef screenPairRef, HandlerManager eventBus) {
+   public ScreenPropertyEditable(ScreenPairRef screenPairRef, EventBus eventBus) {
       this.screenPairRef = screenPairRef;
       this.screen = screenPairRef.getScreen();
       this.eventBus = eventBus;

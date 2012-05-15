@@ -85,8 +85,8 @@ public class ScreenPropertyForm extends PropertyForm {
    private RadioGroup whetherFillScreen; 
    private ScreenCanvas canvas = null;
   
-   public ScreenPropertyForm(ScreenCanvas canvas) {
-      super(canvas);
+   public ScreenPropertyForm(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       this.canvas = canvas;
       createFields();
    }
@@ -296,8 +296,8 @@ public class ScreenPropertyForm extends PropertyForm {
             if (!"".equals(canvas.getScreen().getBackground().getImageSource().getSrc())) {
                setBackground("");
                // remove this form from property panel.
-               WidgetSelectionUtil.setSelectWidget(null);
-               WidgetSelectionUtil.setSelectWidget(canvas);
+//               WidgetSelectionUtil.setSelectWidget(null);
+               widgetSelectionUtil.setSelectWidget(canvas);
             }
          }
          

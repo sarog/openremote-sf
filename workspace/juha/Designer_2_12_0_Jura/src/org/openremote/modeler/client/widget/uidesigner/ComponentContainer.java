@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -31,9 +32,15 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
  */
 public class ComponentContainer extends LayoutContainer {
    private ScreenCanvas screenCanvas = null;
-   public ComponentContainer() {
+   
+   protected WidgetSelectionUtil widgetSelectionUtil;
+   
+   public ComponentContainer(WidgetSelectionUtil widgetSelectionUtil) {
+     this.widgetSelectionUtil = widgetSelectionUtil;
    }
-   public ComponentContainer(ScreenCanvas screenCanvas) {
+   
+   public ComponentContainer(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+     this(widgetSelectionUtil);
       this.screenCanvas = screenCanvas;
    }
 
@@ -50,7 +57,8 @@ public class ComponentContainer extends LayoutContainer {
    public void hideBackground() {
       screenCanvas.hideBackground();
    }
+   
    public PropertyForm getPropertiesForm() {
-      return new PropertyForm(this);
+      return new PropertyForm(this, widgetSelectionUtil);
    }
 }

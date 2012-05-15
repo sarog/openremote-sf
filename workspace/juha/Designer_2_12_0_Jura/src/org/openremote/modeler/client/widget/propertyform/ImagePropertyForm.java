@@ -72,8 +72,8 @@ public class ImagePropertyForm extends PropertyForm {
    
    private State customSensorState = null;
    
-   public ImagePropertyForm(ScreenImage screenImage) {
-      super(screenImage);
+   public ImagePropertyForm(ScreenImage screenImage, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenImage, widgetSelectionUtil);
       this.screenImage = screenImage;
       addFields(screenImage);
       addListenersToForm();
@@ -184,8 +184,8 @@ public class ImagePropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             if (!UIImage.DEFAULT_IMAGE_URL.equals(screenImage.getUiImage().getImageSource().getSrc())){
                screenImage.setImageSource(new ImageSource(UIImage.DEFAULT_IMAGE_URL));
-               WidgetSelectionUtil.setSelectWidget(null);
-               WidgetSelectionUtil.setSelectWidget(screenImage);
+//               WidgetSelectionUtil.setSelectWidget(null);
+               widgetSelectionUtil.setSelectWidget(screenImage);
             }
          }
       });

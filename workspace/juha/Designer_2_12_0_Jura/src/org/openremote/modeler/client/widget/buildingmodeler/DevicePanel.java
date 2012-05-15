@@ -83,7 +83,7 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -94,7 +94,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DevicePanel extends ContentPanel {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   
    /** The tree. */
    private TreePanel<BeanModel> tree;
@@ -110,7 +110,7 @@ public class DevicePanel extends ContentPanel {
    /**
     * Instantiates a new device panel.
     */
-   public DevicePanel(HandlerManager eventBus) {
+   public DevicePanel(EventBus eventBus) {
      this.eventBus = eventBus;
      bind();
       setHeading("Device");

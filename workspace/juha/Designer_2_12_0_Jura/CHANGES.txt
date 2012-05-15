@@ -2,17 +2,21 @@
 Designer 2.12.0 (2012-XX-XX Jura)
 =================================
 
- - Fix for an UI issue where elements in a template
-   tree were not shown on first time the window
-   was opened (MODELER-262)
+ - Fixes for UI issues where elements in a template
+   tree were not shown correctly (MODELER-262, MODELER-281)
  - Multiple elements in the UI designer can be selected
    at the same time (using SHIFT key) for aggregate
    operations
  - Selected elements can be moved with arrow keys instead
    of mouse drag for more precise control (MODELER-272, MODELER-273)
- - UI Designer view has a toolbar for component alignment
-   functions (MODELER-276)
- - 
+ - UI Designer view has a toolbar for component alignment and 
+   sizing functions (MODELER-276, MODELER-278)
+ - Fix for an issue with resizing columns in a grid (MODELER-260)
+ - Fix for an issue with buttons with empty names recreated
+   incorrectly using a default button name with templates
+   (MODELER-270)
+ - Autosave interval set to 5 minutes.
+ - Editing of groups works now (MODELER-283)  
 
 
 Designer 2.11.3 (2012-03-25 Formosa)

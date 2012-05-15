@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.component;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
@@ -42,13 +43,13 @@ public class ScreenSwitch extends ScreenComponent {
    /**
     * Instantiates a new screen button.
     */
-   public ScreenSwitch(ScreenCanvas canvas) {
-      super(canvas);
+   public ScreenSwitch(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(canvas, widgetSelectionUtil);
       initial();
    }
 
-   public ScreenSwitch(ScreenCanvas canvas, UISwitch uiSwitch) {
-      this(canvas);
+   public ScreenSwitch(ScreenCanvas canvas, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
+      this(canvas, widgetSelectionUtil);
       this.uiSwitch = uiSwitch;
       if (uiSwitch.getOnImage() != null) {
          setIcon(uiSwitch.getOnImage().getSrc());
@@ -71,7 +72,7 @@ public class ScreenSwitch extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new SwitchPropertyForm(this, uiSwitch);
+      return new SwitchPropertyForm(this, uiSwitch, widgetSelectionUtil);
    }
 
    public void setIcon(String icon) {

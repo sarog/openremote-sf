@@ -43,15 +43,15 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TemplatePanelPresenter implements Presenter, org.openremote.modeler.client.widget.uidesigner.TemplatePanel.Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   private TemplatePanel view;
   
-  public TemplatePanelPresenter(HandlerManager eventBus, TemplatePanel view) {
+  public TemplatePanelPresenter(EventBus eventBus, TemplatePanel view) {
     super();
     this.eventBus = eventBus;
     this.view = view;

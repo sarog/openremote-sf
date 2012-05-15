@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import com.google.gwt.user.client.ui.PushButton;
+
 public interface UIDesignerToolbar {
 
   public interface Presenter {
@@ -31,7 +33,27 @@ public interface UIDesignerToolbar {
     void onVerticalCenterAlignButtonClicked();
     void onVerticalBottomAlignButtonClicked();
     
+    void onSameSizeButtonClicked();
+    
+    void onHorizontalSpreadButtonClicked();
+    void onVerticalSpreadButtonClicked();
+    
+    void onHorizontalCenterButtonClicked();
+    void onVerticalCenterButtonClicked();
   }
   
   void setPresenter(Presenter presenter);
+  
+  PushButton getHorizontalLeftAlignButton();
+  PushButton getHorizontalCenterAlignButton();
+  PushButton getHorizontalRightAlignButton();
+  PushButton getVerticalTopAlignButton();
+  PushButton getVerticalCenterAlignButton();
+  PushButton getVerticalBottomAlignButton();
+  PushButton getSameSizeButton();
+  PushButton getHorizontalSpreadButton();
+  PushButton getVerticalSpreadButton();
+  PushButton getHorizontalCenterButton();
+  PushButton getVerticalCenterButton();
+  
 }
