@@ -22,27 +22,30 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
-import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The SelectedWidgetContainer for store selected widget and fire widgetSelectChange event.
  */
 public class WidgetSelectionUtil {
 
-   private WidgetSelectionUtil() {
+  private EventBus eventBus;
+  
+   private List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
+   
+   public WidgetSelectionUtil(EventBus eventBus) {
+    super();
+    this.eventBus = eventBus;
+  }
+   
+   public void resetSelection() {
+     setSelectWidget(null);
    }
    
-   private static List<ComponentContainer> selectedWidgets = new ArrayList<ComponentContainer>();
-   
-   private static WidgetSelectChangeListener widgetSelectChangeListener;
-   
-   public static void setChangeListener(WidgetSelectChangeListener listener) {
-      widgetSelectChangeListener = listener;
-   }
-   
-   public static void setSelectWidget(ComponentContainer selectedWidget) {
+   public void setSelectWidget(ComponentContainer selectedWidget) {
      for (ComponentContainer widget : selectedWidgets) {
        widget.removeStyleName("button-border");
      }
@@ -55,11 +58,10 @@ public class WidgetSelectionUtil {
         selectedWidgets.add(selectedWidget);
       }
 
-      // TODO - EBR : this should go through the event bus, not via a direct dependency
-      widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
+      eventBus.fireEvent(new WidgetSelectedEvent(selectedWidgets));
    }
 
-   public static void toggleSelectWidget(ComponentContainer selectedWidget) {
+   public void toggleSelectWidget(ComponentContainer selectedWidget) {
      if (selectedWidget != null) {
        if (selectedWidgets.contains(selectedWidget)) {
          selectedWidget.removeStyleName("button-border");
@@ -69,16 +71,15 @@ public class WidgetSelectionUtil {
          selectedWidgets.add(selectedWidget);
        }
        
-       // TODO - EBR : this should go through the event bus, not via a direct dependency
-       widgetSelectChangeListener.handleEvent(new WidgetSelectChangeEvent(selectedWidgets));
+       eventBus.fireEvent(new WidgetSelectedEvent(selectedWidgets));
      }
    }
    
-   public static List<ComponentContainer> getSelectedWidgets() {
+   public List<ComponentContainer> getSelectedWidgets() {
     return selectedWidgets;
   }
 
-  private static void selectWidget(ComponentContainer selectedWidget) {
+  private void selectWidget(ComponentContainer selectedWidget) {
      selectedWidget.addStyleName("button-border");
       
       // add tab index and focus it, for catch keyboard "delete" event in Firefox.

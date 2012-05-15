@@ -26,7 +26,7 @@ import org.openremote.modeler.client.widget.propertyform.PanelPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Panel;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class make the panel be edit in property form.
@@ -37,12 +37,12 @@ public class PanelPropertyEditable implements PropertyEditable {
 
    private Panel panel = null;
    
-   private HandlerManager eventBus;
+   private EventBus eventBus;
 
    public PanelPropertyEditable() {
    }
 
-   public PanelPropertyEditable(Panel panel, HandlerManager eventBus) {
+   public PanelPropertyEditable(Panel panel, EventBus eventBus) {
       this.panel = panel;
       this.eventBus = eventBus;
    }

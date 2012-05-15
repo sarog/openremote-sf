@@ -565,7 +565,7 @@ public class TreePanelBuilder {
                BeanModel model = (BeanModel) loadConfig;
                if (model.getBean() instanceof TreeFolderBean) {
                   TreeFolderBean folderBean = model.getBean();
-                  if (folderBean.getDisplayName().contains("Private")) {
+                  if (folderBean.getDisplayName().contains("rivate")) {
                      TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override

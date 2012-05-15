@@ -22,7 +22,8 @@ package org.openremote.modeler.client;
 import org.openremote.modeler.client.view.ApplicationView;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -45,7 +46,7 @@ public class Modeler implements EntryPoint {
    private void init() {
       DOM.setStyleAttribute(RootPanel.get("loading-cont").getElement(), "display", "none");
       
-      HandlerManager eventBus = new HandlerManager(null);
+      EventBus eventBus = new SimpleEventBus();
       ApplicationView appView = new ApplicationView(eventBus);
       appView.initialize();
    }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
@@ -38,8 +39,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
-import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
+import org.openremote.modeler.domain.component.UIButton;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -64,8 +65,8 @@ public class ButtonPropertyForm extends PropertyForm {
    private CheckBox repeat = new CheckBox();
    private NavigateFieldSet navigateSet = null;
    
-   public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton) {
-      super(screenButton);
+   public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenButton, widgetSelectionUtil);
       addFields(screenButton, uiButton);
       super.addDeleteButton();
    }
@@ -82,8 +83,8 @@ public class ButtonPropertyForm extends PropertyForm {
            // Call here should only change model and other visual representations should update because they listen to changes on the bus.
 //            screenButton.setName(name.getValue());
             
-            
-            uiButton.setName(name.getValue());
+            String buttonName = name.getValue();
+            uiButton.setName((buttonName != null)?buttonName:""); // Do not use null as button name, see MODELER-270
             screenButton.adjustTextLength();
          }
       });

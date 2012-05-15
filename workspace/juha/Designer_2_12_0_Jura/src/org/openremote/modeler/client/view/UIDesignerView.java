@@ -20,9 +20,10 @@
  */
 package org.openremote.modeler.client.view;
 
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
-import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenPanelImpl;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbarImpl;
@@ -47,7 +48,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 public class UIDesignerView extends TabItem {
   
    /** The screen panel is for DND widget in it. */
-   private ScreenPanel screenPanel = new ScreenPanel();
+   private ScreenPanelImpl screenPanel;
 
    private ProfilePanel profilePanel = null;
    
@@ -57,11 +58,15 @@ public class UIDesignerView extends TabItem {
    
    private UIDesignerToolbarImpl toolbar;
    
+   private WidgetSelectionUtil widgetSelectionUtil;
+   
    /**
     * Instantiates a new uI designer view.
     */
-   public UIDesignerView() {
+   public UIDesignerView(WidgetSelectionUtil widgetSelectionUtil) {
       super();
+      this.widgetSelectionUtil = widgetSelectionUtil;
+      screenPanel = new ScreenPanelImpl(widgetSelectionUtil);
       setText("UI Designer");
       setLayout(new BorderLayout());
       profilePanel = createWest();
@@ -123,7 +128,7 @@ public class UIDesignerView extends TabItem {
       add(centerContainer, centerData);      
       centerContainer.add(screenPanel, centerData);
       
-      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 42);
+      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 34);
       northData.setMargins(new Margins(2, 2, 2, 2));
       toolbar = new UIDesignerToolbarImpl();
       centerContainer.add(toolbar, northData);
@@ -145,7 +150,7 @@ public class UIDesignerView extends TabItem {
       widgetPanel.setSize("100%", "50%");
       widgetAndPropertyContainer.add(widgetPanel, northData);
 
-      propertyPanel = new PropertyPanel();
+      propertyPanel = new PropertyPanel(widgetSelectionUtil);
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
       centerData.setSplit(true);
       centerData.setMargins(new Margins(2));
@@ -165,7 +170,7 @@ public class UIDesignerView extends TabItem {
     return profilePanel;
   }
 
-  public ScreenPanel getScreenPanel() {
+  public ScreenPanelImpl getScreenPanel() {
     return screenPanel;
   }
   

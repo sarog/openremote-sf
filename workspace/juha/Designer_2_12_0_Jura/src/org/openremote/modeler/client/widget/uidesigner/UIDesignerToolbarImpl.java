@@ -62,6 +62,18 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
   @UiField
   PushButton verticalBottomAlignButton;
   
+  @UiField
+  PushButton sameSizeButton;
+  
+  @UiField
+  PushButton horizontalSpreadButton;
+  @UiField
+  PushButton verticalSpreadButton;
+  
+  @UiField
+  PushButton horizontalCenterButton;
+  @UiField
+  PushButton verticalCenterButton;
 
   public UIDesignerToolbarImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
@@ -108,9 +120,88 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
       presenter.onVerticalBottomAlignButtonClicked();
     }
   }
+  
+  @UiHandler("sameSizeButton")
+  void onSameSizeButtonClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onSameSizeButtonClicked();
+    }
+  }
+
+  @UiHandler("horizontalSpreadButton")
+  void onHorizontalSpreadButtonClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onHorizontalSpreadButtonClicked();
+    }
+  }
+  
+  @UiHandler("verticalSpreadButton")
+  void onVerticalSpreadButtonClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onVerticalSpreadButtonClicked();
+    }
+  }
+
+  @UiHandler("horizontalCenterButton")
+  void onHorizontalCenterButtonClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onHorizontalCenterButtonClicked();
+    }
+  }
+  
+  @UiHandler("verticalCenterButton")
+  void onVerticalCenterButtonClicked(ClickEvent e) {
+    if (presenter != null) {
+      presenter.onVerticalCenterButtonClicked();
+    }
+  }
 
   public void setPresenter(Presenter presenter) {
     this.presenter = presenter;
+  }
+
+  public PushButton getHorizontalLeftAlignButton() {
+    return horizontalLeftAlignButton;
+  }
+
+  public PushButton getHorizontalCenterAlignButton() {
+    return horizontalCenterAlignButton;
+  }
+
+  public PushButton getHorizontalRightAlignButton() {
+    return horizontalRightAlignButton;
+  }
+
+  public PushButton getVerticalTopAlignButton() {
+    return verticalTopAlignButton;
+  }
+
+  public PushButton getVerticalCenterAlignButton() {
+    return verticalCenterAlignButton;
+  }
+
+  public PushButton getVerticalBottomAlignButton() {
+    return verticalBottomAlignButton;
+  }
+
+  public PushButton getSameSizeButton() {
+    return sameSizeButton;
+  }
+
+  public PushButton getHorizontalSpreadButton() {
+    return horizontalSpreadButton;
+  }
+
+  public PushButton getVerticalSpreadButton() {
+    return verticalSpreadButton;
+  }
+
+  public PushButton getHorizontalCenterButton() {
+    return horizontalCenterButton;
+  }
+
+  public PushButton getVerticalCenterButton() {
+    return verticalCenterButton;
   }
 
 }

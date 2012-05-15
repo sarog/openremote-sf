@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.FlexTable;
  *
  */
 public class ScreenTabbar extends ScreenComponent {
+  
    public static final int PADDING = 5;
    
    private int defaultHeight = 44;
@@ -64,9 +65,9 @@ public class ScreenTabbar extends ScreenComponent {
    private UITabbar uiTabbar = null;
    
    private LayoutContainer moveBackGround = null;
-
-   public ScreenTabbar(ScreenCanvas screenCanvas) {
-      super(screenCanvas);
+ 
+   public ScreenTabbar(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
    }
 
    /**
@@ -76,8 +77,9 @@ public class ScreenTabbar extends ScreenComponent {
     * @param screenCanvas the screen canvas
     * @param uiTabbar the ui tabbar
     */
-   public ScreenTabbar(ScreenCanvas screenCanvas,UITabbar uiTabbar){
-      super(screenCanvas);
+   public ScreenTabbar(ScreenCanvas screenCanvas, UITabbar uiTabbar, WidgetSelectionUtil widgetSelectionUtil){
+      super(screenCanvas, widgetSelectionUtil);
+      this.widgetSelectionUtil = widgetSelectionUtil;
       this.uiTabbar = uiTabbar;
       
       setToGroup();
@@ -126,13 +128,13 @@ public class ScreenTabbar extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new TabbarPropertyForm(this);
+      return new TabbarPropertyForm(this, widgetSelectionUtil);
    }
    
    @Override
    public void onComponentEvent(ComponentEvent ce) {
       if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-         WidgetSelectionUtil.setSelectWidget(this);
+         widgetSelectionUtil.setSelectWidget(this);
       }
       ce.cancelBubble();
       super.onComponentEvent(ce);
@@ -191,10 +193,10 @@ public class ScreenTabbar extends ScreenComponent {
    public void addTabbarItem(final UITabbarItem uiTabbarItem) {
       this.uiTabbar.addTabbarItem(uiTabbarItem);
       
-      final ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem);
+      final ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem, widgetSelectionUtil);
       this.getScreenTabbarItems().add(screenTabbarItem);
       this.initTabbar();
-      WidgetSelectionUtil.setSelectWidget(screenTabbarItem);
+      widgetSelectionUtil.setSelectWidget(screenTabbarItem);
    }
    
    private void initTabbar() {
@@ -204,7 +206,7 @@ public class ScreenTabbar extends ScreenComponent {
          int width = (getScreenCanvas().getScreen().getTouchPanelDefinition().getCanvas().getWidth()-2*PADDING)/tabbarItemNumber;
          this.screenTabbarItems.removeAll(screenTabbarItems);
          for (UITabbarItem uiTabbarItem : this.uiTabbar.getTabbarItems()) {
-            ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem);
+            ScreenTabbarItem screenTabbarItem = new ScreenTabbarItem(this.getScreenCanvas(),uiTabbarItem, widgetSelectionUtil);
             this.getScreenTabbarItems().add(screenTabbarItem);
             this.addDeleteListenerToTabItem(screenTabbarItem);
             makeTabItemDragable(screenTabbarItem);

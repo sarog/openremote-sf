@@ -45,7 +45,7 @@ import org.openremote.modeler.shared.lutron.OutputType;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -73,7 +73,7 @@ public class LutronImportWizard extends DialogBox {
   interface LutronImportWizardUiBinder extends UiBinder<Widget, LutronImportWizard> {
   }
   
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   
   private Device device;
   
@@ -88,7 +88,7 @@ public class LutronImportWizard extends DialogBox {
     return this;
   }
 
-  public LutronImportWizard(final Device device, final HandlerManager eventBus) {
+  public LutronImportWizard(final Device device, final EventBus eventBus) {
     this.eventBus = eventBus;
     this.device = device;
 

@@ -21,13 +21,11 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
 
-import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
-import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
@@ -36,28 +34,22 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 public class PropertyPanel extends ContentPanel {
 
    private ComponentContainer currentLayoutContainer;
-   private FormPanel currentPropertyForm;
-   public PropertyPanel() {
+   private PropertyForm currentPropertyForm;
+   
+   public PropertyPanel(WidgetSelectionUtil widgetSelectionUtil) {
       setBorders(false);
       setFooter(false);
       setBodyStyleName("zero-padding");
       setBodyBorder(false);
       setHeading("Properties");
       setLayout(new FitLayout());
-      setFrame(true);
-      WidgetSelectionUtil.setChangeListener(new WidgetSelectChangeListener() {
-         @Override
-         public void changeSelect(WidgetSelectChangeEvent be) {
-            update(be.getSelectWidget());
-         }
-         
-      });
+      setFrame(true);      
    }
    
    /**
     * Update the panel's content follow with different component.
     */
-   private void update(List<ComponentContainer> components) {
+   public void update(List<ComponentContainer> components) {
       if (components.isEmpty()) {
          removePropertiesForm();
          setHeading("Properties");

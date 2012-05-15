@@ -26,27 +26,38 @@ import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEventHandler;
 import org.openremote.modeler.client.event.TemplateSelectedEvent;
 import org.openremote.modeler.client.event.TemplateSelectedEventHandler;
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.BeanModelTable;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.ScreenPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenTab;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
-public class ScreenPanelPresenter implements Presenter {
+public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
+  private WidgetSelectionUtil widgetSelectionUtil;
   private ScreenPanel view;
   
-  public ScreenPanelPresenter(HandlerManager eventBus, ScreenPanel view) {
+  public ScreenPanelPresenter(EventBus eventBus, WidgetSelectionUtil widgetSelectionUtil, ScreenPanel view) {
     super();
     this.eventBus = eventBus;
+    this.widgetSelectionUtil = widgetSelectionUtil;
     this.view = view;
+    view.setPresenter(this);
     
     bind();
   }
@@ -67,7 +78,7 @@ public class ScreenPanelPresenter implements Presenter {
             if (event.getType() == BeanModelTable.ADD) {
               BeanModel beanModel = (BeanModel) event.getItem();
               if (beanModel.getBean() instanceof ScreenPair) {
-                ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean()));
+                ScreenPanelPresenter.this.view.setScreenItem(new ScreenTab((ScreenPair) beanModel.getBean(), widgetSelectionUtil));
               }
             }
           }
@@ -79,11 +90,18 @@ public class ScreenPanelPresenter implements Presenter {
       @Override
       public void onTemplateSelected(TemplateSelectedEvent event) {
         if (event.getTemplate() != null) {
-          view.setScreenItem(new ScreenTab(event.getTemplate().getScreen()));
+          view.setScreenItem(new ScreenTab(event.getTemplate().getScreen(), widgetSelectionUtil));
         } else {
 //          templateEditPanel.remove(editTabItem);// TODO EBR : this is not done anymore, but was it really required, below call should be enough
           view.closeCurrentScreenTab();
         }
+      }
+    });
+    
+    eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
+      @Override
+      public void onElementEdited(UIElementEditedEvent event) {
+        view.onUIElementEdited(event.getElement());
       }
     });
   }
@@ -98,16 +116,49 @@ public class ScreenPanelPresenter implements Presenter {
         screenTabItem.updateTouchPanel();
         screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
       } else {
-        screenTabItem = new ScreenTab(screen);
+        screenTabItem = new ScreenTab(screen, widgetSelectionUtil);
         screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
         this.view.setScreenItem(screenTabItem);
       }
     } else {
-      screenTabItem = new ScreenTab(screen);
+      screenTabItem = new ScreenTab(screen, widgetSelectionUtil);
       screenTabItem.updateTabbarForScreenCanvas(screenPairRef);
       this.view.setScreenItem(screenTabItem);
     }
     screenTabItem.updateScreenIndicator();
+  }
+  
+  // Use arrow keys for moving selection
+  public void onRightKeyPressed() {
+    moveWidgetSelection((view.isShiftKeyDown()?10:1), 0);
+  }
+  
+  public void onLeftKeyPressed() {
+    moveWidgetSelection(-(view.isShiftKeyDown()?10:1), 0);
+  }
+  
+  public void onUpKeyPressed() {
+    moveWidgetSelection(0, -(view.isShiftKeyDown()?10:1));
+  }
+  
+  public void onDownKeyPressed() {
+    moveWidgetSelection(0, (view.isShiftKeyDown()?10:1));
+  }         
+
+  private void moveWidgetSelection(int left, int top) {
+    for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
+       if (cc instanceof AbsoluteLayoutContainer) {
+         Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
+         absolute.setLeft(absolute.getLeft() + left);
+         absolute.setTop(absolute.getTop() + top);
+         eventBus.fireEvent(new UIElementEditedEvent(absolute));
+       } else if (cc instanceof GridLayoutContainerHandle) {        
+         UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
+         grid.setLeft(grid.getLeft() + left);
+         grid.setTop(grid.getTop() + top);
+         eventBus.fireEvent(new UIElementEditedEvent(grid));
+       }          
+     }
   }
   
 }

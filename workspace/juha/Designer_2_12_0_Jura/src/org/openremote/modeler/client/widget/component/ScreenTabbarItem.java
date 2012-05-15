@@ -43,12 +43,12 @@ public class ScreenTabbarItem extends ScreenComponent {
    private UITabbarItem uiTabbarItem = null;
    protected Text center = new Text("item");
    
-   public ScreenTabbarItem(ScreenCanvas screenCanvas) {
-      super(screenCanvas);
+   public ScreenTabbarItem(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
    }
 
-   public ScreenTabbarItem(ScreenCanvas screenCanvas,UITabbarItem uiTabbarItem){
-      super(screenCanvas);
+   public ScreenTabbarItem(ScreenCanvas screenCanvas,UITabbarItem uiTabbarItem, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenCanvas, widgetSelectionUtil);
       this.uiTabbarItem = uiTabbarItem;
       
       addStyleName("tabbaritem-background");
@@ -87,7 +87,7 @@ public class ScreenTabbarItem extends ScreenComponent {
    @Override
    public void onComponentEvent(ComponentEvent ce) {
       if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-         WidgetSelectionUtil.setSelectWidget(this);
+         widgetSelectionUtil.setSelectWidget(this);
       }
       ce.cancelBubble();
       super.onComponentEvent(ce);
@@ -100,7 +100,7 @@ public class ScreenTabbarItem extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new TabbarItemPropertyForm(this);
+      return new TabbarItemPropertyForm(this, widgetSelectionUtil);
    }
    
    public ImageSource getImageSource() {

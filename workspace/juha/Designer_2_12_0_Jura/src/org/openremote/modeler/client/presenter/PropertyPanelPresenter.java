@@ -19,21 +19,28 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
+import org.openremote.modeler.client.event.WidgetSelectedEvent;
+import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
+import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 public class PropertyPanelPresenter implements Presenter {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
+  private WidgetSelectionUtil widgetSelectionUtil;
   private PropertyPanel view;
   
-  public PropertyPanelPresenter(HandlerManager eventBus, PropertyPanel view) {
+  public PropertyPanelPresenter(EventBus eventBus, WidgetSelectionUtil widgetSelectionUtil, PropertyPanel view) {
     super();
     this.eventBus = eventBus;
+    this.widgetSelectionUtil = widgetSelectionUtil;
     this.view = view;
     bind();
   }
@@ -43,6 +50,21 @@ public class PropertyPanelPresenter implements Presenter {
       @Override
       public void onElementSelected(UIElementSelectedEvent event) {
         PropertyPanelPresenter.this.view.setPropertyForm(PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus));
+      }
+    });
+    
+    eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
+      @Override
+      public void onElementEdited(UIElementEditedEvent event) {
+        // TODO EBR - this is just a quick fix, need to review
+        view.update(widgetSelectionUtil.getSelectedWidgets());
+      }
+    });
+    
+    eventBus.addHandler(WidgetSelectedEvent.TYPE, new WidgetSelectedEventHandler() {
+      @Override
+      public void onSelectionChanged(WidgetSelectedEvent event) {
+        view.update(event.getSelectedWidgets());
       }
     });
   }

@@ -31,7 +31,7 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * The class is for initializing the building modeler view.
@@ -41,12 +41,12 @@ import com.google.gwt.event.shared.HandlerManager;
  */
 public class BuildingModelerView extends TabItem {
 
-  private HandlerManager eventBus;
+  private EventBus eventBus;
   
    /** The config tab panel is for managing the controller configuration. */
    private TabPanel configTabPanel = new TabPanel();
 
-   public BuildingModelerView(HandlerManager eventBus) {
+   public BuildingModelerView(EventBus eventBus) {
      this.eventBus = eventBus;
       setText("Building Modeler");
       setLayout(new BorderLayout());
