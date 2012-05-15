@@ -80,6 +80,85 @@
 }
 
 
+
+
+
+
+
+
+
+// For lack of better name
+// For now just extract behaviour to startup application
+- (void)startup
+{
+    ORConsoleSettings *settings = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings;
+    ORController *selectedController = settings.selectedController;
+    
+    if (selectedController) {
+        // First try to use local cache so the user can directly interact with the UI, and trigger the check for update after that
+        [self useLocalCache];
+        
+        // TODO: should check if there is cached information available
+        
+        
+        [self.delegate didUpdate];
+        
+        
+        // Delay so that loading message is displayed
+//        [self performSelector:@selector(checkConfigAndUpdate) withObject:nil afterDelay:0.0];
+        
+        
+        [self refreshControllerInformation];
+        
+        
+
+        
+
+    } else {
+        if ([settings.controllers count] == 1) {
+            settings.selectedController = [settings.controllers lastObject];
+            
+            
+            // TODO: next step of process is to contact controller
+            // In this case, as we don't have anything to display, we can display a panel to the user indicating we're contacting the controller, plus option to cancel
+            
+            // At any point, if user cancel and we don't have enough information -> display message and allow him to go to settigns
+            
+        } else if ([settings.controllers count] == 0) {
+            // Launch auto-discovery
+            
+            // TODO: should notify user of process and allow to cancel
+            // if cancel -> Settings
+        } else {
+            // Nothing automatic we can do, display settings screen but notify user first
+        }
+    }
+}
+
+
+/**
+ * Contacts the controller and gather up to date information:
+ * - group members
+ * - capabilities
+ * - panels
+ * - update of selected panel
+ */
+- (void)refreshControllerInformation
+{
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController fetchGroupMembers];
+    
+    // Once group members has been fetched, ORController will get its capabilities
+    
+    // TODO: somehow when a command / status polling is send to controller, it should wait for controller to be ready -> that is group members and capabilities fetched
+    // Maybe have a notification posted when controller is ready -> use that to start polling
+    // For command sending, might have a popup to indicate that controller is not yet available
+    
+    // TODO: panels and update
+}
+
+
+
+
 // Read Application settings from appSettings.plist.
 // If there have an defined server url. It will call checkNetworkAndUpdate method
 // else if auto discovery is enable it will try to find another server url using auto discovery,
@@ -108,14 +187,28 @@
     // TODO EBR: On start-up, definition is nil as it's never been loaded from controller
     // Should have this loaded from cache if present -> !time to parse, if too big, have some lazy loading
 	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.groups.count > 0) {
+        
+        // Should not display loading indicator if the UI is already displayed
+        
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	}
 	NSLog(@"check config");
 
     // If there is a selected controller (auto-discovered or configured), try to use it
 	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController) {
+        
+        
 		[self checkNetworkAndUpdate];
+        
+        
+        
+        
+        
 	} else {
+        
+        
+        // TODO: this part should not be here
+        
 		NSLog(@"No selected controller found in configuration");
 		if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
 			[self findServer];

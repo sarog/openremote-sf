@@ -28,6 +28,9 @@
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
 
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+
 #ifdef INCLUDE_SIP_SUPPORT
     #import "SipController.h"
 #endif
@@ -61,16 +64,12 @@
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
 	
+    // TODO: this should be done only if controller does report SIP capabilities
     #ifdef INCLUDE_SIP_SUPPORT
         sipController = [[SipController alloc] init];
     #endif
 	
-    // First try to use local cache so the user can directly interact with the UI, and trigger the check for update after that
-    [updateController useLocalCache];
-    [self didUpdate]; // TODO: not really a good idea to send that ourself, but will do for now
-    
-    // Delay so that loading message is displayed
-    [self performSelector:@selector(checkConfigAndUpdate) withObject:nil afterDelay:0.0];
+    [updateController startup];
 }
 
 // when it's launched by other apps.
@@ -78,6 +77,7 @@
 	[self applicationDidFinishLaunching:application];
 	return YES;
 }
+
 
 //when it wake up, WIFI is active.
 - (void)applicationDidBecomeActive:(UIApplication *)application {

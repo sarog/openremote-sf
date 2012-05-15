@@ -57,6 +57,12 @@
 
 - (id)initWithDelegate:(NSObject <UpdateControllerDelegate> *)aDelegate;
 
+
+- (void)startup;
+
+
+
+
 - (void)checkConfigAndUpdate;
 
 - (void)useLocalCache;
