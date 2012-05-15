@@ -119,6 +119,9 @@
 		@throw e;
 	}
 
+    
+    // TODO: this should be encapsulated in communication objects as other calls
+    
 	NSHTTPURLResponse *resp = nil;
 	NSError *error = nil;
 	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]
