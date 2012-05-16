@@ -27,12 +27,13 @@ import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
 import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 
 /**
- * Represents a command to read the base ID of an EnOcean module as defined in EnOcean Serial
- * Protocol 3 (ESP3) specification chapter 1.11.10: Code 08: CO_RD_IDBASE. <p>
+ * Represents the CO_RD_IDBASE command to read the base ID of an EnOcean module as defined
+ * in EnOcean Serial Protocol 3 (ESP3) specification chapter 1.11.10: Code 08: CO_RD_IDBASE. <p>
  *
  * Each EnOcean module acting as a gateway has a base ID and an ID range starting with the
  * base ID.
  *
+ * @see Esp3RdIDBaseResponse
  * @see org.openremote.controller.protocol.enocean.DeviceID
  *
  *
