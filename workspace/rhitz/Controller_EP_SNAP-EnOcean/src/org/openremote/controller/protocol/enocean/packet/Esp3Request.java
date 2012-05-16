@@ -48,6 +48,13 @@ public interface Esp3Request
   Esp3ResponsePacket send(EspProcessor<Esp3Packet> processor) throws ConnectionException, InterruptedException;
 
   /**
+   * Returns return code.
+   *
+   * @return return code
+   */
+  Esp3ResponsePacket.ReturnCode getReturnCode();
+
+  /**
    * Returns response.
    *
    * @return response packet, null if response packet has not been received

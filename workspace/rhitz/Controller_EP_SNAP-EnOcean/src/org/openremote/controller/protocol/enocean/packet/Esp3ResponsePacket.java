@@ -72,10 +72,15 @@ public class Esp3ResponsePacket extends Esp3Packet
     RET_WRONG_PARAM(0x03),
 
     /**
-     * Example: memory access denied (code protected)
+     * Example: memory access denied (code protected).
      */
-    RET_OPERATION_DENIED(0x04);
+    RET_OPERATION_DENIED(0x04),
 
+    /**
+     * Default return code to indicate that the return code has not been received from the
+     * EnOcean module.
+     */
+    RET_CODE_NOT_SET(0xFF);
 
     // Members ------------------------------------------------------------------------------------
 
