@@ -77,6 +77,8 @@ public abstract class AbstractEsp3RequestPacket extends Esp3Packet implements Es
       throw new IllegalArgumentException("null ESP3 processor");
     }
 
+    response = null;
+
     Esp3Packet responsePacket = null;
 
     responsePacket = processor.sendRequest(this);
@@ -87,6 +89,19 @@ public abstract class AbstractEsp3RequestPacket extends Esp3Packet implements Es
     }
 
     return response;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public Esp3ResponsePacket.ReturnCode getReturnCode()
+  {
+    if(response == null)
+    {
+      return Esp3ResponsePacket.ReturnCode.RET_CODE_NOT_SET;
+    }
+
+    return response.getReturnCode();
   }
 
   /**

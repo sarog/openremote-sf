@@ -49,6 +49,34 @@ public class Esp3RdIDBaseResponseTest
     Assert.assertEquals(deviceID, response.getBaseID());
   }
 
+  @Test public void testBaseID() throws Exception
+  {
+    Esp3ResponsePacket.ReturnCode returnCode = Esp3ResponsePacket.ReturnCode.RET_OK;
+
+    DeviceID deviceID = DeviceID.fromString("0x12345678");
+
+    byte[] dataBytes = createResponseDataBytes(returnCode.getValue(), deviceID);
+    Esp3RdIDBaseResponse response = new Esp3RdIDBaseResponse(dataBytes);
+
+    Assert.assertEquals(deviceID, response.getBaseID());
+
+
+    deviceID = DeviceID.fromString("0xFFFFFFFF");
+
+    dataBytes = createResponseDataBytes(returnCode.getValue(), deviceID);
+    response = new Esp3RdIDBaseResponse(dataBytes);
+
+    Assert.assertEquals(deviceID, response.getBaseID());
+
+
+    deviceID = DeviceID.fromString("0x00000000");
+
+    dataBytes = createResponseDataBytes(returnCode.getValue(), deviceID);
+    response = new Esp3RdIDBaseResponse(dataBytes);
+
+    Assert.assertEquals(deviceID, response.getBaseID());
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testNullArg() throws Exception
   {
@@ -59,7 +87,7 @@ public class Esp3RdIDBaseResponseTest
   @Test (expected = EspException.class)
   public void testUnknownReturnCode() throws Exception
   {
-    byte unknownReturnCode = (byte)0xFF;
+    byte unknownReturnCode = (byte)0x81;
 
     DeviceID deviceID = DeviceID.fromString("0xFF800001");
 
@@ -91,17 +119,6 @@ public class Esp3RdIDBaseResponseTest
     DeviceID deviceID = DeviceID.fromString("0xFF800001");
 
     byte[] dataBytesTooShort = new byte[0];
-
-    Esp3RdIDBaseResponse response = new Esp3RdIDBaseResponse(dataBytesTooShort);
-  }
-
-  @Test (expected = EspException.class)
-  public void testInvalidDataLength3() throws Exception
-  {
-    Esp3ResponsePacket.ReturnCode returnCode = Esp3ResponsePacket.ReturnCode.RET_OK;
-    DeviceID deviceID = DeviceID.fromString("0xFF800001");
-
-    byte[] dataBytesTooShort = new byte[] {returnCode.getValue()};
 
     Esp3RdIDBaseResponse response = new Esp3RdIDBaseResponse(dataBytesTooShort);
   }

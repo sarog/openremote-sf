@@ -46,11 +46,11 @@ public class Esp3RdIDBaseCommandTest
    */
   private byte[] rdBaseIDCmdBytes;
 
-  Esp3RdIDBaseResponse response;
+  private Esp3RdIDBaseResponse response;
 
-  DeviceID baseID;
+  private DeviceID baseID;
 
-  Esp3ResponsePacket.ReturnCode returnCode;
+  private Esp3ResponsePacket.ReturnCode returnCode;
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
@@ -84,23 +84,51 @@ public class Esp3RdIDBaseCommandTest
     Assert.assertArrayEquals(packetBytes, rdBaseIDCmdBytes);
   }
 
-  @Test public void testResponse() throws Exception
+  @Test public void testSend() throws Exception
   {
     TestProcessor processor = new TestProcessor(response);
 
     Esp3RdIDBaseCommand command = new Esp3RdIDBaseCommand();
 
-    Esp3ResponsePacket resp = command.send(processor);
+    command.send(processor);
 
-    Assert.assertEquals(returnCode, resp.getReturnCode());
-    Assert.assertEquals(returnCode, command.getResponse().getReturnCode());
+    Assert.assertEquals(returnCode, command.getReturnCode());
     Assert.assertEquals(baseID, command.getBaseID());
+  }
+
+  @Test public void testSendMoreThanOnce() throws Exception
+  {
+    TestProcessor processor = new TestProcessor(response);
+    Esp3RdIDBaseCommand command = new Esp3RdIDBaseCommand();
+    command.send(processor);
+
+
+    processor = new TestProcessor(null);
+    command.send(processor);
+
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_CODE_NOT_SET, command.getReturnCode());
+    Assert.assertNull(command.getBaseID());
+
+
+    processor = new TestProcessor(response);
+    command.send(processor);
+
+    Assert.assertEquals(returnCode, command.getReturnCode());
+    Assert.assertEquals(baseID, command.getBaseID());
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testSendNullArg() throws Exception
+  {
+    Esp3RdIDBaseCommand command = new Esp3RdIDBaseCommand();
+
+    command.send(null);
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private byte [] createResponseDataBytes(Esp3ResponsePacket.ReturnCode returnCode, DeviceID baseID)
+  private byte[] createResponseDataBytes(Esp3ResponsePacket.ReturnCode returnCode, DeviceID baseID)
   {
     byte[] dataBytes = new byte[DeviceID.ENOCEAN_ESP_ID_LENGTH + 1];
 
