@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="mine"/>
+	<classpathentry kind="src" path="protocols"/>
+	<classpathentry kind="src" path="config"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="touchpanels"/>
+	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/core/hibernate/hibernate3.jar" sourcepath="/Users/ebr/.m2/repository/org/hibernate/hibernate/3.2.2.ga/hibernate-3.2.2.ga-sources.jar"/>
+	<classpathentry kind="lib" path="lib/core/spring/spring-2.0.8.jar" sourcepath="E:/src/spring2.0"/>
+	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/trove/trove.jar"/>
+	<classpathentry kind="lib" path="lib/test/hsqldb/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/test/spring/spring-test-2.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/test/testng/testng-5.9-jdk15.jar" sourcepath="D:/Javen/src/testNG_source.jar"/>
+	<classpathentry kind="lib" path="lib/test/selenium/selenium-java-client-driver.jar"/>
+	<classpathentry kind="lib" path="lib/core/xmlparser/jaxen-1.1-beta-9.jar"/>
+	<classpathentry kind="lib" path="lib/core/velocity/velocity-1.6.2-dep.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/apache-mime4j-0.6.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpmime-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/simplecaptcha/SimpleCaptcha-1.1.1.jar" sourcepath="/simple"/>
+	<classpathentry kind="lib" path="lib/core/mail/mail-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/slf4j/slf4j-log4j12-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/slf4j/slf4j-api-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/log4j/log4j-1.2.12.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/servlet-api"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/gwt-2.0.4"/>
+	<classpathentry kind="lib" path="lib/core/gwt/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="lib/core/gilead/gilead-core-1.3.2.1839.jar"/>
+	<classpathentry kind="lib" path="lib/core/gilead/gilead-hibernate-1.3.2.1839.jar"/>
+	<classpathentry kind="lib" path="lib/core/gilead/gilead4gwt-1.3.2.1839.jar"/>
+	<classpathentry kind="lib" path="lib/core/antlr-2.7.6/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/core/asm-1.5.3/asm.jar"/>
+	<classpathentry kind="lib" path="lib/core/flexjson-1.9.2/flexjson.jar"/>
+	<classpathentry kind="lib" path="lib/core/dom4j-1.6.1/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/cglib-2.1.3/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/cglib-2.1.3/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="lib/core/beanlib-5.0.2beta/beanlib-5.0.2beta.jar"/>
+	<classpathentry kind="lib" path="lib/core/beanlib-5.0.2beta/beanlib-hibernate-5.0.2beta.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache/jakarta-taglibs-standard-1.1.2/jstl.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache/jakarta-taglibs-standard-1.1.2/standard.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/codec-1.3/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/collections-3.2.1/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/dbcp-1.2.1/commons-dbcp.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/fileupload-1.2.1/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/httpclient-3.0/commons-httpclient-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/io-1.2/commons-io.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/logging-1.1/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/pool-1.2/commons-pool.jar"/>
+	<classpathentry kind="lib" path="lib/core/gxt/gxt-2.2.5-gwt22.jar"/>
+	<classpathentry kind="lib" path="lib/core/gwt-dispatch/gwt-dispatch-1.2.0.jar" sourcepath="/Users/ebr/.m2/repository/net/customware/gwt/dispatch/gwt-dispatch/1.2.0/gwt-dispatch-1.2.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/core/gin/gin-1.5-post-gwt-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/persistence-api-1.0-rev-1.jar" sourcepath="/Users/ebr/.m2/repository/javax/persistence/persistence-api/1.0-rev-1/persistence-api-1.0-rev-1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/transaction-api-1.1-rev-1.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/ircodeslib-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/irfileslib-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/tinsysfwk-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
