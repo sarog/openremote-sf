@@ -19,8 +19,10 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import org.openremote.modeler.client.dto.SliderDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
@@ -102,8 +104,9 @@ public class SliderPropertyForm extends PropertyForm {
             selectSliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
-                  BeanModel dataModel = be.<BeanModel> getData();
-                  Slider slider = dataModel.getBean();
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 SliderDTO sliderDTO = dataModel.getBean();
+                 Slider slider = BeanModelDataBase.sliderTable.get(sliderDTO.getOid()).getBean();
                   screenSlider.setSlider(slider);
                   command.setText(slider.getName());
                }

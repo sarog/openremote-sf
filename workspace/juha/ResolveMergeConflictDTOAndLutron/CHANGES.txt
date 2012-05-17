@@ -1,14 +1,15 @@
 
-Designer 2.0 Alpha 10 (2011-12-24 Jolly Noel)
+Designer 2.0 Alpha 10 (2011-12-26 Jolly Noel)
 =============================================
 
+- Update GWT to version 2.4.0 and GXT to version 2.2.5
+  (R5440 - Eric Bariaux)
 - Fixed issue with macro display tree not always showing content,
   http://jira.openremote.org/browse/MODELER-259 (R5436 - Eric Bariaux)
 - KNX Import bug fix on parsing DPTs (R5439 - Marcus Redeker)
 
 
-
-Designer 2.0 Alpha 9 (2011-12-12 Voldemort)
+Designer 2.0 Alpha 9 (2011-12-19 Voldemort)
 ===========================================
 
 - KNX ETS4 Project Import (Marcus Redeker)

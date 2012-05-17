@@ -19,9 +19,12 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import org.openremote.modeler.client.dto.SwitchDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
@@ -154,8 +157,9 @@ public class SwitchPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  if (dataModel.getBean() instanceof Switch) {
-                     Switch switchCommand = dataModel.getBean();
+                  if (dataModel.getBean() instanceof SwitchDTO) {
+                     SwitchDTO switchDTO = dataModel.getBean();
+                     Switch switchCommand = BeanModelDataBase.switchTable.get(switchDTO.getOid()).getBean();
                      uiSwitch.setSwitchCommand(switchCommand);
                      command.setText(switchCommand.getDisplayName());
                   }
