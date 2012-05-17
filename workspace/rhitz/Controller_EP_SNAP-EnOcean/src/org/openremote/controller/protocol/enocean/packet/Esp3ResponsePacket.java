@@ -125,6 +125,10 @@ public class Esp3ResponsePacket extends Esp3Packet
    */
   public static final int ESP3_RESPONSE_RETURN_CODE_INDEX = 0x00;
 
+  /**
+   * Length of return code field.
+   */
+  public static final int ESP3_RESPONSE_RETURN_CODE_LENGTH = 0x01;
 
   // Private Instance Fields ----------------------------------------------------------------------
 
