@@ -50,7 +50,7 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 public class BeanModelTable {
 
    /** The map store BeanModel. */
-   private Map<Long, BeanModel> map = new HashMap<Long, BeanModel>();
+   protected Map<Long, BeanModel> map = new HashMap<Long, BeanModel>();
 
    // the same as ChangeEventSource
    /** The Constant ADD. */

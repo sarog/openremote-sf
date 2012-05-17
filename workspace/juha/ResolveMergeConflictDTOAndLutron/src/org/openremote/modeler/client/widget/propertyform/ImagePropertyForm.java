@@ -24,9 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.dto.SensorDTO;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.ComboBoxExt;
@@ -88,7 +91,8 @@ public class ImagePropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  Sensor sensor = dataModel.getBean();
+                  SensorDTO sensorDTO = dataModel.getBean();
+                  Sensor sensor = BeanModelDataBase.sensorTable.get(sensorDTO.getOid()).getBean();
                   uiImage.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
                   if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
