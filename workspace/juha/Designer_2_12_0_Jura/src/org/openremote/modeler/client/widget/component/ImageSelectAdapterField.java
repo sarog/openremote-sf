@@ -42,7 +42,11 @@ public class ImageSelectAdapterField extends AdapterField {
    }
    
    public void setText(String text) {
-      ((SelectAndDeleteButtonWidget)this.widget).setText(text);
+     if (text != null && !"".equals(text)) {
+       ((SelectAndDeleteButtonWidget)this.widget).setText(text);
+     } else {
+       removeImageText();
+     }
    }
    
    public void removeImageText() {
