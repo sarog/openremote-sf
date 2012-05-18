@@ -52,6 +52,7 @@ public class OneWireCommandBuilder implements CommandBuilder
   private final static String STR_ATTRIBUTE_NAME_FILENAME = "filename";
   private final static String STR_ATTRIBUTE_NAME_POLLING_INTERVAL = "pollingInterval";
   private final static String STR_ATTRIBUTE_NAME_TEMPERATURE_SCALE = "temperatureScale";
+  private final static String STR_ATTRIBUTE_NAME_DATA = "data";
   
 
   // Class Members --------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ public class OneWireCommandBuilder implements CommandBuilder
       String deviceAddress = null;
       String filename = null;
       String tempScaleStr = null;
+      String data = null;
       String pollingIntervalStr = null;
       int pollingInterval = 0;
 
@@ -119,6 +121,12 @@ public class OneWireCommandBuilder implements CommandBuilder
         {
            tempScaleStr = elementValue;
           logger.debug("OneWire Command: temperatureScale = " + tempScaleStr);
+        }
+        
+        else if (STR_ATTRIBUTE_NAME_DATA.equals(elementName))
+        {
+          data = elementValue;
+          logger.debug("OneWire Command: data = " + data);
         }
       }
 
@@ -165,6 +173,6 @@ public class OneWireCommandBuilder implements CommandBuilder
 
       logger.debug("OneWire Command created successfully");
       
-      return new OneWireCommand(hostname, port, deviceAddress, filename, pollingInterval, tempScale);
+      return new OneWireCommand(hostname, port, deviceAddress, filename, pollingInterval, tempScale, data);
   }
 }
