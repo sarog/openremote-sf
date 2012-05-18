@@ -64,6 +64,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   private String filename;
   private int pollingInterval;
   private TemperatureScale tempScale;
+  private String data;
 
   /** The thread that is used to peridically update the sensor */
   private Thread pollingThread;
@@ -76,7 +77,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, int pollingInterval, TemperatureScale tempScale)
+  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, int pollingInterval, TemperatureScale tempScale, String data)
   {
     this.hostname = hostname;
     this.port = port;
@@ -84,6 +85,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
     this.filename = filename;
     this.pollingInterval = pollingInterval;
     this.tempScale = tempScale;
+    this.data = data;
 
     logger.debug("OneWireCommand created with values hostname=" + hostname +
                "; port=" + port + "; deviceAddress=" + deviceAddress + "; filename=" +filename +
@@ -100,21 +102,10 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
    * returns null or exception is thrown by jowfs library) last available value is returned. In this case, timestamp
    * is not updated, which means that next read() call will retry to get value from 1-wire.
    * <p>
-   * Values from 1-wire sensors are processed following way:
+   * Values from 1-wire sensors are just passed as string the way they are into sensor.update(). The sensor
+   * has to map the result to it's internal data type.
    *
-   * <ul>
-   * <li>SWITCH type sensor returns "on" (when value in 1-Wire file is equal to "1") or "off" (any other value) strings
-   * <li>LEVEL type sensor returns value rounded to INTEGER in range 0-100.
-   * <li>RANGE type sensor returns value rounded to 1 decimal place within specified range.
-   * <li>Any other type of sensor returns UNKNOWN_STATUS
-   * </ul>
-   *
-   * @param sensorType
-   *           sensor type
-   * @param stateMap
-   *           state map, key is state name, value is the returned raw string related to the state.
-   *           NOTE: if sensor type is RANGE, this map only contains min/max states.
-   * @return string value in format dependent on selected sensor type
+   * @return string value independent from sensor type
    */
   private String read()
   {
@@ -173,39 +164,22 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   // Implements ExecutableCommand -----------------------------------------------------------------
 
   /**
-   * Currently useable only for 1-wire SWITCH devices. It reads current value of switch, negate it and write this
-   * new value back to 1-wire device.
+   * Takes the given 'data' and writes it to the given attribute
    *
    */
   public void send()
   {
 
-    logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be changed.");
+    logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be changed to: '" + data);
 
     OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
 
     client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
     client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
     client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
-    client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);
-
     try
     {
-      String currentStatus = client.read(deviceAddress+"/"+filename);
-
-      // Currently only write to switches is supported. If we read "1", then switch is "on" and we will write "off"=>"0"
-      // otherwise switch is now "off", so we will write "on"=>"1"
-
-      String newStatus = "1";
-      if("1".equals(currentStatus))
-      {
-        newStatus = "0";
-      }
-
-      logger.debug("Current value of 1-Wire switch "+deviceAddress+"/"+filename+" is '"+currentStatus+
-          "', new value will be '"+newStatus+"'.");
-
-      client.write(deviceAddress+"/"+filename, newStatus);
+      client.write(deviceAddress+"/"+filename, data);
     }
     catch (OwfsException e)
     {
