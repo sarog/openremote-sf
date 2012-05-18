@@ -19,13 +19,13 @@ package org.openremote.controller.protocol.shellexe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.exec.CommandLine;
+import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -50,8 +50,11 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    /** The thread that is used to peridically update the sensor */
    private Thread pollingThread;
    
-   /** The list of sensors which all use the same command */
-   private List<Sensor> sensors;
+   /** The map of sensors which all use the same command */
+   private Map<String,Sensor> sensors;
+   
+   /** The ordered list of sensors'names that corresponds to regex groups */
+   private String sensorNamesList;
    
    /** Boolean to indicate if polling thread should run */
    boolean doPoll = false;
@@ -62,12 +65,13 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
     * @param commandPath
     * @param commandParams
     */
-   public ShellExeCommand(String commandPath, String commandParams, String regex, Integer pollingInterval) {
+   public ShellExeCommand(String commandPath, String commandParams, String regex, String sensorNamesList, Integer pollingInterval) {
       this.commandPath = commandPath;
       this.commandParams = commandParams;
       this.regex = regex;
+      this.sensorNamesList = sensorNamesList;
       this.pollingInterval = pollingInterval;
-      sensors = new ArrayList<Sensor>();
+      sensors = new HashMap<String,Sensor>();
    }
 
    /**
@@ -85,7 +89,7 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
      if (pollingInterval == null) {
        throw new RuntimeException("Could not set sensor because no polling interval was given");
      }
-     this.sensors.add(sensor);
+     this.sensors.put(sensor.getName(), sensor);
      if (sensors.size() == 1) {
         this.doPoll = true;
         pollingThread = new Thread(this);
@@ -132,23 +136,27 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    @Override
    public void run() {
       logger.debug("Thread started: " + pollingThread.getName());
+      String[] sensorNames = null;
+      if (sensorNamesList != null) {
+         sensorNames = sensorNamesList.split(";");          // get an array with all sensor'names
+      }
       while (doPoll) {
          String readValue = this.executeCommand();
-         if (regex != null) {
+         if ( (regex != null) && (sensorNamesList != null) ) {
            Pattern regexPattern = Pattern.compile(regex);
            Matcher matcher = regexPattern.matcher(readValue);
            if (matcher.find()) {
-              for (int i = 0; i < sensors.size(); i++) {
-                 sensors.get(i).update(matcher.group(i+1));
+              for (int i = 0; i < sensorNames.length; i++) {
+                 sensors.get(sensorNames[i]).update(matcher.group(i+1));
               }
            } else {
              logger.info("regex evaluation did not find a match");
-             for (Sensor sensor : sensors) {
+             for (Sensor sensor : sensors.values()) {
                sensor.update("N/A");
             }
            }
          } else {
-            for (Sensor sensor : sensors) {
+            for (Sensor sensor : sensors.values()) {
                sensor.update(readValue);
             }
          }
