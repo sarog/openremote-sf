@@ -35,6 +35,7 @@ import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.ResourceFileLostException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -146,4 +147,8 @@ public interface UtilsRPCService extends RemoteService {
     * @return the on line test url
     */
    String getOnLineTestURL ();
+   
+   List<GraphicalAssetDTO>getUserImagesURLs();
+   
+   void deleteImage(String imageName);
 }

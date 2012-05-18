@@ -28,7 +28,8 @@ import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
-import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
+import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -157,21 +158,23 @@ public class ButtonPropertyForm extends PropertyForm {
       defaultImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final ImageSource image = uiButton.getImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, image), screenButton.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String imageUrl = be.getData();
-                  screenButton.setIcon(imageUrl);
-                  if (image != null) {
-                     image.setSrc(imageUrl);
-                  } else {
-                     uiButton.setImage(new ImageSource(imageUrl));
-                  }
-                  defaultImageField.setText(uiButton.getImage().getImageFileName());
-               }
-            });
+           final ImageSource image = uiButton.getImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              screenButton.setIcon(imageURL);
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiButton.setImage(new ImageSource(imageURL));
+              }
+              defaultImageField.setText(uiButton.getImage().getImageFileName());              
+            }             
+           });
          }
       });
       defaultImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
@@ -192,20 +195,22 @@ public class ButtonPropertyForm extends PropertyForm {
       pressImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final ImageSource onPressImage = uiButton.getPressImage();
-            ChangeIconWindow selectImageONWindow = new ChangeIconWindow(createIconPreviewWidget(screenButton, onPressImage), screenButton.getWidth());
-            selectImageONWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String onPressImageUrl = be.getData();
-                  if (onPressImage != null) {
-                     onPressImage.setSrc(onPressImageUrl);
-                  } else {
-                     uiButton.setPressImage(new ImageSource(onPressImageUrl));
-                  }
-                  pressImageField.setText(uiButton.getPressImage().getImageFileName());
-               }
-            });
+           final ImageSource image = uiButton.getPressImage();
+           
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
+           imageAssetPicker.show();
+           imageAssetPicker.center();
+           imageAssetPicker.setListener(new ImageAssetPickerListener() {
+            @Override
+            public void imagePicked(String imageURL) {
+              if (image != null) {
+                 image.setSrc(imageURL);
+              } else {
+                 uiButton.setPressImage(new ImageSource(imageURL));
+              }
+              pressImageField.setText(uiButton.getPressImage().getImageFileName());              
+            }
+           });
          }
       });
       pressImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {

@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +43,7 @@ import java.util.Set;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -112,6 +114,7 @@ import org.openremote.modeler.utils.ZipUtils;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
@@ -306,7 +309,7 @@ public class ResourceServiceImpl implements ResourceService
    *
    * @deprecated looks unused
    */
-  @Deprecated public File uploadImage(InputStream inputStream, String fileName, String sessionId)
+  @Deprecated @Override public File uploadImage(InputStream inputStream, String fileName, String sessionId)
   {
     File file = new File(
         PathConfig.getInstance(configuration).userFolder(sessionId) +
@@ -324,7 +327,13 @@ public class ResourceServiceImpl implements ResourceService
   //    - restrict file names
   //    - should be a direct call to Beehive
   //
-  public File uploadImage(InputStream inputStream, String fileName)
+  //
+  //  @deprecated Should eventually go away, with a direct API in
+  //  {@link org.openremote.modeler.beehive.BeehiveService} to upload images to account (and not
+  //  upload as part of save-cycle). See MODELER-292.
+  //
+  //
+  @Deprecated @Override public File uploadImage(InputStream inputStream, String fileName)
   {
     File file = new File(
         PathConfig.getInstance(configuration).userFolder(userService.getAccount()) +
@@ -334,6 +343,23 @@ public class ResourceServiceImpl implements ResourceService
     return uploadFile(inputStream, file);
   }
 
+  @Override public List<GraphicalAssetDTO>getUserImagesURLs() {
+    File userFolder = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()));
+    String[] imageFiles = userFolder.list(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        String lowercaseName = name.toLowerCase();
+        return (lowercaseName.endsWith("png") || lowercaseName.endsWith("gif") || lowercaseName.endsWith("jpg") || lowercaseName.endsWith("jpeg"));
+      }
+    });
+    List<GraphicalAssetDTO> assets = new ArrayList<GraphicalAssetDTO>();
+    if (imageFiles != null) { // Seems we sometimes get a null (got it when tomcat was still starting)
+      for (int i = 0; i < imageFiles.length; i++) {
+        assets.add(new GraphicalAssetDTO(imageFiles[i], getRelativeResourcePathByCurrentAccount(imageFiles[i])));
+      }
+    }
+    return assets;
+  }
 
   //
   //  TODO :
@@ -353,6 +379,22 @@ public class ResourceServiceImpl implements ResourceService
       {
         dir.mkdirs();     // TODO : need to check success
       }
+
+      String originalFileName = file.getName();
+
+      // First get rid of "invalid" characters in filename
+      String escapedChar = "[ \\+\\-\\*%\\!\\(\\\"')_#;/?:&;=$,#<>]";
+      originalFileName = originalFileName.replaceAll(escapedChar, "");
+      file = new File(dir.getAbsolutePath() + File.separator + originalFileName);
+
+      // Don't replace an existing file, add "index" if required to not have a name clash
+      String extension = FilenameUtils.getExtension(originalFileName);
+      String originalNameWithoutExtension = originalFileName.replace("." + extension, "");
+      int index = 0;
+      while (file.exists()) {
+        file = new File(dir.getAbsolutePath() + File.separator + originalNameWithoutExtension + "." + Integer.toString(++index) + "." + extension);
+      }
+
 
       FileUtils.touch(file);
 
@@ -1235,6 +1277,7 @@ public class ResourceServiceImpl implements ResourceService
   }
 
 
+
   /**
    * This method is calling by controllerXML.vm, to export sensors which from database.
    */
@@ -1312,5 +1355,32 @@ public class ResourceServiceImpl implements ResourceService
          return maxId++;
       }
    }
+
+
+  @Override
+  public File getTempDirectory(String sessionId) {
+
+       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+      if (tmpDir.exists() && tmpDir.isDirectory()) {
+         try {
+            FileUtils.deleteDirectory(tmpDir);
+         } catch (IOException e) {
+            throw new FileOperationException("Error in deleting temp dir", e);
+         }
+      }
+      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
+       return tmpDir;
+  }
+
+  @Override public void deleteImage(String imageName) {
+
+    // TODO: make it fail to test UI reporting
+
+    File image = new File(PathConfig.getInstance(configuration).userFolder(userService.getAccount()) + imageName);
+    if (!image.delete()) {
+      // TODO: handle correctly
+      throw new RuntimeException("Could not delete file");
+    }
+  }
 
 }
