@@ -96,7 +96,7 @@ public class Esp3RdIDBaseCommandTest
     Assert.assertEquals(baseID, command.getBaseID());
   }
 
-  @Test public void testSendMoreThanOnce() throws Exception
+  @Test public void testRepeatedSend() throws Exception
   {
     TestProcessor processor = new TestProcessor(response);
     Esp3RdIDBaseCommand command = new Esp3RdIDBaseCommand();
