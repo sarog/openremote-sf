@@ -133,7 +133,7 @@ public class Esp3RdVersionCommandTest
     Assert.assertEquals(apiVersionBuild, command.getApiVersion().getBuild());
   }
 
-  @Test public void testSendMoreThanOnce() throws Exception
+  @Test public void testRepeatedSend() throws Exception
   {
     TestProcessor processor = new TestProcessor(response);
     Esp3RdVersionCommand command = new Esp3RdVersionCommand();
