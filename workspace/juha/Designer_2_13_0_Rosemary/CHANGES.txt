@@ -1,7 +1,8 @@
 Designer 2.13.0 (2012-05-XX Rosemary)
 =====================================
 
- - TODO
+ - Performance improvements of the client side (web browser
+   Javascript) code of the KNX and Russound import wizards
 
 
 Designer 2.12.0 (2012-05-20 Jura)
