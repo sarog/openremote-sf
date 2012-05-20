@@ -18,34 +18,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.modeler.client.dto;
+package org.openremote.modeler.shared.dto;
 
 import java.io.Serializable;
+
+import org.openremote.modeler.domain.SensorType;
 
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 @SuppressWarnings("serial")
-public class SwitchDTO implements Serializable, BeanModelTag {
+public class SensorDTO implements Serializable, BeanModelTag {
 
   private String displayName;
-  private String onCommandName;
-  private String offCommandName;
-  private String sensorName;
-  private String deviceName;
+  private SensorType type;
+  private String commandName;
+  private String minValue;
+  private String maxValue;
+  private String statesInfo;
   private Long oid;
   
-  public SwitchDTO() {
+  public SensorDTO() {
     super();
   }
 
-  public SwitchDTO(Long oid, String displayName, String onCommandName, String offCommandName, String sensorName, String deviceName) {
+  public SensorDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, String statesInfo) {
     super();
     this.oid = oid;
     this.displayName = displayName;
-    this.onCommandName = onCommandName;
-    this.offCommandName = offCommandName;
-    this.sensorName = sensorName;
-    this.deviceName = deviceName;
+    this.type = type;
+    this.commandName = commandName;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.statesInfo = statesInfo;
   }
 
   public String getDisplayName() {
@@ -56,36 +60,44 @@ public class SwitchDTO implements Serializable, BeanModelTag {
     this.displayName = displayName;
   }
 
-  public String getOnCommandName() {
-    return onCommandName;
+  public SensorType getType() {
+    return type;
   }
 
-  public void setOnCommandName(String onCommandName) {
-    this.onCommandName = onCommandName;
+  public void setType(SensorType type) {
+    this.type = type;
   }
 
-  public String getOffCommandName() {
-    return offCommandName;
+  public String getCommandName() {
+    return commandName;
   }
 
-  public void setOffCommandName(String offCommandName) {
-    this.offCommandName = offCommandName;
+  public void setCommandName(String commandName) {
+    this.commandName = commandName;
   }
 
-  public String getSensorName() {
-    return sensorName;
+  public String getMinValue() {
+    return minValue;
   }
 
-  public void setSensorName(String sensorName) {
-    this.sensorName = sensorName;
+  public void setMinValue(String minValue) {
+    this.minValue = minValue;
   }
 
-  public String getDeviceName() {
-    return deviceName;
+  public String getMaxValue() {
+    return maxValue;
   }
 
-  public void setDeviceName(String deviceName) {
-    this.deviceName = deviceName;
+  public void setMaxValue(String maxValue) {
+    this.maxValue = maxValue;
+  }
+
+  public String getStatesInfo() {
+    return statesInfo;
+  }
+
+  public void setStatesInfo(String statesInfo) {
+    this.statesInfo = statesInfo;
   }
 
   public Long getOid() {

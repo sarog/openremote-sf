@@ -392,9 +392,16 @@ public class DevicePanel extends ContentPanel {
               @Override
               public void afterSubmit(SubmitEvent be) {
                  deviceWindow.hide();
+                 
+//                 ArrayList<Device> devices = be.getData();
+                 // TODO: should indicate the devices that are updated
+                 eventBus.fireEvent(new DeviceUpdatedEvent(null));
+
+                 /*
                  List<BeanModel> deviceModels = be.getData();
                  tree.getStore().add(deviceModels, true);
-                 Info.display("Info", "Added " + deviceModels.size() + " Russound zone devices successfully.");
+                 */
+//                 Info.display("Info", "Added " + devices.size() + " Russound zone devices successfully.");
               }
            });
         }
@@ -845,11 +852,16 @@ public class DevicePanel extends ContentPanel {
           knxImportWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
              @Override
              public void afterSubmit(SubmitEvent be) {
+               /*
                 List<BeanModel> deviceCommandModels = be.getData();
                 for (BeanModel deviceCommandModel : deviceCommandModels) {
                    tree.getStore().add(deviceModel, deviceCommandModel, false);
                 }
                 tree.setExpanded(deviceModel, true);
+                */
+                eventBus.fireEvent(new DeviceUpdatedEvent((Device)deviceModel.getBean()));
+
+               
                 knxImportWindow.hide();
              }
           });

@@ -17,18 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.lutron.importmodel;
+package org.openremote.modeler.client.knx;
 
 import org.openremote.modeler.client.utils.ArrayOverlay;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class AreaOverlay extends JavaScriptObject {
+public class KNXImportResultOverlay  extends JavaScriptObject {
 
-  protected AreaOverlay() {}
+  // Overlay types always have protected, zero-arg ctors
+  protected KNXImportResultOverlay() { } 
+    
+  // Typically, methods on overlay types are JSNI
+  public final native String getException() /*-{ return this.exception; }-*/;
+
+  public final native ArrayOverlay<RecordOverlay> getRecords() /*-{ return this.records; }-*/;
+
+  public static native KNXImportResultOverlay fromJSONString(String jsonString) /*-{
+    return eval('(' + jsonString + ')');
+  }-*/;
   
-  public final native String getName() /*-{ return this.name; }-*/;
-
-  public final native ArrayOverlay<RoomOverlay> getRooms() /*-{ return this.rooms; }-*/;
-
 }
