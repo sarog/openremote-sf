@@ -1,5 +1,10 @@
+Designer 2.13.0 (2012-05-XX Rosemary)
+=====================================
 
-Designer 2.12.0 (2012-XX-XX Jura)
+ - TODO
+
+
+Designer 2.12.0 (2012-05-20 Jura)
 =================================
 
  - Fixes for UI issues where elements in a template
