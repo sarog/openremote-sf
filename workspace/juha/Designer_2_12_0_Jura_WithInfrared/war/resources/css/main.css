@@ -392,3 +392,8 @@ table.screen-btn-cont td.br-c{
 .gwt-SplitLayoutPanel-VDragger {
   cursor: row-resize;
 }
+
+.row-invalid_file_imported_code .x-grid3-cell-inner  {
+ color:red;
+}
+

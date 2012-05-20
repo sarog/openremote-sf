@@ -127,4 +127,6 @@ public class Constants {
    public static final String ROLE_DESIGNER_DISPLAYNAME = "UI Designer";
    public static final String ROLE_MODELER_DESIGNER_DISPLAYNAME = "Building Modeler & UI Designer";
    public static final String ROLE_ADMIN_DISPLAYNAME = "Admin";
+   
+   public static final String IRFILE_UPLOAD_ERROR = "File Upload Error :";
 }
