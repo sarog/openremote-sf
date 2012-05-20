@@ -105,3 +105,4 @@ public interface ResourceService
    void deleteImage(String imageName);
 }
 
+   

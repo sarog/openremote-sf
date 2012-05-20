@@ -697,7 +697,7 @@ OpenRemote Designer Sub-components:
 * Apache Jakarta Standard Taglib (standard.jar and jstl.jar) are licensed
   under Apache License, v2.0
 * Apache Commons Codec 1.3, DBCP 1.2.1, Collections 3.2.1, Fileupload 1.2.1,
-  HTTPClient 3.0, IO 1.2, Lang 2.1, Logging 1.1 and Pool 1.2 are licensed 
+  HTTPClient 3.0, IO 1.2, Lang 2.4, Logging 1.1 and Pool 1.2 are licensed 
   under Apache License, v2.0
 * Asm library is licensed under BSD-like license which is included below.
 * Beanlib libraries are licensed under Apache License, v2.0
