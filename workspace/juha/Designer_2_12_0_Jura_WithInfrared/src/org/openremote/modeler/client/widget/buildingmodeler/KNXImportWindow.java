@@ -24,21 +24,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
+import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
-import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.knx.KNXImportResultOverlay;
+import org.openremote.modeler.client.lutron.importmodel.LutronImportResultOverlay;
 import org.openremote.modeler.client.utils.AutoCommitCheckColumnConfig;
 import org.openremote.modeler.client.utils.NoButtonsRowEditor;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.RangeSensor;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorCommandRef;
-import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.knx.ImportKNXConfigAction;
+import org.openremote.modeler.shared.knx.ImportKNXConfigResult;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -62,23 +60,23 @@ import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
-import com.extjs.gxt.ui.client.widget.form.FileUploadField;
-import com.extjs.gxt.ui.client.widget.form.SimpleComboBox;
-import com.extjs.gxt.ui.client.widget.form.SimpleComboValue;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
+import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
+import com.extjs.gxt.ui.client.widget.form.SimpleComboBox;
+import com.extjs.gxt.ui.client.widget.form.SimpleComboValue;
 import com.extjs.gxt.ui.client.widget.grid.CellEditor;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
-
-import flexjson.JSONDeserializer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * @author marcus@openremote.org
@@ -351,7 +349,7 @@ public class KNXImportWindow extends FormWindow {
 
     private void importSelectedGridData() {
         List<ModelData> data = (List<ModelData>) store.getModels();
-        List<ModelData> importData = new ArrayList<ModelData>();
+        ArrayList<ModelData> importData = new ArrayList<ModelData>();
 
         for (ModelData modelData : data) {
             if (modelData.get("import")) {
@@ -363,121 +361,35 @@ public class KNXImportWindow extends FormWindow {
                 }
             }
         }
-        List<DeviceCommand> deviceCommands = createDeviceCommandsFromGridData(importData);
-        DeviceCommandBeanModelProxy.saveDeviceCommandList(deviceCommands,
-                new AsyncSuccessCallback<List<BeanModel>>() {
-                    @Override
-                    public void onSuccess(List<BeanModel> deviceCommandModels) {
-                        createSensorsForStatusCommands(deviceCommandModels);
-                    }
-                });
-    }
+        
+        ModelerGinjector injector = GWT.create(ModelerGinjector.class);
+        DispatchAsync dispatcher = injector.getDispatchAsync();
+        ImportKNXConfigAction action = new ImportKNXConfigAction(device, importData);
+        dispatcher.execute(action, new AsyncCallback<ImportKNXConfigResult>() {
 
-    
-    private void createSensorsForStatusCommands(final List<BeanModel> deviceCommandModels) {
-        List<Sensor> sensorList = createSensorListFromDevices(deviceCommandModels);
-        SensorBeanModelProxy.saveSensorList(sensorList, new AsyncSuccessCallback<List<BeanModel>>() {
-            public void onSuccess(List<BeanModel> sensordModels) {
-                List<BeanModel> allCommandsAndSensors = new ArrayList<BeanModel>();
-                allCommandsAndSensors.addAll(deviceCommandModels);
-                allCommandsAndSensors.addAll(sensordModels);
-               fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allCommandsAndSensors));
-            }
-         });
+          @Override
+          public void onFailure(Throwable caught) {
+            Info.display("ERROR", caught.getMessage());
+            
+            // TODO: better error reporting
+          }
+
+          @Override
+          public void onSuccess(ImportKNXConfigResult result) {
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+          }
+        });
     }
     
-    private List<Sensor> createSensorListFromDevices(List<BeanModel> deviceCommandModels) {
-        List<Sensor> result = new ArrayList<Sensor>();
-        for (BeanModel commandBeanModel : deviceCommandModels) {
-            DeviceCommand deviceCommand = (DeviceCommand)commandBeanModel.getBean(); 
-            Protocol prot = deviceCommand.getProtocol();
-            String cmdName = prot.getAttributeValue("command");
-            String dpt = prot.getAttributeValue("DPT");
-            if ("status".equalsIgnoreCase(cmdName)) {
-                if ("1.001".equals(dpt)) {
-                    Sensor sensor = createSensor(SensorType.SWITCH, deviceCommand);
-                    result.add(sensor);
-                } else if ("5.001".equals(dpt)) {
-                    Sensor sensor = createSensor(SensorType.LEVEL, deviceCommand);
-                    result.add(sensor);
-                } else if ("5.010".equals(dpt)) {
-                    Sensor sensor = createSensor(SensorType.RANGE, deviceCommand);
-                    result.add(sensor);
-                }
-            }
-        }
-        return result;
-    }
-
-    private Sensor createSensor(SensorType type, DeviceCommand command) {
-        Sensor sensor;
-        if (type == SensorType.RANGE) {
-            sensor = new RangeSensor();
-           ((RangeSensor) sensor).setMin(0);
-           ((RangeSensor) sensor).setMax(255);
-        } else {
-            sensor = new Sensor();
-        }
-        sensor.setType(type);
-        sensor.setName(command.getName());
-
-        SensorCommandRef sensorCommandRef = new SensorCommandRef();
-        sensorCommandRef.setDeviceCommand(command);
-        sensorCommandRef.setSensor(sensor);
-        sensor.setSensorCommandRef(sensorCommandRef);
-        sensor.setDevice(device);
-        return sensor;
-    }
-
-    private List<DeviceCommand> createDeviceCommandsFromGridData(List<ModelData> importDataList) {
-        List<DeviceCommand> result = new ArrayList<DeviceCommand>();
-        for (ModelData importData : importDataList) {
-            DeviceCommand deviceCommand = null;
-            String name = importData.get("Name");
-            String groupAddress = importData.get("GroupAddress");
-            String commandType = importData.get("commandType");
-            String dpt = COMMAND_DPT_MAP.get(commandType);
-            if (commandType.indexOf("Status") != -1) {
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name, groupAddress, "status", dpt);
-                result.add(deviceCommand);
-            } else if ("Switch".equals(commandType)) {
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name + " (ON)", groupAddress, "on", dpt);
-                result.add(deviceCommand);
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name + " (OFF)", groupAddress, "off", dpt);
-                result.add(deviceCommand);
-            } else if ("Dim/Scale 0-100%".equals(commandType)) {
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name, groupAddress, "scale", dpt);
-                result.add(deviceCommand);
-            } else if ("Dimmer/Blind Step".equals(commandType)) {
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name + " (UP)", groupAddress, "dim_increase", dpt);
-                result.add(deviceCommand);
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name + " (DOWN)", groupAddress, "dim_decrease", dpt);
-                result.add(deviceCommand);
-            } else if ("Range 0-255".equals(commandType)) {
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name, groupAddress, "range", dpt);
-                result.add(deviceCommand);
-            } else if ("Play Scene".equals(commandType)) {
-                String sceneNo = importData.get("SceneNumber");
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name, groupAddress, "scene "+sceneNo, dpt);
-                result.add(deviceCommand);
-            } else if ("Store Scene".equals(commandType)) {
-                String sceneNo = importData.get("SceneNumber");
-                deviceCommand = DeviceCommandBeanModelProxy.convertToKnxDeviceCommand(device, name, groupAddress, "learn_scene "+sceneNo, dpt);
-                result.add(deviceCommand);
-            }
-        }
-        return result;
-    }
-
     /**
      * Adds the listeners to form.
      */
     private void addListenersToForm() {
         form.addListener(Events.Submit, new Listener<FormEvent>() {
             public void handleEvent(FormEvent be) {
-              Map<String, Object> data = JsonConverter.decode(be.getResultHtml());
-              if (data.containsKey("exception")) {
-                MessageBox.alert("Import Error", (String)data.get("exception"), null);
+              KNXImportResultOverlay importResult = KNXImportResultOverlay.fromJSONString(be.getResultHtml());
+              if (importResult.getException() != null) {
+                MessageBox.alert("Import Error", importResult.getException(), null);
               } else {
                 proxy.setData(be.getResultHtml());
                 loader.load();

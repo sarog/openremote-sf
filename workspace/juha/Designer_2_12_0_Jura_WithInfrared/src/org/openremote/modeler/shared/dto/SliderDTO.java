@@ -18,38 +18,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.modeler.client.dto;
+package org.openremote.modeler.shared.dto;
 
-import java.io.Serializable;
+public class SliderDTO implements DTO {
 
-import org.openremote.modeler.domain.SensorType;
-
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
-@SuppressWarnings("serial")
-public class SensorDTO implements Serializable, BeanModelTag {
+  private static final long serialVersionUID = 1L;
 
   private String displayName;
-  private SensorType type;
   private String commandName;
-  private String minValue;
-  private String maxValue;
-  private String statesInfo;
+  private String sensorName;
+  private String deviceName;
   private Long oid;
-  
-  public SensorDTO() {
+
+  public SliderDTO() {
     super();
   }
-
-  public SensorDTO(Long oid, String displayName, SensorType type, String commandName, String minValue, String maxValue, String statesInfo) {
+  
+  public SliderDTO(Long oid, String displayName, String commandName, String sensorName, String deviceName) {
     super();
     this.oid = oid;
     this.displayName = displayName;
-    this.type = type;
     this.commandName = commandName;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    this.statesInfo = statesInfo;
+    this.sensorName = sensorName;
+    this.deviceName = deviceName;
   }
 
   public String getDisplayName() {
@@ -60,14 +51,6 @@ public class SensorDTO implements Serializable, BeanModelTag {
     this.displayName = displayName;
   }
 
-  public SensorType getType() {
-    return type;
-  }
-
-  public void setType(SensorType type) {
-    this.type = type;
-  }
-
   public String getCommandName() {
     return commandName;
   }
@@ -76,28 +59,12 @@ public class SensorDTO implements Serializable, BeanModelTag {
     this.commandName = commandName;
   }
 
-  public String getMinValue() {
-    return minValue;
+  public String getSensorName() {
+    return sensorName;
   }
 
-  public void setMinValue(String minValue) {
-    this.minValue = minValue;
-  }
-
-  public String getMaxValue() {
-    return maxValue;
-  }
-
-  public void setMaxValue(String maxValue) {
-    this.maxValue = maxValue;
-  }
-
-  public String getStatesInfo() {
-    return statesInfo;
-  }
-
-  public void setStatesInfo(String statesInfo) {
-    this.statesInfo = statesInfo;
+  public void setSensorName(String sensorName) {
+    this.sensorName = sensorName;
   }
 
   public Long getOid() {
@@ -106,6 +73,14 @@ public class SensorDTO implements Serializable, BeanModelTag {
 
   public void setOid(Long oid) {
     this.oid = oid;
+  }
+
+  public String getDeviceName() {
+    return deviceName;
+  }
+
+  public void setDeviceName(String deviceName) {
+    this.deviceName = deviceName;
   }
   
 }

@@ -34,9 +34,13 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -59,31 +63,37 @@ public class DeviceBeanModelProxy {
     */
    public static void loadDevice(BeanModel beanModel, final AsyncSuccessCallback<List<BeanModel>> callback) {
       if (beanModel == null || beanModel.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getDeviceServiceAsync().loadAll(new AsyncSuccessCallback<List<Device>>() {
-            public void onSuccess(List<Device> result) {
+         AsyncServiceFactory.getDeviceServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+            public void onSuccess(ArrayList<DeviceDTO> result) {
+              
+              /*
                List<BeanModel> beanModels = Device.createModels(result);
                BeanModelDataBase.deviceTable.insertAll(beanModels);
+               */
+              
+              List<BeanModel> beanModels = DTOHelper.createModels(result);
                callback.onSuccess(beanModels);
             }
             
          });
-      } else if(beanModel.getBean() instanceof Device){
+      } else if(beanModel.getBean() instanceof DeviceDTO){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
-         Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
+         DeviceDTO device = (DeviceDTO) beanModel.getBean();
+         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>(){
 
             @Override
-            public void onSuccess(Device result) {
-               List<BeanModel> cmdBeanModels = DeviceCommand.createModels(result.getDeviceCommands());
-               List<BeanModel> sensorBeanModels = Sensor.createModels(result.getSensors());
-               List<BeanModel> sliderBeanModels = Slider.createModels(result.getSliders());
-               List<BeanModel> switchBeanModels = Switch.createModels(result.getSwitchs());
+            public void onSuccess(DeviceWithChildrenDTO result) {
+               List<BeanModel> cmdBeanModels = DTOHelper.createModels(result.getDeviceCommands());
+               List<BeanModel> sensorBeanModels = DTOHelper.createModels(result.getSensors());
+               List<BeanModel> sliderBeanModels = DTOHelper.createModels(result.getSliders());
+               List<BeanModel> switchBeanModels = DTOHelper.createModels(result.getSwitches());
                
+               /*
                BeanModelDataBase.deviceCommandTable.insertAll(cmdBeanModels);
                BeanModelDataBase.sensorTable.insertAll(sensorBeanModels);
                BeanModelDataBase.sliderTable.insertAll(sliderBeanModels);
                BeanModelDataBase.switchTable.insertAll(switchBeanModels);
-               
+               */
                beanModels.addAll(cmdBeanModels);
                beanModels.addAll(sensorBeanModels);
                beanModels.addAll(sliderBeanModels);

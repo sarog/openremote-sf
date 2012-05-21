@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -154,5 +155,25 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          }
       }
       return tmpResult;
+   }
+   
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.DeviceCommandService#loadComandsDTOByDevice(long)
+    */
+   public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
+     long originalTime = System.currentTimeMillis();
+     System.out.println("loadCommandsDTOByDevice " + id);
+      Device device = genericDAO.loadById(Device.class, id);
+      System.out.println("Got device " + device.getDisplayName());
+      ArrayList<DeviceCommandDTO> dtos = new ArrayList<DeviceCommandDTO>();
+      List<DeviceCommand> dcs = device.getDeviceCommands();
+      System.out.println("Got " + dcs.size() + " device commands");
+      for (DeviceCommand deviceCommand : dcs) {
+        dtos.add(new DeviceCommandDTO(deviceCommand.getOid(), deviceCommand.getDisplayName()));
+      }
+      System.out.println("Will return " + dtos.size() + " dtos");
+      System.out.println("Timing : " + (System.currentTimeMillis() - originalTime) + " ms");
+      return dtos;
    }
 }

@@ -22,10 +22,8 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.dto.SliderDTO;
-import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.shared.dto.SliderDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -36,11 +34,10 @@ import com.extjs.gxt.ui.client.data.BeanModelLookup;
  */
 public class SliderBeanModelTable extends BeanModelTable {
 
+  /*
    public SliderBeanModelTable() {
       super();
-      /*
-       * initialize the Database.  
-       */
+      // initialize the Database. 
       SliderBeanModelProxy.loadAll(null, new AsyncSuccessCallback<List<BeanModel>>(){
 
          public void onSuccess(List<BeanModel> result) {
@@ -49,6 +46,7 @@ public class SliderBeanModelTable extends BeanModelTable {
          
       });
    }
+   */
    
    public List<BeanModel> loadAllAsDTOs() {
      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SliderDTO.class);

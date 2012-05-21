@@ -32,18 +32,42 @@ import flexjson.JSON;
  * The domain class represent a slider entity.
  * It contains a command and a sensor.
  */
-@SuppressWarnings("serial")
+
 @Entity
 @Table(name = "slider")
 public class Slider extends BusinessEntity {
 
-   private String name;
+  private static final long serialVersionUID = 134992115758993597L;
+  
+  private String name;
    private SliderCommandRef setValueCmd;
    private SliderSensorRef sliderSensorRef;
    private Account account;
    private Device device;
    
-   public String getName() {
+   public Slider() {
+    super();
+  }
+
+  public Slider(long oid) {
+    super(oid);
+  }
+
+  public Slider(String name, DeviceCommand setCmd, Sensor sensor) {
+    super();
+    setName(name);
+    setDevice(sensor.getDevice());
+    SliderCommandRef setValueCmdRef = new SliderCommandRef();
+    setValueCmdRef.setDeviceCommand(setCmd);
+    setValueCmdRef.setDeviceName(setCmd.getDevice().getName());
+    setValueCmdRef.setSlider(this);
+    SliderSensorRef sensorRef = new SliderSensorRef(this);
+    sensorRef.setSensor(sensor);
+    setSetValueCmd(setValueCmdRef);
+    setSliderSensorRef(sensorRef);
+  }
+
+  public String getName() {
       return name;
    }
 

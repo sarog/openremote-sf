@@ -19,9 +19,11 @@
 */
 package org.openremote.modeler.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 /**
  * The Interface DeviceCommandService.
@@ -79,4 +81,7 @@ public interface DeviceCommandService {
    List<DeviceCommand> loadByDevice(long id);
    
    List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand);
+   
+   ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id);
+   
 }

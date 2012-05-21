@@ -31,19 +31,53 @@ import flexjson.JSON;
 /**
  * It represents a switch entity, includes sensor, on command and off command.
  */
-@SuppressWarnings("serial")
+
 @Entity
 @Table(name = "switch")
 public class Switch extends BusinessEntity {
 
-   private String name;
+  private static final long serialVersionUID  = 156984492491427373L;
+  
+  private String name;
    private SwitchCommandOnRef switchCommandOnRef;
    private SwitchCommandOffRef switchCommandOffRef;
    private SwitchSensorRef switchSensorRef;
    private Account account;
    private Device device;
    
-   public String getName() {
+   
+   
+   public Switch() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
+
+  public Switch(long oid) {
+    super(oid);
+    // TODO Auto-generated constructor stub
+  }
+
+  public Switch(DeviceCommand onCmd, DeviceCommand offCmd, Sensor sensor) {
+    super();
+    setDevice(sensor.getDevice());
+    SwitchCommandOnRef onRef = new SwitchCommandOnRef();
+    onRef.setDeviceCommand(onCmd);
+    onRef.setDeviceName(onCmd.getDevice().getName());
+    onRef.setOnSwitch(this);
+    SwitchCommandOffRef offRef = new SwitchCommandOffRef();
+    offRef.setDeviceCommand(offCmd);
+    offRef.setDeviceName(offCmd.getDevice().getName());
+    offRef.setOffSwitch(this);
+    SwitchSensorRef sensorRef = new SwitchSensorRef(this);
+    sensorRef.setSensor(sensor);
+    setSwitchCommandOnRef(onRef);
+    setSwitchCommandOffRef(offRef);
+    setSwitchSensorRef(sensorRef);
+    setName(sensor.getName()+ " Switch");
+  }
+
+  public String getName() {
       return name;
    }
 

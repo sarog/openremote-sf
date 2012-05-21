@@ -127,6 +127,7 @@ public class FileUploadController extends MultiActionController implements BeanF
         JSONSerializer serializer = new JSONSerializer();
         String jsonResult = serializer.exclude("*.class").deepSerialize(data);
         logger.debug("Responding with string\n" + jsonResult);
+        response.setHeader("content-type", "text/html");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().println(jsonResult);
     }
@@ -146,6 +147,7 @@ public class FileUploadController extends MultiActionController implements BeanF
       JSONSerializer serializer = new JSONSerializer();
       System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importResult) + "<");
       response.setHeader("content-type", "text/html");
+      response.setCharacterEncoding("UTF-8");
       response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
     
