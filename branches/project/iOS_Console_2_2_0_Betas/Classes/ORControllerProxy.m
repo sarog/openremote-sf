@@ -25,6 +25,10 @@
 @interface ORControllerProxy ()
 
 @property (nonatomic, assign) ORController *controller;
+@property (nonatomic, retain) NSMutableArray *commandsQueue;
+
+- (void)queueCommand:(ORControllerSender *)command;
+- (void)processQueue;
 
 @end
 
@@ -35,8 +39,38 @@
     self = [super init];
     if (self) {
         self.controller = aController;
+        self.commandsQueue = [NSMutableArray array];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    self.commandsQueue = nil;
+    self.controller = nil;
+    [super dealloc];
+}
+
+#pragma mark -
+
+/**
+ * Stores a command to controller for later execution.
+ */
+- (void)queueCommand:(ORControllerSender *)command
+{
+    [self.commandsQueue addObject:command];
+}
+
+/**
+ * Processes all stored commands to controller.
+ * This first implementation just sends them all to the controller.
+ */
+- (void)processQueue
+{
+    for (ORControllerSender *command in self.commandsQueue) {
+        [command send];
+        [self.commandsQueue removeObject:command];
+    }
 }
 
 #pragma mark -
@@ -45,7 +79,8 @@
 {
     ORControllerCommandSender *commandSender = [[ORControllerCommandSender alloc] initWithController:self.controller command:command component:component];
     commandSender.delegate = delegate;
-    [commandSender send];
+    [self queueCommand:commandSender];
+    [self processQueue];
     return [commandSender autorelease];
 }
 
@@ -53,7 +88,8 @@
 {
     ORControllerStatusRequestSender *statusRequestSender = [[ORControllerStatusRequestSender alloc] initWithController:self.controller ids:ids];
     statusRequestSender.delegate = delegate;
-    [statusRequestSender send];
+    [self queueCommand:statusRequestSender];
+    [self processQueue];
     return [statusRequestSender autorelease];
 }
 
@@ -61,7 +97,8 @@
 {
     ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithController:self.controller ids:ids];
     pollingSender.delegate = delegate;
-    [pollingSender send];
+    [self queueCommand:pollingSender];
+    [self processQueue];
     return [pollingSender autorelease];
 }
 
@@ -69,7 +106,8 @@
 {
     ORControllerPanelsFetcher *panelsFetcher = [[ORControllerPanelsFetcher alloc] initWithController:self.controller];
     panelsFetcher.delegate = delegate;
-    [panelsFetcher send];
+    [self queueCommand:panelsFetcher];
+    [self processQueue];
     return [panelsFetcher autorelease];
 }
 
@@ -77,7 +115,8 @@
 {
     ORControllerCapabilitiesFetcher *capabilitiesFetcher = [[ORControllerCapabilitiesFetcher alloc] initWithController:self.controller];
     capabilitiesFetcher.delegate = delegate;
-    [capabilitiesFetcher send];
+    [self queueCommand:capabilitiesFetcher];
+    [self processQueue];
     return [capabilitiesFetcher autorelease];
 }
 
@@ -95,5 +134,6 @@
 }
 
 @synthesize controller;
+@synthesize commandsQueue;
 
 @end
