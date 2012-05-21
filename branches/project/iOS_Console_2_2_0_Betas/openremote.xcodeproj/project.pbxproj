@@ -378,6 +378,12 @@
 		60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60987EBC1402B0C000967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
 		60987EC01402B11F00967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
+		609AAFCD156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */; };
+		609AAFCE156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */; };
+		609AAFCF156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */; };
+		609AAFD3156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
+		609AAFD4156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
+		609AAFD5156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -1073,6 +1079,10 @@
 		60987EBB1402B09500967DEA /* SensorParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorParser.m; sourceTree = "<group>"; };
 		60987EBE1402B0FE00967DEA /* CommandParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandParser.h; sourceTree = "<group>"; };
 		60987EBF1402B10600967DEA /* CommandParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandParser.m; sourceTree = "<group>"; };
+		609AAFCB156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollOrStatusSender.h; sourceTree = "<group>"; };
+		609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollOrStatusSender.m; sourceTree = "<group>"; };
+		609AAFD1156A5FA6000DA1F9 /* ORControllerStatusRequestSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerStatusRequestSender.h; sourceTree = "<group>"; };
+		609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerStatusRequestSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A2D262140662B500A529ED /* DefinitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionManager.h; sourceTree = "<group>"; };
 		60A2D263140662BA00A529ED /* DefinitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionManager.m; sourceTree = "<group>"; };
@@ -2323,8 +2333,12 @@
 				60AFCECF1371787300A811D4 /* ORControllerProxy.m */,
 				60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */,
 				60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */,
+				609AAFCB156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.h */,
+				609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */,
 				6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */,
 				6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */,
+				609AAFD1156A5FA6000DA1F9 /* ORControllerStatusRequestSender.h */,
+				609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */,
 				60C81D9B137BD55300B2A12A /* ORControllerPanelsFetcher.h */,
 				60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */,
 				60AFCEE713729AA400A811D4 /* ControllerRequest.h */,
@@ -3124,6 +3138,8 @@
 				60DED44F155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED453155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
 				60DED45C155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
+				609AAFCD156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
+				609AAFD3156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3295,6 +3311,8 @@
 				60DED450155A9E0300F5C0CD /* DeviceProtocolBrightnessCommand.m in Sources */,
 				60DED454155A9FE900F5C0CD /* ClientSideProtocolReadCommandBase.m in Sources */,
 				60DED45D155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
+				609AAFCF156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
+				609AAFD5156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3410,6 +3428,8 @@
 				60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 				60F386F8155503820089F8BD /* SensorStatusCacheTest.m in Sources */,
+				609AAFCE156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
+				609AAFD4156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

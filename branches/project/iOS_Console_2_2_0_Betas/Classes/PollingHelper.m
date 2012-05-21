@@ -39,7 +39,7 @@
 @property(nonatomic, readwrite) BOOL isError;
 @property(nonatomic, retain, readwrite) NSString *pollingStatusIds;
 @property (nonatomic, retain) NSArray *localSensors;
-@property (nonatomic, retain) ORControllerPollingSender *pollingSender;
+@property (nonatomic, retain) ORControllerPollOrStatusSender *pollingSender;
 
 @property (nonatomic, retain) UpdateController *updateController;
 
