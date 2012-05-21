@@ -18,36 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
-#import "ControllerRequest.h"
+#import "ORControllerPollOrStatusSender.h"
 
-@class ORController;
-
-@protocol ORControllerPollingSenderDelegate <NSObject>
-
-// Note that this applies to both polling and status request, even if the name would indicate otherwise
-- (void)pollingDidFailWithError:(NSError *)error;
-- (void)pollingDidSucceed;
-- (void)pollingDidTimeout;
-- (void)pollingDidReceiveErrorResponse;
-
-- (void)controllerConfigurationUpdated:(ORController *)aController;
-
-@end
-
-@interface ORControllerPollingSender : NSObject <ControllerRequestDelegate> {
-    NSString *ids;
-    ControllerRequest *controllerRequest;
-    
-    NSObject <ORControllerPollingSenderDelegate> *delegate;
-}
-
-@property (nonatomic, assign) NSObject <ORControllerPollingSenderDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController ids:(NSString *)someIds;
-- (void)requestStatus;
-- (void)poll;
-
-- (void)cancel;
+@interface ORControllerPollingSender : ORControllerPollOrStatusSender
 
 @end

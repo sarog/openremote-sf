@@ -49,19 +49,19 @@
     return [commandSender autorelease];
 }
 
-- (ORControllerPollingSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate
+- (ORControllerStatusRequestSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate
 {
-    ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithController:self.controller ids:ids];
-    pollingSender.delegate = delegate;
-    [pollingSender requestStatus];
-    return [pollingSender autorelease];
+    ORControllerStatusRequestSender *statusRequestSender = [[ORControllerStatusRequestSender alloc] initWithController:self.controller ids:ids];
+    statusRequestSender.delegate = delegate;
+    [statusRequestSender send];
+    return [statusRequestSender autorelease];
 }
 
 - (ORControllerPollingSender *)requestPollingForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate
 {
     ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithController:self.controller ids:ids];
     pollingSender.delegate = delegate;
-    [pollingSender poll];
+    [pollingSender send];
     return [pollingSender autorelease];
 }
 

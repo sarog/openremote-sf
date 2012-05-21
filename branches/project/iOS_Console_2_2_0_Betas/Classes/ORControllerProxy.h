@@ -21,6 +21,7 @@
 #import <Foundation/Foundation.h>
 #import "ORControllerCommandSender.h"
 #import "ORControllerPollingSender.h"
+#import "ORControllerStatusRequestSender.h"
 #import "ORControllerPanelsFetcher.h"
 #import "ORControllerCapabilitiesFetcher.h"
 #import "ORControllerGroupMembersFetcher.h"
@@ -36,7 +37,7 @@
 
 - (ORControllerCapabilitiesFetcher *)fetchCapabilitiesWithDelegate:(NSObject <ORControllerCapabilitiesFetcherDelegate> *)delegate;
 - (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate;
-- (ORControllerPollingSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
+- (ORControllerStatusRequestSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
 - (ORControllerPollingSender *)requestPollingForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
 - (ORControllerPanelsFetcher *)fetchPanelsWithDelegate:(NSObject <ORControllerPanelsFetcherDelegate> *)delegate;
 - (ORControllerGroupMembersFetcher *)fetchGroupMembersWithDelegate:(NSObject <ORControllerGroupMembersFetcherDelegate> *)delegate;
