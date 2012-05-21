@@ -30,10 +30,7 @@
 
 @end
 
-@interface ORControllerCommandSender : ORControllerSender <ControllerRequestDelegate> {
-    NSString *command;
-    Component *component;
-}
+@interface ORControllerCommandSender : ORControllerSender <ControllerRequestDelegate>
 
 @property (nonatomic, assign) NSObject <ORControllerCommandSenderDelegate> *delegate;
 

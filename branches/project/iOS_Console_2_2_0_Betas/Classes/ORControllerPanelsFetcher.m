@@ -28,6 +28,7 @@
 
 @property (nonatomic, retain) ControllerRequest *controllerRequest;
 @property (nonatomic, retain) ORController *controller;
+@property (nonatomic, retain) NSMutableArray *panels;
 
 @end
 
@@ -37,14 +38,14 @@
 {
     self = [super initWithController:aController];
     if (self) {
-        panels = [[NSMutableArray alloc] init];
+        self.panels = [NSMutableArray array];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [panels release];
+    self.panels = nil;
     [super dealloc];
 }
 
@@ -63,7 +64,7 @@
 {
 	if ([elementName isEqualToString:@"panel"]) {
 		NSLog(@"panel logical id : %@",[attributeDict valueForKey:@"name"]);
-		[panels addObject:[attributeDict valueForKey:@"name"]]; 
+		[self.panels addObject:[attributeDict valueForKey:@"name"]]; 
 	}
 }
 
@@ -75,7 +76,7 @@
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
 	[xmlParser release];
-    [self.delegate fetchPanelsDidSucceedWithPanels:[NSArray arrayWithArray:panels]];
+    [self.delegate fetchPanelsDidSucceedWithPanels:[NSArray arrayWithArray:self.panels]];
 }
 
 // optional TODO EBR is it required
@@ -104,5 +105,6 @@
 @synthesize controller;
 @synthesize delegate;
 @synthesize controllerRequest;
+@synthesize panels;
 
 @end
