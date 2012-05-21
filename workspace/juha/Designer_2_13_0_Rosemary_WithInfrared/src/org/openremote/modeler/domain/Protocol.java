@@ -163,6 +163,8 @@ public class Protocol extends BusinessEntity {
      getAttributes().add(protocolAttr);
    }
    
-
+  public void clearProtocolAttributes() {
+    getAttributes().clear();
+  }
    
 }

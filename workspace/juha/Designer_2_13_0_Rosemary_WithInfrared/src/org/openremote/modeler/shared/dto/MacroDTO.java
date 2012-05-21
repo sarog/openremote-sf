@@ -1,18 +1,20 @@
 package org.openremote.modeler.shared.dto;
 
-public class SensorDTO implements DTO {
+import java.util.ArrayList;
+
+public class MacroDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
   private String displayName;
   private long oid;
-  private DeviceCommandDTO command;
+  private ArrayList<MacroItemDTO> items;
 
-  public SensorDTO() {
+  public MacroDTO() {
     super();
   }
   
-  public SensorDTO(long oid, String displayName) {
+  public MacroDTO(long oid, String displayName) {
     super();
     this.oid = oid;
     this.displayName = displayName;
@@ -34,12 +36,12 @@ public class SensorDTO implements DTO {
     this.oid = oid;
   }
   
-  public DeviceCommandDTO getCommand() {
-    return command;
+  public ArrayList<MacroItemDTO> getItems() {
+    return items;
   }
 
-  public void setCommand(DeviceCommandDTO command) {
-    this.command = command;
+  public void setItems(ArrayList<MacroItemDTO> items) {
+    this.items = items;
   }
 
 }

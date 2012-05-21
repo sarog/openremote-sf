@@ -109,6 +109,10 @@ public class SensorWizardWindow extends SensorWindow {
                      ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
                      ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
                   } else if (type == SensorType.CUSTOM) {
+                    
+                    // TODO
+                    
+                    /* 
                      sensor = new CustomSensor();
                      List<BeanModel> states = grid.getStore().getModels();
                      for (BeanModel stateModel : states) {
@@ -116,6 +120,8 @@ public class SensorWizardWindow extends SensorWindow {
                         state.setSensor((CustomSensor) sensor);
                         ((CustomSensor) sensor).addState(state);
                      }
+                     */
+                     
                   }
                   sensor.setType(type);
                }else {

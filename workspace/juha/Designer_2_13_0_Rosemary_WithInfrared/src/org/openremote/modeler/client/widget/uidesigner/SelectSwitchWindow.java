@@ -22,7 +22,7 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.SwitchBeanModelTable;
-import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -88,7 +88,7 @@ public class SelectSwitchWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSwitchModel = se.getSelectedItem();
             if (selectedSwitchModel != null) {
-               SwitchDTO switchToggle = selectedSwitchModel.getBean();
+               SwitchDetailsDTO switchToggle = selectedSwitchModel.getBean();
                String switchInfo = "<p><b>Switch info</b></p>";
                if (switchToggle.getOnCommandName() != null){
                   switchInfo = switchInfo + "<p>On: " + switchToggle.getOnCommandName() + "</p>";
@@ -115,7 +115,7 @@ public class SelectSwitchWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a switch.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof SwitchDTO) {
+                  if (beanModel.getBean() instanceof SwitchDetailsDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a switch.", null);

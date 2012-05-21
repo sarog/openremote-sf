@@ -32,7 +32,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.UISlider;
-import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -105,7 +105,7 @@ public class SliderPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                  BeanModel dataModel = be.<BeanModel> getData();
-                 SliderDTO sliderDTO = dataModel.getBean();
+                 SliderDetailsDTO sliderDTO = dataModel.getBean();
                  Slider slider = BeanModelDataBase.sliderTable.get(sliderDTO.getOid()).getBean();
                   screenSlider.setSlider(slider);
                   command.setText(slider.getName());

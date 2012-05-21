@@ -20,47 +20,67 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class DeviceCommandDTO implements DTO {
+public class SliderDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
-  
-  private String displayName;
-  private String protocolType;
-  private long oid;
 
-  public DeviceCommandDTO() {
+  private String displayName;
+  private String commandName;
+  private String sensorName;
+  private String deviceName;
+  private Long oid;
+
+  public SliderDetailsDTO() {
     super();
   }
   
-  public DeviceCommandDTO(long oid, String displayName, String protocolType) {
+  public SliderDetailsDTO(Long oid, String displayName, String commandName, String sensorName, String deviceName) {
     super();
     this.oid = oid;
     this.displayName = displayName;
-    this.protocolType = protocolType;
+    this.commandName = commandName;
+    this.sensorName = sensorName;
+    this.deviceName = deviceName;
   }
 
   public String getDisplayName() {
     return displayName;
   }
-  
+
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
-  
-  public long getOid() {
+
+  public String getCommandName() {
+    return commandName;
+  }
+
+  public void setCommandName(String commandName) {
+    this.commandName = commandName;
+  }
+
+  public String getSensorName() {
+    return sensorName;
+  }
+
+  public void setSensorName(String sensorName) {
+    this.sensorName = sensorName;
+  }
+
+  public Long getOid() {
     return oid;
   }
-  
-  public void setOid(long oid) {
+
+  public void setOid(Long oid) {
     this.oid = oid;
   }
 
-  public String getProtocolType() {
-    return protocolType;
+  public String getDeviceName() {
+    return deviceName;
   }
 
-  public void setProtocolType(String protocolType) {
-    this.protocolType = protocolType;
+  public void setDeviceName(String deviceName) {
+    this.deviceName = deviceName;
   }
-
+  
 }

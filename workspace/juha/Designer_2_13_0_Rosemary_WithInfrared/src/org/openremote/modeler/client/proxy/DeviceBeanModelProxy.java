@@ -36,11 +36,14 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -79,7 +82,7 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof DeviceDTO){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
          DeviceDTO device = (DeviceDTO) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>(){
+         AsyncServiceFactory.getDeviceServiceAsync().loadDeviceWithChildrenDTOById(device.getOid(), new AsyncSuccessCallback<DeviceWithChildrenDTO>() {
 
             @Override
             public void onSuccess(DeviceWithChildrenDTO result) {
@@ -102,23 +105,21 @@ public class DeviceBeanModelProxy {
             }
             
          });
-      }else if(beanModel.getBean() instanceof Sensor){
-         Sensor sensor = beanModel.getBean();
+      }else if(beanModel.getBean() instanceof SensorDTO) {
+         SensorDTO sensor = beanModel.getBean();
          List<BeanModel> sensorBenModels = new ArrayList<BeanModel>();
-         sensorBenModels.add(sensor.getSensorCommandRef().getBeanModel());
+         sensorBenModels.add(DTOHelper.getBeanModel(sensor.getCommand()));
          callback.onSuccess(sensorBenModels);
-      } else if(beanModel.getBean() instanceof Slider){
-         Slider slider = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SliderDTO) {
+         SliderDTO slider = beanModel.getBean();
          List<BeanModel> sliderModels = new ArrayList<BeanModel>();
-         if (slider.getSetValueCmd() != null) {
-            sliderModels.add(slider.getSetValueCmd().getBeanModel());
-         }
+         sliderModels.add(DTOHelper.getBeanModel(slider.getCommand()));
          callback.onSuccess(sliderModels);
-      } else if(beanModel.getBean() instanceof Switch){
-         Switch swh = beanModel.getBean();
+      } else if(beanModel.getBean() instanceof SwitchDTO) {
+         SwitchDTO swh = beanModel.getBean();
          List<BeanModel> switchBeanModels = new ArrayList<BeanModel>();
-         switchBeanModels.add(swh.getSwitchCommandOnRef().getBeanModel());
-         switchBeanModels.add(swh.getSwitchCommandOffRef().getBeanModel());
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOnCommand()));
+         switchBeanModels.add(DTOHelper.getBeanModel(swh.getOffCommand()));
          callback.onSuccess(switchBeanModels);
       }
    }
@@ -209,23 +210,8 @@ public class DeviceBeanModelProxy {
       });
    }
 
-   
-   /**
-    * Update device.
-    * 
-    * @param deviceModel the device model
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDevice(final BeanModel deviceModel, Map<String, String> map, final AsyncSuccessCallback<BeanModel> callback) {
-      Device device = deviceModel.getBean();
-      setAttrsToDevice(map, device);
-      AsyncServiceFactory.getDeviceServiceAsync().updateDevice(device, new AsyncSuccessCallback<Void>() {
-         public void onSuccess(Void result) {
-            BeanModelDataBase.deviceTable.update(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
+   public static void updateDeviceWithDTO(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceServiceAsync().updateDeviceWithDTO(device, callback);
    }
    
    /**
@@ -374,4 +360,13 @@ public class DeviceBeanModelProxy {
          }
       });
    }
+   
+   public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
+         public void onSuccess(DeviceDetailsDTO result) {
+           callback.onSuccess(DTOHelper.getBeanModel(result));
+         }
+       });
+   }
+
 }
