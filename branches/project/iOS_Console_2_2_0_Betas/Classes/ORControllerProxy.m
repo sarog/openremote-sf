@@ -68,8 +68,10 @@
 - (void)processQueue
 {
     for (ORControllerSender *command in self.commandsQueue) {
-        [command send];
-        [self.commandsQueue removeObject:command];
+        if ([command shouldExecuteNow]) {
+            [command send];
+            [self.commandsQueue removeObject:command];
+        }
     }
 }
 

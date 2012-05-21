@@ -32,4 +32,12 @@
 - (void)send;
 - (void)cancel;
 
+/**
+ * Indicates whether or not the sender should execute at this time.
+ * If it does not, it'll stay in the queue and will be offered to execute at a later stage.
+ * This allows command to check if the current "environment" meets to required condition for execution.
+ * For instance, it can check that the controller has obtained all the required information (e.g. capabilities).
+ */
+- (BOOL)shouldExecuteNow;
+
 @end
