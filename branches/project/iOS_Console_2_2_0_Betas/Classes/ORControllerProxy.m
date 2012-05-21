@@ -69,7 +69,7 @@
 {
     ORControllerPanelsFetcher *panelsFetcher = [[ORControllerPanelsFetcher alloc] initWithController:self.controller];
     panelsFetcher.delegate = delegate;
-    [panelsFetcher fetch];
+    [panelsFetcher send];
     return [panelsFetcher autorelease];
 }
 
@@ -77,7 +77,7 @@
 {
     ORControllerCapabilitiesFetcher *capabilitiesFetcher = [[ORControllerCapabilitiesFetcher alloc] initWithController:self.controller];
     capabilitiesFetcher.delegate = delegate;
-    [capabilitiesFetcher fetch];
+    [capabilitiesFetcher send];
     return [capabilitiesFetcher autorelease];
 }
 

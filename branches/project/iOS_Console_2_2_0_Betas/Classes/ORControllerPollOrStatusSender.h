@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 OpenRemote, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "ORControllerSender.h"
 #import "ControllerRequest.h"
 
 @class ORController;
@@ -23,12 +23,10 @@
 
 @end
 
-@interface ORControllerPollOrStatusSender : NSObject <ControllerRequestDelegate>
+@interface ORControllerPollOrStatusSender : ORControllerSender <ControllerRequestDelegate>
 
 @property (nonatomic, assign) NSObject <ORControllerPollingSenderDelegate> *delegate;
 
 - (id)initWithController:(ORController *)aController ids:(NSString *)someIds;
-- (void)send;
-- (void)cancel;
 
 @end

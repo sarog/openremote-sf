@@ -36,20 +36,9 @@
 - (void)dealloc
 {
     self.ids = nil;
-    self.controllerRequest = nil;
     self.controller = nil;
     self.delegate = nil;
     [super dealloc];
-}
-
-- (void)send
-{
-    // Don't do anything in this class, subclasses implement as appropriate
-}
-
-- (void)cancel
-{
-    [controllerRequest cancel];
 }
 
 - (void)handleServerResponseWithStatusCode:(int)statusCode

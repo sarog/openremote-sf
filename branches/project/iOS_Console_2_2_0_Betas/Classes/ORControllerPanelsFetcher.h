@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
+#import "ORControllerSender.h"
 #import "ControllerRequest.h"
 
 @class ORController;
@@ -33,8 +33,7 @@
 
 @end
 
-@interface ORControllerPanelsFetcher : NSObject <ControllerRequestDelegate, NSXMLParserDelegate> {
-    ControllerRequest *controllerRequest;
+@interface ORControllerPanelsFetcher : ORControllerSender <ControllerRequestDelegate, NSXMLParserDelegate> {
     NSMutableArray *panels;
     
     NSObject <ORControllerPanelsFetcherDelegate> *delegate;
@@ -43,6 +42,5 @@
 @property (nonatomic, assign) NSObject <ORControllerPanelsFetcherDelegate> *delegate;
 
 - (id)initWithController:(ORController *)aController;
-- (void)fetch;
 
 @end
