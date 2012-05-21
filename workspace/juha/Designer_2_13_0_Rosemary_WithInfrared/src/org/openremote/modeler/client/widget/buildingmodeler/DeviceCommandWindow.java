@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
@@ -34,13 +35,13 @@ import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -52,6 +53,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -59,6 +61,7 @@ import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.google.gwt.event.shared.EventBus;
 
 
 /**
@@ -72,8 +75,10 @@ public class DeviceCommandWindow extends FormWindow {
    /** The Constant DEVICE_COMMAND_PROTOCOL. */
    public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
    
+   private EventBus eventBus;
+   
    /** The device command. */
-   private DeviceCommand deviceCommand = null;
+   private DeviceCommandDetailsDTO deviceCommand = null;
    
    /** The device. */
    private Device device = null;
@@ -88,6 +93,8 @@ public class DeviceCommandWindow extends FormWindow {
     * @param device the device
     */
    public DeviceCommandWindow(Device device) {
+     
+     // TODO : update for DTO use
       super();
       this.device = device;
       setHeading("New command");
@@ -100,16 +107,16 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param command the command
     */
-   public DeviceCommandWindow(final DeviceCommand command) {
+   public DeviceCommandWindow(final DeviceCommandDTO command, EventBus eventBus) {
       super();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().loadById(command.getOid(),
-            new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand cmd) {
-            command.setProtocol(cmd.getProtocol());
-            deviceCommand = command;
-            setHeading("Edit command");
-            initial();
-            show();
+      this.eventBus = eventBus;
+      setHeading("Edit command");
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandDetailsDTO(command.getOid(),
+            new AsyncSuccessCallback<DeviceCommandDetailsDTO>() {
+         public void onSuccess(DeviceCommandDetailsDTO cmd) {
+           deviceCommand = cmd;
+           initial(); // TODO: review to display so form of wait message while loading the command
+           show(); // TODO EBR: this should just be layout, show() being called by caller, but doesn't work
          }
       });
    }
@@ -154,8 +161,9 @@ public class DeviceCommandWindow extends FormWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
+           Info.display("INFO", "Will save");
             List<Field<?>> list = form.getFields();
-            Map<String, String> attrMap = new HashMap<String, String>();
+            HashMap<String, String> attrMap = new HashMap<String, String>();
             for (Field<?> f : list) {
                if (DEVICE_COMMAND_PROTOCOL.equals(f.getName())) {
                   Field<BaseModelData> p = (Field<BaseModelData>) f;
@@ -167,6 +175,7 @@ public class DeviceCommandWindow extends FormWindow {
                   }
                }
             }
+
             AsyncSuccessCallback<BeanModel> callback = new AsyncSuccessCallback<BeanModel>() {
                @Override
                public void onSuccess(BeanModel deviceCommandModel) {
@@ -181,10 +190,29 @@ public class DeviceCommandWindow extends FormWindow {
                   }
                }
             };
+            AsyncSuccessCallback<Void> callback2 = new AsyncSuccessCallback<Void>() {
+              @Override
+              public void onSuccess(Void result) {
+                eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO should pass device DTO
+                 if (hideWindow) {
+                    hide();
+                 } else {
+                    hideWindow = true;
+                    unmask();
+                    info.setText("Command '" + deviceCommand.getName() + "' is saved.");
+                    info.show();
+                 }
+              }
+           };
             if (deviceCommand == null) {
                DeviceCommandBeanModelProxy.saveDeviceCommand(device, attrMap, callback);
-            } else {
-               DeviceCommandBeanModelProxy.updateDeviceCommand(deviceCommand, attrMap, callback);
+            } else {              
+              deviceCommand.setName(attrMap.get(DEVICE_COMMAND_NAME));
+              deviceCommand.setProtocolType(attrMap.get(DEVICE_COMMAND_PROTOCOL));
+              attrMap.remove(DEVICE_COMMAND_NAME);
+              attrMap.remove(DEVICE_COMMAND_PROTOCOL);
+              deviceCommand.setProtocolAttributes(attrMap);
+              DeviceCommandBeanModelProxy.updateDeviceCommandWithDTO(deviceCommand, callback2);
             }
          }
 
@@ -239,7 +267,7 @@ public class DeviceCommandWindow extends FormWindow {
       });
 
       if (deviceCommand != null) {
-         String protocolName = deviceCommand.getProtocol().getType();
+         String protocolName = deviceCommand.getProtocolType();
          nameField.setValue(deviceCommand.getName());
          if (protocols.containsKey(protocolName)) {
             ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
@@ -269,9 +297,9 @@ public class DeviceCommandWindow extends FormWindow {
          if (attrDefinition.getValue() != null) {
             value = attrDefinition.getValue();
          } else if (deviceCommand != null) {
-            for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
-               if (attrDefinition.getName().equals(attr.getName())) {
-                  value = attr.getValue();
+            for (Map.Entry<String, String> entry : deviceCommand.getProtocolAttributes().entrySet()) {
+               if (attrDefinition.getName().equals(entry.getKey())) {
+                  value = entry.getValue();
                }
             }
          }
