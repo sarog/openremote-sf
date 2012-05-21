@@ -25,6 +25,9 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Slider;
 
 public interface SliderService {
+  
+  Slider loadById(long id);
+  
    Slider save(Slider slider);
    Slider update(Slider slider);
    void delete(long id);

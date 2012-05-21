@@ -24,11 +24,14 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -37,16 +40,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("device.smvc")
 public interface DeviceRPCService extends RemoteService {
-   
-   /**
-    * Save device.
-    * 
-    * @param device the device
-    * 
-    * @return the device
-    */
-   Device saveDevice(Device device);
-   ArrayList<Device> saveDevices(ArrayList<Device> device);
    
    /**
     * Delete device.
@@ -81,14 +74,17 @@ public interface DeviceRPCService extends RemoteService {
     */
    List<Device> loadAll(Account account);
    
-   Account getAccount();
-   
    ArrayList<DeviceDTO> loadAllDTOs();
 
    DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid);
    
    DeviceDetailsDTO loadDeviceDetailsDTO(long oid);
    
+   void saveNewDevice(DeviceDetailsDTO device);
+   
+   void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands,
+           ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
+
    void updateDeviceWithDTO(DeviceDetailsDTO device);
 
 }

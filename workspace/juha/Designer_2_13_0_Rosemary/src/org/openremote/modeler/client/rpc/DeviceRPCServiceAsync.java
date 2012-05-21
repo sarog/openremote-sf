@@ -24,9 +24,13 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -36,14 +40,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface DeviceRPCServiceAsync {
    
-   /**
-    * Save device.
-    * 
-    * @param device the device
-    * @param callback the callback
-    */
-   void saveDevice(Device device, AsyncCallback<Device> callback);
-      
    /**
     * Delete device.
     * 
@@ -73,12 +69,7 @@ public interface DeviceRPCServiceAsync {
     * @param account the account
     * @param callback the callback
     */
-   void loadAll(Account account, AsyncCallback<List<Device>> callback);
-   
-   void getAccount(AsyncCallback<Account> callback);
-
-  void saveDevices(ArrayList<Device> devices, AsyncCallback<ArrayList<Device>> callback);
-  
+   void loadAll(Account account, AsyncCallback<List<Device>> callback);  
   
   void loadAllDTOs(AsyncCallback<ArrayList<DeviceDTO>> callback);
   
@@ -86,5 +77,10 @@ public interface DeviceRPCServiceAsync {
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
   
+  void saveNewDevice(DeviceDetailsDTO device, AsyncCallback<Void> callback);
+  
+  void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands,
+          ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders, AsyncCallback<Void> callback);
+
   void updateDeviceWithDTO(DeviceDetailsDTO device, AsyncCallback<Void> callback);
 }

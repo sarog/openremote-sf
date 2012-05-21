@@ -6,7 +6,7 @@ public class DeviceCommandDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
-  private long oid;
+  private Long oid;
   private String name;
   private String protocolType;
   private HashMap<String, String> protocolAttributes;
@@ -15,18 +15,18 @@ public class DeviceCommandDetailsDTO implements DTO {
     super();
   }
   
-  public DeviceCommandDetailsDTO(long oid, String name, String protocolType) {
+  public DeviceCommandDetailsDTO(Long oid, String name, String protocolType) {
     super();
     this.oid = oid;
     this.name = name;
     this.protocolType = protocolType;
   }
 
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
   
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
   
@@ -54,4 +54,13 @@ public class DeviceCommandDetailsDTO implements DTO {
     this.protocolAttributes = protocolAttributes;
   }
 
+  /**
+   * @return New DeviceCommandDetailsDTO instance with all fields equal except oid that is left null.
+   */
+  public DeviceCommandDetailsDTO cloneFields() {
+    DeviceCommandDetailsDTO clone = new DeviceCommandDetailsDTO(null, getName(), getProtocolType());
+    clone.setProtocolAttributes(new HashMap<String, String>(getProtocolAttributes()));
+    return clone;
+  }
+  
 }

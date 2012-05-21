@@ -29,8 +29,6 @@ import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
-import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
@@ -82,7 +80,7 @@ public class SensorBeanModelProxy {
    }
    
    public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
-      Sensor sensor = beanModel.getBean();
+      SensorDTO sensor = beanModel.getBean();
       AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
             if (result) {
@@ -94,17 +92,9 @@ public class SensorBeanModelProxy {
       });
    }
    
-   /*public static void loadByDevice(final Device device,final AsyncSuccessCallback<List<Sensor>> callback){
-      AsyncServiceFactory.getSensorRPCServiceAsync().loadByDevice(device, new AsyncSuccessCallback<List<Sensor>>(){
-
-         @Override
-         public void onSuccess(List<Sensor> result) {
-            BeanModelDataBase.sensorTable.insertAll(Sensor.createModels(result));
-            callback.onSuccess(result);
-         }
-         
-      });
-   }*/
+   public static void loadSensorDTOsByDeviceId(final long id, final AsyncSuccessCallback<ArrayList<SensorDTO>> callback) {
+     AsyncServiceFactory.getSensorRPCServiceAsync().loadSensorDTOsByDeviceId(id, callback);
+   }
 
   public static void saveSensorList(List<Sensor> sensorList, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
       AsyncServiceFactory.getSensorRPCServiceAsync().saveAll(sensorList, new AsyncSuccessCallback<List<Sensor>>() {
@@ -115,7 +105,6 @@ public class SensorBeanModelProxy {
           }
        });
   }
-
   
   public static void loadSensorDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
     AsyncServiceFactory.getSensorRPCServiceAsync().loadSensorDetails(((SensorDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SensorDetailsDTO>() {
@@ -127,6 +116,10 @@ public class SensorBeanModelProxy {
   
   public static void updateSensorWithDTO(final SensorDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {
     AsyncServiceFactory.getSensorRPCServiceAsync().updateSensorWithDTO(sensor, callback);
+  }
+  
+  public static void saveNewSensor(final SensorDetailsDTO sensor, final long deviceId, AsyncSuccessCallback<Void> callback) {
+    AsyncServiceFactory.getSensorRPCServiceAsync().saveNewSensor(sensor, deviceId, callback);
   }
 
 }

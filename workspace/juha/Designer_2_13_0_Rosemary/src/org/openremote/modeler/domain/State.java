@@ -39,7 +39,21 @@ public class State extends BusinessEntity {
    
    private CustomSensor sensor;
    
-   public String getName() {
+   public State() {
+    super();
+  }
+
+  public State(long oid) {
+    super(oid);
+  }
+
+  public State(String name, String value) {
+    super();
+    this.name = name;
+    this.value = value;
+  }
+
+  public String getName() {
       return name;
    }
 

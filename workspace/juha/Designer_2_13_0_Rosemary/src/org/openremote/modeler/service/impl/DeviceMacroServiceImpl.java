@@ -84,8 +84,6 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       List<DeviceMacro> list = account.getDeviceMacros();
       for (DeviceMacro deviceMacro : list) {
          Hibernate.initialize(deviceMacro.getDeviceMacroItems());
-         System.out.println("Macro is " + deviceMacro.getDisplayName());
-         System.out.println("It has " + deviceMacro.getDeviceMacroItems().size() + " elements");
       }
       return list;
    }
@@ -122,7 +120,6 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       old.getDeviceMacroItems().addAll(items);
       return old;
    }
-
 
    /**
     * {@inheritDoc}

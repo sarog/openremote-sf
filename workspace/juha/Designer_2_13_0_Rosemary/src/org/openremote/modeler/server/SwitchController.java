@@ -19,13 +19,16 @@
 */
 package org.openremote.modeler.server;
 
-import java.util.List;
-
 import org.openremote.modeler.client.rpc.SwitchRPCService;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The server side implementation of the RPC service <code>SwitchRPCService</code>.
@@ -34,6 +37,8 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 public class SwitchController extends BaseGWTSpringController implements SwitchRPCService {
 
    private SwitchService switchService;
+   private SensorService sensorService;
+   private DeviceCommandService deviceCommandService;
    
    private UserService userService;
    
@@ -43,30 +48,69 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
    }
 
    @Override
-   public List<Switch> loadAll() {
-      return switchService.loadAll();
-   }
-
-   @Override
    public Switch save(Switch switchToggle) {
       switchToggle.setAccount(userService.getAccount());
       return switchService.save(switchToggle);
-   }
-
-   
-   @Override
-   public Switch update(Switch switchToggle) {
-      switchToggle.setAccount(userService.getAccount());
-      return switchService.update(switchToggle);
    }
 
    public void setSwitchService(SwitchService switchService) {
       this.switchService = switchService;
    }
 
-   public void setUserService(UserService userService) {
+   public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  public void setUserService(UserService userService) {
       this.userService = userService;
    }
-
    
+   @Override
+   public SwitchDetailsDTO loadSwitchDetails(long id) {
+     Switch sw = switchService.loadById(id);
+     return new SwitchDetailsDTO(sw.getOid(), sw.getName(), new DTOReference(sw.getSwitchSensorRef().getSensor().getOid()),
+             new DTOReference(sw.getSwitchCommandOnRef().getDeviceCommand().getOid()), sw.getSwitchCommandOnRef().getDeviceCommand().getDisplayName(),
+             new DTOReference(sw.getSwitchCommandOffRef().getDeviceCommand().getOid()), sw.getSwitchCommandOffRef().getDeviceCommand().getDisplayName());
+   }
+
+   @Override
+   public void updateSwitchWithDTO(SwitchDetailsDTO switchDTO) {
+     Switch sw = switchService.loadById(switchDTO.getOid());
+     sw.setName(switchDTO.getName());
+     
+     if (sw.getSwitchSensorRef().getSensor().getOid() != switchDTO.getSensor().getId()) {
+       Sensor sensor = sensorService.loadById(switchDTO.getSensor().getId());
+       sw.getSwitchSensorRef().setSensor(sensor);
+     }
+     
+     if (sw.getSwitchCommandOnRef().getDeviceCommand().getOid() != switchDTO.getOnCommand().getId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOnCommand().getId());
+       sw.getSwitchCommandOnRef().setDeviceCommand(dc);
+     }
+     
+     if (sw.getSwitchCommandOffRef().getDeviceCommand().getOid() != switchDTO.getOffCommand().getId()) {
+       DeviceCommand dc = deviceCommandService.loadById(switchDTO.getOffCommand().getId());
+       sw.getSwitchCommandOffRef().setDeviceCommand(dc);
+     }
+
+     switchService.update(sw);
+   }
+
+   @Override
+   public void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId) {
+     Sensor sensor = sensorService.loadById(switchDTO.getSensor().getId());
+     DeviceCommand onCommand = deviceCommandService.loadById(switchDTO.getOnCommand().getId());
+     DeviceCommand offCommand = deviceCommandService.loadById(switchDTO.getOffCommand().getId());
+     
+     Switch sw = new Switch(onCommand, offCommand, sensor);
+     sw.setName(switchDTO.getName());
+     sw.setAccount(userService.getAccount());
+     
+     switchService.save(sw);
+   }
+
 }

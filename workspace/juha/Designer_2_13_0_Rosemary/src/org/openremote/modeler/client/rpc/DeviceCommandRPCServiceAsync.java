@@ -40,22 +40,6 @@ public interface DeviceCommandRPCServiceAsync {
     * @param callback the callback
     */
    void saveAll(List<DeviceCommand> deviceCommands, AsyncCallback<List<DeviceCommand>> callback);
-   
-   /**
-    * Save.
-    * 
-    * @param deviceCommand the device command
-    * @param callback the callback
-    */
-   void save(DeviceCommand deviceCommand, AsyncCallback<DeviceCommand> callback);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * @param callback the callback
-    */
-   void loadById(long id, AsyncCallback<DeviceCommand> callback);
 
    /**
     * Delete command.
@@ -80,5 +64,7 @@ public interface DeviceCommandRPCServiceAsync {
    void loadCommandDetailsDTO(long id, AsyncCallback<DeviceCommandDetailsDTO> asyncCallback);
 
    void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto, AsyncCallback<Void> asyncCallback);
+   
+   void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId, AsyncCallback<Void> asyncCallback);
 
 }
