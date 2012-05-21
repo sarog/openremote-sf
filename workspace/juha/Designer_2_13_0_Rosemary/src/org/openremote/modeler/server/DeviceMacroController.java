@@ -19,13 +19,20 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
+import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 
 /**
  * The server side implementation of the RPC service <code>DeviceMacroRPCService</code>.
@@ -48,16 +55,6 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
       this.deviceMacroService = deviceMacroService;
    }
-
-
-   /**
-    * {@inheritDoc}
-    * @see org.openremote.modeler.client.rpc.DeviceMacroRPCService#loadAll()
-    */
-   public List<DeviceMacro> loadAll() {
-      return deviceMacroService.loadAll(userService.getAccount());
-   }
-
 
    /**
     * {@inheritDoc}
@@ -103,7 +100,24 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
-    
-    
 
+   public ArrayList<MacroDTO> loadAllDTOs() {
+     ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
+     for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
+       MacroDTO dto = new MacroDTO(dm.getOid(), dm.getDisplayName());
+       ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
+       for (DeviceMacroItem dmi : dm.getDeviceMacroItems()) {
+         if (dmi instanceof DeviceMacroRef) {
+           itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
+         } else if (dmi instanceof DeviceCommandRef) {
+           itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
+         } else if (dmi instanceof CommandDelay) {
+           itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + "s)", MacroItemType.Delay));
+         }
+       }
+       dto.setItems(itemDTOs);
+       dtos.add(dto);
+     }
+     return dtos;
+   }
 }

@@ -29,9 +29,10 @@ import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -54,22 +55,26 @@ public class DeviceMacroBeanModelProxy {
    public static void loadDeviceMaro(BeanModel deviceMacroBeanModel,
          final AsyncSuccessCallback<List<BeanModel>> callback) {
       if (deviceMacroBeanModel == null || deviceMacroBeanModel.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getDeviceMacroServiceAsync().loadAll(new AsyncSuccessCallback<List<DeviceMacro>>() {
-            public void onSuccess(List<DeviceMacro> result) {
-               List<BeanModel> beanModels = DeviceMacro.createModels(result);
-               BeanModelDataBase.deviceMacroTable.insertAll(beanModels);
+         AsyncServiceFactory.getDeviceMacroServiceAsync().loadAllDTOs(new AsyncSuccessCallback<ArrayList<MacroDTO>>() {
+            public void onSuccess(ArrayList<MacroDTO> result) {
+               List<BeanModel> beanModels = DTOHelper.createModels(result);
+//               BeanModelDataBase.deviceMacroTable.insertAll(beanModels);
                callback.onSuccess(beanModels);
             }
          });
       } else {
-         AsyncServiceFactory.getDeviceMacroServiceAsync().loadDeviceMacroItems(
+        List<BeanModel> beanModels = DTOHelper.createModels(((MacroDTO) deviceMacroBeanModel.getBean()).getItems());
+        callback.onSuccess(beanModels);
+/*
+ *          AsyncServiceFactory.getDeviceMacroServiceAsync().loadDeviceMacroItems(
+
                (DeviceMacro) deviceMacroBeanModel.getBean(), new AsyncSuccessCallback<List<DeviceMacroItem>>() {
                   public void onSuccess(List<DeviceMacroItem> result) {
                      List<BeanModel> beanModels = DeviceMacroItem.createModels(result);
                      BeanModelDataBase.deviceMacroItemTable.insertAll(beanModels);
                      callback.onSuccess(beanModels);
                   }
-               });
+               });*/
       }
 
    }

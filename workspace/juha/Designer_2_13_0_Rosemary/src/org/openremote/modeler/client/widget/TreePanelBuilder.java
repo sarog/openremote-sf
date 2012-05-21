@@ -41,11 +41,9 @@ import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable.DeviceMacroInsertListener;
 import org.openremote.modeler.client.widget.buildingmodeler.ControllerConfigTabItem;
 import org.openremote.modeler.client.widget.uidesigner.TemplatePanelImpl;
-import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -66,6 +64,9 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
@@ -187,7 +188,7 @@ public class TreePanelBuilder {
          final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
-               if (beanModel.getBean() instanceof DeviceCommand || beanModel.getBean() instanceof UICommand) {
+               if (beanModel.getBean() instanceof DeviceCommandDTO || beanModel.getBean() instanceof UICommand) {
                   return false;
                }
                return true;
@@ -256,11 +257,11 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildCommandTree(final Device device, final BeanModel selectedCommandModel) {
+   public static TreePanel<BeanModel> buildCommandTree(final Long deviceId, final Long selectedCommandId) {
      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
         @Override
         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-           DeviceCommandBeanModelProxy.loadDeviceCommandsDTOFromDevice(device,
+           DeviceCommandBeanModelProxy.loadDeviceCommandsDTOFromDeviceId(deviceId,
                  new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
 
                     @Override
@@ -286,12 +287,10 @@ public class TreePanelBuilder {
      loadDeviceTreeLoader.addLoadListener(new LoadListener() {
         public void loaderLoad(LoadEvent le) {
            super.loaderLoad(le);
-           Info.display("INFO", "Loaded class " + le.getData().getClass());
-           if (selectedCommandModel != null) {
-             Info.display("INFO", "Will select " + selectedCommandModel.getBean());
+           if (selectedCommandId != null) {
              for (BeanModel bm : ((List<BeanModel>)le.getData())) {
                DeviceCommandDTO dto = bm.getBean();
-               if (dto.getOid() == ((DeviceCommand)selectedCommandModel.getBean()).getOid()) {
+               if (dto.getOid() == selectedCommandId) {
                  tree.getSelectionModel().select(bm, false);
                }
              }
@@ -307,9 +306,9 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
                return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Device) {
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
             } else {
                return ICON.folder();
@@ -341,7 +340,7 @@ public class TreePanelBuilder {
          BaseTreeLoader<BeanModel> loadDeviceMacroTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceMacroRPCProxy) {
             @Override
             public boolean hasChildren(BeanModel beanModel) {
-               if (beanModel.getBean() instanceof DeviceMacro) {
+               if (beanModel.getBean() instanceof MacroDTO) {
                   return true;
                }
                return false;
@@ -384,12 +383,18 @@ public class TreePanelBuilder {
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
-            if (thisModel.getBean() instanceof DeviceMacro) {
+            if (thisModel.getBean() instanceof MacroDTO) {
                return ICON.macroIcon();
-            } else if (thisModel.getBean() instanceof DeviceCommandRef) {
-               return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof CommandDelay) {
-               return ICON.delayIcon();
+            } else if (thisModel.getBean() instanceof MacroItemDTO) {
+              MacroItemType type = ((MacroItemDTO)thisModel.getBean()).getType();
+              switch (type) {
+                case Command:
+                  return ICON.deviceCmd();
+                case Delay:
+                  return ICON.delayIcon();
+                default:
+                  return ICON.macroIcon();
+              }
             } else {
                return ICON.macroIcon();
             }

@@ -27,7 +27,8 @@ import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
-import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -53,15 +54,14 @@ public class SensorBeanModelTable extends BeanModelTable {
   */
    
    public List<BeanModel> loadAllAsDTOs() {
-     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SensorDTO.class);
+     BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SensorDetailsDTO.class);
 
       List<BeanModel> beanModelList = new ArrayList<BeanModel>();
       for (Long key : map.keySet()) {
         Sensor sensor = (Sensor)map.get(key).getBean();
         
-        
         if (sensor.getType() == SensorType.RANGE) {
-          beanModelList.add(beanModelFactory.createModel(new SensorDTO(sensor.getOid(), sensor.getDisplayName(),
+          beanModelList.add(beanModelFactory.createModel(new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
                   sensor.getType(), sensor.getSensorCommandRef().getDisplayName(),
                   Integer.toString(((RangeSensor)sensor).getMin()),
                   Integer.toString(((RangeSensor)sensor).getMax()), null)));
@@ -71,10 +71,10 @@ public class SensorBeanModelTable extends BeanModelTable {
           for (State state : customSensor.getStates()) {
              states = states + state.getName() + ". ";
           }
-          beanModelList.add(beanModelFactory.createModel(new SensorDTO(sensor.getOid(), sensor.getDisplayName(),
+          beanModelList.add(beanModelFactory.createModel(new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
                   sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states)));
        } else {
-         beanModelList.add(beanModelFactory.createModel(new SensorDTO(sensor.getOid(), sensor.getDisplayName(),
+         beanModelList.add(beanModelFactory.createModel(new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
                  sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null)));
        }
       }

@@ -28,6 +28,11 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.State;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -76,15 +81,6 @@ public class SensorBeanModelProxy {
       });
    }
    
-   public static void updateSensor(Sensor sensor, final AsyncSuccessCallback<Sensor> callback) {
-      AsyncServiceFactory.getSensorRPCServiceAsync().updateSensor(sensor, new AsyncSuccessCallback<Sensor>() {
-         public void onSuccess(Sensor result) {
-            BeanModelDataBase.sensorTable.update(result.getBeanModel());
-            callback.onSuccess(result);
-         }
-      });
-   }
-   
    public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
       Sensor sensor = beanModel.getBean();
       AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
@@ -119,5 +115,18 @@ public class SensorBeanModelProxy {
           }
        });
   }
+
   
+  public static void loadSensorDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
+    AsyncServiceFactory.getSensorRPCServiceAsync().loadSensorDetails(((SensorDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SensorDetailsDTO>() {
+      public void onSuccess(SensorDetailsDTO result) {
+        asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
+      }
+    });
+  }
+  
+  public static void updateSensorWithDTO(final SensorDetailsDTO sensor, AsyncSuccessCallback<Void> callback) {
+    AsyncServiceFactory.getSensorRPCServiceAsync().updateSensorWithDTO(sensor, callback);
+  }
+
 }
