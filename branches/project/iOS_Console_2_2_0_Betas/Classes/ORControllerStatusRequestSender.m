@@ -33,12 +33,12 @@
 
 - (void)send
 {
-    NSAssert(!controllerRequest, @"ORControllerPollingSender can only be used to send a request once");
+    NSAssert(!self.controllerRequest, @"ORControllerPollingSender can only be used to send a request once");
     
-    NSString *urlPath = [[ServerDefinition controllerStatusPathForController:self.controller] stringByAppendingFormat:@"/%@", ids];
-    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
-    controllerRequest.delegate = self;
-    [controllerRequest getRequestWithPath:urlPath];
+    NSString *urlPath = [[ServerDefinition controllerStatusPathForController:self.controller] stringByAppendingFormat:@"/%@", self.ids];
+    self.controllerRequest = [[[ControllerRequest alloc] initWithController:self.controller] autorelease];
+    self.controllerRequest.delegate = self;
+    [self.controllerRequest getRequestWithPath:urlPath];
 }
 
 @synthesize controller;

@@ -33,8 +33,6 @@
 @interface ORControllerCommandSender : ORControllerSender <ControllerRequestDelegate> {
     NSString *command;
     Component *component;
-    
-    NSObject <ORControllerCommandSenderDelegate> *delegate;
 }
 
 @property (nonatomic, assign) NSObject <ORControllerCommandSenderDelegate> *delegate;

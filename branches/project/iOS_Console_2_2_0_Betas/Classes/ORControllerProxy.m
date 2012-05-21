@@ -81,6 +81,11 @@
     return [capabilitiesFetcher autorelease];
 }
 
+
+
+
+
+
 - (ORControllerGroupMembersFetcher *)fetchGroupMembersWithDelegate:(NSObject <ORControllerGroupMembersFetcherDelegate> *)delegate
 {
     ORControllerGroupMembersFetcher *groupMembersFetcher = [[ORControllerGroupMembersFetcher alloc] initWithController:self.controller];

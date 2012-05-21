@@ -58,12 +58,12 @@
 
 - (void)send
 {  
-    NSAssert(!controllerRequest, @"ORControllerCommandSender can only be used to send a request once");
+    NSAssert(!self.controllerRequest, @"ORControllerCommandSender can only be used to send a request once");
     
     NSString *commandURLPath = [[ServerDefinition controllerControlPathForController:self.controller] stringByAppendingFormat:@"/%d/%@", component.componentId, command];
-    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
-    controllerRequest.delegate = self;
-    [controllerRequest postRequestWithPath:commandURLPath];
+    self.controllerRequest = [[[ControllerRequest alloc] initWithController:self.controller] autorelease];
+    self.controllerRequest.delegate = self;
+    [self.controllerRequest postRequestWithPath:commandURLPath];
 }
 
 // TODO EBR : things like UNAUTHORIZED should be moved down to ControllerRequest code, not handled in each command -> test this authorization stuff
@@ -73,8 +73,8 @@
 		[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
 
         // TODO EBR we should sure pass some params e.g. for handling multiple command send ...
-        if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
-            [delegate commandSendFailed];
+        if ([self.delegate respondsToSelector:@selector(commandSendFailed)]) {
+            [self.delegate commandSendFailed];
         }
 	}
 }
@@ -95,8 +95,8 @@
 
 - (void) controllerRequestDidFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
-        [delegate commandSendFailed];
+    if ([self.delegate respondsToSelector:@selector(commandSendFailed)]) {
+        [self.delegate commandSendFailed];
     }
 }
 
