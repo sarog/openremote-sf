@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
+#import "ORControllerSender.h"
 #import "ControllerRequest.h"
 
 @class Component;
@@ -30,10 +30,9 @@
 
 @end
 
-@interface ORControllerCommandSender : NSObject <ControllerRequestDelegate> {
+@interface ORControllerCommandSender : ORControllerSender <ControllerRequestDelegate> {
     NSString *command;
     Component *component;
-    ControllerRequest *controllerRequest;
     
     NSObject <ORControllerCommandSenderDelegate> *delegate;
 }
@@ -41,6 +40,5 @@
 @property (nonatomic, assign) NSObject <ORControllerCommandSenderDelegate> *delegate;
 
 - (id)initWithController:(ORController *)aController command:(NSString *)aCommand component:(Component *)aComponent;
-- (void)send;
 
 @end

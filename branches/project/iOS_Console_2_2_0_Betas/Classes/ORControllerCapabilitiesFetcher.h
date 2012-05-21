@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 OpenRemote, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "ORControllerSender.h"
 #import "ControllerRequest.h"
 
 @class ORController;
@@ -22,11 +22,10 @@
 
 @end
 
-@interface ORControllerCapabilitiesFetcher : NSObject <ControllerRequestDelegate, NSXMLParserDelegate>
+@interface ORControllerCapabilitiesFetcher : ORControllerSender <ControllerRequestDelegate, NSXMLParserDelegate>
 
 @property (nonatomic, assign) NSObject <ORControllerCapabilitiesFetcherDelegate> *delegate;
 
 - (id)initWithController:(ORController *)aController;
-- (void)fetch;
 
 @end

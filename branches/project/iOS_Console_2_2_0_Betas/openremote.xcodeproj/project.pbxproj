@@ -384,6 +384,9 @@
 		609AAFD3156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
 		609AAFD4156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
 		609AAFD5156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */; };
+		609AAFD8156A61F7000DA1F9 /* ORControllerSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD7156A61F6000DA1F9 /* ORControllerSender.m */; };
+		609AAFD9156A61F7000DA1F9 /* ORControllerSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD7156A61F6000DA1F9 /* ORControllerSender.m */; };
+		609AAFDA156A61F7000DA1F9 /* ORControllerSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 609AAFD7156A61F6000DA1F9 /* ORControllerSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -1083,6 +1086,8 @@
 		609AAFCC156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollOrStatusSender.m; sourceTree = "<group>"; };
 		609AAFD1156A5FA6000DA1F9 /* ORControllerStatusRequestSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerStatusRequestSender.h; sourceTree = "<group>"; };
 		609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerStatusRequestSender.m; sourceTree = "<group>"; };
+		609AAFD6156A61F6000DA1F9 /* ORControllerSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerSender.h; sourceTree = "<group>"; };
+		609AAFD7156A61F6000DA1F9 /* ORControllerSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A2D262140662B500A529ED /* DefinitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionManager.h; sourceTree = "<group>"; };
 		60A2D263140662BA00A529ED /* DefinitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionManager.m; sourceTree = "<group>"; };
@@ -2331,6 +2336,8 @@
 				60AA14B413E9651D008ACE4A /* API Implementation */,
 				60AFCECE1371787200A811D4 /* ORControllerProxy.h */,
 				60AFCECF1371787300A811D4 /* ORControllerProxy.m */,
+				609AAFD6156A61F6000DA1F9 /* ORControllerSender.h */,
+				609AAFD7156A61F6000DA1F9 /* ORControllerSender.m */,
 				60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */,
 				60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */,
 				609AAFCB156A5DBE000DA1F9 /* ORControllerPollOrStatusSender.h */,
@@ -2341,12 +2348,12 @@
 				609AAFD2156A5FA6000DA1F9 /* ORControllerStatusRequestSender.m */,
 				60C81D9B137BD55300B2A12A /* ORControllerPanelsFetcher.h */,
 				60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */,
+				60FAD46E153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.h */,
+				60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */,
 				60AFCEE713729AA400A811D4 /* ControllerRequest.h */,
 				60AFCEE813729AA400A811D4 /* ControllerRequest.m */,
 				6055687713CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.h */,
 				6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */,
-				60FAD46E153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.h */,
-				60FAD46F153EFCF7008DA70E /* ORControllerCapabilitiesFetcher.m */,
 			);
 			name = "Controller communication";
 			sourceTree = "<group>";
@@ -3140,6 +3147,7 @@
 				60DED45C155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
 				609AAFCD156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD3156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
+				609AAFD8156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3313,6 +3321,7 @@
 				60DED45D155AA80700F5C0CD /* DeviceProtocolSetBrightnessCommand.m in Sources */,
 				609AAFCF156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD5156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
+				609AAFDA156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3430,6 +3439,7 @@
 				60F386F8155503820089F8BD /* SensorStatusCacheTest.m in Sources */,
 				609AAFCE156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD4156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
+				609AAFD9156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

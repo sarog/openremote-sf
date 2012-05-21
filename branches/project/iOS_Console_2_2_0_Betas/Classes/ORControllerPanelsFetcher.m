@@ -26,6 +26,7 @@
 
 @interface ORControllerPanelsFetcher ()
 
+@property (nonatomic, retain) ControllerRequest *controllerRequest;
 @property (nonatomic, retain) ORController *controller;
 
 @end
@@ -44,13 +45,12 @@
 
 - (void)dealloc
 {
-    [controllerRequest release];
     [panels release];
     self.controller = nil;
     [super dealloc];
 }
 
-- (void)fetch
+- (void)send
 {
     NSAssert(!controllerRequest, @"ORControllerPanelsFetcher can only be used to send a request once");
 
@@ -105,5 +105,6 @@
 
 @synthesize controller;
 @synthesize delegate;
+@synthesize controllerRequest;
 
 @end

@@ -29,6 +29,7 @@
 @interface ORControllerCommandSender ()
 
 @property (nonatomic, retain) ORController *controller;
+@property (nonatomic, retain) ControllerRequest *controllerRequest;
 
 @end
 
@@ -49,7 +50,6 @@
 {
     [command release];
     [component release];
-    [controllerRequest release];
     self.controller = nil;
     [super dealloc];
 }
@@ -102,5 +102,6 @@
 
 @synthesize controller;
 @synthesize delegate;
+@synthesize controllerRequest;
 
 @end

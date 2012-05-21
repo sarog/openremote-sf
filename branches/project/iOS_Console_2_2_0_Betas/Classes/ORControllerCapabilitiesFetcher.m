@@ -35,13 +35,12 @@
 
 - (void)dealloc
 {
-    self.controllerRequest = nil;
     self.versions = nil;
     self.controller = nil;
     [super dealloc];
 }
 
-- (void)fetch
+- (void)send
 {
     NSAssert(!self.controllerRequest, @"ORControllerPanelsFetcher can only be used to send a request once");
     
