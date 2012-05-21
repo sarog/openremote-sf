@@ -33,6 +33,7 @@ import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
@@ -137,17 +138,6 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
       return null;
    }
 
-   
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#updateDevice(org.openremote.modeler.domain.Device)
-    */
-   public void updateDevice(Device device) {
-      deviceService.updateDevice(device);
-      
-   }
-
    public Account getAccount() {
       return userService.getAccount();
    }
@@ -167,25 +157,49 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
      ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
      for (DeviceCommand dc : device.getDeviceCommands()) {
-       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName()));
+       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
      }
      deviceDTO.setDeviceCommands(dcDTOs);
      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
      for (Sensor sensor : device.getSensors()) {
-       sensorDTOs.add(new SensorDTO(sensor.getOid(), sensor.getDisplayName(), null, null, null, null, null)); // TODO EBR : have a simple DTO for just name
+       SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName());
+       DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
+       sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+       sensorDTOs.add(sensorDTO);
      }
      deviceDTO.setSensors(sensorDTOs);
      ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
      for (Switch s : device.getSwitchs()) {
-       switchDTOs.add(new SwitchDTO(s.getOid(), s.getDisplayName(), null, null, null, null)); // TODO EBR : have a simple DTO
+       SwitchDTO switchDTO = new SwitchDTO(s.getOid(), s.getDisplayName());
+       DeviceCommand dc = s.getSwitchCommandOnRef().getDeviceCommand();
+       switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+       dc = s.getSwitchCommandOffRef().getDeviceCommand();
+       switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+       switchDTOs.add(switchDTO);
      }
      deviceDTO.setSwitches(switchDTOs);
      ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
      for (Slider s : device.getSliders()) {
-       sliderDTOs.add(new SliderDTO(s.getOid(), s.getDisplayName(), null, null, null)); // TODO EBR : have a simple DTO
+       SliderDTO sliderDTO = new SliderDTO(s.getOid(), s.getDisplayName());
+       DeviceCommand dc = s.getSetValueCmd().getDeviceCommand();
+       sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+       sliderDTOs.add(sliderDTO);
      }
      deviceDTO.setSliders(sliderDTOs);
      return deviceDTO;
    }
-   
+
+   public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
+     Device device = deviceService.loadById(oid);
+     return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
+   }
+
+   public void updateDeviceWithDTO(DeviceDetailsDTO device) {
+     Device deviceBean = deviceService.loadById(device.getOid());
+     deviceBean.setName(device.getName());
+     deviceBean.setVendor(device.getVendor());
+     deviceBean.setModel(device.getModel());
+     deviceService.updateDevice(deviceBean);
+   }
+
 }

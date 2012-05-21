@@ -162,18 +162,12 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#loadComandsDTOByDevice(long)
     */
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
-     long originalTime = System.currentTimeMillis();
-     System.out.println("loadCommandsDTOByDevice " + id);
       Device device = genericDAO.loadById(Device.class, id);
-      System.out.println("Got device " + device.getDisplayName());
       ArrayList<DeviceCommandDTO> dtos = new ArrayList<DeviceCommandDTO>();
       List<DeviceCommand> dcs = device.getDeviceCommands();
-      System.out.println("Got " + dcs.size() + " device commands");
       for (DeviceCommand deviceCommand : dcs) {
-        dtos.add(new DeviceCommandDTO(deviceCommand.getOid(), deviceCommand.getDisplayName()));
+        dtos.add(new DeviceCommandDTO(deviceCommand.getOid(), deviceCommand.getDisplayName(), deviceCommand.getProtocol().getType()));
       }
-      System.out.println("Will return " + dtos.size() + " dtos");
-      System.out.println("Timing : " + (System.currentTimeMillis() - originalTime) + " ms");
       return dtos;
    }
 }

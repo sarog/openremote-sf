@@ -19,6 +19,8 @@
   <inherits name='com.google.gwt.user.theme.standard.Standard'/>
   
   <inherits name='com.extjs.gxt.themes.Themes' />
+
+  <set-property name="user.agent" value="safari"/>
               
 	<source path='domain'/>
 	<source path='client'/>

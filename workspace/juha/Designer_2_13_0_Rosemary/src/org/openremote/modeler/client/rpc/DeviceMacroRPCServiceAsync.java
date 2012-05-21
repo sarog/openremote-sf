@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -31,15 +33,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The Interface DeviceMacroServiceAsync.
  */
 public interface DeviceMacroRPCServiceAsync {
-
-
-    /**
-     * Load all.
-     * 
-     * @param async the async
-     * 
-     */
-    void loadAll(AsyncCallback<List<DeviceMacro>> async);
 
     /**
      * Save device macro.
@@ -76,4 +69,7 @@ public interface DeviceMacroRPCServiceAsync {
      */
     void loadDeviceMacroItems(DeviceMacro deviceMacro, AsyncCallback<List<DeviceMacroItem>> async);
 
+    
+    void loadAllDTOs(AsyncCallback<ArrayList<MacroDTO>> async);
+    
 }

@@ -32,10 +32,10 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -95,24 +95,8 @@ public class DeviceCommandBeanModelProxy {
       return protocol;
    }
    
-   /**
-    * Update device command.
-    * 
-    * @param deviceCommand the device command
-    * @param map the map
-    * @param callback the callback
-    */
-   public static void updateDeviceCommand(final DeviceCommand deviceCommand, Map<String, String> map,
-         final AsyncSuccessCallback<BeanModel> callback) {
-      deviceCommand.setName(map.get(DeviceCommandWindow.DEVICE_COMMAND_NAME));
-      deviceCommand.setProtocol(careateProtocol(map, deviceCommand));
-      AsyncServiceFactory.getDeviceCommandServiceAsync().update(deviceCommand, new AsyncSuccessCallback<DeviceCommand>() {
-         public void onSuccess(DeviceCommand result) {
-            BeanModel deviceCommandModel = result.getBeanModel();
-            BeanModelDataBase.deviceCommandTable.update(deviceCommandModel);
-            callback.onSuccess(deviceCommandModel);
-         }
-      });
+   public static void updateDeviceCommandWithDTO(final DeviceCommandDetailsDTO deviceCommand, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().updateDeviceCommandWithDTO(deviceCommand, callback);
    }
    
    /**
@@ -229,10 +213,9 @@ public class DeviceCommandBeanModelProxy {
          
       });
    }
-
    
-   public static void loadDeviceCommandsDTOFromDevice(Device device,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
-     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(device.getOid(), callback);
+   public static void loadDeviceCommandsDTOFromDeviceId(final Long deviceId,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(deviceId, callback);
   }
    
 }
