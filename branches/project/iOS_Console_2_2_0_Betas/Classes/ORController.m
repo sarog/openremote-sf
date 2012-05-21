@@ -105,6 +105,10 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
     self.groupMembersFetcher = nil;
     
+    
+    // TODO: if we fail to contact primary URL and had persisted group members, we should still try to get the capabilities and panels
+    // as maybe the primary controller is down but one of the group members is not
+    
     // Now get the capabilities, all group members are supposed to have the same
     [self.proxy fetchCapabilitiesWithDelegate:self];
 }
@@ -153,12 +157,37 @@
     
     // TODO: use log4j    
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
+    
+    // TODO: should notify that controller is ready to use, or do we want to get panels ?
+    
+    [self.proxy fetchPanelsWithDelegate:self];
 }
 
 - (void)fetchCapabilitiesDidFailWithError:(NSError *)error
 {
     // TODO
     NSLog(@"fetch capabilities error %@", error);
+}
+
+#pragma mark - ORControllerPanelsFetcherDelegate
+
+- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)thePanels
+{
+    self.panelIdentities = thePanels;
+    
+    NSLog(@"Got panel identities %@", thePanels);
+    // TODO change state, notification
+}
+
+- (void)fetchPanelsDidFailWithError:(NSError *)error
+{
+    self.panelIdentities = nil;
+    // TODO
+}
+
+- (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
+{
+    // TODO
 }
 
 #pragma mark -
@@ -171,6 +200,7 @@
     self.definition = nil;
     self.controllerAPIVersion = nil;
     self.sensorStatusCache = nil;
+    self.panelIdentities = nil;
     [super didTurnIntoFault];
 }
 
@@ -236,7 +266,7 @@
 @synthesize groupMembersFetcher;
 @synthesize definition;
 @synthesize controllerAPIVersion;
-
+@synthesize panelIdentities;
 @synthesize sensorStatusCache;
 @synthesize clientSideRuntime;
 
