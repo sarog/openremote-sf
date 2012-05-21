@@ -37,11 +37,10 @@
 
 - (id)initWithController:(ORController *)aController command:(NSString *)aCommand component:(Component *)aComponent
 {
-    self = [super init];
+    self = [super initWithController:aController];
     if (self) {
         command = [aCommand retain];
         component = [aComponent retain];
-        self.controller = aController;
     }
     return self;
 }
@@ -50,7 +49,6 @@
 {
     [command release];
     [component release];
-    self.controller = nil;
     [super dealloc];
 }
 

@@ -23,11 +23,21 @@
 
 @interface ORControllerSender()
 
+@property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) ControllerRequest *controllerRequest;
 
 @end
 
 @implementation ORControllerSender
+
+- (id)initWithController:(ORController *)aController
+{
+    self = [super init];
+    if (self) {
+        self.controller = aController;
+    }
+    return self;
+}
 
 - (void)dealloc
 {
@@ -46,5 +56,6 @@
 }
 
 @synthesize controllerRequest;
+@synthesize controller;
 
 @end

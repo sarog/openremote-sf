@@ -20,10 +20,14 @@
  */
 #import <Foundation/Foundation.h>
 
+@class ORController;
+
 /**
  * Parent class for all "commands" towards the controller
  */
 @interface ORControllerSender : NSObject
+
+- (id)initWithController:(ORController *)aController;
 
 - (void)send;
 - (void)cancel;

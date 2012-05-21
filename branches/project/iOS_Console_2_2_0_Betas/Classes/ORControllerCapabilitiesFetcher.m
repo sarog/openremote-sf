@@ -37,10 +37,9 @@
 
 - (id)initWithController:(ORController *)aController
 {
-    self = [super init];
+    self = [super initWithController:aController];
     if (self) {
         self.versions = [NSMutableArray array];
-        self.controller = aController;
     }
     return self;
 }
@@ -48,7 +47,6 @@
 - (void)dealloc
 {
     self.versions = nil;
-    self.controller = nil;
     [super dealloc];
 }
 

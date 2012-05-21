@@ -35,10 +35,9 @@
 
 - (id)initWithController:(ORController *)aController
 {
-    self = [super init];
+    self = [super initWithController:aController];
     if (self) {
         panels = [[NSMutableArray alloc] init];
-        self.controller = aController;
     }
     return self;
 }
@@ -46,7 +45,6 @@
 - (void)dealloc
 {
     [panels release];
-    self.controller = nil;
     [super dealloc];
 }
 
