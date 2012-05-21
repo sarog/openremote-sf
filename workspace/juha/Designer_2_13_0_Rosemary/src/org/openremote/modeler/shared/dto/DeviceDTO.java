@@ -20,77 +20,36 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class SwitchDTO implements DTO {
+public class DeviceDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
-
-  private String displayName;
-  private String onCommandName;
-  private String offCommandName;
-  private String sensorName;
-  private String deviceName;
-  private Long oid;
   
-  public SwitchDTO() {
+  private String displayName;
+  private long oid;
+
+  public DeviceDTO() {
     super();
   }
-
-  public SwitchDTO(Long oid, String displayName, String onCommandName, String offCommandName, String sensorName, String deviceName) {
+  
+  public DeviceDTO(long oid, String displayName) {
     super();
     this.oid = oid;
     this.displayName = displayName;
-    this.onCommandName = onCommandName;
-    this.offCommandName = offCommandName;
-    this.sensorName = sensorName;
-    this.deviceName = deviceName;
   }
 
   public String getDisplayName() {
     return displayName;
   }
-
+  
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
-
-  public String getOnCommandName() {
-    return onCommandName;
-  }
-
-  public void setOnCommandName(String onCommandName) {
-    this.onCommandName = onCommandName;
-  }
-
-  public String getOffCommandName() {
-    return offCommandName;
-  }
-
-  public void setOffCommandName(String offCommandName) {
-    this.offCommandName = offCommandName;
-  }
-
-  public String getSensorName() {
-    return sensorName;
-  }
-
-  public void setSensorName(String sensorName) {
-    this.sensorName = sensorName;
-  }
-
-  public String getDeviceName() {
-    return deviceName;
-  }
-
-  public void setDeviceName(String deviceName) {
-    this.deviceName = deviceName;
-  }
-
-  public Long getOid() {
+  
+  public long getOid() {
     return oid;
   }
-
-  public void setOid(Long oid) {
+  
+  public void setOid(long oid) {
     this.oid = oid;
   }
-  
 }

@@ -16,10 +16,19 @@
  */
 package org.openremote.modeler.domain.component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import flexjson.JSON;
 
@@ -30,7 +39,10 @@ import flexjson.JSON;
  * 
  */
 @SuppressWarnings("serial")
-public abstract class UIComponent extends BusinessEntity {
+
+// TODO EBR : remove BeanModelTag when appropriate
+
+public abstract class UIComponent extends BusinessEntity implements BeanModelTag {
 
    private transient boolean removed = false;
 
@@ -139,5 +151,38 @@ public abstract class UIComponent extends BusinessEntity {
    public int hashCode() {
       return (int) getOid();
    }
+   
+   
+   
+   /**
+    * Gets the bean model.
+    * 
+    * @return the bean model
+    */
+   @Transient
+   @JSON(include = false)
+   public BeanModel getBeanModel() {
+      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(getClass());
+      return beanModelFactory.createModel(this);
+   }
+
+   /**
+    * Creates the models.
+    * 
+    * @param list the list
+    * 
+    * @return the list< bean model>
+    */
+   public static List<BeanModel> createModels(Collection<? extends UIComponent> list) {
+      List<BeanModel> models = new ArrayList<BeanModel>();
+      for (UIComponent b : list) {
+         models.add(b.getBeanModel());
+      }
+      return models;
+
+
+   }
+   
+
 
 }

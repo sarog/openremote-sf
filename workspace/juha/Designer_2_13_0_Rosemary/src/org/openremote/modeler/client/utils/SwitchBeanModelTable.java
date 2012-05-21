@@ -22,8 +22,6 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 
@@ -37,11 +35,10 @@ import com.extjs.gxt.ui.client.data.BeanModelLookup;
  */
 public class SwitchBeanModelTable extends BeanModelTable {
 
+  /*
    public SwitchBeanModelTable() {
       super();
-      /*
-       * initialize the Database.  
-       */
+      // initialize the Database. 
       SwitchBeanModelProxy.loadAll(null, new AsyncSuccessCallback<List<BeanModel>>(){
 
          @Override
@@ -52,6 +49,7 @@ public class SwitchBeanModelTable extends BeanModelTable {
       });
       
    }
+   */
    
    public List<BeanModel> loadAllAsDTOs() {
      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SwitchDTO.class);

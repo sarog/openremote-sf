@@ -20,12 +20,9 @@
  */
 package org.openremote.modeler.shared.dto;
 
-import java.io.Serializable;
+public class SliderDTO implements DTO {
 
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
-@SuppressWarnings("serial")
-public class SliderDTO implements Serializable, BeanModelTag {
+  private static final long serialVersionUID = 1L;
 
   private String displayName;
   private String commandName;

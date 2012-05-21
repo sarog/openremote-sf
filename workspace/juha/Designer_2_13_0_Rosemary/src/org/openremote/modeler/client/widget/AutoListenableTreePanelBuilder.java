@@ -115,11 +115,9 @@ public class AutoListenableTreePanelBuilder {
       TreeFolderBean devicesBean = new TreeFolderBean();
       devicesBean.setDisplayName("Devices");
       devicesBean.setType(Constants.DEVICES);
-      devicesBean.setOid(Constants.DEVICES_OID);
       TreeFolderBean macrosBean = new TreeFolderBean();
       macrosBean.setDisplayName("Macros");
       macrosBean.setType(Constants.MACROS);
-      macrosBean.setOid(Constants.MACROS_OID);
       devicesAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
       devicesAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
    }

@@ -31,9 +31,11 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -227,4 +229,10 @@ public class DeviceCommandBeanModelProxy {
          
       });
    }
+
+   
+   public static void loadDeviceCommandsDTOFromDevice(Device device,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(device.getOid(), callback);
+  }
+   
 }
