@@ -36,6 +36,9 @@
 
 @end
 
+/**
+ * The request is only sent to the primary URL of the controller.
+ */
 @implementation ORControllerGroupMembersFetcher
 
 - (id)initWithController:(ORController *)aController
