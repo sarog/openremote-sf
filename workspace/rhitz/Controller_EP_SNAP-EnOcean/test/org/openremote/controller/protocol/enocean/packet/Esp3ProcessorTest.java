@@ -20,15 +20,24 @@
  */
 package org.openremote.controller.protocol.enocean.packet;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseCommand;
+import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseResponse;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp3RPSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp3RadioTelegramOptData;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.protocol.enocean.port.MockPort;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Unit tests for {@link Esp3Processor} class.
@@ -37,6 +46,7 @@ import org.openremote.controller.protocol.enocean.port.MockPort;
  */
 public class Esp3ProcessorTest
 {
+
   // Class Members --------------------------------------------------------------------------------
 
   private static final String COM_PORT = "/dev/cu.usbserial-FTUOKF2Q";
@@ -47,60 +57,255 @@ public class Esp3ProcessorTest
   private EspPortConfiguration portConfig;
   private MockPort mockPort;
   private Esp3ComPortAdapter portAdapter;
+  private Esp3Processor processor;
 
-  private byte[] readBaseIDCommand;
-  private byte[] readBaseIDResponse;
+  private DeviceID senderID;
+  private DeviceID baseID;
 
-  private byte[] rpsRadioTelegram;
-  private byte[] rpsRadioTelegramResponse;
+  private Esp3RdIDBaseCommand rdIDBaseCommand;
+  private Esp3RdIDBaseResponse rdIDBaseResponse;
+
+  private Esp3RPSTelegram radioTelegram;
+  private Esp3ResponsePacket radioTelegramRespose;
+
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
-  @Before
-  public void setUp()
+  @Before public void setUp() throws Exception
   {
     portConfig = new EspPortConfiguration();
     portConfig.setComPort(COM_PORT);
 
     mockPort = new MockPort();
+    mockPort.setRequestResponseMode();
 
     portAdapter = new Esp3ComPortAdapter(mockPort, portConfig);
+    processor = new Esp3Processor(portAdapter);
 
-    readBaseIDCommand = new byte[] {
-        (byte)0x55, (byte)0x00, (byte)0x01, (byte)0x00,
-        (byte)0x05, (byte)0x70, (byte)0x08, (byte)0x38
-    };
+    processor.start();
 
-    readBaseIDResponse = new byte[] {
-        (byte)0x55, (byte)0x00, (byte)0x05, (byte)0x00,
-        (byte)0x02, (byte)0xCE, (byte)0x00, (byte)0xFF,
-        (byte)0x80, (byte)0x00, (byte)0x00, (byte)0xDA
-    };
+    baseID = DeviceID.fromString("0xFF800000");
+    senderID = DeviceID.fromString("0xFF800001");
+
+    rdIDBaseCommand = new Esp3RdIDBaseCommand();
+    rdIDBaseResponse = createRdIDBaseResponse(Esp3ResponsePacket.ReturnCode.RET_OK);
+
+    radioTelegram = new Esp3RPSTelegram(senderID);
+    radioTelegramRespose = createRadioTelegramResponse(Esp3ResponsePacket.ReturnCode.RET_OK);
+  }
+
+  @After public void tearDown() throws Exception
+  {
+    processor.stop();
   }
 
 
-  @Test public void testBasicSendCommand() throws Exception
+  // Tests ----------------------------------------------------------------------------------------
+
+  @Test public void testSendCommand() throws Exception
   {
-    mockPort.addExpectedDataToSend(readBaseIDCommand);
-    mockPort.addDataToReturn(readBaseIDResponse);
-    mockPort.setRequestResponseMode();
+    mockPort.addDataToReturn(rdIDBaseResponse.asByteArray());
 
-    Esp3Processor processor = new Esp3Processor(portAdapter);
+    rdIDBaseCommand.send(processor);
 
-    processor.start();
-    processor.stop();
-    processor.start();
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, rdIDBaseCommand.getReturnCode());
+    Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
+  }
 
-    Esp3RdIDBaseCommand cmd = new Esp3RdIDBaseCommand();
+  @Test public void testSendRadioTelegram() throws Exception
+  {
+    mockPort.addDataToReturn(radioTelegramRespose.asByteArray());
 
-    cmd.send(processor);
+    radioTelegram.send(processor);
 
-    DeviceID expectedID = DeviceID.fromByteArray(
-        new byte[] {(byte)0xFF, (byte)0x80, (byte)0x00, (byte)0x00}
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, radioTelegram.getReturnCode());
+  }
+
+  @Test public void testRepeatedSend() throws Exception
+  {
+    int repeatCount = 10;
+
+    for(int i = 0; i < repeatCount; i++)
+    {
+      mockPort.addDataToReturn(rdIDBaseResponse.asByteArray());
+    }
+
+    for(int i = 0; i < repeatCount; i++)
+    {
+      Esp3RdIDBaseCommand command = new Esp3RdIDBaseCommand();
+
+      command.send(processor);
+
+      Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, command.getReturnCode());
+      Assert.assertEquals(baseID, command.getBaseID());
+    }
+  }
+
+  @Test public void testResponseTimeout() throws Exception
+  {
+    try
+    {
+      radioTelegram.send(processor);
+
+      Assert.fail();
+    }
+    catch (EspException e)
+    {
+      // expected
+    }
+  }
+
+  @Test public void testHeaderCRC8() throws Exception
+  {
+    byte[] invalidResponse = rdIDBaseResponse.asByteArray();
+    invalidResponse[Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX] =
+        (byte)(invalidResponse[Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX] + 1);
+
+    mockPort.addDataToReturn(invalidResponse);
+
+    try
+    {
+      rdIDBaseCommand.send(processor);
+
+      Assert.fail();
+    }
+    catch (EspException e)
+    {
+      // expected
+    }
+
+    List<byte[]> returnData = new ArrayList<byte[]>();
+    returnData.add(invalidResponse);
+    returnData.add(rdIDBaseResponse.asByteArray());
+
+    mockPort.addDataToReturn(returnData);
+
+    rdIDBaseCommand.send(processor);
+
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, rdIDBaseCommand.getReturnCode());
+    Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
+  }
+
+  @Test public void testDataCRC8() throws Exception
+  {
+    byte[] invalidResponse = rdIDBaseResponse.asByteArray();
+    // Invalidate data CRC8
+    invalidResponse[invalidResponse.length - 1] =
+        (byte)(invalidResponse[invalidResponse.length - 1] + 1);
+
+    mockPort.addDataToReturn(invalidResponse);
+
+    try
+    {
+      rdIDBaseCommand.send(processor);
+
+      Assert.fail();
+    }
+    catch (EspException e)
+    {
+      // expected
+    }
+
+    List<byte[]> returnData = new ArrayList<byte[]>();
+    returnData.add(invalidResponse);
+    returnData.add(rdIDBaseResponse.asByteArray());
+
+    mockPort.addDataToReturn(returnData);
+
+    rdIDBaseCommand.send(processor);
+
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, rdIDBaseCommand.getReturnCode());
+    Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
+  }
+
+  @Test public void testFragmentedResponse() throws Exception
+  {
+    List<Integer> boundaries = new ArrayList<Integer>();
+
+    boundaries.add(Esp3PacketHeader.ESP3_HEADER_SYNC_BYTE_INDEX);
+    boundaries.add(Esp3PacketHeader.ESP3_HEADER_SIZE / 2);
+    boundaries.add(Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX);
+    boundaries.add(
+        Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX +
+            (Esp3RdIDBaseResponse.ESP3_RESPONSE_RD_IDBASE_DATA_LENGTH / 2)
     );
 
-    DeviceID receivedID = cmd.getBaseID();
+    List<byte[]> fragments = fragmentPacket(rdIDBaseResponse, boundaries);
 
-    Assert.assertEquals(expectedID, receivedID);
+    mockPort.addDataToReturn(fragments);
+
+    rdIDBaseCommand.send(processor);
+
+    Assert.assertEquals(Esp3ResponsePacket.ReturnCode.RET_OK, rdIDBaseCommand.getReturnCode());
+    Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
+  }
+
+
+  // Helpers --------------------------------------------------------------------------------------
+
+  private Esp3RdIDBaseResponse createRdIDBaseResponse(Esp3ResponsePacket.ReturnCode returnCode)
+      throws EspException
+  {
+    byte[] dataBytes = new byte[Esp3RdIDBaseResponse.ESP3_RESPONSE_RD_IDBASE_DATA_LENGTH];
+
+    dataBytes[Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX] = returnCode.getValue();
+
+    System.arraycopy(
+        baseID.asByteArray(), 0, dataBytes,
+        Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX + 1,
+        DeviceID.ENOCEAN_ESP_ID_LENGTH
+    );
+
+    return new Esp3RdIDBaseResponse(dataBytes);
+  }
+
+  private Esp3ResponsePacket createRadioTelegramResponse(Esp3ResponsePacket.ReturnCode returnCode)
+      throws EspException
+  {
+    return new Esp3ResponsePacket(
+        new byte[] {returnCode.getValue()},
+        Esp3RadioTelegramOptData.ESP3_RADIO_OPT_DATA_TX.asByteArray()
+    );
+  }
+
+  private List<byte[]> fragmentPacket(Esp3Packet packet, List<Integer> boundaries)
+  {
+
+    List<byte[]> fragments = new LinkedList<byte[]>();
+    byte[] packetBytes = packet.asByteArray();
+
+    int startIndex = 0;
+    int stopIndex = 0;
+
+    for(int index = 0; index < (boundaries.size() + 1); index++)
+    {
+      if(index == 0)
+      {
+        startIndex = 0;
+      }
+      else
+      {
+        startIndex = stopIndex + 1;
+      }
+
+      if(index < boundaries.size())
+      {
+        stopIndex = boundaries.get(index);
+      }
+      else
+      {
+        stopIndex = packetBytes.length - 1;
+      }
+
+      int length = stopIndex - startIndex + 1;
+      byte[] fragmentBytes = new byte[length];
+      System.arraycopy(
+          packetBytes, startIndex, fragmentBytes, 0, length
+      );
+
+      fragments.add(fragmentBytes);
+    }
+
+    return fragments;
   }
 }
