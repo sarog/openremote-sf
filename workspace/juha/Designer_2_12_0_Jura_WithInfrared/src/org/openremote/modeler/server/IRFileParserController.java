@@ -41,7 +41,7 @@ import com.tinsys.pronto.irfiles.ProntoFileParser;
  * 
  */
 public class IRFileParserController extends
-      BaseGWTSpringControllerWithHibernateSupport implements
+      BaseGWTSpringController implements
       IRFileParserRPCService {
 
    private ProntoFileParser prontoFileParser;
