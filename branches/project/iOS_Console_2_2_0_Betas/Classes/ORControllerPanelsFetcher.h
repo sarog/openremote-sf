@@ -33,11 +33,7 @@
 
 @end
 
-@interface ORControllerPanelsFetcher : ORControllerSender <ControllerRequestDelegate, NSXMLParserDelegate> {
-    NSMutableArray *panels;
-    
-    NSObject <ORControllerPanelsFetcherDelegate> *delegate;
-}
+@interface ORControllerPanelsFetcher : ORControllerSender <ControllerRequestDelegate, NSXMLParserDelegate>
 
 @property (nonatomic, assign) NSObject <ORControllerPanelsFetcherDelegate> *delegate;
 

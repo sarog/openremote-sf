@@ -30,6 +30,8 @@
 
 @property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) ControllerRequest *controllerRequest;
+@property (nonatomic, retain) NSString *command;
+@property (nonatomic, retain) Component *component;
 
 @end
 
@@ -39,16 +41,16 @@
 {
     self = [super initWithController:aController];
     if (self) {
-        command = [aCommand retain];
-        component = [aComponent retain];
+        self.command = aCommand;
+        self.component = aComponent;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [command release];
-    [component release];
+    self.command = nil;
+    self.component = nil;
     [super dealloc];
 }
 
@@ -58,7 +60,7 @@
 {  
     NSAssert(!self.controllerRequest, @"ORControllerCommandSender can only be used to send a request once");
     
-    NSString *commandURLPath = [[ServerDefinition controllerControlPathForController:self.controller] stringByAppendingFormat:@"/%d/%@", component.componentId, command];
+    NSString *commandURLPath = [[ServerDefinition controllerControlPathForController:self.controller] stringByAppendingFormat:@"/%d/%@", self.component.componentId, self.command];
     self.controllerRequest = [[[ControllerRequest alloc] initWithController:self.controller] autorelease];
     self.controllerRequest.delegate = self;
     [self.controllerRequest postRequestWithPath:commandURLPath];
@@ -66,7 +68,8 @@
 
 // TODO EBR : things like UNAUTHORIZED should be moved down to ControllerRequest code, not handled in each command -> test this authorization stuff
 
-- (void)handleServerResponseWithStatusCode:(int) statusCode {
+- (void)handleServerResponseWithStatusCode:(int)statusCode
+{
 	if (statusCode != 200) {
 		[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
 
@@ -87,7 +90,7 @@
 - (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response
 {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-    NSLog(@"Command response for component %d, statusCode is %d", component.componentId, [httpResp statusCode]);
+    NSLog(@"Command response for component %d, statusCode is %d", self.component.componentId, [httpResp statusCode]);
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
@@ -101,5 +104,7 @@
 @synthesize controller;
 @synthesize delegate;
 @synthesize controllerRequest;
+@synthesize command;
+@synthesize component;
 
 @end
