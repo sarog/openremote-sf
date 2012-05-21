@@ -78,7 +78,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    @Transactional
    public DeviceCommand save(DeviceCommand deviceCommand) {
       genericDAO.save(deviceCommand);
-      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+//      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
       return deviceCommand;
    }
 

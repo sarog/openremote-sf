@@ -48,9 +48,6 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.UIButton;
@@ -63,13 +60,17 @@ import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
 import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -135,7 +136,7 @@ public class TreePanelBuilder {
       TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
          @Override
          public boolean hasChildren(BeanModel beanModel) {
-            if (beanModel.getBean() instanceof Device) {
+            if (beanModel.getBean() instanceof DeviceDTO) {
                return true;
             }
             return false;
@@ -159,15 +160,14 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
+            if (thisModel.getBean() instanceof DeviceCommandDTO) {
                return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Device) {
+            } else if (thisModel.getBean() instanceof DeviceDTO) {
                return ICON.device();
             } else {
                return ICON.folder();
             }
          }
-
       });
       return tree;
    }
@@ -666,33 +666,5 @@ public class TreePanelBuilder {
       tree.setHeight("100%");
       tree.setDisplayProperty("displayName");
       return tree;
-   }
-
-   public static TreePanel<BeanModel> buildDeviceContentTree(TreeStore<BeanModel> store) {
-      TreePanel<BeanModel> deviceContentTree = new TreePanel<BeanModel>(store);
-
-      deviceContentTree.setStateful(true);
-      deviceContentTree.setBorders(false);
-      deviceContentTree.setHeight("100%");
-      deviceContentTree.setDisplayProperty("displayName");
-      deviceContentTree.setStyleAttribute("overflow", "auto");
-
-      deviceContentTree.setIconProvider(new ModelIconProvider<BeanModel>() {
-         public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if (thisModel.getBean() instanceof DeviceCommand) {
-               return ICON.deviceCmd();
-            } else if (thisModel.getBean() instanceof Sensor) {
-               return ICON.sensorIcon();
-            } else if (thisModel.getBean() instanceof Switch) {
-               return ICON.switchIcon();
-            } else if (thisModel.getBean() instanceof Slider) {
-               return ICON.sliderIcon();
-            } else {
-               return ICON.folder();
-            }
-         }
-      });
-
-      return deviceContentTree;
    }
 }

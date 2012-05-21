@@ -1,21 +1,25 @@
 package org.openremote.modeler.shared.dto;
 
+import org.openremote.modeler.domain.SensorType;
+
 public class SensorDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
   private String displayName;
   private long oid;
+  private SensorType type;
   private DeviceCommandDTO command;
 
   public SensorDTO() {
     super();
   }
   
-  public SensorDTO(long oid, String displayName) {
+  public SensorDTO(long oid, String displayName, SensorType type) {
     super();
     this.oid = oid;
     this.displayName = displayName;
+    this.type = type;
   }
 
   public String getDisplayName() {
@@ -34,6 +38,14 @@ public class SensorDTO implements DTO {
     this.oid = oid;
   }
   
+  public SensorType getType() {
+    return type;
+  }
+
+  public void setType(SensorType type) {
+    this.type = type;
+  }
+
   public DeviceCommandDTO getCommand() {
     return command;
   }

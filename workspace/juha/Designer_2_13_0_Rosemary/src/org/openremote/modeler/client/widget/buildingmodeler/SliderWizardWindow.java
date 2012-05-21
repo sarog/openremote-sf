@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.event.DeviceWizardEvent;
@@ -27,12 +28,10 @@ import org.openremote.modeler.client.listener.DeviceWizardListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.utils.DeviceCommandWizardSelectWindow;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceCommandRef;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SliderCommandRef;
-import org.openremote.modeler.domain.SliderSensorRef;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -40,6 +39,8 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -52,16 +53,45 @@ import com.extjs.gxt.ui.client.widget.form.Field;
  */
 public class SliderWizardWindow extends SliderWindow {
 
-   private Device device;
-   public SliderWizardWindow(Device device) {
-      super(null, device);
-      this.device = device;
-      initSensorFiled();
+  private ArrayList<DeviceCommandDetailsDTO> commands;
+
+  public SliderWizardWindow(ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors) {
+      super(0L, null);
+      this.commands = commands;
+      populateSensorFieldStore(sensors);
       addNewSensorButton();
+      addSensorFieldListener();
       addCommandSelectListener();
       form.removeAllListeners();
       onSubmit();
    }
+
+  @Override
+  protected void populateSensorFieldStore() {
+    // Don't load anything here, we'll load just after coming back from our parent's constructor
+  }
+
+  private void populateSensorFieldStore(ArrayList<SensorDetailsDTO> sensors) {
+     ListStore<ModelData> sensorStore = sensorField.getStore();
+     sensorStore.removeAll();
+     for (SensorDetailsDTO sensor : sensors) {
+        ComboBoxDataModel<SensorDetailsDTO> sensorRefSelector = new ComboBoxDataModel<SensorDetailsDTO>(sensor.getName(), sensor);
+        sensorStore.add(sensorRefSelector);
+     }
+  }
+
+  private void addSensorFieldListener() {
+    sensorField.removeAllListeners();
+    sensorField.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
+
+       @SuppressWarnings("unchecked")
+       @Override
+       public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+         ComboBoxDataModel<SensorDetailsDTO> sensorItem = (ComboBoxDataModel<SensorDetailsDTO>) se.getSelectedItem();
+         sliderDTO.setSensor(new DTOReference(sensorItem.getData()));
+       }
+    });
+  }
 
    /**
     * Adds the button for adding a new sensor to the current device.
@@ -75,98 +105,83 @@ public class SliderWizardWindow extends SliderWindow {
       layout();
    }
    
-   /**
-    * Inits the sensor filed, added the device's sensors into a combobox for selection.
-    */
-   private void initSensorFiled() {
-      ListStore<ModelData> sensorStore = sensorField.getStore();
-      sensorStore.removeAll();
-      for (Sensor sensor : device.getSensors()) {
-         ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-         sensorStore.add(sensorRefSelector);
-      }
-   }
    private void addCommandSelectListener() {
       setValueBtn.removeAllListeners();
       setValueBtn.addSelectionListener(new CommandSelectionListener());
    }
    
-   /**
-    * Add the new slider into the current device.
-    */
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            List<Field<?>> fields = form.getFields();
+           // TODO EBR : review this validation, this does prevent re-submitting the form
+           // there must be a specific way to handle validation, not doing it in submit        
+           if (sliderDTO.getCommand() == null) {
+             MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
+             return;
+           }
+           if (sliderDTO.getSensor() == null) {
+             MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
+             return;
+           }
+
+           List<Field<?>> fields = form.getFields();
             for (Field<?> field : fields) {
                if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
-                  slider.setName(field.getValue().toString());
+                  sliderDTO.setName(field.getValue().toString());
                   break;
                }
             }
-            slider.setAccount(DeviceContentWizardForm.account);
-            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(slider));
+            // TODO : account ? should be set on backend
+            
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(sliderDTO));
          }
-         
       });
    }
-   
+
    /**
     * The listener to create a new sensor for the current device.
     */
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
-         // The submit listener to create a new sensor, and add it into the device content container.
-         sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            @Override
-            public void afterSubmit(SubmitEvent be) {
-               Sensor sensor = be.getData();
-               device.getSensors().add(sensor);
-               SliderSensorRef sliderSensorRef = new SliderSensorRef(slider);
-               sliderSensorRef.setSensor(sensor);
-               slider.setSliderSensorRef(sliderSensorRef);
-               ComboBoxDataModel<Sensor> sensorRefSelector = new ComboBoxDataModel<Sensor>(sensor.getName(), sensor);
-               sensorField.getStore().add(sensorRefSelector);
-               sensorField.setValue(sensorRefSelector);
-               sensorWizardWindow.hide();
-               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensor.getBeanModel()));
-            }
-         });
-         // The listener to transform the data into deviceContent and add it.
-         sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
-            @Override
-            public void afterAdd(DeviceWizardEvent be) {
-               fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(be.getData()));
-            }
-         });
+        final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(commands);
+        sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+           @Override
+           public void afterSubmit(SubmitEvent be) {
+              SensorDetailsDTO sensor = be.getData();
+              BeanModel sensorModel = DTOHelper.getBeanModel(sensor);               
+              ComboBoxDataModel<SensorDetailsDTO> sensorRefSelector = new ComboBoxDataModel<SensorDetailsDTO>(sensor.getName(), sensor);
+              sensorField.getStore().add(sensorRefSelector);
+              sensorField.setValue(sensorRefSelector);
+              sliderDTO.setSensor(new DTOReference(sensor));               
+              sensorWizardWindow.hide();               
+              fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensorModel));
+           }
+        });
+        
+        // When new command is created from the sensor wizard window, this passes it down so it's added to the "device" command lists 
+        sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
+           @Override
+           public void afterAdd(DeviceWizardEvent be) {
+              fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(be.getData()));
+           }
+        });
+        sensorWizardWindow.show();
       }
    }
    
-   /**
-    * The listener to create a new command for the current device.
-    */
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(device);
+         final DeviceCommandWizardSelectWindow selectCommandWindow = new DeviceCommandWizardSelectWindow(commands);
          final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
-               DeviceCommandRef deviceCommandRef = null;
-               if (dataModel.getBean() instanceof DeviceCommand) {
-                  deviceCommandRef = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
-               } else {
-                  MessageBox.alert("error", "A slider can only have command instead of macor", null);
-                  return;
-               }
-               command.setText(deviceCommandRef.getDeviceCommand().getDisplayName());
-               SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
-               sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
-               slider.setSetValueCmd(sliderCommandRef);
+               DeviceCommandDetailsDTO deviceCommand = dataModel.getBean();
+               command.setText(deviceCommand.getName());
+               sliderDTO.setCommand(new DTOReference(deviceCommand));
             }
          });
       }
