@@ -52,11 +52,11 @@
 
 - (void)send
 {
-    NSAssert(!controllerRequest, @"ORControllerPanelsFetcher can only be used to send a request once");
+    NSAssert(!self.controllerRequest, @"ORControllerPanelsFetcher can only be used to send a request once");
 
-    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
-    controllerRequest.delegate = self;
-    [controllerRequest getRequestWithPath:[ServerDefinition controllerFetchPanelsPathForController:self.controller]];
+    self.controllerRequest = [[[ControllerRequest alloc] initWithController:self.controller] autorelease];
+    self.controllerRequest.delegate = self;
+    [self.controllerRequest getRequestWithPath:[ServerDefinition controllerFetchPanelsPathForController:self.controller]];
 }
 
 #pragma mark NSXMLParserDelegate implementation
@@ -77,14 +77,14 @@
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
 	[xmlParser release];
-    [delegate fetchPanelsDidSucceedWithPanels:[NSArray arrayWithArray:panels]];
+    [self.delegate fetchPanelsDidSucceedWithPanels:[NSArray arrayWithArray:panels]];
 }
 
 // optional TODO EBR is it required
 - (void)controllerRequestDidFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(fetchPanelsDidFailWithError:)]) {
-        [delegate fetchPanelsDidFailWithError:error];
+    if ([self.delegate respondsToSelector:@selector(fetchPanelsDidFailWithError:)]) {
+        [self.delegate fetchPanelsDidFailWithError:error];
     }
 }
 
@@ -98,8 +98,8 @@
 
 - (void)controllerRequestRequiresAuthentication:(ControllerRequest *)request
 {
-    if ([delegate respondsToSelector:@selector(fetchPanelsRequiresAuthenticationForControllerRequest:)]) {
-        [delegate fetchPanelsRequiresAuthenticationForControllerRequest:request];
+    if ([self.delegate respondsToSelector:@selector(fetchPanelsRequiresAuthenticationForControllerRequest:)]) {
+        [self.delegate fetchPanelsRequiresAuthenticationForControllerRequest:request];
     }
 }
 

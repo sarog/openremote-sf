@@ -134,7 +134,7 @@
 {
     [URLConnectionHelper setWifiActive:YES];
     self.isError = NO;
-    if (self.isPolling == YES) {
+    if (self.isPolling) {
         [self doPolling];
     }    
 }

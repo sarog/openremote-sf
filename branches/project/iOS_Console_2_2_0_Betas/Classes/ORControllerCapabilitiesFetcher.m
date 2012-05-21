@@ -93,14 +93,14 @@
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
 	[xmlParser release];
-    [delegate fetchCapabilitiesDidSucceedWithCapabilities:[[[Capabilities alloc] initWithSupportedVersions:[NSArray arrayWithArray:self.versions]] autorelease]];
+    [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:[[[Capabilities alloc] initWithSupportedVersions:[NSArray arrayWithArray:self.versions]] autorelease]];
 }
 
 // optional TODO EBR is it required
 - (void)controllerRequestDidFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(fetchCapabilitiesDidFailWithError:)]) {
-        [delegate fetchCapabilitiesDidFailWithError:error];
+    if ([self.delegate respondsToSelector:@selector(fetchCapabilitiesDidFailWithError:)]) {
+        [self.delegate fetchCapabilitiesDidFailWithError:error];
     }
 }
 
@@ -109,7 +109,7 @@
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
     if (statusCode == 404) {
         // Controller does not support /rest/capabilities call -> return nil capabilities
-        [delegate fetchCapabilitiesDidSucceedWithCapabilities:nil];
+        [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:nil];
     } else if (statusCode != 200) {
 		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	}
@@ -117,8 +117,8 @@
 
 - (void)controllerRequestRequiresAuthentication:(ControllerRequest *)request
 {
-    if ([delegate respondsToSelector:@selector(fetchCapabilitiesRequiresAuthenticationForControllerRequest:)]) {
-        [delegate fetchCapabilitiesRequiresAuthenticationForControllerRequest:request];
+    if ([self.delegate respondsToSelector:@selector(fetchCapabilitiesRequiresAuthenticationForControllerRequest:)]) {
+        [self.delegate fetchCapabilitiesRequiresAuthenticationForControllerRequest:request];
     }
 }
 

@@ -39,7 +39,7 @@
 {
     self = [super init];
     if (self) {
-        ids = [someIds retain];
+        self.ids = someIds;
         self.controller = aController;
     }
     return self;
@@ -59,22 +59,22 @@
 		switch (statusCode) {
 			case POLLING_TIMEOUT:
             {
-                if ([delegate respondsToSelector:@selector(pollingDidTimeout)]) {
-                    [delegate pollingDidTimeout];
+                if ([self.delegate respondsToSelector:@selector(pollingDidTimeout)]) {
+                    [self.delegate pollingDidTimeout];
                 }
 				return;
             }
 		}		
-        if ([delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
-            [delegate pollingDidReceiveErrorResponse];
+        if ([self.delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
+            [self.delegate pollingDidReceiveErrorResponse];
         }
         // [ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
         // Don't bother user with this, for now simply log
         NSLog(@"Polling failed %@", [ControllerException exceptionMessageOfCode:statusCode]);
         // TODO: user should be notified in an unobstrusive way that the polling did stop and there should be a way to restart it
 	} else {
-        if ([delegate respondsToSelector:@selector(pollingDidSucceed)]) {
-            [delegate pollingDidSucceed];
+        if ([self.delegate respondsToSelector:@selector(pollingDidSucceed)]) {
+            [self.delegate pollingDidSucceed];
         }
 	} 
 }
@@ -98,22 +98,22 @@
 - (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response
 {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"polling[%@]statusCode is %d", ids, [httpResp statusCode]);
+	NSLog(@"polling[%@] statusCode is %d", self.ids, [httpResp statusCode]);
 	
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 - (void)controllerRequestDidFailWithError:(NSError *)error
 {
-	if ([delegate respondsToSelector:@selector(pollingDidFailWithError:)]) {
-        [delegate pollingDidFailWithError:error];
+	if ([self.delegate respondsToSelector:@selector(pollingDidFailWithError:)]) {
+        [self.delegate pollingDidFailWithError:error];
     }
 }
 
 - (void)controllerRequestConfigurationUpdated:(ControllerRequest *)request
 {
-    if ([delegate respondsToSelector:@selector(controllerConfigurationUpdated:)]) {
-        [delegate controllerConfigurationUpdated:request.controller];
+    if ([self.delegate respondsToSelector:@selector(controllerConfigurationUpdated:)]) {
+        [self.delegate controllerConfigurationUpdated:request.controller];
     }    
 }
 
