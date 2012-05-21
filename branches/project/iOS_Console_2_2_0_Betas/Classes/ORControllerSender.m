@@ -55,6 +55,11 @@
     // Don't do anything in this class, subclasses implement as appropriate
 }
 
+- (BOOL)shouldExecuteNow
+{
+    return YES;
+}
+
 @synthesize controllerRequest;
 @synthesize controller;
 
