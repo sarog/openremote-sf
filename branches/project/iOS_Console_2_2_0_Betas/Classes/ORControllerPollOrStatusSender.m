@@ -37,10 +37,9 @@
 
 - (id)initWithController:(ORController *)aController ids:(NSString *)someIds
 {
-    self = [super init];
+    self = [super initWithController:aController];
     if (self) {
         self.ids = someIds;
-        self.controller = aController;
     }
     return self;
 }
@@ -48,7 +47,6 @@
 - (void)dealloc
 {
     self.ids = nil;
-    self.controller = nil;
     self.delegate = nil;
     [super dealloc];
 }
