@@ -353,8 +353,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     // Instance Fields ----------------------------------------------------------------------------
 
     /**
-     * Buffer implementation as a "double ended queue" to enable appending data to the end
-     * and removing data from the beginning.
+     * FIFO buffer.
      */
     protected Deque<Byte> buffer = new LinkedList<Byte>();
 
