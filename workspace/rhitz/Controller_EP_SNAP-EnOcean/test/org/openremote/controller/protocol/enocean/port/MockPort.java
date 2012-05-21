@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,7 +60,7 @@ public class MockPort implements Port
 
   private List<ArrayList<Byte>> expectedDataToSend = new ArrayList<ArrayList<Byte>>();
   private List<ArrayList<Byte>> actualDataToSend = new ArrayList<ArrayList<Byte>>();
-  private LinkedList<Message> messagesToReturn = new LinkedList<Message>();
+  private LinkedList<LinkedList<Message>> messagesToReturn = new LinkedList<LinkedList<Message>>();
 
   private Exception configureException = null;
   private Exception startException = null;
@@ -69,7 +70,7 @@ public class MockPort implements Port
 
   private boolean requestResponseMode = false;
 
-  SynchronousQueue<Message> responseQueue = new SynchronousQueue<Message>();
+  private BlockingQueue<Message> responseQueue = new LinkedBlockingQueue<Message>();
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -90,7 +91,22 @@ public class MockPort implements Port
 
   public void addDataToReturn(byte[] rawData)
   {
-    messagesToReturn.addLast(new Message(rawData.clone()));
+    ArrayList<byte[]> list = new ArrayList<byte[]>();
+    list.add(rawData);
+
+    addDataToReturn(list);
+  }
+
+  public void addDataToReturn(List<byte[]> rawDataList)
+  {
+    LinkedList<Message> messages = new LinkedList<Message>();
+
+    for(byte[] rawData : rawDataList)
+    {
+      messages.add(new Message(rawData.clone()));
+    }
+
+    messagesToReturn.addLast(messages);
   }
 
 
@@ -179,11 +195,14 @@ public class MockPort implements Port
 
     if(requestResponseMode && messagesToReturn.size() > 0)
     {
-      Message msg = messagesToReturn.removeFirst();
+      LinkedList<Message> messages = messagesToReturn.removeFirst();
 
       try
       {
-        boolean  isOK = responseQueue.offer(msg, 1, TimeUnit.SECONDS);
+        for(Message msg : messages)
+        {
+          responseQueue.put(msg);
+        }
       }
       catch (InterruptedException e)
       {
@@ -201,7 +220,7 @@ public class MockPort implements Port
     {
       try
       {
-        msg = responseQueue.poll(1, TimeUnit.SECONDS);
+        msg = responseQueue.take();
       }
 
       catch (InterruptedException e)
@@ -211,7 +230,16 @@ public class MockPort implements Port
     }
     else
     {
-      msg = messagesToReturn.removeFirst();
+      if(messagesToReturn.size() > 0)
+      {
+        LinkedList<Message> messages = messagesToReturn.getFirst();
+        msg = messages.removeFirst();
+
+        if(messages.size() == 0)
+        {
+          messagesToReturn.removeFirst();
+        }
+      }
     }
 
 
