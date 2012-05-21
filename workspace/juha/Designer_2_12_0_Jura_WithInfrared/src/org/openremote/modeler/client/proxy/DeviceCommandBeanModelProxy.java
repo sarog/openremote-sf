@@ -31,9 +31,11 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.widget.Info;
 
 
 /**
@@ -193,41 +195,6 @@ public class DeviceCommandBeanModelProxy {
       return deviceCommands;
    }
    
-
-   public static DeviceCommand convertToKnxDeviceCommand(Device device, String name, String groupAddress, String command, String dpt) {
-
-       Protocol protocol = new Protocol();
-       protocol.setType(Constants.KNX_TYPE);
-
-       ProtocolAttr commandAttr = new ProtocolAttr();
-       commandAttr.setName("command");
-       commandAttr.setValue(command);
-       commandAttr.setProtocol(protocol);
-       protocol.getAttributes().add(commandAttr);
-       
-       ProtocolAttr dptAttr = new ProtocolAttr();
-       dptAttr.setName("DPT");
-       dptAttr.setValue(dpt);
-       dptAttr.setProtocol(protocol);
-       protocol.getAttributes().add(dptAttr);
-       
-       ProtocolAttr groupAddrAttr = new ProtocolAttr();
-       groupAddrAttr.setName("groupAddress");
-       groupAddrAttr.setValue(groupAddress);
-       groupAddrAttr.setProtocol(protocol);
-       protocol.getAttributes().add(groupAddrAttr);
-
-       DeviceCommand deviceCommand = new DeviceCommand();
-       deviceCommand.setDevice(device);
-       deviceCommand.setProtocol(protocol);
-       deviceCommand.setName(name);
-
-       protocol.setDeviceCommand(deviceCommand);
-       device.getDeviceCommands().add(deviceCommand);
-       return deviceCommand;
-     }
-   
-   
    /**
     * Delete device command.
     * 
@@ -262,4 +229,10 @@ public class DeviceCommandBeanModelProxy {
          
       });
    }
+
+   
+   public static void loadDeviceCommandsDTOFromDevice(Device device,final AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>callback) {
+     AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandsDTOByDevice(device.getOid(), callback);
+  }
+   
 }

@@ -22,14 +22,12 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.dto.SensorDTO;
-import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
+import org.openremote.modeler.shared.dto.SensorDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -40,11 +38,10 @@ import com.extjs.gxt.ui.client.data.BeanModelLookup;
  */
 public class SensorBeanModelTable extends BeanModelTable {
 
+  /*
    public SensorBeanModelTable() {
       super();
-      /*
-       * initialize the Database.  
-       */
+      // initialize the Database. 
       SensorBeanModelProxy.loadSensor(null, new AsyncSuccessCallback<List<BeanModel>>(){
 
          public void onSuccess(List<BeanModel> result) {
@@ -53,6 +50,7 @@ public class SensorBeanModelTable extends BeanModelTable {
          
       });
    }
+  */
    
    public List<BeanModel> loadAllAsDTOs() {
      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(SensorDTO.class);

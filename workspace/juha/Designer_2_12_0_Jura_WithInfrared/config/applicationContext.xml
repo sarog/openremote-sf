@@ -65,26 +65,6 @@
 
 	<bean id="genericDAO" class="org.openremote.modeler.dao.GenericDAO"></bean>
 	
-	<bean id="proxySerializer" class="net.sf.gilead.core.serialization.GwtProxySerialization"></bean>
-   
-	<bean id="proxyStore" class="net.sf.gilead.core.store.stateless.StatelessProxyStore">
-	  <property name="proxySerializer" ref="proxySerializer" />
-	</bean>
-
-	<bean id="hibernateUtil" class="net.sf.gilead.core.hibernate.HibernateUtil">
-
-		<property name="sessionFactory" ref="sessionFactory" />
-
-	</bean>
-
-	<bean id="beanManager" class="net.sf.gilead.core.PersistentBeanManager">
-
-		<property name="proxyStore" ref="proxyStore" />
-
-		<property name="persistenceUtil" ref="hibernateUtil" />
-
-	</bean>
-	
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
   		<property name="host" value="${mail.sender.host}" /> 
   		<property name="port" value="${mail.sender.port}" /> 
@@ -113,11 +93,15 @@
   </bean>
   
   <bean id="importLutronConfigActionHandler" class="org.openremote.modeler.server.lutron.ImportLutronConfigActionHandler"></bean>
+  <bean id="createRussoundDeviceActionHandler" class="org.openremote.modeler.server.russound.CreateRussoundDeviceActionHandler"></bean>
+  <bean id="importKNXConfigActionHandler" class="org.openremote.modeler.server.knx.ImportKNXConfigActionHandler"></bean>
         
   <bean id="registry" class="net.customware.gwt.dispatch.server.DefaultActionHandlerRegistry">
     <property name="actionHandlers">
         <list>
             <ref bean="importLutronConfigActionHandler"/>
+            <ref bean="createRussoundDeviceActionHandler"/>
+            <ref bean="importKNXConfigActionHandler"/>
         </list>
     </property>
   </bean>

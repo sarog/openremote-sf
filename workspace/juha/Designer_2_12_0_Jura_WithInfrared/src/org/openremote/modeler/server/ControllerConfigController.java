@@ -31,7 +31,7 @@ import org.openremote.modeler.service.ControllerConfigService;
  *
  */
 @SuppressWarnings("serial")
-public class ControllerConfigController extends BaseGWTSpringControllerWithHibernateSupport implements ControllerConfigRPCService{
+public class ControllerConfigController extends BaseGWTSpringController implements ControllerConfigRPCService{
    private ControllerConfigService controllerConfigService = null;
    @Override
    public Set<ControllerConfig> getConfigsByCategory(String categoryName, Account account) {
