@@ -77,7 +77,9 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 
 - (void)addGroupMemberForURL:(NSString *)url;
 
-
+- (BOOL)hasGroupMembers;
+- (BOOL)hasCapabilities;
+- (BOOL)hasPanelIdentities;
 
 // TODO: re-check in model vs property
 // TODO: this is not persisted but should be lazy loaded (! parsing is required -> we want to be able to notifiy user of progress and let him cancel)

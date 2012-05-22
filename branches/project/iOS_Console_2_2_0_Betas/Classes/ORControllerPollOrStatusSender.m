@@ -51,6 +51,11 @@
     [super dealloc];
 }
 
+- (BOOL)shouldExecuteNow
+{
+    return [self.controller hasPanelIdentities];
+}
+
 - (void)handleServerResponseWithStatusCode:(int)statusCode
 {
 	if (statusCode != 200) {

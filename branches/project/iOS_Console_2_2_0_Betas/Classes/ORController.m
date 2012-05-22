@@ -192,6 +192,23 @@
 
 #pragma mark -
 
+- (BOOL)hasGroupMembers
+{
+    return self.groupMembers != nil;
+}
+
+- (BOOL)hasCapabilities
+{
+    return YES; // TODO
+}
+
+- (BOOL)hasPanelIdentities
+{
+    return self.panelIdentities != nil;
+}
+
+#pragma mark -
+
 - (void)didTurnIntoFault
 {
     [proxy release];
