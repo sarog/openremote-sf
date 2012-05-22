@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "ORControllerCommandSender.h"
+#import "ORController.h"
 #import "Component.h"
 #import "Definition.h"
 #import "ViewHelper.h"
@@ -55,6 +56,11 @@
 }
 
 #pragma mark -
+
+- (BOOL)shouldExecuteNow
+{
+    return [self.controller hasPanelIdentities];
+}
 
 - (void)send
 {  

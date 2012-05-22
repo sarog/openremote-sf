@@ -67,12 +67,14 @@
  */
 - (void)processQueue
 {
+    NSMutableArray *commandsToRemove = [NSMutableArray array];
     for (ORControllerSender *command in self.commandsQueue) {
         if ([command shouldExecuteNow]) {
             [command send];
-            [self.commandsQueue removeObject:command];
+            [commandsToRemove addObject:command];
         }
     }
+    [self.commandsQueue removeObjectsInArray:commandsToRemove];
 }
 
 #pragma mark -
