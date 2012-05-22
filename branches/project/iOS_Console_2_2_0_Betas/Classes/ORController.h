@@ -66,6 +66,7 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 
 @property (nonatomic, assign) ORGroupMember *activeGroupMember;
 
+@property (nonatomic, retain) NSArray *controllerAPIVersions;
 @property (nonatomic, retain) NSString *controllerAPIVersion;
 @property (nonatomic, retain) NSArray *panelIdentities;
 
