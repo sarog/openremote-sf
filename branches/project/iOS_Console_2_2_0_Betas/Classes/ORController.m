@@ -144,14 +144,14 @@
     [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
     
     // Sort supported versions descending
-    NSArray *versions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
+    self.controllerAPIVersions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
 
     // First in the array is the best one
-    if ([versions count] > 0) {
+    if ([self.controllerAPIVersions count] > 0) {
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
         [f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
         f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
-        self.controllerAPIVersion = [f stringFromNumber:[versions objectAtIndex:0]];
+        self.controllerAPIVersion = [f stringFromNumber:[self.controllerAPIVersions objectAtIndex:0]];
         [f release];
     }
     
@@ -199,7 +199,7 @@
 
 - (BOOL)hasCapabilities
 {
-    return YES; // TODO
+    return self.controllerAPIVersions != nil;
 }
 
 - (BOOL)hasPanelIdentities
@@ -215,6 +215,7 @@
     proxy = nil;
     self.groupMembersFetcher = nil;
     self.definition = nil;
+    self.controllerAPIVersions = nil;
     self.controllerAPIVersion = nil;
     self.sensorStatusCache = nil;
     self.panelIdentities = nil;
@@ -282,6 +283,7 @@
 @synthesize groupMembersFetchStatus;
 @synthesize groupMembersFetcher;
 @synthesize definition;
+@synthesize controllerAPIVersions;
 @synthesize controllerAPIVersion;
 @synthesize panelIdentities;
 @synthesize sensorStatusCache;
