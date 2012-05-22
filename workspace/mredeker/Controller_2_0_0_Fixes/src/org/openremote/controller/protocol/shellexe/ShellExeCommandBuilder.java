@@ -24,6 +24,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -83,7 +84,7 @@ public class ShellExeCommandBuilder implements CommandBuilder {
             commandPath = elementValue;
             logger.debug("ShellExe Command: commandPath= " + commandPath);
          } else if (STR_ATTRIBUTE_NAME_COMMAND_PARAMS.equals(elementName)) {
-            commandParams = elementValue;
+            commandParams = CommandUtil.parseStringWithParam(element, elementValue);
             logger.debug("ShellExe Command: commandParams = " + commandParams);
          } else if (STR_ATTRIBUTE_NAME_POLLINGINTERVAL.equals(elementName))
          {
