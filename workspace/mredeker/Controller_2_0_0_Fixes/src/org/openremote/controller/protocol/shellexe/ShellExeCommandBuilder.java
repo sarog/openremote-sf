@@ -60,7 +60,9 @@ public class ShellExeCommandBuilder implements CommandBuilder {
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
       String commandId = element.getAttribute("id").getValue();
-      if (cachedCommands.get(commandId) != null) {
+      
+      String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+      if ((cachedCommands.get(commandId) != null) && (commandParam == null)) {  //only use cached command if we don't have dynamic values
          logger.debug("Found cached ShellExe command with id: " + commandId);
          return cachedCommands.get(commandId);
       }
