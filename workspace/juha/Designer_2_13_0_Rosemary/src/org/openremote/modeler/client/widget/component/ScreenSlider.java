@@ -26,6 +26,7 @@ import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
@@ -119,12 +120,12 @@ public class ScreenSlider extends ScreenComponent {
       maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
-   public void setSlider(Slider slider) {
-      uiSlider.setSlider(slider);
+   public void setSliderDTO(SliderWithInfoDTO sliderDTO) {
+      uiSlider.setSliderDTO(sliderDTO);
    }
 
-   public Slider getSlider() {
-      return uiSlider.getSlider();
+   public SliderWithInfoDTO getSliderDTO() {
+      return uiSlider.getSliderDTO();
    }
    
    public void setVertical(boolean isVertical) {

@@ -29,10 +29,10 @@ import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
@@ -150,7 +150,7 @@ public class ScreenLabel extends ScreenComponent {
       setText(uiLabel.getText());
    }
    public void onStateChange() {
-      Sensor sensor = uiLabel.getSensor();
+      SensorWithInfoDTO sensor = uiLabel.getSensorDTO();
       if (sensor != null && states.isEmpty()) {
          if (sensor.getType() == SensorType.SWITCH) {
             if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName("on"))) {
@@ -161,9 +161,9 @@ public class ScreenLabel extends ScreenComponent {
             }
          } else if (sensor.getType() == SensorType.CUSTOM) {
             SensorLink sensorLink = uiLabel.getSensorLink();
-            for (State state : ((CustomSensor)sensor).getStates()) {
-               if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName(state.getName()))) {
-                  states.add(sensorLink.getStateValueByStateName(state.getName()));
+            for (String stateName : sensor.getStateNames()) {
+               if (!"".equals(uiLabel.getSensorLink().getStateValueByStateName(stateName))) {
+                  states.add(sensorLink.getStateValueByStateName(stateName));
                }
             }
          }

@@ -28,6 +28,8 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import flexjson.JSON;
 
@@ -60,6 +62,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    private ImageSource maxImage = new ImageSource("");
    private ImageSource maxTrackImage = new ImageSource("");
    private Slider slider;
+   private SliderWithInfoDTO sliderDTO;
    
    public UISlider() {
    }
@@ -138,7 +141,15 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       this.slider = slider;
    }
 
-   @Override
+   public SliderWithInfoDTO getSliderDTO() {
+    return sliderDTO;
+  }
+
+  public void setSliderDTO(SliderWithInfoDTO sliderDTO) {
+    this.sliderDTO = sliderDTO;
+  }
+
+  @Override
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
       if (slider != null && slider.getSetValueCmd() != null) {
@@ -236,6 +247,16 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       }
    }
 
+   @Override
+   public void setSensorDTO(SensorWithInfoDTO sensorDTO) {
+     // TODO EBR : Just to comply to interface, but this class should not implement this interface, never has direct access to sensor, only through Slider
+   }
+   
+   public SensorWithInfoDTO getSensorDTO() {
+     return null;
+     // TODO EBR : As above
+   }
+   
    @Override
    @JSON(include = false)
    public Collection<ImageSource> getImageSources() {

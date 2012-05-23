@@ -20,11 +20,10 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -36,47 +35,16 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface SensorRPCService extends RemoteService {
 
    /**
-    * Save sensor into database.
-    * 
-    * @param sensor the sensor
-    * 
-    * @return the sensor
-    */
-   Sensor saveSensor(Sensor sensor);
-   
-   /**
     * Delete sensor by id from database.
     * 
     * @param id the id
     * 
     * @return the boolean
     */
-   Boolean deleteSensor(long id);
-   
-   /**
-    * Load all sensor from database.
-    * 
-    * @return the list< sensor>
-    */
-   List<Sensor> loadAll();
-   
-   /**
-    * Gets the sensor by id.
-    * 
-    * @param id the id
-    * 
-    * @return the by id
-    */
-   Sensor getById(long id);
+   Boolean deleteSensor(long id);   
 
-   /**
-    * Saves all sensors in the database
-    * @param sensorList
-    * @return
-    */
-   List<Sensor> saveAll(List<Sensor> sensorList);
-   
-   
+  ArrayList<SensorWithInfoDTO> loadAllSensorWithInfosDTO();
+
   ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id);
 
   SensorDetailsDTO loadSensorDetails(long id);
