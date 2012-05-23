@@ -145,9 +145,13 @@
  */
 - (void)refreshControllerInformation
 {
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController fetchGroupMembers];
+    ORController *controller = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    [controller fetchGroupMembers];
     
-    // Once group members has been fetched, ORController will get its capabilities
+    [controller fetchCapabilities];
+    
+    [controller fetchPanels];
+
     
     // TODO: somehow when a command / status polling is send to controller, it should wait for controller to be ready -> that is group members and capabilities fetched
     // Maybe have a notification posted when controller is ready -> use that to start polling

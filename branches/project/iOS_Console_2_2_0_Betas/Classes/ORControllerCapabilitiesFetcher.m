@@ -23,6 +23,7 @@
 #import "ViewHelper.h"
 #import "ControllerException.h"
 #import "Capabilities.h"
+#import "ORController.h"
 
 @interface ORControllerCapabilitiesFetcher ()
 
@@ -48,6 +49,11 @@
 {
     self.versions = nil;
     [super dealloc];
+}
+
+- (BOOL)shouldExecuteNow
+{
+    return [self.controller hasGroupMembers];
 }
 
 - (void)send

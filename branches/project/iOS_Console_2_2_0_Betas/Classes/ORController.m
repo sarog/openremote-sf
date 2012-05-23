@@ -108,9 +108,6 @@
     
     // TODO: if we fail to contact primary URL and had persisted group members, we should still try to get the capabilities and panels
     // as maybe the primary controller is down but one of the group members is not
-    
-    // Now get the capabilities, all group members are supposed to have the same
-    [self.proxy fetchCapabilitiesWithDelegate:self];
 }
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
@@ -127,6 +124,14 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:self];    
   //  [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
     self.groupMembersFetcher = nil;
+}
+
+#pragma mark -
+
+- (void)fetchCapabilities
+{
+    // TODO: should there be more to it, see fetchGroupMembers ?
+    [self.proxy fetchCapabilitiesWithDelegate:self];
 }
 
 #pragma mark - ORControllerCapabilitiesFetcherDelegate
@@ -158,15 +163,20 @@
     // TODO: use log4j    
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
     
-    // TODO: should notify that controller is ready to use, or do we want to get panels ?
-    
-    [self.proxy fetchPanelsWithDelegate:self];
+    // TODO: should notify of change -> queue should process
 }
 
 - (void)fetchCapabilitiesDidFailWithError:(NSError *)error
 {
     // TODO
     NSLog(@"fetch capabilities error %@", error);
+}
+
+#pragma mark - 
+
+- (void)fetchPanels
+{
+    [self.proxy fetchPanelsWithDelegate:self];
 }
 
 #pragma mark - ORControllerPanelsFetcherDelegate
@@ -194,7 +204,7 @@
 
 - (BOOL)hasGroupMembers
 {
-    return self.groupMembers != nil;
+    return (self.groupMembersFetchStatus == GroupMembersFetchSucceeded);
 }
 
 - (BOOL)hasCapabilities
