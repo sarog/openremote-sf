@@ -40,20 +40,20 @@
 #define kORControllerGroupMembersFetchRequiresAuthenticationNotification @"kORControllerGroupMembersFetchRequiresAuthenticationNotification"
 
 enum {
-    GroupMembersFetchStatusUnknown = 0,
-	GroupMembersFetching,
-    GroupMembersFetchSucceeded,
-    GroupMembersFetchFailed,
-    GroupMembersFetchRequiresAuthentication
+    FetchStatusUnknown = 0,
+	Fetching,
+    FetchSucceeded,
+    FetchFailed,
+    FetchRequiresAuthentication
 };
-typedef NSInteger ORControllerGroupMembersFetchStatus;
+typedef NSInteger ORControllerFetchStatus;
 
 
 @interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate, ORControllerCapabilitiesFetcherDelegate, ORControllerPanelsFetcherDelegate> {
 @private
     ORGroupMember *activeGroupMember;
     ORControllerProxy *proxy;
-    ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
+    ORControllerFetchStatus groupMembersFetchStatus;
 }
 
 @property (nonatomic, retain) NSString * primaryURL;
@@ -74,7 +74,7 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 @property (nonatomic, retain) NSArray *panelIdentities;
 
 @property (nonatomic, readonly, retain) ORControllerProxy *proxy;
-@property (nonatomic, readonly) ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
+@property (nonatomic, readonly) ORControllerFetchStatus groupMembersFetchStatus;
 
 - (void)fetchGroupMembers;
 - (void)cancelGroupMembersFetch;

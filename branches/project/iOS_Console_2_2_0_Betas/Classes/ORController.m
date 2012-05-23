@@ -76,7 +76,7 @@
     if (self.groupMembersFetcher) {
         return;
     }
-    groupMembersFetchStatus = GroupMembersFetching;
+    groupMembersFetchStatus = Fetching;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchingNotification object:self];
     self.groupMembersFetcher = [self.proxy fetchGroupMembersWithDelegate:self];
 }
@@ -101,7 +101,7 @@
         NSLog(@"%@", url);
         [self addGroupMemberForURL:url];
     }
-    groupMembersFetchStatus = GroupMembersFetchSucceeded;
+    groupMembersFetchStatus = FetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
     self.groupMembersFetcher = nil;
     
@@ -112,7 +112,7 @@
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
 {
-    groupMembersFetchStatus = GroupMembersFetchFailed;    
+    groupMembersFetchStatus = FetchFailed;    
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];
     self.groupMembersFetcher = nil;
 }
@@ -120,7 +120,7 @@
 - (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController
 {
 //    self.password = nil;
-    groupMembersFetchStatus = GroupMembersFetchRequiresAuthentication;
+    groupMembersFetchStatus = FetchRequiresAuthentication;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:self];    
   //  [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
     self.groupMembersFetcher = nil;
@@ -204,7 +204,7 @@
 
 - (BOOL)hasGroupMembers
 {
-    return (self.groupMembersFetchStatus == GroupMembersFetchSucceeded);
+    return (self.groupMembersFetchStatus == FetchSucceeded);
 }
 
 - (BOOL)hasCapabilities
