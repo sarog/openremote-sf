@@ -40,9 +40,11 @@
     if (self) {
         self.controller = aController;
         self.commandsQueue = [NSMutableArray array];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:self.controller];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:self.controller];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerFetchStatusChanged:) name:kORControllerCapabilitiesFetchStatusChange object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerFetchStatusChanged:) name:kORControllerPanelIdentitiesFetchStatusChange object:self.controller];
     }
     return self;
 }
@@ -56,7 +58,7 @@
 
 #pragma mark -
 
-- (void)groupMembersFetchStatusChanged:(NSNotification *)notification
+- (void)controllerFetchStatusChanged:(NSNotification *)notification
 {
     [self processQueue];
 }

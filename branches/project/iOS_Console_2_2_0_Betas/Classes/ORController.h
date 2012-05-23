@@ -38,6 +38,9 @@ extern NSString *kORControllerGroupMembersFetchSucceededNotification;
 extern NSString *kORControllerGroupMembersFetchFailedNotification;
 extern NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification;
 
+extern NSString *kORControllerCapabilitiesFetchStatusChange;
+extern NSString *kORControllerPanelIdentitiesFetchStatusChange;
+
 enum {
     FetchStatusUnknown = 0,
 	Fetching,

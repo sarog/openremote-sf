@@ -32,6 +32,9 @@ NSString *kORControllerGroupMembersFetchSucceededNotification = @"kORControllerG
 NSString *kORControllerGroupMembersFetchFailedNotification = @"kORControllerGroupMembersFetchFailedNotification";
 NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"kORControllerGroupMembersFetchRequiresAuthenticationNotification";
 
+NSString *kORControllerCapabilitiesFetchStatusChange = @"kORControllerCapabilitiesFetchStatusChangeNotification";
+NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelIdentitiesFetchStatusChangeNotification";
+
 @interface ORController ()
 
 - (void)addGroupMembersObject:(ORGroupMember *)value;
@@ -140,8 +143,7 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
 - (void)fetchCapabilities
 {
     self.capabilitiesFetchStatus = Fetching;
-
-    // TODO: should there be more to it, see fetchGroupMembers ?
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
     [self.proxy fetchCapabilitiesWithDelegate:self];
 }
 
@@ -152,30 +154,29 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
     // nil means server can not advertise -> use default API version
     if (!capabilities) {
         self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
-        return;
-    }
-    
-    // Find the versions in common between client and server
-    NSMutableSet *supportedVersions = [NSMutableSet setWithArray:capabilities.supportedVersions];
-    [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
-    
-    // Sort supported versions descending
-    self.controllerAPIVersions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
+    } else {
+        // Find the versions in common between client and server
+        NSMutableSet *supportedVersions = [NSMutableSet setWithArray:capabilities.supportedVersions];
+        [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
+        
+        // Sort supported versions descending
+        self.controllerAPIVersions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
 
-    // First in the array is the best one
-    if ([self.controllerAPIVersions count] > 0) {
-        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-        [f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
-        f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
-        self.controllerAPIVersion = [f stringFromNumber:[self.controllerAPIVersions objectAtIndex:0]];
-        [f release];
+        // First in the array is the best one
+        if ([self.controllerAPIVersions count] > 0) {
+            NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+            [f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
+            f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
+            self.controllerAPIVersion = [f stringFromNumber:[self.controllerAPIVersions objectAtIndex:0]];
+            [f release];
+        }
     }
     
     // TODO: use log4j    
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
     
-    // TODO: should notify of change -> queue should process
     self.capabilitiesFetchStatus = FetchSucceeded;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
 }
 
 - (void)fetchCapabilitiesDidFailWithError:(NSError *)error
@@ -183,6 +184,7 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
     // TODO
     NSLog(@"fetch capabilities error %@", error);
     self.capabilitiesFetchStatus = FetchFailed;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
 }
 
 #pragma mark - 
@@ -190,6 +192,7 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
 - (void)fetchPanels
 {
     self.panelIdentitiesFetchStatus = Fetching;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerPanelIdentitiesFetchStatusChange object:self];
     [self.proxy fetchPanelsWithDelegate:self];
 }
 
@@ -202,6 +205,7 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
     NSLog(@"Got panel identities %@", thePanels);
     // TODO change state, notification
     self.panelIdentitiesFetchStatus = FetchSucceeded;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerPanelIdentitiesFetchStatusChange object:self];
 }
 
 - (void)fetchPanelsDidFailWithError:(NSError *)error
@@ -209,12 +213,14 @@ NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"k
     self.panelIdentities = nil;
     // TODO
     self.panelIdentitiesFetchStatus = FetchFailed;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerPanelIdentitiesFetchStatusChange object:self];
 }
 
 - (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
     // TODO
     self.panelIdentitiesFetchStatus = FetchRequiresAuthentication;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerPanelIdentitiesFetchStatusChange object:self];
 }
 
 #pragma mark -
