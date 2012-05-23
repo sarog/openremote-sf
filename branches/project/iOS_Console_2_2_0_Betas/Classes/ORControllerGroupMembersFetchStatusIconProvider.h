@@ -23,6 +23,6 @@
 
 @interface ORControllerGroupMembersFetchStatusIconProvider : NSObject
 
-+ (UIView *)viewForGroupMembersFetchStatus:(ORControllerGroupMembersFetchStatus)status;
++ (UIView *)viewForGroupMembersFetchStatus:(ORControllerFetchStatus)status;
                                             
 @end

@@ -22,24 +22,24 @@
 
 @implementation ORControllerGroupMembersFetchStatusIconProvider
 
-+ (UIView *)viewForGroupMembersFetchStatus:(ORControllerGroupMembersFetchStatus)status;
++ (UIView *)viewForGroupMembersFetchStatus:(ORControllerFetchStatus)status;
 {
     switch (status) {
-        case GroupMembersFetching:
+        case Fetching:
         {
             UIActivityIndicatorView *aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             [aiv startAnimating];
             return [aiv autorelease];
         }
-        case GroupMembersFetchSucceeded:
+        case FetchSucceeded:
         {
             return [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerOK"]] autorelease];
         }
-        case GroupMembersFetchFailed:
+        case FetchFailed:
         {
             return [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerNOK"]] autorelease];
         }
-        case GroupMembersFetchRequiresAuthentication:
+        case FetchRequiresAuthentication:
         {
             return [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerRequiresAuthentication"]] autorelease];
         }
