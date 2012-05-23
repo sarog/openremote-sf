@@ -22,6 +22,8 @@ package org.openremote.controller.statuscache;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Test;
 import org.openremote.controller.protocol.Event;
@@ -475,16 +477,16 @@ public class StatusCacheTest
 
     Event evt = new Switch(1, "test1", "foo", Switch.State.OFF);
 
-    List<Integer> pollingSensorIDs = new ArrayList<Integer>();
+    Set<Integer> pollingSensorIDs = new TreeSet<Integer>();
     pollingSensorIDs.add(1);
 
-    cst.insert(new ChangedStatusRecord("My Device", pollingSensorIDs));
+    cst.insert(new ChangedStatusRecord("My Device-1", pollingSensorIDs));
 
     cache.update(evt);
 
-    ChangedStatusRecord record = cst.query("My Device", pollingSensorIDs);
+    ChangedStatusRecord record = cst.query("My Device-1");
 
-    Assert.assertTrue(record.getDeviceID().equals("My Device"));
+    Assert.assertTrue(record.getRecordKey().equals("My Device-1"));
     Assert.assertTrue(record.getPollingSensorIDs().contains(1));
     Assert.assertTrue(record.getPollingSensorIDs().size() == 1);
     Assert.assertTrue(record.getStatusChangedSensorIDs().contains(1));
@@ -497,21 +499,21 @@ public class StatusCacheTest
 
     evt = new Level(30, "test30", 30);
 
-    pollingSensorIDs = new ArrayList<Integer>();
+    pollingSensorIDs = new TreeSet<Integer>();
     pollingSensorIDs.add(10);
     pollingSensorIDs.add(20);
     pollingSensorIDs.add(30);
     pollingSensorIDs.add(40);
 
-    cst.insert(new ChangedStatusRecord("Another Device", pollingSensorIDs));
+    cst.insert(new ChangedStatusRecord("Another Device-10,20,30,40", pollingSensorIDs));
 
     cache.update(evt);
 
     pollingSensorIDs.remove(new Integer(10));
 
-    record = cst.query("Another Device", pollingSensorIDs);
+    record = cst.query("Another Device-10,20,30,40");
 
-    Assert.assertTrue(record.getDeviceID().equals("Another Device"));
+    Assert.assertTrue(record.getRecordKey().equals("Another Device-10,20,30,40"));
     Assert.assertTrue(record.getPollingSensorIDs().contains(20));
     Assert.assertTrue(record.getPollingSensorIDs().contains(30));
     Assert.assertTrue(record.getPollingSensorIDs().contains(40));
@@ -528,20 +530,20 @@ public class StatusCacheTest
     Event evt2 = new CustomState(200, "test200", "acme");
 
 
-    pollingSensorIDs = new ArrayList<Integer>();
+    pollingSensorIDs = new TreeSet<Integer>();
     pollingSensorIDs.add(100);
     pollingSensorIDs.add(200);
     pollingSensorIDs.add(300);
     pollingSensorIDs.add(400);
 
-    cst.insert(new ChangedStatusRecord("Third Device", pollingSensorIDs));
+    cst.insert(new ChangedStatusRecord("Third Device-100,200,300,400", pollingSensorIDs));
 
     cache.update(evt1);
     cache.update(evt2);
 
-    record = cst.query("Third Device", pollingSensorIDs);
+    record = cst.query("Third Device-100,200,300,400");
 
-    Assert.assertTrue(record.getDeviceID().equals("Third Device"));
+    Assert.assertTrue(record.getRecordKey().equals("Third Device-100,200,300,400"));
     Assert.assertTrue(record.getPollingSensorIDs().contains(100));
     Assert.assertTrue(record.getPollingSensorIDs().contains(200));
     Assert.assertTrue(record.getPollingSensorIDs().contains(300));
