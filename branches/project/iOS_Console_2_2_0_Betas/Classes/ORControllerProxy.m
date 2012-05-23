@@ -40,6 +40,9 @@
     if (self) {
         self.controller = aController;
         self.commandsQueue = [NSMutableArray array];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:self.controller];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:self.controller];
     }
     return self;
 }
@@ -49,6 +52,13 @@
     self.commandsQueue = nil;
     self.controller = nil;
     [super dealloc];
+}
+
+#pragma mark -
+
+- (void)groupMembersFetchStatusChanged:(NSNotification *)notification
+{
+    [self processQueue];
 }
 
 #pragma mark -

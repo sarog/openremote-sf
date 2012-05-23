@@ -23,6 +23,7 @@
 #import "Definition.h"
 #import "ViewHelper.h"
 #import "ControllerException.h"
+#import "ORController.h"
 
 @interface ORControllerPanelsFetcher ()
 
@@ -47,6 +48,11 @@
 {
     self.panels = nil;
     [super dealloc];
+}
+
+- (BOOL)shouldExecuteNow
+{
+    return [self.controller hasCapabilities];
 }
 
 - (void)send
