@@ -2,19 +2,19 @@ package org.openremote.modeler.shared.dto;
 
 import java.util.ArrayList;
 
-public class MacroDTO implements DTO {
+public class MacroDTO implements DTO, UICommandDTO {
 
   private static final long serialVersionUID = 1L;
   
   private String displayName;
-  private long oid;
+  private Long oid;
   private ArrayList<MacroItemDTO> items;
 
   public MacroDTO() {
     super();
   }
   
-  public MacroDTO(long oid, String displayName) {
+  public MacroDTO(Long oid, String displayName) {
     super();
     this.oid = oid;
     this.displayName = displayName;
@@ -28,11 +28,11 @@ public class MacroDTO implements DTO {
     this.displayName = displayName;
   }
   
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
   
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
   
