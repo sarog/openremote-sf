@@ -27,6 +27,11 @@
 #import "SensorStatusCache.h"
 #import "ClientSideRuntime.h"
 
+NSString *kORControllerGroupMembersFetchingNotification = @"kORControllerGroupMembersFetchingNotification";
+NSString *kORControllerGroupMembersFetchSucceededNotification = @"kORControllerGroupMembersFetchSucceededNotification";
+NSString *kORControllerGroupMembersFetchFailedNotification = @"kORControllerGroupMembersFetchFailedNotification";
+NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification = @"kORControllerGroupMembersFetchRequiresAuthenticationNotification";
+
 @interface ORController ()
 
 - (void)addGroupMembersObject:(ORGroupMember *)value;

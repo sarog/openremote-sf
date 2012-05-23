@@ -31,13 +31,12 @@
 @class SensorStatusCache;
 @class ClientSideRuntime;
 
-
 // TODO: do we really need to have those different notifications, can't we just pass the status as param to the notification
-// TODO: don't use define but extern static
-#define kORControllerGroupMembersFetchingNotification @"kORControllerGroupMembersFetchingNotification"
-#define kORControllerGroupMembersFetchSucceededNotification @"kORControllerGroupMembersFetchSucceededNotification"
-#define kORControllerGroupMembersFetchFailedNotification @"kORControllerGroupMembersFetchFailedNotification"
-#define kORControllerGroupMembersFetchRequiresAuthenticationNotification @"kORControllerGroupMembersFetchRequiresAuthenticationNotification"
+
+extern NSString *kORControllerGroupMembersFetchingNotification;
+extern NSString *kORControllerGroupMembersFetchSucceededNotification;
+extern NSString *kORControllerGroupMembersFetchFailedNotification;
+extern NSString *kORControllerGroupMembersFetchRequiresAuthenticationNotification;
 
 enum {
     FetchStatusUnknown = 0,
