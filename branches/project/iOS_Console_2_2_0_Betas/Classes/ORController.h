@@ -74,7 +74,10 @@ typedef NSInteger ORControllerFetchStatus;
 @property (nonatomic, retain) NSArray *panelIdentities;
 
 @property (nonatomic, readonly, retain) ORControllerProxy *proxy;
+
 @property (nonatomic, readonly) ORControllerFetchStatus groupMembersFetchStatus;
+@property (nonatomic, readonly) ORControllerFetchStatus capabilitiesFetchStatus;
+@property (nonatomic, readonly) ORControllerFetchStatus panelIdentitiesFetchStatus;
 
 - (void)fetchGroupMembers;
 - (void)cancelGroupMembersFetch;

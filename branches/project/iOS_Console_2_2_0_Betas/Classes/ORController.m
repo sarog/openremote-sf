@@ -36,6 +36,10 @@
 
 @property (nonatomic, retain) ORControllerGroupMembersFetcher *groupMembersFetcher;
 
+@property (nonatomic, readwrite) ORControllerFetchStatus groupMembersFetchStatus;
+@property (nonatomic, readwrite) ORControllerFetchStatus capabilitiesFetchStatus;
+@property (nonatomic, readwrite) ORControllerFetchStatus panelIdentitiesFetchStatus;
+
 @property (nonatomic, retain, readwrite) SensorStatusCache *sensorStatusCache;
 @property (nonatomic, retain, readwrite) ClientSideRuntime *clientSideRuntime;
 
@@ -76,7 +80,7 @@
     if (self.groupMembersFetcher) {
         return;
     }
-    groupMembersFetchStatus = Fetching;
+    self.groupMembersFetchStatus = Fetching;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchingNotification object:self];
     self.groupMembersFetcher = [self.proxy fetchGroupMembersWithDelegate:self];
 }
@@ -101,7 +105,7 @@
         NSLog(@"%@", url);
         [self addGroupMemberForURL:url];
     }
-    groupMembersFetchStatus = FetchSucceeded;
+    self.groupMembersFetchStatus = FetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
     self.groupMembersFetcher = nil;
     
@@ -112,7 +116,7 @@
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
 {
-    groupMembersFetchStatus = FetchFailed;    
+    self.groupMembersFetchStatus = FetchFailed;    
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];
     self.groupMembersFetcher = nil;
 }
@@ -120,7 +124,7 @@
 - (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController
 {
 //    self.password = nil;
-    groupMembersFetchStatus = FetchRequiresAuthentication;
+    self.groupMembersFetchStatus = FetchRequiresAuthentication;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:self];    
   //  [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
     self.groupMembersFetcher = nil;
@@ -130,6 +134,8 @@
 
 - (void)fetchCapabilities
 {
+    self.capabilitiesFetchStatus = Fetching;
+
     // TODO: should there be more to it, see fetchGroupMembers ?
     [self.proxy fetchCapabilitiesWithDelegate:self];
 }
@@ -164,18 +170,21 @@
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
     
     // TODO: should notify of change -> queue should process
+    self.capabilitiesFetchStatus = FetchSucceeded;
 }
 
 - (void)fetchCapabilitiesDidFailWithError:(NSError *)error
 {
     // TODO
     NSLog(@"fetch capabilities error %@", error);
+    self.capabilitiesFetchStatus = FetchFailed;
 }
 
 #pragma mark - 
 
 - (void)fetchPanels
 {
+    self.panelIdentitiesFetchStatus = Fetching;
     [self.proxy fetchPanelsWithDelegate:self];
 }
 
@@ -187,17 +196,20 @@
     
     NSLog(@"Got panel identities %@", thePanels);
     // TODO change state, notification
+    self.panelIdentitiesFetchStatus = FetchSucceeded;
 }
 
 - (void)fetchPanelsDidFailWithError:(NSError *)error
 {
     self.panelIdentities = nil;
     // TODO
+    self.panelIdentitiesFetchStatus = FetchFailed;
 }
 
 - (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
     // TODO
+    self.panelIdentitiesFetchStatus = FetchRequiresAuthentication;
 }
 
 #pragma mark -
@@ -209,12 +221,12 @@
 
 - (BOOL)hasCapabilities
 {
-    return self.controllerAPIVersions != nil;
+    return (self.capabilitiesFetchStatus == FetchSucceeded);
 }
 
 - (BOOL)hasPanelIdentities
 {
-    return self.panelIdentities != nil;
+    return (self.panelIdentitiesFetchStatus == FetchSucceeded);
 }
 
 #pragma mark -
@@ -290,8 +302,10 @@
 
 
 @synthesize activeGroupMember;
-@synthesize groupMembersFetchStatus;
 @synthesize groupMembersFetcher;
+@synthesize groupMembersFetchStatus;
+@synthesize capabilitiesFetchStatus;
+@synthesize panelIdentitiesFetchStatus;
 @synthesize definition;
 @synthesize controllerAPIVersions;
 @synthesize controllerAPIVersion;
