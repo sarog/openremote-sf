@@ -19,10 +19,16 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.SensorBeanModelTable;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
@@ -72,8 +78,14 @@ public class SelectSensorWindow extends Dialog {
       // overflow-auto style is for IE hack.
       sensorListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();
-      store.add(((SensorBeanModelTable)BeanModelDataBase.sensorTable).loadAllAsDTOs());
+      final ListStore<BeanModel> store = new ListStore<BeanModel>();
+      SensorBeanModelProxy.loadAllSensorWithInfosDTO(new AsyncSuccessCallback<ArrayList<SensorWithInfoDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SensorWithInfoDTO> result) {
+          store.add(DTOHelper.createModels(result));
+
+        }
+      });      
       sensorList.setHeight(150);
       sensorList.setStore(store);
       sensorList.setDisplayProperty("displayName");
@@ -115,7 +127,7 @@ public class SelectSensorWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a sensor.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof SensorDetailsDTO) {
+                  if (beanModel.getBean() instanceof SensorWithInfoDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a sensor.", null);

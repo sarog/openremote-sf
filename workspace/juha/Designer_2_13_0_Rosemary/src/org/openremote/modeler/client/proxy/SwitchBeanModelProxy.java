@@ -19,12 +19,14 @@
 */
 package org.openremote.modeler.client.proxy;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -48,27 +50,16 @@ public class SwitchBeanModelProxy {
       }
    }
    
-   public static void save(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().save((Switch) (beanModel.getBean()),
-               new AsyncSuccessCallback<Switch>() {
-
-                  @Override
-                  public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.insert(result.getBeanModel());
-                     callback.onSuccess(result);
-                  }
-
-               });
-      }
-   }
-   
    public static void loadSwitchDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
      AsyncServiceFactory.getSwitchRPCServiceAsync().loadSwitchDetails(((SwitchDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SwitchDetailsDTO>() {
        public void onSuccess(SwitchDetailsDTO result) {
          asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
        }
      });
+   }
+   
+   public static void loadAllSwitchWithInfosDTO(AsyncSuccessCallback<ArrayList<SwitchWithInfoDTO>> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().loadAllSwitchWithInfosDTO(callback);
    }
    
    public static void updateSwitchWithDTO(final SwitchDetailsDTO switchDTO, AsyncSuccessCallback<Void> callback) {

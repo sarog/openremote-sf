@@ -22,7 +22,6 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
@@ -30,7 +29,6 @@ import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
@@ -130,8 +128,8 @@ public class SwitchPropertyForm extends PropertyForm {
       });
       
       Button switchCommand = new Button("Select");
-      if (uiSwitch.getSwitchCommand() != null) {
-         switchCommand.setText(uiSwitch.getSwitchCommand().getDisplayName());
+      if (uiSwitch.getSwitchDTO() != null) {
+         switchCommand.setText(uiSwitch.getSwitchDTO().getDisplayName());
       }
       switchCommand.addSelectionListener(createSelectionListener(uiSwitch, switchCommand));
       AdapterField adapterSwitchCommand = new AdapterField(switchCommand);
@@ -158,10 +156,9 @@ public class SwitchPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
                   if (dataModel.getBean() instanceof SwitchWithInfoDTO) {
-                     SwitchWithInfoDTO switchDTO = dataModel.getBean();
-                     Switch switchCommand = BeanModelDataBase.switchTable.get(switchDTO.getOid()).getBean();
-                     uiSwitch.setSwitchCommand(switchCommand);
-                     command.setText(switchCommand.getDisplayName());
+                    SwitchWithInfoDTO switchDTO = dataModel.getBean();
+                     uiSwitch.setSwitchDTO(switchDTO);
+                     command.setText(switchDTO.getDisplayName());
                   }
                }
             });
