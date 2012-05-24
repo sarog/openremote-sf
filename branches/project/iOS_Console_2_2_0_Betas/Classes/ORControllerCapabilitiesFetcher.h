@@ -34,10 +34,8 @@
 
 @end
 
-@interface ORControllerCapabilitiesFetcher : ORControllerSender <ControllerRequestDelegate, NSXMLParserDelegate>
+@interface ORControllerCapabilitiesFetcher : ORControllerSender <ControllerRequestDelegate>
 
 @property (nonatomic, assign) NSObject <ORControllerCapabilitiesFetcherDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController;
 
 @end
