@@ -71,9 +71,6 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-    /*<openremote><rest-api-versions><version>2.0</version><version>2.1</version></rest-api-versions></openremote>*/
-    /*<openremote><rest-api-versions><version>2.0</version><version>2.1</version></rest-api-versions><security><api path="panels" security="none" ssl-enabled="false"/><api path="panel" security="HTTP-basic" ssl-enabled="true"/></security><capabilities><capability name="SIP"><param name="port" value="5060"/></capability></capabilities></openremote>*/
-    
 	if ([elementName isEqualToString:@"version"]) {
         self.temporaryXMLElementContent = [NSMutableString string];
 	}
