@@ -18,20 +18,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
+#import "CapabilitiesWithSettableConsoleVersions.h"
 
-#define DEFAULT_CONTROLLER_API_VERSION  @"2.0"
+@implementation CapabilitiesWithSettableConsoleVersions
 
-@interface Capabilities : NSObject
+static NSArray *consoleVersionsToReport;
 
-+ (NSArray *)iosConsoleSupportedVersions;
++ (void)setConsoleVersionsToReport:(NSArray *)versions
+{
+    if (consoleVersionsToReport != versions) {
+        [consoleVersionsToReport release];
+        consoleVersionsToReport = [versions copy];
+    }
+}
 
-- (id)initWithSupportedVersions:(NSArray *)versions apiSecurities:(NSArray *)securities capabilities:(NSArray *)someCapabilities;
-
-- (NSArray *)matchingVersions;
-
-@property (nonatomic, copy, readonly) NSArray *supportedVersions;
-@property (nonatomic, copy, readonly) NSArray *apiSecurities;
-@property (nonatomic, copy, readonly) NSArray *capabilities;
++ (NSArray *)iosConsoleSupportedVersions
+{
+    return consoleVersionsToReport;
+}
 
 @end

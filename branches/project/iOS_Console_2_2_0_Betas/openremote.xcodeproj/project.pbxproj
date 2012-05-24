@@ -38,6 +38,8 @@
 		602418CB156E5555004E5860 /* ControllerComponentCommandDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25BE155A71EF0048A2BD /* ControllerComponentCommandDeferredBinding.m */; };
 		602418CC156E5580004E5860 /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
 		602418CD156E558C004E5860 /* ClientSideBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */; };
+		602418D0156E6AB6004E5860 /* CapabilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418CF156E6AB6004E5860 /* CapabilitiesTest.m */; };
+		602418D3156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418D2156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -698,6 +700,10 @@
 		602418C2156E5383004E5860 /* CapabilitiesParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CapabilitiesParserTest.m; sourceTree = "<group>"; };
 		602418C4156E53EB004E5860 /* CompleteCapabilities.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = CompleteCapabilities.xml; sourceTree = "<group>"; };
 		602418C6156E5474004E5860 /* APIVersionsOnlyCapabilities.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = APIVersionsOnlyCapabilities.xml; sourceTree = "<group>"; };
+		602418CE156E6AB6004E5860 /* CapabilitiesTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CapabilitiesTest.h; sourceTree = "<group>"; };
+		602418CF156E6AB6004E5860 /* CapabilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CapabilitiesTest.m; sourceTree = "<group>"; };
+		602418D1156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CapabilitiesWithSettableConsoleVersions.h; sourceTree = "<group>"; };
+		602418D2156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CapabilitiesWithSettableConsoleVersions.m; sourceTree = "<group>"; };
 		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		603A8FC9155C138E00E46FA0 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
@@ -1824,6 +1830,10 @@
 				602418C2156E5383004E5860 /* CapabilitiesParserTest.m */,
 				602418C4156E53EB004E5860 /* CompleteCapabilities.xml */,
 				602418C6156E5474004E5860 /* APIVersionsOnlyCapabilities.xml */,
+				602418CE156E6AB6004E5860 /* CapabilitiesTest.h */,
+				602418CF156E6AB6004E5860 /* CapabilitiesTest.m */,
+				602418D1156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.h */,
+				602418D2156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m */,
 			);
 			name = capabilities;
 			sourceTree = "<group>";
@@ -3504,6 +3514,8 @@
 				602418B9156E4D2D004E5860 /* APISecurity.m in Sources */,
 				602418BE156E531C004E5860 /* CapabilitiesParser.m in Sources */,
 				602418C3156E5383004E5860 /* CapabilitiesParserTest.m in Sources */,
+				602418D0156E6AB6004E5860 /* CapabilitiesTest.m in Sources */,
+				602418D3156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

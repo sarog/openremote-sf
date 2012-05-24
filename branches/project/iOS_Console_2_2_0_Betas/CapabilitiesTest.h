@@ -18,20 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
+#import <SenTestingKit/SenTestingKit.h>
 
-#define DEFAULT_CONTROLLER_API_VERSION  @"2.0"
-
-@interface Capabilities : NSObject
-
-+ (NSArray *)iosConsoleSupportedVersions;
-
-- (id)initWithSupportedVersions:(NSArray *)versions apiSecurities:(NSArray *)securities capabilities:(NSArray *)someCapabilities;
-
-- (NSArray *)matchingVersions;
-
-@property (nonatomic, copy, readonly) NSArray *supportedVersions;
-@property (nonatomic, copy, readonly) NSArray *apiSecurities;
-@property (nonatomic, copy, readonly) NSArray *capabilities;
+@interface CapabilitiesTest : SenTestCase
 
 @end
