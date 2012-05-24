@@ -71,8 +71,8 @@
     self.sectionDefinitions = [NSArray arrayWithObjects:
                                // Section header for controller URL is handled by custom view so error message can be displayed
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionControllerURL sectionHeader:nil sectionFooter:@"Sample:192.168.1.2:8080/controller"] autorelease],
-                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionRoundrobinMembers sectionHeader:@"Roundrobin group members:" sectionFooter:nil] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionLogin sectionHeader:@"Login:" sectionFooter:nil] autorelease],
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionRoundrobinMembers sectionHeader:@"Roundrobin group members:" sectionFooter:nil] autorelease],
                                nil];
 }
 
