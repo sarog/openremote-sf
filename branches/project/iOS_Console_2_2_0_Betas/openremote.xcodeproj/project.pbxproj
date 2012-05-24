@@ -20,6 +20,12 @@
 		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
 		6010DE8E13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
+		602418B2156E4D0F004E5860 /* Capability.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B1156E4D0F004E5860 /* Capability.m */; };
+		602418B3156E4D0F004E5860 /* Capability.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B1156E4D0F004E5860 /* Capability.m */; };
+		602418B4156E4D0F004E5860 /* Capability.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B1156E4D0F004E5860 /* Capability.m */; };
+		602418B8156E4D2D004E5860 /* APISecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B7156E4D2D004E5860 /* APISecurity.m */; };
+		602418B9156E4D2D004E5860 /* APISecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B7156E4D2D004E5860 /* APISecurity.m */; };
+		602418BA156E4D2D004E5860 /* APISecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418B7156E4D2D004E5860 /* APISecurity.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -670,6 +676,10 @@
 		6010DE7913FEB389001E6AA9 /* DefinitionParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionParser.m; sourceTree = "<group>"; };
 		6010DE8C13FEB8D3001E6AA9 /* ScreenParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenParser.h; sourceTree = "<group>"; };
 		6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenParser.m; sourceTree = "<group>"; };
+		602418B0156E4D0F004E5860 /* Capability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capability.h; sourceTree = "<group>"; };
+		602418B1156E4D0F004E5860 /* Capability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Capability.m; sourceTree = "<group>"; };
+		602418B6156E4D2D004E5860 /* APISecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APISecurity.h; sourceTree = "<group>"; };
+		602418B7156E4D2D004E5860 /* APISecurity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APISecurity.m; sourceTree = "<group>"; };
 		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		603A8FC9155C138E00E46FA0 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
@@ -2661,6 +2671,10 @@
 				60F386CF1553DC230089F8BD /* ControllerComponent.m */,
 				60FAD47D154050B1008DA70E /* Capabilities.h */,
 				60FAD47E154050B1008DA70E /* Capabilities.m */,
+				602418B6156E4D2D004E5860 /* APISecurity.h */,
+				602418B7156E4D2D004E5860 /* APISecurity.m */,
+				602418B0156E4D0F004E5860 /* Capability.h */,
+				602418B1156E4D0F004E5860 /* Capability.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -3148,6 +3162,8 @@
 				609AAFCD156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD3156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 				609AAFD8156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
+				602418B2156E4D0F004E5860 /* Capability.m in Sources */,
+				602418B8156E4D2D004E5860 /* APISecurity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3322,6 +3338,8 @@
 				609AAFCF156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD5156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 				609AAFDA156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
+				602418B4156E4D0F004E5860 /* Capability.m in Sources */,
+				602418BA156E4D2D004E5860 /* APISecurity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3440,6 +3458,8 @@
 				609AAFCE156A5DBF000DA1F9 /* ORControllerPollOrStatusSender.m in Sources */,
 				609AAFD4156A5FA7000DA1F9 /* ORControllerStatusRequestSender.m in Sources */,
 				609AAFD9156A61F7000DA1F9 /* ORControllerSender.m in Sources */,
+				602418B3156E4D0F004E5860 /* Capability.m in Sources */,
+				602418B9156E4D2D004E5860 /* APISecurity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
