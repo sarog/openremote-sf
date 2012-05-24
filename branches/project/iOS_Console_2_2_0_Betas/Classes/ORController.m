@@ -155,24 +155,11 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
     if (!capabilities) {
         self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
     } else {
-        // Find the versions in common between client and server
-        
-#warning TODO
-        // TODO: this will not work anymore, should convert to decimal numbers
-        
-        NSMutableSet *supportedVersions = [NSMutableSet setWithArray:capabilities.supportedVersions];
-        [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
-        
-        // Sort supported versions descending
-        self.controllerAPIVersions = [[supportedVersions allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"" ascending:NO]]];
-
-        // First in the array is the best one
-        if ([self.controllerAPIVersions count] > 0) {
-            NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-            [f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease]];
-            f.minimumFractionDigits = 1; // Ensures 2.0 is converted to "2.0" string
-            self.controllerAPIVersion = [f stringFromNumber:[self.controllerAPIVersions objectAtIndex:0]];
-            [f release];
+        NSArray *matchingVersions = [capabilities matchingVersions];
+        if ([matchingVersions count] > 0) {
+            self.controllerAPIVersion = [matchingVersions objectAtIndex:0];
+        } else {
+            // TODO: report error, we can't talk to server
         }
     }
     
