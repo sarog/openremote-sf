@@ -22,6 +22,7 @@
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "ControllerException.h"
+#import "CapabilitiesParser.h"
 #import "Capabilities.h"
 #import "ORController.h"
 
@@ -29,27 +30,10 @@
 
 @property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) ControllerRequest *controllerRequest;
-@property (nonatomic, retain) NSMutableString *temporaryXMLElementContent;
-@property (nonatomic, retain) NSMutableArray *versions;
 
 @end
 
 @implementation ORControllerCapabilitiesFetcher
-
-- (id)initWithController:(ORController *)aController
-{
-    self = [super initWithController:aController];
-    if (self) {
-        self.versions = [NSMutableArray array];
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    self.versions = nil;
-    [super dealloc];
-}
 
 - (BOOL)shouldExecuteNow
 {
@@ -67,36 +51,13 @@
     [self.controllerRequest getRequestWithPath:kControllerFetchCapabilitiesPath];
 }
 
-#pragma mark NSXMLParserDelegate implementation
-
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
-{
-	if ([elementName isEqualToString:@"version"]) {
-        self.temporaryXMLElementContent = [NSMutableString string];
-	}
-}
-
-- (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
-{
-    [self.temporaryXMLElementContent appendString:string];
-}
-
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
-{
-	if ([elementName isEqualToString:@"version"]) {
-        [self.versions addObject:[NSDecimalNumber decimalNumberWithString:[self.temporaryXMLElementContent stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]]];
-    }
-}
-
 #pragma mark ControllerRequestDelegate implementation
 
 - (void)controllerRequestDidFinishLoading:(NSData *)data
 {
-    NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	[xmlParser release];
-    [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:[[[Capabilities alloc] initWithSupportedVersions:[NSArray arrayWithArray:self.versions] apiSecurities:nil capabilities:nil] autorelease]];
+    CapabilitiesParser *parser = [[CapabilitiesParser alloc] init];
+    [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:[parser parseXMLData:data]];
+    [parser release];
 }
 
 // optional TODO EBR is it required
@@ -128,7 +89,5 @@
 @synthesize controller;
 @synthesize controllerRequest;
 @synthesize delegate;
-@synthesize temporaryXMLElementContent;
-@synthesize versions;
 
 @end
