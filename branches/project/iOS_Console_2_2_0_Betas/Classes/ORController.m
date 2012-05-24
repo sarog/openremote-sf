@@ -156,6 +156,10 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
         self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
     } else {
         // Find the versions in common between client and server
+        
+#warning TODO
+        // TODO: this will nor work anymore, should convert to decimal numbers
+        
         NSMutableSet *supportedVersions = [NSMutableSet setWithArray:capabilities.supportedVersions];
         [supportedVersions intersectSet:[NSSet setWithArray:[Capabilities iosConsoleSupportedVersions]]];
         
