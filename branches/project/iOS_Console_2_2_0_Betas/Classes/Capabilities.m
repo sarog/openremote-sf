@@ -11,6 +11,8 @@
 @interface Capabilities ()
 
 @property (nonatomic, copy, readwrite) NSArray *supportedVersions;
+@property (nonatomic, copy, readwrite) NSArray *apiSecurities;
+@property (nonatomic, copy, readwrite) NSArray *capabilities;
 
 @end
 
@@ -23,11 +25,13 @@ static NSArray *iosConsoleSupportedVersions;
     iosConsoleSupportedVersions = [[NSArray arrayWithObjects:[NSDecimalNumber decimalNumberWithString:@"2.1"], [NSDecimalNumber decimalNumberWithString:@"2.0"], nil] retain];
 }
 
-- (id)initWithSupportedVersions:(NSArray *)versions
+- (id)initWithSupportedVersions:(NSArray *)versions apiSecurities:(NSArray *)securities capabilities:(NSArray *)someCapabilities
 {
     self = [super init];
     if (self) {
         self.supportedVersions = versions;
+        self.apiSecurities = securities;
+        self.capabilities = someCapabilities;
     }
     return self;
 }
@@ -35,6 +39,8 @@ static NSArray *iosConsoleSupportedVersions;
 - (void)dealloc
 {
     self.supportedVersions = nil;
+    self.apiSecurities = nil;
+    self.capabilities = nil;
     [super dealloc];
 }
 
@@ -44,5 +50,7 @@ static NSArray *iosConsoleSupportedVersions;
 }
 
 @synthesize supportedVersions;
+@synthesize apiSecurities;
+@synthesize capabilities;
 
 @end

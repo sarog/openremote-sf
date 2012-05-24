@@ -14,8 +14,10 @@
 
 + (NSArray *)iosConsoleSupportedVersions;
 
-- (id)initWithSupportedVersions:(NSArray *)versions;
+- (id)initWithSupportedVersions:(NSArray *)versions apiSecurities:(NSArray *)securities capabilities:(NSArray *)someCapabilities;
 
 @property (nonatomic, copy, readonly) NSArray *supportedVersions;
+@property (nonatomic, copy, readonly) NSArray *apiSecurities;
+@property (nonatomic, copy, readonly) NSArray *capabilities;
 
 @end
