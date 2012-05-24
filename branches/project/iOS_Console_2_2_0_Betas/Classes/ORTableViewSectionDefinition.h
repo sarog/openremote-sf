@@ -18,27 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#import <Foundation/Foundation.h>
 
-#import "ORTableViewController.h"
+@interface ORTableViewSectionDefinition : NSObject
 
-@class ORController;
+- (id)initWithSectionIdentifier:(NSInteger)identifier;
+- (id)initWithSectionIdentifier:(NSInteger)identifier sectionHeader:(NSString *)header sectionFooter:(NSString *)footer;
 
-@protocol ControllerDetailViewControllerDelegate <NSObject>
-
-- (void)didAddController:(ORController *)controller;
-- (void)didEditController:(ORController *)controller;
-- (void)didDeleteController:(ORController *)controller;
-- (void)didFailToAddController;
-
-@end
-
-@interface ControllerDetailViewController : ORTableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
-    
-}
-
-@property (nonatomic, retain) NSObject<ControllerDetailViewControllerDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController;
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)moc;
+@property (nonatomic, assign, readonly) NSInteger sectionIdentifier;
+@property (nonatomic, copy) NSString *sectionHeader;
+@property (nonatomic, copy) NSString *sectionFooter;
 
 @end

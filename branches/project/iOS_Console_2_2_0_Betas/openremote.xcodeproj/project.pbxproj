@@ -40,6 +40,12 @@
 		602418CD156E558C004E5860 /* ClientSideBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60BC25B0155A5D3C0048A2BD /* ClientSideBeanManager.m */; };
 		602418D0156E6AB6004E5860 /* CapabilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418CF156E6AB6004E5860 /* CapabilitiesTest.m */; };
 		602418D3156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418D2156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m */; };
+		602418D6156E766C004E5860 /* ORTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418D5156E766C004E5860 /* ORTableViewController.m */; };
+		602418D7156E766C004E5860 /* ORTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418D5156E766C004E5860 /* ORTableViewController.m */; };
+		602418D8156E766C004E5860 /* ORTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418D5156E766C004E5860 /* ORTableViewController.m */; };
+		602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
+		602418DC156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
+		602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -704,6 +710,10 @@
 		602418CF156E6AB6004E5860 /* CapabilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CapabilitiesTest.m; sourceTree = "<group>"; };
 		602418D1156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CapabilitiesWithSettableConsoleVersions.h; sourceTree = "<group>"; };
 		602418D2156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CapabilitiesWithSettableConsoleVersions.m; sourceTree = "<group>"; };
+		602418D4156E766C004E5860 /* ORTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORTableViewController.h; sourceTree = "<group>"; };
+		602418D5156E766C004E5860 /* ORTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORTableViewController.m; sourceTree = "<group>"; };
+		602418D9156E76BE004E5860 /* ORTableViewSectionDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORTableViewSectionDefinition.h; sourceTree = "<group>"; };
+		602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORTableViewSectionDefinition.m; sourceTree = "<group>"; };
 		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		603A8FC9155C138E00E46FA0 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
@@ -2543,6 +2553,10 @@
 				60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */,
 				606281101446F5F6001123BD /* RuntimeUtils.h */,
 				606281111446F5F6001123BD /* RuntimeUtils.m */,
+				602418D4156E766C004E5860 /* ORTableViewController.h */,
+				602418D5156E766C004E5860 /* ORTableViewController.m */,
+				602418D9156E76BE004E5860 /* ORTableViewSectionDefinition.h */,
+				602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -3209,6 +3223,8 @@
 				602418B2156E4D0F004E5860 /* Capability.m in Sources */,
 				602418B8156E4D2D004E5860 /* APISecurity.m in Sources */,
 				602418BD156E531C004E5860 /* CapabilitiesParser.m in Sources */,
+				602418D6156E766C004E5860 /* ORTableViewController.m in Sources */,
+				602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3386,6 +3402,8 @@
 				602418B4156E4D0F004E5860 /* Capability.m in Sources */,
 				602418BA156E4D2D004E5860 /* APISecurity.m in Sources */,
 				602418BF156E531C004E5860 /* CapabilitiesParser.m in Sources */,
+				602418D8156E766C004E5860 /* ORTableViewController.m in Sources */,
+				602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3516,6 +3534,8 @@
 				602418C3156E5383004E5860 /* CapabilitiesParserTest.m in Sources */,
 				602418D0156E6AB6004E5860 /* CapabilitiesTest.m in Sources */,
 				602418D3156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m in Sources */,
+				602418D7156E766C004E5860 /* ORTableViewController.m in Sources */,
+				602418DC156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

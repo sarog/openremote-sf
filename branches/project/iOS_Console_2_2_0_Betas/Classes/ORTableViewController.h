@@ -18,27 +18,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#import <UIKit/UIKit.h>
 
-#import "ORTableViewController.h"
+/**
+ * A table view controller that makes organizing sections easier.
+ * Each section is represented by an ORTableViewSectionDefinition object.
+ */
+@interface ORTableViewController : UITableViewController
 
-@class ORController;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSectionWithIdentifier:(NSInteger)sectionIdentifier;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRow:(NSInteger)row inSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-@protocol ControllerDetailViewControllerDelegate <NSObject>
+/**
+ * Returns section "number" (as in an index path) based on it's identifier
+ */
+- (NSInteger)sectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-- (void)didAddController:(ORController *)controller;
-- (void)didEditController:(ORController *)controller;
-- (void)didDeleteController:(ORController *)controller;
-- (void)didFailToAddController;
+/**
+ * Returns the section identifier for the given section
+ */
+- (NSInteger)sectionIdentifierForSection:(NSInteger)section;
 
-@end
-
-@interface ControllerDetailViewController : ORTableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
-    
-}
-
-@property (nonatomic, retain) NSObject<ControllerDetailViewControllerDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController;
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)moc;
+@property (nonatomic, retain) NSArray *sectionDefinitions;
 
 @end
