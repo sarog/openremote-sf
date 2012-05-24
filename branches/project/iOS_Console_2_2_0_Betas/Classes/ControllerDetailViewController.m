@@ -26,11 +26,16 @@
 #import "StyleValue1TextEntryCell.h"
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
 #import "NSURLHelper.h"
+#import "ORTableViewSectionDefinition.h"
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
 #define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
 #define kUsernameCellIdentifier @"kUsernameCellIdentifier"
 #define kPasswordCellIdentifier @"kPasswordCellIdentifier"
+
+#define kSectionControllerURL 1
+#define kSectionRoundrobinMembers 2
+#define kSectionLogin 3
 
 @interface ControllerDetailViewController()
 
@@ -59,11 +64,24 @@
 
 @implementation ControllerDetailViewController
 
+
+
+- (void)initTableViewSections
+{
+    self.sectionDefinitions = [NSArray arrayWithObjects:
+                               // Section header for controller URL is handled by custom view so error message can be displayed
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionControllerURL sectionHeader:nil sectionFooter:@"Sample:192.168.1.2:8080/controller"] autorelease],
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionRoundrobinMembers sectionHeader:@"Roundrobin group members:" sectionFooter:nil] autorelease],
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionLogin sectionHeader:@"Login:" sectionFooter:nil] autorelease],
+                               nil];
+}
+
 - (id)initWithController:(ORController *)aController
 {
 	self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.controller = aController;
+        [self initTableViewSections];
     }
 	return self;
 }
@@ -73,6 +91,7 @@
 	self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.managedObjectContext = moc;
+        [self initTableViewSections];
     }
 	return self;
 }
@@ -259,32 +278,27 @@
     return YES;
 }
 
-#pragma mark - Table view data source
+#pragma mark - ORTableView customization methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSectionWithIdentifier:(NSInteger)sectionIdentifier
 {
-    return 3;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    switch (section) {
-        case 0:
+    switch (sectionIdentifier) {
+        case kSectionControllerURL:
             return 1;
-        case 1:
+        case kSectionRoundrobinMembers:
             return [self.groupMembers count];
-        case 2:
+        case kSectionLogin:
             return 2;
         default:
             return 0;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRow:(NSInteger)row inSectionWithIdentifier:(NSInteger)sectionIdentifier
 {
     UITableViewCell *cell = nil;
-    switch (indexPath.section) {
-        case 0:
+    switch (sectionIdentifier) {
+        case kSectionControllerURL:
         {
             cell = [tableView dequeueReusableCellWithIdentifier:kControllerUrlCellIdentifier];
             if (cell == nil) {
@@ -296,18 +310,18 @@
             self.urlField.text = self.controller.primaryURL;
             break;
         }
-        case 1:
+        case kSectionRoundrobinMembers:
         {
             cell = [tableView dequeueReusableCellWithIdentifier:kGroupMemberCellIdentifier];
             if (cell == nil) {
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGroupMemberCellIdentifier] autorelease];
             }            
-            cell.textLabel.text = ((ORGroupMember *)[self.groupMembers objectAtIndex:indexPath.row]).url;
+            cell.textLabel.text = ((ORGroupMember *)[self.groupMembers objectAtIndex:row]).url;
             break;
         }
-        case 2:
+        case kSectionLogin:
         {
-            switch (indexPath.row) {
+            switch (row) {
                 case 0:
                     cell = [tableView dequeueReusableCellWithIdentifier:kUsernameCellIdentifier];
                     if (cell == nil) {
@@ -324,7 +338,7 @@
                         cell = [[[StyleValue1TextEntryCell alloc] initWithReuseIdentifier:kPasswordCellIdentifier] autorelease];
                         self.passwordField = ((TextFieldCell *)cell).textField;
                         self.passwordField.secureTextEntry = YES;
-
+                        
                         self.passwordField.delegate = self;
                     }
                     cell.textLabel.text = @"Password";
@@ -334,27 +348,7 @@
             }
         }
     }
-    return cell;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-	return (section == 0)?@"Sample:192.168.1.2:8080/controller":@"";
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    switch (section) {
-        case 0:
-            // Handled by custom view so error message can be displayed
-            return nil;
-        case 1:
-            return @"Roundrobin group members:";
-        case 2:
-            return @"Login:";
-        default:
-            return nil;
-    }
+    return cell;    
 }
 
 #pragma mark - Table view delegate
@@ -371,7 +365,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    if (section == 0) {
+    if ([self sectionIdentifierForSection:section] == kSectionControllerURL) {
         if (!self.controllerSectionHeaderView) {
             CGFloat totalWidth = tableView.frame.size.width;
             UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, totalWidth)];
@@ -418,7 +412,7 @@
 - (void)updateTableViewHeaderForGroupMemberFetchStatus
 {
     UIView *statusView = [ORControllerGroupMembersFetchStatusIconProvider viewForGroupMembersFetchStatus:self.controller.groupMembersFetchStatus];
-    CGRect sectionBounds = [self.tableView rectForSection:0];
+    CGRect sectionBounds = [self.tableView rectForSection:[self sectionWithIdentifier:kSectionControllerURL]];
     UIView *aView = [[UIView alloc] initWithFrame:CGRectMake(sectionBounds.origin.x, 0.0, sectionBounds.size.width, 40.0)];
     // Status view is centered but with a 12 points offset from top. Also offset 44 from right border to align on rows' border
     statusView.frame = CGRectMake(sectionBounds.size.width - statusView.frame.size.width - 44.0, (int)(12.0 + (aView.frame.size.height - statusView.frame.size.height)/ 2.0), statusView.frame.size.width, statusView.frame.size.height);
@@ -429,7 +423,7 @@
 
 - (void)refreshGroupMemberTableViewSection
 {
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:[self sectionWithIdentifier:kSectionRoundrobinMembers]] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (void)deleteController:(id)sender

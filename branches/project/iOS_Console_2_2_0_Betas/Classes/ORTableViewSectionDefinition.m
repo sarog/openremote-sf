@@ -18,27 +18,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#import "ORTableViewSectionDefinition.h"
 
-#import "ORTableViewController.h"
+@interface ORTableViewSectionDefinition ()
 
-@class ORController;
-
-@protocol ControllerDetailViewControllerDelegate <NSObject>
-
-- (void)didAddController:(ORController *)controller;
-- (void)didEditController:(ORController *)controller;
-- (void)didDeleteController:(ORController *)controller;
-- (void)didFailToAddController;
+@property (nonatomic, assign, readwrite) NSInteger sectionIdentifier;
 
 @end
 
-@interface ControllerDetailViewController : ORTableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
-    
+@implementation ORTableViewSectionDefinition
+
+- (id)initWithSectionIdentifier:(NSInteger)identifier sectionHeader:(NSString *)header sectionFooter:(NSString *)footer
+{
+    self = [super init];
+    if (self) {
+        self.sectionIdentifier = identifier;
+        self.sectionHeader = header;
+        self.sectionFooter = footer;
+    }
+    return self;
 }
 
-@property (nonatomic, retain) NSObject<ControllerDetailViewControllerDelegate> *delegate;
+- (id)initWithSectionIdentifier:(NSInteger)identifier
+{
+    return [self initWithSectionIdentifier:identifier sectionHeader:nil sectionFooter:nil];
+}
 
-- (id)initWithController:(ORController *)aController;
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)moc;
+- (void)dealloc
+{
+    self.sectionHeader = nil;
+    self.sectionFooter = nil;
+    [super dealloc];
+}
+
+@synthesize sectionIdentifier;
+@synthesize sectionHeader;
+@synthesize sectionFooter;
 
 @end
