@@ -46,6 +46,10 @@
 		602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
 		602418DC156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
 		602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */; };
+		602418E5156FAC6D004E5860 /* UITableViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418E4156FAC6D004E5860 /* UITableViewHelper.m */; };
+		602418E6156FAC6D004E5860 /* UITableViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418E4156FAC6D004E5860 /* UITableViewHelper.m */; };
+		602418E7156FAC6D004E5860 /* UITableViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418E4156FAC6D004E5860 /* UITableViewHelper.m */; };
+		602418EB156FAD40004E5860 /* UITableViewHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 602418EA156FAD40004E5860 /* UITableViewHelperTest.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -714,6 +718,10 @@
 		602418D5156E766C004E5860 /* ORTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORTableViewController.m; sourceTree = "<group>"; };
 		602418D9156E76BE004E5860 /* ORTableViewSectionDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORTableViewSectionDefinition.h; sourceTree = "<group>"; };
 		602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORTableViewSectionDefinition.m; sourceTree = "<group>"; };
+		602418E3156FAC6D004E5860 /* UITableViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITableViewHelper.h; sourceTree = "<group>"; };
+		602418E4156FAC6D004E5860 /* UITableViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITableViewHelper.m; sourceTree = "<group>"; };
+		602418E9156FAD40004E5860 /* UITableViewHelperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITableViewHelperTest.h; sourceTree = "<group>"; };
+		602418EA156FAD40004E5860 /* UITableViewHelperTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITableViewHelperTest.m; sourceTree = "<group>"; };
 		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		603A8FC9155C138E00E46FA0 /* decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = decoder.h; sourceTree = "<group>"; };
@@ -2461,6 +2469,8 @@
 			children = (
 				60F3868215517C030089F8BD /* NSURLHelperTest.h */,
 				60F3868315517C030089F8BD /* NSURLHelperTest.m */,
+				602418E9156FAD40004E5860 /* UITableViewHelperTest.h */,
+				602418EA156FAD40004E5860 /* UITableViewHelperTest.m */,
 			);
 			name = helper;
 			sourceTree = "<group>";
@@ -2557,6 +2567,8 @@
 				602418D5156E766C004E5860 /* ORTableViewController.m */,
 				602418D9156E76BE004E5860 /* ORTableViewSectionDefinition.h */,
 				602418DA156E76BE004E5860 /* ORTableViewSectionDefinition.m */,
+				602418E3156FAC6D004E5860 /* UITableViewHelper.h */,
+				602418E4156FAC6D004E5860 /* UITableViewHelper.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -3225,6 +3237,7 @@
 				602418BD156E531C004E5860 /* CapabilitiesParser.m in Sources */,
 				602418D6156E766C004E5860 /* ORTableViewController.m in Sources */,
 				602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
+				602418E5156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3404,6 +3417,7 @@
 				602418BF156E531C004E5860 /* CapabilitiesParser.m in Sources */,
 				602418D8156E766C004E5860 /* ORTableViewController.m in Sources */,
 				602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
+				602418E7156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3536,6 +3550,8 @@
 				602418D3156E6BE4004E5860 /* CapabilitiesWithSettableConsoleVersions.m in Sources */,
 				602418D7156E766C004E5860 /* ORTableViewController.m in Sources */,
 				602418DC156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
+				602418E6156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
+				602418EB156FAD40004E5860 /* UITableViewHelperTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
