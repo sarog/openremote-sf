@@ -121,6 +121,9 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.server.SensorController;
 import org.openremote.modeler.server.SliderController;
 import org.openremote.modeler.server.SwitchController;
@@ -966,21 +969,42 @@ public class ResourceServiceImpl implements ResourceService
       if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
         // We must load slider because referenced sensor / command are not serialized, this reloads from DB
         Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
-        if (slider != null) { // Just in case we have dangling pointer
+        if (slider != null) { // Just in case we have a dangling pointer
           uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
         }
         uiSlider.setSlider(null);
       }
-      if (component instanceof UISwitch) {
-        UISwitch uiSwitch = (UISwitch)component;
-        if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
-          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(uiSwitch.getSwitchCommand()));
-          uiSwitch.setSwitchCommand(null);
+    }
+    if (component instanceof UISwitch) {
+      UISwitch uiSwitch = (UISwitch)component;
+      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+        if (switchBean != null) { // Just in case we have a dangling pointer
+          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
         }
+        uiSwitch.setSwitchCommand(null);
+      }
+    }
+    if (component instanceof UIButton) {
+      UIButton uiButton = (UIButton)component;
+      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
+        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
+        uiButton.setUiCommand(null);
       }
     }
 
     // TODO: continue
+  }
+
+  private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
+    if (uiCommand instanceof DeviceCommandRef) {
+      DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
+      return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+    } else if (uiCommand instanceof DeviceMacroRef) {
+      DeviceMacro dm = deviceMacroService.loadById(((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid());
+      return (dm != null)?new MacroDTO(dm.getOid(), dm.getDisplayName()):null;
+    }
+    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
   }
 
   
@@ -1023,6 +1047,7 @@ public class ResourceServiceImpl implements ResourceService
 
   }
 
+
   protected void resolvedDTOReferences(UIComponent component) {
     if (component instanceof SensorOwner) {
       SensorOwner owner = (SensorOwner) component;
@@ -1047,16 +1072,40 @@ public class ResourceServiceImpl implements ResourceService
     if (component instanceof UISwitch) {
       UISwitch uiSwitch = (UISwitch)component;
       if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
-        Switch sw = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+        Switch sw = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
         uiSwitch.setSwitchCommand(sw);
         uiSwitch.setSwitchDTO(null);
       }
     }
-
+    if (component instanceof UIButton) {
+      UIButton uiButton = (UIButton)component;
+      if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
+        uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
+        uiButton.setUiCommandDTO(null);
+      }
+    }
 
     // TODO: continue
   }
 
+  private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
+    DeviceMacroItem item = null;
+    if (uiCommandDTO instanceof DeviceCommandDTO) {
+      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
+      item =  (dc != null)?new DeviceCommandRef(dc):null;
+    } else if (uiCommandDTO instanceof MacroDTO) {
+      DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
+      item = (dm != null)?new DeviceMacroRef(dm):null;
+    } else {
+      throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+    }
+    if (item != null) {
+//      deviceMacroItemService.save(item);
+    }
+    return item;
+  }
+
+  
 
    //
    // TODO :
