@@ -27,6 +27,7 @@
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
 #import "NSURLHelper.h"
 #import "ORTableViewSectionDefinition.h"
+#import "UITableViewHelper.h"
 #import "Capabilities.h"
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
@@ -51,6 +52,9 @@
 // because we want an array to have an order to display in table view
 // We observe controller.groupMembers to keep this on in sync
 @property (nonatomic, retain) NSArray *groupMembers;
+
+@property (nonatomic, assign) NSInteger currentNumberOfCapabilitiesRow;
+
 // Used to indicate that the done button has been clicked -> cancel management because no target/action on back button
 @property (nonatomic, assign) BOOL doneAction;
 @property (nonatomic, assign) BOOL creating;
@@ -61,14 +65,11 @@
 @property (nonatomic, retain) UILabel *controllerErrorLabel;
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
-- (void)refreshGroupMemberTableViewSection;
 - (void)refreshCapabilitiesTableViewSection;
 
 @end
 
 @implementation ControllerDetailViewController
-
-
 
 - (void)initTableViewSections
 {
@@ -275,9 +276,8 @@
     self.groupMembers = nil;
     [self.controller fetchGroupMembers];
     [self.controller fetchCapabilities];
-    // Must be delayed or the table view update does not work
-    [self performSelector:@selector(refreshCapabilitiesTableViewSection) withObject:nil afterDelay:0.0];
-//    [self.controller fetchPanels];
+
+    //    [self.controller fetchPanels];
     
     return YES;
 }
@@ -307,6 +307,8 @@
         case kSectionLogin:
             return 2;
         case kSectionCapabilities:
+            self.currentNumberOfCapabilitiesRow = (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
+            NSLog(@"Updated current number of capabilities rows to %d", self.currentNumberOfCapabilitiesRow);
             return (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
         default:
             return 0;
@@ -374,7 +376,7 @@
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kAPIVersionsCellIdentifier] autorelease];
             }
             if (row == 0) {
-                cell.textLabel.text = @"Supported API versions";            
+                cell.textLabel.text = @"Supported API versions";
                 if (self.controller.capabilitiesFetchStatus != FetchSucceeded) {
                     cell.detailTextLabel.text = @"Unknown";
                 } else {
@@ -469,21 +471,19 @@
     [aView release];    
 }
 
-- (void)refreshGroupMemberTableViewSection
-{
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:[self sectionWithIdentifier:kSectionRoundrobinMembers]] withRowAnimation:UITableViewRowAnimationFade];
-}
-
 - (void)refreshCapabilitiesTableViewSection
-{
-    [self.tableView reloadData];
-
-     // This fails but with an error on section 2 (group members) and not on the section we're updating !!!
-    /*     
-     [self.tableView beginUpdates];    
-     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:[self sectionWithIdentifier:kSectionCapabilities]] withRowAnimation:UITableViewRowAnimationFade];
-     [self.tableView endUpdates];
-     */
+{    
+    NSInteger plannedRowCount = (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
+    NSInteger section = [self sectionWithIdentifier:kSectionCapabilities];
+    [self.tableView beginUpdates];
+    NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:self.currentNumberOfCapabilitiesRow to:plannedRowCount section:section];
+    if (plannedRowCount > self.currentNumberOfCapabilitiesRow) {
+        [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+     } else {
+         [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+     }
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
 }
 
 - (void)deleteController:(id)sender
@@ -504,6 +504,7 @@
 @synthesize managedObjectContext;
 @synthesize controller;
 @synthesize groupMembers;
+@synthesize currentNumberOfCapabilitiesRow;
 @synthesize usernameField;
 @synthesize passwordField;
 @synthesize urlField;
@@ -517,10 +518,20 @@
 - (void)setGroupMembers:(NSArray *)theGroupMembers
 {
     if (groupMembers != theGroupMembers) {
+        int oldCount = [groupMembers count];
+        int newCount = [theGroupMembers count];
+        
         [groupMembers release];
         groupMembers = [theGroupMembers retain];
-        // This must be performed after the setter finishes, otherwise the data source code using the getter does not see the new value
-        [self performSelector:@selector(refreshGroupMemberTableViewSection) withObject:nil afterDelay:0.0];
+        
+        [self.tableView beginUpdates];
+        NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:oldCount to:newCount section:[self sectionWithIdentifier:kSectionRoundrobinMembers]];
+        if (newCount > oldCount) {
+            [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+        } else {
+            [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+        }
+        [self.tableView endUpdates];
     }
 }
 
