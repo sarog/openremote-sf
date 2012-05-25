@@ -37,7 +37,7 @@ public class DiscoveredDeviceAttrDTO implements Serializable {
   
 
    /** The oid. */
-   private long oid;
+   private Long oid;
    
    /** The name. */
    private String name;
@@ -81,12 +81,12 @@ public class DiscoveredDeviceAttrDTO implements Serializable {
       this.value = value;
    }
 
-  public long getOid()
+  public Long getOid()
   {
     return oid;
   }
 
-  public void setOid(long oid)
+  public void setOid(Long oid)
   {
     this.oid = oid;
   }
