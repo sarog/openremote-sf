@@ -149,13 +149,13 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
 
 #pragma mark - ORControllerCapabilitiesFetcherDelegate
 
-- (void)fetchCapabilitiesDidSucceedWithCapabilities:(Capabilities *)capabilities
+- (void)fetchCapabilitiesDidSucceedWithCapabilities:(Capabilities *)controllerCapabilities
 {
     // nil means server can not advertise -> use default API version
-    if (!capabilities) {
+    if (!controllerCapabilities) {
         self.controllerAPIVersion = DEFAULT_CONTROLLER_API_VERSION;
     } else {
-        NSArray *matchingVersions = [capabilities matchingVersions];
+        NSArray *matchingVersions = [controllerCapabilities matchingVersions];
         if ([matchingVersions count] > 0) {
             self.controllerAPIVersion = [matchingVersions objectAtIndex:0];
         } else {
@@ -165,6 +165,8 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
     
     // TODO: use log4j    
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
+    
+    self.capabilities = controllerCapabilities;
     
     self.capabilitiesFetchStatus = FetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
@@ -239,7 +241,7 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
     proxy = nil;
     self.groupMembersFetcher = nil;
     self.definition = nil;
-    self.controllerAPIVersions = nil;
+    self.capabilities = nil;
     self.controllerAPIVersion = nil;
     self.sensorStatusCache = nil;
     self.panelIdentities = nil;
@@ -309,7 +311,7 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
 @synthesize capabilitiesFetchStatus;
 @synthesize panelIdentitiesFetchStatus;
 @synthesize definition;
-@synthesize controllerAPIVersions;
+@synthesize capabilities;
 @synthesize controllerAPIVersion;
 @synthesize panelIdentities;
 @synthesize sensorStatusCache;

@@ -27,15 +27,18 @@
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
 #import "NSURLHelper.h"
 #import "ORTableViewSectionDefinition.h"
+#import "Capabilities.h"
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
 #define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
 #define kUsernameCellIdentifier @"kUsernameCellIdentifier"
 #define kPasswordCellIdentifier @"kPasswordCellIdentifier"
+#define kAPIVersionsCellIdentifier @"kAPIVersionsCellIdentifier"
 
 #define kSectionControllerURL 1
 #define kSectionRoundrobinMembers 2
 #define kSectionLogin 3
+#define kSectionCapabilities 4
 
 @interface ControllerDetailViewController()
 
@@ -59,6 +62,7 @@
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 - (void)refreshGroupMemberTableViewSection;
+- (void)refreshCapabilitiesTableViewSection;
 
 @end
 
@@ -73,6 +77,7 @@
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionControllerURL sectionHeader:nil sectionFooter:@"Sample:192.168.1.2:8080/controller"] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionLogin sectionHeader:@"Login:" sectionFooter:nil] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionRoundrobinMembers sectionHeader:@"Roundrobin group members:" sectionFooter:nil] autorelease],
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionCapabilities sectionHeader:@"Controller capabilities:" sectionFooter:nil] autorelease],
                                nil];
 }
 
@@ -121,6 +126,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
     // We don't present a login panel when on this page, user can use "regular" fields to enter credentials
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerCapabilitiesFetchStatusChanged:) name:kORControllerCapabilitiesFetchStatusChange object:nil];
+    
+#warning TODO: observe notifications for panels update
     
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)] autorelease];
         
@@ -204,6 +213,9 @@
     
     self.groupMembers = [self.controller.groupMembers allObjects];
     [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
+    
+    [self.controller fetchCapabilities];
+    //    [self.controller fetchPanels];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -262,6 +274,11 @@
     [self.controller cancelGroupMembersFetch];
     self.groupMembers = nil;
     [self.controller fetchGroupMembers];
+    [self.controller fetchCapabilities];
+    // Must be delayed or the table view update does not work
+    [self performSelector:@selector(refreshCapabilitiesTableViewSection) withObject:nil afterDelay:0.0];
+//    [self.controller fetchPanels];
+    
     return YES;
 }
 
@@ -289,6 +306,8 @@
             return [self.groupMembers count];
         case kSectionLogin:
             return 2;
+        case kSectionCapabilities:
+            return (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
         default:
             return 0;
     }
@@ -324,7 +343,7 @@
             switch (row) {
                 case 0:
                     cell = [tableView dequeueReusableCellWithIdentifier:kUsernameCellIdentifier];
-                    if (cell == nil) {
+                    if (!cell) {
                         cell = [[[StyleValue1TextEntryCell alloc] initWithReuseIdentifier:kUsernameCellIdentifier] autorelease];
                         self.usernameField = ((TextFieldCell *)cell).textField;
                         self.usernameField.delegate = self;
@@ -334,7 +353,7 @@
                     break;
                 case 1:
                     cell = [tableView dequeueReusableCellWithIdentifier:kPasswordCellIdentifier];
-                    if (cell == nil) {
+                    if (!cell) {
                         cell = [[[StyleValue1TextEntryCell alloc] initWithReuseIdentifier:kPasswordCellIdentifier] autorelease];
                         self.passwordField = ((TextFieldCell *)cell).textField;
                         self.passwordField.secureTextEntry = YES;
@@ -346,6 +365,30 @@
                     ((TextFieldCell *)cell).textField.secureTextEntry = YES;
                     break;
             }
+            break;
+        }
+        case kSectionCapabilities:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kAPIVersionsCellIdentifier];
+            if (!cell) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kAPIVersionsCellIdentifier] autorelease];
+            }
+            if (row == 0) {
+                cell.textLabel.text = @"Supported API versions";            
+                if (self.controller.capabilitiesFetchStatus != FetchSucceeded) {
+                    cell.detailTextLabel.text = @"Unknown";
+                } else {
+                    cell.detailTextLabel.text = [self.controller.capabilities.supportedVersions componentsJoinedByString:@", "];
+                }
+            } else if (row > 0 && row <= [self.controller.capabilities.capabilities count]) {
+                cell.textLabel.text = (row == 1)?@"Capabilities":@"";
+                cell.detailTextLabel.text = [[self.controller.capabilities.capabilities objectAtIndex:(row - 1)] description];
+            } else {
+                NSInteger adjustedRow = row - [self.controller.capabilities.capabilities count] - 1;
+                cell.textLabel.text = (adjustedRow == 0)?@"Security rules":@"";
+                cell.detailTextLabel.text = [[self.controller.capabilities.apiSecurities objectAtIndex:adjustedRow] description];
+            }
+            break;
         }
     }
     return cell;    
@@ -407,6 +450,11 @@
     [self updateTableViewHeaderForGroupMemberFetchStatus];
 }
 
+- (void)orControllerCapabilitiesFetchStatusChanged:(NSNotification *)notification
+{
+    [self refreshCapabilitiesTableViewSection];
+}
+
 #pragma mark - Utility methods
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus
@@ -424,6 +472,18 @@
 - (void)refreshGroupMemberTableViewSection
 {
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:[self sectionWithIdentifier:kSectionRoundrobinMembers]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)refreshCapabilitiesTableViewSection
+{
+    [self.tableView reloadData];
+
+     // This fails but with an error on section 2 (group members) and not on the section we're updating !!!
+    /*     
+     [self.tableView beginUpdates];    
+     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:[self sectionWithIdentifier:kSectionCapabilities]] withRowAnimation:UITableViewRowAnimationFade];
+     [self.tableView endUpdates];
+     */
 }
 
 - (void)deleteController:(id)sender

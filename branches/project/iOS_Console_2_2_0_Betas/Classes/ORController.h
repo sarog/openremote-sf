@@ -30,6 +30,7 @@
 @class Definition;
 @class SensorStatusCache;
 @class ClientSideRuntime;
+@class Capabilities;
 
 // TODO: do we really need to have those different notifications, can't we just pass the status as param to the notification
 
@@ -71,7 +72,7 @@ typedef NSInteger ORControllerFetchStatus;
 
 @property (nonatomic, assign) ORGroupMember *activeGroupMember;
 
-@property (nonatomic, retain) NSArray *controllerAPIVersions;
+@property (nonatomic, retain) Capabilities *capabilities;
 @property (nonatomic, retain) NSString *controllerAPIVersion;
 @property (nonatomic, retain) NSArray *panelIdentities;
 
