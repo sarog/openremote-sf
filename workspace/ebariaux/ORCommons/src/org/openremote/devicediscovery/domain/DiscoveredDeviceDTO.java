@@ -11,7 +11,7 @@ public class DiscoveredDeviceDTO implements Serializable
   private static final long serialVersionUID = -6004225908783010315L;
 
   /** The oid. */
-  private long oid;
+  private Long oid;
   
   /** The device name. */
   private String name;
@@ -105,12 +105,12 @@ public class DiscoveredDeviceDTO implements Serializable
   }
 
   
-  public long getOid()
+  public Long getOid()
   {
     return oid;
   }
 
-  public void setOid(long oid)
+  public void setOid(Long oid)
   {
     this.oid = oid;
   }
@@ -118,7 +118,7 @@ public class DiscoveredDeviceDTO implements Serializable
   @Override
   public int hashCode()
   {
-    return (int) getOid();
+    return (oid == null)?-1:(int)oid.longValue();
   }
 
   @Override
