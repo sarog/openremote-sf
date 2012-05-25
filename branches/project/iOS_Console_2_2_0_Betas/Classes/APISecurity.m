@@ -48,6 +48,15 @@
     [super dealloc];
 }
 
+- (NSString *)description
+{
+    NSMutableString *desc = [NSMutableString stringWithFormat:@"%@ : %@", self.path, self.security];
+    if (sslEnabled) {
+        [desc appendString:@" [SSL]"];
+    }
+    return [NSString stringWithString:desc];
+}
+
 @synthesize path;
 @synthesize security;
 @synthesize sslEnabled;

@@ -46,6 +46,25 @@
     [super dealloc];
 }
 
+- (NSString *)description
+{
+    NSMutableString *desc = [NSMutableString stringWithString:self.name];
+    if ([self.properties count]) {
+        [desc appendString:@" ("];
+        NSEnumerator *keyEnumerator = [self.properties keyEnumerator];
+        NSString *key = [keyEnumerator nextObject];
+        while (key) {
+            [desc appendFormat:@"%@ : %@", key, [self.properties valueForKey:key]];
+            key = [keyEnumerator nextObject];
+            if (key) {
+                [desc appendString:@", "];
+            }
+        }
+        [desc appendString:@")"];
+    }
+    return [NSString stringWithString:desc];
+}
+
 @synthesize name;
 @synthesize properties;
 
