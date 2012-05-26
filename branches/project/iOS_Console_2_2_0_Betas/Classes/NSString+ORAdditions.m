@@ -33,7 +33,7 @@
 }
 
 - (NSString *)portAsStringOfURL {
-    return [[[NSURL URLWithString:self] port] stringValue];
+    return [[(NSURL *)[NSURL URLWithString:self] port] stringValue];
 }
 
 @end
