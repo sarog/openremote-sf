@@ -20,12 +20,21 @@
  */
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    None  = 0,
+	HTTPBasic
+} SecurityType;
+
+
 @interface APISecurity : NSObject
 
-- (id)initWithPath:(NSString *)aPath security:(NSString *)aSecurity sslEnabled:(BOOL)flag;
+- (id)initWithPath:(NSString *)aPath security:(SecurityType)aSecurity sslEnabled:(BOOL)flag;
+
++ (NSString *)securityTypeStringFromEnum:(SecurityType)securityType;
++ (SecurityType)securityTypeFromString:(NSString *)securityTypeString;
 
 @property (nonatomic, copy, readonly) NSString *path;
-@property (nonatomic, copy, readonly) NSString *security; // TODO: replace with enemuration
+@property (nonatomic, assign, readonly) SecurityType security;
 @property (nonatomic, assign, readonly) BOOL sslEnabled;
 
 @end

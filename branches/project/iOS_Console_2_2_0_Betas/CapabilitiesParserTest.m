@@ -56,11 +56,11 @@
     STAssertEquals([capabilities.apiSecurities count], (NSUInteger)2, @"Given XML contains 2 API securities");
     APISecurity *security = [capabilities.apiSecurities objectAtIndex:0];
     STAssertEqualObjects(security.path, @"panels", @"First API security path is panels");
-    STAssertEqualObjects(security.security, @"none", @"First API security security is none");
+    STAssertEquals(security.security, None, @"First API security security is none");
     STAssertEquals(security.sslEnabled, NO, @"First API security  does not report SSL");
     security = [capabilities.apiSecurities objectAtIndex:1];
     STAssertEqualObjects(security.path, @"panel", @"Second API security path is panel");
-    STAssertEqualObjects(security.security, @"HTTP-basic", @"Second API security security is HTTP-basic");
+    STAssertEquals(security.security, HTTPBasic, @"Second API security security is HTTP-basic");
     STAssertEquals(security.sslEnabled, YES, @"Second API security reports SSL");
     
     STAssertNotNil(capabilities.capabilities, @"Given XML contains a capability definition");

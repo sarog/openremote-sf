@@ -80,7 +80,9 @@
     } else if ([elementName isEqualToString:@"version"]) {
         self.temporaryXMLElementContent = [NSMutableString string];
 	} else if ([elementName isEqualToString:@"api"]) {
-        self.security = [[[APISecurity alloc] initWithPath:[attributeDict valueForKey:@"path"] security:[attributeDict valueForKey:@"security"] sslEnabled:[[attributeDict valueForKey:@"ssl-enabled"] boolValue]] autorelease];
+        // TODO: parsing error if security is not a know enum type
+        
+        self.security = [[[APISecurity alloc] initWithPath:[attributeDict valueForKey:@"path"] security:[APISecurity securityTypeFromString:[attributeDict valueForKey:@"security"]] sslEnabled:[[attributeDict valueForKey:@"ssl-enabled"] boolValue]] autorelease];
     } else if ([elementName isEqualToString:@"capability"]) {
         self.capabilityName = [attributeDict valueForKey:@"name"];
         self.properties = [NSMutableDictionary dictionary];
