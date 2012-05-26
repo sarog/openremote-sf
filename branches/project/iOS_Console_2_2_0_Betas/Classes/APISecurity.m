@@ -23,14 +23,14 @@
 @interface APISecurity ()
 
 @property (nonatomic, copy, readwrite) NSString *path;
-@property (nonatomic, copy, readwrite) NSString *security; // TODO: replace with enemuration
+@property (nonatomic, assign, readwrite) SecurityType security;
 @property (nonatomic, assign, readwrite) BOOL sslEnabled;
 
 @end
 
 @implementation APISecurity
 
-- (id)initWithPath:(NSString *)aPath security:(NSString *)aSecurity sslEnabled:(BOOL)flag
+- (id)initWithPath:(NSString *)aPath security:(SecurityType)aSecurity sslEnabled:(BOOL)flag
 {
     self = [super init];
     if (self) {
@@ -44,13 +44,31 @@
 - (void)dealloc
 {
     self.path = nil;
-    self.security = nil;
     [super dealloc];
+}
+
++ (NSString *)securityTypeStringFromEnum:(SecurityType)securityType
+{
+    switch (securityType) {
+        case None:
+            return @"None";
+        case HTTPBasic:
+            return @"HTTP-basic";
+    }
+    return nil;
+}
+
++ (SecurityType)securityTypeFromString:(NSString *)securityTypeString
+{
+    if ([@"HTTP-basic" isEqualToString:securityTypeString]) {
+        return HTTPBasic;
+    }
+    return None;
 }
 
 - (NSString *)description
 {
-    NSMutableString *desc = [NSMutableString stringWithFormat:@"%@ : %@", self.path, self.security];
+    NSMutableString *desc = [NSMutableString stringWithFormat:@"%@ : %@", self.path, [[self class] securityTypeStringFromEnum:self.security]];
     if (sslEnabled) {
         [desc appendString:@" [SSL]"];
     }
