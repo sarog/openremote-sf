@@ -342,6 +342,7 @@
             cell = [tableView dequeueReusableCellWithIdentifier:kGroupMemberCellIdentifier];
             if (cell == nil) {
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGroupMemberCellIdentifier] autorelease];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }            
             cell.textLabel.text = ((ORGroupMember *)[self.groupMembers objectAtIndex:row]).url;
             break;
@@ -380,6 +381,7 @@
             cell = [tableView dequeueReusableCellWithIdentifier:kAPIVersionsCellIdentifier];
             if (!cell) {
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kAPIVersionsCellIdentifier] autorelease];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }
             if (row == 0) {
                 cell.textLabel.text = @"Supported API versions";
@@ -403,8 +405,11 @@
             cell = [tableView dequeueReusableCellWithIdentifier:kPanelIdentityCellIdentifier];
             if (!cell) {
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kPanelIdentityCellIdentifier] autorelease];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
             }
-            cell.textLabel.text = [self.controller.panelIdentities objectAtIndex:row];
+            NSString *identity = [self.controller.panelIdentities objectAtIndex:row];
+            cell.textLabel.text = identity;
+            cell.accessoryType = [self.controller.selectedPanelIdentity isEqualToString:identity]?UITableViewCellAccessoryCheckmark:UITableViewCellAccessoryNone;
             break;
         }
     }
@@ -474,7 +479,6 @@
 
 - (void)orControllerPanelIdentitiesFetchStatusChanged:(NSNotification *)notification
 {
-    NSLog(@"panel identities fetch status changed to %d", self.controller.panelIdentitiesFetchStatus);
     [self refreshPanelIdentitiesTableViewSection];
 }
 
@@ -511,9 +515,7 @@
 
 - (void)refreshPanelIdentitiesTableViewSection
 {
-    NSInteger plannedRowCount = (self.controller.panelIdentitiesFetchStatus != FetchSucceeded)?0:[self.controller.panelIdentities count];
-    NSLog(@"current panel identities rows %d, planned %d", self.currentNumberOfPanelIdentitiesRow, plannedRowCount);
-    
+    NSInteger plannedRowCount = (self.controller.panelIdentitiesFetchStatus != FetchSucceeded)?0:[self.controller.panelIdentities count];    
     if (plannedRowCount != self.currentNumberOfPanelIdentitiesRow) {
         NSInteger section = [self sectionWithIdentifier:kSectionPanelIdentities];
         [self.tableView beginUpdates];
