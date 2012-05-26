@@ -35,11 +35,13 @@
 #define kUsernameCellIdentifier @"kUsernameCellIdentifier"
 #define kPasswordCellIdentifier @"kPasswordCellIdentifier"
 #define kAPIVersionsCellIdentifier @"kAPIVersionsCellIdentifier"
+#define kPanelIdentityCellIdentifier @"kPanelIdentityCellIdentifier"
 
 #define kSectionControllerURL 1
 #define kSectionRoundrobinMembers 2
 #define kSectionLogin 3
 #define kSectionCapabilities 4
+#define kSectionPanelIdentities 5
 
 @interface ControllerDetailViewController()
 
@@ -54,6 +56,7 @@
 @property (nonatomic, retain) NSArray *groupMembers;
 
 @property (nonatomic, assign) NSInteger currentNumberOfCapabilitiesRow;
+@property (nonatomic, assign) NSInteger currentNumberOfPanelIdentitiesRow;
 
 // Used to indicate that the done button has been clicked -> cancel management because no target/action on back button
 @property (nonatomic, assign) BOOL doneAction;
@@ -66,6 +69,7 @@
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 - (void)refreshCapabilitiesTableViewSection;
+- (void)refreshPanelIdentitiesTableViewSection;
 
 @end
 
@@ -77,6 +81,7 @@
                                // Section header for controller URL is handled by custom view so error message can be displayed
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionControllerURL sectionHeader:nil sectionFooter:@"Sample:192.168.1.2:8080/controller"] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionLogin sectionHeader:@"Login:" sectionFooter:nil] autorelease],
+                               [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionPanelIdentities sectionHeader:@"Panel identities:" sectionFooter:nil] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionRoundrobinMembers sectionHeader:@"Roundrobin group members:" sectionFooter:nil] autorelease],
                                [[[ORTableViewSectionDefinition alloc] initWithSectionIdentifier:kSectionCapabilities sectionHeader:@"Controller capabilities:" sectionFooter:nil] autorelease],
                                nil];
@@ -129,8 +134,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerCapabilitiesFetchStatusChanged:) name:kORControllerCapabilitiesFetchStatusChange object:nil];
-    
-#warning TODO: observe notifications for panels update
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerPanelIdentitiesFetchStatusChanged:) name:kORControllerPanelIdentitiesFetchStatusChange object:nil];
     
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)] autorelease];
         
@@ -216,7 +220,7 @@
     [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
     
     [self.controller fetchCapabilities];
-    //    [self.controller fetchPanels];
+    [self.controller fetchPanels];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -272,12 +276,12 @@
     } else if (textField == self.passwordField) {
         self.controller.password = textField.text;
     }
+
     [self.controller cancelGroupMembersFetch];
     self.groupMembers = nil;
     [self.controller fetchGroupMembers];
     [self.controller fetchCapabilities];
-
-    //    [self.controller fetchPanels];
+    [self.controller fetchPanels];
     
     return YES;
 }
@@ -308,8 +312,10 @@
             return 2;
         case kSectionCapabilities:
             self.currentNumberOfCapabilitiesRow = (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
-            NSLog(@"Updated current number of capabilities rows to %d", self.currentNumberOfCapabilitiesRow);
-            return (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
+            return self.currentNumberOfCapabilitiesRow;
+        case kSectionPanelIdentities:
+            self.currentNumberOfPanelIdentitiesRow = (self.controller.panelIdentitiesFetchStatus != FetchSucceeded)?0:[self.controller.panelIdentities count];
+            return self.currentNumberOfPanelIdentitiesRow;
         default:
             return 0;
     }
@@ -392,6 +398,15 @@
             }
             break;
         }
+        case kSectionPanelIdentities:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kPanelIdentityCellIdentifier];
+            if (!cell) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kPanelIdentityCellIdentifier] autorelease];
+            }
+            cell.textLabel.text = [self.controller.panelIdentities objectAtIndex:row];
+            break;
+        }
     }
     return cell;    
 }
@@ -457,6 +472,12 @@
     [self refreshCapabilitiesTableViewSection];
 }
 
+- (void)orControllerPanelIdentitiesFetchStatusChanged:(NSNotification *)notification
+{
+    NSLog(@"panel identities fetch status changed to %d", self.controller.panelIdentitiesFetchStatus);
+    [self refreshPanelIdentitiesTableViewSection];
+}
+
 #pragma mark - Utility methods
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus
@@ -474,16 +495,36 @@
 - (void)refreshCapabilitiesTableViewSection
 {    
     NSInteger plannedRowCount = (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
-    NSInteger section = [self sectionWithIdentifier:kSectionCapabilities];
-    [self.tableView beginUpdates];
-    NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:self.currentNumberOfCapabilitiesRow to:plannedRowCount section:section];
-    if (plannedRowCount > self.currentNumberOfCapabilitiesRow) {
-        [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
-     } else {
-         [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
-     }
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView endUpdates];
+    if (plannedRowCount != self.currentNumberOfCapabilitiesRow) {
+        NSInteger section = [self sectionWithIdentifier:kSectionCapabilities];
+        [self.tableView beginUpdates];
+        NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:self.currentNumberOfCapabilitiesRow to:plannedRowCount section:section];
+        if (plannedRowCount > self.currentNumberOfCapabilitiesRow) {
+            [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+         } else {
+             [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+         }
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+}
+
+- (void)refreshPanelIdentitiesTableViewSection
+{
+    NSInteger plannedRowCount = (self.controller.panelIdentitiesFetchStatus != FetchSucceeded)?0:[self.controller.panelIdentities count];
+    NSLog(@"current panel identities rows %d, planned %d", self.currentNumberOfPanelIdentitiesRow, plannedRowCount);
+    
+    if (plannedRowCount != self.currentNumberOfPanelIdentitiesRow) {
+        NSInteger section = [self sectionWithIdentifier:kSectionPanelIdentities];
+        [self.tableView beginUpdates];
+        NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:self.currentNumberOfPanelIdentitiesRow to:plannedRowCount section:section];
+        if (plannedRowCount > self.currentNumberOfPanelIdentitiesRow) {
+            [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+        } else {
+            [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+        }
+        [self.tableView endUpdates];
+    }
 }
 
 - (void)deleteController:(id)sender
@@ -505,6 +546,7 @@
 @synthesize controller;
 @synthesize groupMembers;
 @synthesize currentNumberOfCapabilitiesRow;
+@synthesize currentNumberOfPanelIdentitiesRow;
 @synthesize usernameField;
 @synthesize passwordField;
 @synthesize urlField;
