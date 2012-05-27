@@ -277,12 +277,6 @@ public class LutronImportWizard extends DialogBox {
       @Override
       public void onSuccess(ImportLutronConfigResult result) {
          eventBus.fireEvent(new DeviceUpdatedEvent(LutronImportWizard.this.deviceDTO));
-         /*
-          * Not use for now as issue with serialiazation of Hibernate beans (Gilead + gwt-dispatch)
-          * 
-         List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
-         BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-         */
          hide();
       }
       

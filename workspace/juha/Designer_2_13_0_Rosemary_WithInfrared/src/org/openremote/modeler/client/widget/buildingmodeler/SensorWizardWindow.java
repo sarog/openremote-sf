@@ -59,7 +59,7 @@ public class SensorWizardWindow extends SensorWindow {
   private TreeStore<BeanModel> commandTreeStore; 
   
    public SensorWizardWindow(ArrayList<DeviceCommandDetailsDTO> commands) {
-      super(0L, null); // Pass dummy data, not used
+      super(null, null); // Pass dummy data, not used
       // Must populate store here, as buildCommandSelectTree is called by our parent's constructor,
       // so we don't have time to store commands before that method gets called for it to use while building tree 
       for (DeviceCommandDetailsDTO deviceCommand : commands) {
