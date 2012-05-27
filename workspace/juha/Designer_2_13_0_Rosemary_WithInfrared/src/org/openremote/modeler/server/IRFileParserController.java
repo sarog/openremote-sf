@@ -23,14 +23,10 @@ package org.openremote.modeler.server;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.IRFileParserRPCService;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
-import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
-import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.service.IRFileParserService;
 
 import com.tinsys.ir.database.IRCommand;
@@ -105,24 +101,6 @@ public class IRFileParserController extends
     */
    public List<IRCommandInfo> getIRCommands(CodeSetInfo csi) {
       return iRFileParserService.getIRCommands(csi);
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see
-    * org.openremote.modeler.client.rpc.IRFileParserRPCService#saveCommands(
-    * org.openremote.modeler.domain.Device,
-    * org.openremote.modeler.irfileparser.GlobalCache,
-    * org.openremote.modeler.irfileparser.IRTrans, java.util.List)
-    */
-   public List<DeviceCommand> saveCommands(
-         org.openremote.modeler.domain.Device device, GlobalCache globalCache,
-         IRTrans irTrans, List<IRCommandInfo> selectedFunctions)
-         throws IrFileParserException {
-      return iRFileParserService.saveCommands(device, globalCache, irTrans,
-            selectedFunctions);
-
    }
 
 }
