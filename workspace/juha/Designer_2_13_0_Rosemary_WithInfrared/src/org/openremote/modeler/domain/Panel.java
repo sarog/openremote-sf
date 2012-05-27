@@ -21,22 +21,22 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
-import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
-import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.logging.AdministratorAlert;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 import flexjson.JSON;
 
@@ -46,7 +46,7 @@ import flexjson.JSON;
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
  * It includes name, groupRefs, global tabbarItems and touchPanelDefinition.
  */
-public class Panel extends BusinessEntity
+public class Panel extends BusinessEntity implements BeanModelTag
 {
 
   // Serialization --------------------------------------------------------------------------------

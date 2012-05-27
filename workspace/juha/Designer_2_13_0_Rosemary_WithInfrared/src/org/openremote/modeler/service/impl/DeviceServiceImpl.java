@@ -54,6 +54,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    @Transactional public Device saveDevice(Device device) {
       genericDAO.save(device);
+      /*
       Hibernate.initialize(device.getSensors());
       Hibernate.initialize(device.getSwitchs());
       List<DeviceCommand> deviceCommands = device.getDeviceCommands();
@@ -62,6 +63,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       }
       Hibernate.initialize(device.getSliders());
       Hibernate.initialize(device.getDeviceAttrs());
+      */
       return device;
    }
 
@@ -94,7 +96,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public Device loadById(long id) {
+   @Transactional public Device loadById(long id) {
       Device device = super.loadById(id);
       if (device.getAccount() != null) {
          Hibernate.initialize(device.getAccount().getConfigs());

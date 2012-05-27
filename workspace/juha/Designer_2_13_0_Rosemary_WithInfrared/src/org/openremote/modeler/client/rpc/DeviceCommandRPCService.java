@@ -45,24 +45,6 @@ public interface DeviceCommandRPCService extends RemoteService {
    List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
    
    /**
-    * Save.
-    * 
-    * @param deviceCommand the device command
-    * 
-    * @return the device command
-    */
-   DeviceCommand save(DeviceCommand deviceCommand);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * 
-    * @return the device command
-    */
-   DeviceCommand loadById(long id);
-   
-   /**
     * Delete command.
     * 
     * @param id the id
@@ -83,5 +65,7 @@ public interface DeviceCommandRPCService extends RemoteService {
    DeviceCommandDetailsDTO loadCommandDetailsDTO(long id);
    
    void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto);
+
+   void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId);
 
 }

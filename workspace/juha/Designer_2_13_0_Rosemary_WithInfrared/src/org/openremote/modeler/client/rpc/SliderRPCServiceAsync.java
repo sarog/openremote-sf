@@ -19,23 +19,23 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SliderRPCServiceAsync {
 
-   void save(Slider slider, AsyncCallback<Slider> callback);
-
    void delete(long id, AsyncCallback<Void> callback);
 
-   void update(Slider slider, AsyncCallback<Slider> callback);
+   void loadSliderDetails(long id, AsyncCallback<SliderDetailsDTO> async);
+   
+   void loadAllSliderWithInfosDTO(AsyncCallback<ArrayList<SliderWithInfoDTO>> callback);
 
-   void loadAll(AsyncCallback<List<Slider>> callback);
+   void updateSliderWithDTO(SliderDetailsDTO sliderDTO, AsyncCallback<Void> async);
 
-   void saveAll(List<Slider> sliderList, AsyncCallback<List<Slider>> async);
+   void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId, AsyncCallback<Void> async);
 
 }

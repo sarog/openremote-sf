@@ -19,9 +19,10 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -33,34 +34,18 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface SwitchRPCService extends RemoteService {
    
    /**
-    * Load all switch from database.
-    * 
-    * @return the list< switch>
-    */
-   List<Switch> loadAll();
-   
-   /**
-    * Save switch into database.
-    * 
-    * @param switchToggle the switch toggle
-    * 
-    * @return the switch
-    */
-   Switch save(Switch switchToggle);
-   
-   /**
-    * Update switch with database data.
-    * 
-    * @param switchToggle the switch toggle
-    * 
-    * @return the switch
-    */
-   Switch update(Switch switchToggle);
-   
-   /**
     * Delete switch by id.
     * 
     * @param id the id
     */
    void delete(long id);
+   
+   SwitchDetailsDTO loadSwitchDetails(long id);
+
+   ArrayList<SwitchWithInfoDTO> loadAllSwitchWithInfosDTO();
+
+   void updateSwitchWithDTO(SwitchDetailsDTO switchDTO);
+
+   void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId);
+
 }

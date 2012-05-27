@@ -4,7 +4,7 @@ public class DeviceDetailsDTO implements DTO {
 
   private static final long serialVersionUID = 1L;
   
-  private long oid;
+  private Long oid;
   private String name;
   private String vendor;
   private String model;
@@ -13,7 +13,7 @@ public class DeviceDetailsDTO implements DTO {
     super();
   }
   
-  public DeviceDetailsDTO(long oid, String name, String vendor, String model) {
+  public DeviceDetailsDTO(Long oid, String name, String vendor, String model) {
     super();
     this.oid = oid;
     this.name = name;
@@ -21,11 +21,11 @@ public class DeviceDetailsDTO implements DTO {
     this.model = model;
   }
 
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
   
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
   

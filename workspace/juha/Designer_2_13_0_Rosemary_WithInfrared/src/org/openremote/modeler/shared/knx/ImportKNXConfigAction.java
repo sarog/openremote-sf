@@ -4,30 +4,30 @@ import java.util.ArrayList;
 
 import net.customware.gwt.dispatch.shared.Action;
 
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 
 public class ImportKNXConfigAction implements Action<ImportKNXConfigResult> {
 
-  private Device device;
+  private DeviceDTO device;
   private ArrayList<ModelData> config;
   
   public ImportKNXConfigAction() {
     super();
   }
 
-  public ImportKNXConfigAction(Device device, ArrayList<ModelData> config) {
+  public ImportKNXConfigAction(DeviceDTO device, ArrayList<ModelData> config) {
     super();
     this.device = device;
     this.config = config;
   }
 
-  public Device getDevice() {
+  public DeviceDTO getDevice() {
     return device;
   }
 
-  public void setDevice(Device device) {
+  public void setDevice(DeviceDTO device) {
     this.device = device;
   }
 

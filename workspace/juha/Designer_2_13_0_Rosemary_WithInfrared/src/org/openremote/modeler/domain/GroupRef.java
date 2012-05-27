@@ -21,10 +21,12 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.Transient;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 /**
  * The GroupRef is linked the group and panel.
  */
-public class GroupRef extends BusinessEntity {
+public class GroupRef extends BusinessEntity implements BeanModelTag {
 
    private static final long serialVersionUID = -8454086925745873969L;
    

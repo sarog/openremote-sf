@@ -96,6 +96,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     LogFacade log = LogFacade.getInstance(LogFacade.Category.EXPORT);
 
+    resourceService.resolveDTOReferences(panelList);
+
     // TODO : this call should be internalized, see MODELER-287
     resourceService.initResources(panelList, maxId);
 
@@ -219,6 +221,9 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
          oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
       if (panels != null && panels.size() > 0) {
+        
+        resourceService.resolveDTOReferences(panels);
+        
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
             synchronized (getThreadLocalRequest().getSession()) {
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
@@ -242,6 +247,9 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
+            
+            resourceService.resolveDTOReferences(panels);
+            
             resourceService.initResources(panels, maxID);
             resourceService.saveResourcesToBeehive(panels);
          }

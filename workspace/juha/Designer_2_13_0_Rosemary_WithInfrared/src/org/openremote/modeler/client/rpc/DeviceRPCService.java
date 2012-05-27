@@ -20,15 +20,15 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -39,49 +39,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceRPCService extends RemoteService {
    
    /**
-    * Save device.
-    * 
-    * @param device the device
-    * 
-    * @return the device
-    */
-   Device saveDevice(Device device);
-   ArrayList<Device> saveDevices(ArrayList<Device> device);
-   
-   /**
     * Delete device.
     * 
     * @param id the id
     */
    void deleteDevice(long id);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * 
-    * @return the device
-    */
-   Device loadById(long id);
-   
-
-   /**
-    * Load all.
-    * 
-    * @return the list< device>
-    */
-   List<Device> loadAll();
-   
-   /**
-    * Load all.
-    * 
-    * @param account the account
-    * 
-    * @return the list< device>
-    */
-   List<Device> loadAll(Account account);
-   
-   Account getAccount();
    
    ArrayList<DeviceDTO> loadAllDTOs();
 
@@ -89,6 +51,11 @@ public interface DeviceRPCService extends RemoteService {
    
    DeviceDetailsDTO loadDeviceDetailsDTO(long oid);
    
+   void saveNewDevice(DeviceDetailsDTO device);
+   
+   void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands,
+           ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
+
    void updateDeviceWithDTO(DeviceDetailsDTO device);
 
 }

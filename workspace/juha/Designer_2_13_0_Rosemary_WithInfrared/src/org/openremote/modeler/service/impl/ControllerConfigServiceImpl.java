@@ -11,6 +11,7 @@ import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -172,5 +173,36 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
          cfg.setValidation(oldCfg.getValidation());
       }
    }
+   
+   
+   @Transactional
+   public Set<ControllerConfig> saveAllDTOs(HashSet<ControllerConfigDTO> configDTOs) {
+     Set<ControllerConfig> configs = new HashSet<ControllerConfig>();
+     for (ControllerConfigDTO dto : configDTOs) {
+       ControllerConfig config;
+       if (dto.getOid() != null && dto.getOid() != 0) {
+         config = loadById(dto.getOid());
+         updateControllerConfigWithDTO(config, dto);
+         genericDAO.update(config);
+       } else {
+         config = new ControllerConfig();
+         config.setAccount(userService.getAccount());
+         updateControllerConfigWithDTO(config, dto);
+         genericDAO.save(config); 
+       }
+       configs.add(config);
+     }
+     initializeConfigs(configs);
+     return configs;
+   }
+
+  private void updateControllerConfigWithDTO(ControllerConfig config, ControllerConfigDTO dto) {
+    config.setCategory(dto.getCategory());
+    config.setName(dto.getName());
+    config.setValue(dto.getValue());
+    config.setHint(dto.getHint());
+    config.setValidation(dto.getValidation());
+    config.setOptions(dto.getOptions());
+  }
    
 }

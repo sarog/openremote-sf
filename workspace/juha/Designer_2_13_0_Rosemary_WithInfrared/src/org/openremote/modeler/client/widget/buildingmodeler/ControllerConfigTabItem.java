@@ -19,8 +19,8 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
@@ -28,7 +28,7 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.ControllerConfigBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.ConfigCategory;
-import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -46,12 +46,12 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -64,8 +64,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ControllerConfigTabItem extends TabItem {
 
    private ConfigCategory category;
-   private Set<ControllerConfig> configs = null;
-   private Set<ControllerConfig> newConfigs = null;               //new configurations after the Controller-Config-2.0-M7.xml updated. 
+   private HashSet<ControllerConfigDTO> configs = null;
+   private HashSet<ControllerConfigDTO> newConfigs = null;               //new configurations after the Controller-Config-2.0-M7.xml updated. 
    private Text hintContent = new Text();
    
    /** The config container includes all config infos. */
@@ -130,18 +130,18 @@ public class ControllerConfigTabItem extends TabItem {
     */
    private void initForm() {
       if (configs == null) {
-         ControllerConfigBeanModelProxy.getConfigs(category, new AsyncSuccessCallback<Set<ControllerConfig>>() {
+         ControllerConfigBeanModelProxy.getConfigDTOs(category, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>() {
 
             @Override
-            public void onSuccess(Set<ControllerConfig> result) {
+            public void onSuccess(HashSet<ControllerConfigDTO> result) {
                configs = result;
-               for (ControllerConfig config : configs) {
+               for (ControllerConfigDTO config : configs) {
                   createProperty(config,false);
                }
 
                if (newConfigs == null) {
-                  ControllerConfigBeanModelProxy.listAllMissingConfigs(category.getName(),
-                        new AsyncCallback<Set<ControllerConfig>>() {
+                  ControllerConfigBeanModelProxy.listAllMissingConfigDTOs(category.getName(),
+                        new AsyncCallback<HashSet<ControllerConfigDTO>>() {
 
                            @Override
                            public void onFailure(Throwable caught) {
@@ -149,9 +149,9 @@ public class ControllerConfigTabItem extends TabItem {
                            }
 
                            @Override
-                           public void onSuccess(Set<ControllerConfig> result) {
+                           public void onSuccess(HashSet<ControllerConfigDTO> result) {
                               newConfigs = result;
-                              for (ControllerConfig config : newConfigs) {
+                              for (ControllerConfigDTO config : newConfigs) {
                                  createProperty(config, true);
                               }
                               if (newConfigs.size() > 0) {
@@ -195,7 +195,7 @@ public class ControllerConfigTabItem extends TabItem {
     * @param config the config
     * @param isNewConfig the is new config
     */
-   private void createProperty(ControllerConfig config,boolean isNewConfig) {
+   private void createProperty(ControllerConfigDTO config,boolean isNewConfig) {
       if (config.getOptions().trim().length() == 0) {
         TextField<String> configValueField = new TextField<String>();
         if (config.getName().equals("rules.editor")) {
@@ -246,7 +246,7 @@ public class ControllerConfigTabItem extends TabItem {
     * @param config the config
     * @param configValueField the config value field
     */
-   private void addUpdateListenerToTextField(final ControllerConfig config,final TextField<String> configValueField){
+   private void addUpdateListenerToTextField(final ControllerConfigDTO config,final TextField<String> configValueField){
       configValueField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
@@ -272,7 +272,7 @@ public class ControllerConfigTabItem extends TabItem {
     * @param config the config
     * @param configValueComboBox the config value combo box
     */
-   private void addUpdateListenerToComboBox(final ControllerConfig config,final ComboBox<ModelData> configValueComboBox){
+   private void addUpdateListenerToComboBox(final ControllerConfigDTO config,final ComboBox<ModelData> configValueComboBox){
       configValueComboBox.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
          @SuppressWarnings("unchecked")
@@ -315,18 +315,16 @@ public class ControllerConfigTabItem extends TabItem {
  class SaveListener extends SelectionListener<ButtonEvent>{
    @Override
    public void componentSelected(ButtonEvent ce) {
-      Set<ControllerConfig> allConfigs = new LinkedHashSet<ControllerConfig>();
+      HashSet<ControllerConfigDTO> allConfigs = new LinkedHashSet<ControllerConfigDTO>();
       allConfigs.addAll(configs);
       allConfigs.addAll(newConfigs);
-      ControllerConfigBeanModelProxy.saveAllConfigs(allConfigs, new AsyncSuccessCallback<Set<ControllerConfig>>(){
+      ControllerConfigBeanModelProxy.saveAllConfigDTOs(allConfigs, new AsyncSuccessCallback<HashSet<ControllerConfigDTO>>(){
 
-         @Override
-         public void onSuccess(Set<ControllerConfig> result) {
-            configs = result;
-            Info.display("save", "Property saved successfully");
-            fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(this));
-         }
-         
+        @Override
+        public void onSuccess(HashSet<ControllerConfigDTO> result) {
+          Info.display("save", "Property saved successfully");
+          fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(this)); // This will trigger refresh of the current selection, no need to do it here
+        }         
       });
    }
     

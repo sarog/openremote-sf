@@ -20,13 +20,14 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -37,48 +38,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface DeviceRPCServiceAsync {
    
    /**
-    * Save device.
-    * 
-    * @param device the device
-    * @param callback the callback
-    */
-   void saveDevice(Device device, AsyncCallback<Device> callback);
-      
-   /**
     * Delete device.
     * 
     * @param id the id
     * @param callback the callback
     */
    void deleteDevice(long id, AsyncCallback<Void> callback);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * @param callback the callback
-    */
-   void loadById(long id, AsyncCallback<Device> callback);
-   
-   /**
-    * Load all.
-    * 
-    * @param callback the callback
-    */
-   void loadAll(AsyncCallback<List<Device>> callback);
-   
-   /**
-    * Load all.
-    * 
-    * @param account the account
-    * @param callback the callback
-    */
-   void loadAll(Account account, AsyncCallback<List<Device>> callback);
-   
-   void getAccount(AsyncCallback<Account> callback);
-
-  void saveDevices(ArrayList<Device> devices, AsyncCallback<ArrayList<Device>> callback);
-  
   
   void loadAllDTOs(AsyncCallback<ArrayList<DeviceDTO>> callback);
   
@@ -86,5 +51,10 @@ public interface DeviceRPCServiceAsync {
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
   
+  void saveNewDevice(DeviceDetailsDTO device, AsyncCallback<Void> callback);
+  
+  void saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands,
+          ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders, AsyncCallback<Void> callback);
+
   void updateDeviceWithDTO(DeviceDetailsDTO device, AsyncCallback<Void> callback);
 }

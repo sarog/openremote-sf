@@ -19,10 +19,10 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -32,15 +32,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("slider.smvc")
 public interface SliderRPCService extends RemoteService {
-   
-   /**
-    * Save slider into database.
-    * 
-    * @param slider the slider
-    * 
-    * @return the slider
-    */
-   Slider save(Slider slider);
 
    /**
     * Delete slider by id from database.
@@ -49,27 +40,11 @@ public interface SliderRPCService extends RemoteService {
     */
    void delete(long id);
 
-   /**
-    * Update slider with database.
-    * 
-    * @param slider the slider
-    * 
-    * @return the slider
-    */
-   Slider update(Slider slider);
+   SliderDetailsDTO loadSliderDetails(long id);
 
-   /**
-    * Load all sliders from database.
-    * 
-    * @return the list< slider>
-    */
-   List<Slider> loadAll();
+   ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO();
+
+   void updateSliderWithDTO(SliderDetailsDTO sliderDTO);
    
-   /**
-    * Saves all sliders in the database
-    * @param sliderList
-    * @return
-    */
-   List<Slider> saveAll(List<Slider> sliderList);
-
+   void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId);
 }
