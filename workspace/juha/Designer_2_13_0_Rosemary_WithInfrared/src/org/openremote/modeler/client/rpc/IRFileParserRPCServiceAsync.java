@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
@@ -30,10 +30,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IRFileParserRPCServiceAsync {
 
-   void getBrands(AsyncCallback<List<BrandInfo>> callback);
-	void getDevices(BrandInfo brand, AsyncCallback<List<DeviceInfo>> callback);
-	void getCodeSets(DeviceInfo device,
-			AsyncCallback<List<CodeSetInfo>> callback);
-	void getIRCommands(CodeSetInfo codeset,
-			AsyncCallback<List<IRCommandInfo>> callback);
+  void getBrands(AsyncCallback<ArrayList<BrandInfo>> callback);
+  void getDevices(BrandInfo brand, AsyncCallback<ArrayList<DeviceInfo>> callback);
+  void getCodeSets(DeviceInfo device, AsyncCallback<ArrayList<CodeSetInfo>> callback);
+  void getIRCommands(CodeSetInfo codeset, AsyncCallback<ArrayList<IRCommandInfo>> callback);
+  
 }

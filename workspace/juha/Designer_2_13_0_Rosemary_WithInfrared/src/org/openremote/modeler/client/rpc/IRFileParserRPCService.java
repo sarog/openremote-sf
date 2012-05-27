@@ -19,7 +19,7 @@
  */
 package org.openremote.modeler.client.rpc;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
@@ -41,14 +41,14 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param device
     * @return List<CodeSetInfo>
     */
-   List<CodeSetInfo> getCodeSets(DeviceInfo device);
+   ArrayList<CodeSetInfo> getCodeSets(DeviceInfo device);
 
    /**
     * Returns the brands
     * 
     * @return List<BrandInfo>
     */
-   List<BrandInfo> getBrands();
+   ArrayList<BrandInfo> getBrands();
 
    /**
     * Returns the devices linked to a brand
@@ -56,7 +56,7 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param brand
     * @return List<DeviceInfo>
     */
-   List<DeviceInfo> getDevices(BrandInfo brand);
+   ArrayList<DeviceInfo> getDevices(BrandInfo brand);
 
    /**
     * Returns the IR commands from a code set
@@ -64,6 +64,6 @@ public interface IRFileParserRPCService extends RemoteService {
     * @param codeset
     * @return List<IRCommandInfo>
     */
-   List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
+   ArrayList<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 
 }

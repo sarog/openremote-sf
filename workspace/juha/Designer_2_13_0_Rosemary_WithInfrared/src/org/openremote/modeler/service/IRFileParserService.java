@@ -20,6 +20,7 @@
 
 package org.openremote.modeler.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
@@ -46,27 +47,27 @@ public interface IRFileParserService {
 	 * @param brand
 	 * @return List<DeviceInfo>
 	 */
-	List<DeviceInfo> getDevices(BrandInfo brand);
+   ArrayList<DeviceInfo> getDevices(BrandInfo brand);
 	
    /** 
     * returns the code set information to the client side for the given device
 	 * @param device
 	 * @return List<CodeSetInfo>
 	 */
-	List<CodeSetInfo> getCodeSets(DeviceInfo device);
+   ArrayList<CodeSetInfo> getCodeSets(DeviceInfo device);
 	
 	/**
     * returns the brand information to the client side
 	 * @return
 	 */
-	List<BrandInfo> getBrands();
+   ArrayList<BrandInfo> getBrands();
 	
 	/**
     * returns the IrCommand information to the client side for the given device
 	 * @param codeset
 	 * @return
 	 */
-	List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
+   ArrayList<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 	
 	/**
     * export the selected commands

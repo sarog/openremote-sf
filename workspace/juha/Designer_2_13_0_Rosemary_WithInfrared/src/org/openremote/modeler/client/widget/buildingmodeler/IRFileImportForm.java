@@ -167,10 +167,10 @@ public class IRFileImportForm extends CommonForm {
     * populates and shows the brand combo box
     */
    public void showBrands() {
-      IrFileParserProxy.loadBrands(new AsyncSuccessCallback<List<BrandInfo>>() {
+      IrFileParserProxy.loadBrands(new AsyncSuccessCallback<ArrayList<BrandInfo>>() {
 
          @Override
-         public void onSuccess(final List<BrandInfo> brands) {
+         public void onSuccess(final ArrayList<BrandInfo> brands) {
 
             if (brandInfos == null) {
                brandInfos = new ListStore<BrandInfo>();
@@ -215,10 +215,10 @@ public class IRFileImportForm extends CommonForm {
     */
    private void showDevices(BrandInfo brandInfo) {
       IrFileParserProxy.loadModels(brandInfo,
-            new AsyncSuccessCallback<List<DeviceInfo>>() {
+            new AsyncSuccessCallback<ArrayList<DeviceInfo>>() {
 
                @Override
-               public void onSuccess(List<DeviceInfo> devices) {
+               public void onSuccess(ArrayList<DeviceInfo> devices) {
                   if (deviceInfos == null) {
                      deviceInfos = new ListStore<DeviceInfo>();
                      deviceInfoList = new ComboBox<DeviceInfo>();
@@ -264,10 +264,10 @@ public class IRFileImportForm extends CommonForm {
     */
    private void showCodeSets(DeviceInfo device) {
       IrFileParserProxy.loadCodeSets(device,
-            new AsyncSuccessCallback<List<CodeSetInfo>>() {
+            new AsyncSuccessCallback<ArrayList<CodeSetInfo>>() {
 
                @Override
-               public void onSuccess(final List<CodeSetInfo> codeSets) {
+               public void onSuccess(final ArrayList<CodeSetInfo> codeSets) {
                   if (codeSetInfos == null) {
 
                      codeSetInfos = new ListStore<CodeSetInfo>();
@@ -317,10 +317,10 @@ public class IRFileImportForm extends CommonForm {
    private void showGrid(CodeSetInfo selectedItem) {
       // wrapper.mask("Please Wait...");
       IrFileParserProxy.loadIRCommands(selectedItem,
-            new AsyncSuccessCallback<List<IRCommandInfo>>() {
+            new AsyncSuccessCallback<ArrayList<IRCommandInfo>>() {
 
                @Override
-               public void onSuccess(List<IRCommandInfo> iRCommands) {
+               public void onSuccess(ArrayList<IRCommandInfo> iRCommands) {
 
                   if (listStore == null) {
                      listStore = new ListStore<IRCommandInfo>();
