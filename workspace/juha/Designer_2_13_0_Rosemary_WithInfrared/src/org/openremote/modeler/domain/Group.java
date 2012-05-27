@@ -27,13 +27,15 @@ import javax.persistence.Transient;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+
 import flexjson.JSON;
 
 /**
  * A Group includes name, screenRefs and local tabbarItems.
  * The parentPanel property is for passing on to screenRefs.
  */
-public class Group extends RefedEntity {
+public class Group extends RefedEntity implements BeanModelTag {
 
    private static final long serialVersionUID = -9043041127351437532L;
 

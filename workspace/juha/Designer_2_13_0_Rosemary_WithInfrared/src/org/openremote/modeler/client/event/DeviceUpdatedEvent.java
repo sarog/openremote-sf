@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.event;
 
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -27,14 +27,14 @@ public class DeviceUpdatedEvent extends GwtEvent<DeviceUpdatedEventHandler> {
 
   public static Type<DeviceUpdatedEventHandler> TYPE = new Type<DeviceUpdatedEventHandler>();
 
-  private final Device updatedDevice;
+  private final DeviceDTO updatedDevice;
   
-  public DeviceUpdatedEvent(Device updatedDevice) {
+  public DeviceUpdatedEvent(DeviceDTO updatedDevice) {
     super();
     this.updatedDevice = updatedDevice;
   }
 
-  public Device getUpdatedDevice() {
+  public DeviceDTO getUpdatedDevice() {
     return updatedDevice;
   }
 

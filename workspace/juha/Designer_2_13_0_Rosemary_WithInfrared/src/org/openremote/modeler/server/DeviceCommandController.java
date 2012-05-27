@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.rpc.DeviceCommandRPCService;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
@@ -44,6 +46,7 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    
    /** The device command service. */
    private DeviceCommandService deviceCommandService;
+   private DeviceService deviceService;
 
     /**
      * Sets the device command service.
@@ -54,22 +57,17 @@ public class DeviceCommandController extends BaseGWTSpringController implements
       this.deviceCommandService = deviceCommandRPCService;
    }
 
-   /**
+   public void setDeviceService(DeviceService deviceService) {
+      this.deviceService = deviceService;
+    }
+
+  /**
     * {@inheritDoc}
     * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#saveAll(java.util.List)
     */
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       return deviceCommandService.saveAll(deviceCommands);
-   }
-
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#save(org.openremote.modeler.domain.DeviceCommand)
-    */
-   public DeviceCommand save(DeviceCommand deviceCommand) {
-      return deviceCommandService.save(deviceCommand);
    }
 
    /**
@@ -84,25 +82,18 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    /**
     * {@inheritDoc}
     * 
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadById(long)
-    */
-   public DeviceCommand loadById(long id) {
-      return deviceCommandService.loadById(id);
-   }
-
-   /**
-    * {@inheritDoc}
-    * 
     * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadByDevice(long)
     */
    public List<DeviceCommand> loadByDevice(long id) {
       return deviceCommandService.loadByDevice(id);
    }
 
+   @Override
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
      return deviceCommandService.loadCommandsDTOByDevice(id);
    }
    
+   @Override
    public DeviceCommandDetailsDTO loadCommandDetailsDTO(long id) {
      DeviceCommand dc = deviceCommandService.loadById(id);
      DeviceCommandDetailsDTO dto = new DeviceCommandDetailsDTO(dc.getOid(), dc.getName(), dc.getProtocol().getType());
@@ -114,6 +105,7 @@ public class DeviceCommandController extends BaseGWTSpringController implements
      return dto;
    }
 
+   @Override
    public void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto) {
      DeviceCommand dc = deviceCommandService.loadById(dto.getOid());
      dc.setName(dto.getName());
@@ -126,4 +118,23 @@ public class DeviceCommandController extends BaseGWTSpringController implements
      }
      deviceCommandService.update(dc);
    }
+   
+   @Override
+   public void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId) {
+     DeviceCommand dc = new DeviceCommand();
+
+     Device device = deviceService.loadById(deviceId);
+     dc.setDevice(device);
+     
+     dc.setName(dto.getName());
+     Protocol protocol = new Protocol();
+     protocol.setDeviceCommand(dc);
+     dc.setProtocol(protocol);
+     protocol.setType(dto.getProtocolType());
+     for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
+     deviceCommandService.save(dc);
+   }
+
 }

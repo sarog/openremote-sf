@@ -20,9 +20,9 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.utils.DeviceAndMacroTree;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceMacro;
+import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
@@ -59,7 +59,7 @@ public class SelectCommandWindow extends Dialog {
       devicesAndMacrosTreeContainer.setHeaderVisible(false);
       devicesAndMacrosTreeContainer.setLayout(new FitLayout());
       if (devicesAndMacrosTree == null) {
-         devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
+         devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree();
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
       
@@ -77,7 +77,7 @@ public class SelectCommandWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a command.", null);
                   be.cancelBubble();
                } else {
-                  if ((beanModel.getBean() instanceof DeviceCommand) || (beanModel.getBean() instanceof DeviceMacro)) {
+                  if ((beanModel.getBean() instanceof DeviceCommandDTO) || (beanModel.getBean() instanceof MacroDTO)) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a command.", null);

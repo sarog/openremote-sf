@@ -26,7 +26,6 @@ import java.util.List;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
@@ -36,7 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
    private UserService userService = null;
-   
+
+   @Override
+   public Slider loadById(long id) {
+     return genericDAO.getById(Slider.class, id);
+   }
+
    @Override
    @Transactional public void delete(long id) {
       Slider slider = super.loadById(id);
@@ -60,6 +64,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
 
    @Override
    @Transactional public Slider update(Slider slider) {
+     /*
       Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
       if (oldSlider.getSliderSensorRef() != null) {
          genericDAO.delete(oldSlider.getSliderSensorRef());
@@ -85,6 +90,9 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
       }
       return oldSlider;
+      */
+     genericDAO.saveOrUpdate(slider);
+     return slider;
    }
    
    public List<Slider> loadSameSliders(Slider slider) {

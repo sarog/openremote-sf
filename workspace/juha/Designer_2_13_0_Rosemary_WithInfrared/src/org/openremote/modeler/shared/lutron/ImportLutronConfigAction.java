@@ -21,11 +21,11 @@ package org.openremote.modeler.shared.lutron;
 
 import net.customware.gwt.dispatch.shared.Action;
 
-import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 public class ImportLutronConfigAction implements Action<ImportLutronConfigResult> {
   
-  private Device device;
+  private DeviceDTO device;
   private ImportConfig config;
   
   public ImportLutronConfigAction() {
@@ -43,11 +43,11 @@ public class ImportLutronConfigAction implements Action<ImportLutronConfigResult
     this.config = config;
   }
   
-  public Device getDevice() {
+  public DeviceDTO getDevice() {
     return device;
   }
 
-  public void setDevice(Device device) {
+  public void setDevice(DeviceDTO device) {
     this.device = device;
   }
 

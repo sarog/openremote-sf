@@ -20,12 +20,13 @@
 package org.openremote.modeler.client.proxy;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
@@ -35,29 +36,10 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 public class SwitchBeanModelProxy {
    private SwitchBeanModelProxy() {
    }
-   public static void loadAll(BeanModel switchBean, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      if (switchBean == null || switchBean.getBean() instanceof TreeFolderBean) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().loadAll(new AsyncSuccessCallback<List<Switch>>() {
-            @Override
-            public void onSuccess(List<Switch> result) {
-               List<BeanModel> switchBeanModels = Switch.createModels(result);
-               BeanModelDataBase.switchTable.insertAll(switchBeanModels);
-               callback.onSuccess(switchBeanModels);
-            }
-         });
-      } else {
-         Switch switchToggle = switchBean.getBean();
-         List<BeanModel> commandBeanModels = new ArrayList<BeanModel>();
-         commandBeanModels.add(switchToggle.getSwitchCommandOnRef().getBeanModel());
-         commandBeanModels.add(switchToggle.getSwitchCommandOffRef().getBeanModel());
-
-         callback.onSuccess(commandBeanModels);
-      }
-   }
    
    public static void delete(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().delete(((Switch) (beanModel.getBean())).getOid(),
+      if (beanModel != null && beanModel.getBean() instanceof SwitchDTO) {
+         AsyncServiceFactory.getSwitchRPCServiceAsync().delete(((SwitchDTO) (beanModel.getBean())).getOid(),
                new AsyncSuccessCallback<Void>() {
                   @Override
                   public void onSuccess(Void result) {
@@ -68,32 +50,23 @@ public class SwitchBeanModelProxy {
       }
    }
    
-   public static void save(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().save((Switch) (beanModel.getBean()),
-               new AsyncSuccessCallback<Switch>() {
-
-                  @Override
-                  public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.insert(result.getBeanModel());
-                     callback.onSuccess(result);
-                  }
-
-               });
-      }
+   public static void loadSwitchDetails(final BeanModel beanModel, final AsyncSuccessCallback<BeanModel> asyncSuccessCallback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().loadSwitchDetails(((SwitchDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<SwitchDetailsDTO>() {
+       public void onSuccess(SwitchDetailsDTO result) {
+         asyncSuccessCallback.onSuccess(DTOHelper.getBeanModel(result));
+       }
+     });
    }
    
-   public static void update(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
-      if (beanModel != null && beanModel.getBean() instanceof Switch) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch) (beanModel.getBean()),
-               new AsyncSuccessCallback<Switch>() {
-                  @Override
-                  public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.update(result.getBeanModel());
-                     callback.onSuccess(result);
-                  }
+   public static void loadAllSwitchWithInfosDTO(AsyncSuccessCallback<ArrayList<SwitchWithInfoDTO>> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().loadAllSwitchWithInfosDTO(callback);
+   }
+   
+   public static void updateSwitchWithDTO(final SwitchDetailsDTO switchDTO, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().updateSwitchWithDTO(switchDTO, callback);
+   }
 
-               });
-      }
+   public static void saveNewSwitch(final SwitchDetailsDTO switchDTO, final long deviceId, AsyncSuccessCallback<Void> callback) {
+     AsyncServiceFactory.getSwitchRPCServiceAsync().saveNewSwitch(switchDTO, deviceId, callback);
    }
 }

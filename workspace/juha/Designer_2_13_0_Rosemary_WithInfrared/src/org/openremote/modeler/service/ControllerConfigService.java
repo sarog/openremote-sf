@@ -1,10 +1,12 @@
 package org.openremote.modeler.service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 
 public interface ControllerConfigService {
    
@@ -70,5 +72,7 @@ public interface ControllerConfigService {
    
    Set<ConfigCategory> listAllCategory();
    
-   
+
+   Set<ControllerConfig> saveAllDTOs(HashSet<ControllerConfigDTO> configDTOs);
+
 }

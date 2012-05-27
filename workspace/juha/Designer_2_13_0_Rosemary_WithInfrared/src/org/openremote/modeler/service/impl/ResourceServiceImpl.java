@@ -80,6 +80,8 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -92,6 +94,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
@@ -104,6 +107,9 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.service.SwitchService;
+import org.openremote.modeler.service.SliderService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -115,10 +121,16 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
+import org.openremote.modeler.server.SensorController;
+import org.openremote.modeler.server.SliderController;
+import org.openremote.modeler.server.SwitchController;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
- * TODO
+ * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
  * 
  * @author Allen, Handy, Javen
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
@@ -133,14 +145,16 @@ public class ResourceServiceImpl implements ResourceService
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
-  //private static final Logger _LOGGER = Logger.getLogger(ResourceServiceImpl.class);
-
 
   private Configuration configuration;
 
   private DeviceCommandService deviceCommandService;
 
   private DeviceMacroService deviceMacroService;
+
+  private SensorService sensorService;
+  private SliderService sliderService;
+  private SwitchService switchService;
 
   private VelocityEngine velocity;
 
@@ -275,33 +289,6 @@ public class ResourceServiceImpl implements ResourceService
 //      return dotImportFileContent;
      return "";
    }
-
-//   /**
-//    * Check xml.
-//    *
-//    * @param zipInputStream
-//    *           the zip input stream
-//    * @param zipEntry
-//    *           the zip entry
-//    * @param xmlName
-//    *           the xml name
-//    *
-//    * @return true, if successful
-//    *
-//    * @throws IOException
-//    *            Signals that an I/O exception has occurred.
-//    */
-//   private boolean checkXML(ZipInputStream zipInputStream, ZipEntry zipEntry, String xmlName) throws IOException {
-//      if (zipEntry.getName().equals(xmlName + ".xml")) {
-//         String xsdRelativePath = "iphone".equals(xmlName) ? configuration.getPanelXsdPath() : configuration
-//               .getControllerXsdPath();
-//         String xsdPath = getClass().getResource(xsdRelativePath).getPath();
-//         if (!XmlParser.checkXmlSchema(xsdPath, IOUtils.toString(zipInputStream))) {
-//            return false;
-//         }
-//      }
-//      return true;
-//   }
 
 
   /**
@@ -597,6 +584,19 @@ public class ResourceServiceImpl implements ResourceService
   {
     this.deviceMacroService = deviceMacroService;
   }
+
+   public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+   }
+
+   public void setSliderService(SliderService sliderService) {
+     this.sliderService = sliderService;
+   }
+
+   public void setSwitchService(SwitchService switchService) {
+     this.switchService = switchService;
+   }
+
 
   /**
    * @deprecated looks unused
@@ -912,6 +912,193 @@ public class ResourceServiceImpl implements ResourceService
    }
 
 
+  /**
+   * Prepares the objects to be sent to client side by replacing references to entity beans with references to DTOs.
+   * The inverse operation is performed by the resolveDTOReferences method before using the objects on the server side.
+   *
+   * @param panels
+   */
+  private void populateDTOReferences(Collection<Panel> panels) {
+    for (Panel panel : panels) {
+      for (GroupRef groupRef : panel.getGroupRefs()) {
+        Group group = groupRef.getGroup();
+        for (ScreenPairRef screenRef : group.getScreenRefs()) {
+          ScreenPair screenPair = screenRef.getScreen();
+          Screen screen = screenPair.getPortraitScreen();
+          if (screen != null) {
+            populateDTOReferences(screen);
+          }
+          screen = screenPair.getLandscapeScreen();
+          if (screen != null) {
+            populateDTOReferences(screen);
+          }
+        }
+      }
+    }
+  }
+
+  private void populateDTOReferences(Screen screen) {
+    for (Absolute absolute : screen.getAbsolutes()) {
+      populateDTOReferences(absolute.getUiComponent());
+    }
+    for (UIGrid grid : screen.getGrids()) {
+      for (Cell cell : grid.getCells()) {
+        populateDTOReferences(cell.getUiComponent());
+      }
+    }
+    for (Gesture gesture : screen.getGestures()) {
+      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
+        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
+        gesture.setUiCommand(null);
+      }
+    }
+  }
+
+  private void populateDTOReferences(UIComponent component) {    if (component instanceof SensorOwner) {
+      SensorOwner owner = (SensorOwner) component;
+      if (owner.getSensorDTO() == null && owner.getSensor() != null) {
+        owner.setSensorDTO(SensorController.createSensorWithInfoDTO(owner.getSensor()));
+        owner.setSensor(null);
+        if (owner instanceof SensorLinkOwner) {
+          ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
+          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
+        }
+      }
+    }
+    if (component instanceof UISlider) {
+      UISlider uiSlider = (UISlider)component;
+      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
+        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
+        if (slider != null) { // Just in case we have a dangling pointer
+          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+        }
+        uiSlider.setSlider(null);
+      }
+    }
+    if (component instanceof UISwitch) {
+      UISwitch uiSwitch = (UISwitch)component;
+      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+        if (switchBean != null) { // Just in case we have a dangling pointer
+          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+        }
+        uiSwitch.setSwitchCommand(null);
+      }
+    }
+    if (component instanceof UIButton) {
+      UIButton uiButton = (UIButton)component;
+      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
+        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
+        uiButton.setUiCommand(null);
+      }
+    }
+  }
+
+  private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
+    if (uiCommand instanceof DeviceCommandRef) {
+      DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
+      return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+    } else if (uiCommand instanceof DeviceMacroRef) {
+      DeviceMacro dm = deviceMacroService.loadById(((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid());
+      return (dm != null)?new MacroDTO(dm.getOid(), dm.getDisplayName()):null;
+    }
+    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+  }
+
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void resolveDTOReferences(Collection<Panel> panels) {
+    for (Panel panel : panels) {
+      for (GroupRef groupRef : panel.getGroupRefs()) {
+        Group group = groupRef.getGroup();
+        for (ScreenPairRef screenRef : group.getScreenRefs()) {
+          ScreenPair screenPair = screenRef.getScreen();
+          Screen screen = screenPair.getPortraitScreen();
+          if (screen != null) {
+            resolveDTOReferences(screen);
+          }
+          screen = screenPair.getLandscapeScreen();
+          if (screen != null) {
+            resolveDTOReferences(screen);
+          }
+        }
+      }
+    }
+  }
+
+  private void resolveDTOReferences(Screen screen) {
+    for (Absolute absolute : screen.getAbsolutes()) {
+      resolvedDTOReferences(absolute.getUiComponent());
+    }
+    for (UIGrid grid : screen.getGrids()) {
+      for (Cell cell : grid.getCells()) {
+        resolvedDTOReferences(cell.getUiComponent());
+      }
+    }
+    for (Gesture gesture : screen.getGestures()) {
+      if (gesture.getUiCommand() == null && gesture.getUiCommandDTO() != null) {        
+        gesture.setUiCommand(lookupUiCommandFromDTO(gesture.getUiCommandDTO()));
+        gesture.setUiCommandDTO(null);
+      }
+    }
+  }
+
+
+  protected void resolvedDTOReferences(UIComponent component) {
+    if (component instanceof SensorOwner) {
+      SensorOwner owner = (SensorOwner) component;
+      if (owner.getSensor() == null && owner.getSensorDTO() != null) {
+        Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
+        owner.setSensor(sensor);
+        owner.setSensorDTO(null);
+        if (owner instanceof SensorLinkOwner) {
+          ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
+          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
+        }
+      }
+    }
+    if (component instanceof UISlider) {
+      UISlider uiSlider = (UISlider)component;
+      if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
+        Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+        uiSlider.setSlider(slider);
+        uiSlider.setSliderDTO(null);
+      }
+    }
+    if (component instanceof UISwitch) {
+      UISwitch uiSwitch = (UISwitch)component;
+      if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
+        Switch sw = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
+        uiSwitch.setSwitchCommand(sw);
+        uiSwitch.setSwitchDTO(null);
+      }
+    }
+    if (component instanceof UIButton) {
+      UIButton uiButton = (UIButton)component;
+      if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
+        uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
+        uiButton.setUiCommandDTO(null);
+      }
+    }
+  }
+
+  private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
+    if (uiCommandDTO instanceof DeviceCommandDTO) {
+      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
+      return  (dc != null)?new DeviceCommandRef(dc):null;
+    } else if (uiCommandDTO instanceof MacroDTO) {
+      DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
+      return (dm != null)?new DeviceMacroRef(dm):null;
+    }
+    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+  }
+
+  
+
    //
    // TODO :
    //
@@ -1046,7 +1233,23 @@ public class ResourceServiceImpl implements ResourceService
       DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
       state.restore();
 
-      return state.transformToPanelsAndMaxOid();
+      PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
+
+      // EBR
+
+      // TODO :
+      //    this should be pushed deeper into the call stack, either into the designer state
+      //    implementation (which can implement a translation to DTOs, similar to the current
+      //    hack of transformToPanelsAndMaxOid() as seen above) or better yet into the domain
+      //    package as was done in the case of Panel.getAllImageNames() method implementation --
+      //    same comment applies, the processing is part of the domain object which should also
+      //    help reduce the very brittle instanceof semantics seen in the populate and resolve
+      //    DTO references here.
+      //                                                                            [JPL]
+
+      populateDTOReferences(result.getPanels());
+
+      return result;
     }
 
     catch (NetworkException e)

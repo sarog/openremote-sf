@@ -20,19 +20,19 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class DeviceCommandDTO implements DTO {
+public class DeviceCommandDTO implements DTO, UICommandDTO {
 
   private static final long serialVersionUID = 1L;
   
   private String displayName;
   private String protocolType;
-  private long oid;
+  private Long oid;
 
   public DeviceCommandDTO() {
     super();
   }
   
-  public DeviceCommandDTO(long oid, String displayName, String protocolType) {
+  public DeviceCommandDTO(Long oid, String displayName, String protocolType) {
     super();
     this.oid = oid;
     this.displayName = displayName;
@@ -47,11 +47,11 @@ public class DeviceCommandDTO implements DTO {
     this.displayName = displayName;
   }
   
-  public long getOid() {
+  public Long getOid() {
     return oid;
   }
   
-  public void setOid(long oid) {
+  public void setOid(Long oid) {
     this.oid = oid;
   }
 

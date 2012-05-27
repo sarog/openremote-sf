@@ -19,10 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.SwitchBeanModelTable;
-import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -70,8 +73,13 @@ public class SelectSwitchWindow extends Dialog {
       // overflow-auto style is for IE hack.
       switchListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();
-      store.add(((SwitchBeanModelTable)BeanModelDataBase.switchTable).loadAllAsDTOs());
+      final ListStore<BeanModel> store = new ListStore<BeanModel>();
+      SwitchBeanModelProxy.loadAllSwitchWithInfosDTO(new AsyncSuccessCallback<ArrayList<SwitchWithInfoDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SwitchWithInfoDTO> result) {
+          store.add(DTOHelper.createModels(result));
+        }
+      });
       switchList.setStore(store);
       switchList.setDisplayProperty("displayName");
       switchList.setStyleAttribute("overflow", "auto");
@@ -88,7 +96,7 @@ public class SelectSwitchWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSwitchModel = se.getSelectedItem();
             if (selectedSwitchModel != null) {
-               SwitchDetailsDTO switchToggle = selectedSwitchModel.getBean();
+               SwitchWithInfoDTO switchToggle = selectedSwitchModel.getBean();
                String switchInfo = "<p><b>Switch info</b></p>";
                if (switchToggle.getOnCommandName() != null){
                   switchInfo = switchInfo + "<p>On: " + switchToggle.getOnCommandName() + "</p>";
@@ -115,7 +123,7 @@ public class SelectSwitchWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a switch.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof SwitchDetailsDTO) {
+                  if (beanModel.getBean() instanceof SwitchWithInfoDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a switch.", null);

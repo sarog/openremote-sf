@@ -18,6 +18,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.shared.knx.ImportKNXConfigAction;
 import org.openremote.modeler.shared.knx.ImportKNXConfigResult;
@@ -44,8 +45,13 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
       COMMAND_DPT_MAP.put("N/A", "N/A");
   }
 
+  protected DeviceService deviceService;
   protected DeviceCommandService deviceCommandService;
   protected SensorService sensorService;
+  
+  public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
@@ -58,7 +64,8 @@ public class ImportKNXConfigActionHandler implements ActionHandler<ImportKNXConf
   @Override
   public ImportKNXConfigResult execute(ImportKNXConfigAction action, ExecutionContext context) throws DispatchException {
     ImportKNXConfigResult result = new ImportKNXConfigResult();
-    createKNXObjects(action.getDevice(), action.getConfig());
+    Device device = deviceService.loadById(action.getDevice().getOid());
+    createKNXObjects(device, action.getConfig());
     return result;
   }
 

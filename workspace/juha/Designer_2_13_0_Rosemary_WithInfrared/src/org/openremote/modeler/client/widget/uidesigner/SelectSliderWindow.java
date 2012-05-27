@@ -19,10 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.utils.SliderBeanModelTable;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -70,8 +73,13 @@ public class SelectSliderWindow extends Dialog {
       // overflow-auto style is for IE hack.
       sliderListContainer.addStyleName("overflow-auto");
       
-      ListStore<BeanModel> store = new ListStore<BeanModel>();      
-      store.add(((SliderBeanModelTable)BeanModelDataBase.sliderTable).loadAllAsDTOs());
+      final ListStore<BeanModel> store = new ListStore<BeanModel>();
+      SliderBeanModelProxy.loadAllSliderWithInfosDTO(new AsyncSuccessCallback<ArrayList<SliderWithInfoDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<SliderWithInfoDTO> result) {
+          store.add(DTOHelper.createModels(result));
+        }
+      });
       sliderList.setStore(store);
       sliderList.setDisplayProperty("displayName");
       sliderList.setStyleAttribute("overflow", "auto");
@@ -88,7 +96,7 @@ public class SelectSliderWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
             BeanModel selectedSliderModel = se.getSelectedItem();
             if (selectedSliderModel != null) {
-               SliderDetailsDTO slider = selectedSliderModel.getBean();
+               SliderWithInfoDTO slider = selectedSliderModel.getBean();
                String sliderInfo = "<p><b>Slider info</b></p>";
                if (slider.getCommandName() != null){
                   sliderInfo = sliderInfo + "<p>Command: " + slider.getCommandName() + "</p>";
@@ -113,7 +121,7 @@ public class SelectSliderWindow extends Dialog {
                   MessageBox.alert("Error", "Please select a slider.", null);
                   be.cancelBubble();
                } else {
-                  if (beanModel.getBean() instanceof SliderDetailsDTO) {
+                  if (beanModel.getBean() instanceof SliderWithInfoDTO) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(beanModel));
                   } else {
                      MessageBox.alert("Error", "Please select a slider.", null);
