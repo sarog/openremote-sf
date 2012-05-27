@@ -144,12 +144,12 @@ public class DeviceBeanModelProxy {
       }
    }
 
-   public static void saveNewDevice(final DeviceDetailsDTO device, final AsyncSuccessCallback<Void> callback) {
+   public static void saveNewDevice(final DeviceDetailsDTO device, final AsyncSuccessCallback<DeviceDTO> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().saveNewDevice(device, callback);
    }
    
    public static void saveNewDeviceWithChildren(final DeviceDetailsDTO device, final ArrayList<DeviceCommandDetailsDTO> commands,
-           final ArrayList<SensorDetailsDTO> sensors, final ArrayList<SwitchDetailsDTO> switches, final ArrayList<SliderDetailsDTO> sliders, final AsyncSuccessCallback<Void> callback) {
+           final ArrayList<SensorDetailsDTO> sensors, final ArrayList<SwitchDetailsDTO> switches, final ArrayList<SliderDetailsDTO> sliders, final AsyncSuccessCallback<DeviceDTO> callback) {
      AsyncServiceFactory.getDeviceServiceAsync().saveNewDeviceWithChildren(device, commands, sensors, switches, sliders, callback);
    }
    
@@ -243,8 +243,8 @@ public class DeviceBeanModelProxy {
       }
    }
    
-   public static void loadDeviceDetails(BeanModel beanModel, final AsyncSuccessCallback<BeanModel> callback) {
-       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(((DeviceDTO)beanModel.getBean()).getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
+   public static void loadDeviceDetails(DeviceDTO device, final AsyncSuccessCallback<BeanModel> callback) {
+       AsyncServiceFactory.getDeviceServiceAsync().loadDeviceDetailsDTO(device.getOid(), new AsyncSuccessCallback<DeviceDetailsDTO>() {
          public void onSuccess(DeviceDetailsDTO result) {
            callback.onSuccess(DTOHelper.getBeanModel(result));
          }

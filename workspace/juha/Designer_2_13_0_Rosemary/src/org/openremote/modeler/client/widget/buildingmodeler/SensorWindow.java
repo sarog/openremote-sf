@@ -36,6 +36,7 @@ import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
@@ -54,7 +55,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -83,7 +83,7 @@ public class SensorWindow extends FormWindow {
 
   private EventBus eventBus;
   
-  private long deviceId;
+  private DeviceDTO device;
   
    protected SensorDetailsDTO sensorDTO;
    
@@ -115,7 +115,8 @@ public class SensorWindow extends FormWindow {
     * 
     * @param sensorModel the sensor model
     */
-   public SensorWindow(BeanModel sensorModel, EventBus eventBus) {
+   public SensorWindow(BeanModel sensorModel, DeviceDTO device, EventBus eventBus) {
+     this.device = device;
      this.eventBus = eventBus;
       setHeading("Edit sensor");
       edit = true;
@@ -137,14 +138,13 @@ public class SensorWindow extends FormWindow {
     * 
     * @param device the device
     */
-   public SensorWindow(long deviceId, EventBus eventBus) {
+   public SensorWindow(DeviceDTO device, EventBus eventBus) {
      super();
-     this.deviceId = deviceId;
+     this.device = device;
      this.eventBus = eventBus;
      sensorDTO = new SensorDetailsDTO();
       setHeading("New sensor");
       edit = false;
-      Info.display("INFO", "SensorWindow");
       init();
    }
    
@@ -278,7 +278,7 @@ public class SensorWindow extends FormWindow {
          devId = sensorDTO.getDeviceId();
          selectedCommandId = sensorDTO.getCommandId();
       }
-      commandSelectTree = TreePanelBuilder.buildCommandTree(devId != null?devId:deviceId, selectedCommandId);
+      commandSelectTree = TreePanelBuilder.buildCommandTree(devId != null?devId:device.getOid(), selectedCommandId);
    }
    
    /**
@@ -439,7 +439,7 @@ public class SensorWindow extends FormWindow {
             SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();            
             if (!edit) {
               sensorDTO.setType(type);
-              sensorDTO.setDeviceId(deviceId);
+              sensorDTO.setDeviceId(device.getOid());
             }
             
             if (type == SensorType.RANGE) {
@@ -459,17 +459,17 @@ public class SensorWindow extends FormWindow {
             sensorDTO.setCommand(new DTOReference(cmd.getOid()));
 
             if (!edit) {
-              SensorBeanModelProxy.saveNewSensor(sensorDTO, deviceId, new AsyncSuccessCallback<Void>() {
+              SensorBeanModelProxy.saveNewSensor(sensorDTO, device.getOid(), new AsyncSuccessCallback<Void>() {
                  public void onSuccess(Void result) {
                    hide();
-                   eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO EBR : pass appropriate parameter
+                   eventBus.fireEvent(new DeviceUpdatedEvent(device));
                  }
               });
             } else {
                SensorBeanModelProxy.updateSensorWithDTO(sensorDTO, new AsyncSuccessCallback<Void>() {
                   public void onSuccess(Void result) {
                     hide();
-                    eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO EBR : pass appropriate parameter
+                    eventBus.fireEvent(new DeviceUpdatedEvent(device)); // TODO : have specific event for sensor update
                   }
                });
             }
