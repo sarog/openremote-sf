@@ -40,8 +40,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
    @Transactional public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
-      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
-            sensor)));
+      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor", sensor)));
+
       if (sensorRefItems.size() > 0) {
          return false;
       } else {
