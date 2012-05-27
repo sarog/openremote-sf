@@ -87,22 +87,26 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    public ArrayList<MacroDTO> loadAllDTOs() {
      ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
      for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
-       MacroDTO dto = new MacroDTO(dm.getOid(), dm.getDisplayName());
-       ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
-       for (DeviceMacroItem dmi : dm.getDeviceMacroItems()) {
-         if (dmi instanceof DeviceMacroRef) {
-           itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
-         } else if (dmi instanceof DeviceCommandRef) {
-           itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
-         } else if (dmi instanceof CommandDelay) {
-           itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
-         }
-       }
-       dto.setItems(itemDTOs);
-       dtos.add(dto);
+       dtos.add(createMacroDTO(dm));
      }
      return dtos;
    }
+
+  protected MacroDTO createMacroDTO(DeviceMacro dm) {
+    MacroDTO dto = new MacroDTO(dm.getOid(), dm.getDisplayName());
+     ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
+     for (DeviceMacroItem dmi : dm.getDeviceMacroItems()) {
+       if (dmi instanceof DeviceMacroRef) {
+         itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
+       } else if (dmi instanceof DeviceCommandRef) {
+         itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
+       } else if (dmi instanceof CommandDelay) {
+         itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
+       }
+     }
+     dto.setItems(itemDTOs);
+    return dto;
+  }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
      DeviceMacro macroBean = deviceMacroService.loadById(id);
@@ -123,7 +127,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    }
 
    
-   public void saveNewMacro(MacroDetailsDTO macro) {
+   public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
      macroBean.setName(macro.getName());
      macroBean.setAccount(userService.getAccount());
@@ -131,15 +135,15 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
      
      macroBean.setDeviceMacroItems(macroItemBeans);
-     deviceMacroService.saveDeviceMacro(macroBean);
+     return createMacroDTO(deviceMacroService.saveDeviceMacro(macroBean));
    }
 
-   public void updateMacroWithDTO(MacroDetailsDTO macro) {
+   public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
      DeviceMacro macroBean = deviceMacroService.loadById(macro.getOid());
      macroBean.setName(macro.getName());
 
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
-     deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans);
+     return createMacroDTO(deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans));
    }
 
    protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {

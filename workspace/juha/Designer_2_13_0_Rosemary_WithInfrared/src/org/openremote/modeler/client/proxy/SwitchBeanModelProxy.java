@@ -39,14 +39,7 @@ public class SwitchBeanModelProxy {
    
    public static void delete(final BeanModel beanModel, final AsyncSuccessCallback<Void> callback) {
       if (beanModel != null && beanModel.getBean() instanceof SwitchDTO) {
-         AsyncServiceFactory.getSwitchRPCServiceAsync().delete(((SwitchDTO) (beanModel.getBean())).getOid(),
-               new AsyncSuccessCallback<Void>() {
-                  @Override
-                  public void onSuccess(Void result) {
-                     BeanModelDataBase.switchTable.delete(beanModel);
-                     callback.onSuccess(result);
-                  }
-               });
+         AsyncServiceFactory.getSwitchRPCServiceAsync().delete(((SwitchDTO) (beanModel.getBean())).getOid(), callback);
       }
    }
    
