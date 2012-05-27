@@ -20,10 +20,7 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
@@ -47,32 +44,6 @@ public interface DeviceRPCService extends RemoteService {
     * @param id the id
     */
    void deleteDevice(long id);
-   
-   /**
-    * Load by id.
-    * 
-    * @param id the id
-    * 
-    * @return the device
-    */
-   Device loadById(long id);
-   
-
-   /**
-    * Load all.
-    * 
-    * @return the list< device>
-    */
-   List<Device> loadAll();
-   
-   /**
-    * Load all.
-    * 
-    * @param account the account
-    * 
-    * @return the list< device>
-    */
-   List<Device> loadAll(Account account);
    
    ArrayList<DeviceDTO> loadAllDTOs();
 
