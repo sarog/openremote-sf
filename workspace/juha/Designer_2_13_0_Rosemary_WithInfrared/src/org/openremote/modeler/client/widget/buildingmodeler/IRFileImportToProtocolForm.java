@@ -19,21 +19,24 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import net.customware.gwt.dispatch.client.DispatchAsync;
+
+import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.proxy.IrFileParserProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRLed;
 import org.openremote.modeler.irfileparser.IRTrans;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
+import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -48,8 +51,11 @@ import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
@@ -57,8 +63,7 @@ import com.google.gwt.user.client.ui.ListBox;
  */
 public class IRFileImportToProtocolForm extends FormWindow {
 
-
-   private Device device = null;
+   private DeviceDTO device = null;
    private VerticalPanel gCPanel;
    private TextField<String> gCip;
    private TextField<String> tcpPort;
@@ -76,7 +81,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
    private TextField<String> iRTransIp;
 
-   private List<IRCommandInfo> selectedFunctions;
+   private ArrayList<IRCommandInfo> selectedFunctions;
    @SuppressWarnings("unused")
    private ComboBox<IRLed> IRLed;
    private Component wrapper;
@@ -91,7 +96,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param device
     *           the device
     */
-   public IRFileImportToProtocolForm(Component wrapper, Device device) {
+   public IRFileImportToProtocolForm(Component wrapper, DeviceDTO device) {
       super();
       this.device = device;
       this.wrapper = wrapper;
@@ -137,26 +142,30 @@ public class IRFileImportToProtocolForm extends FormWindow {
                irTrans = new IRTrans(iRTransIp.getValue(), udpPort.getValue(),
                      iRLed.getSelection().get(0).getCode());
             }
-            IrFileParserProxy.saveCommands(device, selectedFunctions,
-                  globalCache, irTrans,
-                  new AsyncSuccessCallback<List<BeanModel>>() {
-                     @Override
-                     public void onSuccess(List<BeanModel> deviceCommandModels) {
-                        IRFileImportToProtocolForm.this.hide();
-                        wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(
-                              deviceCommandModels));
+            
+            ModelerGinjector injector = GWT.create(ModelerGinjector.class);
+            DispatchAsync dispatcher = injector.getDispatchAsync();
 
-                     }
+            GenerateIRCommandsAction action = new GenerateIRCommandsAction(device, selectedFunctions, globalCache, irTrans);
+            dispatcher.execute(action, new AsyncCallback<GenerateIRCommandsResult>() {
 
-                     @Override
-                     public void onFailure(Throwable caught) {
-                        form.unmask();
-                        info.setText("Error : " + caught.getMessage());
-                        info.setVisible(true);
-                        submitBtn.setEnabled(true);
+              @Override
+              public void onFailure(Throwable caught) {
+                form.unmask();
+                info.setText("Error : " + caught.getMessage());
+                info.setVisible(true);
+                submitBtn.setEnabled(true);
+              }
 
-                     }
-                  });
+              @Override
+              public void onSuccess(GenerateIRCommandsResult result) {
+                
+                // TODO: have an error message in result and check for that
+                
+                IRFileImportToProtocolForm.this.hide();                
+                wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+              }
+            });
          }
       });
       createFields();
@@ -294,7 +303,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param selectedItems
     */
    public void setSelectedFunctions(List<IRCommandInfo> selectedItems) {
-      this.selectedFunctions = selectedItems;
+      this.selectedFunctions = new ArrayList<IRCommandInfo>(selectedItems);
 
    }
 }

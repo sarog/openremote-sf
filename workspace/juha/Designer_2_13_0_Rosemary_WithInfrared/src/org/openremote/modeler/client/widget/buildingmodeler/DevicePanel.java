@@ -850,19 +850,22 @@ public class DevicePanel extends ContentPanel {
    
    private void importIRCommandFile() {
 		 final BeanModel deviceModel = getDeviceModel();
-		 if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+		 if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
 			 final IRFileImportWindow selectIRFileWindow = new IRFileImportWindow(deviceModel);
 			 selectIRFileWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 				
 				@Override
 				public void afterSubmit(SubmitEvent be) {
-					List<BeanModel> deviceCommandModels = be.getData();
-		               for (BeanModel deviceCommandModel : deviceCommandModels) {
-		                  tree.getStore().add(deviceModel, deviceCommandModel, false);
-		               }
-		               tree.setExpanded(deviceModel, true);
-		               selectIRFileWindow.hide();
-					
+				  /*
+				  List<BeanModel> deviceCommandModels = be.getData();
+				  for (BeanModel deviceCommandModel : deviceCommandModels) {
+				    tree.getStore().add(deviceModel, deviceCommandModel, false);
+				  }
+				  tree.setExpanded(deviceModel, true);
+				  */
+				  eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO
+				  selectIRFileWindow.hide();
+
 				}
 			});
 			 
@@ -873,16 +876,19 @@ public class DevicePanel extends ContentPanel {
     */
    private void importIRCommand() {
       final BeanModel deviceModel = getDeviceModel();
-      if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {
          final IRCommandImportWindow selectIRWindow = new IRCommandImportWindow(deviceModel);
          selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
+              /*
                List<BeanModel> deviceCommandModels = be.getData();
                for (BeanModel deviceCommandModel : deviceCommandModels) {
                   tree.getStore().add(deviceModel, deviceCommandModel, false);
                }
                tree.setExpanded(deviceModel, true);
+               */
+              eventBus.fireEvent(new DeviceUpdatedEvent(null)); // TODO
                selectIRWindow.hide();
             }
          });
