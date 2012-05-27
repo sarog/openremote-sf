@@ -19,12 +19,13 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openremote.modeler.client.rpc.ControllerConfigRPCService;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.ControllerConfigService;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 /**
  * The controller for configuring the Controller. 
  * @author javen
@@ -33,39 +34,32 @@ import org.openremote.modeler.service.ControllerConfigService;
 @SuppressWarnings("serial")
 public class ControllerConfigController extends BaseGWTSpringController implements ControllerConfigRPCService{
    private ControllerConfigService controllerConfigService = null;
-   @Override
-   public Set<ControllerConfig> getConfigsByCategory(String categoryName, Account account) {
-      return controllerConfigService.listAllConfigsByCategoryNameForAccount(categoryName, account);
-   }
-
-   @Override
-   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName) {
-      return controllerConfigService.listAllConfigsByCategory(categoryName);
-   }
-
-   @Override
-   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs) {
-      return controllerConfigService.saveAll(cfgs);
-   }
-
-   @Override
-   public ControllerConfig update(ControllerConfig config) {
-      return controllerConfigService.update(config);
-   }
-
-   /*@Override
-   public Set<ConfigCategory> getCategories() {
-      return controllerConfigService.listAllCategory();
-   }*/
-   
-   @Override
-   public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName) {
-      return controllerConfigService.listMissedConfigsByCategoryName(categoryName);
-   }
 
    public void setControllerConfigService(ControllerConfigService controllerConfigService) {
       this.controllerConfigService = controllerConfigService;
    }
 
+   @Override
+   public HashSet<ControllerConfigDTO> getConfigDTOsByCategoryForCurrentAccount(String categoryName) {
+     return createDTOsFromBeans(controllerConfigService.listAllConfigsByCategory(categoryName));
+   }
+
+   @Override
+   public HashSet<ControllerConfigDTO> listAllMissedConfigDTOsByCategoryName(String categoryName) {
+     return createDTOsFromBeans(controllerConfigService.listMissedConfigsByCategoryName(categoryName));
+   }
+
+   private HashSet<ControllerConfigDTO> createDTOsFromBeans(Set<ControllerConfig> configs) {
+     HashSet<ControllerConfigDTO> dtos = new HashSet<ControllerConfigDTO>();
+     for (ControllerConfig cc : configs) {
+       dtos.add(new ControllerConfigDTO(cc.getOid(), cc.getCategory(), cc.getName(), cc.getValue(), cc.getHint(), cc.getValidation(), cc.getOptions()));
+     }
+     return dtos;
+   }
+
+   @Override
+   public HashSet<ControllerConfigDTO> saveAllDTOs(HashSet<ControllerConfigDTO> configs) {
+     return createDTOsFromBeans(controllerConfigService.saveAllDTOs(configs));
+   }
 
 }
