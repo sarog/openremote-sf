@@ -79,15 +79,6 @@ public class DeviceCommandController extends BaseGWTSpringController implements
       return deviceCommandService.deleteCommand(id);
    }
 
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceCommandRPCService#loadByDevice(long)
-    */
-   public List<DeviceCommand> loadByDevice(long id) {
-      return deviceCommandService.loadByDevice(id);
-   }
-
    @Override
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
      return deviceCommandService.loadCommandsDTOByDevice(id);

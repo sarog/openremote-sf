@@ -50,14 +50,6 @@ public interface DeviceCommandRPCServiceAsync {
     *           the callback
     */
    void deleteCommand(long id, AsyncCallback<Boolean> callback);
-
-   /**
-    * Load by device.
-    * 
-    * @param id the id
-    * @param asyncCallback the async callback
-    */
-   void loadByDevice(long id, AsyncCallback<List<DeviceCommand>> asyncCallback);
    
    void loadCommandsDTOByDevice(long id, AsyncCallback<ArrayList<DeviceCommandDTO>> asyncCallback);
 
