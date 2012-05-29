@@ -88,7 +88,6 @@ public class ChangedStatusTable
         {
            record.getStatusChangedSensorIDs().add(statusChangedSensorID);
            record.notifyAll();
-           break;
         }
       }
     }
