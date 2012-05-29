@@ -19,20 +19,32 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.proxy.IrFileParserProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.ir.BrandsResultOverlay;
+import org.openremote.modeler.client.ir.CodeSetInfoOverlay;
+import org.openremote.modeler.client.ir.CodeSetsResultOverlay;
+import org.openremote.modeler.client.ir.DevicesResultOverlay;
+import org.openremote.modeler.client.ir.IRCommandInfoOverlay;
+import org.openremote.modeler.client.ir.IRCommandsResultOverlay;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.data.MediaType;
+import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelFactory;
+import com.extjs.gxt.ui.client.data.BeanModelLookup;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -44,6 +56,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -78,22 +91,25 @@ public class IRFileImportForm extends CommonForm {
    protected Button nextButton;
 
    /** The code grid. */
-   protected Grid<IRCommandInfo> codeGrid = null;
+   protected Grid<BeanModel> codeGrid = null;
 
    private ColumnModel cm = null;
 
-   protected ListStore<BrandInfo> brandInfos = null;
-   protected ComboBox<BrandInfo> brandInfoList = null;
+   protected ListStore<BeanModel> brandInfos = null;
+   protected ComboBox<BeanModel> brandInfoList = null;
 
-   protected ListStore<DeviceInfo> deviceInfos = null;
-   protected ComboBox<DeviceInfo> deviceInfoList = null;
+   protected ListStore<BeanModel> deviceInfos = null;
+   protected ComboBox<BeanModel> deviceInfoList = null;
 
-   protected ListStore<CodeSetInfo> codeSetInfos = null;
-   protected ComboBox<CodeSetInfo> codeSetInfoList = null;
+   protected ListStore<BeanModel> codeSetInfos = null;
+   protected ComboBox<BeanModel> codeSetInfoList = null;
 
-   ListStore<IRCommandInfo> listStore;
+   ListStore<BeanModel> listStore;
 
-   protected Component wrapper;
+   protected IRFileImportWindow wrapper;
+   
+   private String irServiceRootRestURL;   
+   private String prontoFileHandle;
 
    /**
     * Instantiates a new iR command file import form.
@@ -103,7 +119,7 @@ public class IRFileImportForm extends CommonForm {
     * @param deviceBeanModel
     *           the device bean model
     */
-   public IRFileImportForm(final Component wrapper, BeanModel deviceBeanModel) {
+   public IRFileImportForm(final IRFileImportWindow wrapper, BeanModel deviceBeanModel) {
 
       super();
 
@@ -154,7 +170,7 @@ public class IRFileImportForm extends CommonForm {
 
          @Override
          public void componentSelected(ButtonEvent ce) {
-           IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
+           IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper, irServiceRootRestURL, prontoFileHandle, device);
            protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
            protocolChooserForm.setVisible(true);
            protocolChooserForm.show();
@@ -166,95 +182,109 @@ public class IRFileImportForm extends CommonForm {
    /**
     * populates and shows the brand combo box
     */
-   public void showBrands() {
-      IrFileParserProxy.loadBrands(new AsyncSuccessCallback<ArrayList<BrandInfo>>() {
+   public void showBrands() {     
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brands");
+    clientResource.setOnResponse(new Uniform() {
+      public void handle(Request request, Response response) {
+        try {
+          String jsonString = response.getEntity().getText();
+          BrandsResultOverlay importResult = BrandsResultOverlay.fromJSONString(jsonString);
+          if (importResult.getErrorMessage() != null) {
+            wrapper.setErrorMessage(importResult.getErrorMessage());
+         } else {
+          if (brandInfos == null) {
+            brandInfos = new ListStore<BeanModel>();
+            brandInfoList = new ComboBox<BeanModel>();
+            brandInfoList.setEmptyText("Please select Brand...");
+            brandInfoList.setDisplayField("brandName");
+            brandInfoList.setWidth(150);
+            brandInfoList.setStore(brandInfos);
+            brandInfoList.setTriggerAction(TriggerAction.ALL);
+            brandInfoList.setEditable(false);
+            selectContainer.add(brandInfoList);
+            setStyleOfComboBox(brandInfoList);
+            brandInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+              @Override
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showDevices((BrandInfo) se.getSelectedItem().getBean());
+              }
+            });
 
-         @Override
-         public void onSuccess(final ArrayList<BrandInfo> brands) {
+          } else {
+            cleanCodeGrid();
+            cleanDeviceComboBox();
+            cleanCodeSetComboBox();
+            cleanBrandComboBox();
+          }
 
-            if (brandInfos == null) {
-               brandInfos = new ListStore<BrandInfo>();
-               brandInfoList = new ComboBox<BrandInfo>();
-               brandInfoList.setEmptyText("Please select Brand...");
-               brandInfoList.setDisplayField("brandName");
-               brandInfoList.setWidth(150);
-               brandInfoList.setStore(brandInfos);
-               brandInfoList.setTriggerAction(TriggerAction.ALL);
-               brandInfoList.setEditable(false);
-               selectContainer.add(brandInfoList);
-               brandInfos.add(brands);
-               setStyleOfComboBox(brandInfoList);
-               brandInfoList
-                     .addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
-                        @Override
-                        public void selectionChanged(
-                              SelectionChangedEvent<BrandInfo> se) {
-                           showDevices(se.getSelectedItem());
-                        }
-                     });
-
-            } else {
-               brandInfoList.setVisible(true);
-               cleanCodeGrid();
-               cleanDeviceComboBox();
-               cleanCodeSetComboBox();
-               cleanBrandComboBox();
-               brandInfos.add(brands);
-               brandInfoList.setVisible(true);
-            }
-
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(BrandInfo.class);
+          for (int i = 0; i < importResult.getResult().length(); i++) {
+            brandInfos.add(beanModelFactory.createModel(new BrandInfo(importResult.getResult().get(i))));
+          }
+          brandInfoList.setVisible(true);
          }
-
-      });
-   }
+        } catch (IOException e) {
+          wrapper.setErrorMessage("Error connecting to server");
+        }
+      }
+    });
+    clientResource.get(MediaType.APPLICATION_JSON);
+  }
 
    /**
     * populates and shows the devices combobox for the currently selected brand
     * 
     * @param brandInfo
     */
-   private void showDevices(BrandInfo brandInfo) {
-      IrFileParserProxy.loadModels(brandInfo,
-            new AsyncSuccessCallback<ArrayList<DeviceInfo>>() {
+  private void showDevices(final BrandInfo brandInfo) {
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + brandInfo.getBrandName() + "/devices");
+    clientResource.setOnResponse(new Uniform() {
+      public void handle(Request request, Response response) {
+        try {
+          String jsonString = response.getEntity().getText();
+          DevicesResultOverlay importResult = DevicesResultOverlay.fromJSONString(jsonString);
+          if (importResult.getErrorMessage() != null) {
+            wrapper.setErrorMessage(importResult.getErrorMessage());
+         } else {
+          if (deviceInfos == null) {
+            deviceInfos = new ListStore<BeanModel>();
+            deviceInfoList = new ComboBox<BeanModel>();
+            deviceInfoList.setEmptyText("Please select Device...");
+            deviceInfoList.setDisplayField("modelName");
+            deviceInfoList.setWidth(150);
+            deviceInfoList.setStore(deviceInfos);
+            deviceInfoList.setTriggerAction(TriggerAction.ALL);
+            deviceInfoList.setEditable(false);
+            selectContainer.add(deviceInfoList);
+            setStyleOfComboBox(deviceInfoList);
+            deviceInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
 
-               @Override
-               public void onSuccess(ArrayList<DeviceInfo> devices) {
-                  if (deviceInfos == null) {
-                     deviceInfos = new ListStore<DeviceInfo>();
-                     deviceInfoList = new ComboBox<DeviceInfo>();
-                     deviceInfoList.setEmptyText("Please select Device...");
-                     deviceInfoList.setDisplayField("modelName");
-                     deviceInfoList.setWidth(150);
-                     deviceInfoList.setStore(deviceInfos);
-                     deviceInfoList.setTriggerAction(TriggerAction.ALL);
-                     deviceInfoList.setEditable(false);
-                     selectContainer.add(deviceInfoList);
-                     deviceInfos.add(devices);
-                     setStyleOfComboBox(deviceInfoList);
-                     deviceInfoList
-                           .addSelectionChangedListener(new SelectionChangedListener<DeviceInfo>() {
+              @Override
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showCodeSets((DeviceInfo) se.getSelectedItem().getBean());
 
-                              @Override
-                              public void selectionChanged(
-                                    SelectionChangedEvent<DeviceInfo> se) {
-                                 showCodeSets(se.getSelectedItem());
-
-                              }
-
-                           });
-                  } else {
-                     cleanCodeGrid();
-                     cleanCodeSetComboBox();
-                     cleanDeviceComboBox();
-                     deviceInfos.add(devices);
-                     deviceInfoList.setVisible(true);
-                  }
-
-               }
+              }
 
             });
+          } else {
+            cleanCodeGrid();
+            cleanCodeSetComboBox();
+            cleanDeviceComboBox();
+          }
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(DeviceInfo.class);
+          for (int i = 0; i < importResult.getResult().length(); i++) {
+            deviceInfos.add(beanModelFactory.createModel(new DeviceInfo(brandInfo, importResult.getResult().get(i))));
+          }
 
-   }
+          deviceInfoList.setVisible(true);
+         }
+        } catch (IOException e) {
+          wrapper.setErrorMessage("Error connecting to server");
+        }
+      }
+    });
+    clientResource.get(MediaType.APPLICATION_JSON);
+  }
 
    /**
     * populates and shows the code set combo box for the currently selected
@@ -262,143 +292,155 @@ public class IRFileImportForm extends CommonForm {
     * 
     * @param device
     */
-   private void showCodeSets(DeviceInfo device) {
-      IrFileParserProxy.loadCodeSets(device,
-            new AsyncSuccessCallback<ArrayList<CodeSetInfo>>() {
+  private void showCodeSets(final DeviceInfo device) {
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + device.getBrandInfo().getBrandName() + "/device/" + device.getModelName() + "/codeSets");
+    clientResource.setOnResponse(new Uniform() {
+      public void handle(Request request, Response response) {
+        try {          
+          String jsonString = response.getEntity().getText();
+          CodeSetsResultOverlay importResult = CodeSetsResultOverlay.fromJSONString(jsonString);
+          if (importResult.getErrorMessage() != null) {
+            wrapper.setErrorMessage(importResult.getErrorMessage());
+         } else {
+          if (codeSetInfos == null) {
+            codeSetInfos = new ListStore<BeanModel>();
+            codeSetInfoList = new ComboBox<BeanModel>();
+            codeSetInfoList.setEmptyText("Please select CodeSet...");
+            codeSetInfoList.setDisplayField("index");
+            codeSetInfoList.setSimpleTemplate("{category}");
 
-               @Override
-               public void onSuccess(final ArrayList<CodeSetInfo> codeSets) {
-                  if (codeSetInfos == null) {
+            codeSetInfoList.setWidth(150);
+            codeSetInfoList.setStore(codeSetInfos);
+            codeSetInfoList.setTriggerAction(TriggerAction.ALL);
+            codeSetInfoList.setEditable(false);
 
-                     codeSetInfos = new ListStore<CodeSetInfo>();
-                     codeSetInfoList = new ComboBox<CodeSetInfo>();
-                     codeSetInfoList.setEmptyText("Please select CodeSet...");
-                     codeSetInfoList.setDisplayField("index");
-                     codeSetInfoList.setSimpleTemplate("{category}");
+            selectContainer.add(codeSetInfoList);
+            setStyleOfComboBox(codeSetInfoList);
+            codeSetInfoList.addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
 
-                     codeSetInfoList.setWidth(150);
-                     codeSetInfoList.setStore(codeSetInfos);
-                     codeSetInfoList.setTriggerAction(TriggerAction.ALL);
-                     codeSetInfoList.setEditable(false);
+              @Override
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                showGrid((CodeSetInfo) se.getSelectedItem().getBean());
+                codeSetInfoList.setRawValue(((CodeSetInfo)se.getSelectedItem().getBean()).getCategory());
+              }
 
-                     selectContainer.add(codeSetInfoList);
-                     codeSetInfos.add(codeSets);
-                     setStyleOfComboBox(codeSetInfoList);
-                     codeSetInfoList
-                           .addSelectionChangedListener(new SelectionChangedListener<CodeSetInfo>() {
-
-                              @Override
-                              public void selectionChanged(
-                                    SelectionChangedEvent<CodeSetInfo> se) {
-                                 showGrid(se.getSelectedItem());
-                                 codeSetInfoList.setRawValue(se
-                                       .getSelectedItem().getCategory());
-                              }
-
-                           });
-
-                  } else {
-                     cleanCodeGrid();
-                     cleanCodeSetComboBox();
-                     codeSetInfos.add(codeSets);
-                     codeSetInfoList.setVisible(true);
-                  }
-
-               }
             });
 
-   }
+          } else {
+            cleanCodeGrid();
+            cleanCodeSetComboBox();
+          }
+
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(CodeSetInfo.class);
+          for (int i = 0; i < importResult.getResult().length(); i++) {
+            CodeSetInfoOverlay codeSet = importResult.getResult().get(i);
+            codeSetInfos.add(beanModelFactory.createModel(new CodeSetInfo(device, codeSet.getDescription(), codeSet.getCategory(), Integer.parseInt(codeSet.getIndex()))));
+          }
+
+          codeSetInfoList.setVisible(true);
+         }
+        } catch (IOException e) {
+          wrapper.setErrorMessage("Error connecting to server");
+        }
+      }
+    });
+    clientResource.get(MediaType.APPLICATION_JSON);
+  }
 
    /**
     * show the Ir commands from the currently selected code set
     * 
     * @param selectedItem
     */
-   private void showGrid(CodeSetInfo selectedItem) {
-      // wrapper.mask("Please Wait...");
-      IrFileParserProxy.loadIRCommands(selectedItem,
-            new AsyncSuccessCallback<ArrayList<IRCommandInfo>>() {
+  private void showGrid(final CodeSetInfo selectedItem) {
+    ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + selectedItem.getDeviceInfo().getBrandInfo().getBrandName() + "/device/" + selectedItem.getDeviceInfo().getModelName() + "/codeSet/"
+            + selectedItem.getIndex() + "/IRCommands");
+    clientResource.setOnResponse(new Uniform() {
+      public void handle(Request request, Response response) {
+        try {
+          String jsonString = response.getEntity().getText();
+          IRCommandsResultOverlay importResult = IRCommandsResultOverlay.fromJSONString(jsonString);
+          if (importResult.getErrorMessage() != null) {
+            wrapper.setErrorMessage(importResult.getErrorMessage());
+         } else {
+          if (listStore == null) {
+            listStore = new ListStore<BeanModel>();
+          } else {
+            listStore.removeAll();
+          }
 
-               @Override
-               public void onSuccess(ArrayList<IRCommandInfo> iRCommands) {
+          if (cm == null) {
+            List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
+            codeGridColumns.add(new ColumnConfig("name", "Name", 120));
+            codeGridColumns.add(new ColumnConfig("originalCode", "Original Code", 250));
+            codeGridColumns.add(new ColumnConfig("comment", "Comment", 250));
+            cm = new ColumnModel(codeGridColumns);
+          }
 
-                  if (listStore == null) {
-                     listStore = new ListStore<IRCommandInfo>();
+          if (codeGrid == null) {
+            codeGrid = new Grid<BeanModel>(listStore, cm);
+
+            GridView gv = new GridView();
+            codeGrid.setView(gv);
+            // invalid code lines are rendered in red
+            gv.setViewConfig(new GridViewConfig() {
+              @Override
+              public String getRowStyle(ModelData model, int rowIndex, ListStore<ModelData> ds) {
+                if (model != null) {
+                  if (model.get("code") == null) {
+                    return "row-invalid_file_imported_code";
                   } else {
-                     listStore.removeAll();
+                    return "";
                   }
-                  listStore.add(iRCommands);
+                } else {
+                  return "";
+                }
+              }
 
-                  if (cm == null) {
-                     List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
-                     codeGridColumns.add(new ColumnConfig("name", "Name", 120));
-                     codeGridColumns.add(new ColumnConfig("originalCode",
-                           "Original Code", 250));
-                     codeGridColumns.add(new ColumnConfig("comment", "Comment",
-                           250));
-                     cm = new ColumnModel(codeGridColumns);
-                  }
-
-                  if (codeGrid == null) {
-                     codeGrid = new Grid<IRCommandInfo>(listStore, cm);
-
-                     GridView gv = new GridView();
-                     codeGrid.setView(gv);
-                     // invalid code lines are rendered in red
-                     gv.setViewConfig(new GridViewConfig() {
-                        @Override
-                        public String getRowStyle(ModelData model,
-                              int rowIndex, ListStore<ModelData> ds) {
-                           if (model != null) {
-                              if (model.get("code") == null) {
-                                 return "row-invalid_file_imported_code";
-                              } else {
-                                 return "";
-                              }
-                           } else {
-                              return "";
-                           }
-                        }
-
-                     });
-
-                     codeGrid.setLoadMask(true);
-                     codeGrid.setHeight(400);
-                     codeGrid.getSelectionModel().addSelectionChangedListener(
-                           new SelectionChangedListener<IRCommandInfo>() {
-                              // if trying to select invalid line,
-                              // remove it from selection
-                              @Override
-                              public void selectionChanged(
-                                    SelectionChangedEvent<IRCommandInfo> se) {
-                                 List<IRCommandInfo> selectedItems = se
-                                       .getSelection();
-                                 for (IRCommandInfo irCommandInfo : selectedItems) {
-                                    if (irCommandInfo.getCode() == null) {
-                                       codeGrid.getSelectionModel().deselect(
-                                             irCommandInfo);
-                                    }
-                                 }
-                                 if (codeGrid.getSelectionModel()
-                                       .getSelectedItems().size() > 0) {
-                                    nextButton.setEnabled(true);
-                                 } else {
-                                    nextButton.setEnabled(false);
-                                 }
-
-                              }
-                           });
-
-                     commandContainer.add(codeGrid);
-                  } else {
-                     codeGrid.getStore().removeAll();
-                     codeGrid.getStore().add(iRCommands);
-                  }
-                  wrapper.unmask();
-               }
             });
 
-   }
+            codeGrid.setLoadMask(true);
+            codeGrid.setHeight(400);
+            codeGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+              // if trying to select invalid line,
+              // remove it from selection
+              @Override
+              public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+                List<BeanModel> selectedItems = se.getSelection();
+                for (BeanModel bm : selectedItems) {
+                  IRCommandInfo irCommandInfo = bm.getBean();
+                  if (irCommandInfo.getCode() == null) {
+                    codeGrid.getSelectionModel().deselect(bm);
+                  }
+                }
+                if (codeGrid.getSelectionModel().getSelectedItems().size() > 0) {
+                  nextButton.setEnabled(true);
+                } else {
+                  nextButton.setEnabled(false);
+                }
+
+              }
+            });
+
+            commandContainer.add(codeGrid);
+          } else {
+            codeGrid.getStore().removeAll();
+          }
+          
+          BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(IRCommandInfo.class);
+          for (int i = 0; i < importResult.getResult().length(); i++) {
+            IRCommandInfoOverlay irCommand = importResult.getResult().get(i);
+            codeGrid.getStore().add(beanModelFactory.createModel(new IRCommandInfo(irCommand.getName(), irCommand.getCode(), irCommand.getOriginalCode(), irCommand.getComment(), selectedItem)));
+          }
+          wrapper.unmask();
+         }
+        } catch (IOException e) {
+          wrapper.setErrorMessage("Error connecting to server");
+        }
+      }
+    });
+    clientResource.get(MediaType.APPLICATION_JSON);
+  }
 
    /**
     * Hides the combobox and clean the grid
@@ -476,4 +518,13 @@ public class IRFileImportForm extends CommonForm {
       box.setMaxHeight(250);
 
    }
+
+  public void setProntoFileHandle(String prontoFileHandle) {
+    this.prontoFileHandle = prontoFileHandle;
+  }
+
+  public void setIrServiceRootRestURL(String irServiceRootRestURL) {
+    this.irServiceRootRestURL = irServiceRootRestURL;
+  }
+  
 }

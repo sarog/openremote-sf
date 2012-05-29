@@ -29,6 +29,8 @@ public class Configuration {
     * e.g.: "http://openremote.finalist.hk/beehive/rest/".
     */
    private String beehiveRESTRootUrl;
+   
+   private String irServiceRESTRootUrl;
 
    /** The relative path of panel xsd. 
     *  e.g.: "/panel-2.0-M7.xsd" 
@@ -87,7 +89,15 @@ public class Configuration {
       this.beehiveRESTRootUrl = beehiveRESTRootUrl;
    }
 
-   public String getBeehiveLircdConfRESTUrl() {
+   public String getIrServiceRESTRootUrl() {
+    return irServiceRESTRootUrl;
+  }
+
+  public void setIrServiceRESTRootUrl(String irServiceRESTRootUrl) {
+    this.irServiceRESTRootUrl = irServiceRESTRootUrl;
+  }
+
+  public String getBeehiveLircdConfRESTUrl() {
       return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "lirc.conf" : beehiveRESTRootUrl + "/lirc.conf";
    }
 

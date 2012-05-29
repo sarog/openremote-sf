@@ -10,6 +10,7 @@
   
   <inherits name="com.google.gwt.inject.Inject" />
   <inherits name='net.customware.gwt.dispatch.Dispatch' />
+  <inherits name='org.restlet.Restlet' />
 
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->
@@ -19,6 +20,10 @@
   <inherits name='com.google.gwt.user.theme.standard.Standard'/>
   
   <inherits name='com.extjs.gxt.themes.Themes' />
+
+  <inherits name="org.openremote.Commons" />
+
+  <set-property name="user.agent" value="safari"/> 
 
 	<source path='domain'/>
 	<source path='client'/>

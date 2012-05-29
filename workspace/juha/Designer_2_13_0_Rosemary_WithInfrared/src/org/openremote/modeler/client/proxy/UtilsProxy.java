@@ -94,6 +94,10 @@ public class UtilsProxy {
       AsyncServiceFactory.getUtilsRPCServiceAsync().beehiveRestIconUrl(callback);
    }
    
+   public static void getIrServiceRestRootUrl(final AsyncSuccessCallback<String> callback) {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getIrServiceRestRootURL(callback);
+   }
+   
    public static void loadPanelsFromSession(final AsyncSuccessCallback<Collection<Panel>> callback) {
       AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(callback);
    }

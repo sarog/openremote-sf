@@ -19,9 +19,15 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.ir.ProntoFileImportResultOverlay;
+import org.openremote.modeler.client.proxy.UtilsProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.selenium.DebugId;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -29,6 +35,8 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -37,7 +45,6 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -55,21 +62,22 @@ public class IRFileImportWindow extends FormWindow {
    private LabelField errorLabel;
    private Button loadBtn;
    private Button resetBtn;
+   private String prontoFileHandle;
 
    public IRFileImportWindow(BeanModel deviceBeanModel) {
       super();
       importWindow = this;
       setSize(800, 610);
+      importForm = new IRFileImportForm(this, deviceBeanModel);
       initial("Import IR Command from file");
       this.ensureDebugId(DebugId.IMPORT_WINDOW);
-      importForm = new IRFileImportForm(this, deviceBeanModel);
       deviceChooser.add(importForm);
       deviceChooser.setLayoutData(new FillLayout());
       add(deviceChooser);
       importForm.disable();
       show();
    }
-
+   
    /**
     * Initialize the window
     * 
@@ -77,8 +85,32 @@ public class IRFileImportWindow extends FormWindow {
     */
    private void initial(String heading) {
       setHeading(heading);
-      form.setAction(GWT.getModuleBaseURL()
-            + "fileUploadController.htm?method=importIRFile");
+      
+      UtilsProxy.getIrServiceRestRootUrl(new AsyncSuccessCallback<String>() {        
+        @Override
+        public void onSuccess(final String result) {
+          form.setAction(result + "ProntoFile");
+          importForm.setIrServiceRootRestURL(result);
+          
+          addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowHide(WindowEvent we) {
+              if (prontoFileHandle != null) {
+                // Clean-up imported Pronto file as we're done importing
+                ClientResource clientResource = new ClientResource(result + "ProntoFile/" + prontoFileHandle);
+                clientResource.setOnResponse(new Uniform() {
+                  // Even if empty, the onReponse handler is required or call does not go through
+                  public void handle(Request request, Response response) {
+                  }
+                });
+                clientResource.delete();
+              }
+              super.windowHide(we);
+            }            
+          });
+        }
+      });
       form.setEncoding(Encoding.MULTIPART);
       form.setMethod(Method.POST);
 
@@ -109,16 +141,23 @@ public class IRFileImportWindow extends FormWindow {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             importForm.hideComboBoxes();
-            if (be.getResultHtml().contains(Constants.IRFILE_UPLOAD_ERROR)) {
-               reportError(be.getResultHtml());
+            // We get an id back from IRService and pass that to importForm so brands can be loaded
+            if (be.getResultHtml() == null) {
+              reportError("Communication error");
             } else {
-               errorLabel.setVisible(false);
-               importForm.setVisible(true);
-               importWindow.unmask();
-               importForm.enable();
-               importForm.showBrands();
+              ProntoFileImportResultOverlay importResult = ProntoFileImportResultOverlay.fromJSONString(be.getResultHtml());
+              if (importResult.getErrorMessage() != null) {
+                 reportError(importResult.getErrorMessage());
+              } else {
+                 errorLabel.setVisible(false);
+                 importForm.setVisible(true);
+                 importWindow.unmask();
+                 importForm.enable();               
+                 prontoFileHandle = importResult.getResult();
+                 importForm.setProntoFileHandle(prontoFileHandle);               
+                 importForm.showBrands();
+              }
             }
-
          }
       });
    }
@@ -133,8 +172,12 @@ public class IRFileImportWindow extends FormWindow {
       form.clear();
       form.clearState();
       loadBtn.enable();
-      errorLabel.setText(errorMessage);
-      errorLabel.setVisible(true);
+      setErrorMessage(errorMessage);
+   }
+   
+   public void setErrorMessage(String errorMessage) {
+     errorLabel.setText(errorMessage);
+     errorLabel.setVisible(true);
    }
 
    /**
@@ -175,7 +218,7 @@ public class IRFileImportWindow extends FormWindow {
     */
    private void createFileUploadField() {
       fileUploadField = new FileUploadField();
-      fileUploadField.setName("file");
+      fileUploadField.setName("fileToUpload");
       fileUploadField.setAllowBlank(false);
       fileUploadField.setFieldLabel("File");
       fileUploadField.setStyleAttribute("overflow", "hidden");

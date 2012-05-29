@@ -271,14 +271,12 @@ public class SensorWindow extends FormWindow {
     * Builds the device's commands as a tree to select.
     */
    protected void buildCommandSelectTree() {      
-      Long devId = null;
       Long selectedCommandId = null;
 
       if (sensorDTO != null) {
-         devId = sensorDTO.getDeviceId();
          selectedCommandId = sensorDTO.getCommandId();
       }
-      commandSelectTree = TreePanelBuilder.buildCommandTree(devId != null?devId:device.getOid(), selectedCommandId);
+      commandSelectTree = TreePanelBuilder.buildCommandTree(device.getOid(), selectedCommandId);
    }
    
    /**
@@ -439,7 +437,6 @@ public class SensorWindow extends FormWindow {
             SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();            
             if (!edit) {
               sensorDTO.setType(type);
-              sensorDTO.setDeviceId(device.getOid());
             }
             
             if (type == SensorType.RANGE) {

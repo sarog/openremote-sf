@@ -17,41 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.irfileparser;
+package org.openremote.modeler.client.ir;
 
-import com.extjs.gxt.ui.client.data.BaseModelData;
+import com.google.gwt.core.client.JavaScriptObject;
 
-/**
- * Adds BeanModelTag capability to IRLed for compatibility with GXT stores.
- * 
- * @author Eric Bariaux (eric@openremote.org)
- *
- */
-public class IRLed extends BaseModelData {
+public class ProntoFileImportResultOverlay extends JavaScriptObject {
 
-   private static final long serialVersionUID = 1L;
+  // Overlay types always have protected, zero-arg ctors
+  protected ProntoFileImportResultOverlay() { } 
+    
+  // Typically, methods on overlay types are JSNI
+  public final native String getErrorMessage() /*-{ return this.errorMessage; }-*/;
 
-   public IRLed() {
-   }
+  public final native String getResult() /*-{ return this.result; }-*/;
 
-   public IRLed(String value, String code) {
-      setValue(value);
-      setCode(code);
-   }
+  public static native ProntoFileImportResultOverlay fromJSONString(String jsonString) /*-{
+    return eval('(' + jsonString + ')');
+  }-*/;
 
-   public String getCode() {
-      return get("code");
-   }
-
-   public void setCode(String code) {
-      set("code", code);
-   }
-
-   protected String getValue() {
-      return get("value");
-   }
-
-   protected void setValue(String value) {
-      set("value", value);
-   }
 }
