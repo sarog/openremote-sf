@@ -54,9 +54,6 @@ public class BeanModelDataBase {
    private BeanModelDataBase() {
    }
    
-   /** The Constant activityTable. */
-   public static final BeanModelTable activityTable = new BeanModelTable();
-   
    /** The Constant groupTable. */
    public static final BeanModelTable groupTable = new GroupTable();
 
@@ -64,9 +61,6 @@ public class BeanModelDataBase {
    public static final ScreenTable screenTable = new ScreenTable();
    
    public static final BeanModelTable panelTable = new BeanModelTable();
-   
-   public static final BeanModelTable configCategoryTable = new BeanModelTable();
-   
    
    /**
     * Gets the original device macro item bean model id,if not find return 0.

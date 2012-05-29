@@ -35,7 +35,6 @@ public class SensorDetailsDTO implements DTO {
   private Integer maxValue;
   private HashMap<String, String> states;
   private Long oid;
-  private Long deviceId;
   private DTOReference command;
   
   public SensorDetailsDTO() {
@@ -107,14 +106,6 @@ public class SensorDetailsDTO implements DTO {
 
   public void setOid(Long oid) {
     this.oid = oid;
-  }
-
-  public Long getDeviceId() {
-    return deviceId;
-  }
-
-  public void setDeviceId(Long deviceId) {
-    this.deviceId = deviceId;
   }
 
   public DTOReference getCommand() {

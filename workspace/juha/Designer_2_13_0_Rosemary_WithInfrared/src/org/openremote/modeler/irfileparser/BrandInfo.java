@@ -1,41 +1,42 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.irfileparser;
 
-import com.extjs.gxt.ui.client.data.BaseModel;
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 /**
- * allows to share xcfFileParser.brand necessary information with the client side
+ * Adds BeanModelTag capability to BrandInfo for compatibility with GXT stores.
  * 
- * @author wbalcaen
+ * @author Eric Bariaux (eric@openremote.org)
  *
  */
-public class BrandInfo extends BaseModel implements IsSerializable {
+public class BrandInfo extends org.openremote.ir.domain.BrandInfo implements BeanModelTag {
 
-   private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-   public BrandInfo() {
-   }
+  public BrandInfo() {
+    super();
+  }
 
-   public BrandInfo(String brandName) {
-      setBrandName(brandName);
-   }
-
-   /** 
-    * returns the brandName
-    * 
-    * @return String
-    */
-   public String getBrandName() {
-      return get("brandName");
-   }
-
-   /** 
-    * sets the brandName
-    * 
-    * @param brandName
-    */
-   public void setBrandName(String brandName) {
-      set("brandName", brandName);
-   }
-
+  public BrandInfo(String brandName) {
+    super(brandName);
+  }
+   
 }

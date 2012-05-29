@@ -1,118 +1,44 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.irfileparser;
 
-import com.extjs.gxt.ui.client.data.BaseModel;
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.openremote.ir.domain.CodeSetInfo;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 /**
- * allows to exchange xcfFileParser.IRCommand necessary information with the client side
- * @author wbalcaen
+ * Adds BeanModelTag capability to IRCommandInfo for compatibility with GXT stores.
+ * 
+ * @author Eric Bariaux (eric@openremote.org)
  *
  */
-public class IRCommandInfo extends BaseModel implements IsSerializable {
+public class IRCommandInfo extends org.openremote.ir.domain.IRCommandInfo implements BeanModelTag {
 
-   private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-   public IRCommandInfo() {
-   }
+  public IRCommandInfo() {
+    super();
+  }
 
-   public IRCommandInfo(String name, String code, String originalCode,
-         String comment, CodeSetInfo codeSet) {
-      setName(name);
-      setCode(code);
-      setOriginalCodeString(originalCode);
-      setComment(comment);
-      setCodeSet(codeSet);
-   }
-
-   /**
-    * returns the code set information
-    * 
-    * @return CodeSetInfo
-    */
-   public CodeSetInfo getCodeSet() {
-      return get("codeSet");
-   }
-
-   /**
-    * sets the code set info
-    * 
-    * @param codeSet
-    */
-   public void setCodeSet(CodeSetInfo codeSet) {
-      set("codeSet", codeSet);
-
-   }
-
-   /**
-    * returns the original code string
-    * 
-    * @return String
-    */
-   public String getOriginalCodeString() {
-      return get("originalCode");
-   }
-
-   /**
-    * sets the original code string
-    * 
-    * @param originalCode
-    */
-   public void setOriginalCodeString(String originalCode) {
-      set("originalCode", originalCode);
-
-   }
-
-   /**
-    * returns the comment
-    * 
-    * @return String
-    */
-   public String getComment() {
-      return get("comment");
-   }
-
-   /**
-    * sets the comment
-    * 
-    * @param comment
-    */
-   public void setComment(String comment) {
-      set("comment", comment);
-
-   }
-
-   /**
-    * returns the name
-    * 
-    * @return String
-    */
-   public String getName() {
-      return get("name");
-   }
-
-   /**
-    * sets the name
-    * 
-    * @param name
-    */
-   public void setName(String name) {
-      set("name", name);
-   }
-
-   /**
-    * returns the code
-    * 
-    * @return String
-    */
-   public String getCode() {
-      return get("code");
-   }
-
-   /**
-    * @param code
-    */
-   public void setCode(String code) {
-      set("code", code);
-   }
+  public IRCommandInfo(String name, String code, String originalCode, String comment, CodeSetInfo codeSet) {
+    super(name, code, originalCode, comment, codeSet);
+  }
 
 }

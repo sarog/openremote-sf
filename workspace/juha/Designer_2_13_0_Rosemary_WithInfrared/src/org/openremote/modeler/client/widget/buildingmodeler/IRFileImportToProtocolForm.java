@@ -24,24 +24,30 @@ import java.util.List;
 
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
+import org.openremote.ir.domain.GlobalCache;
+import org.openremote.ir.domain.IRTrans;
 import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRLed;
-import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.resource.ClientResource;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -54,7 +60,6 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ListBox;
 
@@ -64,6 +69,9 @@ import com.google.gwt.user.client.ui.ListBox;
 public class IRFileImportToProtocolForm extends FormWindow {
 
    private DeviceDTO device = null;
+   
+   private String prontoFileHandle;
+   
    private VerticalPanel gCPanel;
    private TextField<String> gCip;
    private TextField<String> tcpPort;
@@ -84,7 +92,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
    private ArrayList<IRCommandInfo> selectedFunctions;
    @SuppressWarnings("unused")
    private ComboBox<IRLed> IRLed;
-   private Component wrapper;
+   private IRFileImportWindow wrapper;
    private Button submitBtn;
    protected static final String INFO_FIELD = "infoField";
 
@@ -96,19 +104,20 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * @param device
     *           the device
     */
-   public IRFileImportToProtocolForm(Component wrapper, DeviceDTO device) {
+   public IRFileImportToProtocolForm(IRFileImportWindow wrapper, String irServiceRootRestURL, String prontoFileHandle, DeviceDTO device) {
       super();
+      this.prontoFileHandle = prontoFileHandle;
       this.device = device;
       this.wrapper = wrapper;
       setHeading("New command");
-      initial();
+      initial(irServiceRootRestURL);
       show();
    }
 
    /**
     * Initial.
     */
-   private void initial() {
+   private void initial(final String irServiceRootRestURL) {
       setWidth(380);
       setAutoHeight(true);
       setLayout(new FlowLayout());
@@ -146,24 +155,38 @@ public class IRFileImportToProtocolForm extends FormWindow {
             ModelerGinjector injector = GWT.create(ModelerGinjector.class);
             DispatchAsync dispatcher = injector.getDispatchAsync();
 
-            GenerateIRCommandsAction action = new GenerateIRCommandsAction(device, selectedFunctions, globalCache, irTrans);
+            GenerateIRCommandsAction action = new GenerateIRCommandsAction(device, prontoFileHandle, selectedFunctions, globalCache, irTrans);
             dispatcher.execute(action, new AsyncCallback<GenerateIRCommandsResult>() {
 
               @Override
               public void onFailure(Throwable caught) {
-                form.unmask();
-                info.setText("Error : " + caught.getMessage());
-                info.setVisible(true);
-                submitBtn.setEnabled(true);
+                reportError(caught.getMessage());
               }
 
               @Override
               public void onSuccess(GenerateIRCommandsResult result) {
-                
-                // TODO: have an error message in result and check for that
-                
-                IRFileImportToProtocolForm.this.hide();                
-                wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+                if (result.getErrorMessage() != null) {
+                  reportError(result.getErrorMessage());
+                } else {
+                  // Clean-up imported Pronto file as we're done importing
+                  ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
+                  clientResource.setOnResponse(new Uniform() {
+                    // Even if empty, the onReponse handler is required or call does not go through
+                    public void handle(Request request, Response response) {
+                    }
+                  });
+                  clientResource.delete();
+  
+                  IRFileImportToProtocolForm.this.hide();                
+                  wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+                }
+              }
+              
+              protected void reportError(String message) {
+                form.unmask();
+                info.setText("Error : " + message);
+                info.setVisible(true);
+                submitBtn.setEnabled(true);
               }
             });
          }
@@ -302,8 +325,10 @@ public class IRFileImportToProtocolForm extends FormWindow {
    /** stores the grid selected items
     * @param selectedItems
     */
-   public void setSelectedFunctions(List<IRCommandInfo> selectedItems) {
-      this.selectedFunctions = new ArrayList<IRCommandInfo>(selectedItems);
-
+   public void setSelectedFunctions(List<BeanModel> selectedItems) {
+      this.selectedFunctions = new ArrayList<IRCommandInfo>();
+      for (BeanModel bm : selectedItems) {
+        selectedFunctions.add((IRCommandInfo) bm.getBean());
+      }
    }
 }
