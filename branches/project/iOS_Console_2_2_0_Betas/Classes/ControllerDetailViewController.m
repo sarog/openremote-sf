@@ -386,9 +386,13 @@
             if (row == 0) {
                 cell.textLabel.text = @"Supported API versions";
                 if (self.controller.capabilitiesFetchStatus != FetchSucceeded) {
-                    cell.detailTextLabel.text = @"Unknown";
+                    cell.detailTextLabel.text = @"Error getting versions";
                 } else {
-                    cell.detailTextLabel.text = [self.controller.capabilities.supportedVersions componentsJoinedByString:@", "];
+                    if (self.controller.capabilities) {
+                        cell.detailTextLabel.text = [self.controller.capabilities.supportedVersions componentsJoinedByString:@", "];
+                    } else {
+                        cell.detailTextLabel.text = @"Not reported by controller";
+                    }
                 }
             } else if (row > 0 && row <= [self.controller.capabilities.capabilities count]) {
                 cell.textLabel.text = (row == 1)?@"Capabilities":@"";
@@ -499,18 +503,18 @@
 - (void)refreshCapabilitiesTableViewSection
 {    
     NSInteger plannedRowCount = (self.controller.capabilitiesFetchStatus != FetchSucceeded)?1:(1 + [self.controller.capabilities.apiSecurities count] + [self.controller.capabilities.capabilities count]);
+    [self.tableView beginUpdates];
+    NSInteger section = [self sectionWithIdentifier:kSectionCapabilities];
     if (plannedRowCount != self.currentNumberOfCapabilitiesRow) {
-        NSInteger section = [self sectionWithIdentifier:kSectionCapabilities];
-        [self.tableView beginUpdates];
         NSArray *rows = [UITableViewHelper indexPathsForRowCountGoingFrom:self.currentNumberOfCapabilitiesRow to:plannedRowCount section:section];
         if (plannedRowCount > self.currentNumberOfCapabilitiesRow) {
             [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
          } else {
              [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
          }
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView endUpdates];
     }
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
 }
 
 - (void)refreshPanelIdentitiesTableViewSection

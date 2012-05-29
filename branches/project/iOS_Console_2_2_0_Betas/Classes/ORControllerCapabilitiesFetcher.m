@@ -30,6 +30,7 @@
 
 @property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) ControllerRequest *controllerRequest;
+@property (nonatomic, assign) int statusCode;
 
 @end
 
@@ -55,9 +56,11 @@
 
 - (void)controllerRequestDidFinishLoading:(NSData *)data
 {
-    CapabilitiesParser *parser = [[CapabilitiesParser alloc] init];
-    [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:[parser parseXMLData:data]];
-    [parser release];
+    if (self.statusCode == 200) {
+        CapabilitiesParser *parser = [[CapabilitiesParser alloc] init];
+        [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:[parser parseXMLData:data]];
+        [parser release];
+    }
 }
 
 // optional TODO EBR is it required
@@ -70,11 +73,11 @@
 
 - (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response
 {
-    int statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    if (statusCode == 404) {
+    self.statusCode = ((NSHTTPURLResponse *)response).statusCode;
+    if (self.statusCode == 404) {
         // Controller does not support /rest/capabilities call -> return nil capabilities
         [self.delegate fetchCapabilitiesDidSucceedWithCapabilities:nil];
-    } else if (statusCode != 200) {
+    } else if (self.statusCode != 200) {
 		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	}
 }
@@ -88,6 +91,7 @@
 
 @synthesize controller;
 @synthesize controllerRequest;
+@synthesize statusCode;
 @synthesize delegate;
 
 @end
