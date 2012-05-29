@@ -25,13 +25,8 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.utils.BeanModelTable;
-import org.openremote.modeler.client.utils.DeviceBeanModelTable;
-import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.GroupTable;
 import org.openremote.modeler.client.utils.ScreenTable;
-import org.openremote.modeler.client.utils.SensorBeanModelTable;
-import org.openremote.modeler.client.utils.SliderBeanModelTable;
-import org.openremote.modeler.client.utils.SwitchBeanModelTable;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
@@ -59,18 +54,6 @@ public class BeanModelDataBase {
    private BeanModelDataBase() {
    }
    
-   /** Stores all the device models. */
-   public static final BeanModelTable deviceTable = new DeviceBeanModelTable();
-
-   /** Stores all the DeviceCommand models. */
-   public static final BeanModelTable deviceCommandTable = new DeviceBeanModelTable();
-
-   /** Store all the DeviceMacro models. */
-   public static final BeanModelTable deviceMacroTable = new DeviceMacroBeanModelTable();
-
-   /** Store all the DeviceItem models. */
-   public static final BeanModelTable deviceMacroItemTable = new DeviceMacroBeanModelTable();
-   
    /** The Constant activityTable. */
    public static final BeanModelTable activityTable = new BeanModelTable();
    
@@ -82,9 +65,6 @@ public class BeanModelDataBase {
    
    public static final BeanModelTable panelTable = new BeanModelTable();
    
-   public static final BeanModelTable switchTable = new SwitchBeanModelTable();
-   public static final BeanModelTable sensorTable = new SensorBeanModelTable();
-   public static final BeanModelTable sliderTable = new SliderBeanModelTable();
    public static final BeanModelTable configCategoryTable = new BeanModelTable();
    
    
