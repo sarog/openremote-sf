@@ -89,22 +89,6 @@ public class KNXImportWindow extends FormWindow {
     private FileUploadField fileUploadField;
     private ListStore<ModelData> store;
 
-    public static final Map<String, String> COMMAND_DPT_MAP;
-
-    static {
-        COMMAND_DPT_MAP = new TreeMap<String, String>();
-        COMMAND_DPT_MAP.put("Switch", "1.001");
-        COMMAND_DPT_MAP.put("Switch Status", "1.001");
-        COMMAND_DPT_MAP.put("Dim/Scale 0-100%", "5.001");
-        COMMAND_DPT_MAP.put("Dim/Scale Status", "5.001");
-        COMMAND_DPT_MAP.put("Dimmer/Blind Step", "3.007");
-        COMMAND_DPT_MAP.put("Range 0-255", "5.010");
-        COMMAND_DPT_MAP.put("Range Status", "5.010");
-        COMMAND_DPT_MAP.put("Play Scene", "17.001");
-        COMMAND_DPT_MAP.put("Store Scene", "18.001");
-        COMMAND_DPT_MAP.put("N/A", "N/A");
-    }
-
     /**
      * Instantiates a new import window.
      */
@@ -198,7 +182,7 @@ public class KNXImportWindow extends FormWindow {
         combo.setForceSelection(true);
         combo.setEditable(false);
         combo.setTriggerAction(TriggerAction.ALL);
-        combo.add(new ArrayList<String>(COMMAND_DPT_MAP.keySet()));
+        combo.add(new ArrayList<String>(ImportKNXConfigAction.COMMAND_DPT_MAP.keySet()));
 
         final CellEditor editor = new CellEditor(combo) {
             @Override

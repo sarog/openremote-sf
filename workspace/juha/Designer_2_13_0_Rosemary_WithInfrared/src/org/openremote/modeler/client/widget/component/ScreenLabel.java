@@ -28,9 +28,7 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
-import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
@@ -69,7 +67,7 @@ public class ScreenLabel extends ScreenComponent {
    protected void initial() {
       setLayout(new CenterLayout());
       center.setStyleAttribute("textAlign", "center");
-      center.setStyleAttribute("color", uiLabel.getColor());
+      center.setStyleAttribute("color", "#" + uiLabel.getColor());
       center.setStyleAttribute("fontSize", uiLabel.getFontSize() + "px");
       center.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
       add(center);
@@ -91,7 +89,7 @@ public class ScreenLabel extends ScreenComponent {
 
    public void setColor(String color) {
       uiLabel.setColor(color);
-      center.setStyleAttribute("color", color);
+      center.setStyleAttribute("color", "#" + color);
    }
 
    public void setFontSize(int size) {
