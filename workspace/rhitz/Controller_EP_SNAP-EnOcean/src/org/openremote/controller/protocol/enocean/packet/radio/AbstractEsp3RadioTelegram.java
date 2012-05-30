@@ -77,7 +77,7 @@ import org.openremote.controller.utils.Strings;
  *
  * @author Rainer Hitz
  */
-public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacket
+public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacket implements EspRadioTelegram
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -149,11 +149,21 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
    *
    * @return returns new data group
    */
-  protected static byte[] createDataGroup(RORG rorg, int payloadLength, DeviceID senderID)
+  protected static byte[] createDataGroup(RORG rorg, int payloadLength, DeviceID senderID, byte[] payload, byte status)
   {
     if(senderID == null)
     {
       throw new IllegalArgumentException("null sender ID");
+    }
+
+    if(payload == null)
+    {
+      throw new IllegalArgumentException("null payload data");
+    }
+
+    if(payload.length != payloadLength)
+    {
+      throw new IllegalArgumentException("Invalid payload length.");
     }
 
     int length = ESP_RADIO_RORG_LENGTH + payloadLength +
@@ -161,12 +171,27 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
 
     byte[] dataBytes = new byte[length];
 
+    // Radio telegram type...
+
     dataBytes[ESP3_RADIO_RORG_INDEX] = rorg.getValue();
+
+    // Payload...
+
+    System.arraycopy(
+        payload, 0, dataBytes, ESP_RADIO_RORG_LENGTH, payloadLength
+    );
+
+    // Sender ID...
 
     System.arraycopy(
         senderID.asByteArray(), 0 , dataBytes,
         ESP_RADIO_RORG_LENGTH + payloadLength, DeviceID.ENOCEAN_ESP_ID_LENGTH
     );
+
+    // Status...
+
+    dataBytes[dataBytes.length - 1] = status;
+
 
     return dataBytes;
   }
@@ -190,100 +215,6 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
     );
 
     return DeviceID.fromByteArray(senderIDBytes);
-  }
-
-  // Enums ----------------------------------------------------------------------------------------
-
-  /**
-   * Radio telegram types as defined in EnOcean Equipment Profiles 2.1 specification
-   * chapter 1.4: Telegram types (RORG).
-   */
-  public enum RORG
-  {
-    /**
-     * Repeated switch communication.
-     */
-    RPS(0xF6),
-
-    /**
-     * 1 byte communication.
-     */
-    BS1(0xD5),
-
-    /**
-     * 4 byte communication.
-     */
-    BS4(0xA5),
-
-    /**
-     * Variable length data.
-     */
-    VLD(0xD2),
-
-    /**
-     * Manufacturer specific communication.
-     */
-    MSC(0xD1),
-
-    /**
-     * Addressed destination telegram.
-     */
-    ADT(0xA6),
-
-    /**
-     * Smart ack learn request.
-     */
-    SM_LRN_REQ(0xC6),
-
-    /**
-     * Smart ack learn answer.
-     */
-    SM_LRN_ANS(0xC7),
-
-    /**
-     * Smart ack reclaim.
-     */
-    SM_REC(0xA7),
-
-    /**
-     * Remote management.
-     */
-    SYS_EX(0xC5);
-
-    // Members ------------------------------------------------------------------------------------
-
-    public static RORG resolve(int value) throws UnknownRorgException
-    {
-      RORG[] allTypes = RORG.values();
-
-      byte radioTypeByte = (byte)(value & 0xFF);
-
-      for (RORG radioType : allTypes)
-      {
-        if (radioType.value == radioTypeByte)
-        {
-          return radioType;
-        }
-      }
-
-      throw new UnknownRorgException(
-          "Unknown ESP3 radio telegram type (RORG) value : " +
-          Strings.byteToUnsignedHexString(radioTypeByte)
-      );
-    }
-
-
-    private byte value;
-
-    private RORG(int value)
-    {
-      this.value = (byte)(value & 0xFF);
-    }
-
-    public byte getValue()
-    {
-      return value;
-    }
   }
 
 
@@ -373,39 +304,44 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
   }
 
 
-  // Public Instance Methods ----------------------------------------------------------------------
+  // Implements EspRadioTelegram ------------------------------------------------------------------
 
   /**
-   * Returns radio telegram type (RORG).
-   *
-   * @return radio telegram type
+   * {@inheritDoc}
    */
-  public RORG getRORG()
+  @Override public RORG getRORG()
   {
     return rorg;
   }
 
   /**
-   * Returns sender ID.
-   *
-   * @return sender ID
+   * {@inheritDoc}
    */
-  public DeviceID getSenderID()
+  @Override public DeviceID getSenderID()
   {
     return senderID;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override public byte[] getPayload()
+  {
+    byte[] payload = new byte[payloadLength];
 
-  // Nested Classes -------------------------------------------------------------------------------
+    System.arraycopy(data, ESP_RADIO_RORG_LENGTH, payload, 0, payloadLength);
+
+    return payload;
+  }
 
   /**
-   * Indicates an unknown {@link RORG} type.
+   * {@inheritDoc}
    */
-  public static class UnknownRorgException extends Exception
+  @Override public byte getStatusByte()
   {
-    public UnknownRorgException(String msg)
-    {
-      super(msg);
-    }
+    int statusIndex = ESP_RADIO_RORG_LENGTH + payloadLength +
+                      DeviceID.ENOCEAN_ESP_ID_LENGTH;
+
+    return data[statusIndex];
   }
 }

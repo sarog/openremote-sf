@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.enocean.packet.radio;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.ConnectionException;
@@ -38,75 +39,155 @@ import org.openremote.controller.protocol.enocean.packet.EspProcessor;
  */
 public class Esp34BSTelegramTest
 {
+  private DeviceID senderID;
+  private byte[] payload;
+  private byte status;
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+
+  @Before public void setUp() throws Exception
+  {
+    senderID = DeviceID.fromString("0xFF800001");
+    payload = new byte[] {0x01, 0x02, 0x03, 0x04};
+    status = 0x11;
+  }
 
   // Tests ----------------------------------------------------------------------------------------
 
 
   @Test public void testBasicConstruction() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
-
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
     telegram = new Esp34BSTelegram(telegram.getData(), telegram.getOptionalData());
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
   }
 
   @Test public void testSenderID() throws Exception
   {
     DeviceID senderID = DeviceID.fromString("0x44332211");
 
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
     telegram = new Esp34BSTelegram(telegram.getData(), telegram.getOptionalData());
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
 
     senderID = DeviceID.fromString("0xFFFFFFFF");
 
-    telegram = new Esp34BSTelegram(senderID);
+    telegram = new Esp34BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
     telegram = new Esp34BSTelegram(telegram.getData(), telegram.getOptionalData());
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
 
     senderID = DeviceID.fromString("0x00000000");
 
-    telegram = new Esp34BSTelegram(senderID);
+    telegram = new Esp34BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
 
 
     telegram = new Esp34BSTelegram(telegram.getData(), telegram.getOptionalData());
 
-    assertTelegramAttributes(telegram, senderID);
+    assertTelegramAttributes(telegram, senderID, payload, status);
+  }
+
+  @Test public void testPayload() throws Exception
+  {
+    payload = new byte[] {0x01, 0x02, 0x03, 0x04};
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
+
+
+    payload = new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+    telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
+
+
+    payload = new byte[] {0x00, 0x00, 0x00, 0x00};
+    telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
+  }
+
+  @Test public void testInvalidPayloadLength() throws Exception
+  {
+    payload = new byte[] {0x01, 0x02, 0x03};
+
+    Esp34BSTelegram telegram;
+
+    try
+    {
+      telegram = new Esp34BSTelegram(senderID, payload, status);
+
+      Assert.fail();
+    }
+    catch (IllegalArgumentException e)
+    {
+      // expected
+    }
+
+    payload = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05};
+
+    try
+    {
+      telegram = new Esp34BSTelegram(senderID, payload, status);
+
+      Assert.fail();
+    }
+    catch (IllegalArgumentException e)
+    {
+      // expected
+    }
+  }
+
+  @Test public void testStatus() throws Exception
+  {
+    status = 0x12;
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
+
+
+    status = (byte)0xFF;
+    telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
+
+
+    status = (byte)0x00;
+    telegram = new Esp34BSTelegram(senderID, payload, status);
+
+    assertTelegramAttributes(telegram, senderID, payload, status);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testNullArg1() throws Exception
   {
-    Esp34BSTelegram telegram = new Esp34BSTelegram(null);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(null, payload, status);
   }
 
   @Test (expected = IllegalArgumentException.class)
   public void testNullArg2() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     telegram = new Esp34BSTelegram(null, telegram.getOptionalData());
   }
@@ -114,17 +195,21 @@ public class Esp34BSTelegramTest
   @Test (expected = IllegalArgumentException.class)
   public void testNullArg3() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     telegram = new Esp34BSTelegram(telegram.getData(), null);
   }
 
   @Test (expected = IllegalArgumentException.class)
+  public void testNullArg4() throws Exception
+  {
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, null, status);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
   public void testInvalidRORG() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     byte[] dataBytes = telegram.getData();
 
@@ -137,8 +222,7 @@ public class Esp34BSTelegramTest
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidDataGroupLength() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     byte[] dataBytes = telegram.getData();
     byte[] dataBytesTooLong = new byte[dataBytes.length + 1];
@@ -153,8 +237,7 @@ public class Esp34BSTelegramTest
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidOptDataGroupLength() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     byte[] optDataBytes = telegram.getOptionalData();
     byte[] optDataBytesTooLong = new byte[optDataBytes.length + 1];
@@ -173,8 +256,7 @@ public class Esp34BSTelegramTest
 
     TestProcessor processor = new TestProcessor(response);
 
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     telegram.send(processor);
 
@@ -188,8 +270,7 @@ public class Esp34BSTelegramTest
 
     TestProcessor processor = new TestProcessor(response);
 
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     telegram.send(processor);
 
@@ -209,8 +290,7 @@ public class Esp34BSTelegramTest
   @Test (expected = IllegalArgumentException.class)
   public void testSendNullArg() throws Exception
   {
-    DeviceID senderID = DeviceID.fromString("0xFF800001");
-    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID);
+    Esp34BSTelegram telegram = new Esp34BSTelegram(senderID, payload, status);
 
     telegram.send(null);
   }
@@ -218,21 +298,26 @@ public class Esp34BSTelegramTest
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private void assertTelegramAttributes(Esp34BSTelegram telegram, DeviceID senderID)
+  private void assertTelegramAttributes(Esp34BSTelegram telegram, DeviceID senderID,
+                                        byte[] payload , byte status)
   {
     Assert.assertEquals(Esp3PacketHeader.PacketType.RADIO, telegram.getPacketType());
     Assert.assertEquals(AbstractEsp3RadioTelegram.RORG.BS4, telegram.getRORG());
     Assert.assertEquals(senderID, telegram.getSenderID());
 
-    Assert.assertArrayEquals(createDataGroup(senderID), telegram.getData());
+    Assert.assertArrayEquals(createDataGroup(senderID, payload, status), telegram.getData());
+    Assert.assertArrayEquals(payload, telegram.getPayload());
+    Assert.assertEquals(status, telegram.getStatusByte());
     Assert.assertArrayEquals(
         Esp3RadioTelegramOptData.ESP3_RADIO_OPT_DATA_TX.asByteArray(),
         telegram.getOptionalData()
     );
-    Assert.assertArrayEquals(createTelegramAsByteArray(senderID), telegram.asByteArray());
+    Assert.assertArrayEquals(
+        createTelegramAsByteArray(senderID, payload, status), telegram.asByteArray()
+    );
   }
 
-  private byte[] createTelegramAsByteArray(DeviceID deviceID)
+  private byte[] createTelegramAsByteArray(DeviceID deviceID, byte[] payload, byte status)
   {
     int dataGroupLength = 0x0A;
 
@@ -261,7 +346,7 @@ public class Esp34BSTelegramTest
     copyIndex += Esp3PacketHeader.ESP3_HEADER_SIZE;
 
     System.arraycopy(
-        createDataGroup(deviceID), 0, packetBytes,
+        createDataGroup(deviceID, payload, status), 0, packetBytes,
         copyIndex, dataGroupLength
     );
 
@@ -284,18 +369,30 @@ public class Esp34BSTelegramTest
     return packetBytes;
   }
 
-  private byte[] createDataGroup(DeviceID deviceID)
+  private byte[] createDataGroup(DeviceID deviceID, byte[] payload, byte status)
   {
     int dataGroupLength = 0x0A;
 
     byte[] dataGroupBytes = new byte[dataGroupLength];
 
+    // RORG...
+
     dataGroupBytes[0] = AbstractEsp3RadioTelegram.RORG.BS4.getValue();
+
+    // Payload...
+
+    System.arraycopy(payload, 0, dataGroupBytes, 1, 4);
+
+    // Sender ID...
 
     System.arraycopy(
         deviceID.asByteArray(), 0, dataGroupBytes,
         5, DeviceID.ENOCEAN_ESP_ID_LENGTH
     );
+
+    // Status...
+
+    dataGroupBytes[dataGroupBytes.length - 1] = status;
 
     return dataGroupBytes;
   }

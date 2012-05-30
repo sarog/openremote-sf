@@ -99,16 +99,21 @@ public class Esp34BSTelegram extends AbstractEsp3RadioTelegram
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a 4BS radio telegram instance with given sender ID.
+   * Constructs a 4BS radio telegram instance with given sender ID,
    *
    * @param senderID unique sender device ID
+   *
+   * @param payload  content of payload field (4 bytes)
+   *
+   * @param status   status field value
    */
-  public Esp34BSTelegram(DeviceID senderID)
+  public Esp34BSTelegram(DeviceID senderID, byte[] payload, byte status)
   {
     super(
         RORG.BS4, ESP3_RADIO_4BS_PAYLOAD_LENGTH,
         AbstractEsp3RadioTelegram.createDataGroup(
-            RORG.BS4, ESP3_RADIO_4BS_PAYLOAD_LENGTH, senderID
+            RORG.BS4, ESP3_RADIO_4BS_PAYLOAD_LENGTH, senderID,
+            payload, status
         ),
         Esp3RadioTelegramOptData.ESP3_RADIO_OPT_DATA_TX.asByteArray()
     );

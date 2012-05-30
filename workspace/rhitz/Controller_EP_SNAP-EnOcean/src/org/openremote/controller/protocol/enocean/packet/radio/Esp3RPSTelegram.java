@@ -100,16 +100,21 @@ public class Esp3RPSTelegram extends AbstractEsp3RadioTelegram
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a RPS radio telegram instance with given sender ID.
+   * Constructs a RPS radio telegram instance with given sender ID, payload and status field value.
    *
    * @param senderID unique sender device ID
+   *
+   * @param payload  payload field value
+   *
+   * @param status   status field value
    */
-  public Esp3RPSTelegram(DeviceID senderID)
+  public Esp3RPSTelegram(DeviceID senderID, byte payload, byte status)
   {
     super(
         RORG.RPS, ESP3_RADIO_RPS_PAYLOAD_LENGTH,
         AbstractEsp3RadioTelegram.createDataGroup(
-            RORG.RPS, ESP3_RADIO_RPS_PAYLOAD_LENGTH, senderID
+            RORG.RPS, ESP3_RADIO_RPS_PAYLOAD_LENGTH, senderID,
+            new byte[] {payload}, status
         ),
         Esp3RadioTelegramOptData.ESP3_RADIO_OPT_DATA_TX.asByteArray()
     );
