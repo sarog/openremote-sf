@@ -734,6 +734,9 @@ OpenRemote Designer Sub-components:
 * Restlet libraries org.restlet.jar (2.1 RC3) and 
   org.restlet.ext.json.jar (2.1 RC3) are licensed under Apache
   License 2.0. 
+* Restlet libraries org.restlet-jse.jar (2.0.11) and
+  org.restlet.ext.json-jse.jar (2.0.11) are licensed under
+  LGPL v3 license.
 * SimpleCaptcha 1.1.1 library is licensed under a BSD-like license
   which is included below.
 * SLF4J 1.5 library is licensed under a BSD-like license which
