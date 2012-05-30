@@ -83,7 +83,6 @@ public class UDPListenerCommand implements EventListener {
       private Map<String, Sensor> regexSensorMap = new HashMap<String, Sensor>();
       
       private int port;
-      private boolean doListen = true;
       
       public UDPListenerThread(String port) {
          this.port = Integer.parseInt(port);
@@ -92,9 +91,6 @@ public class UDPListenerCommand implements EventListener {
 
       public void remove(String regex) {
          regexSensorMap.remove(regex);
-         if (regexSensorMap.isEmpty()) {
-            doListen = false;
-         }
       }
 
       @Override
@@ -105,7 +101,7 @@ public class UDPListenerCommand implements EventListener {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
             // Now loop forever, waiting to receive packets and evaluating them
-            while (this.doListen) {
+            while (true) {
               dsocket.receive(packet);
               String msg = new String(buffer, 0, packet.getLength());
               logger.debug("Received UDP packet: " + msg);
