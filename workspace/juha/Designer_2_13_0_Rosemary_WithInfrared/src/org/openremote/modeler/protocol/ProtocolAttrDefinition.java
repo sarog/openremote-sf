@@ -47,6 +47,8 @@ public class ProtocolAttrDefinition implements Serializable {
 
    private String value;
    
+   private String tooltipMessage;
+   
    private List<String> options = new ArrayList<String>();
    
    /** The validators. */
@@ -88,7 +90,16 @@ public class ProtocolAttrDefinition implements Serializable {
       this.label = label;
    }
 
-   /**
+   
+  public String getTooltipMessage() {
+    return tooltipMessage;
+  }
+
+  public void setTooltipMessage(String tooltipMessage) {
+    this.tooltipMessage = tooltipMessage;
+  }
+
+  /**
     * Gets the validators.
     * 
     * @return the validators
@@ -140,8 +151,11 @@ public class ProtocolAttrDefinition implements Serializable {
          return false;
       }
       if (name != null ? !name.equals(that.name) : that.name != null) {
-         return false;
-      }
+        return false;
+     }
+      if (tooltipMessage != null ? !tooltipMessage.equals(that.tooltipMessage) : that.tooltipMessage != null) {
+        return false;
+     }
       if (validators == null && that.getValidators() == null) {
          return true;
       }
@@ -168,6 +182,7 @@ public class ProtocolAttrDefinition implements Serializable {
    public int hashCode() {
       int result = name != null ? name.hashCode() : 0;
       result = 31 * result + (label != null ? label.hashCode() : 0);
+      result = 31 * result + (tooltipMessage != null ? tooltipMessage.hashCode() : 0);
       result = 31 * result + (validators != null ? validators.hashCode() : 0);
       return result;
    }

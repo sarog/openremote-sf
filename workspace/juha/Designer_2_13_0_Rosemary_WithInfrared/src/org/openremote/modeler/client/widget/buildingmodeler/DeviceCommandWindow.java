@@ -290,6 +290,9 @@ public class DeviceCommandWindow extends FormWindow {
          if (options.size() > 0) {
             ComboBoxExt comboAttrField = new ComboBoxExt();
             comboAttrField.setName(attrDefinition.getName());
+            if (attrDefinition.getTooltipMessage() != null) {
+              comboAttrField.setToolTip(attrDefinition.getTooltipMessage());
+            }
             comboAttrField.setFieldLabel(attrDefinition.getLabel());
             ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
             for (String option : options) {
@@ -306,6 +309,9 @@ public class DeviceCommandWindow extends FormWindow {
          } else {
             TextField<String> attrField = new TextField<String>();
             attrField.setName(attrDefinition.getName());
+            if (attrDefinition.getTooltipMessage() != null) {
+              attrField.setToolTip(attrDefinition.getTooltipMessage());
+            }
             TextField<String>.TextFieldMessages messages = attrField.getMessages();
             attrField.setFieldLabel(attrDefinition.getLabel());
             if (!"".equals(value)) {

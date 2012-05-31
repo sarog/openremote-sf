@@ -49,6 +49,8 @@ public interface DeviceRPCService extends RemoteService {
 
    DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid);
    
+   DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid);
+   
    DeviceDetailsDTO loadDeviceDetailsDTO(long oid);
    
    DeviceDTO saveNewDevice(DeviceDetailsDTO device);
