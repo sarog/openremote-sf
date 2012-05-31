@@ -30,6 +30,8 @@ import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
@@ -89,6 +91,13 @@ public class SliderController extends BaseGWTSpringController implements SliderR
             slider.getDevice().getDisplayName());
   }
 
+  public static SliderDTO createSliderDTO(Slider slider) {
+    SliderDTO sliderDTO = new SliderDTO(slider.getOid(), slider.getDisplayName());
+    DeviceCommand dc = slider.getSetValueCmd().getDeviceCommand();
+    sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+    return sliderDTO;
+  }
+  
   @Override
    public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
      Slider slider = sliderService.loadById(sliderDTO.getOid());

@@ -2,7 +2,7 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 	<protocol displayName="KNX" tagName="knx">
-		<attr name="groupAddress" label="Group Address">
+		<attr name="groupAddress" label="Group Address" tooltipMessage="KNX Group Address">
 			<validations>
 				<allowBlank>false</allowBlank>
 				<!-- message is option -->

@@ -80,6 +80,7 @@ public class ProtocolParserTest {
       ProtocolAttrDefinition commandAttr = new ProtocolAttrDefinition();
       commandAttr.setName("command");
       commandAttr.setLabel("KNX Command");
+      commandAttr.setTooltipMessage("KNX Group Address");
       ProtocolValidator allowBlank2 = new ProtocolValidator(ProtocolValidator.ALLOW_BLANK_TYPE, "false", null);
       ProtocolValidator maxLength2 = new ProtocolValidator(ProtocolValidator.MAX_LENGTH_TYPE, "10", null);
       ProtocolValidator regex2 = new ProtocolValidator(ProtocolValidator.REGEX_TYPE, "\\w*", null);

@@ -103,40 +103,40 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = deviceService.loadById(oid);
      DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
-     for (DeviceCommand dc : device.getDeviceCommands()) {
-       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-     }
-     deviceDTO.setDeviceCommands(dcDTOs);
+     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
      for (Sensor sensor : device.getSensors()) {
-       SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName(), sensor.getType());
-       DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
-       sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-       sensorDTOs.add(sensorDTO);
+       sensorDTOs.add(SensorController.createSensorDTO(sensor));
      }
      deviceDTO.setSensors(sensorDTOs);
      ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
      for (Switch s : device.getSwitchs()) {
-       SwitchDTO switchDTO = new SwitchDTO(s.getOid(), s.getDisplayName());
-       DeviceCommand dc = s.getSwitchCommandOnRef().getDeviceCommand();
-       switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-       dc = s.getSwitchCommandOffRef().getDeviceCommand();
-       switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-       switchDTOs.add(switchDTO);
+       switchDTOs.add(SwitchController.createSwitchDTO(s));
      }
      deviceDTO.setSwitches(switchDTOs);
      ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
      for (Slider s : device.getSliders()) {
-       SliderDTO sliderDTO = new SliderDTO(s.getOid(), s.getDisplayName());
-       DeviceCommand dc = s.getSetValueCmd().getDeviceCommand();
-       sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-       sliderDTOs.add(sliderDTO);
+       sliderDTOs.add(SliderController.createSliderDTO(s));
      }
      deviceDTO.setSliders(sliderDTOs);
      return deviceDTO;
    }
 
+   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
+     Device device = deviceService.loadById(oid);
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
+     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
+     return deviceDTO;
+   }
+
+  protected ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
+    ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
+     for (DeviceCommand dc : deviceCommands) {
+       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+     }
+    return dcDTOs;
+  }
+   
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());

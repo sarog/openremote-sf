@@ -48,6 +48,8 @@ public interface DeviceRPCServiceAsync {
   void loadAllDTOs(AsyncCallback<ArrayList<DeviceDTO>> callback);
   
   void loadDeviceWithChildrenDTOById(long oid, AsyncCallback<DeviceWithChildrenDTO> callback);
+
+  void loadDeviceWithCommandChildrenDTOById(long oid, AsyncCallback<DeviceWithChildrenDTO> callback);
   
   void loadDeviceDetailsDTO(long oid, AsyncCallback<DeviceDetailsDTO> callback);
   
