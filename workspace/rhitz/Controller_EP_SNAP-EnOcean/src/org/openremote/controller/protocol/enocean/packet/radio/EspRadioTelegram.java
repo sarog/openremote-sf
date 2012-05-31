@@ -46,7 +46,11 @@ public interface EspRadioTelegram
     RPS(0xF6),
 
     /**
+     * Repeated switch communication (old ESP2 version). <p>
      *
+     * RORG values are part of the EnOcean equipment profile (EEP) number. The new
+     * {@link #RPS} value and this old value may be used interchangeably for defining
+     * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
     RPS_ESP2(0x05),
 
@@ -56,7 +60,11 @@ public interface EspRadioTelegram
     BS1(0xD5),
 
     /**
-     * TODO
+     * 1 byte communication (old ESP2 version).
+     *
+     * RORG values are part of the EnOcean equipment profile (EEP) number. The new
+     * {@link #BS1} value and this old value may be used interchangeably for defining
+     * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
     BS1_ESP2(0x06),
 
@@ -66,7 +74,11 @@ public interface EspRadioTelegram
     BS4(0xA5),
 
     /**
-     * TODO
+     * 4 byte communication (old ESP2 version).
+     *
+     * RORG values are part of the EnOcean equipment profile (EEP) number. The new
+     * {@link #BS4} value and this old value may be used interchangeably for defining
+     * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
     BS4_ESP2(0x07),
 
@@ -139,8 +151,27 @@ public interface EspRadioTelegram
     {
       return value;
     }
-  }
 
+    @Override public String toString()
+    {
+      if(this == RPS_ESP2)
+      {
+        return "RPS";
+      }
+
+      else if(this == BS1 || this == BS1_ESP2)
+      {
+        return "1BS";
+      }
+
+      else if(this == BS4 || this == BS4_ESP2)
+      {
+        return "4BS";
+      }
+
+      return super.toString();
+    }
+  }
 
   // Interface Methods ----------------------------------------------------------------------------
 

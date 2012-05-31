@@ -304,6 +304,30 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
   }
 
 
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    byte[] payload = getPayload();
+    StringBuilder payloadString = new StringBuilder();
+
+    for(int i = 0; i < payload.length; i++)
+    {
+      payloadString.append(
+          String.format("0x%02X%s", payload[i], i == (payload.length - 1) ? "" : " ")
+      );
+    }
+
+    return String.format(
+        "[RORG: %s, Sender ID: %s, Payload: %s, Status: 0x%02X]",
+        rorg, senderID, payloadString, getStatusByte()
+    );
+  }
+
+
   // Implements EspRadioTelegram ------------------------------------------------------------------
 
   /**
