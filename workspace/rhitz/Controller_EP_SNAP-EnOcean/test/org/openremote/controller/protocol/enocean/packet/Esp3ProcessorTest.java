@@ -29,8 +29,7 @@ import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseCommand;
 import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseResponse;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp3RPSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp3RadioTelegramOptData;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.protocol.enocean.port.MockPort;
@@ -38,6 +37,8 @@ import org.openremote.controller.protocol.enocean.port.MockPort;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Unit tests for {@link Esp3Processor} class.
@@ -77,12 +78,9 @@ public class Esp3ProcessorTest
     portConfig.setComPort(COM_PORT);
 
     mockPort = new MockPort();
-    mockPort.setRequestResponseMode();
 
     portAdapter = new Esp3ComPortAdapter(mockPort, portConfig);
     processor = new Esp3Processor(portAdapter);
-
-    processor.start();
 
     baseID = DeviceID.fromString("0xFF800000");
     senderID = DeviceID.fromString("0xFF800001");
@@ -90,7 +88,7 @@ public class Esp3ProcessorTest
     rdIDBaseCommand = new Esp3RdIDBaseCommand();
     rdIDBaseResponse = createRdIDBaseResponse(Esp3ResponsePacket.ReturnCode.RET_OK);
 
-    radioTelegram = new Esp3RPSTelegram(senderID);
+    radioTelegram = new Esp3RPSTelegram(senderID, (byte)0x00, (byte)0x00);
     radioTelegramRespose = createRadioTelegramResponse(Esp3ResponsePacket.ReturnCode.RET_OK);
   }
 
@@ -104,7 +102,10 @@ public class Esp3ProcessorTest
 
   @Test public void testSendCommand() throws Exception
   {
+    mockPort.setRequestResponseMode();
     mockPort.addDataToReturn(rdIDBaseResponse.asByteArray());
+
+    processor.start();
 
     rdIDBaseCommand.send(processor);
 
@@ -114,7 +115,10 @@ public class Esp3ProcessorTest
 
   @Test public void testSendRadioTelegram() throws Exception
   {
+    mockPort.setRequestResponseMode();
     mockPort.addDataToReturn(radioTelegramRespose.asByteArray());
+
+    processor.start();
 
     radioTelegram.send(processor);
 
@@ -123,12 +127,16 @@ public class Esp3ProcessorTest
 
   @Test public void testRepeatedSend() throws Exception
   {
+    mockPort.setRequestResponseMode();
+
     int repeatCount = 10;
 
     for(int i = 0; i < repeatCount; i++)
     {
       mockPort.addDataToReturn(rdIDBaseResponse.asByteArray());
     }
+
+    processor.start();
 
     for(int i = 0; i < repeatCount; i++)
     {
@@ -143,6 +151,9 @@ public class Esp3ProcessorTest
 
   @Test public void testResponseTimeout() throws Exception
   {
+    mockPort.setRequestResponseMode();
+    processor.start();
+
     try
     {
       radioTelegram.send(processor);
@@ -161,7 +172,10 @@ public class Esp3ProcessorTest
     invalidResponse[Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX] =
         (byte)(invalidResponse[Esp3PacketHeader.ESP3_HEADER_CRC8_INDEX] + 1);
 
+    mockPort.setRequestResponseMode();
     mockPort.addDataToReturn(invalidResponse);
+
+    processor.start();
 
     try
     {
@@ -193,7 +207,10 @@ public class Esp3ProcessorTest
     invalidResponse[invalidResponse.length - 1] =
         (byte)(invalidResponse[invalidResponse.length - 1] + 1);
 
+    mockPort.setRequestResponseMode();
     mockPort.addDataToReturn(invalidResponse);
+
+    processor.start();
 
     try
     {
@@ -232,7 +249,10 @@ public class Esp3ProcessorTest
 
     List<byte[]> fragments = fragmentPacket(rdIDBaseResponse, boundaries);
 
+    mockPort.setRequestResponseMode();
     mockPort.addDataToReturn(fragments);
+
+    processor.start();
 
     rdIDBaseCommand.send(processor);
 
@@ -240,6 +260,46 @@ public class Esp3ProcessorTest
     Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
   }
 
+  @Test public void testReceiveRadioTelegrams() throws Exception
+  {
+    List<EspRadioTelegram> expectedTelegrams = new ArrayList<EspRadioTelegram>();
+
+    expectedTelegrams.add(new Esp3RPSTelegram(senderID, (byte)0x11, (byte)0x22));
+    expectedTelegrams.add(new Esp31BSTelegram(senderID, (byte)0x33, (byte)0x44));
+    expectedTelegrams.add(new Esp34BSTelegram(
+        senderID, new byte[] {(byte)0xFF, 0x01, 0x02, 0x03}, (byte)0x55)
+    );
+
+    for(EspRadioTelegram telegram : expectedTelegrams)
+    {
+      mockPort.addDataToReturn(((EspPacket) telegram).asByteArray());
+    }
+
+    RadioListener listener = new RadioListener(expectedTelegrams.size());
+
+    processor.setProcessorListener(listener);
+    processor.start();
+
+    List<EspRadioTelegram> receivedTelegrams = listener.waitForRadioTelegrams();
+
+    Assert.assertNotNull(receivedTelegrams);
+    Assert.assertEquals(expectedTelegrams.size(), receivedTelegrams.size());
+
+    for(int index = 0; index < expectedTelegrams.size(); index++)
+    {
+      EspRadioTelegram expTele = expectedTelegrams.get(index);
+      EspRadioTelegram rcvTele = receivedTelegrams.get(index);
+
+      Assert.assertEquals(expTele.getRORG(), rcvTele.getRORG());
+      Assert.assertEquals(expTele.getSenderID(), rcvTele.getSenderID());
+      Assert.assertArrayEquals(expTele.getPayload(), rcvTele.getPayload());
+      Assert.assertEquals(expTele.getStatusByte(), rcvTele.getStatusByte());
+    }
+
+    Assert.assertTrue(receivedTelegrams.get(0) instanceof Esp3RPSTelegram);
+    Assert.assertTrue(receivedTelegrams.get(1) instanceof Esp31BSTelegram);
+    Assert.assertTrue(receivedTelegrams.get(2) instanceof Esp34BSTelegram);
+  }
 
   // Helpers --------------------------------------------------------------------------------------
 
@@ -308,4 +368,56 @@ public class Esp3ProcessorTest
 
     return fragments;
   }
+
+
+  // Inner Classes --------------------------------------------------------------------------------
+
+  private static class RadioListener implements Esp3ProcessorListener
+  {
+    // Constants ----------------------------------------------------------------------------------
+
+    private static final int TIMEOUT = 2;
+
+    // Private Instance Fields --------------------------------------------------------------------
+
+    private List<EspRadioTelegram> radioTelegrams;
+    private SynchronousQueue<List<EspRadioTelegram>> queue;
+    private int numOfExpectedTelegrams;
+
+    // Constructors -------------------------------------------------------------------------------
+
+    public RadioListener(int numOfExpectedTelegrams)
+    {
+      this.numOfExpectedTelegrams = numOfExpectedTelegrams;
+
+      radioTelegrams = new ArrayList<EspRadioTelegram>();
+      queue = new SynchronousQueue<List<EspRadioTelegram>>();
+    }
+
+    // Implements Esp3ProcessorListener -----------------------------------------------------------
+
+    @Override public void radioTelegramReceived(EspRadioTelegram telegram)
+    {
+      radioTelegrams.add(telegram);
+
+      if(radioTelegrams.size() == numOfExpectedTelegrams)
+      {
+        try
+        {
+          queue.offer(radioTelegrams, TIMEOUT, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e)
+        {
+          Thread.currentThread().interrupt();
+        }
+      }
+    }
+
+    // Public Instance Methods --------------------------------------------------------------------
+
+    public List<EspRadioTelegram> waitForRadioTelegrams() throws InterruptedException
+    {
+      return queue.poll(TIMEOUT, TimeUnit.SECONDS);
+    }
+  };
 }
