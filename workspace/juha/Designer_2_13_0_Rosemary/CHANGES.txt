@@ -1,8 +1,12 @@
 Designer 2.13.0 (2012-05-XX Rosemary)
 =====================================
 
+ - Archos 7 Tablet supported as a predefined panel 
+   in Designer
+ - KNX DPT 9.001 support in KNX Import Wizard 
  - Performance improvements of the client side (web browser
    Javascript) code of the KNX and Russound import wizards
+   
 
 
 Designer 2.12.0 (2012-05-20 Jura)
