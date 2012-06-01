@@ -41,6 +41,22 @@ public class RoleDTO implements Serializable
   /** The users. */
   private List<UserDTO> users;
 
+  
+  public RoleDTO()
+  {
+  }
+  
+  public RoleDTO(String roleName)
+  {
+    this.name = roleName;
+  }
+  
+  public RoleDTO(String roleName, Long oid)
+  {
+    this.name = roleName;
+    this.oid = oid;
+  }
+
   /**
    * Gets the name.
    * 
