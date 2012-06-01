@@ -575,8 +575,10 @@
             settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
             identityCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity;
         } else {
-            settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
-            identityCell.textLabel.text = @"None";
+            if (![panels containsObject:settingsManager.consoleSettings.selectedController.selectedPanelIdentity]) {
+                settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
+                identityCell.textLabel.text = @"None";
+            }
         }
     }
 }
