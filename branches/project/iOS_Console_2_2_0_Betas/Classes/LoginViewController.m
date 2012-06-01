@@ -76,13 +76,6 @@
 - (void)goBack:(id)sender
 {
     [self.delegate loginViewControllerDidCancelLogin:self];
-    /*
-     OLD CODE
-	[self dismissModalViewControllerAnimated:YES];
-	if ([theDelegate respondsToSelector:@selector(onBackFromLogin)]) {
-		[theDelegate performSelector:@selector(onBackFromLogin)];
-	}
-     */
 }
 
 // Send sign in request to remote controller server by loginViewController's delegate.
@@ -95,27 +88,6 @@
 	}
     
     [self.delegate loginViewController:self didProvideUserName:self.usernameField.text password:self.passwordField.text];
-
-    /*
-     OLD CODE
-    // Why was it here ?
-	// [[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
-    
-    
-    // TODO: All this should not be in here, we are just presenting username/password request, we should not be concerned about how this gets used
-    // TODO: + should not use selectedController but controller for which credentials were requested -> pass it somehow
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    activeController.userName = usernameField.text;
-	activeController.password = passwordField.text;
-    
-    // TODO: we might not want to save here, maybe have a method to set this and save in dedicated MOC
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
-    
-	[self dismissModalViewControllerAnimated:NO];
-	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
-		[theDelegate performSelector:@selector(onSignin)];
-	}
-     */
 }
 
 #pragma mark Table view methods
