@@ -578,11 +578,6 @@
     [self presentLoginRequestForControllerRequest:controllerRequest];
 }
 
-- (void)fetchPanelsRequiresAuthentication
-{
-    [self populateLoginView:nil];
-}
-
 #pragma mark LoginViewControllerDelegate implementation
 
 - (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller
