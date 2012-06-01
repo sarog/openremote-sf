@@ -317,6 +317,7 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
+
       final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
       newMenu.add(newCommandMemuItem);
@@ -326,7 +327,11 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
-      newMenu.add(importIRCommandFileMenuItem);
+
+     //  TODO:
+     //     Enable once the IR Import service has been deployed.   [JPL]
+     //
+     // newMenu.add(importIRCommandFileMenuItem);
       
       // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
