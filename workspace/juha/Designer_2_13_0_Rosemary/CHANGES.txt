@@ -5,9 +5,9 @@ Designer 2.13.0 (2012-05-XX Rosemary)
    in Designer
  - KNX DPT 9.001 support in KNX Import Wizard 
  - Performance improvements of the client side (web browser
-   Javascript) code of the KNX and Russound import wizards
+   Javascript) code with an improvement data serialization
+   mechanism
    
-
 
 Designer 2.12.0 (2012-05-20 Jura)
 =================================
