@@ -23,8 +23,6 @@
 
   <inherits name="org.openremote.Commons" />
 
-  <set-property name="user.agent" value="safari"/> 
-
 	<source path='domain'/>
 	<source path='client'/>
 	<source path='shared'/>
