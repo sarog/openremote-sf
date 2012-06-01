@@ -1,6 +1,9 @@
 Designer 2.13.0 (2012-05-XX Rosemary)
 =====================================
 
+ - Image assets in designs are now handled with
+   an image asset manager which allows reuse of
+   images across multiple UI components and screens.
  - Archos 7 Tablet supported as a predefined panel 
    in Designer
  - KNX DPT 9.001 support in KNX Import Wizard 
