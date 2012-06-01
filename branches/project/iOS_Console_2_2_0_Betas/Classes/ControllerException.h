@@ -23,6 +23,7 @@
 /********************* Standard Client error *********************/ 
 
 #define UNAUTHORIZED              401 //unauthorized by Controller, should login.
+#define FORBIDDEN                 403
 #define REQUEST_ERROR             404 //bad request
 
 /********************* Standard Server error *********************/ 

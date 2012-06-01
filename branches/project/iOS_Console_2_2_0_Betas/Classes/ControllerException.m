@@ -29,6 +29,9 @@
 	NSString *errorMessage = nil;
 	if (code != 200) {
 		switch (code) {
+            case FORBIDDEN:
+                errorMessage = @"Access to controller forbidden";
+                break;
 			case REQUEST_ERROR://404
 				errorMessage = @"The command was sent to an invalid URL.";
 				break;
