@@ -43,10 +43,8 @@ public class UserDTO implements Serializable
 
   private String password;
 
-  private String rawPassword;
-
   private String email;
-
+  
   private boolean valid;
 
   private transient Timestamp registerTime;
@@ -192,16 +190,10 @@ public class UserDTO implements Serializable
     this.registerTime = registerTime;
   }
 
-  public String getRawPassword()
-  {
-    return rawPassword;
+  public String getRegisterTimeAsString() {
+    return registerTime.toString().replaceAll("\\.\\d+", "");
   }
-
-  public void setRawPassword(String rawPassword)
-  {
-    this.rawPassword = rawPassword;
-  }
-
+  
   public String getToken()
   {
     return token;
@@ -222,6 +214,12 @@ public class UserDTO implements Serializable
     this.oid = oid;
   }
   
-  
+  public String getRole() {
+    List<String> roleStrs = new ArrayList<String>();
+    for (RoleDTO role : roles) {
+       roleStrs.add(role.getName());
+    }
+    return roleStrs.toString();
+ }
 
 }
