@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <UIKit/UIKit.h>
-#import "ORControllerPanelsFetcher.h"
 #import "LoginViewController.h"
 
 @protocol ChoosePanelViewControllerDelegate <NSObject>
@@ -31,7 +30,7 @@
 /**
  * It's responsible for Controlling presentation of choosing panel view.
  */
-@interface ChoosePanelViewController : UITableViewController <ORControllerPanelsFetcherDelegate, LoginViewControllerDelegate> {
+@interface ChoosePanelViewController : UITableViewController <LoginViewControllerDelegate> {
 	
     NSObject <ChoosePanelViewControllerDelegate> *delegate;
     

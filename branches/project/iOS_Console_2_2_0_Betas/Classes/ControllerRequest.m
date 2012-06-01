@@ -34,6 +34,7 @@
 
 @property (nonatomic, retain) ORGroupMember *usedGroupMember;
 @property (nonatomic, assign, readwrite) ORController *controller;
+@property (nonatomic, assign) NSInteger httpResponseCode;
 
 @end
 
@@ -110,6 +111,7 @@
     NSString *location = [usedGroupMember.url stringByAppendingFormat:@"/%@", requestPath];
     NSLog(@"Trying to send command to %@", location);
     
+    self.httpResponseCode = 0;
     NSURLRequest *request = [NSURLRequest or_requestWithURLString:location method:method userName:usedGroupMember.controller.userName password:usedGroupMember.controller.password];
     
     if (connection) {
@@ -164,10 +166,12 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receivedData
 {
-    self.controller.activeGroupMember = self.usedGroupMember;
-	[delegate controllerRequestDidFinishLoading:receivedData];
-    [delegate release];
-    delegate = nil;
+    if (self.httpResponseCode != UNAUTHORIZED) {
+        self.controller.activeGroupMember = self.usedGroupMember;
+        [delegate controllerRequestDidFinishLoading:receivedData];
+        [delegate release];
+        delegate = nil;
+    }
 }
 
 #pragma mark NSURLConnectionDelegate implementation
@@ -199,7 +203,8 @@
     // TODO: shouldn't this also trigger the switch to another controller ?
     
     NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-    switch ([httpResp statusCode]) {
+    self.httpResponseCode = [httpResp statusCode];
+    switch (self.httpResponseCode) {
         case CONTROLLER_CONFIG_CHANGED: //controller config changed
         {
             if ([delegate respondsToSelector:@selector(controllerRequestConfigurationUpdated:)]) {
@@ -211,13 +216,11 @@
         {
             if ([delegate respondsToSelector:@selector(controllerRequestRequiresAuthentication:)]) {
                 [delegate controllerRequestRequiresAuthentication:self];
-            } else {
-                // No specific handling by the delegate, post a notification so "anyone" can handle
-//                [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil; // TODO: move to specific cases, don't always get rid of password
-                
-                [[NSNotificationCenter defaultCenter] postNotification:
-                 [NSNotification notificationWithName:NotificationPopulateCredentialView object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:kAuthenticationRequiredControllerRequest]]];
             }
+
+//          [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil; // TODO: move to specific cases, don't always get rid of password
+            [[NSNotificationCenter defaultCenter] postNotification:
+             [NSNotification notificationWithName:NotificationPopulateCredentialView object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:kAuthenticationRequiredControllerRequest]]];
             break;
         }
         default:
@@ -244,6 +247,7 @@
 }
 
 @synthesize controller;
+@synthesize httpResponseCode;
 @synthesize delegate, usedGroupMember;
 
 @end

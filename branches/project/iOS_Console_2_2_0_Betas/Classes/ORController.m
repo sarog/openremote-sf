@@ -163,7 +163,7 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
         }
     }
     
-    // TODO: use log4j    
+    // TODO: use log4j
     NSLog(@"Selected version >%@<", self.controllerAPIVersion);
     
     self.capabilities = controllerCapabilities;
@@ -177,6 +177,12 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
     // TODO
     NSLog(@"fetch capabilities error %@", error);
     self.capabilitiesFetchStatus = FetchFailed;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
+}
+
+- (void)fetchCapabilitiesRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
+{
+    self.capabilitiesFetchStatus = FetchRequiresAuthentication;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerCapabilitiesFetchStatusChange object:self];
 }
 
@@ -211,7 +217,6 @@ NSString *kORControllerPanelIdentitiesFetchStatusChange = @"kORControllerPanelId
 
 - (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
-    // TODO
     self.panelIdentitiesFetchStatus = FetchRequiresAuthentication;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerPanelIdentitiesFetchStatusChange object:self];
 }

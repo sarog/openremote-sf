@@ -22,7 +22,6 @@
 #import "ServerAutoDiscoveryController.h"
 #import "UpdateController.h"
 #import "FileUtils.h"
-#import "ORControllerPanelsFetcher.h"
 #import "ControllerDetailViewController.h"
 #import "ChoosePanelViewController.h"
 #import "LoginViewController.h"
@@ -32,7 +31,7 @@
 /**
  * Render the UI of AppSetting view and provide functions of setting about panel client.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate, ORControllerPanelsFetcherDelegate, ServerAutoDiscoveryControllerDelagate, ControllerDetailViewControllerDelegate, ChoosePanelViewControllerDelegate, UpdateControllerDelegate, LoginViewControllerDelegate> {
+@interface AppSettingController : UITableViewController <UITextFieldDelegate, ServerAutoDiscoveryControllerDelagate, ControllerDetailViewControllerDelegate, ChoosePanelViewControllerDelegate, UpdateControllerDelegate, LoginViewControllerDelegate> {
     
     ORConsoleSettingsManager *settingsManager;
 

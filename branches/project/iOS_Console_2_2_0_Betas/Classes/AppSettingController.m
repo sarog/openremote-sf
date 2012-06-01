@@ -36,8 +36,6 @@
 
 @interface AppSettingController ()
 
-@property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
-
 // Indicates if a login window must be presented to user for entering credentials when a controller says authentication is required
 @property (nonatomic, assign) BOOL askUserForCredentials;
 
@@ -97,7 +95,6 @@
 	[updateController release];
 	[done release];
 	[cancel release];
-    self.panelsFetcher = nil;
 	self.currentSelectedServerIndex = nil;
 	[super dealloc];
 }
@@ -176,13 +173,14 @@
 {
     [super viewWillAppear:animated];
 
-    // TODO: get rid of that when fully handled by delegate messages
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchSucceeded:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerPanelIdentitiesFetchStatusChanged:) name:kORControllerPanelIdentitiesFetchStatusChange object:nil];
 
     self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
@@ -209,8 +207,9 @@
 	UITableView *tv = (UITableView *)self.view;
 	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	identityCell.textLabel.text = @"None";
-
-    self.panelsFetcher = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController fetchPanelsWithDelegate:self];
+    
+    // !!! Panels won't fetch until capabilities are, this can cause issues of message blocked in queue
+    [settingsManager.consoleSettings.selectedController fetchPanels];
     
     // TODO EBR : this might need to be cancelled some time
 }
@@ -406,7 +405,7 @@
 		}
 		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity?settingsManager.consoleSettings.selectedController.selectedPanelIdentity:@"None";
+		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentityDisplayString;
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
@@ -496,8 +495,11 @@
         
         // TODO: might not be required if update of panel identities trigger this
         [settingsManager.consoleSettings.selectedController fetchGroupMembers];
-        
+
 		if (self.currentSelectedServerIndex && self.currentSelectedServerIndex.row != indexPath.row) {            
+            // !!! Panels won't fetch until capabilities are, this can cause issues of message blocked in queue
+            [settingsManager.consoleSettings.selectedController fetchCapabilities];
+            
             // TODO: review how this gets updated
 			[self updatePanelIdentityView];
 		}
@@ -557,25 +559,26 @@
     [self.navigationController popViewControllerAnimated:YES];    
 }
 
-#pragma mark ORControllerPanelsFetcherDelegate implementation
+#pragma mark Panel identities fetch notifications
 
-- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)panels
+- (void)orControllerPanelIdentitiesFetchStatusChanged:(NSNotification *)notification
 {
-    // When a controller gets selected, the list of available panels is fetched.
-    // If there is only one panel available, it is automatically selected.
-	UITableViewCell *identityCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
-	if (panels.count == 1) {
-        settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
-        identityCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity;
-	} else {
-		settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
-        identityCell.textLabel.text = @"None";
-	}
-}
+    ORController *controller = [notification object];
+    
+    if (controller.panelIdentitiesFetchStatus == FetchSucceeded) {
+        NSArray *panels = controller.panelIdentities;
 
-- (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
-{
-    [self presentLoginRequestForControllerRequest:controllerRequest];
+        // When a controller gets selected, the list of available panels is fetched.
+        // If there is only one panel available, it is automatically selected.
+        UITableViewCell *identityCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
+        if (panels.count == 1) {
+            settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
+            identityCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity;
+        } else {
+            settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
+            identityCell.textLabel.text = @"None";
+        }
+    }
 }
 
 #pragma mark LoginViewControllerDelegate implementation
@@ -650,17 +653,7 @@
     [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(cancelGroupMembersFetch)];
 }
 
-@synthesize panelsFetcher;
 @synthesize askUserForCredentials;
 @synthesize currentSelectedServerIndex;
-
-- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
-{
-    if (panelsFetcher != aPanelsFetcher) {
-        panelsFetcher.delegate = nil;
-        [panelsFetcher release];
-        panelsFetcher = [aPanelsFetcher retain];
-    }
-}
 
 @end

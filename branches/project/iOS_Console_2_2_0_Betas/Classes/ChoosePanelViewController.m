@@ -33,7 +33,6 @@
 
 @interface ChoosePanelViewController ()
 
-@property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
 @property (nonatomic, retain) NSArray *panels;
 
 - (void)requestPanelList;
@@ -57,27 +56,27 @@
 {
 	[chosenPanel release];
     self.panels = nil;
-    self.panelsFetcher = nil;
-	
+
 	[super dealloc];
 }
 
-- (void)viewDidLoad
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];    
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerPanelIdentitiesFetchStatusChanged:) name:kORControllerPanelIdentitiesFetchStatusChange object:nil];
 }
 
-- (void)viewDidUnload
+- (void)viewDidDisappear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationPopulateCredentialView object:nil];
-    [super viewDidUnload];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super viewDidDisappear:animated];
 }
 
 // Load panel list from remote controller server.
 - (void)requestPanelList {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
-    self.panelsFetcher = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController fetchPanelsWithDelegate:self];
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController fetchPanels];
     
     // TODO EBR : cancel fetch when user going back
 }
@@ -175,36 +174,28 @@
 	return YES;
 }
 
-#pragma mark ORControllerPanelsFetcherDelegate implementation
+#pragma mark notifications handling
 
-- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)thePanels
+- (void)orControllerPanelIdentitiesFetchStatusChanged:(NSNotification *)notification
 {
-    self.panels = thePanels;
-    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-    [self updateTableView];
+    ORController *controller = [notification object];
+    
+    if (controller.panelIdentitiesFetchStatus == FetchSucceeded) {        
+        self.panels = controller.panelIdentities;
+        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+        [self updateTableView];
+    } else if (controller.panelIdentitiesFetchStatus == FetchFailed) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+        [ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:@"Impossible to get list of panels from controller"];
+    }
 }
 
-- (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
+- (void)populateLoginView:(NSNotification *)notification
 {
-    [self presentLoginRequestForControllerRequest:controllerRequest];
-}
-
-- (void)fetchPanelsDidFailWithError:(NSError *)error
-{
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-    [ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[error localizedDescription]];
+    [self presentLoginRequestForControllerRequest:[notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]];
 }
 
 @synthesize delegate;
-@synthesize panelsFetcher;
 @synthesize panels;
-
-- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
-{
-    if (panelsFetcher != aPanelsFetcher) {
-        panelsFetcher.delegate = nil;
-        panelsFetcher = [aPanelsFetcher retain];
-    }
-}
 
 @end
