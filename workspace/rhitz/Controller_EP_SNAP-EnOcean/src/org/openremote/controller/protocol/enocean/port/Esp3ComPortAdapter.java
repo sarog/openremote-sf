@@ -21,8 +21,11 @@
 package org.openremote.controller.protocol.enocean.port;
 
 import org.openremote.controller.protocol.enocean.ConfigurationException;
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
+import org.openremote.controller.protocol.enocean.EspVersion;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.pad.AbstractPort;
+import org.openremote.controller.utils.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +37,14 @@ import java.util.Map;
  */
 public class Esp3ComPortAdapter extends AbstractEspComPortAdapter
 {
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
+   */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
+
 
   // Constructors -------------------------------------------------------------------------------
 
@@ -88,5 +99,13 @@ public class Esp3ComPortAdapter extends AbstractEspComPortAdapter
     portConfig.put(AbstractPort.PORT_PARITY, "no");
 
     return portConfig;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override protected EspVersion getEspVersion()
+  {
+    return EspVersion.ESP3;
   }
 }

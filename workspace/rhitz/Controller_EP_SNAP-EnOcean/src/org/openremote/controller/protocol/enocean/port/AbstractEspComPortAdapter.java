@@ -22,9 +22,12 @@ package org.openremote.controller.protocol.enocean.port;
 
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.ConnectionException;
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
+import org.openremote.controller.protocol.enocean.EspVersion;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;
+import org.openremote.controller.utils.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -48,8 +51,9 @@ public abstract class AbstractEspComPortAdapter implements EspPort
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   * TODO : Logger
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
    */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
 
   // Private Instance Fields ----------------------------------------------------------------------
@@ -246,6 +250,31 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     return msg.getContent();
   }
 
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    StringBuilder builder = new StringBuilder();
+
+    String comPort = configuration.getComPort();
+    if(comPort == null)
+    {
+      comPort = "--";
+    }
+
+    builder
+        .append("[COM port: ")
+        .append(comPort)
+        .append(", Protocol: ")
+        .append(getEspVersion())
+        .append("]");
+
+    return builder.toString();
+  }
+
 
   // Protected Instance Methods -------------------------------------------------------------------
 
@@ -263,6 +292,14 @@ public abstract class AbstractEspComPortAdapter implements EspPort
    */
   protected abstract Map<String, Object> createComPortConfiguration(EspPortConfiguration configuration)
       throws ConfigurationException;
+
+
+  /**
+   * Returns the EnOcean serial protocol version.
+   *
+   * @return ESP version
+   */
+  protected abstract EspVersion getEspVersion();
 
 
   // Private Instance Methods ---------------------------------------------------------------------
