@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.openremote.modeler.dao;
 
@@ -34,6 +35,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.dao.DataAccessException;
 
 
 /**
@@ -54,19 +56,6 @@ public class GenericDAO extends HibernateDaoSupport {
       return getHibernateTemplate().save(o);
    }
 
-   /**
-    * Copy the state of the given object onto the persistent object with the same identifier. Follows JSR-220 semantics.
-    * Similar to saveOrUpdate, but never associates the given object with the current Hibernate Session. In case of a
-    * new entity, the state will be copied over as well.
-    * 
-    * Note that merge will not update the identifiers in the passed-in object graph (in contrast to TopLink)! Consider
-    * registering Spring's IdTransferringMergeEventListener if you would like to have newly assigned ids transferred to
-    * the original object graph too.
-    * 
-    * @param o the object to merge with the corresponding persistence instance
-    * 
-    * @return the updated, registered persistent instance
-    */
    public Object merge(Object o) {
       return getHibernateTemplate().merge(o);
    }
@@ -80,53 +69,32 @@ public class GenericDAO extends HibernateDaoSupport {
       getHibernateTemplate().saveOrUpdate(o);
    }
    
-   /**
-    * Return the persistent instance of the given entity class with the given identifier, throwing an exception if not
-    * found. This method is a thin wrapper around HibernateTemplate.load(Class, java.io.Serializable) for convenience.
-    * For an explanation of the exact semantics of this method, please do refer to the Hibernate API documentation in
-    * the first instance.
-    * 
-    * @param clazz a persistent class
-    * @param id the identifier of the persistent instance
-    * @param <T> t
-    * 
-    * @return the persistent instance
-    */
    @SuppressWarnings("unchecked")
    public <T> T loadById(Class<T> clazz, Serializable id) {
       return (T) getHibernateTemplate().load(clazz, id);
    }
 
-   /**
-    * Return the persistent instance of the given entity class with the given identifier, or null if not found. This
-    * method is a thin wrapper around HibernateTemplate.get(Class, java.io.Serializable) for convenience. For an
-    * explanation of the exact semantics of this method, please do refer to the Hibernate API documentation in the first
-    * instance.
-    * 
-    * @param clazz a persistent class
-    * @param id the identifier of the persistent instance
-    * @param <T> t
-    * 
-    * @return the persistent instance, or null if not found
-    */
-   @SuppressWarnings("unchecked")
-   public <T> T getById(Class<T> clazz, Serializable id) {
-      return (T) getHibernateTemplate().get(clazz, id);
-   }
 
-   /**
-    * Return the persistent instance of the given entity class with the given non-identifier field, or null if not
-    * found. This method is a thin wrapper around HibernateTemplate.findByCriteria(DetachedCriteria criteria, int
-    * firstResult, int maxResults)convenience. For an explanation of the exact semantics of this method, please do refer
-    * to the Hibernate API documentation in the first instance.
-    * 
-    * @param clazz a persistent class
-    * @param fieldName field name
-    * @param fieldValue field value
-    * @param <T> t
-    * 
-    * @return the persistent instance, or null if not found
-    */
+  public <T> T getById(Class<T> clazz, Serializable id)
+  {
+    try
+    {
+      return (T) getHibernateTemplate().get(clazz, id);
+    }
+
+    catch (DataAccessException e)
+    {
+      // TODO :
+      //   Convert to a different type of runtime error here to contain third party library
+      //   dependencies higher up in the code. Should really be a checked exception
+      //   to force everyone to deal with database issues but that will be a bigger change
+      //   for later.
+      //                                                                            [JPL]
+
+      throw new DatabaseError(e.getMessage());
+    }
+  }
+
    @SuppressWarnings("unchecked")
    public <T> T getByNonIdField(Class<T> clazz, String fieldName, String fieldValue) {
       List retList = new ArrayList();
@@ -142,7 +110,7 @@ public class GenericDAO extends HibernateDaoSupport {
 
    /**
     * Delete the given persistent instance.
-    * 
+    *
     * @param o the persistent instance to delete
     */
    public void delete(Object o) {
@@ -297,11 +265,6 @@ public class GenericDAO extends HibernateDaoSupport {
       }, true).toString());
    }
    
-   /**
-    * Initialize.
-    * 
-    * @param arg0 the arg0
-    */
    public void initialize(Object arg0) {
        this.getHibernateTemplate().initialize(arg0);
    }
@@ -310,11 +273,26 @@ public class GenericDAO extends HibernateDaoSupport {
       this.getHibernateTemplate().flush();
    }
    
-   /**
-    * update 
-    * @param arg0
-    */
    public void update(Object arg0){
       this.getHibernateTemplate().update(arg0);
    }
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  /**
+   * TODO :
+   *
+   *   a temporary error type to manage third party library dependencies -- this is a temporary
+   *   construct, should really throw checked PersistenceExceptions from this layer to force
+   *   everyone to deal with database issues in the higher code layers
+   * 
+   */
+  public static class DatabaseError extends Error
+  {
+    DatabaseError(String msg)
+    {
+      super(msg);
+    }
+  }
 }
