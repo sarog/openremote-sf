@@ -38,8 +38,8 @@ import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.exception.OpenRemoteException;
 import org.openremote.modeler.exception.PersistenceException;
+import org.openremote.modeler.dao.GenericDAO;
 
 /**
  * TODO :
@@ -236,21 +236,17 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
     /*
      * TODO :
      *   - review the database load semantics, especially with regards to dependent objects
-     *   - the current data access objects do not expose error messages from underlying
-     *     database connection directly in the API which is somewhat unfortunate with regards
-     *     to error messaging and logging
      */
 
-    // can return null -- underlying reason is hidden...
-
-    Switch sw = switchService.loadById(id);
-
-    if (sw == null)
+    try
     {
-      throw new PersistenceException("Unable to load switch ID {0} (reason unknown)", id);
+      return switchService.loadById(id);
     }
 
-    return sw;
+    catch (GenericDAO.DatabaseError e)
+    {
+      throw new PersistenceException("Unable to load switch ID {0} : {1}", id, e.getMessage());
+    }
   }
   
   /**
