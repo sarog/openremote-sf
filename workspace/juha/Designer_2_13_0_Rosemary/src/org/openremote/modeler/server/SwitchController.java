@@ -39,6 +39,7 @@ import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.exception.OpenRemoteException;
+import org.openremote.modeler.exception.PersistenceException;
 
 /**
  * TODO :
@@ -413,26 +414,4 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
 
 
 
-
-  // Nested Classes -------------------------------------------------------------------------------
-
-
-  /**
-   * TODO
-   */
-  static class PersistenceException extends OpenRemoteException
-  {
-    PersistenceException(String msg)
-    {
-      super(msg);
-    }
-
-    PersistenceException(String msg, Object... args)
-    {
-      super(msg, args);
-    }
-  }
-
-
-  
 }
