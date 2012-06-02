@@ -20,7 +20,10 @@
  */
 package org.openremote.controller.protocol.enocean.packet;
 
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
+import org.openremote.controller.utils.Logger;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +43,23 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
   public static final long ESP3_RESPONSE_TIMEOUT = 500;
 
 
-  // Constructors -------------------------------------------------------------------------------
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
+   */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
+
+
+  // Private Instance Fields
+
+  /**
+   * Processor listener.
+   */
+  private Esp3ProcessorListener listener = null;
+
+
+  // Constructors ---------------------------------------------------------------------------------
 
   /**
    * Constructs a new processor instance with a given serial COM port adapter which is
@@ -54,7 +73,7 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
   }
 
 
-  // Implements AbstractEspProcessor ------------------------------------------------------------
+  // Implements AbstractEspProcessor --------------------------------------------------------------
 
   /**
    * {@inheritDoc}
@@ -86,13 +105,23 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
 
     else if(type == Esp3PacketHeader.PacketType.RADIO)
     {
-      // TODO
+      dispatchRadio(packet);
     }
 
     else if(type == Esp3PacketHeader.PacketType.EVENT)
     {
       // TODO
     }
+  }
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  /**
+   * Sets processor listener.
+   */
+  public void setProcessorListener(Esp3ProcessorListener listener)
+  {
+    this.listener = listener;
   }
 
 
@@ -110,6 +139,18 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
     );
   }
 
+  /**
+   * Notifies listener that a radio telegram has been received.
+   *
+   * @param radioPacket radio telegram
+   */
+  private void dispatchRadio(Esp3Packet radioPacket)
+  {
+    if((radioPacket instanceof EspRadioTelegram) && listener != null)
+    {
+      listener.radioTelegramReceived((EspRadioTelegram)radioPacket);
+    }
+  }
 
   // Inner Classes --------------------------------------------------------------------------------
 
@@ -119,7 +160,7 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
   private class Esp3PortReaderBuffer extends AbstractPortReaderBuffer<Esp3Packet>
   {
 
-    // Private Instance Fields ----------------------------------------------------------------------
+    // Private Instance Fields --------------------------------------------------------------------
 
     /**
      * ESP 3.0 packet header.
@@ -127,7 +168,7 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
     private Esp3PacketHeader header = null;
 
 
-    // Implements AbstractPortReaderBuffer ----------------------------------------------------------
+    // Implements AbstractPortReaderBuffer --------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -165,7 +206,10 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
       }
       else
       {
-        // TODO : log
+        log.error(
+            "Discarded received packet {0} because of " +
+            "invalid CRC8 data checksum.", header
+        );
       }
 
       header = null;
@@ -211,12 +255,12 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
 
           catch (Esp3PacketHeader.UnknownPacketTypeException e)
           {
-            // TODO : log - new ProtocolException ?
+            log.warn("Discarded received packet : {0}", e, e.getMessage());
           }
 
           catch (Esp3PacketHeader.CRC8Exception e)
           {
-            // TODO : log
+            log.error("Received invalid packet header : {0}", e, e.getMessage());
           }
         }
       }
@@ -283,7 +327,7 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
 
       else if(type == Esp3PacketHeader.PacketType.RADIO)
       {
-        // TODO
+        packet = createRadioTelegram(header, data, optionalData);
       }
 
       else if(type == Esp3PacketHeader.PacketType.EVENT)
@@ -306,6 +350,170 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
       responsePacket = new Esp3Packet(Esp3PacketHeader.PacketType.RESPONSE, data, optionalData);
 
       return responsePacket;
+    }
+
+    /**
+     * Creates a radio telegram instance with given data groups.
+     *
+     * @param  header        radio telegram header
+     *
+     * @param  data          data group
+     *
+     * @param  optionalData  optional data group
+     *
+     * @return new radio telegram instance or <tt>null</tt> if radio telegram type (RORG) is not
+     *         implemented or if there's something wrong with the telegram data
+     *
+     */
+    private Esp3Packet createRadioTelegram(Esp3PacketHeader header, byte[] data, byte[] optionalData)
+    {
+      Esp3Packet radioTelegram = null;
+
+      if(data.length >= AbstractEsp3RadioTelegram.ESP3_RADIO_MIN_DATA_LENGTH &&
+         optionalData.length == Esp3RadioTelegramOptData.ESP3_RADIO_OPT_DATA_LENGTH)
+      {
+        EspRadioTelegram.RORG rorg;
+
+        try
+        {
+          rorg = AbstractEsp3RadioTelegram.getRORGFromDataGroup(data);
+        }
+
+        catch (EspRadioTelegram.UnknownRorgException e)
+        {
+          log.warn("Discarded received radio telegram : {0}", e, e.getMessage());
+
+          return null;
+        }
+
+        if(rorg == EspRadioTelegram.RORG.RPS)
+        {
+          radioTelegram = createRPSRadioTelegram(header, data, optionalData);
+        }
+
+        else if(rorg == EspRadioTelegram.RORG.BS1)
+        {
+          radioTelegram = create1BSRadioTelegram(header, data, optionalData);
+        }
+
+        else if(rorg == EspRadioTelegram.RORG.BS4)
+        {
+          radioTelegram = create4BSRadioTelegram(header, data, optionalData);
+        }
+
+        else
+        {
+          log.debug(
+              "Discarded received radio telegram (RORG={0}) " +
+              "because processing of this type is not implemented yet.", rorg
+          );
+        }
+      }
+
+      else
+      {
+        log.error(
+            "Discarded received radio telegram {0} because of invalid data length.",
+            header
+        );
+      }
+
+      if(radioTelegram != null)
+      {
+        log.debug("Received radio telegram : " + radioTelegram);
+      }
+
+      return radioTelegram;
+    }
+
+    /**
+     * Creates a new RPS radio telegram instance with given data groups.
+     *
+     * @param  header        radio telegram header
+     *
+     * @param  data          data group
+     *
+     * @param  optionalData  optional data group
+     *
+     * @return RPS radio telegram instance or <tt>null</tt> if the data group does not
+     *         have the expected size
+     */
+    private Esp3RPSTelegram createRPSRadioTelegram(Esp3PacketHeader header, byte[] data, byte[] optionalData)
+    {
+      Esp3RPSTelegram telegram = null;
+
+      if(data.length == Esp3RPSTelegram.ESP3_RADIO_RPS_DATA_LENGTH)
+      {
+        telegram = new Esp3RPSTelegram(data, optionalData);
+      }
+
+      else
+      {
+        log.error("Discarded received RPS radio telegram {0} " +
+                  "because of invalid data length.", header);
+      }
+
+      return telegram;
+    }
+
+    /**
+     * Creates a new 1BS radio telegram instance with given data groups.
+     *
+     * @param  header        radio telegram header
+     *
+     * @param  data          data group
+     *
+     * @param  optionalData  optional data group
+     *
+     * @return 1BS radio telegram instance or <tt>null</tt> if the data group does not
+     *         have the expected size
+     */
+    private Esp31BSTelegram create1BSRadioTelegram(Esp3PacketHeader header, byte[] data, byte[] optionalData)
+    {
+      Esp31BSTelegram telegram = null;
+
+      if(data.length == Esp31BSTelegram.ESP3_RADIO_1BS_DATA_LENGTH)
+      {
+        telegram = new Esp31BSTelegram(data, optionalData);
+      }
+
+      else
+      {
+        log.error("Discarded received 1BS radio telegram {0} " +
+                  "because of invalid data length.", header);
+      }
+
+      return telegram;
+    }
+
+    /**
+     * Creates a new 4BS radio telegram instance with given data groups.
+     *
+     * @param  header        radio telegram header
+     *
+     * @param  data          data group
+     *
+     * @param  optionalData  optional data group
+     *
+     * @return 4BS radio telegram instance or <tt>null</tt> if the data group does not
+     *         have the expected size
+     */
+    private Esp34BSTelegram create4BSRadioTelegram(Esp3PacketHeader header, byte[] data, byte[] optionalData)
+    {
+      Esp34BSTelegram telegram = null;
+
+      if(data.length == Esp34BSTelegram.ESP3_RADIO_4BS_DATA_LENGTH)
+      {
+        telegram = new Esp34BSTelegram(data, optionalData);
+      }
+
+      else
+      {
+        log.error("Discarded received 4BS radio telegram {0} " +
+                  "because of invalid data length.", header);
+      }
+
+      return telegram;
     }
   }
 }
