@@ -154,10 +154,21 @@ public class LogFacade
      */
     RESOURCE_SERVICE(RESOURCE_SERVICE_LOG_CATEGORY, "Designer Resource Service Log Category"),
 
-    
+
+    // Persistence and Database Access Log Categories ---------------------------------------------
+
+
+    /**
+     * Log category for designer database access. <p>
+     *
+     * The canonical log category name is defined {@link LogFacade#PERSISTENCE_LOG_CATEGORY}.
+     */
+    PERSISTENCE(PERSISTENCE_LOG_CATEGORY, "Designer Database Access Log Category"),
+
+
     // TODO
     EXPORT(EXPORT_LOG_CATEGORY, "Resource Export Log Category"),
-    
+
     ;
 
 
@@ -316,6 +327,16 @@ public class LogFacade
    */
   public final static String RESOURCE_SERVICE_LOG_CATEGORY =
       SERVICE_LOG_CATEGORY + ".ResourceService";
+
+
+  /**
+   * Canonical log hierarchy name for persistence and database access logging categories.
+   * More specific persistence logging categories should use this category as their parent
+   * log category.
+   *
+   * @see LogFacade.Category#PERSISTENCE
+   */
+  public final static String PERSISTENCE_LOG_CATEGORY = ROOT_LOG_CATEGORY + ".Persistence";
 
 
   // TODO
