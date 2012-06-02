@@ -289,7 +289,31 @@ public class Esp3PacketHeader
   }
 
 
-  // Public Instance Methods ----------------------------------------------------------------------
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    StringBuilder builder = new StringBuilder();
+
+    String length = String.format("length=0x%04X, ", dataLength);
+    String optLength = String.format("optional length=0x%02X, ", optionalDataLength);
+    String type = "type=" + packetType;
+
+    builder
+        .append("[HEADER: ")
+        .append(length)
+        .append(optLength)
+        .append(type)
+        .append("]");
+
+    return builder.toString();
+  }
+
+
+    // Public Instance Methods ----------------------------------------------------------------------
 
   /**
    * Returns size of the ESP3 packet data section.

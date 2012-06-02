@@ -311,20 +311,22 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
    */
   @Override public String toString()
   {
-    byte[] payload = getPayload();
-    StringBuilder payloadString = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
 
-    for(int i = 0; i < payload.length; i++)
-    {
-      payloadString.append(
-          String.format("0x%02X%s", payload[i], i == (payload.length - 1) ? "" : " ")
-      );
-    }
+    String rorgString = "RORG=" + rorg + ", ";
+    String idString = "sender ID=" + senderID + ", ";
+    String payloadString = "payload=" + getPayloadAsString() + ", ";
+    String statusString = "status=" + String.format("0x%02X", getStatusByte());
 
-    return String.format(
-        "[RORG: %s, Sender ID: %s, Payload: %s, Status: 0x%02X]",
-        rorg, senderID, payloadString, getStatusByte()
-    );
+    builder
+        .append("[RADIO: ")
+        .append(rorgString)
+        .append(idString)
+        .append(payloadString)
+        .append(statusString)
+        .append("]");
+
+    return builder.toString();
   }
 
 
@@ -367,5 +369,29 @@ public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacke
                       DeviceID.ENOCEAN_ESP_ID_LENGTH;
 
     return data[statusIndex];
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  /**
+   * Returns payload as a string with hexadecimal encoding.
+   *
+   * @return payload string
+   */
+  private String getPayloadAsString()
+  {
+    StringBuilder builder = new StringBuilder();
+
+    byte[] payload = getPayload();
+
+    for(int i = 0; i < payload.length; i++)
+    {
+      builder.append(
+          String.format("0x%02X%s", payload[i], i == (payload.length - 1) ? "" : " ")
+      );
+    }
+
+    return builder.toString();
   }
 }
