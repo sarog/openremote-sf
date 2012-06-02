@@ -52,6 +52,8 @@ import org.openremote.modeler.dao.GenericDAO;
  *     - DTO transformation should logically go into the domain object implementation
  *     - This class should not access DB directly but to delegate to a REST API on Beehive
  *       that is responsible for persistent switch operations.
+ *     - review the database load semantics, especially with regards to dependent objects
+ *       in Switch, requires unit testing
  *
  *
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
@@ -113,7 +115,7 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
 
     try
     {
-      // database load, including all dependents (optional sensor and two mandatory commands)...
+      // database load, see Switch class annotations for database access patterns
 
       sw = loadSwitch(id);
 
@@ -233,11 +235,6 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
    */
   private Switch loadSwitch(long id) throws PersistenceException
   {
-    /*
-     * TODO :
-     *   - review the database load semantics, especially with regards to dependent objects
-     */
-
     try
     {
       return switchService.loadById(id);
