@@ -22,9 +22,13 @@ package org.openremote.controller.protocol.enocean.packet;
 
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.ConnectionException;
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
 import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.port.EspPort;
+import org.openremote.controller.utils.Logger;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.SynchronousQueue;
@@ -47,11 +51,21 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
   //    synchronization
   //
 
+
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Port reader thread shutdown timeout [millis].
+   */
+  private static final long READER_THREAD_SHUTDOWN_TIMEOUT = 1000;
+
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   * TODO : Logger
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
    */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
 
   // Private Instance Fields ----------------------------------------------------------------------
@@ -144,7 +158,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     {
       throw new EspException(
           EspException.ErrorCode.RESP_TIMEOUT,
-          "Failed to send request because of response timeout."
+          "Response timed out."
       );
     }
 
@@ -260,7 +274,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
       // TODO : OpenRemoteRuntime.createThread
 
       readerThread = new Thread(
-          this, "EnOcean Serial Protocol Port Reader"
+          this, "EnOcean ESP port reader"
       );
 
       readerThread.start();
@@ -271,13 +285,41 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
      */
     public void stop()
     {
-      readerThreadRunning = false;
+      if(readerThread == null)
+      {
+        return;
+      }
 
-      readerThread.interrupt();
+      readerThreadRunning = false;
 
       try
       {
-        readerThread.join();
+        // ----- BEGIN PRIVILEGED CODE BLOCK ------------------------------------------------------
+
+        AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Void>()
+        {
+          @Override public Void run()
+          {
+            readerThread.interrupt();
+
+            return null;
+          }
+        });
+
+        // ----- END PRIVILEGED CODE BLOCK ------------------------------------------------------
+      }
+
+      catch (SecurityException e)
+      {
+        log.warn(
+            "Could not interrupt port reader thread ''{0}'' due to security constraints: {1}",
+            readerThread.getName(), e.getMessage()
+        );
+      }
+
+      try
+      {
+        readerThread.join(READER_THREAD_SHUTDOWN_TIMEOUT);
       }
       catch (InterruptedException e)
       {
@@ -294,6 +336,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
      */
     @Override public void run()
     {
+      log.info("Started reader thread for port " + AbstractEspProcessor.this.port);
+
       while (readerThreadRunning)
       {
         try
@@ -315,6 +359,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
           Thread.currentThread().interrupt();
         }
       }
+
+      log.info("Shutting down reader thread for port " + AbstractEspProcessor.this.port);
     }
 
 
