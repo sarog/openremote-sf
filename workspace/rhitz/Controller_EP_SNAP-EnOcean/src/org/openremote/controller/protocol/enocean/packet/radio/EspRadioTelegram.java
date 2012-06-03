@@ -43,7 +43,7 @@ public interface EspRadioTelegram
     /**
      * Repeated switch communication.
      */
-    RPS(0xF6),
+    RPS("RPS", 0xF6),
 
     /**
      * Repeated switch communication (old ESP2 version). <p>
@@ -52,12 +52,12 @@ public interface EspRadioTelegram
      * {@link #RPS} value and this old value may be used interchangeably for defining
      * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
-    RPS_ESP2(0x05),
+    RPS_ESP2("RPS", 0x05),
 
     /**
      * 1 byte communication.
      */
-    BS1(0xD5),
+    BS1("1BS", 0xD5),
 
     /**
      * 1 byte communication (old ESP2 version).
@@ -66,12 +66,12 @@ public interface EspRadioTelegram
      * {@link #BS1} value and this old value may be used interchangeably for defining
      * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
-    BS1_ESP2(0x06),
+    BS1_ESP2("1BS", 0x06),
 
     /**
      * 4 byte communication.
      */
-    BS4(0xA5),
+    BS4("4BS", 0xA5),
 
     /**
      * 4 byte communication (old ESP2 version).
@@ -80,42 +80,42 @@ public interface EspRadioTelegram
      * {@link #BS4} value and this old value may be used interchangeably for defining
      * EnOcean equipment profiles no matter if it's a ESP2 or ESP3 setting.
      */
-    BS4_ESP2(0x07),
+    BS4_ESP2("4BS", 0x07),
 
     /**
      * Variable length data.
      */
-    VLD(0xD2),
+    VLD("VLD", 0xD2),
 
     /**
      * Manufacturer specific communication.
      */
-    MSC(0xD1),
+    MSC("MSC", 0xD1),
 
     /**
      * Addressed destination telegram.
      */
-    ADT(0xA6),
+    ADT("ADT", 0xA6),
 
     /**
      * Smart ack learn request.
      */
-    SM_LRN_REQ(0xC6),
+    SM_LRN_REQ("SM_LRN_REQ", 0xC6),
 
     /**
      * Smart ack learn answer.
      */
-    SM_LRN_ANS(0xC7),
+    SM_LRN_ANS("SM_LRN_ANS", 0xC7),
 
     /**
      * Smart ack reclaim.
      */
-    SM_REC(0xA7),
+    SM_REC("SM_REC", 0xA7),
 
     /**
      * Remote management.
      */
-    SYS_EX(0xC5);
+    SYS_EX("SYS_EX", 0xC5);
 
     // Members ------------------------------------------------------------------------------------
 
@@ -135,15 +135,17 @@ public interface EspRadioTelegram
 
       throw new UnknownRorgException(
           "Unknown ESP3 radio telegram type (RORG) value : " +
-              Strings.byteToUnsignedHexString(radioTypeByte)
+          Strings.byteToUnsignedHexString(radioTypeByte)
       );
     }
 
 
     private byte value;
+    private String rorgString;
 
-    private RORG(int value)
+    private RORG(String rorgString, int value)
     {
+      this.rorgString = rorgString;
       this.value = (byte)(value & 0xFF);
     }
 
@@ -154,22 +156,7 @@ public interface EspRadioTelegram
 
     @Override public String toString()
     {
-      if(this == RPS_ESP2)
-      {
-        return "RPS";
-      }
-
-      else if(this == BS1 || this == BS1_ESP2)
-      {
-        return "1BS";
-      }
-
-      else if(this == BS4 || this == BS4_ESP2)
-      {
-        return "4BS";
-      }
-
-      return super.toString();
+      return rorgString;
     }
   }
 
