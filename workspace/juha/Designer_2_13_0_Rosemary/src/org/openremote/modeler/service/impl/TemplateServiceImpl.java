@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.service.impl;
 
 import java.io.BufferedReader;
@@ -104,13 +105,15 @@ import flexjson.JSONSerializer;
 import flexjson.Path;
 
 /**
- * 
+ * TODO
+ *
  * @author javen
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class TemplateServiceImpl implements TemplateService {
-   private static Logger log = Logger.getLogger(TemplateServiceImpl.class);;
+public class TemplateServiceImpl implements TemplateService
+{
+   private static Logger log = Logger.getLogger(TemplateServiceImpl.class);
 
    private Configuration configuration;
    private UserService userService;
@@ -620,69 +623,157 @@ public class TemplateServiceImpl implements TemplateService {
       return switches;
    }
 
-   private Set<Sensor> getSensors(List<Screen> screens) {
-      Set<Sensor> sensors = new HashSet<Sensor>();
 
-      for (Screen screen : screens) {
-         for (Absolute absolute : screen.getAbsolutes()) {
-            UIComponent component = absolute.getUiComponent();
+  /**
+   * Retrieves all associated sensors from all given screen designs and their included
+   * UI components. As a side effect (ugh) relinks components to sensors in what looks
+   * like an attempt to avoid duplicate sensors in the loaded template.
+   *
+   * TODO :
+   *   - the logic in this method (and associated helper methods) is somewhat contrived
+   *     and has a definite 'smell' to it -- smells like a misunderstanding of Java's
+   *     equals() object identity or mismatch between the persistent identity and object
+   *     instance identity. Not sure which (and there's no code documentation) and whether
+   *     it can be improved. Not touching it further for now, since there are no tests to
+   *     back it up.
+   *                                                                            [JPL]
+   *
+   * @param screens   list of screens to iterate through to discover their UI components,
+   *                  and the sensors the UI components might be associated with
+   *
+   * @return  a set of sensor instances for a template
+   */
+  private Set<Sensor> getSensors(List<Screen> screens)
+  {
+    Set<Sensor> sensors = new HashSet<Sensor>();
 
-            if (component instanceof SensorOwner) {
-               SensorOwner sensorOwner = (SensorOwner) component;
-               Sensor s = sensorOwner.getSensor();
-
-               if (s != null) {
-
-                  for (Sensor sensor : sensors) {
-                     if (sensor.equals(sensorOwner.getSensor())) {
-                        sensorOwner.setSensor(sensor);
-                     }
-                  }
-
-                  initSensorLinker(component, sensorOwner);
-                  sensors.add(s);
-               }
-            }
-         }
-
-         for (UIGrid grid : screen.getGrids()) {
-            for (Cell cell : grid.getCells()) {
-               UIComponent component = cell.getUiComponent();
-               if (component instanceof SensorOwner) {
-                  SensorOwner sensorOwner = (SensorOwner) component;
-                  for (Sensor sensor : sensors) {
-                     if (sensor.equals(sensorOwner.getSensor())) {
-                        sensorOwner.setSensor(sensor);
-                     }
-                  }
-
-                  initSensorLinker(component, sensorOwner);
-                  sensors.add(sensorOwner.getSensor());
-               }
-            }
-         }
+    for (Screen screen : screens)
+    {
+      for (Absolute absolute : screen.getAbsolutes())
+      {
+        relinkSensor(absolute.getUiComponent(), sensors);
       }
 
-      return sensors;
-   }
-
-   private void initSensorLinker(UIComponent component,SensorOwner sensorOwner) {
-      if (component != null ) {
-         if(component instanceof UILabel ) {
-            UILabel uiLabel = (UILabel) component;
-            if (uiLabel.getSensorLink() == null) {
-               uiLabel.setSensorLink(new SensorLink(sensorOwner.getSensor()));
-            }
-            uiLabel.getSensorLink().setSensor(sensorOwner.getSensor());
-         } else if (component instanceof UIImage) {
-            UIImage uiImage = (UIImage) component;
-            if (uiImage.getSensorLink() == null) {
-               uiImage.setSensorLink(new SensorLink(sensorOwner.getSensor()));
-            }
-            uiImage.getSensorLink().setSensor(sensorOwner.getSensor());
-         }
+      for (UIGrid grid : screen.getGrids())
+      {
+        for (Cell cell : grid.getCells())
+        {
+         relinkSensor(cell.getUiComponent(), sensors);
+        }
       }
-   }
+    }
+
+    return sensors;
+  }
+
+
+  /**
+   * Reset the sensor references in UI components to ensure there are no duplicate
+   * sensor instances being used.
+   *
+   * TODO :
+   *   - see the comments on the calling 'getSensors' method and further comments
+   *     in this implementation about the code smell
+   *
+   *
+   * @param component           the UI component to relink
+   * @param existingSensors     a set of sensors already found in previous UI
+   *                            components
+   */
+  private void relinkSensor(UIComponent component, Set<Sensor> existingSensors)
+  {
+    if (!(component instanceof SensorOwner))
+    {
+      // Component has no associated sensors, so we don't care about it...
+
+      return;
+    }
+
+    SensorOwner sensorOwner = (SensorOwner) component;
+    Sensor componentSensor = sensorOwner.getSensor();
+
+    if (componentSensor == null)
+    {
+      // Component can be associated with sensor, but this one wasn't, so ignore it...
+
+      return;
+    }
+
+
+    // Check if this component's sensor was already picked up from any of the other
+    // UI components in this design...
+
+    for (Sensor existingSensor : existingSensors)
+    {
+      if (existingSensor.equals(componentSensor))
+      {
+        // Same sensor was already found earlier associated to another UI component. Use
+        // the existing one and update this UI component to use it too...
+
+        sensorOwner.setSensor(existingSensor);
+      }
+    }
+
+    // Initialize UI label and image sensor links (custom sensor state handling)...
+
+    initSensorLinks(sensorOwner);
+
+
+    // Add the found sensor to our set of existing sensors.
+    //
+    //  TODO :
+    //    - This here assumes the Sensor equals() works as expected, otherwise we *would*
+    //      end up with duplicate sensors in the set -- yet the re-setting of the sensor
+    //      links above would only be necessary if equals() check do not spot duplicates.
+    //      Thus here is the source of the 'smell' in this implementation. The logic of
+    //      re-setting sensors above may be unneeded code noise.
+    //                                                                              [JPL]
+
+    existingSensors.add(componentSensor);
+  }
+
+
+  /**
+   * Establish the sensor links for component types that have specific handling for
+   * custom sensor states.
+   *
+   * TODO :
+   *   - unclear why this would be necessary on top of the existing component sensor
+   *     association -- the sensor link will use the same sensor instance as the
+   *     component so this duplicate linking looks unnecessary. And also it's inclusion
+   *     in concrete types of UILabel and UIImage only smacks of poor OO design.
+   *                                                                                [JPL]
+   *
+   * @param sensorOwner UILabel or UIImage component
+   */
+  private void initSensorLinks(SensorOwner sensorOwner)
+  {
+    if (sensorOwner instanceof UILabel)
+    {
+      UILabel uiLabel = (UILabel)sensorOwner;
+
+      if (uiLabel.getSensorLink() == null)
+      {
+        uiLabel.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+      }
+
+      uiLabel.getSensorLink().setSensor(sensorOwner.getSensor());
+    }
+
+    else if (sensorOwner instanceof UIImage)
+    {
+      UIImage uiImage = (UIImage)sensorOwner;
+
+      if (uiImage.getSensorLink() == null)
+      {
+        uiImage.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+      }
+
+      uiImage.getSensorLink().setSensor(sensorOwner.getSensor());
+    }
+  }
+
+
 
    @SuppressWarnings("unchecked")
    private Set<DeviceMacro> getMacros(UIComponentBox box,Collection<Gesture> gestures) {
