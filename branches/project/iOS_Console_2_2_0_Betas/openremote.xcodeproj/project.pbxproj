@@ -152,7 +152,6 @@
 		60366BCC144DCB9C004FED3B /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
 		60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
 		60366BCE144DCB9C004FED3B /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
-		60366BCF144DCB9C004FED3B /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
 		60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
@@ -230,7 +229,6 @@
 		60366C20144DCB9C004FED3B /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		60366C21144DCB9C004FED3B /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
 		60366C23144DCB9C004FED3B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D982136ADD31009EECA3 /* CoreData.framework */; };
-		60366C24144DCB9C004FED3B /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7D1355F15000A7C87E /* libresolv.dylib */; };
 		60366C25144DCB9C004FED3B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7B1355F12400A7C87E /* AVFoundation.framework */; };
 		60366C26144DCB9C004FED3B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A791355F07E00A7C87E /* CoreAudio.framework */; };
 		60366C27144DCB9C004FED3B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
@@ -240,22 +238,6 @@
 		60366C2B144DCB9C004FED3B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		60366C2C144DCB9C004FED3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		60366C2D144DCB9C004FED3B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
-		60366C2E144DCB9C004FED3B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6197F1355ED9900A7C87E /* libcrypto.a */; };
-		60366C2F144DCB9C004FED3B /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619801355ED9900A7C87E /* libeXosip2.a */; settings = {ATTRIBUTES = (Required, ); }; };
-		60366C30144DCB9C004FED3B /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619811355ED9900A7C87E /* libgsm.a */; };
-		60366C31144DCB9C004FED3B /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619821355ED9900A7C87E /* libilbc.a */; };
-		60366C32144DCB9C004FED3B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619831355ED9900A7C87E /* liblinphone.a */; };
-		60366C33144DCB9C004FED3B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619841355ED9900A7C87E /* libmediastreamer.a */; };
-		60366C34144DCB9C004FED3B /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619851355ED9900A7C87E /* libopencore-amrnb.a */; };
-		60366C35144DCB9C004FED3B /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619861355ED9900A7C87E /* libopencore-amrwb.a */; };
-		60366C36144DCB9C004FED3B /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619871355ED9900A7C87E /* libortp.a */; };
-		60366C37144DCB9C004FED3B /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619881355ED9900A7C87E /* libosip2.a */; };
-		60366C38144DCB9C004FED3B /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619891355ED9900A7C87E /* libosipparser2.a */; };
-		60366C39144DCB9C004FED3B /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198A1355ED9900A7C87E /* libspeex.a */; };
-		60366C3A144DCB9C004FED3B /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198B1355ED9900A7C87E /* libspeexdsp.a */; };
-		60366C3B144DCB9C004FED3B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198C1355ED9900A7C87E /* libssl.a */; };
-		60366C3C144DCB9C004FED3B /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A731355EFB000A7C87E /* libmsamr.a */; };
-		60366C3D144DCB9C004FED3B /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A741355EFB000A7C87E /* libmsilbc.a */; };
 		603A9108155C13A600E46FA0 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60F3874815590FC40089F8BD /* libOCMock.a */; };
 		603A9115155C13AC00E46FA0 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 603A9109155C13A600E46FA0 /* libavcodec.a */; };
 		603A9116155C13AC00E46FA0 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 603A910A155C13A700E46FA0 /* libavutil.a */; };
@@ -537,7 +519,6 @@
 		60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E0155401AC0089F8BD /* ClientSideRuntime.m */; };
 		60F386E61554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386E71554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
-		60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386E51554034C0089F8BD /* SIPProtocol.m */; };
 		60F386EB15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
 		60F386EC15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
 		60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F386EA15541CE90089F8BD /* SensorStatusCache.m */; };
@@ -1539,7 +1520,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				60366C23144DCB9C004FED3B /* CoreData.framework in Frameworks */,
-				60366C24144DCB9C004FED3B /* libresolv.dylib in Frameworks */,
 				60366C25144DCB9C004FED3B /* AVFoundation.framework in Frameworks */,
 				60366C26144DCB9C004FED3B /* CoreAudio.framework in Frameworks */,
 				60366C27144DCB9C004FED3B /* CoreGraphics.framework in Frameworks */,
@@ -1549,22 +1529,6 @@
 				60366C2B144DCB9C004FED3B /* UIKit.framework in Frameworks */,
 				60366C2C144DCB9C004FED3B /* Foundation.framework in Frameworks */,
 				60366C2D144DCB9C004FED3B /* AudioToolbox.framework in Frameworks */,
-				60366C2E144DCB9C004FED3B /* libcrypto.a in Frameworks */,
-				60366C2F144DCB9C004FED3B /* libeXosip2.a in Frameworks */,
-				60366C30144DCB9C004FED3B /* libgsm.a in Frameworks */,
-				60366C31144DCB9C004FED3B /* libilbc.a in Frameworks */,
-				60366C32144DCB9C004FED3B /* liblinphone.a in Frameworks */,
-				60366C33144DCB9C004FED3B /* libmediastreamer.a in Frameworks */,
-				60366C34144DCB9C004FED3B /* libopencore-amrnb.a in Frameworks */,
-				60366C35144DCB9C004FED3B /* libopencore-amrwb.a in Frameworks */,
-				60366C36144DCB9C004FED3B /* libortp.a in Frameworks */,
-				60366C37144DCB9C004FED3B /* libosip2.a in Frameworks */,
-				60366C38144DCB9C004FED3B /* libosipparser2.a in Frameworks */,
-				60366C39144DCB9C004FED3B /* libspeex.a in Frameworks */,
-				60366C3A144DCB9C004FED3B /* libspeexdsp.a in Frameworks */,
-				60366C3B144DCB9C004FED3B /* libssl.a in Frameworks */,
-				60366C3C144DCB9C004FED3B /* libmsamr.a in Frameworks */,
-				60366C3D144DCB9C004FED3B /* libmsilbc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3308,7 +3272,6 @@
 				60366BCC144DCB9C004FED3B /* XMLEntity.m in Sources */,
 				60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */,
 				60366BCE144DCB9C004FED3B /* Web.m in Sources */,
-				60366BCF144DCB9C004FED3B /* SipController.m in Sources */,
 				60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */,
 				60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */,
 				60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */,
@@ -3395,7 +3358,6 @@
 				60F386CD1553D9BA0089F8BD /* ControllerButtonParser.m in Sources */,
 				60F386D21553DC230089F8BD /* ControllerComponent.m in Sources */,
 				60F386E3155401AC0089F8BD /* ClientSideRuntime.m in Sources */,
-				60F386E81554034D0089F8BD /* SIPProtocol.m in Sources */,
 				60F386ED15541CE90089F8BD /* SensorStatusCache.m in Sources */,
 				60BC259C15596E8D0048A2BD /* DeviceProtocol.m in Sources */,
 				60BC25A01559736D0048A2BD /* CommandDeferredBinding.m in Sources */,
@@ -3562,9 +3524,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3587,7 +3552,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3597,7 +3562,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
@@ -3623,7 +3591,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3633,7 +3601,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
@@ -3657,7 +3628,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3667,7 +3638,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
@@ -3691,7 +3665,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CB508E15-95FF-4714-8F3A-404AFAC698A4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3801,9 +3775,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3824,7 +3801,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3856,9 +3833,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3878,7 +3858,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C422AD39-9B7E-408F-A648-FCB4465ACE46";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
