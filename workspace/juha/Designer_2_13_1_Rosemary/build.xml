@@ -228,9 +228,9 @@
 		<echo message=" Deploying project..." />
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
-		<delete file="${deploy.dir}/${project.name}.war"/>
-		<delete dir="${deploy.dir}/${project.name}"/>
-		<copy todir="${deploy.dir}" file="${output.dir}/${project.name}.war"/>
+		<delete file="${deploy.dir}/Designer-${version}-${build.date}-${version.name}.war"/>
+		<delete dir="${deploy.dir}/Designer-${version}-${build.date}-${version.name}"/>
+		<copy todir="${deploy.dir}" file="${output.dir}/Designer-${version}-${build.date}-${version.name}.war"/>
 	</target>
 
 
