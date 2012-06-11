@@ -1,4 +1,15 @@
-Designer 2.13.0 (2012-05-XX Rosemary)
+Designer 2.13.1 (2012-06-11 Rosemary)
+=====================================
+
+Bug fix release:
+
+ - Templates no longer recreate associated building
+   objects when used. Users must explicitly bind UI
+   components in templates to their own building
+   objects.
+
+
+Designer 2.13.0 (2012-06-01 Rosemary)
 =====================================
 
  - Image assets in designs are now handled with
