@@ -6,7 +6,7 @@ Bug fix release:
  - Templates no longer recreate associated building
    objects when used. Users must explicitly bind UI
    components in templates to their own building
-   objects.
+   objects (MODELER-314).
 
 
 Designer 2.13.0 (2012-06-01 Rosemary)
