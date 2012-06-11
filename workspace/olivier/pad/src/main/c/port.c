@@ -33,7 +33,7 @@ int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceive
 	// Prepare runtime
 	r = port->lockCb(port->portPool, port->portId, &port->context, port->cfg, portReceiveCb);
 	if (r != R_SUCCESS) {
-		return unlock(pool, port, source);
+		unlock(pool, port, source);
 	}
 	return r;
 }

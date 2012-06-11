@@ -136,8 +136,10 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 
 int lsInterruptReadThread(portContext_t *portContext) {
 	apr_status_t r;
-	pthread_kill(portContext->readThread, SIGALRM);
-	pthread_join(portContext->readThread, NULL);
+	if(portContext->readThread > 0) {
+		pthread_kill(portContext->readThread, SIGALRM);
+		pthread_join(portContext->readThread, NULL);
+	}
 	return R_SUCCESS;
 }
 
@@ -172,7 +174,9 @@ physicalLock_t physicalLockCb = physicalLock;
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	// Close serial port
 	//fcntl((*portContext)->fd, F_SETFL, FNDELAY);
-	close((*portContext)->fd);
+	if((*portContext)->fd > 0) {
+		close((*portContext)->fd);
+	}
 
 	// Interrupt read thread
 	lsInterruptReadThread(*portContext);
