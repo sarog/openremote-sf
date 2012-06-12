@@ -913,6 +913,50 @@ public class ResourceServiceImpl implements ResourceService
       }
    }
 
+   /**
+    * Iterates over all buttons in the design and when the name is null, replaces with empty string.
+    * Having null name causes issue when template is created from screen.
+    *
+    * @param panels All panels in which to process the buttons
+    */
+   private void replaceNullNamesWithEmptyString(Collection<Panel> panels) {
+     for (Panel panel : panels) {
+       for (GroupRef groupRef : panel.getGroupRefs()) {
+         Group group = groupRef.getGroup();
+         for (ScreenPairRef screenRef : group.getScreenRefs()) {
+           ScreenPair screenPair = screenRef.getScreen();
+           Screen screen = screenPair.getPortraitScreen();
+           if (screen != null) {
+             replaceNullNamesWithEmptyString(screen);
+           }
+           screen = screenPair.getLandscapeScreen();
+           if (screen != null) {
+             replaceNullNamesWithEmptyString(screen);
+           }
+         }
+       }
+     }
+   }
+
+   private void replaceNullNamesWithEmptyString(Screen screen) {
+     for (Absolute absolute : screen.getAbsolutes()) {
+       replaceNullNamesWithEmptyString(absolute.getUiComponent());
+     }
+     for (UIGrid grid : screen.getGrids()) {
+       for (Cell cell : grid.getCells()) {
+         replaceNullNamesWithEmptyString(cell.getUiComponent());
+       }
+     }
+   }
+
+   private void replaceNullNamesWithEmptyString(UIComponent component) {
+     if (component instanceof UIButton) {
+       UIButton uiButton = (UIButton)component;
+       if (uiButton.getName() == null) {
+         uiButton.setName("");
+       }
+     }
+   }
 
   /**
    * Prepares the objects to be sent to client side by replacing references to entity beans with references to DTOs.
@@ -1260,6 +1304,9 @@ public class ResourceServiceImpl implements ResourceService
       //                                                                            [JPL]
 
       populateDTOReferences(result.getPanels());
+      
+      // EBR - MODELER-315
+      replaceNullNamesWithEmptyString(result.getPanels());      
 
       return result;
     }
