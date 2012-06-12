@@ -7,6 +7,8 @@ Bug fix release:
    objects when used. Users must explicitly bind UI
    components in templates to their own building
    objects (MODELER-314).
+ - Correctly maintains empty button label names
+   when read from a template (MODELER-315)
 
 
 Designer 2.13.0 (2012-06-01 Rosemary)
