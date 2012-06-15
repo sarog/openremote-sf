@@ -13,7 +13,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${APR_PATH}/include")
  
 # external libraries
-link_directories("${APR_PATH}/lib")
+link_directories("${APR_PATH}/.libs")
 
 
 # add the executable

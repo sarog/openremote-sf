@@ -7,7 +7,7 @@ include_directories(${APR_PATH}/include)
 include_directories("../../main/c")
  
 # external libraries
-link_directories("${APR_PATH}/lib")
+link_directories("${APR_PATH}/.libs")
 
 # add the executable
 add_executable(padTest main.c test.c)
