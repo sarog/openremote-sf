@@ -10,7 +10,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
   set (APR_LIB "apr-1")
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
   set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.6")
-  set (APR_LIB "apr-1")
+  set (APR_LIB "apr-1.a")
 endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 
 # The version number.
