@@ -31,6 +31,8 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.UserDTO;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.IconAlign;
@@ -47,11 +49,11 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
 import com.extjs.gxt.ui.client.widget.form.SimpleComboBox;
 import com.extjs.gxt.ui.client.widget.form.SimpleComboValue;
 import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -213,11 +215,11 @@ public class AccountManageWindow extends Dialog {
             if (cureentUserId == (Long) model.get("oid")) {
                html += "<b> - me</b>";
             }
-            return "<span title='" + (String) model.get("username") + "'>" + html + "</span>";
+            return "<span title='" + (String) model.get("userName") + "'>" + html + "</span>";
          }
       };
       
-      ColumnConfig emailColumn = new ColumnConfig("email", "OpenRemote user", 180);
+      ColumnConfig emailColumn = new ColumnConfig("eMail", "OpenRemote user", 180);
       emailColumn.setSortable(false);
       emailColumn.setRenderer(emailRenderer);
       accessUserConfigs.add(emailColumn);
@@ -250,10 +252,10 @@ public class AccountManageWindow extends Dialog {
       accessUsersContainer.setSize(440, 150);
       accessUsersContainer.add(accessUsersGrid);
       add(accessUsersContainer);
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsers(new AsyncSuccessCallback<List<User>>() {
-         public void onSuccess(List<User> accessUsers) {
+      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+         public void onSuccess(ArrayList<UserDTO> accessUsers) {
             if (accessUsers.size() > 0) {
-               accessUsersGrid.getStore().add(User.createModels(accessUsers));
+               accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
                accessUsersGrid.unmask();
             }
          }
