@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
+import org.openremote.modeler.shared.dto.UserDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -82,4 +84,11 @@ public interface UserRPCService extends RemoteService {
     * @return the user id
     */
    Long getUserId();
+   
+   /**
+    * Gets the users who can access the current account.
+    * 
+    * @return the account access users
+    */
+   ArrayList<UserDTO> getAccountAccessUsersDTO();
 }
