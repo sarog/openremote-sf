@@ -30,7 +30,6 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.domain.User;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.UserDTO;
 
@@ -104,13 +103,13 @@ public class AccountManageWindow extends Dialog {
             inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                public void afterSubmit(SubmitEvent be) {
                   inviteUserWindow.hide();
-                  User user = be.getData();
-                  if (user != null) {
+                  UserDTO userDTO = be.getData();
+                  if (userDTO != null) {
                      if (invitedUsersGrid == null) {
                         createInvitedUserGrid();
                      }
                      invitedUsersGrid.stopEditing();
-                     invitedUsersGrid.getStore().insert(user.getBeanModel(), 0);
+                     invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
                      invitedUsersGrid.startEditing(0, 1);
                   }
                }
@@ -124,11 +123,11 @@ public class AccountManageWindow extends Dialog {
     * Initialize the invited user grid's store by getting the invited users from server.
     */
    private void addInvitedUsers() {
-      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<List<User>>() {
-         public void onSuccess(List<User> invitedUsers) {
+      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+         public void onSuccess(ArrayList<UserDTO> invitedUsers) {
             if (invitedUsers.size() > 0) {
                createInvitedUserGrid();
-               invitedUsersGrid.getStore().add(User.createModels(invitedUsers));
+               invitedUsersGrid.getStore().add(DTOHelper.createModels(invitedUsers));
             }
          }
       });
@@ -140,7 +139,7 @@ public class AccountManageWindow extends Dialog {
     */
    private void createInvitedUserGrid() {
       List<ColumnConfig> invitedUserConfigs = new ArrayList<ColumnConfig>();
-      invitedUserConfigs.add(new ColumnConfig("email", "Invited user", 180));
+      invitedUserConfigs.add(new ColumnConfig("eMail", "Invited user", 180));
       
        GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
@@ -289,9 +288,9 @@ public class AccountManageWindow extends Dialog {
          public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
             final String roleStrs = se.getSelectedItem().getValue();
             if (!roleStrs.equals(model.get("role"))) {
-               AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getOid(), roleStrs, new AsyncSuccessCallback<User>() {
-                  public void onSuccess(User user) {
-                     ((User)model.getBean()).setRoles(user.getRoles());
+               AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((UserDTO)model.getBean()).getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
+                  public void onSuccess(UserDTO userDTO) {
+                     ((UserDTO)model.getBean()).setRole(userDTO.getRole());
                      Info.display("Change role", "Change role to " + roleStrs + " success.");
                   }
                });
@@ -316,7 +315,7 @@ public class AccountManageWindow extends Dialog {
       deleteButton.setIcon(icons.delete());
       deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((User)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
+            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((UserDTO)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
                   store.remove(model);
                   Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");
@@ -365,10 +364,10 @@ public class AccountManageWindow extends Dialog {
             public void handleEvent(FormEvent be) {
                form.mask("sending email...");
                AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(),
-                     roleList.getValue().get("data").toString(), new AsyncSuccessCallback<User>() {
-                        public void onSuccess(User user) {
+                     roleList.getValue().get("data").toString(), new AsyncSuccessCallback<UserDTO>() {
+                        public void onSuccess(UserDTO userDTO) {
                            form.unmask();
-                           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(user));
+                           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
                         }
                         public void onFailure(Throwable caught) {
                            super.onFailure(caught);
