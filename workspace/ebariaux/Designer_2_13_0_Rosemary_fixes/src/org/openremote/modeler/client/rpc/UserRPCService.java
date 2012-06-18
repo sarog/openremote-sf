@@ -45,14 +45,14 @@ public interface UserRPCService extends RemoteService {
     * 
     * @throws UserInvitationException the user invitation exception
     */
-   User inviteUser(String email, String role) throws UserInvitationException;
+   UserDTO inviteUser(String email, String role) throws UserInvitationException;
    
    /**
     * Gets the pending invitees by current account.
     * 
     * @return the pending invitees by account
     */
-   List<User> getPendingInviteesByAccount();
+   ArrayList<UserDTO> getPendingInviteesByAccount();
    
    /**
     * Update the invited user roles.
@@ -62,7 +62,7 @@ public interface UserRPCService extends RemoteService {
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles);
+   UserDTO updateUserRoles(long uid, String roles);
    
    /**
     * Delete the invited user by user id.
@@ -70,13 +70,6 @@ public interface UserRPCService extends RemoteService {
     * @param uid the uid
     */
    void deleteUser(long uid);
-   
-   /**
-    * Gets the users who can access the current account.
-    * 
-    * @return the account access users
-    */
-   List<User> getAccountAccessUsers();
    
    /**
     * Gets the current user's id.
