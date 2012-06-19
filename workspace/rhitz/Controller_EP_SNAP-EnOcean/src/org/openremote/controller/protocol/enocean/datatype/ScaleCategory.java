@@ -1,57 +1,101 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.enocean.datatype;
 
+/**
+ * EnOcean equipment profile (EEP) scale category.
+ *
+ * EnOcean equipment profiles (EEP) are used to structure the payload field of an EnOcean
+ * radio telegram. Each EnOcean equipment profile is formally specified by a table with rows
+ * for each profile data field. The table contains the column 'Scale' which is used to specify
+ * a linear scale or a categorical scale. This class represents a scale category item of a
+ * categorical scale.
+ *
+ * @see CategoricalScale
+ *
+ *
+ * @author Rainer Hitz
+ */
 public class ScaleCategory
 {
+
+  // Private Instance Fields ----------------------------------------------------------------------
+
   /**
-   * TODO
+   * Scale category name mainly used for logging purposes. <p>
    */
   private String name;
 
   /**
-   * TODO
+   * Start of raw value data range.
    */
   private int minValue;
 
   /**
-   * TODO
+   * End of raw value data range.
    */
   private int maxValue;
 
   /**
-   * TODO
+   * Value for updating sensors with a state value (mainly state sensors).
    */
-  private String sensorStringValue;
+  private String sensorStateValue;
 
   /**
-   * TODO
+   * Value for updating sensors with a numeric value.
    */
   private int sensorValue;
 
   /**
-   * TODO
+   * Constructs a scale category instance.
    *
-   * @param name
-   * @param minValue
-   * @param maxValue
+   * @param name              scale category name mainly used for logging purposes
+   *
+   * @param minValue          start of raw value data range
+   *
+   * @param maxValue          end of raw value data range
+   *
+   * @param sensorStateValue  value for updating sensors with a state value (mainly state sensors)
+   *
+   * @param sensorValue       value for updating sensors with a numeric value
    */
-  public ScaleCategory(String name, int minValue, int maxValue, String sensorStringValue, int sensorValue)
+  public ScaleCategory(String name, int minValue, int maxValue, String sensorStateValue, int sensorValue)
   {
     this.name = name;
     this.minValue = minValue;
     this.maxValue = maxValue;
-    this.sensorStringValue = sensorStringValue;
+    this.sensorStateValue = sensorStateValue;
     this.sensorValue = sensorValue;
   }
 
   /**
-   * TODO
+   * Determines if a raw value falls into this scale category.
    *
-   * @param value
-   * @return
+   * @param  rawValue  raw value from EnOcean equipment profile (EEP) data field
+   *
+   * @return true if the raw value falls into this scale category, otherwise false
    */
-  public boolean isInCategory(int value)
+  public boolean fallsIntoCategory(int rawValue)
   {
-    if(value >= minValue && value <= maxValue)
+    if(rawValue >= minValue && rawValue <= maxValue)
     {
       return true;
     }
@@ -61,16 +105,51 @@ public class ScaleCategory
     }
   }
 
+  /**
+   * Returns the category name (mainly used for logging purposes).
+   *
+   * @return the category name
+   */
   public String getName()
   {
     return name;
   }
 
-  public String getSensorStringValue()
+  /**
+   * Returns the start of the raw value range.
+   *
+   * @return start of value range
+   */
+  public int getMinValue()
   {
-    return sensorStringValue;
+    return minValue;
   }
 
+  /**
+   * Returns the end of the raw value range.
+   *
+   * @return end of value range
+   */
+  public int getMaxValue()
+  {
+    return maxValue;
+  }
+
+  /**
+   * Returns the value for updating sensors with a state value.
+   *
+   * @return the sensor state value
+   */
+  public String getSensorStateValue()
+  {
+    return sensorStateValue;
+  }
+
+  /**
+   * Returns the value for updating sensors with a numeric value.
+   *
+   * @return the sensor value
+   */
   public int getSensorValue()
   {
     return sensorValue;
