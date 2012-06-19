@@ -38,7 +38,6 @@ import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
@@ -446,13 +445,7 @@ public class MacroWindow extends FormWindow {
     macroDetails.setName(macroNameField.getValue());
     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
     for (BeanModel bm : rightMacroItemListView.getStore().getModels()) {
-      if (bm.getBean() instanceof DeviceCommandDTO) {
-        items.add(new MacroItemDetailsDTO(null, MacroItemType.Command, null, new DTOReference(((DeviceCommandDTO) bm.getBean()).getOid()))); // We don't care about the name for saving
-      } else if (bm.getBean() instanceof MacroDTO) {
-        items.add(new MacroItemDetailsDTO(null, MacroItemType.Macro, null, new DTOReference(((MacroDTO) bm.getBean()).getOid()))); // We don't care about the name for saving
-      } else if (bm.getBean() instanceof MacroItemDetailsDTO) {
-        items.add((MacroItemDetailsDTO) bm.getBean());
-      }
+      items.add((MacroItemDetailsDTO) bm.getBean());
     }
     macroDetails.setItems(items);
     if (edit) {
