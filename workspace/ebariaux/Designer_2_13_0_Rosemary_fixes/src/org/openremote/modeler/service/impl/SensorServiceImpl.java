@@ -31,6 +31,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SensorService;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,5 +113,13 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
             genericDAO.save(sensor);
         }
         return sensorList;
+    }
+    
+    @Transactional
+    public void deleteSensorStates(CustomSensor sensor) {
+      List<State> states = sensor.getStates();
+      sensor.setStates(null);
+      genericDAO.deleteAll(states);
+      genericDAO.saveOrUpdate(sensor);
     }
 }

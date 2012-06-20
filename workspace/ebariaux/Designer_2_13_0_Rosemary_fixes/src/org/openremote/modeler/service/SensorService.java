@@ -22,6 +22,7 @@ package org.openremote.modeler.service;
 import java.util.List;
 
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 
 public interface SensorService {
@@ -41,4 +42,7 @@ public interface SensorService {
    List<Sensor> loadSameSensors(Sensor sensor) ;
 
    List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account);
+   
+   void deleteSensorStates(CustomSensor sensor);
+
 }
