@@ -83,8 +83,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    
    private Button previousPage = new Button();
-   
    private Button nextPage = new Button();
+   
+   private Button submitBtn;
 
    public NewScreenFromTemplateWindow() {
       super();
@@ -122,7 +123,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       nextPage.addSelectionListener(new PageListener());
       nextPage.setEnabled(false);
       
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
       submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
@@ -144,6 +145,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       BeanModel templateBeanModel = templateView.getSelectionModel().getSelectedItem();
       if (templateBeanModel == null) {
          MessageBox.alert("Error", "Please select a template.", null);
+         submitBtn.enable();
          be.cancelBubble();
       } else {
          NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
