@@ -65,4 +65,30 @@ public class ScaleCategoryTest
     Assert.assertTrue(category.fallsIntoCategory(20));
     Assert.assertFalse(category.fallsIntoCategory(21));
   }
+
+  @Test public void testEquals() throws Exception
+  {
+    ScaleCategory cat1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+    ScaleCategory cat2 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+
+    ScaleCategory cat3 = new ScaleCategory("Category 2", 50, 99, "CAT1", 2);
+
+    Assert.assertTrue(cat1.equals(cat2));
+    Assert.assertTrue(cat2.equals(cat1));
+
+    Assert.assertFalse(cat1.equals(cat3));
+    Assert.assertFalse(cat3.equals(cat1));
+
+    Assert.assertFalse(cat1.equals(null));
+    Assert.assertFalse(cat1.equals(new Object()));
+  }
+
+  @Test public void testHash() throws Exception
+  {
+    ScaleCategory cat1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+    ScaleCategory cat2 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+
+    Assert.assertTrue(cat1.hashCode() == cat2.hashCode());
+    Assert.assertTrue(cat1.equals(cat2));
+  }
 }
