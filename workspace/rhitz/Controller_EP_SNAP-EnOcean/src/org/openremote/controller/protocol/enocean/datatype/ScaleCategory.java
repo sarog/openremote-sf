@@ -64,6 +64,9 @@ public class ScaleCategory
    */
   private int sensorValue;
 
+
+  // Constructors ---------------------------------------------------------------------------------
+
   /**
    * Constructs a scale category instance.
    *
@@ -85,6 +88,41 @@ public class ScaleCategory
     this.sensorStateValue = sensorStateValue;
     this.sensorValue = sensorValue;
   }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * Tests category object equality based on raw value range.
+   *
+   * @param   o   device ID object to compare to
+   *
+   * @return  true if equals, false otherwise
+   */
+  @Override public boolean equals(Object o)
+  {
+    if(o == null)
+      return false;
+
+    if(!o.getClass().equals(this.getClass()))
+      return false;
+
+    ScaleCategory category = (ScaleCategory)o;
+
+    return this.minValue == category.minValue &&
+           this.maxValue == category.maxValue;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public int hashCode()
+  {
+    return minValue;
+  }
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
 
   /**
    * Determines if a raw value falls into this scale category.
