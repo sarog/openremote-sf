@@ -61,6 +61,8 @@ public class PanelWindow extends FormWindow {
 //   private CheckBox createScreen = new CheckBox();
    private ComboBoxExt predefinedPanel = null;
    
+   private Button submitBtn;
+   
    /**
     * Instantiates a window to create a new panel.
     */
@@ -145,7 +147,7 @@ public class PanelWindow extends FormWindow {
    }
    
    private void createButtons() {
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
       submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
@@ -164,6 +166,7 @@ public class PanelWindow extends FormWindow {
             String panelName = panelNameField.getValue();
             if (!UtilsProxy.isPanelNameAvailable(panelName)) {
                MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
+               submitBtn.enable();
                return;
             }
             if (panelModel == null) {

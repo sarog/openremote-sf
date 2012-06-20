@@ -64,6 +64,7 @@ public class ScreenWindow extends FormWindow {
    private Operation operation = Operation.NEW;
    private TreePanel<BeanModel> groupSelectTree = null;
    
+   private Button submitBtn;
    
    public ScreenWindow(BeanModel selectItem, Operation operation) {
       super();
@@ -113,7 +114,7 @@ public class ScreenWindow extends FormWindow {
    }
    
    private void createButtons() {
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
       submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
@@ -134,6 +135,7 @@ public class ScreenWindow extends FormWindow {
                BeanModel groupModel = groupSelectTree.getSelectionModel().getSelectedItem();
                if (groupModel == null || !(groupModel.getBean() instanceof GroupRef)) {
                   MessageBox.alert("New Screen Error", "Please select a group.", null);
+                  submitBtn.enable();
                   be.cancelBubble();
                   return;
                }
