@@ -167,6 +167,11 @@ public class SensorController extends BaseGWTSpringController implements SensorR
       ((RangeSensor)sensorBean).setMax(sensor.getMaxValue());
    } else if (sensor.getType() == SensorType.CUSTOM) {
       CustomSensor customSensor = (CustomSensor)sensorBean;
+      
+      // EBR - MODELER-321: removing children from relationship does not delete them in JPA
+      // Note that the delete is not done in the same transaction as the update, might be good to move this whole method to service layer
+      sensorService.deleteSensorStates(customSensor);
+      
       List<State> states = new ArrayList<State>();
       for (Map.Entry<String,String> e : sensor.getStates().entrySet()) {
         State state = new State();
