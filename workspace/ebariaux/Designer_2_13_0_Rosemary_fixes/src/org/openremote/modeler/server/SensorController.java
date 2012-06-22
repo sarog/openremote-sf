@@ -151,38 +151,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
   
    @Override
   public void updateSensorWithDTO(SensorDetailsDTO sensor) {
-    Sensor sensorBean = sensorService.loadById(sensor.getOid());
-    
-    if (sensor.getType() != sensorBean.getType()) {
-      throw new IllegalStateException("Sensor type cannot be changed on edit");
-    }
-
-    sensorBean.setName(sensor.getName());
-    
-    DeviceCommand deviceCommand = deviceCommandService.loadById(sensor.getCommand().getId());
-    sensorBean.getSensorCommandRef().setDeviceCommand(deviceCommand);
-    
-    if (sensor.getType() == SensorType.RANGE) {
-      ((RangeSensor)sensorBean).setMin(sensor.getMinValue());
-      ((RangeSensor)sensorBean).setMax(sensor.getMaxValue());
-   } else if (sensor.getType() == SensorType.CUSTOM) {
-      CustomSensor customSensor = (CustomSensor)sensorBean;
-      
-      // EBR - MODELER-321: removing children from relationship does not delete them in JPA
-      // Note that the delete is not done in the same transaction as the update, might be good to move this whole method to service layer
-      sensorService.deleteSensorStates(customSensor);
-      
-      List<State> states = new ArrayList<State>();
-      for (Map.Entry<String,String> e : sensor.getStates().entrySet()) {
-        State state = new State();
-        state.setName(e.getKey());
-        state.setValue(e.getValue());
-        state.setSensor(customSensor);
-        states.add(state);
-      }
-      customSensor.setStates(states);
-   }
-    sensorService.updateSensor(sensorBean);
+     sensorService.updateSensorWithDTO(sensor);
   }
 
   public void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId) {

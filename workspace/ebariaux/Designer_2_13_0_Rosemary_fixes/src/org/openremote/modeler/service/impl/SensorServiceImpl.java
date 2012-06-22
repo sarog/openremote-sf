@@ -19,8 +19,10 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
@@ -28,17 +30,27 @@ import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.service.BaseAbstractService;
+import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
 
-   @Transactional public Boolean deleteSensor(long id) {
+  private DeviceCommandService deviceCommandService;
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  @Transactional public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
       List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor", sensor)));
@@ -116,10 +128,37 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
     }
     
     @Transactional
-    public void deleteSensorStates(CustomSensor sensor) {
-      List<State> states = sensor.getStates();
-      sensor.setStates(null);
-      genericDAO.deleteAll(states);
-      genericDAO.saveOrUpdate(sensor);
+    public void updateSensorWithDTO(SensorDetailsDTO sensor) {
+      Sensor sensorBean = loadById(sensor.getOid());
+      
+      if (sensor.getType() != sensorBean.getType()) {
+        throw new IllegalStateException("Sensor type cannot be changed on edit");
+      }
+
+      sensorBean.setName(sensor.getName());
+      
+      DeviceCommand deviceCommand = deviceCommandService.loadById(sensor.getCommand().getId());
+      sensorBean.getSensorCommandRef().setDeviceCommand(deviceCommand);
+      
+      if (sensor.getType() == SensorType.RANGE) {
+        ((RangeSensor)sensorBean).setMin(sensor.getMinValue());
+        ((RangeSensor)sensorBean).setMax(sensor.getMaxValue());
+     } else if (sensor.getType() == SensorType.CUSTOM) {
+        CustomSensor customSensor = (CustomSensor)sensorBean;
+        
+        // MODELER-321: removing children from relationship does not delete them in JPA
+        genericDAO.deleteAll(customSensor.getStates());
+        
+        List<State> states = new ArrayList<State>();
+        for (Map.Entry<String,String> e : sensor.getStates().entrySet()) {
+          State state = new State();
+          state.setName(e.getKey());
+          state.setValue(e.getValue());
+          state.setSensor(customSensor);
+          states.add(state);
+        }
+        customSensor.setStates(states);
+     }
+      updateSensor(sensorBean);
     }
 }
