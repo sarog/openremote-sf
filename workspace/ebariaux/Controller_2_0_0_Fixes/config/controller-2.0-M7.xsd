@@ -689,7 +689,7 @@
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref = "include" minOccurs = "0" maxOccurs = "unbounded"/>
+        <xsd:group ref = "macroGroup" minOccurs = "0" maxOccurs = "unbounded"/>
       </xsd:sequence>
       <xsd:attribute name = "id" type = "idType" use = "required" />
     </xsd:complexType>
