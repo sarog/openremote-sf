@@ -83,23 +83,14 @@ tcflag_t lsGetCfg(apr_hash_t *cfg, const trsTbl_t *tbl, tcflag_t dft) {
 int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 	struct serial_struct serinfo;
 
-	// Force low latency on serial ports
-	if (ioctl(portContext->fd, TIOCGSERIAL, &serinfo) < 0) {
-		return R_CONFIGURE_ERROR;
-	}
-	serinfo.flags |= ASYNC_LOW_LATENCY;
-	if (ioctl(portContext->fd, TIOCSSERIAL, &serinfo) < 0) {
-		return R_CONFIGURE_ERROR;
-	}
-
 	// Save current port settings
 	tcgetattr(portContext->fd, &portContext->oldtio);
 
 	// Prepare new settings
 	tcflag_t parity = lsGetCfg(cfg, &parityTrsTbl, PARITY_EVEN);
-	cfsetspeed(&portContext->newtio, lsGetCfg(cfg, &speedTrsTbl, B19200));
 	cfmakeraw(&portContext->newtio);
 	portContext->newtio.c_cflag = lsGetCfg(cfg, &nbBitsTrsTbl, CS8) | CLOCAL | CREAD;
+	portContext->newtio.c_cflag &= ~CRTSCTS;
 	if (parity != PARITY_NO) {
 		portContext->newtio.c_cflag |= PARENB;
 		portContext->newtio.c_iflag = INPCK | IGNPAR;
@@ -111,6 +102,7 @@ int lsConfigure(portContext_t *portContext, apr_hash_t *cfg) {
 	}
 	portContext->newtio.c_cc[VMIN] = 1;
 	portContext->newtio.c_cc[VTIME] = 0; // read timeout = 0 * 0.1s
+	cfsetspeed(&portContext->newtio, lsGetCfg(cfg, &speedTrsTbl, B115200));
 	tcsetattr(portContext->fd, TCSANOW, &portContext->newtio);
 
 	return R_SUCCESS;
