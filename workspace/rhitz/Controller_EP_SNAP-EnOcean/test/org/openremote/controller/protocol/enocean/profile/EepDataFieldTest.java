@@ -145,7 +145,7 @@ public class EepDataFieldTest
 
     EepDataField df = new EepDataField(offset, size);
 
-    byte[] data = new byte[] {0x00};
+    EepData data = new EepData(1, (EepDataListener)null);
 
     df.write(0x0F, data);
 
@@ -169,7 +169,7 @@ public class EepDataFieldTest
 
     EepDataField df = new EepDataField(offset, size);
 
-    byte[] dataTooShort = new byte[] {0x00};
+    EepData dataTooShort = new EepData(1, (EepDataListener)null);
 
     try
     {
@@ -198,8 +198,11 @@ public class EepDataFieldTest
 
   private void assertReadValue(int expectedValue, byte[] data, int offset, int size)
   {
+    EepData eepData = new EepData(data.length, (EepDataListener)null);
+    eepData.update(data);
+
     EepDataField df = new EepDataField(offset, size);
-    int actualValue = df.read(data);
+    int actualValue = df.read(eepData);
 
     Assert.assertEquals(expectedValue, actualValue);
   }
@@ -207,10 +210,12 @@ public class EepDataFieldTest
   private void assertWriteValue(byte[] expectedData, int value, int offset, int size)
       throws EepDataField.ValueOutOfRangeException
   {
-    byte[] actualData = new byte[expectedData.length];
+    EepData eepData = new EepData(expectedData.length, (EepDataListener)null);
 
     EepDataField df = new EepDataField(offset, size);
-    df.write(value, actualData);
+    df.write(value, eepData);
+
+    byte[] actualData = eepData.asByteArray();
 
     Assert.assertArrayEquals(expectedData, actualData);
   }

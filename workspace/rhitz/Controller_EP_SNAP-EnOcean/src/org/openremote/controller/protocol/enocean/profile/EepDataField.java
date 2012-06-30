@@ -45,12 +45,12 @@ public class EepDataField
   /**
    * Start bit of data field.
    */
-  int offset;
+  private int offset;
 
   /**
    * Number of data field bits.
    */
-  int size;
+  private int size;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -72,14 +72,14 @@ public class EepDataField
   // Public Instance Methods ----------------------------------------------------------------------
 
   /**
-   * Retrieves the data field value from the given radio telegram payload data and
-   * returns it.
+   * Retrieves the data field value from the given EnOcean equipment profile (EEP)
+   * data and returns it.
    *
-   * @param  data  radio telegram payload data
+   * @param  data  EnOcean equipment (EEP) profile data
    *
    * @return data field value
    */
-  public int read(byte[] data)
+  public int read(EepData data)
   {
     checkDataParameter(data, false);
 
@@ -116,16 +116,16 @@ public class EepDataField
   }
 
   /**
-   * Stores the data field value in the radio telegram payload data.
+   * Stores the data field value in the given EnOcean equipment profile (EEP) data.
    *
    * @param  value  data field value
    *
-   * @param  data   radio telegram payload data
+   * @param  data   EnOcean equipment profile (EEP) data
    *
    * @throws ValueOutOfRangeException
    *           if the value exceeds the valid range of this data field
    */
-  public void write(int value, byte[] data) throws ValueOutOfRangeException
+  public void write(int value, EepData data) throws ValueOutOfRangeException
   {
     checkDataParameter(data, true);
     checkValueParameter(value);
@@ -176,14 +176,14 @@ public class EepDataField
     }
   }
 
-  private void checkDataParameter(byte[] data, boolean isWrite)
+  private void checkDataParameter(EepData data, boolean isWrite)
   {
     if(data == null)
     {
       throw new IllegalArgumentException("null data");
     }
 
-    if(data.length < (getLSBIndex() + 1))
+    if(data.length() < (getLSBIndex() + 1))
     {
       String errText = isWrite ? "Could not store value to EEP data field" :
                                  "Could not read value from EEP data field";
@@ -191,7 +191,7 @@ public class EepDataField
       throw new IllegalArgumentException(
           errText + " (offset=" + this.offset +
           ", size=" + this.size + ") because radio telegram payload (length=" +
-          data.length + ") is too short.");
+          data.length() + ") is too short.");
     }
   }
 
@@ -200,21 +200,24 @@ public class EepDataField
    *
    * @param subValue       value that is stored
    *
-   * @param data           radio telegram payload data
+   * @param data           EnOcean equipment profile (EEP) data
    *
    * @param dataByteIndex  index of payload data byte
    *
    * @param bitIndex       index of start bit
    */
-  private void writeSubValue(int subValue, byte[] data, int dataByteIndex, int bitIndex)
+  private void writeSubValue(int subValue, EepData data, int dataByteIndex, int bitIndex)
   {
-    data[dataByteIndex] |= (subValue << bitIndex);
+    int oldValue = data.getValue(dataByteIndex);
+    int newValue = oldValue | (subValue << bitIndex);
+
+    data.setValue(dataByteIndex, newValue);
   }
 
   /**
    * Reads part of the data field value from the payload data
    *
-   * @param data           radio telegram payload data
+   * @param data           EnOcean equipment profile (EEP) data
    *
    * @param dataByteIndex  index of payload data byte
    *
@@ -224,7 +227,7 @@ public class EepDataField
    *
    * @return               data field sub value
    */
-  private int readSubValue(byte[] data, int dataByteIndex, int bitIndex, int length)
+  private int readSubValue(EepData data, int dataByteIndex, int bitIndex, int length)
   {
     int mask = 0xFF;
 
@@ -238,7 +241,7 @@ public class EepDataField
       mask = mask & (0xFF >> (Byte.SIZE - (bitIndex + length)));
     }
 
-    return (data[dataByteIndex] & mask) >> bitIndex;
+    return (data.getValue(dataByteIndex) & mask) >> bitIndex;
   }
 
   /**
@@ -260,6 +263,7 @@ public class EepDataField
   {
     return (this.offset + this.size - 1) / Byte.SIZE;
   }
+
 
   // Nested Classes -------------------------------------------------------------------------------
 
