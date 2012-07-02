@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.protocol.enocean.datatype;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -29,20 +30,50 @@ import java.util.Set;
  * EnOcean equipment profiles (EEP) are used to structure the payload field of an EnOcean
  * radio telegram. Each EnOcean equipment profile is formally specified by a table with rows
  * for each profile data field. The table contains the columns 'Valid Range' and 'Scale'
- * used to specify the conversion from raw values to a categorical value.
+ * used to specify the conversion from raw values to a categorical value. <p>
+ *
+ * This class is used in combination with a {@link Ordinal} data type. <p>
  *
  * Note that the EnOcean equipment profile (EEP) specification uses the term 'Enum' for
  * specifying categorical scales.
  *
- *
  * @see org.openremote.controller.protocol.enocean.profile.EepDataField
- * @see LinearScale
- *
+ * @see Ordinal
  *
  * @author Rainer Hitz
  */
 public class CategoricalScale
 {
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Creates a scale category set with given categories.
+   *
+   * @param categories  scale category array
+   *
+   * @return scale category set
+   */
+  private static Set<ScaleCategory> createSet(ScaleCategory[] categories)
+  {
+    Set<ScaleCategory> set = new HashSet<ScaleCategory>(categories.length);
+
+    for(ScaleCategory category : categories)
+    {
+      if(category != null)
+      {
+        set.add(category);
+      }
+    }
+
+    if(set.size() == 0)
+    {
+      throw new IllegalArgumentException("null scale category");
+    }
+
+    return set;
+  }
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -55,9 +86,9 @@ public class CategoricalScale
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a categorical scale instance with given scale categories.
+   * Constructs a categorical scale instance with given scale category set.
    *
-   * @param categories  scale categories for converting raw values to categorical values
+   * @param categories  scale category set for converting raw values to categorical values
    */
   public CategoricalScale(Set<ScaleCategory> categories)
   {
@@ -69,15 +100,25 @@ public class CategoricalScale
     this.categories = categories;
   }
 
+  /**
+   * Constructs a categorical scale instance with given scale categories.
+   *
+   * @param categories scale categories for converting raw values to categorical values
+   */
+  public CategoricalScale(ScaleCategory...categories)
+  {
+    this(createSet(categories));
+  }
+
 
   // Public Instance Methods ----------------------------------------------------------------------
 
   /**
-   * Returns the category the given raw value falls into.
+   * Searches for the scale category which matches the given raw value and returns it.
    *
    * @param   rawValue  raw EnOcean equipment profile (EEP) data field value
    *
-   * @return  a matching scale category or <tt>null</tt> if there is not matching category
+   * @return  the matching scale category or <tt>null</tt> if there is not matching category
    */
   public ScaleCategory scaleRawValue(int rawValue)
   {
