@@ -36,43 +36,99 @@ public class CategoricalScaleTest
 
   // Tests ----------------------------------------------------------------------------------------
 
-  @Test public void testScaling() throws Exception
+
+  @Test public void testBasicConstruction() throws Exception
   {
-    ScaleCategory cat1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
-    ScaleCategory cat2 = new ScaleCategory("Category 2", 50, 99, "CAT2", 2);
-    ScaleCategory cat3 = new ScaleCategory("Category 3", 100, 150, "CAT3", 3);
+    ScaleCategory category1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+    ScaleCategory category2 = new ScaleCategory("Category 2", 50, 99, "CAT2", 2);
 
     Set<ScaleCategory> categories = new HashSet<ScaleCategory>();
-    categories.add(cat1);
-    categories.add(cat2);
-    categories.add(cat3);
+    categories.add(category1);
+    categories.add(category2);
+
+    CategoricalScale scale = new CategoricalScale(categories);
+
+    ScaleCategory scaledCategory = scale.scaleRawValue(25);
+
+    Assert.assertEquals(category1, scaledCategory);
+
+
+    scale = new CategoricalScale(category1, category2);
+
+    scaledCategory = scale.scaleRawValue(25);
+
+    Assert.assertEquals(category1, scaledCategory);
+  }
+
+  @Test public void testScaling() throws Exception
+  {
+    ScaleCategory category1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+    ScaleCategory category2 = new ScaleCategory("Category 2", 50, 99, "CAT2", 2);
+
+    Set<ScaleCategory> categories = new HashSet<ScaleCategory>();
+    categories.add(category1);
+    categories.add(category2);
 
     CategoricalScale scale = new CategoricalScale(categories);
 
 
-    ScaleCategory cat = scale.scaleRawValue(49);
+    ScaleCategory scaledCategory = scale.scaleRawValue(49);
 
-    Assert.assertEquals(cat1, cat);
-
-
-    cat = scale.scaleRawValue(50);
-
-    Assert.assertEquals(cat2, cat);
+    Assert.assertEquals(category1, scaledCategory);
 
 
-    cat = scale.scaleRawValue(99);
+    scaledCategory = scale.scaleRawValue(50);
 
-    Assert.assertEquals(cat2, cat);
+    Assert.assertEquals(category2, scaledCategory);
 
 
-    cat = scale.scaleRawValue(151);
+    scaledCategory = scale.scaleRawValue(99);
 
-    Assert.assertNull(cat);
+    Assert.assertEquals(category2, scaledCategory);
+  }
+
+  @Test public void testScaleOutOfRangeValue() throws Exception
+  {
+    ScaleCategory category1 = new ScaleCategory("Category 1", 0, 49, "CAT1", 1);
+    ScaleCategory category2 = new ScaleCategory("Category 2", 50, 99, "CAT2", 2);
+
+    CategoricalScale scale = new CategoricalScale(category1, category2);
+
+    ScaleCategory scaleCategory = scale.scaleRawValue(100);
+
+    Assert.assertNull(scaleCategory);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullCategories() throws Exception
+  public void testNullArg1() throws Exception
   {
-    CategoricalScale scale = new CategoricalScale(null);
+    CategoricalScale scale = new CategoricalScale((Set<ScaleCategory>)null);
+  }
+
+  @Test public void testNullArg2() throws Exception
+  {
+    CategoricalScale scale;
+
+    try
+    {
+      scale = new CategoricalScale();
+
+      Assert.fail();
+    }
+    catch (Exception e)
+    {
+      // expected
+    }
+
+    try
+    {
+      scale = new CategoricalScale((ScaleCategory)null);
+
+      Assert.fail();
+    }
+    catch (Exception e)
+    {
+      // expected
+    }
   }
 }
