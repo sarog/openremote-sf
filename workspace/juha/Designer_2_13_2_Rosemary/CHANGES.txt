@@ -1,3 +1,15 @@
+Designer 2.13.2 (2012-06-24 Rosemary)
+=====================================
+
+Bug fix release:
+
+ - Fixed MODELER-316: Enable gestures to be associated
+   with full macro definitions (XML schema change)
+ - Fixed MODELER-318: Account management yields an 
+   HTTP 500 error
+ -
+
+
 Designer 2.13.1 (2012-06-11 Rosemary)
 =====================================
 
