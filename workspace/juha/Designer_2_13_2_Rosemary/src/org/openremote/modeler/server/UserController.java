@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +27,7 @@ import org.openremote.modeler.client.rpc.UserRPCService;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.UserDTO;
 
 /**
  * The Class is for inviting user and managing invited user.
@@ -65,4 +67,14 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
    public Long getUserId() {
       return userService.getCurrentUser().getOid();
    }
+   
+   public ArrayList<UserDTO> getAccountAccessUsersDTO() {
+     List<User> users = userService.getAccountAccessUsers(userService.getCurrentUser());
+     ArrayList<UserDTO> dtos = new ArrayList<UserDTO>();
+     for (User u : users) {
+       dtos.add(new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole()));
+     }
+     return dtos;
+   }
+
 }
