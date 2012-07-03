@@ -20,24 +20,20 @@
 package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.modeler.domain.User;
 import org.openremote.modeler.shared.dto.UserDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface UserRPCServiceAsync {
 
-   void inviteUser(String email, String role, AsyncCallback<User> callback);
+   void inviteUser(String email, String role, AsyncCallback<UserDTO> callback);
 
-   void getPendingInviteesByAccount(AsyncCallback<List<User>> callback);
+   void getPendingInviteesByAccount(AsyncCallback<ArrayList<UserDTO>> callback);
 
-   void updateUserRoles(long uid, String roles, AsyncCallback<User> callback);
+   void updateUserRoles(long uid, String roles, AsyncCallback<UserDTO> callback);
 
    void deleteUser(long uid, AsyncCallback<Void> callback);
-
-   void getAccountAccessUsers(AsyncCallback<List<User>> callback);
 
    void getUserId(AsyncCallback<Long> callback);
 
