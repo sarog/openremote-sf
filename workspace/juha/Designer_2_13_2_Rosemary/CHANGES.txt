@@ -7,7 +7,8 @@ Bug fix release:
    with full macro definitions (XML schema change)
  - Fixed MODELER-318: Account management yields an 
    HTTP 500 error
- -
+ - Fixed MODELER-311: same macro can be used multiple
+   times in a command
 
 
 Designer 2.13.1 (2012-06-11 Rosemary)
