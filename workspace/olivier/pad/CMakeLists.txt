@@ -22,7 +22,5 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 4)
   set (CMAKE_C_FLAGS "-D_LARGEFILE64_SOURCE")
 endif()
 
-message(${CMAKE_C_FLAGS})
-
 add_subdirectory (src/main/c)
 add_subdirectory (src/test/c)
