@@ -16,6 +16,13 @@ endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 # The version number.
 set (pad_VERSION_MAJOR 1)
 set (pad_VERSION_MINOR 0)
-  
+
+# On 32bit system (eg Raspberry Pi) set extra compiler flag
+if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+  set (CMAKE_C_FLAGS "-D_LARGEFILE64_SOURCE")
+endif()
+
+message(${CMAKE_C_FLAGS})
+
 add_subdirectory (src/main/c)
 add_subdirectory (src/test/c)
