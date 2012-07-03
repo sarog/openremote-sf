@@ -80,6 +80,8 @@ public class SliderWindow extends FormWindow {
    
    private boolean edit = false;
    
+   protected Button submitBtn;
+   
    /**
     * Instantiates a window to edit a slider.
     */
@@ -160,7 +162,7 @@ public class SliderWindow extends FormWindow {
 
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
       switchOnAdapter.setFieldLabel(SLIDER_SETVALUE_COMMMAND_FIELD_NAME);
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
       
       submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
@@ -186,15 +188,14 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        
-        // TODO EBR : review this validation, this does prevent re-submitting the form
-        // there must be a specific way to handle validation, not doing it in submit        
         if (sliderDTO.getCommand() == null) {
           MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
+          submitBtn.enable();
           return;
         }
         if (sliderDTO.getSensor() == null) {
           MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
+          submitBtn.enable();
           return;
         }
         
