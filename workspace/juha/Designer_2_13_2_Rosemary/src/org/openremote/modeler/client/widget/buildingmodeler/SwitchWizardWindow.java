@@ -112,15 +112,14 @@ public class SwitchWizardWindow extends SwitchWindow {
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-
-           // TODO EBR : review this validation, this does prevent re-submitting the form
-           // there must be a specific way to handle validation, not doing it in submit        
            if (switchDTO.getOnCommand() == null || switchDTO.getOffCommand() == null) {
              MessageBox.alert("Switch", "A switch must have on and off commands defined to toggle its state", null);
+             submitBtn.enable();
              return;
            }
            if (switchDTO.getSensor() == null) {
              MessageBox.alert("Switch", "A switch must have a sensor defined to read its state", null);
+             submitBtn.enable();
              return;
            }
             

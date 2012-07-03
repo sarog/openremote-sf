@@ -79,6 +79,8 @@ public class SwitchWindow extends FormWindow {
    
    private boolean edit = false;
    
+   protected Button submitBtn;
+   
    /**
     * Instantiates a window to edit the switch.
     * 
@@ -165,7 +167,7 @@ public class SwitchWindow extends FormWindow {
       AdapterField switchOffAdapter = new AdapterField(switchOffBtn);
       switchOffAdapter.setFieldLabel(SWITCH_OFF_COMMAND_FIELD_NAME);
       
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
       
       form.add(nameField);
@@ -193,15 +195,14 @@ public class SwitchWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        
-        // TODO EBR : review this validation, this does prevent re-submitting the form
-        // there must be a specific way to handle validation, not doing it in submit        
         if (switchDTO.getOnCommand() == null || switchDTO.getOffCommand() == null) {
           MessageBox.alert("Switch", "A switch must have on and off commands defined to toggle its state", null);
+          submitBtn.enable();
           return;
         }
         if (switchDTO.getSensor() == null) {
           MessageBox.alert("Switch", "A switch must have a sensor defined to read its state", null);
+          submitBtn.enable();
           return;
         }
          

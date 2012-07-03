@@ -106,11 +106,13 @@ public class SensorWizardWindow extends SensorWindow {
            BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
            if (typeList.getValue() == null) {
               MessageBox.alert("Warn", "A sensor must have a type", null);
+              submitBtn.enable();
               typeList.focus();
               return;
            }
            if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommandDetailsDTO)) {
               MessageBox.alert("Warn", "A sensor must have a device command", null);
+              submitBtn.enable();
               commandSelectTree.focus();
               return;
            }
