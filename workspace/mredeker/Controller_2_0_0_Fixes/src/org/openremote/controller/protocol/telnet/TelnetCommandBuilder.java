@@ -120,6 +120,7 @@ public class TelnetCommandBuilder implements CommandBuilder {
       {
         if (null != interval) {
           intervalInMillis = Integer.valueOf(Strings.convertPollingIntervalString(interval));
+          logger.debug("Telnet Command: pollingIntervalInMillis = " + intervalInMillis);
         }
       } catch (Exception e1)
       {
