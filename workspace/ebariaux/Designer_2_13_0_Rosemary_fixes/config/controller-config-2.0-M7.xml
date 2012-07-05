@@ -247,7 +247,30 @@ If it's true, controller will auto-detect its groupmembers with multicast.
    			</hint>
 		</config>
 	</category>
-
+	
+  <category name="amx_ni">
+    <description>
+        <![CDATA[
+          Configuration for the AMX NI Processor used by protocol of the AMX protocol.
+        ]]>
+      </description>
+    <config name="amx_ni.address" value="192.168.1.1"
+      validation="(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)">
+      <hint>
+          <![CDATA[
+           Address of the AMX NI processor, mandatory.
+          ]]>
+        </hint>
+    </config>
+    <config name="amx_ni.port" value="50000"
+      validation="\d+">
+      <hint>
+          <![CDATA[
+            TCP port the AMX module is listening on, mandatory.
+          ]]>
+        </hint>
+    </config>
+  </category>
 
   <!--
    |
