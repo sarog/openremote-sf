@@ -66,11 +66,6 @@ public class CommandCommand extends AMXNICommand implements ExecutableCommand, E
     // Private Instance Fields ----------------------------------------------------------------------
 
     /**
-     * Index of device this command is for.
-     */
-    private Integer deviceIndex;
-
-    /**
      * Value this command will send.
      */
     private String value;
@@ -82,8 +77,7 @@ public class CommandCommand extends AMXNICommand implements ExecutableCommand, E
     // Constructors ---------------------------------------------------------------------------------
 
     public CommandCommand(String name, AMXNIGateway gateway, Integer deviceIndex, String value, Pattern statusFilter, Integer statusFilterGroup) {
-      super(name, gateway);
-      this.deviceIndex = deviceIndex;
+      super(name, gateway, deviceIndex);
       this.value = value;
       this.statusFilter = statusFilter;
       this.statusFilterGroup = statusFilterGroup;

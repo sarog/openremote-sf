@@ -64,11 +64,6 @@ public class LevelCommand extends AMXNICommand implements ExecutableCommand, Eve
     // Private Instance Fields ----------------------------------------------------------------------
 
     /**
-     * Index of device this command is for.
-     */
-    private Integer deviceIndex;
-
-    /**
      * Level this command will act on.
      */
     private Integer level;
@@ -81,8 +76,7 @@ public class LevelCommand extends AMXNICommand implements ExecutableCommand, Eve
     // Constructors ---------------------------------------------------------------------------------
 
     public LevelCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer level, Integer levelValue) {
-      super(name, gateway);
-      this.deviceIndex = deviceIndex;
+      super(name, gateway, deviceIndex);
       this.level = level;
       this.levelValue = levelValue;
     }
