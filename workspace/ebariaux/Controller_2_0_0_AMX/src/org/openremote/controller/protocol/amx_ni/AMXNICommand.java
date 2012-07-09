@@ -126,6 +126,11 @@ public abstract class AMXNICommand implements Command {
    protected String name;
    
    /**
+    * Index of device this command is for.
+    */
+   protected Integer deviceIndex;
+   
+   /**
     * Sensors we are a command of
     */
    protected List<Sensor> sensors;
@@ -137,9 +142,10 @@ public abstract class AMXNICommand implements Command {
     * 
     * @param gateway AMX NI gateway instance used for transmitting this command
     */
-   public AMXNICommand(String name, AMXNIGateway gateway) {
+   public AMXNICommand(String name, AMXNIGateway gateway, Integer deviceIndex) {
       this.name = name;
       this.gateway = gateway;
+      this.deviceIndex = deviceIndex;
       this.sensors = new ArrayList<Sensor>();
    }
    

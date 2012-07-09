@@ -57,11 +57,6 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
     // Private Instance Fields ----------------------------------------------------------------------
 
     /**
-     * Index of device this command is for.
-     */
-    private Integer deviceIndex;
-
-    /**
      * Channel this command will act on.
      */
     private Integer channel;
@@ -69,8 +64,7 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
     // Constructors ---------------------------------------------------------------------------------
 
     public ChannelCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel) {
-      super(name, gateway);
-      this.deviceIndex = deviceIndex;
+      super(name, gateway, deviceIndex);
       this.channel = channel;
     }
 
