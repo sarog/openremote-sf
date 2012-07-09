@@ -44,6 +44,7 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
           </list>
       </property>
@@ -98,6 +99,13 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="AMXNIConfig" class="org.openremote.controller.AMXNIConfig">
+    <property name="address" value="${amx_ni.address}" />
+    <property name="port" value="${amx_ni.port}" />
+  </bean>
+  
+  <bean id="AMXNIGateway" class="org.openremote.controller.protocol.amx_ni.AMXNIGateway"/>
+  
   <!-- TODO -->
   <bean id = "controlCommandService"
         class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
@@ -265,6 +273,7 @@
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
+        <entry key = "amx_ni"           value-ref = "AMXNICommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -361,6 +370,9 @@
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+  <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
+    <property name="gateway" ref="AMXNIGateway"/>
+  </bean>
 
   <!-- DateTime Command Builder -->
   <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
