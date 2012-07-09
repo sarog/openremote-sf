@@ -86,7 +86,6 @@ public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableC
    * {@inheritDoc}
    */
   public void send() {
-    log.info(">>KeypadCommand.send");
     try {
       Keypad keypad = (Keypad) gateway.getHomeWorksDevice(address, Keypad.class);
       log.info("Will execute command for keypad " + keypad);
