@@ -48,11 +48,9 @@ public class StringCommand extends AMXNICommand implements ExecutableCommand, Ev
          throw new NoSuchCommandException("A value is required for SEND_STRING command");
       }
       Pattern statusFilterPattern = null;
-      System.out.println("statusFilter is >" + statusFilter + "<");
       if (statusFilter != null && !"".equals(statusFilter)) {
          if ("STRING_READ".equals(name)) {
             try {
-               System.out.println("compiling pattern");
                statusFilterPattern = Pattern.compile(statusFilter, Pattern.CANON_EQ | Pattern.UNICODE_CASE);
             } catch (PatternSyntaxException e) {
                throw new NoSuchCommandException("Invalid regular expression (" + statusFilter + ") for STRING_READ command");
