@@ -38,6 +38,7 @@ import org.openremote.controller.AMXNIConfig;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceChannels;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceCommand;
+import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceLevels;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceString;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
