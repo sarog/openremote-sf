@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
@@ -30,6 +29,7 @@ import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Command to be sent to a dimmer device to actuate or query status.

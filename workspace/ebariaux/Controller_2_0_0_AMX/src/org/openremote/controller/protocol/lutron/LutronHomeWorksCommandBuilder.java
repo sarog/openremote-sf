@@ -22,12 +22,12 @@ package org.openremote.controller.protocol.lutron;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Logger;
 
 /**
  * 

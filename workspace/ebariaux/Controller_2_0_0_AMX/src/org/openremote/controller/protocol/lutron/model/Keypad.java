@@ -20,10 +20,10 @@
  */
 package org.openremote.controller.protocol.lutron.model;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddress;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksGateway;
+import org.openremote.controller.utils.Logger;
 
 /**
  * 
