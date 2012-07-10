@@ -31,7 +31,6 @@ package org.openremote.controller.protocol.enocean.datatype;
  *
  * @see CategoricalScale
  *
- *
  * @author Rainer Hitz
  */
 public class ScaleCategory
@@ -121,6 +120,14 @@ public class ScaleCategory
     return minValue;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    return "EEP Scale Category (Name = '" + name + "', Range = [" + minValue +
+           "..." + maxValue  + "], Enum = '" + sensorValue + "')";
+  }
 
   // Public Instance Methods ----------------------------------------------------------------------
 

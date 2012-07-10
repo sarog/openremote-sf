@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean.datatype;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,9 +95,17 @@ public class CategoricalScaleTest
 
     CategoricalScale scale = new CategoricalScale(category1, category2);
 
-    ScaleCategory scaleCategory = scale.scaleRawValue(100);
+    try
+    {
+      ScaleCategory scaleCategory = scale.scaleRawValue(100);
 
-    Assert.assertNull(scaleCategory);
+      Assert.fail();
+    }
+    catch (EepOutOfRangeException e)
+    {
+      // expected
+    }
+
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -43,6 +43,11 @@ public class EepDataField
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
+   * Data field name.
+   */
+  private String name;
+
+  /**
    * Start bit of data field.
    */
   private int offset;
@@ -52,20 +57,46 @@ public class EepDataField
    */
   private int size;
 
-
   // Constructors ---------------------------------------------------------------------------------
 
   /**
    * Constructs a data field instance with given offset and size.
    *
+   * @param name    data field name
+   *
    * @param offset  start bit of data field
    *
    * @param size    number of data field bits
    */
-  public EepDataField(int offset, int size)
+  public EepDataField(String name, int offset, int size)
   {
+    this.name = name;
     this.offset = offset;
     this.size = size;
+  }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    StringBuilder builder = new StringBuilder();
+
+    String name = "Name = '" + this.name + "', ";
+    String offsetString = "Offset = '" + this.offset + "', ";
+    String sizeString = "Size = '" + this.size + "'";
+
+    builder
+        .append("EEP data field (")
+        .append(name)
+        .append(offsetString)
+        .append(sizeString)
+        .append(")");
+
+    return builder.toString();
   }
 
 
@@ -81,7 +112,7 @@ public class EepDataField
    */
   public int read(EepData data)
   {
-    checkDataParameter(data, false);
+    checkDataParameter(data);
 
     int curSize = this.size;
     int curDataByteIndex = getLSBIndex();
@@ -122,12 +153,12 @@ public class EepDataField
    *
    * @param  data   EnOcean equipment profile (EEP) data
    *
-   * @throws ValueOutOfRangeException
+   * @throws EepOutOfRangeException
    *           if the value exceeds the valid range of this data field
    */
-  public void write(int value, EepData data) throws ValueOutOfRangeException
+  public void write(int value, EepData data) throws EepOutOfRangeException
   {
-    checkDataParameter(data, true);
+    checkDataParameter(data);
     checkValueParameter(value);
 
     int curSize = this.size;
@@ -159,24 +190,40 @@ public class EepDataField
     }
   }
 
+  /**
+   * Checks if given data field value is within the valid range.
+   *
+   * @param value  data field value
+   *
+   * @return  <tt>true</tt> if valid, <tt>false</tt> otherwise
+   */
+  public boolean isValid(int value)
+  {
+    int max = maxValue();
+
+    return (value >= 0 && value <= max);
+  }
+
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-  private void checkValueParameter(int value) throws ValueOutOfRangeException
+  private int maxValue()
   {
-    int max = (int)Math.pow(2, this.size) - 1;
+    return (int)Math.pow(2, this.size) - 1;
+  }
 
-    if(value < 0 || value > max)
+
+  private void checkValueParameter(int value) throws EepOutOfRangeException
+  {
+    if(!isValid(value))
     {
-      throw new ValueOutOfRangeException(
-          "Could not store value '" + value + "' in EEP data field (offset=" +
-           this.offset + ", size=" + this.size + ")" +
-          " because it exceeds valid data range [0.." + max + "]."
+      throw new EepOutOfRangeException(
+          "Raw value '" + value + "' is out of valid range [0.." + maxValue() + "]."
       );
     }
   }
 
-  private void checkDataParameter(EepData data, boolean isWrite)
+  private void checkDataParameter(EepData data)
   {
     if(data == null)
     {
@@ -185,13 +232,9 @@ public class EepDataField
 
     if(data.length() < (getLSBIndex() + 1))
     {
-      String errText = isWrite ? "Could not store value to EEP data field" :
-                                 "Could not read value from EEP data field";
-
       throw new IllegalArgumentException(
-          errText + " (offset=" + this.offset +
-          ", size=" + this.size + ") because radio telegram payload (length=" +
-          data.length() + ") is too short.");
+          "'" + this + "' is not within the boundaries of '" + data + "'"
+      );
     }
   }
 
@@ -262,20 +305,5 @@ public class EepDataField
   private int getLSBIndex()
   {
     return (this.offset + this.size - 1) / Byte.SIZE;
-  }
-
-
-  // Nested Classes -------------------------------------------------------------------------------
-
-  /**
-   * Indicates that a value cannot be stored to the data field because it
-   * exceeds the valid range.
-   */
-  public static class ValueOutOfRangeException extends Exception
-  {
-    public ValueOutOfRangeException(String msg)
-    {
-      super(msg);
-    }
   }
 }

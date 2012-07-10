@@ -24,18 +24,15 @@ import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
-import org.openremote.controller.protocol.enocean.profile.EepData;
 import org.openremote.controller.protocol.enocean.profile.EepDataField;
-import org.openremote.controller.protocol.enocean.profile.EepDataListener;
 import org.openremote.controller.utils.Logger;
 
 /**
  * Represents a boolean EnOcean equipment profile (EEP) data field type.
  *
- *
  * @author Rainer Hitz
  */
-public class Bool implements DataType, EepDataListener
+public class Bool extends Ordinal
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -53,17 +50,6 @@ public class Bool implements DataType, EepDataListener
    */
   private EepDataField dataField;
 
-  /**
-   * Scale for converting raw EnOcean equipment profile (EEP) data field values to
-   * a boolean value.
-   */
-  private BoolScale scale;
-
-  /**
-   * Raw EnOcean equipment profile (EEP) data field value.
-   */
-  private int rawValue;
-
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -77,32 +63,19 @@ public class Bool implements DataType, EepDataListener
    */
   public Bool(EepDataField dataField, BoolScale scale)
   {
-    if(dataField == null)
-    {
-      throw new IllegalArgumentException("null data field");
-    }
-
-    if(scale == null)
-    {
-      throw new IllegalArgumentException("null scale");
-    }
-
-    this.dataField = dataField;
-    this.scale = scale;
-    this.rawValue = scale.getFalseCategory().getMinValue();
+    super(dataField, scale);
   }
 
   /**
-   * Constructs a bool instance with given data field and primitive value.
+   * Constructs a bool instance with given data field and raw value.
    *
    * @param dataField  EnOcean equipment profile (EEP) data field.
    *
-   * @param value      initial primitive value
+   * @param rawValue   raw value (<tt>true</tt> --> 1, <tt>false</tt> --> 0)
    */
-  public Bool(EepDataField dataField, boolean value)
+  public Bool(EepDataField dataField, boolean rawValue)
   {
-    this.dataField = dataField;
-    this.rawValue = value ? 1 : 0;
+    super(dataField, rawValue ? 1 : 0);
   }
 
 
@@ -115,59 +88,21 @@ public class Bool implements DataType, EepDataListener
    * @return <tt>true</tt> if the object represents the boolean primitive value <tt>true</tt>,
    *         otherwise <tt>false</tt>
    */
-  public boolean boolValue()
+  public Boolean boolValue()
   {
-    if(scale != null)
+    if(category != null)
     {
-      ScaleCategory category = scaleRawValue();
+      return ((BoolScale)scale).isTrue(category);
+    }
 
-      if(category != null)
-      {
-        return scale.isTrue(category);
-      }
-      else
-      {
-        log.error(
-            "Failed to scale value ''{0}'' for data field ''{1}'' " +
-            "because value is out of valid range.",
-            rawValue, dataField
-        );
-
-        return false;
-      }
+    else if(rawValue != null)
+    {
+      return (rawValue == 0 ? false : true);
     }
 
     else
     {
-      return (rawValue == 0 ? false : true);
-    }
-  }
-
-
-  // Implements EepDataListener --------------------------------------------------------------
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public void didUpdateData(EepData data)
-  {
-    rawValue = dataField.read(data);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public void updateData(EepData data)
-  {
-    try
-    {
-      dataField.write(rawValue, data);
-    }
-    catch (EepDataField.ValueOutOfRangeException e)
-    {
-      throw new RuntimeException(
-          "Could not write EEP data field value: " + e.getMessage(), e
-      );
+      return null;
     }
   }
 
@@ -179,19 +114,10 @@ public class Bool implements DataType, EepDataListener
    */
   @Override public void updateSensor(Sensor sensor)
   {
-    ScaleCategory category = scaleRawValue();
-
     if(category == null)
     {
-      log.error(
-          "Failed to update sensor ''{0}'' because value ''{1}'' " +
-          "is out of valid range for data field ''{2}''",
-          sensor, rawValue, dataField
-      );
-
       return;
     }
-
 
     if(sensor instanceof StateSensor)
     {
@@ -205,29 +131,7 @@ public class Bool implements DataType, EepDataListener
 
     else
     {
-      throw new Error("Unrecognized sensor type: " + sensor.toString());
+      throw new RuntimeException("Unrecognized sensor type: " + sensor.toString());
     }
-  }
-
-
-  // Private Instance Methods ---------------------------------------------------------------------
-
-  /**
-   * Determines the scale category for the raw data field value and returns it.
-   *
-   * @return scale category which represents a boolean primitive value or <tt>null</tt>
-   *         if there is no scale object set or there is no matching scale category for the
-   *         raw value
-   */
-  private ScaleCategory scaleRawValue()
-  {
-    ScaleCategory category = null;
-
-    if(scale != null)
-    {
-      category = scale.scaleRawValue(rawValue);
-    }
-
-    return category;
   }
 }

@@ -73,6 +73,11 @@ public class EepData
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
+   * EnOcean equipment profile (EEP) type.
+   */
+  private EepType type;
+
+  /**
    * EnOcean equipment profile (EEP) data.
    */
   private byte[] data;
@@ -87,16 +92,24 @@ public class EepData
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs an EnOcean equipment profile (EEP) data instance with given data length and
-   * data listener set.
+   * Constructs an EnOcean equipment profile (EEP) data instance with given EEP type,
+   * data length and data listener set.
+   *
+   * @param type            EnOcean equipment profile (EEP) type
    *
    * @param length          length of EnOcean equipment profile (EEP) data block
    *
    * @param dataListeners   data listeners for notifying that the profile data has been updated
    *                        or that the profile data has to be updated respectively
    */
-  public EepData(int length, Set<EepDataListener> dataListeners)
+  public EepData(EepType type, int length, Set<EepDataListener> dataListeners)
   {
+    if(type == null)
+    {
+      throw new IllegalArgumentException("null EEP type");
+    }
+
+    this.type = type;
     this.data = new byte[length];
 
     if(dataListeners != null)
@@ -110,18 +123,32 @@ public class EepData
   }
 
   /**
-   * Constructs an EnOcean equipment profile (EEP) data instance with given data length and
-   * data listeners.
+   * Constructs an EnOcean equipment profile (EEP) data instance with given EEP type,
+   * data length and data listeners.
+   *
+   * @param type            EnOcean equipment profile (EEP) type
    *
    * @param length          length of EnOcean equipment profile (EEP) data block
    *
    * @param dataListeners   data listeners for notifying that the profile data has been updated
    *                        or that the profile data has to be updated respectively
    */
-  public EepData(int length, EepDataListener...dataListeners)
+  public EepData(EepType type, int length, EepDataListener...dataListeners)
   {
-    this(length, EepData.createListenerSet(dataListeners));
+    this(type, length, EepData.createListenerSet(dataListeners));
   }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    return "EEP data (Type = '" + type + "', Length = '" + length() + "')";
+  }
+
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -165,11 +192,15 @@ public class EepData
    * profile data.
    *
    * @return array containing the EnOcean equipment profile (EEP) data bytes
+   *
+   * @throws EepOutOfRangeException
+   *           if a EEP data field value is out of range
    */
-  public byte[] asByteArray()
+  public byte[] asByteArray() throws EepOutOfRangeException
   {
     for(EepDataListener listener : listeners)
     {
+      // may throw EepOutOfRangeException
       listener.updateData(this);
     }
 
@@ -200,7 +231,14 @@ public class EepData
 
     for(EepDataListener listener : listeners)
     {
-      listener.didUpdateData(this);
+      try
+      {
+        listener.didUpdateData(this);
+      }
+      catch (EepOutOfRangeException e)
+      {
+        // TODO
+      }
     }
   }
 }

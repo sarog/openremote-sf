@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol.enocean.datatype;
 
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,13 +34,14 @@ import java.util.Set;
  * for each profile data field. The table contains the columns 'Valid Range' and 'Scale'
  * used to specify the conversion from raw values to a categorical value. <p>
  *
- * This class is used in combination with a {@link Ordinal} data type. <p>
+ * This class is used in combination with a {@link Ordinal} and {@link Bool} data type. <p>
  *
  * Note that the EnOcean equipment profile (EEP) specification uses the term 'Enum' for
  * specifying categorical scales.
  *
  * @see org.openremote.controller.protocol.enocean.profile.EepDataField
  * @see Ordinal
+ * @see Bool
  *
  * @author Rainer Hitz
  */
@@ -114,13 +117,16 @@ public class CategoricalScale
   // Public Instance Methods ----------------------------------------------------------------------
 
   /**
-   * Searches for the scale category which matches the given raw value and returns it.
+   * Returns the scale category which contains the raw value in its raw value range.
    *
    * @param   rawValue  raw EnOcean equipment profile (EEP) data field value
    *
-   * @return  the matching scale category or <tt>null</tt> if there is not matching category
+   * @return  the scale category
+   *
+   * @throws EepOutOfRangeException
+   *           if no scale category can be found
    */
-  public ScaleCategory scaleRawValue(int rawValue)
+  public ScaleCategory scaleRawValue(int rawValue) throws EepOutOfRangeException
   {
     for(ScaleCategory category : categories)
     {
@@ -130,6 +136,8 @@ public class CategoricalScale
       }
     }
 
-    return null;
+    throw new  EepOutOfRangeException(
+        "Raw value ''{0}'' is not within the valid scale ranges : {1}", categories
+    );
   }
 }

@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.profile.EepData;
 import org.openremote.controller.protocol.enocean.profile.EepDataField;
+import org.openremote.controller.protocol.enocean.profile.EepType;
 
 import java.text.MessageFormat;
 
@@ -39,16 +40,16 @@ public class BoolTest
 
   @Test public void testBasicConstruction() throws Exception
   {
+    EepDataField dataField = new EepDataField("EDF1", 7, 1);
+
     ScaleCategory trueCategory = new ScaleCategory("True category" , 1, 1, "on", 1);
     ScaleCategory falseCategory = new ScaleCategory("False category" , 0, 0, "off", 0);
     BoolScale scale = new BoolScale(trueCategory, falseCategory);
 
-    EepDataField dataField = new EepDataField(7, 1);
-
 
     Bool b = new Bool(dataField, scale);
 
-    Assert.assertFalse(b.boolValue());
+    Assert.assertNull(b.boolValue());
 
 
     b = new Bool(dataField, false);
@@ -63,7 +64,7 @@ public class BoolTest
 
   @Test public void testUpdateValue() throws Exception
   {
-    EepDataField dataField = new EepDataField(7, 1);
+    EepDataField dataField = new EepDataField("EDF1", 7, 1);
 
     ScaleCategory trueCategory = new ScaleCategory("True category" , 1, 1, "on", 1);
     ScaleCategory falseCategory = new ScaleCategory("False category" , 0, 0, "off", 0);
@@ -71,10 +72,8 @@ public class BoolTest
 
     Bool bool = new Bool(dataField, scale);
 
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, bool);
 
-    EepData data = new EepData(1, bool);
-
-    Assert.assertFalse(bool.boolValue());
 
 
     data.update(new byte[] {0x01});
@@ -93,10 +92,7 @@ public class BoolTest
 
     bool = new Bool(dataField, scale);
 
-
-    data = new EepData(1, bool);
-
-    Assert.assertFalse(bool.boolValue());
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, bool);
 
 
     data.update(new byte[] {0x01});
@@ -109,7 +105,7 @@ public class BoolTest
     Assert.assertTrue(bool.boolValue());
 
 
-    dataField = new EepDataField(0, 8);
+    dataField = new EepDataField("EDF1", 0, 8);
 
     trueCategory = new ScaleCategory("True category" , 0, 5, "on", 1);
     falseCategory = new ScaleCategory("False category" , 6, 9, "off", 0);
@@ -117,10 +113,7 @@ public class BoolTest
 
     bool = new Bool(dataField, scale);
 
-
-    data = new EepData(1, bool);
-
-    Assert.assertFalse(bool.boolValue());
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, bool);
 
 
     data.update(new byte[] {0x00});
@@ -152,22 +145,22 @@ public class BoolTest
 
   @Test public void testSaveValueToEepData() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 1);
+    EepDataField dataField = new EepDataField("EDF1", 0, 1);
     Bool bool = new Bool(dataField, true);
-    EepData data = new EepData(1, bool);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, bool);
 
     Assert.assertArrayEquals(new byte[] {(byte)0x80}, data.asByteArray());
 
 
     bool = new Bool(dataField, false);
-    data = new EepData(1, bool);
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, bool);
 
     Assert.assertArrayEquals(new byte[] {(byte)0x00}, data.asByteArray());
   }
 
   @Test public void testNullArgs() throws Exception
   {
-    EepDataField dataField = new EepDataField(7, 1);
+    EepDataField dataField = new EepDataField("EDF1", 7, 1);
 
     ScaleCategory trueCategory = new ScaleCategory("True category" , 1, 1, "on", 1);
     ScaleCategory falseCategory = new ScaleCategory("False category" , 0, 0, "off", 0);
@@ -181,7 +174,7 @@ public class BoolTest
 
       Assert.fail();
     }
-    catch (Exception e)
+    catch (IllegalArgumentException e)
     {
       // expected
     }
@@ -192,7 +185,18 @@ public class BoolTest
 
       Assert.fail();
     }
-    catch (Exception e)
+    catch (IllegalArgumentException e)
+    {
+      // expected
+    }
+
+    try
+    {
+      bool = new Bool(null, true);
+
+      Assert.fail();
+    }
+    catch (IllegalArgumentException e)
     {
       // expected
     }

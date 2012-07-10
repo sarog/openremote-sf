@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol.enocean.datatype;
 
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -32,8 +34,10 @@ import java.math.RoundingMode;
  * for each profile data field. The table contains the columns 'Valid Range' and 'Scale'
  * used to specify the conversion from raw values to engineering units.
  *
+ * This class is used in combination with a {@link Range} data type. <p>
  *
  * @see org.openremote.controller.protocol.enocean.profile.EepDataField
+ * @see Range
  *
  *
  * @author Rainer Hitz
@@ -85,6 +89,16 @@ public class LinearScale
    */
   public LinearScale(DataRange rawDataRange, DataRange unitsDataRange, int fractionalDigits)
   {
+    if(rawDataRange == null)
+    {
+      throw new IllegalArgumentException("null raw data range");
+    }
+
+    if(unitsDataRange == null)
+    {
+      throw new IllegalArgumentException("null units data range");
+    }
+
     this.fractionalDigits = fractionalDigits;
 
     if(rawDataRange.getStart().compareTo(rawDataRange.getEnd()) < 0)
@@ -113,9 +127,20 @@ public class LinearScale
    * @param  rawValue  raw value from EnOcean equipment profile (EEP) data field.
    *
    * @return scaled value (engineering unit)
+   *
+   * @throws EepOutOfRangeException
+   *           if the raw value parameter is not within the raw value range
    */
-  public BigDecimal scaleRawValue(int rawValue)
+
+  public BigDecimal scaleRawValue(int rawValue) throws EepOutOfRangeException
   {
+    if(rawValue < minRawValue.intValue() || rawValue > maxRawValue.intValue())
+    {
+      throw new EepOutOfRangeException(
+        "Raw value ''{0}'' is out of valid range [{1}..{2}].",
+        rawValue, minRawValue.intValue(), maxRawValue.intValue()
+      );
+    }
 
     BigDecimal decRawValue = BigDecimal.valueOf(rawValue);
     BigDecimal scaledValue;

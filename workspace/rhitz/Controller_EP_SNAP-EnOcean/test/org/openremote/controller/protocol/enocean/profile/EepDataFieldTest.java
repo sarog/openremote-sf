@@ -143,9 +143,9 @@ public class EepDataFieldTest
     int offset = 0;
     int size = 4;
 
-    EepDataField df = new EepDataField(offset, size);
+    EepDataField df = new EepDataField("EDF1", offset, size);
 
-    EepData data = new EepData(1, (EepDataListener)null);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, (EepDataListener)null);
 
     df.write(0x0F, data);
 
@@ -155,21 +155,21 @@ public class EepDataFieldTest
 
       Assert.fail();
     }
-    catch (EepDataField.ValueOutOfRangeException e)
+    catch (EepOutOfRangeException e)
     {
       // expected
     }
   }
 
 
-  @Test public void testInvalidPayloadLength() throws Exception
+  @Test public void testInvalidDataLength() throws Exception
   {
     int offset = 8;
     int size = 1;
 
-    EepDataField df = new EepDataField(offset, size);
+    EepDataField df = new EepDataField("EDF1", offset, size);
 
-    EepData dataTooShort = new EepData(1, (EepDataListener)null);
+    EepData dataTooShort = new EepData(EepType.EEP_TYPE_F60201, 1, (EepDataListener)null);
 
     try
     {
@@ -198,21 +198,21 @@ public class EepDataFieldTest
 
   private void assertReadValue(int expectedValue, byte[] data, int offset, int size)
   {
-    EepData eepData = new EepData(data.length, (EepDataListener)null);
+    EepData eepData = new EepData(EepType.EEP_TYPE_F60201, data.length, (EepDataListener)null);
     eepData.update(data);
 
-    EepDataField df = new EepDataField(offset, size);
+    EepDataField df = new EepDataField("EDF1", offset, size);
     int actualValue = df.read(eepData);
 
     Assert.assertEquals(expectedValue, actualValue);
   }
 
   private void assertWriteValue(byte[] expectedData, int value, int offset, int size)
-      throws EepDataField.ValueOutOfRangeException
+      throws EepOutOfRangeException
   {
-    EepData eepData = new EepData(expectedData.length, (EepDataListener)null);
+    EepData eepData = new EepData(EepType.EEP_TYPE_F60201, expectedData.length, (EepDataListener)null);
 
-    EepDataField df = new EepDataField(offset, size);
+    EepDataField df = new EepDataField("EDF1", offset, size);
     df.write(value, eepData);
 
     byte[] actualData = eepData.asByteArray();

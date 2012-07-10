@@ -24,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.profile.EepData;
 import org.openremote.controller.protocol.enocean.profile.EepDataField;
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
+import org.openremote.controller.protocol.enocean.profile.EepType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +42,7 @@ public class OrdinalTest
 
   @Test public void testBasicConstruction() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     ScaleCategory category1 = new ScaleCategory("Category 1", 0x00, 0x05, "CAT1", 1);
     ScaleCategory category2 = new ScaleCategory("Category 2", 0x06, 0x0A, "CAT2", 2);
@@ -59,7 +61,7 @@ public class OrdinalTest
 
   @Test public void testUpdateValue() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     ScaleCategory category1 = new ScaleCategory("Category 1", 0x00, 0x05, "CAT1", 1);
     ScaleCategory category2 = new ScaleCategory("Category 2", 0x06, 0x0A, "CAT2", 2);
@@ -67,7 +69,7 @@ public class OrdinalTest
 
     Ordinal ordinal = new Ordinal(dataField, scale);
 
-    EepData data = new EepData(1, ordinal);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, ordinal);
 
 
     data.update(new byte[] {0x00});
@@ -91,7 +93,7 @@ public class OrdinalTest
 
     ordinal = new Ordinal(dataField, scale);
 
-    data = new EepData(1, ordinal);
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, ordinal);
 
 
     data.update(new byte[] {0x03});
@@ -106,7 +108,7 @@ public class OrdinalTest
 
   @Test public void testUpdateWithOutOfRangeValue() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     ScaleCategory category1 = new ScaleCategory("Category 1", 0x00, 0x05, "CAT1", 1);
     ScaleCategory category2 = new ScaleCategory("Category 2", 0x06, 0x0A, "CAT2", 2);
@@ -115,7 +117,7 @@ public class OrdinalTest
     Ordinal ordinal = new Ordinal(dataField, scale);
 
 
-    EepData data = new EepData(1, ordinal);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, ordinal);
 
     Assert.assertNull(ordinal.ordinalValue());
 
@@ -142,31 +144,31 @@ public class OrdinalTest
 
   @Test public void testSaveValueToEepData() throws Exception
   {
-    EepDataField dataField = new EepDataField(8, 8);
+    EepDataField dataField = new EepDataField("EDF1", 8, 8);
 
     Ordinal ordinal = new Ordinal(dataField, 0x55);
-    EepData data = new EepData(2, ordinal);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 2, ordinal);
 
     Assert.assertArrayEquals(new byte[] {0x00, 0x55}, data.asByteArray());
 
 
     ordinal = new Ordinal(dataField, 0xFF);
-    data = new EepData(2, ordinal);
+    data = new EepData(EepType.EEP_TYPE_F60201, 2, ordinal);
 
     Assert.assertArrayEquals(new byte[] {0x00, (byte)0xFF}, data.asByteArray());
   }
 
   @Test public void testSaveOutOfRangeValueToEepData() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
     Ordinal ordinal = new Ordinal(dataField, 0xFF);
-    EepData data = new EepData(1, ordinal);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, ordinal);
 
     Assert.assertArrayEquals(new byte[] {(byte)0xFF}, data.asByteArray());
 
 
     ordinal = new Ordinal(dataField, 0x1FF);
-    data = new EepData(1, ordinal);
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, ordinal);
 
     try
     {
@@ -174,7 +176,7 @@ public class OrdinalTest
 
       Assert.fail();
     }
-    catch (RuntimeException e)
+    catch (EepOutOfRangeException e)
     {
       // expected
     }
@@ -182,7 +184,7 @@ public class OrdinalTest
 
   @Test public void testNullArgs() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     ScaleCategory category1 = new ScaleCategory("Category 1", 0x00, 0x05, "CAT1", 1);
     ScaleCategory category2 = new ScaleCategory("Category 2", 0x06, 0x0A, "CAT2", 2);

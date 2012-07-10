@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.profile.EepData;
 import org.openremote.controller.protocol.enocean.profile.EepDataField;
+import org.openremote.controller.protocol.enocean.profile.EepType;
 
 import java.math.BigDecimal;
 
@@ -39,7 +40,7 @@ public class RangeTest
 
   @Test public void testBasicConstruction() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     DataRange rawDataRange = new DataRange(0, 255);
     DataRange unitsDataRange = new DataRange(0, 100);
@@ -58,14 +59,14 @@ public class RangeTest
 
   @Test public void testUpdateValue() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     DataRange rawDataRange = new DataRange(0, 255);
     DataRange unitsDataRange = new DataRange(0, 100);
     LinearScale scale = new LinearScale(rawDataRange, unitsDataRange, 2);
 
     Range range = new Range(dataField, scale);
-    EepData data = new EepData(1, range);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, range);
 
 
     data.update(new byte[] {0x00});
@@ -80,14 +81,14 @@ public class RangeTest
 
   @Test public void testUpdateWithOutOfRangeValue() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     DataRange rawDataRange = new DataRange(0x05, 0x0A);
     DataRange unitsDataRange = new DataRange(0, 100);
     LinearScale scale = new LinearScale(rawDataRange, unitsDataRange, 2);
 
     Range range = new Range(dataField, scale);
-    EepData data = new EepData(1, range);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, range);
 
 
     data.update(new byte[] {0x00});
@@ -107,30 +108,30 @@ public class RangeTest
 
   @Test public void testSaveValueToEepData() throws Exception
   {
-    EepDataField dataField = new EepDataField(8, 8);
+    EepDataField dataField = new EepDataField("EDF1", 8, 8);
     Range range = new Range(dataField, 0x55);
-    EepData data = new EepData(2, range);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 2, range);
 
     Assert.assertArrayEquals(new byte[] {0x00, (byte)0x55}, data.asByteArray());
 
 
     range = new Range(dataField, 0xFF);
-    data = new EepData(2, range);
+    data = new EepData(EepType.EEP_TYPE_F60201, 2, range);
 
     Assert.assertArrayEquals(new byte[] {0x00, (byte)0xFF}, data.asByteArray());
   }
 
   @Test public void testSaveOutOfRangeValueToEepData() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
     Range range = new Range(dataField, 0xFF);
-    EepData data = new EepData(1, range);
+    EepData data = new EepData(EepType.EEP_TYPE_F60201, 1, range);
 
     Assert.assertArrayEquals(new byte[]{(byte) 0xFF}, data.asByteArray());
 
 
     range = new Range(dataField, 0x1FF);
-    data = new EepData(1, range);
+    data = new EepData(EepType.EEP_TYPE_F60201, 1, range);
 
     try
     {
@@ -146,7 +147,7 @@ public class RangeTest
 
   @Test public void testNullArgs() throws Exception
   {
-    EepDataField dataField = new EepDataField(0, 8);
+    EepDataField dataField = new EepDataField("EDF1", 0, 8);
 
     DataRange rawDataRange = new DataRange(0, 255);
     DataRange unitsDataRange = new DataRange(0, 100);

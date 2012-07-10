@@ -4,6 +4,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
+import org.openremote.controller.protocol.enocean.datatype.*;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
 
@@ -18,7 +19,15 @@ public class EepA50205 implements EepReceive
   private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
 
-  private int temperature = 0;
+  /**
+   * TODO
+   */
+  private Range temperature;
+
+  /**
+   * TODO
+   */
+  private Bool learn;
 
   /**
    * EnOcean equipment profile (EEP) type.
@@ -30,6 +39,9 @@ public class EepA50205 implements EepReceive
    */
   //private CommandType command;
 
+
+  private EepData eepData;
+
   /**
    * TODO
    */
@@ -40,6 +52,19 @@ public class EepA50205 implements EepReceive
     this.eepType = eepType;
     this.deviceID = deviceID;
     //this.command = CommandType.resolve(command);
+
+    EepDataField tempDataField = new EepDataField("TMP", 16, 8);
+    LinearScale tempScale = new LinearScale(new DataRange(255, 0), new DataRange(0, 40), 1);
+    this.temperature = new Range(tempDataField, tempScale);
+
+    EepDataField learnDataField = new EepDataField("LRNB", 28, 1);
+    BoolScale learnScale = new BoolScale(
+        new ScaleCategory("Teach-in telegram", 0, 0, "on", 1),
+        new ScaleCategory("Data telegram", 1, 1, "off", 0)
+    );
+    this.learn = new Bool(learnDataField, learnScale);
+
+    this.eepData = new EepData(EepType.EEP_TYPE_A50205, 4, this.temperature, this.learn);
   }
 
 
@@ -59,42 +84,20 @@ public class EepA50205 implements EepReceive
       return false;
     }
 
-    int oldTemperature = temperature;
+    double oldTempValue = temperature.rangeValue();
 
-    byte[] payload = telegram.getPayload();
+    this.eepData.update(telegram.getPayload());
 
-    temperature = payload[2] & 0xFF;
+    double newTempValue = temperature.rangeValue();
 
-    return temperature != oldTemperature;
+
+    return oldTempValue != newTempValue;
   }
 
   @Override public void updateSensor(Sensor sensor)
   {
+    // TODO : evaluate learn bit
 
+    temperature.updateSensor(sensor);
   }
-
-  //@Override public boolean getBoolValue() throws ConfigurationException
-  //{
-    // TODO
-  //  throw new ConfigurationException("");
-  //}
-
-  //@Override public int getRangeValue() throws ConfigurationException
-  //{
-  //  log.debug("get range value from profile A50205 instance");
-
-  //  return (int)((1.0 - (temperature/255.0)) * 40.0);
-  //}
-
-  //@Override public int getLevelValue() throws ConfigurationException
-  //{
-  //  return ((1 - (temperature/255)) * 100);
-  //}
-
-  //@Override public String getStateValue() throws ConfigurationException
-  //{
-  //  log.debug("get state value from profile A50205 instance");
-
-  //  return String.format("%.1f", ((1.0 - (temperature/255.0)) * 40.0));
-  //}
 }
