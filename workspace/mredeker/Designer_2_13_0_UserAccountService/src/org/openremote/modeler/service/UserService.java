@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
+import org.openremote.useraccount.domain.UserDTO;
 
 /**
  * The service for User.
@@ -31,11 +32,9 @@ import org.openremote.modeler.domain.User;
  */
 public interface UserService {
    
-   void initRoles();
-
    void saveUser(User user);
    
-   void updateUser(User user);
+   void updateUser(UserDTO user);
    
    User getUserById(long id);
    
@@ -61,17 +60,7 @@ public interface UserService {
     * @return true if success
     */
    boolean activateUser(String userOid, String aid);
-   
-   /**
-    * Send register activation email.
-    * 
-    * @param user
-    *           the user
-    * 
-    * @return true, if success
-    */
-   boolean sendRegisterActivationEmail(User user);
-   
+      
    boolean isUsernameAvailable(String username);
    
    User getCurrentUser();
@@ -87,7 +76,6 @@ public interface UserService {
     */
    User inviteUser(String email, String role, User currentUser);
 
-   boolean sendInvitation(User invitee, User currentUser);
    
    /**
     * Check invitation info.
@@ -143,13 +131,13 @@ public interface UserService {
    List<User> getAccountAccessUsers(User currentUser);
    
    /**
-    * The user forget password, send to the email that the user have registered.
+    * The user forgot password, send to the email that the user have registered.
     * 
     * @param username the username
     * 
     * @return the user
     */
-   User forgetPassword(String username);
+   UserDTO forgotPassword(String username);
    
    /**
     * Check password token from the url which forward from the user email.
@@ -159,7 +147,7 @@ public interface UserService {
     * 
     * @return the user
     */
-   User checkPasswordToken(long uid, String passwordToken);
+   UserDTO checkPasswordToken(long uid, String passwordToken);
    
    /**
     * Change the user password if the passwordToken is equals to the database and set it into database.
