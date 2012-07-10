@@ -52,7 +52,6 @@ public class ApplicationListener implements ServletContextListener {
       if (!tempFolder.exists()) {
          tempFolder.mkdirs();
       }
-      userService.initRoles();
    }
 
    

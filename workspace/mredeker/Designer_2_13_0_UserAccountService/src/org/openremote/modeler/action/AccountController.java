@@ -27,12 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.impl.UserServiceImpl;
+import org.openremote.useraccount.domain.UserDTO;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-import org.openremote.modeler.client.Constants;
 
 /**
  * The Class is used for managing user and account.
@@ -266,7 +266,7 @@ public class AccountController extends MultiActionController {
          forgetMav.addObject("isUserAvailable", false);
          return forgetMav;
       }
-      User user = userService.forgetPassword(username);
+      UserDTO user = userService.forgotPassword(username);
       if (user != null) {
          forgetMav.addObject("needReset", true);
          forgetMav.addObject("email", user.getEmail());
@@ -293,7 +293,7 @@ public class AccountController extends MultiActionController {
          return loginMav;
       }
       
-      User user = userService.checkPasswordToken(Long.valueOf(uid), aid);
+      UserDTO user = userService.checkPasswordToken(Long.valueOf(uid), aid);
       if (user != null) {
          resetMav.addObject("hasReset", false);
          resetMav.addObject("aid", aid);
