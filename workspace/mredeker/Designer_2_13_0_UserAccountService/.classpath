@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="mine"/>
-	<classpathentry kind="src" path="protocols"/>
-	<classpathentry kind="src" path="config"/>
-	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="touchpanels"/>
+	<classpathentry kind="src" output="war/WEB-INF/classes" path="src"/>
+	<classpathentry kind="src" output="war/WEB-INF/classes" path="protocols"/>
+	<classpathentry kind="src" output="war/WEB-INF/classes" path="config"/>
+	<classpathentry kind="src" output="war/WEB-INF/classes" path="test"/>
+	<classpathentry kind="src" output="war/WEB-INF/classes" path="touchpanels"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/core/hibernate/hibernate3.jar"/>
@@ -30,11 +29,10 @@
 	<classpathentry kind="lib" path="lib/core/slf4j/slf4j-api-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j/log4j-1.2.12.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/servlet-api"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/gwt-2.0.4"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/gwt/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/antlr-2.7.6/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/core/asm-1.5.3/asm.jar"/>
-	<classpathentry kind="lib" path="lib/core/flexjson-1.9.2/flexjson.jar"/>
 	<classpathentry kind="lib" path="lib/core/dom4j-1.6.1/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/cglib-2.1.3/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/cglib-2.1.3/cglib-nodep-2.1_3.jar"/>
@@ -48,7 +46,6 @@
 	<classpathentry kind="lib" path="lib/core/apache-commons/fileupload-1.2.1/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/httpclient-3.0/commons-httpclient-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/io-1.2/commons-io.jar"/>
-	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.1/commons-lang.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/logging-1.1/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/pool-1.2/commons-pool.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt/gxt-2.2.5-gwt22.jar"/>
@@ -58,8 +55,15 @@
 	<classpathentry kind="lib" path="lib/core/restlet-gwt-2.1rc3/org.restlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-gwt-2.1rc3/org.restlet.ext.json.jar"/>
 	<classpathentry kind="lib" path="lib/core/org.json_2.0/org.json.jar"/>
-	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet-jse.jar"/>
+	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet-jse.jar" sourcepath="/Users/marcus/Downloads/restlet-jse-2.0.11/src/org.restlet"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/flexjson-2.1/flexjson-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/persistence-api-1.0-rev-1.jar"/>
+	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/aopalliance.jar"/>
 	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
