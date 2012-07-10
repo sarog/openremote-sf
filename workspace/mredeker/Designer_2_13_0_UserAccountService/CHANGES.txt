@@ -1,15 +1,41 @@
-Designer 2.13.0 (2012-05-XX Rosemary)
+Designer 2.13.2 (2012-06-24 Rosemary)
 =====================================
 
- - Image assets in designs are now handled with
-   an image asset manager which allows reuse of
-   images across multiple UI components and screens.
- - Archos 7 Tablet supported as a predefined panel 
-   in Designer
+Bug fix release:
+
+ - Fixed MODELER-316: Enable gestures to be associated with 
+   full macro definitions (XML schema change)
+ - Fixed MODELER-317: Submit button was disabled after an
+   error occured
+ - Fixed MODELER-318: Account management yields an 
+   HTTP 500 error
+ - Fixed MODELER-321: Correctly delete custom sensor states
+ - Fixed MODELER-311: same macro can be used multiple
+   times in a command
+
+
+Designer 2.13.1 (2012-06-11 Rosemary)
+=====================================
+
+Bug fix release:
+
+ - Templates no longer recreate associated building objects 
+   when used. Users must explicitly bind UI components in 
+   templates to their own building objects (MODELER-314).
+ - Correctly maintains empty button label names when read from 
+   a template (MODELER-315)
+
+
+Designer 2.13.0 (2012-06-01 Rosemary)
+=====================================
+
+ - Image assets in designs are now handled with an image asset manager 
+   which allows reuse of images across multiple UI components and 
+   screens.
+ - Archos 7 Tablet supported as a predefined panel in Designer
  - KNX DPT 9.001 support in KNX Import Wizard 
  - Performance improvements of the client side (web browser
-   Javascript) code with an improvement data serialization
-   mechanism
+   Javascript) code with an improvement data serialization mechanism
    
 
 Designer 2.12.0 (2012-05-20 Jura)

@@ -110,6 +110,8 @@ public class SensorWindow extends FormWindow {
    protected EditorGrid<BaseModelData> grid = null;
    private int stateRowIndex = -1;
    
+   protected Button submitBtn;
+   
    /**
     * Instantiates a window to edit a sensor.
     * 
@@ -407,7 +409,7 @@ public class SensorWindow extends FormWindow {
    }
    
    private void createButtons() {
-      Button submitBtn = new Button("Submit");
+      submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
       submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
@@ -424,11 +426,13 @@ public class SensorWindow extends FormWindow {
             BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
             if (typeList.getValue() == null) {
                MessageBox.alert("Warn", "A sensor must have a type", null);
+               submitBtn.enable();
                typeList.focus();
                return;
             }
             if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommandDTO)) {
                MessageBox.alert("Warn", "A sensor must have a device command", null);
+               submitBtn.enable();
                commandSelectTree.focus();
                return;
             }

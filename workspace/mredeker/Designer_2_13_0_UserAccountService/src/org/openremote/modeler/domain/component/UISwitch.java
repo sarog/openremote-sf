@@ -169,6 +169,8 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
      // TODO EBR : Just to comply to interface, but this class should not implement this interface, never has direct access to sensor, only through Switch
    }
    
+   @Override
+   @JSON(include=false)
    public SensorWithInfoDTO getSensorDTO() {
      return null;
      // TODO EBR : As above

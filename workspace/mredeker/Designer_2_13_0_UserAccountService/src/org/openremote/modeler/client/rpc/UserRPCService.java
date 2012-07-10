@@ -19,10 +19,12 @@
 */
 package org.openremote.modeler.client.rpc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
+import org.openremote.modeler.shared.dto.UserDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -43,14 +45,14 @@ public interface UserRPCService extends RemoteService {
     * 
     * @throws UserInvitationException the user invitation exception
     */
-   User inviteUser(String email, String role) throws UserInvitationException;
+   UserDTO inviteUser(String email, String role) throws UserInvitationException;
    
    /**
     * Gets the pending invitees by current account.
     * 
     * @return the pending invitees by account
     */
-   List<User> getPendingInviteesByAccount();
+   ArrayList<UserDTO> getPendingInviteesByAccount();
    
    /**
     * Update the invited user roles.
@@ -60,7 +62,7 @@ public interface UserRPCService extends RemoteService {
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles);
+   UserDTO updateUserRoles(long uid, String roles);
    
    /**
     * Delete the invited user by user id.
@@ -70,16 +72,16 @@ public interface UserRPCService extends RemoteService {
    void deleteUser(long uid);
    
    /**
-    * Gets the users who can access the current account.
-    * 
-    * @return the account access users
-    */
-   List<User> getAccountAccessUsers();
-   
-   /**
     * Gets the current user's id.
     * 
     * @return the user id
     */
    Long getUserId();
+   
+   /**
+    * Gets the users who can access the current account.
+    * 
+    * @return the account access users
+    */
+   ArrayList<UserDTO> getAccountAccessUsersDTO();
 }
