@@ -61,21 +61,27 @@ public class EepDataTest
 
     int dataLength = 4;
 
-    EepData data = new EepData(dataLength, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, dataLength, dataListeners);
 
     Assert.assertArrayEquals(new byte[dataLength], data.asByteArray());
 
 
-    data = new EepData(dataLength, dataListener1, dataListener2);
+    data = new EepData(EepType.EEP_TYPE_A50205, dataLength, dataListener1, dataListener2);
 
     Assert.assertArrayEquals(new byte[dataLength], data.asByteArray());
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void testNullArg() throws Exception
+  {
+    EepData data = new EepData(null, 4, dataListeners);
   }
 
   @Test public void testDataListenerCalls() throws Exception
   {
     int dataLength = 4;
 
-    EepData data = new EepData(dataLength, dataListener1, dataListener2);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, dataLength, dataListener1, dataListener2);
 
     Assert.assertEquals(0, dataListener1.updateCallCount);
     Assert.assertEquals(0, dataListener2.updateCallCount);
@@ -107,7 +113,7 @@ public class EepDataTest
 
   @Test public void testUpdateData() throws Exception
   {
-    EepData data = new EepData(4, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 4, dataListeners);
 
     Assert.assertArrayEquals(new byte[4], data.asByteArray());
 
@@ -121,7 +127,7 @@ public class EepDataTest
 
   @Test public void testSetByteValue() throws Exception
   {
-    EepData data = new EepData(4, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 4, dataListeners);
 
     data.setValue(0, 0x01);
 
@@ -135,7 +141,7 @@ public class EepDataTest
 
   @Test public void testGetByteValue() throws Exception
   {
-    EepData data = new EepData(2, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 2, dataListeners);
 
     data.update(new byte[] {0x01, (byte)0xFF});
 
@@ -153,14 +159,14 @@ public class EepDataTest
   @Test (expected = IllegalArgumentException.class)
   public void testNullUpdateData() throws Exception
   {
-    EepData data = new EepData(2, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 2, dataListeners);
 
     data.update(null);
   }
 
   @Test public void testUpdateWithInvalidDataLength() throws Exception
   {
-    EepData data = new EepData(2, dataListeners);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 2, dataListeners);
 
     try
     {
@@ -187,12 +193,12 @@ public class EepDataTest
 
   @Test public void testNullDataListeners() throws Exception
   {
-    EepData data = new EepData(4, (EepDataListener)null);
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 4, (EepDataListener)null);
 
     Assert.assertArrayEquals(new byte[4], data.asByteArray());
 
 
-    data = new EepData(4, (Set<EepDataListener>)null);
+    data = new EepData(EepType.EEP_TYPE_A50205, 4, (Set<EepDataListener>)null);
 
     Assert.assertArrayEquals(new byte[4], data.asByteArray());
   }

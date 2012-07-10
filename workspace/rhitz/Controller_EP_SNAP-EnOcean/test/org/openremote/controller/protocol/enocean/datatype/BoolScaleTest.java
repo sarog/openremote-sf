@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean.datatype;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
 
 /**
  * Unit tests for {@link BoolScale} class.
@@ -117,9 +118,16 @@ public class BoolScaleTest
 
     BoolScale scale = new BoolScale(trueCategory, falseCategory);
 
-    ScaleCategory category = scale.scaleRawValue(10);
+    try
+    {
+      ScaleCategory category = scale.scaleRawValue(10);
 
-    Assert.assertNull(category);
+      Assert.fail();
+    }
+    catch (EepOutOfRangeException e)
+    {
+      // expected
+    }
   }
 
   @Test public void testNullArg() throws Exception

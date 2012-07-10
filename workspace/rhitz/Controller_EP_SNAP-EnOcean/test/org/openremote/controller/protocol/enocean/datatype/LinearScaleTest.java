@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean.datatype;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
 
 import java.math.BigDecimal;
 
@@ -35,92 +36,168 @@ public class LinearScaleTest
 
   // Tests ----------------------------------------------------------------------------------------
 
-  @Test public void testBasicScaling() throws Exception
+  @Test public void testBasicConstruction() throws Exception
+  {
+    DataRange rawRange = new DataRange(0, 255);
+    DataRange unitsRange = new DataRange(50.0, 100.0);
+    int fractionalDigits = 1;
+
+    LinearScale ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
+
+    BigDecimal scaledValue = ls.scaleRawValue(255);
+    Assert.assertTrue(BigDecimal.valueOf(100).setScale(fractionalDigits).compareTo(scaledValue) == 0);
+  }
+
+  @Test public void testScaling() throws Exception
   {
     DataRange rawRange = new DataRange(100, 200);
     DataRange unitsRange = new DataRange(50.0, 100.0);
-    int scale = 1;
+    int fractionalDigits = 1;
 
-    LinearScale ls = new LinearScale(rawRange, unitsRange, scale);
+    LinearScale ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     BigDecimal scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(200);
-    Assert.assertTrue(BigDecimal.valueOf(100).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(100).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
 
     rawRange = new DataRange(200, 100);
     unitsRange = new DataRange(50.0, 100.0);
 
-    ls = new LinearScale(rawRange, unitsRange, scale);
+    ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(100).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(100).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(200);
-    Assert.assertTrue(BigDecimal.valueOf(50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
 
     rawRange = new DataRange(0, 100);
     unitsRange = new DataRange(-50.0, 50.0);
 
-    ls = new LinearScale(rawRange, unitsRange, scale);
+    ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     scaledValue = ls.scaleRawValue(0);
-    Assert.assertTrue(BigDecimal.valueOf(-50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(-50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(50);
-    Assert.assertTrue(BigDecimal.valueOf(0).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
 
     rawRange = new DataRange(0, 100);
     unitsRange = new DataRange(50.0, -50.0);
 
-    ls = new LinearScale(rawRange, unitsRange, scale);
+    ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     scaledValue = ls.scaleRawValue(0);
-    Assert.assertTrue(BigDecimal.valueOf(50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(50);
-    Assert.assertTrue(BigDecimal.valueOf(0).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(-50).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(-50).setScale(fractionalDigits).compareTo(scaledValue) == 0);
   }
 
   @Test public void testFractionalDigits() throws Exception
   {
     DataRange rawRange = new DataRange(0, 100);
     DataRange unitsRange = new DataRange(0.25, 1.25);
-    int scale = 2;
+    int fractionalDigits = 2;
 
-    LinearScale ls = new LinearScale(rawRange, unitsRange, scale);
+    LinearScale ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     BigDecimal scaledValue = ls.scaleRawValue(0);
-    Assert.assertTrue(BigDecimal.valueOf(0.25).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0.25).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(50);
-    Assert.assertTrue(BigDecimal.valueOf(0.75).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0.75).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(1.25).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(1.25).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
 
-    scale = 1;
+    fractionalDigits = 1;
 
-    ls = new LinearScale(rawRange, unitsRange, scale);
+    ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
 
     scaledValue = ls.scaleRawValue(0);
-    Assert.assertTrue(BigDecimal.valueOf(0.3).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0.3).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(50);
-    Assert.assertTrue(BigDecimal.valueOf(0.8).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(0.8).setScale(fractionalDigits).compareTo(scaledValue) == 0);
 
     scaledValue = ls.scaleRawValue(100);
-    Assert.assertTrue(BigDecimal.valueOf(1.3).setScale(scale).compareTo(scaledValue) == 0);
+    Assert.assertTrue(BigDecimal.valueOf(1.3).setScale(fractionalDigits).compareTo(scaledValue) == 0);
+  }
+
+  @Test public void testScaleOutOfRangeValue() throws Exception
+  {
+    DataRange rawRange = new DataRange(50, 250);
+    DataRange unitsRange = new DataRange(50.0, 100.0);
+    int fractionalDigits = 1;
+
+    LinearScale ls = new LinearScale(rawRange, unitsRange, fractionalDigits);
+
+    BigDecimal scaledValue;
+
+    try
+    {
+      scaledValue = ls.scaleRawValue(49);
+
+      Assert.fail();
+    }
+    catch (EepOutOfRangeException e)
+    {
+      // expected
+    }
+
+    try
+    {
+      scaledValue = ls.scaleRawValue(251);
+
+      Assert.fail();
+    }
+    catch (EepOutOfRangeException e)
+    {
+      // expected
+    }
+  }
+
+  @Test public void testNullArg() throws Exception
+  {
+    DataRange rawRange = new DataRange(0, 255);
+    DataRange unitsRange = new DataRange(50.0, 100.0);
+    int fractionalDigits = 1;
+
+    LinearScale ls;
+
+    try
+    {
+      ls = new LinearScale(null, unitsRange, fractionalDigits);
+
+      Assert.fail();
+    }
+    catch (IllegalArgumentException e)
+    {
+
+    }
+
+    try
+    {
+      ls = new LinearScale(rawRange, null, fractionalDigits);
+
+      Assert.fail();
+    }
+    catch (IllegalArgumentException e)
+    {
+
+    }
   }
 }

@@ -103,7 +103,7 @@ public class BoolScale extends CategoricalScale
    * @param  category scale category
    *
    * @return <tt>true</tt> if scale category represents the boolean value <tt>true</tt>,
-   *         otherwise <tt>false</tt>
+   *         <tt>false</tt> otherwise
    */
   public boolean isTrue(ScaleCategory category)
   {

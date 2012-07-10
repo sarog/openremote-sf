@@ -36,8 +36,11 @@ public interface EepDataListener
    *
    * @param data  the EnOcean equipment profile (EEP) data instance
    *              which has been updated
+   *
+   * @throws EepOutOfRangeException
+   *              if a data field value is out of range
    */
-  void didUpdateData(EepData data);
+  void didUpdateData(EepData data) throws EepOutOfRangeException;
 
   /**
    * This method gets called when the EnOcean equipment profile (EEP) data has to be
@@ -45,6 +48,11 @@ public interface EepDataListener
    *
    * @param data  the EnOcean equipment profile (EEP) data instance
    *              which has to be updated
+   *
+   * @throws EepOutOfRangeException
+   *              if a data field value cannot be stored to the EEP data because it is
+   *              out of range
    */
-  void updateData(EepData data);
+  void updateData(EepData data) throws EepOutOfRangeException;
+
 }

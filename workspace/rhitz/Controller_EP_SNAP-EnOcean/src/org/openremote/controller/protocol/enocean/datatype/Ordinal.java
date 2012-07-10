@@ -28,6 +28,7 @@ import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
 import org.openremote.controller.protocol.enocean.profile.EepData;
 import org.openremote.controller.protocol.enocean.profile.EepDataField;
 import org.openremote.controller.protocol.enocean.profile.EepDataListener;
+import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -56,18 +57,23 @@ public class Ordinal implements DataType, EepDataListener
   /**
    * EnOcean equipment profile (EEP) data field.
    */
-  private EepDataField dataField;
+  protected EepDataField dataField;
 
   /**
    * Scale for converting raw EnOcean equipment profile (EEP) data field values to
    * an ordinal value.
    */
-  private CategoricalScale scale;
+  protected CategoricalScale scale;
 
   /**
    * Raw EnOcean equipment profile (EEP) data field value.
    */
-  private Integer rawValue;
+  protected Integer rawValue;
+
+  /**
+   * The scale category which contains the {@link #rawValue}.
+   */
+  protected ScaleCategory category;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -97,13 +103,13 @@ public class Ordinal implements DataType, EepDataListener
   }
 
   /**
-   * Constructs an ordinal instance with given data field and ordinal value.
+   * Constructs an ordinal instance with given data field and raw value.
    *
    * @param dataField  EnOcean equipment profile (EEP) data field
    *
-   * @param value      ordinal value
+   * @param rawValue   raw value
    */
-  public Ordinal(EepDataField dataField, int value)
+  public Ordinal(EepDataField dataField, int rawValue)
   {
     if(dataField == null)
     {
@@ -111,7 +117,7 @@ public class Ordinal implements DataType, EepDataListener
     }
 
     this.dataField = dataField;
-    this.rawValue = value;
+    this.rawValue = rawValue;
   }
 
 
@@ -126,26 +132,20 @@ public class Ordinal implements DataType, EepDataListener
    */
   public Integer ordinalValue()
   {
-    if(rawValue == null)
+    if(category != null)
     {
-      return null;
+      return category.getSensorValue();
     }
 
-    if(scale == null)
+    else if(rawValue != null)
     {
       return rawValue;
     }
 
-    Integer scaledValue = null;
-
-    ScaleCategory category = scaleRawValue(rawValue);
-
-    if(category != null)
+    else
     {
-      scaledValue = category.getSensorValue();
+      return null;
     }
-
-    return scaledValue;
   }
 
 
@@ -154,41 +154,30 @@ public class Ordinal implements DataType, EepDataListener
   /**
    * {@inheritDoc}
    */
-  @Override public void didUpdateData(EepData data)
+  @Override public void didUpdateData(EepData data) throws EepOutOfRangeException
   {
     int newRawValue = dataField.read(data);
 
-    if(isInValidRange(newRawValue))
+    if(scale != null)
     {
-      this.rawValue = newRawValue;
+      // may throw EepOutOfRangeException
+      this.category = scale.scaleRawValue(newRawValue);
     }
-    else
-    {
-      log.error(
-          "Received out of range value ''{0}'' for data field ''{1}''",
-           newRawValue, dataField
-      );
-    }
+
+    this.rawValue = newRawValue;
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public void updateData(EepData data)
+  @Override public void updateData(EepData data) throws EepOutOfRangeException
   {
-    try
+    if(rawValue == null)
     {
-      if(rawValue != null)
-      {
-        dataField.write(rawValue, data);
-      }
+      return;
     }
-    catch (EepDataField.ValueOutOfRangeException e)
-    {
-      throw new RuntimeException(
-          "Could not write EEP data field value: " + e.getMessage(), e
-      );
-    }
+
+    dataField.write(rawValue, data);
   }
 
 
@@ -199,21 +188,8 @@ public class Ordinal implements DataType, EepDataListener
    */
   @Override public void updateSensor(Sensor sensor)
   {
-    if(rawValue == null)
-    {
-      return;
-    }
-
-    ScaleCategory category = scaleRawValue(rawValue);
-
     if(category == null)
     {
-      log.error(
-          "Failed to update sensor ''{0}'' because value ''{1}'' " +
-          "is out of valid range for data field ''{2}''",
-          sensor, rawValue, dataField
-      );
-
       return;
     }
 
@@ -231,52 +207,13 @@ public class Ordinal implements DataType, EepDataListener
     {
       log.warn(
           "Failed to update sensor ''{0}'' because SWITCH sensor " +
-          "cannot be linked with EEP data field ''{1}''", sensor, dataField
+          "cannot be linked with ''{1}''", sensor, dataField
       );
     }
 
     else
     {
-      throw new Error("Unrecognized sensor type: " + sensor.toString());
+      throw new RuntimeException("Unrecognized sensor type: " + sensor.toString());
     }
-  }
-
-  // Private Instance Methods ---------------------------------------------------------------------
-
-  /**
-   * Determines the scale category for the raw data field value and returns it.
-   *
-   * @return scale category the raw value falls int or <tt>null</tt> if there is no scale
-   *         object set or there is not matching scale category
-   */
-  private ScaleCategory scaleRawValue(Integer aRawValue)
-  {
-    ScaleCategory category = null;
-
-    if(aRawValue == null || scale == null)
-    {
-      return null;
-    }
-
-    category = scale.scaleRawValue(aRawValue);
-
-    return category;
-  }
-
-  /**
-   * Checks if the given raw value is within valid value range.
-   *
-   * @param aRawValue  raw value
-   *
-   * @return <tt>true</tt> if value is within valid range, <tt>false</tt> otherwise
-   */
-  private boolean isInValidRange(int aRawValue)
-  {
-    if(scale == null)
-    {
-      return true;
-    }
-
-    return (scaleRawValue(aRawValue) != null);
   }
 }

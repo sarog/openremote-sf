@@ -20,14 +20,17 @@
  */
 package org.openremote.controller.protocol.enocean.profile;
 
-import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.enocean.*;
+import org.openremote.controller.protocol.enocean.datatype.*;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * EnOcean equipment profile (EEP) F6-02-01 implementation.
@@ -45,7 +48,7 @@ public class EepF60201 implements EepTransceive
   /**
    * Payload value which indicates that the energy bow of the switch has been pressed.
    */
-  private static final int ENERGY_BOW_PRESS = 0x10;
+  private static final int ENERGY_BOW_PRESS = 0x01;
 
   /**
    * Payload value which indicates that the energy bow of the switch has been released.
@@ -60,17 +63,17 @@ public class EepF60201 implements EepTransceive
   /**
    * Payload value which indicates that the upper left button has been activated.
    */
-  private static final int ROCKER_AO = 0x20;
+  private static final int ROCKER_AO = 0x01;
 
   /**
    * Payload value which indicates that the bottom right button has been activated.
    */
-  private static final int ROCKER_BI = 0x40;
+  private static final int ROCKER_BI = 0x02;
 
   /**
    * Payload value which indicates that upper right button has been activated.
    */
-  private static final int ROCKER_BO = 0x60;
+  private static final int ROCKER_BO = 0x03;
 
   /**
    * Status byte value which indicates that the radio telegram is a N-Message. <p>
@@ -95,8 +98,42 @@ public class EepF60201 implements EepTransceive
   private static final int T21 = 0x20;
 
 
-  // Class Members --------------------------------------------------------------------------------
+  private static final int ENERGY_BOW_DATA_FIELD_OFFSET = 0x03;
+  private static final int ENERGY_BOW_DATA_FIELD_SIZE = 0x01;
 
+  private static final int ROCKER_FIRST_ACTION_DATA_FIELD_OFFSET = 0x01;
+  private static final int ROCKER_FIRST_ACTION_DATA_FIELD_SIZE = 0x02;
+
+  private static final EepDataField ENERGY_BOW_DATA_FIELD = new EepDataField(
+      "EB", ENERGY_BOW_DATA_FIELD_OFFSET, ENERGY_BOW_DATA_FIELD_SIZE);
+
+  private static final EepDataField ROCKER_FIRST_ACTION_DATA_FIELD = new EepDataField(
+      "R1", ROCKER_FIRST_ACTION_DATA_FIELD_OFFSET, ROCKER_FIRST_ACTION_DATA_FIELD_SIZE
+  );
+
+  private static final BoolScale ENERGY_BOW_SCALE = new BoolScale(
+      new ScaleCategory("Energy bow pressed", ENERGY_BOW_PRESS, ENERGY_BOW_PRESS, "on", ENERGY_BOW_PRESS),
+      new ScaleCategory("Energy bow released", ENERGY_BOW_RELEASE, ENERGY_BOW_RELEASE, "off", ENERGY_BOW_RELEASE)
+  );
+
+  private static final CategoricalScale ROCKER_FIRST_ACTION_SCALE = new CategoricalScale(
+      new ScaleCategory("Rocker 1st action: Button AI", ROCKER_AI, ROCKER_AI, "ROCKER_AI", ROCKER_AI),
+      new ScaleCategory("Rocker 1st action: Button AO", ROCKER_AO, ROCKER_AO, "ROCKER_AO", ROCKER_AO),
+      new ScaleCategory("Rocker 1st action: Button BI", ROCKER_BI, ROCKER_BI, "ROCKER_BI", ROCKER_BI),
+      new ScaleCategory("Rocker 1st action: Button BO", ROCKER_BO, ROCKER_BO, "ROCKER_BO", ROCKER_BO)
+  );
+
+  private static final Bool ENERGY_BOW_PRESS_VALUE = new Bool(ENERGY_BOW_DATA_FIELD, true);
+
+  private static final Bool ENERGY_BOW_RELEASE_VALUE = new Bool(ENERGY_BOW_DATA_FIELD, false);
+
+  private static final Ordinal ROCKER_AI_VALUE = new Ordinal(ROCKER_FIRST_ACTION_DATA_FIELD, ROCKER_AI);
+  private static final Ordinal ROCKER_AO_VALUE = new Ordinal(ROCKER_FIRST_ACTION_DATA_FIELD, ROCKER_AO);
+  private static final Ordinal ROCKER_BI_VALUE = new Ordinal(ROCKER_FIRST_ACTION_DATA_FIELD, ROCKER_BI);
+  private static final Ordinal ROCKER_BO_VALUE = new Ordinal(ROCKER_FIRST_ACTION_DATA_FIELD, ROCKER_BO);
+
+
+  // Class Members --------------------------------------------------------------------------------
 
   /**
    * EnOcean logger. Uses a common category for all EnOcean related logging.
@@ -115,72 +152,72 @@ public class EepF60201 implements EepTransceive
     /**
      * Press bottom left button.
      */
-    PRESS_ROCKER_AI("PRESS_ROCKER_AI", ENERGY_BOW_PRESS | ROCKER_AI, T21 | N_MESSAGE, null),
+    PRESS_ROCKER_AI("PRESS_ROCKER_AI", T21 | N_MESSAGE, null, ENERGY_BOW_PRESS_VALUE, ROCKER_AI_VALUE),
 
     /**
      * Release bottom left button.
      */
-    RELEASE_ROCKER_AI("PRESS_ROCKER_AI", ENERGY_BOW_RELEASE, T21 | U_MESSAGE, null),
+    RELEASE_ROCKER_AI("PRESS_ROCKER_AI", T21 | U_MESSAGE, null, ENERGY_BOW_RELEASE_VALUE),
 
     /**
      * Press upper left button.
      */
-    PRESS_ROCKER_AO("PRESS_ROCKER_AO", ENERGY_BOW_PRESS | ROCKER_AO, T21 | N_MESSAGE, null),
+    PRESS_ROCKER_AO("PRESS_ROCKER_AO", T21 | N_MESSAGE, null, ENERGY_BOW_PRESS_VALUE, ROCKER_AO_VALUE),
 
     /**
      * Release upper left button.
      */
-    RELEASE_ROCKER_AO("PRESS_ROCKER_AO", ENERGY_BOW_RELEASE, T21 | U_MESSAGE, null),
+    RELEASE_ROCKER_AO("PRESS_ROCKER_AO", T21 | U_MESSAGE, null, ENERGY_BOW_RELEASE_VALUE),
 
     /**
      * Press and release bottom left button.
      */
-    ON_ROCKER_A("ON_ROCKER_A", ENERGY_BOW_PRESS | ROCKER_AI, T21 | N_MESSAGE, RELEASE_ROCKER_AI),
+    ON_ROCKER_A("ON_ROCKER_A", T21 | N_MESSAGE, RELEASE_ROCKER_AI, ENERGY_BOW_PRESS_VALUE, ROCKER_AI_VALUE),
 
     /**
      * Press and release upper left button.
      */
-    OFF_ROCKER_A("OFF_ROCKER_A", ENERGY_BOW_PRESS | ROCKER_AO, T21 | N_MESSAGE, RELEASE_ROCKER_AO),
+    OFF_ROCKER_A("OFF_ROCKER_A",  T21 | N_MESSAGE, RELEASE_ROCKER_AO, ENERGY_BOW_PRESS_VALUE, ROCKER_AO_VALUE),
 
     /**
      * Read ON/OFF status of left rocker.
      */
-    STATUS_ROCKER_A("STATUS_ROCKER_A", 0x00, 0x00, null),
+    STATUS_ROCKER_A("STATUS_ROCKER_A", 0x00, null, ENERGY_BOW_PRESS_VALUE),
 
     /**
      * Press bottom right button.
      */
-    PRESS_ROCKER_BI("PRESS_ROCKER_BI", ENERGY_BOW_PRESS | ROCKER_BI, T21 | N_MESSAGE, null),
+    PRESS_ROCKER_BI("PRESS_ROCKER_BI", T21 | N_MESSAGE, null, ENERGY_BOW_PRESS_VALUE, ROCKER_BI_VALUE),
 
     /**
      * Release bottom right button.
      */
-    RELEASE_ROCKER_BI("PRESS_ROCKER_BI", ENERGY_BOW_RELEASE, T21 | U_MESSAGE, null),
+    RELEASE_ROCKER_BI("PRESS_ROCKER_BI", T21 | U_MESSAGE, null, ENERGY_BOW_RELEASE_VALUE),
 
     /**
      * Press upper right button.
      */
-    PRESS_ROCKER_BO("PRESS_ROCKER_BO", ENERGY_BOW_PRESS | ROCKER_BO, T21 | N_MESSAGE, null),
+    PRESS_ROCKER_BO("PRESS_ROCKER_BO", T21 | N_MESSAGE, null, ENERGY_BOW_PRESS_VALUE, ROCKER_BO_VALUE),
 
     /**
      * Release upper right button.
      */
-    RELEASE_ROCKER_BO("PRESS_ROCKER_BO", ENERGY_BOW_RELEASE, T21 | U_MESSAGE, null),
+    RELEASE_ROCKER_BO("PRESS_ROCKER_BO", T21 | U_MESSAGE, null, ENERGY_BOW_RELEASE_VALUE),
 
     /**
      * Press and release bottom right button.
      */
-    ON_ROCKER_B("ON_ROCKER_B", ENERGY_BOW_PRESS | ROCKER_BI, T21 | N_MESSAGE, RELEASE_ROCKER_BI),
+    ON_ROCKER_B("ON_ROCKER_B", T21 | N_MESSAGE, RELEASE_ROCKER_BI, ENERGY_BOW_PRESS_VALUE, ROCKER_BI_VALUE),
 
     /**
      * Press and release upper right button.
      */
-    OFF_ROCKER_B("OFF_ROCKER_B", ENERGY_BOW_PRESS | ROCKER_BO, T21 | N_MESSAGE, RELEASE_ROCKER_BO),
+    OFF_ROCKER_B("OFF_ROCKER_B", T21 | N_MESSAGE, RELEASE_ROCKER_BO, ENERGY_BOW_PRESS_VALUE, ROCKER_BO_VALUE),
 
     /**
      * Read ON/OFF status of right rocker.
      */
-    STATUS_ROCKER_B("STATUS_ROCKER_B", 0x00, 0x00, null);
+    STATUS_ROCKER_B("STATUS_ROCKER_B", 0x00, null, ENERGY_BOW_PRESS_VALUE);
 
 
     // Members ------------------------------------------------------------------------------------
@@ -209,13 +246,28 @@ public class EepF60201 implements EepTransceive
     private byte statusByte;
     private CommandType releaseCommand;
 
-    private CommandType(String commandString, int dataByte, int statusByte, CommandType releaseCommand)
+    private CommandType(String commandString, int statusByte, CommandType releaseCommand, EepDataListener...listenerArray)
     {
       this.commandString = commandString;
-      this.payload = new byte[] {(byte)dataByte};
       this.statusByte = (byte)statusByte;
-
       this.releaseCommand = releaseCommand;
+
+      Set<EepDataListener> listenerSet = new HashSet<EepDataListener>();
+      for(EepDataListener listener : listenerArray)
+      {
+        listenerSet.add(listener);
+      }
+
+      EepData eepData = new EepData(EepType.EEP_TYPE_F60201, 1, listenerSet);
+
+      try
+      {
+        this.payload = eepData.asByteArray();
+      }
+      catch (EepOutOfRangeException e)
+      {
+        throw new RuntimeException("Failed to create command: " + e.getMessage(), e);
+      }
     }
 
     public byte[] getPayload()
@@ -237,8 +289,9 @@ public class EepF60201 implements EepTransceive
 
   // Private Instance Fields --------------------------------------------------------------------
 
+  private Ordinal rockerStatus = new Ordinal(ROCKER_FIRST_ACTION_DATA_FIELD, ROCKER_FIRST_ACTION_SCALE);
+  private Bool energyBowStatus = new Bool(ENERGY_BOW_DATA_FIELD, ENERGY_BOW_SCALE);
 
-  // TODO
 
   private boolean statusRockerA = false;
   private boolean statusRockerB = false;
@@ -259,11 +312,6 @@ public class EepF60201 implements EepTransceive
    */
   private DeviceID deviceID;
 
-  /**
-   * Payload content of the {@link EspRadioTelegram.RORG#RPS} radio telegram type which is
-   * used to transmit EEP F6-02-01 related radio telegrams.
-   */
-  private byte payloadByte = 0x00;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -333,29 +381,31 @@ public class EepF60201 implements EepTransceive
       return false;
     }
 
-    byte telePayload = telegram.getPayload()[0];
-
     boolean oldStatusRockerA = statusRockerA;
     boolean oldStatusRockerB = statusRockerB;
 
-    if(isEnergyBowPressed(telePayload))
+    updateEnergyBowStatus(telegram.getPayload());
+
+    if(isEnergyBowPressed())
     {
-      if(isButtonPressed(telePayload, ROCKER_AI))
+      updateRockerStatus(telegram.getPayload());
+
+      if(rockerStatus.ordinalValue() == ROCKER_AI)
       {
         statusRockerA = true;
       }
 
-      else if(isButtonPressed(telePayload, ROCKER_AO))
+      else if(rockerStatus.ordinalValue() == ROCKER_AO)
       {
         statusRockerA = false;
       }
 
-      else if(isButtonPressed(telePayload, ROCKER_BI))
+      else if(rockerStatus.ordinalValue() == ROCKER_BI)
       {
         statusRockerB = true;
       }
 
-      else if(isButtonPressed(telePayload, ROCKER_BO))
+      else if(rockerStatus.ordinalValue() == ROCKER_BO)
       {
         statusRockerB = false;
       }
@@ -367,15 +417,14 @@ public class EepF60201 implements EepTransceive
 
   @Override public void updateSensor(Sensor sensor) throws ConfigurationException
   {
-    if(sensor instanceof StateSensor)
+    if(sensor instanceof SwitchSensor)
     {
       sensor.update(getStateValue());
     }
 
     else
     {
-      // TODO
-      throw new ConfigurationException("");
+      this.rockerStatus.updateSensor(sensor);
     }
   }
 
@@ -406,16 +455,20 @@ public class EepF60201 implements EepTransceive
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-  private boolean isEnergyBowPressed(byte value)
+  private void updateEnergyBowStatus(byte[] data)
   {
-    return ((value & (byte)ENERGY_BOW_PRESS) > 0);
+    EepData eepData = new EepData(EepType.EEP_TYPE_F60201, 1, this.energyBowStatus);
+    eepData.update(data);
   }
 
-  private boolean isButtonPressed(int value, int button)
+  private void updateRockerStatus(byte[] data)
   {
-    int maskedValue = value & 0xE0;
+    EepData eepData = new EepData(EepType.EEP_TYPE_F60201, 1, this.rockerStatus);
+    eepData.update(data);
+  }
 
-    return ((maskedValue & button) == button) &&
-           ((maskedValue | button) == button);
+  private boolean isEnergyBowPressed()
+  {
+    return this.energyBowStatus.boolValue();
   }
 }
