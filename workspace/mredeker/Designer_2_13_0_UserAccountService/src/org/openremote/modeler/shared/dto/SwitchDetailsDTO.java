@@ -20,7 +20,14 @@
  */
 package org.openremote.modeler.shared.dto;
 
-public class SwitchDetailsDTO implements DTO {
+/**
+ * Data transfer object to move a switch component state between two separate processes
+ * (mainly used between client and the server side component).
+ *
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
+ */
+public class SwitchDetailsDTO implements DTO
+{
 
   private static final long serialVersionUID = 1L;
   
@@ -32,7 +39,8 @@ public class SwitchDetailsDTO implements DTO {
   private DTOReference offCommand;
   private String offCommandDisplayName;
 
-  public SwitchDetailsDTO() {
+  public SwitchDetailsDTO()
+  {
     super();
   }
 
