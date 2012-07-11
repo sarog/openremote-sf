@@ -21,7 +21,12 @@
 package org.openremote.controller.protocol.enocean.profile;
 
 /**
- * TODO
+ * A tagging interface to indicate that the EnOcean equipment profile (EEP)
+ * implementation may receive and/or transmit EnOcean radio telegrams.
+ *
+ * @see EepReceive
+ * @see EepTransmit
+ * @see EepTransceive
  *
  * @author Rainer Hitz
  */
