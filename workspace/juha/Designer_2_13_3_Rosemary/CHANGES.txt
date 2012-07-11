@@ -1,3 +1,14 @@
+
+Designer 2.13.3 (2012-07-15 Rosemary)
+=====================================
+
+Bug fix release:
+
+ - Account data restore was broken due to running outside
+   of a transaction. This impacted data that contained
+   lazy-loaded items.
+
+
 Designer 2.13.2 (2012-06-24 Rosemary)
 =====================================
 
