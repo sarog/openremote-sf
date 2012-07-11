@@ -130,6 +130,7 @@ import org.openremote.modeler.server.SensorController;
 import org.openremote.modeler.server.SliderController;
 import org.openremote.modeler.server.SwitchController;
 import org.springframework.ui.velocity.VelocityEngineUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -1282,7 +1283,7 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * This implementation has been moved and delegates to {@link DesignerState#restore}.
    */
-  @Override @Deprecated public PanelsAndMaxOid restore()
+  @Override @Deprecated @Transactional public PanelsAndMaxOid restore()
   {
     try
     {
