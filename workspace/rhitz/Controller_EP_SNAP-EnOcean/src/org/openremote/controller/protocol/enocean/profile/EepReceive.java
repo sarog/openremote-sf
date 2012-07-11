@@ -33,17 +33,18 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 public interface EepReceive extends Eep
 {
   /**
-   * Adjusts the internal state of the EnOcean equipment profile (EEP) instance
-   * with payload data from the radio telegram.
+   * Updates the state of an EnOcean equipment profile (EEP) instance
+   * with the data of a received radio telegram.
    *
    * @param telegram  radio telegram
    */
   boolean update(EspRadioTelegram telegram);
 
   /**
-   * TODO
+   * Updates the sensor value with data from the internal state of an
+   * EnOcean equipment profile (EEP) instance.
    *
-   * @param sensor
+   * @param sensor  the sensor
    */
   void updateSensor(Sensor sensor) throws ConfigurationException;
 }
