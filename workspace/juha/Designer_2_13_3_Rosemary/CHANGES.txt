@@ -4,6 +4,7 @@ Designer 2.13.3 (2012-07-15 Rosemary)
 
 Bug fix release:
 
+ - MODELER-325: resolve transaction issues on save
  - MODELER-326: device command update/delete handling fix
 
 
