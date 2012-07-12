@@ -1145,7 +1145,7 @@ public class ResourceServiceImpl implements ResourceService
 
   private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
     if (uiCommandDTO instanceof DeviceCommandDTO) {
-      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
+      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid(), true); // Load device and its relationships eagerly
       return  (dc != null)?new DeviceCommandRef(dc):null;
     } else if (uiCommandDTO instanceof MacroDTO) {
       DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());

@@ -127,8 +127,25 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public DeviceCommand loadById(long id) {
+     return loadById(id, false);
+   }
+   
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.BaseAbstractService#loadById(long, boolean)
+    */
+   public DeviceCommand loadById(long id, boolean loadDeviceEagerly) {
       DeviceCommand deviceCommand = super.loadById(id);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      
+      if (loadDeviceEagerly) {
+        Hibernate.initialize(deviceCommand.getDevice());
+        Hibernate.initialize(deviceCommand.getDevice().getDeviceAttrs());
+        Hibernate.initialize(deviceCommand.getDevice().getSensors());
+        Hibernate.initialize(deviceCommand.getDevice().getSwitchs());
+        Hibernate.initialize(deviceCommand.getDevice().getSliders());
+      }
+      
       return deviceCommand;
    }
 
