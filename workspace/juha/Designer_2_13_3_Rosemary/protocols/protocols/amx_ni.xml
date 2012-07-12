@@ -32,7 +32,7 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 	<protocol displayName="AMX Controller" tagName="amx_ni">
-		<attr name="command" label="AMX Command" options="ON,OFF,PULSE,CHANNEL_STATUS,SEND_LEVEL,LEVEL_STATUS,SEND_COMMAND,SEND_STRING">
+		<attr name="command" label="AMX Command" options="ON,OFF,PULSE,CHANNEL_STATUS,SEND_LEVEL,LEVEL_STATUS,SEND_COMMAND,COMMAND_READ,SEND_STRING,STRING_READ">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
@@ -61,5 +61,19 @@
 				<allowBlank>true</allowBlank>
 			</validations>
 		</attr>
+                <attr name = "statusFilter" label = "Read Regex Filter">
+                    <validations>
+                        <allowBlank>true</allowBlank>
+                        <maxLength>1000</maxLength>
+                        <regex message = "Status Filter Regular Expression">.*</regex>
+                    </validations>
+                </attr>
+                <attr name = "statusFilterGroup" label = "Read Regex Group">
+                    <validations>
+                        <allowBlank>true</allowBlank>
+                        <maxLength>3</maxLength>
+                        <regex message = "This is the regex group number that contains the value to return, it must be an integer.">\d+</regex>
+                    </validations>
+                </attr>
 	</protocol>
 </openremote>
