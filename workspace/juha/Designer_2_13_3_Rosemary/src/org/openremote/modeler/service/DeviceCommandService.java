@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 /**
  * The Interface DeviceCommandService.
@@ -48,12 +49,7 @@ public interface DeviceCommandService {
     */
    DeviceCommand save(DeviceCommand deviceCommand);
    
-   /**
-    * Update.
-    * 
-    * @param deviceCommand the device command
-    */
-   DeviceCommand update(DeviceCommand deviceCommand);
+   void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto);
    
    /**
     * Load by id.
