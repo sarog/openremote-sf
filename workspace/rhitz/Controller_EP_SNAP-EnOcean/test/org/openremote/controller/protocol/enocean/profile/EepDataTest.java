@@ -156,6 +156,21 @@ public class EepDataTest
     Assert.assertEquals(0xFF, value);
   }
 
+  @Test public void testDataAsString() throws Exception
+  {
+    EepData data = new EepData(EepType.EEP_TYPE_A50205, 4, dataListeners);
+    dataListener1.index = 0;
+    dataListener1.value = 0x01;
+    dataListener2.index = 3;
+    dataListener2.value = 0x04;
+
+    Assert.assertEquals("0x01 0x00 0x00 0x04", data.dataAsString());
+
+    dataListener1.throwException = true;
+
+    Assert.assertEquals("-- -- -- --", data.dataAsString());
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testNullUpdateData() throws Exception
   {
@@ -210,16 +225,34 @@ public class EepDataTest
   {
     int didUpdateCallCount;
     int updateCallCount;
+    int index = -1;
+    int value;
+    boolean throwException = false;
 
 
-    @Override public void didUpdateData(EepData data)
+    @Override public void didUpdateData(EepData data) throws EepOutOfRangeException
     {
       ++didUpdateCallCount;
+
+      if(throwException)
+      {
+        throw new EepOutOfRangeException("");
+      }
     }
 
-    @Override public void updateData(EepData data)
+    @Override public void updateData(EepData data) throws EepOutOfRangeException
     {
       ++updateCallCount;
+
+      if(index >= 0)
+      {
+        data.setValue(index, value);
+      }
+
+      if(throwException)
+      {
+        throw new EepOutOfRangeException("");
+      }
     }
   }
 }
