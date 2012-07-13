@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol.enocean.profile;
 
+import org.openremote.controller.utils.Strings;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -146,7 +148,7 @@ public class EepData
    */
   @Override public String toString()
   {
-    return "EEP data (Type = '" + type + "', Length = '" + length() + "')";
+    return "EEP data (Type = '" + type + "', Data = '" + dataAsString() + "')";
   }
 
 
@@ -205,6 +207,40 @@ public class EepData
     }
 
     return data.clone();
+  }
+
+  /**
+   * Returns the EnOcean equipment profile (EEP) data as a string value. The
+   * bytes are formatted as unsigned hex strings. If an associated
+   * {@link EepDataField} value cannot be stored to this instance because
+   * of an out of range error, the returned string contains only hyphens.
+   *
+   * @return EnOcean equipment profile (EEP) data formatted as a sequence of
+   *         unsigned hex strings
+   */
+  public String dataAsString()
+  {
+    StringBuilder builder = new StringBuilder(256);
+
+    try
+    {
+      byte[] eepData = asByteArray();
+
+      for (byte b : eepData)
+      {
+        builder.append(Strings.byteToUnsignedHexString(b));
+        builder.append(" ");
+      }
+    }
+    catch (EepOutOfRangeException e)
+    {
+      for(int i = 0; i < length(); i++)
+      {
+        builder.append("-- ");
+      }
+    }
+
+    return builder.toString().trim();
   }
 
   /**
