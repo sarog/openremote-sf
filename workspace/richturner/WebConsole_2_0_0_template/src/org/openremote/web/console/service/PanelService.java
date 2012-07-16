@@ -18,6 +18,8 @@ public interface PanelService {
 	
 	Screen getScreenById(Integer screenId);
 	
+	Screen getScreenById(Integer screenId, Integer groupId);
+	
 	Screen getScreenByName(String name);
 	
 	Screen getNextScreen(Integer groupId, Integer screenId);
@@ -35,4 +37,6 @@ public interface PanelService {
 	List<Integer> getGroupScreenIds(Integer groupId);
 	
 	List<Integer> getGroupScreenIdsWithSameOrientation(Integer screenId, Integer groupId);
+
+	List<String> getImageResourceUrls();
 }

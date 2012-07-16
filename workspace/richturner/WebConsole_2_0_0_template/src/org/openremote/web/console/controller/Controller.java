@@ -18,11 +18,11 @@ public class Controller implements ControllerCredentials {
 	
 	public Controller(ControllerCredentials credentials) {
 		if (credentials != null) {
-			this.name = credentials.getName();
-			this.url = credentials.getUrl();
-			this.username = credentials.getUsername();
-			this.password = credentials.getPassword();
-			this.defaultPanel = credentials.getDefaultPanel();
+			setName(credentials.getName());
+			setUrl(credentials.getUrl());
+			setUsername(credentials.getUsername());
+			setPassword(credentials.getPassword());
+			setDefaultPanel(credentials.getDefaultPanel());
 		}
 	}
 	
@@ -62,6 +62,7 @@ public class Controller implements ControllerCredentials {
 	}
 	
 	public void setUrl(String url) {
+		if (!url.endsWith("/")) url += "/";
 		this.url = url;
 	}
 	

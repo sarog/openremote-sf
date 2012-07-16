@@ -344,7 +344,7 @@ public class FormPanelComponent extends PanelComponent {
 		}
 		panel.setHeight(layout.getHeight());
 		panel.setWidth(layout.getWidth());
-		panel.setPosition(layout.getLeft(),layout.getTop());
+		panel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
 		panel.setDataSource(layout.getDataSource());
 		panel.setItemBindingObject(layout.getItemBindingObject());
 		

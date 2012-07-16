@@ -12,116 +12,105 @@ import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.ButtonDefault;
+import org.openremote.web.console.panel.entity.ButtonPressed;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.ImageContainer;
 import org.openremote.web.console.util.ImageLoadedCallback;
-
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 
-public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler, LoadHandler {
+public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	public static final int LABEL_FONT_SIZE = 12;
 	private String name;
-	private Label label; 
-	private Image img;
-	private boolean isSystemImage = false;
-	private boolean srcExists = false;
+	private boolean pressed = false;
+	private ImageContainer defaultImageContainer = null;
+	private ImageContainer pressedImageContainer = null;
 	
 	protected ButtonComponent() {
-		super(new AbsolutePanel(), CLASS_NAME);
-		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
-		DOM.setStyleAttribute(getElement(), "display", "inline-block");
-		
-		label = new Label();
-		DOM.setStyleAttribute(label.getElement(), "fontSize", LABEL_FONT_SIZE + "px");
-		label.setWidth("100%");
-		label.setHeight("100%");
-		label.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		
-		img = new Image();
-		img.setWidth("100%");
-		img.setHeight("100%");
-		img.addLoadHandler(new LoadHandler() {
-
-			@Override
-			public void onLoad(LoadEvent event) {
-				srcExists = true;
-				showImage();
-			}
-		});
-		
-		((AbsolutePanel)getWidget()).add(label);
-		((AbsolutePanel)getWidget()).add(img);
+		super(new Button(), CLASS_NAME);
 	}
 	
 	public void setName(String name) {
-		this.name = name;		
-		if (!isInitialised) {
-			return;
-		}
-		this.name = BrowserUtils.limitStringLength(name, width, LABEL_FONT_SIZE);
-		label.setText(this.name);
+		this.name = name;
+		((Button)getWidget()).setHTML("<span>"+ name + "</span>");
 	}
 	
-	public void setImage(String src) {
-		String imagePath = "";
-		if (isSystemImage) {
-			imagePath = BrowserUtils.getSystemImageDir() + "/" + src;
+	public void showDefaultImage() {
+		if (defaultImageContainer != null) {
+			if (defaultImageContainer.getLoadAttempted()) {
+				if (!defaultImageContainer.getExists()) {
+					DOM.setStyleAttribute(getElement(), "backgroundImage", "");
+					getElement().removeClassName("hasImage");
+					return;
+				}
+			} else {
+				defaultImageContainer.addCallback(new ImageLoadedCallback() {
+					@Override
+					public void onImageLoaded(ImageContainer container) {
+						showDefaultImage();
+					}
+				});
+				return;
+			}
+			
+			if (defaultImageContainer.getNativeWidth() > this.getParent().getOffsetWidth() || defaultImageContainer.getNativeHeight() > this.getParent().getOffsetHeight()) {
+				DOM.setStyleAttribute(getElement(), "backgroundSize", "contain");
+			}
+			DOM.setStyleAttribute(getElement(), "backgroundImage", "url(" + defaultImageContainer.getUrl() + ")");
+			DOM.setStyleAttribute(getElement(), "backgroundRepeat", "no-repeat");
+			getElement().addClassName("hasImage");
 		} else {
-			imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + "/" + src;
-		}
-		img.setUrl(imagePath);
-	}
-	
-	private void setIsSystemImage(boolean isSystemImage) {
-		this.isSystemImage = isSystemImage;
-	}
-	
-	public void showImage() {
-		if (srcExists) {
-			img.setVisible(true);
-			label.setVisible(false);			
-			DOM.setStyleAttribute(getElement(), "backgroundColor", "transparent");
-			DOM.setStyleAttribute(getElement(), "backgroundImage", "none");
-		} else {
-			hideImage();
+			DOM.setStyleAttribute(getElement(), "backgroundImage", "");
+			getElement().removeClassName("hasImage");
 		}
 	}
 	
-	public void hideImage() {
-		img.setVisible(false);
-		label.setVisible(true);
-		getElement().getStyle().clearBackgroundColor();
-		getElement().getStyle().clearBackgroundImage();
-	}
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
 	
 	@Override
 	public void onRender(int width, int height) {
-		label.setHeight(height + "px");
 		isInitialised = true;
-		setName(name);
-		DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
-		showImage();
+		showDefaultImage();
+	}
+	
+	@Override
+	public void onUpdate(int width, int height) {
+		showDefaultImage();
 	}
 
 	@Override
 	public void onPressCancel(PressCancelEvent event) {
-		this.removeStyleName("pressed");
+		onPressEnd(null);
 	}
 
 	@Override
 	public void onPressEnd(PressEndEvent event) {
+		if (!pressed) return;
+		pressed = false;
+		showDefaultImage();
 		this.removeStyleName("pressed");
 	}
 
 	@Override
 	public void onPressStart(PressStartEvent event) {
+		pressed = true;
+		if (pressedImageContainer != null && pressedImageContainer.getExists()) {
+			if (pressedImageContainer.getNativeWidth() > this.getParent().getOffsetWidth() || pressedImageContainer.getNativeHeight() > this.getParent().getOffsetHeight()) {
+				DOM.setStyleAttribute(getElement(), "backgroundSize", "contain");
+			}
+			DOM.setStyleAttribute(getElement(), "backgroundImage", "url(" + pressedImageContainer.getUrl() + ")");
+			DOM.setStyleAttribute(getElement(), "backgroundRepeat", "no-repeat");
+			getElement().addClassName("hasImage");
+		}
+//		else {
+//			DOM.setStyleAttribute(getElement(), "backgroundImage", "none");
+//			getElement().removeClassName("hasImage");
+//		}
 		this.addStyleName("pressed");
 	}
 	
@@ -134,11 +123,9 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		}
 	}
 	
-	@Override
-	public void onLoad(LoadEvent event) {
-		srcExists = true;
-		showImage();
-	}
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
 		ButtonComponent component = new ButtonComponent();
@@ -148,15 +135,33 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		}
 		component.setId(entity.getId());
 		component.setName(entity.getName());
+		
 		ButtonDefault buttonDefault = entity.getDefault();
-		Boolean hasControl = entity.getHasControlCommand();
 		if (buttonDefault != null) {
-			boolean isSystemImage = false;
 			org.openremote.web.console.panel.entity.Image img = buttonDefault.getImage();
-			if (img.getSystemImage() != null) isSystemImage = true;			
-			component.setIsSystemImage(isSystemImage);
-			component.setImage(img.getSrc());
+			if (img != null) {
+				String src = img.getSrc();
+				if (img.getSystemImage() != null && img.getSystemImage()) {
+					src = BrowserUtils.getSystemImageDir() + src;
+				} else {
+					src = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + src;
+				}
+				component.defaultImageContainer = WebConsole.getConsoleUnit().getImageFromCache(src);
+			}
 		}
+		ButtonPressed buttonPressed = entity.getPressed();
+		if (buttonPressed != null) {
+			org.openremote.web.console.panel.entity.Image img = buttonPressed.getImage();
+			String src = img.getSrc();
+			if (img.getSystemImage() != null && img.getSystemImage()) {
+				src = BrowserUtils.getSystemImageDir() + src;
+			} else {
+				src = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + src;
+			}
+			component.pressedImageContainer = WebConsole.getConsoleUnit().getImageFromCache(src);
+		}
+		
+		Boolean hasControl = entity.getHasControlCommand();
 		if (hasControl != null && hasControl) {
 			component.setHasControlCommand(hasControl);
 		}

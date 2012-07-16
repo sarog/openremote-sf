@@ -22,6 +22,7 @@ import org.openremote.web.console.panel.entity.ListItemLayout;
 import org.openremote.web.console.panel.entity.ListLayout;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
+import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.Interactive;
@@ -36,6 +37,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
@@ -109,9 +111,13 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	}
 	
 	public List<ListItem> generateListItems() {
+		return generateListItems(null);
+	}
+	
+	public List<ListItem> generateListItems(List<DataValuePairContainer> data) {
 		List<ListItem> listItems = new ArrayList<ListItem>();
 		
-		inputObject = DataBindingService.getInstance().getData(dataSource);
+		inputObject = DataBindingService.getInstance().getData(dataSource, data);
 		if (inputObject != null) {
 			dataMap = AutoBeanCodex.encode(inputObject);
 			
@@ -142,6 +148,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 					}
 				} catch (Exception e) {
 					// TODO: Problem binding to data source do something
+					Window.alert("Failed to bind data source!");
 				}
 			}
 		}
@@ -182,10 +189,8 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	}
 	
 	public boolean appearsVertical() {
-		String unitIsVerticalString = WebConsole.getConsoleUnit().getOrientation();
-		boolean unitIsVertical = unitIsVerticalString.equalsIgnoreCase("portrait") ? true : false;
-		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
-		return ((unitIsVertical && displayIsVertical) || (!unitIsVertical && !displayIsVertical));
+		ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+		return (consoleUnit.getOrientation().equals(consoleUnit.getConsoleDisplay().getOrientation()));
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -208,7 +213,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 	}
 	
 	@Override
-	public void onRender(int width, int height, List<DataValuePairContainer> data) {
+	public void onRender(int screenWidth, int screenHeight, List<DataValuePairContainer> data) {
 		// Set Scroll Panel Size and Vertical Panel Width
 //		ScrollPanel panel = (ScrollPanel)getWidget();
 //		setHeight(height + "px");
@@ -222,14 +227,14 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		
 		// Get data source if it is defined and generate list items
 		if (dataSource != null && !dataSource.equals("")) {
-			items = generateListItems();
+			items = generateListItems(data);
 		}
 		
 		// Add items to container
 		for (ListItem item : items) {
 			if (item != null) {
 				container.add(item);
-				item.onAdd(width, height);
+				item.onAdd(screenWidth, screenHeight);
 			}
 		}
 		
@@ -379,7 +384,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		
 		panel.setHeight(layout.getHeight());
 		panel.setWidth(layout.getWidth());
-		panel.setPosition(layout.getLeft(),layout.getTop());
+		panel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
 		
 		String dataSource = layout.getDataSource();
 		String itemBindingObject = layout.getItemBindingObject();

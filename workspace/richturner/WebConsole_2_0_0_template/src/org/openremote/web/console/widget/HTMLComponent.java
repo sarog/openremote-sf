@@ -8,15 +8,28 @@ public class HTMLComponent extends PassiveConsoleComponent {
 	protected HTMLComponent() {
 		super(new HTML(), CLASS_NAME);
 	}
-
+	
+	public void setHTML(String html) {
+		((HTML)getWidget()).setHTML(html);
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
 	@Override
 	public void onRender(int width, int height) {
 
 	}
 	
-	public void setHTML(String html) {
-		((HTML)getWidget()).setHTML(html);
+	@Override
+	public void onUpdate(int width, int height) {
+		
 	}
+	
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.HTMLComponent entity) {
 		HTMLComponent component = new HTMLComponent(); 

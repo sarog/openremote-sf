@@ -31,24 +31,19 @@ import org.openremote.web.console.panel.entity.component.SwitchComponent;
  * It parse the absolute node, contains size and position info.
  * 
  */
-public interface AbsoluteLayout {
+public interface AbsoluteLayout extends ComponentContainer {
    String getHeight();
    String getWidth();
    String getLeft();
    String getTop();
-	ButtonComponent getButton();
-	LabelComponent getLabel();
-	SliderComponent getSlider();
-	ImageComponent getImage();
-	SwitchComponent getSwitch();
+   String getRight();
+   String getBottom();
+
 	
    void setHeight(String height);
    void setWidth(String width);
    void setLeft(String left);
    void setTop(String top);
-	void setButton(ButtonComponent component);
-	void setLabel(LabelComponent component);
-	void setSlider(SliderComponent component);
-	void setImage(ImageComponent component);
-	void setSwitch(SwitchComponent component);
+   void setRight(String right);
+   void setBottom(String bottom);
 }

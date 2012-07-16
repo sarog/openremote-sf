@@ -8,7 +8,10 @@ import org.openremote.web.console.controller.ControllerCredentialsList;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.ui.BindingDataChangeEvent;
+import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.PanelIdentityList;
 import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.DataValuePairContainer;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
@@ -29,7 +32,9 @@ public class DataBindingService {
 	
 	private enum BindingMap {
 		CONTROLLER_CREDS_LIST(ControllerCredentialsList.class, "controllerCredentialsList"),
-		CONTROLLER_CREDS(ControllerCredentials.class, "controllerCredentials");
+		CONTROLLER_CREDS(ControllerCredentials.class, "controllerCredentials"),
+		PANEL_IDENTITY_LIST(PanelIdentityList.class, "panelIdentityList"),
+		PANEL_IDENTITIES(PanelIdentity.class, "panelIdentities");
 		
 		private Class<?> clazz;
 		private String dataSource;
@@ -83,12 +88,29 @@ public class DataBindingService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public AutoBean<?> getData(String dataSource, List<DataValuePair> data) {
+	public AutoBean<?> getData(String dataSource, List<DataValuePairContainer> data) {
 		BindingMap map = BindingMap.getBindingMap(dataSource);
 		AutoBean<?> bean = null;
 		if (map != null) {
 			String obj = WebConsole.getConsoleUnit().getLocalDataService().getObjectString(map.getDataSource());
-			if (obj != null) {
+			
+			if (obj == null || obj.equals("")) {
+				// Look in supplied data
+				String dataString = null;
+				if (data != null) {
+					for (DataValuePairContainer dvpC : data) {
+						if (dvpC != null) {
+							DataValuePair dvp = dvpC.getDataValuePair();
+							if (dvp.getName().equalsIgnoreCase(dataSource)) {
+								obj = dvp.getValue();
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			if (obj != null && !obj.equals("")) {
 				bean = AutoBeanService.getInstance().fromJsonString(map.getClazz(), obj);
 			} else {
 				bean = AutoBeanService.getInstance().getFactory().create(map.getClazz());

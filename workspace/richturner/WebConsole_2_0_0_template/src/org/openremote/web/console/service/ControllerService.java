@@ -5,6 +5,7 @@ import java.util.Map;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.PanelIdentityList;
 
 /**
  * Controller Service Interface for defining the communication with
@@ -27,13 +28,13 @@ public abstract class ControllerService {
 	/*
 	 * Method for retrieving panel identities for requested controller
 	 */
-	public void getPanelIdentities(AsyncControllerCallback<List<PanelIdentity>> callback) {
+	public void getPanelIdentities(AsyncControllerCallback<PanelIdentityList> callback) {
 		if (controller != null) {
 			getPanelIdentities(controller.getUrl(), callback);
 		}
 	}
 	
-	public abstract void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback);
+	public abstract void getPanelIdentities(String controllerUrl, AsyncControllerCallback<PanelIdentityList> callback);
 	
 	/*
 	 * Method for retrieving panel definition from requested controller

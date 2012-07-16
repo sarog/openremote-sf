@@ -5,8 +5,6 @@ import java.util.List;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
-import org.openremote.web.console.panel.entity.Navigate;
-import org.openremote.web.console.widget.TabBarComponent.TabBarItemComponent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -42,6 +40,10 @@ public class ScreenIndicator extends PassiveConsoleComponent implements ScreenVi
 		return width;
 	}
 	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
 	@Override
 	public void onAdd(int width, int height) {
 		onRender(width, height);
@@ -67,6 +69,12 @@ public class ScreenIndicator extends PassiveConsoleComponent implements ScreenVi
 		
 		// Register screen change handler
 		registerHandler(ConsoleUnitEventManager.getInstance().getEventBus().addHandler(ScreenViewChangeEvent.getType(),this));
+	}
+	
+	@Override
+	public void onUpdate(int width, int height) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

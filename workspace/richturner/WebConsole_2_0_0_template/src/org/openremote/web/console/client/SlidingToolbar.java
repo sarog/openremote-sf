@@ -2,8 +2,12 @@ package org.openremote.web.console.client;
 
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
+import org.openremote.web.console.panel.entity.PanelSizeInfo;
+import org.openremote.web.console.service.AutoBeanService;
+import org.openremote.web.console.service.LocalDataService;
+import org.openremote.web.console.service.LocalDataServiceImpl;
+import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,6 +16,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -19,6 +24,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -29,19 +36,25 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 	private boolean isHidden = true;
 	private int maxMarginLeft = -50;
 	private int minMarginLeft = -320;
-	private Label widthLbl;
-	private Label heightLbl;
 	private TextBox widthInput;
 	private TextBox heightInput;
 	private boolean widthValid = false;
 	private boolean heightValid = false;
+	private RadioButton fullscreenOpt;
+	private RadioButton fixedOpt;
+	private PanelSizeType currentType;
 	
-	private SlidingToolbar() {
+	private enum PanelSizeType {
+		FULLSCREEN,
+		FIXED;
+	}
+	
+	private SlidingToolbar(PanelSizeInfo sizeInfo) {
 		HorizontalPanel container = new HorizontalPanel();
 		this.initWidget(container);
 		setWidth("340px");
 		setStylePrimaryName("toolbar");
-		setHeight(BrowserUtils.getWindowHeight() + "px");
+		setHeight("100%");
 		container.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		DOM.setStyleAttribute(getElement(), "marginLeft", "-320px");
 		mainPanel = new VerticalPanel();
@@ -60,7 +73,6 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		DOM.setStyleAttribute(mainElem, "paddingTop", "20px");
 		DOM.setStyleAttribute(mainElem, "paddingRight", "20px");
 		DOM.setStyleAttribute(mainElem, "paddingBottom", "20px");
-		DOM.setStyleAttribute(mainElem, "marginTop", "10%");
 		
 		// Configure Tab
 		tab.setWidth("20px");
@@ -70,11 +82,11 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		DOM.setStyleAttribute(tabElem, "lineHeight", "50px");
 		
 		// Add to Window
-		BrowserUtils.getConsoleContainer().add(this, 0, 0);
+		RootPanel.get().add(this, 0, 0);
 		
 		addAnimation();
 		
-		createToolbarContent();		
+		createToolbarContent(sizeInfo);
 	}
 	
 	private void addAnimation() {
@@ -102,15 +114,56 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		});
 	}
 	
-	private void createToolbarContent() {
+	private void createToolbarContent(PanelSizeInfo sizeInfo) {
 		// Create Toolbar Content
 		HTML title = new HTML();
 		title.setHTML("<span>OpenRemote</span><br /><span>Web Console 2.0</span>");
 		title.setWidth("100%");
 		title.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		title.setStylePrimaryName("title");
-		title.getElement().getStyle().setMarginBottom(50, Unit.PX);
 		mainPanel.add(title);
+		
+		VerticalPanel panelSizePanel = new VerticalPanel();
+		panelSizePanel.setStylePrimaryName("panelSizePanel");
+		panelSizePanel.setHeight("150px");
+		panelSizePanel.add(new HTML("<h3>Panel Size</h3><p>If you specify a panel size then the dimensions are as if the panel was in Portrait orientation (i.e. Width&lt;=Height).<br /><br />Min Panel Size: 320px x 480px</p>"));
+		fullscreenOpt = new RadioButton("panelSize","Fullscreen");
+		fullscreenOpt.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				setPanelSizeType(PanelSizeType.FULLSCREEN);				
+			}				
+		});
+		fixedOpt = new RadioButton("panelSize","Specify (W X H):");
+		fixedOpt.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				setPanelSizeType(PanelSizeType.FIXED);				
+			}				
+		});		
+		
+		panelSizePanel.add(fullscreenOpt);		
+		panelSizePanel.add(fixedOpt);
+		
+		HorizontalPanel sizeInputPanel = new HorizontalPanel();
+		sizeInputPanel.setStylePrimaryName("sizeInputBoxes");
+		sizeInputPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		widthInput = new TextBox();
+		heightInput = new TextBox();
+		widthInput.setStylePrimaryName("panelSize");
+		heightInput.setStylePrimaryName("panelSize");
+		widthInput.addDomHandler(this, KeyUpEvent.getType());
+		widthInput.addDomHandler(this, BlurEvent.getType());
+		heightInput.addDomHandler(this, KeyUpEvent.getType());
+		heightInput.addDomHandler(this, BlurEvent.getType());
+	
+		sizeInputPanel.add(widthInput);
+		sizeInputPanel.add(new Label("X"));
+		sizeInputPanel.add(heightInput);
+		
+		panelSizePanel.add(sizeInputPanel);
+		
+		mainPanel.add(panelSizePanel);
 		
 		Button rotateBtn = new Button();
 		rotateBtn.setWidth("100px");
@@ -131,47 +184,101 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		resizeBtn.setWidth("100px");
 		resizeBtn.setHeight("50px");
 		resizeBtn.setText("RESIZE");
+		resizeBtn.getElement().setId("resizeBtn");
 		resizeBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if (widthValid && heightValid) {
-					try {
-						WebConsole.getConsoleUnit().setSize(Integer.parseInt(widthInput.getValue()), Integer.parseInt(heightInput.getValue()));
-					} catch (Exception e) {}
+				int widthInt = 0;
+				int heightInt = 0;
+				if (currentType == PanelSizeType.FULLSCREEN) {
+					WebConsole.getConsoleUnit().setSize(true);
+				} else {
+					if (widthValid && heightValid) {
+						try {
+							widthInt = Integer.parseInt(widthInput.getValue());
+							heightInt = Integer.parseInt(heightInput.getValue());
+							if (widthInt <= heightInt && widthInt >=320 && heightInt >= 480) {
+								ConsoleUnit unit = WebConsole.getConsoleUnit();
+								unit.setSize(widthInt, heightInt, false);
+								unit.setPosition();
+								unit.setOrientation(unit.getOrientation());
+								
+//								// Check if unit went to fullscreen due to large dimensions
+//								if (unit.getIsFullscreen()) {
+//									currentType = PanelSizeType.FULLSCREEN;
+//									widthInt = 0;
+//									heightInt = 0;
+//								}
+							} else {
+								Window.alert("Width must be less than or equal to the Height.\n\nMinimum Panel Size: 320px x 480px");
+								return;
+							}
+						} catch (Exception e) {return;}
+					} else {
+						Window.alert("Width and Height values must be Integers!");
+						return;
+					}
 				}
+				
+				// Store new preference
+				LocalDataService dataService = LocalDataServiceImpl.getInstance();
+				PanelSizeInfo sizeInfo = AutoBeanService.getInstance().getFactory().create(PanelSizeInfo.class).as();
+				sizeInfo.setPanelSizeType(currentType == PanelSizeType.FULLSCREEN ? "fullscreen" : "fixed");
+				sizeInfo.setPanelSizeHeight(heightInt);
+				sizeInfo.setPanelSizeWidth(widthInt);
+				dataService.setObject("panelSizeInfo", AutoBeanService.getInstance().toJsonString(sizeInfo));
+				syncUI(sizeInfo);
 			}
 		});
 		
-		// Panel Width Input
-		widthLbl = new Label("Panel Width:");
-		widthLbl.setStylePrimaryName("toolbarInputLabel");
-		widthLbl.setWidth("100%");
-		widthLbl.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-		mainPanel.add(widthLbl);
-		widthInput = new TextBox();
-		widthInput.setStylePrimaryName("toolbarInput");
-		widthInput.setWidth("100%");
-		widthInput.addDomHandler(this, KeyUpEvent.getType());
-		widthInput.addDomHandler(this, BlurEvent.getType());
-		mainPanel.add(widthInput);
-		validateInput(widthInput);
+//		// Panel Width Input
+//		widthLbl = new Label("Panel Width:");
+//		widthLbl.setStylePrimaryName("toolbarInputLabel");
+//		widthLbl.setWidth("100%");
+//		widthLbl.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+//		mainPanel.add(widthLbl);
+//		widthInput = new TextBox();
+//		widthInput.setStylePrimaryName("toolbarInput");
+//		widthInput.setWidth("100%");
+//		widthInput.addDomHandler(this, KeyUpEvent.getType());
+//		widthInput.addDomHandler(this, BlurEvent.getType());
+//		mainPanel.add(widthInput);
+//		validateInput(widthInput);
+//		
+//		// Panel Height Input
+//		heightLbl = new Label("Panel Height:");
+//		heightLbl.setStylePrimaryName("toolbarInputLabel");
+//		heightLbl.setWidth("100%");
+//		heightLbl.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+//		mainPanel.add(heightLbl);
+//		heightInput = new TextBox();
+//		heightInput.setStylePrimaryName("toolbarInput");
+//		heightInput.setWidth("100%");		
+//		heightInput.addDomHandler(this, KeyUpEvent.getType());
+//		heightInput.addDomHandler(this, BlurEvent.getType());
+//		mainPanel.add(heightInput);
+//		validateInput(heightInput);
 		
-		// Panel Height Input
-		heightLbl = new Label("Panel Height:");
-		heightLbl.setStylePrimaryName("toolbarInputLabel");
-		heightLbl.setWidth("100%");
-		heightLbl.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-		mainPanel.add(heightLbl);
-		heightInput = new TextBox();
-		heightInput.setStylePrimaryName("toolbarInput");
-		heightInput.setWidth("100%");		
-		heightInput.addDomHandler(this, KeyUpEvent.getType());
-		heightInput.addDomHandler(this, BlurEvent.getType());
-		mainPanel.add(heightInput);
-		validateInput(heightInput);
-		
-		mainPanel.add(resizeBtn);
+		panelSizePanel.add(resizeBtn);
+		panelSizePanel.setCellHorizontalAlignment(resizeBtn, HasHorizontalAlignment.ALIGN_CENTER);
 		mainPanel.add(rotateBtn);
+		
+		// Match UI to Panel Size Info
+		syncUI(sizeInfo);
+	}
+	
+	private void syncUI(PanelSizeInfo sizeInfo) {
+		if (sizeInfo.getPanelSizeType().equals("fullscreen")) {
+			setPanelSizeType(PanelSizeType.FULLSCREEN);
+			widthInput.setValue("");
+			heightInput.setValue("");
+		} else {
+			setPanelSizeType(PanelSizeType.FIXED);
+			widthInput.setValue(sizeInfo.getPanelSizeWidth().toString());
+			heightInput.setValue(sizeInfo.getPanelSizeHeight().toString());
+			validateInput(widthInput);
+			validateInput(heightInput);
+		}
 	}
 	
 	public void show() {
@@ -182,9 +289,9 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		setVisible(false);
 	}
 	
-	public static synchronized void initialise() {
+	public static synchronized void initialise(PanelSizeInfo sizeInfo) {
 		if (instance == null) {
-			instance = new SlidingToolbar();
+			instance = new SlidingToolbar(sizeInfo);
 		}
 	}
 
@@ -201,19 +308,35 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 	private void validateInput(TextBox input) {
 		String inputStr = input.getValue();
 		boolean valid = inputStr.matches("^\\d+$");
-		Label lbl;
-		if (input == widthInput) {
-			lbl = widthLbl;
-			widthValid = valid;
-		} else {
-			lbl = heightLbl;
-			heightValid = valid;
-		}
 		
 		if (valid) {
-			lbl.removeStyleName("invalidToolbarField");
+			input.getElement().removeClassName("invalid");
 		} else {
-			lbl.addStyleName("invalidToolbarField");
+			input.getElement().addClassName("invalid");
 		}
+		
+		if (input == widthInput) {
+			widthValid = valid;
+		} else {
+			heightValid = valid;
+		}
+	}
+	
+	private void setPanelSizeType(PanelSizeType sizeType) {
+		switch(sizeType) {
+			case FULLSCREEN:
+				fullscreenOpt.setValue(true);
+				fixedOpt.setValue(false);
+				widthInput.setEnabled(false);
+				heightInput.setEnabled(false);
+				break;
+			case FIXED:
+				fullscreenOpt.setValue(false);
+				fixedOpt.setValue(true);
+				widthInput.setEnabled(true);
+				heightInput.setEnabled(true);
+				break;
+		}
+		currentType = sizeType;
 	}
 }

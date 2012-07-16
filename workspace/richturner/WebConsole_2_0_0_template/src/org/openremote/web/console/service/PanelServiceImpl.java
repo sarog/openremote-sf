@@ -5,18 +5,41 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
+import org.openremote.web.console.panel.entity.Cell;
+import org.openremote.web.console.panel.entity.ComponentContainer;
+import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.Image;
+import org.openremote.web.console.panel.entity.ListItemLayout;
+import org.openremote.web.console.panel.entity.ListLayout;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.ScreenRef;
+import org.openremote.web.console.panel.entity.StateMap;
 import org.openremote.web.console.panel.entity.TabBar;
+import org.openremote.web.console.panel.entity.TabBarItem;
+import org.openremote.web.console.panel.entity.component.ButtonComponent;
+import org.openremote.web.console.panel.entity.component.ImageComponent;
+import org.openremote.web.console.panel.entity.component.LabelComponent;
+import org.openremote.web.console.panel.entity.component.SliderComponent;
+import org.openremote.web.console.panel.entity.component.SliderMinMax;
+import org.openremote.web.console.panel.entity.component.SwitchComponent;
 import org.openremote.web.console.unit.ConsoleUnit;
+import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionResult;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionUnit;
+import org.openremote.web.console.widget.panel.form.FormPanelComponent;
+import org.openremote.web.console.widget.panel.list.ListPanelComponent;
+
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 
 public class PanelServiceImpl implements PanelService {
 	private static PanelServiceImpl instance;
@@ -38,10 +61,30 @@ public class PanelServiceImpl implements PanelService {
 	
 	@Override
 	public Screen getScreenById(Integer screenId) {
+		return getScreenById(screenId, null);
+	}
+	
+	@Override
+	public Screen getScreenById(Integer screenId, Integer groupId) {
 		Screen screen = null;
+		boolean groupContainsScreen = false;
 		
-		if (currentScreenMap != null && screenId != null) {
-				screen = currentScreenMap.get(screenId);
+		if (groupId == null) {
+			groupContainsScreen = true;
+		} else {
+			for (Integer sId : getGroupScreenIds(groupId)) {
+				if (sId == screenId) {
+					groupContainsScreen = true;
+					break;
+				}
+			}
+		}
+		if (groupContainsScreen) {
+			if (currentScreenMap != null && screenId != null) {
+					screen = currentScreenMap.get(screenId);
+			}
+		} else if (groupId != null) {
+			screen = getDefaultScreen(groupId);
 		}
 		return screen;
 	}
@@ -83,7 +126,23 @@ public class PanelServiceImpl implements PanelService {
 		Integer screenIndex = getGroupScreenIndex(groupId, screenId);
 		
 		if (screenIndex != null && screenIndex >= 0) {
-			screen = getScreenByGroupIndex(groupId, screenIndex+1);
+			boolean isScreenLandscape = false;
+			
+			Screen oldScreen = getScreenById(screenId);
+			if (oldScreen.getLandscape() != null && oldScreen.getLandscape()) isScreenLandscape = true;
+			List<Integer> screenIds = getGroupScreenIds(groupId);
+			
+				for(int i=screenIndex+1; i<screenIds.size(); i++) {
+					boolean isCompareScreenLandscape = false;
+					Screen scrn = getScreenById(screenIds.get(i));
+					if (scrn != null) {
+						if (scrn.getLandscape() != null && scrn.getLandscape()) isCompareScreenLandscape = true;
+						if (isCompareScreenLandscape == isScreenLandscape) {
+							screen = scrn;
+							break;
+						}
+					}
+				}
 		}		
 		return screen;
 	}
@@ -93,9 +152,25 @@ public class PanelServiceImpl implements PanelService {
 		Screen screen = null;
 		Integer screenIndex = getGroupScreenIndex(groupId, screenId);
 		
-		if (screenIndex != null && screenIndex > 0) {
-			screen = getScreenByGroupIndex(groupId, screenIndex-1);
-		}
+		if (screenIndex != null && screenIndex >= 0) {
+			boolean isScreenLandscape = false;
+			
+			Screen oldScreen = getScreenById(screenId);
+			if (oldScreen.getLandscape() != null && oldScreen.getLandscape()) isScreenLandscape = true;
+			List<Integer> screenIds = getGroupScreenIds(groupId);
+			
+				for(int i=screenIndex-1; i>=0; i--) {
+					boolean isCompareScreenLandscape = false;
+					Screen scrn = getScreenById(screenIds.get(i));
+					if (scrn != null) {
+						if (scrn.getLandscape() != null && scrn.getLandscape()) isCompareScreenLandscape = true;
+						if (isCompareScreenLandscape == isScreenLandscape) {
+							screen = scrn;
+							break;
+						}
+					}
+				}
+		}		
 		return screen;
 	}
 	
@@ -334,5 +409,183 @@ public class PanelServiceImpl implements PanelService {
 		}
 		
 		return filteredScreenIds;
+	}
+
+	@Override
+	public List<String> getImageResourceUrls() {
+		List<String> imageUrls = new ArrayList<String>();
+		// Cycle through panel looking for images that may be required
+		if (currentScreenMap != null) {
+			for (int screenId : currentScreenMap.keySet()) {
+				Screen screenElem = currentScreenMap.get(screenId);
+				
+				// Check background
+				if (screenElem.getBackground() != null && screenElem.getBackground().getImage() != null) {
+					imageUrls.addAll(processImageElement(screenElem.getBackground().getImage()));
+				}
+				
+				// Process Absolute and grid layouts
+				imageUrls.addAll(processAbsoluteAndGridLayouts(screenElem.getAbsolute(), screenElem.getGrid()));
+				
+				// Cycle through list panel elements
+				if (screenElem.getList() != null) {
+					for (ListLayout layout : screenElem.getList()) {
+						ListItemLayout itemLayout = layout.getItemTemplate();
+						if (itemLayout != null) {
+							imageUrls.addAll(processAbsoluteAndGridLayouts(itemLayout.getAbsolute(), itemLayout.getGrid()));
+						}
+					}
+				}
+			}
+			// Cycle through tab bar looking for images also
+			if (currentPanel.getTabbar() != null) {
+				for (TabBarItem item : currentPanel.getTabbar().getItem()) {
+					if (item != null) {
+						if (item.getImage() != null) {
+							if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
+								imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
+							} else {
+								imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return imageUrls;
+	}
+	
+	private List<String> processAbsoluteAndGridLayouts(List<AbsoluteLayout> absLayouts, List<GridLayout> gridLayouts) {
+		List<String> imageUrls = new ArrayList<String>();
+		
+		// Cycle through absolute elements
+		if (absLayouts != null) {
+			for (AbsoluteLayout abs : absLayouts) {
+				if (abs != null) {
+					imageUrls.addAll(processComponentContainer(abs));
+				}
+			}
+		}
+		
+		// Cycle through grid elements
+		if (gridLayouts != null) {
+			for (GridLayout grid : gridLayouts) {
+				List<Cell> cells = grid.getCell();
+			
+				if (cells != null) {
+					for (Cell cell : cells) {
+						if (cell != null) {
+							imageUrls.addAll(processComponentContainer(cell));
+						}
+					}
+				}
+			}
+		}
+		
+		return imageUrls;
+	}
+	
+	private List<String> processComponentContainer(ComponentContainer compContainer) {
+		List<String> imageUrls = new ArrayList<String>();
+		
+		if (compContainer != null) {
+			// Check Button
+			if (compContainer.getButton() != null) imageUrls.addAll(processButtonElement(compContainer.getButton()));
+			// Check Image
+			if (compContainer.getImage() != null) imageUrls.addAll(processImageComponentElement(compContainer.getImage()));
+			// Check Slider
+			if (compContainer.getSlider() != null) imageUrls.addAll(processSliderElement(compContainer.getSlider()));
+			// Check Switch
+			if (compContainer.getSwitch() != null) imageUrls.addAll(processSwitchElement(compContainer.getSwitch()));
+		}
+		
+		return imageUrls;		
+	}
+	
+	private List<String> processImageComponentElement(ImageComponent img) {
+		List<String> imgUrls = new ArrayList<String>();
+		
+		if (img != null) {
+			// Check src and check link
+			if (img.getSrc() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
+			if (img.getLink() != null) {
+				List<StateMap> stateMap = img.getLink().getState();
+				if (stateMap != null) {
+					for (StateMap state : stateMap) {
+						imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + state.getValue());
+					}
+				}
+			}
+		}
+		
+		return imgUrls;
+	}
+	
+	private List<String> processButtonElement(ButtonComponent btn) {
+		List<String> imgUrls = new ArrayList<String>();
+		if (btn != null) {
+			if (btn.getDefault() != null && btn.getDefault().getImage() != null) {
+				if (btn.getDefault().getImage().getSystemImage() != null && btn.getDefault().getImage().getSystemImage()) {
+					imgUrls.add(BrowserUtils.getSystemImageDir() + btn.getDefault().getImage().getSrc());
+				} else {
+					imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getDefault().getImage().getSrc());
+				}
+			}
+			if (btn.getPressed() != null && btn.getPressed().getImage() != null) {
+				if (btn.getPressed().getImage().getSystemImage() != null && btn.getPressed().getImage().getSystemImage()) {
+					imgUrls.add(BrowserUtils.getSystemImageDir() + btn.getPressed().getImage().getSrc());
+				} else {
+					imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getPressed().getImage().getSrc());
+				}
+			}
+		}
+		return imgUrls;
+	}
+	
+	private List<String> processSwitchElement(SwitchComponent swtch) {
+		List<String> imgUrls = new ArrayList<String>();
+		if (swtch != null) {
+			if (swtch.getLink() != null) {
+				for(StateMap map : swtch.getLink().getState()) {
+					if (map != null) {
+						imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + map.getValue());
+					}
+				}
+			}
+		}
+		return imgUrls;
+	}
+	
+	private List<String> processSliderElement(SliderComponent slider) {
+		List<String> imgUrls = new ArrayList<String>();
+		if (slider != null) {
+			if (slider.getThumbImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + slider.getThumbImage());
+			SliderMinMax max = slider.getMax();
+			SliderMinMax min = slider.getMin();
+			if (max != null) {
+				if (max.getImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getImage());
+				if (max.getTrackImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getTrackImage());
+			}
+			if (min != null) {
+				if (min.getImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getImage());
+				if (min.getTrackImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getTrackImage());
+			}
+		}
+		return imgUrls;
+	}
+	
+	private List<String> processImageElement(Image img) {
+		List<String> imgUrls = new ArrayList<String>();
+		
+		if (img != null) {
+			if (img.getSystemImage() != null && img.getSystemImage()) {
+				imgUrls.add(BrowserUtils.getSystemImageDir() + img.getSrc());
+			} else {
+				imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
+			}
+		}
+		
+		return imgUrls;
 	}
 }

@@ -26,6 +26,10 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 		getElement().getStyle().setProperty("fontSize", size + "px");
 	}
 	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
 	@Override
 	public void onRender(int width, int height) {
 		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
@@ -33,10 +37,6 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 	
 	@Override
 	public void onUpdate(int width, int height) {
-		this.width = width;
-		this.height = height;
-		setWidth(width + "px");
-		setHeight(height + "px");
 		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
 	}
 	
@@ -52,6 +52,10 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 		setText(newValue);
 	}
 
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
+	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.LabelComponent entity) {
 		LabelComponent component = new LabelComponent();
 		if (entity == null) {

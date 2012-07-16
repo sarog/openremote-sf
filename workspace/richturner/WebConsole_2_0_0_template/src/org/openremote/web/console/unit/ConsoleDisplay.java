@@ -1,15 +1,11 @@
 package org.openremote.web.console.unit;
 
 import java.util.List;
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
-import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
-import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
@@ -21,7 +17,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
@@ -35,7 +31,6 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	public static final String CLASS_NAME = "consoleDisplay";
 	private AbsolutePanel display;
 	private String currentOrientation = "portrait";
-	private ScreenViewImpl loadingScreen;
 	private TabBarComponent currentTabBar;
 	private ScreenIndicator currentScreenIndicator;
 	private ScreenViewImpl currentScreen;
@@ -46,7 +41,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		
 		// Create display panel where screen is actually loaded
 		display = new AbsolutePanel();
-		display.setStylePrimaryName("portraitDisplay");
+		display.addStyleName("portrait");
 		display.getElement().setId("consoleDisplay");
 		
 		// Add display to the wrapper
@@ -117,13 +112,13 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		return this.currentOrientation;
 	}
 	
-	public boolean getIsVertical() {
-		boolean response = false;
-		if (currentOrientation.equalsIgnoreCase("portrait")) {
-			response = true;
-		}
-		return response;
-	}
+//	public boolean getIsVertical() {
+//		boolean response = false;
+//		if (currentOrientation.equalsIgnoreCase("portrait")) {
+//			response = true;
+//		}
+//		return response;
+//	}
 	
 	public int getWidth() {
 		int value = 0; 
@@ -147,17 +142,13 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	
 	private void setDisplayPosition() {
 		if (currentOrientation.equals("portrait")) {
-			((AbsolutePanel)getWidget()).setWidgetPosition(display,0,0);
-		   display.setStylePrimaryName("portraitDisplay");
+		   display.removeStyleName("landscape");
+		   display.addStyleName("portrait");
+		   DOM.setStyleAttribute(display.getElement(), "left", "0px");
 		} else {
-			int left = ((width/2)-(height/2));
-			int top = -((width/2) - (height/2));
-			if (!BrowserUtils.isCssDodgy) {
-				((AbsolutePanel)getWidget()).setWidgetPosition(display, left, top);
-			} else {
-				((AbsolutePanel)getWidget()).setWidgetPosition(display, 0, 0);
-			}
-			display.setStylePrimaryName("landscapeDisplay");
+		   display.removeStyleName("portrait");
+		   display.addStyleName("landscape");
+		   DOM.setStyleAttribute(display.getElement(), "left", width + "px");
 		}
 	}
 	
@@ -168,51 +159,39 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		if (currentTabBar != null) {
 			removeComponent(currentTabBar);
 		}
-		if (currentScreen != null) {
-			removeComponent(currentScreen);
-		}
-		showLoadingScreen();
-	}
-	
-	private void showLoadingScreen() {
-		if (currentScreen != null) {
-			currentScreen.setVisible(false);
-			removeComponent(currentScreen);
-		}
-		if (currentTabBar != null) {
-			currentTabBar.setVisible(false);
-		}
-		if (currentScreenIndicator != null) {
-			currentScreenIndicator.setVisible(false);
-		}
-		currentScreen = loadingScreen;
-		loadingScreen.setVisible(true);
-	}
-	
-	private void hideLoadingScreen() {
-		loadingScreen.setVisible(false);
-		if (currentTabBar != null) {
-			currentTabBar.setVisible(true);
-		}
+		unloadScreenView();
 	}
 	
 	protected void setScreenView(ScreenViewImpl screen, List<DataValuePairContainer> data) {
 		if (currentScreen != screen) {
-			hideLoadingScreen();
-			if (currentScreen != null) {
-				removeComponent(currentScreen);
-				currentScreen = null;
-			}
+
+			unloadScreenView();
+			
+			BrowserUtils.showLoadingMsg("Loading Screen");
+			
 			// Adjust display orientation if necessary
 			if (screen.isLandscape()) {
 				setOrientation("landscape");
 			} else {
 				setOrientation("portrait");
 			}
-			display.add(screen, 0, 0);
-			screen.onAdd(getWidth(), getHeight(), data);
-			
+			// Have to set this before onAdd as if exception is thrown then at least
+			// any components added to the display will be removed during screen removal
 			currentScreen = screen;
+			
+			display.add(screen, 0, 0);
+			
+			BrowserUtils.hideLoadingMsg();
+			
+			screen.onAdd(getWidth(), getHeight(), data);
+		}
+	}
+	
+	protected void unloadScreenView() {
+		if (currentScreen != null) {
+			currentScreen.setVisible(false);
+			removeComponent(currentScreen);
+			currentScreen = null;
 		}
 	}
 	
@@ -276,7 +255,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	
 	protected void updateTabBar() {
 		if (currentTabBar != null) {
-			currentTabBar.refresh();
+			currentTabBar.onRefresh(getWidth(), getHeight());
 			display.setWidgetPosition(currentTabBar, 0, getHeight() - currentTabBar.getHeight());
 		}
 	}
@@ -340,9 +319,11 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	public void onRender(int width, int height) {
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
-		loadingScreen = new LoadingScreenView();
-		display.add(loadingScreen, 0, 0);
-		loadingScreen.onAdd(width, height, null);
-		showLoadingScreen();		
+	}
+	
+	@Override
+	public void onUpdate(int width, int height) {
+		display.setWidth(width + "px");
+		display.setHeight(height + "px");
 	}
 }

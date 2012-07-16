@@ -22,7 +22,7 @@ public class AddEditControllerScreenView extends ScreenViewImpl {
 		form = new FormPanelComponent();
 		form.setHeight("320px");
 		form.setWidth("95%");
-		form.setPosition("2%", "60px");
+		form.setPosition("2%", "60px", null, null);
 		form.setDataSource("defaultControllerCredentials");
 		
 		// Add fields

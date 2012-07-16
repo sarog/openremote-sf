@@ -66,7 +66,7 @@ public class JSONPControllerService extends ControllerService {
 	// ------------------------   Interface Overrides	-------------------------------------------
 	
 	@Override
-	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback) {
+	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<PanelIdentityList> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
 		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
 	}
@@ -153,9 +153,9 @@ public class JSONPControllerService extends ControllerService {
 			try { 
 				switch(command) {
 					case GET_PANEL_LIST:
-						AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callback;
+						AsyncControllerCallback<PanelIdentityList> panelListCallback = (AsyncControllerCallback<PanelIdentityList>)callback;
 						PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString()).as();
-						panelListCallback.onSuccess(panels.getPanel());
+						panelListCallback.onSuccess(panels);
 						break;
 					case GET_PANEL_LAYOUT:
 						AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callback;

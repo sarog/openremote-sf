@@ -24,6 +24,8 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 			if (container != null) {
 				if (currentImage == container) {
 					setImage(container);
+				} else if (initialImage == container && currentImage == null) {
+					initialImage.setVisible(true);
 				}
 			}
 		}
@@ -31,26 +33,42 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 	
 	public ImageComponent() {
 		super(new AbsolutePanel(), CLASS_NAME);
-		initialImage = new ImageContainer(new Image(), loadedCallback);
 	}
 	
 	public void setInitialImage(String src) {
 		String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-		url += "/" + src;
-		initialImage.setUrl(url);
-		initialImage.getImage().addLoadHandler(new LoadHandler() {
-			@Override
-			public void onLoad(LoadEvent event) {
-				initialImage.setExists(true);
-				initialImage.setVisible(true);
-			}
-		});
-		((AbsolutePanel)getWidget()).add(initialImage.getImage(), 0, 0);
+		url += src;
+		initialImage = WebConsole.getConsoleUnit().getImageFromCache(url);
+		initialImage.addCallback(loadedCallback);
+//		initialImage.setUrl(url);
+//		initialImage.getImage().addLoadHandler(new LoadHandler() {
+//			@Override
+//			public void onLoad(LoadEvent event) {
+//				initialImage.setExists(true);
+//				initialImage.setVisible(true);
+//			}
+//		});
+		if (initialImage != null) {
+			((AbsolutePanel)getWidget()).add(initialImage.getImage(), 0, 0);
+		}
 	}
 	
-	@Override
-	public void onRender(int width, int height) {
-		//initialImage.setVisible(true);
+	private void showInitialImage() {
+		if (initialImage == null) return;
+		
+		if (initialImage.getLoadAttempted()) {
+			if (!initialImage.getExists()) {
+				return;
+			}
+		} else {
+			initialImage.addCallback(new ImageLoadedCallback() {
+				@Override
+				public void onImageLoaded(ImageContainer container) {
+					showInitialImage();
+				}
+			});
+			return;
+		}
 	}
 
 	@Override
@@ -59,18 +77,13 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 		for (String name : map.keySet()) {
 			String value = map.get(name);
 			String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-			url += "/" + value;
-			ImageContainer container = new ImageContainer(new Image(url), loadedCallback);
+			url += value;
+			ImageContainer container = WebConsole.getConsoleUnit().getImageFromCache(url);
+			container.addCallback(loadedCallback);
 			stateImageMap.put(name, container);
-			((AbsolutePanel)getWidget()).add(container.getImage(), 0, 0);
-		}
-	}
-
-	@Override
-	public void sensorChanged(String value) {
-		if (!value.equalsIgnoreCase(state)) {
-			state = value;
-			setImage(stateImageMap.get(value));
+			if (container != null) {
+				((AbsolutePanel)getWidget()).add(container.getImage(), 0, 0);
+			}
 		}
 	}
 	
@@ -82,7 +95,7 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 					currentImage.setVisible(false);
 				}
 				showInitialImage = false;
-				container.setVisible(true);	
+				container.setVisible(true);
 			}
 			currentImage = container;
 		} else {
@@ -93,6 +106,32 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 		}
 		initialImage.setVisible(showInitialImage);
 	}
+	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
+	@Override
+	public void onRender(int width, int height) {
+		showInitialImage();
+	}
+	
+	@Override
+	public void onUpdate(int width, int height) {
+		
+	}
+	
+	@Override
+	public void sensorChanged(String value) {
+		if (!value.equalsIgnoreCase(state)) {
+			state = value;
+			setImage(stateImageMap.get(value));
+		}
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ImageComponent entity) {
 		ImageComponent component = new ImageComponent();
