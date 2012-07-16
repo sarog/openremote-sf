@@ -60,4 +60,8 @@ public class SelectAndDeleteButtonWidget extends LayoutContainer {
       }
       this.selectButton.setToolTip(text);
    }
+   
+   public void setDeleteButtonEnabled(boolean enabled) {
+     this.deleteButton.setEnabled(enabled);
+   }
 }
