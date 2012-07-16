@@ -86,9 +86,9 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
 				String imagePath = "";
 				if (isSystemImage) {
-					imagePath = BrowserUtils.getSystemImageDir() + "/" + tabImage.getSrc();
+					imagePath = BrowserUtils.getSystemImageDir() + tabImage.getSrc();
 				} else {
-					imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + "/" + tabImage.getSrc();
+					imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + tabImage.getSrc();
 				}
 				imageComponent.setUrl(imagePath);
 				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
@@ -184,79 +184,11 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		return TAB_BAR_HEIGHT;
 	}
 	
-	/*
-	 * The position of this widget and the number of visible tab items
-	 * is dependent on the display size, get that from console display
-	 */
-	@Override
-	public void onRender(int width, int height) {
-		setHeight(getHeight() + "px");
-		setWidth("100%");
-		ConsoleDisplay display = WebConsole.getConsoleUnit().getConsoleDisplay();		
-		int displayWidth = display.getWidth();
-		int itemCount = items.size();
-		maxItemsPerPage = (displayWidth / TAB_ITEM_MIN_WIDTH);
-		pageCount = (int)Math.ceil(((double)itemCount/maxItemsPerPage));
 
-		// Insert Next and Prev Nav buttons if there is overflow
-		if (itemCount > maxItemsPerPage) {
-			for (int i=1; i<=pageCount; i++) {
-				int insertPos = (maxItemsPerPage * i) - 1;
-				// Insert next and previous if more screens
-				if (i < pageCount) {
-					this.insertItem(insertPos, createSystemTabItem(EnumSystemTabItemType.NEXT));
-					this.insertItem(insertPos+1, createSystemTabItem(EnumSystemTabItemType.PREVIOUS));
-				}
-				itemCount = items.size();
-				pageCount = (int)Math.round(((double)itemCount/maxItemsPerPage));
-			}
-		}
-		
-		// Determine width per item and add handlers
-		int itemsOnPage = items.size() > maxItemsPerPage ? maxItemsPerPage : items.size();
-		widthPerItem = (int)Math.floor((double)displayWidth / itemsOnPage);
-		for (TabBarItemComponent item : items) {
-			item.setWidth(widthPerItem + "px");
-			if (!isInitialised) {
-				if (item.getItem().getNavigate() != null || (item.getItem().getHasControlCommand() != null) && item.getItem().getHasControlCommand()) {
-					addInteractiveChild(item);
-				}
-			}
-		}
-		
-		// Load first page of items
-		loadPage(1);
-	}
-	
-	/*
-	 * When display dimensions change need to redraw the tab bar to
-	 * account for the change
-	 */
-	public void refresh() {
-		// Remove existing items
-		hideCurrentItems();
-		
-		// Remove the system tab items
-		List<TabBarItemComponent> removedItems = new ArrayList<TabBarItemComponent>();
-		for (TabBarItemComponent item : items) {
-			if (item.systemTabType != null) {
-				removedItems.add(item);
-			}
-		}
-		for (TabBarItemComponent item : removedItems) {
-			items.remove(item);
-		}
-		
-		for (HandlerRegistration handler : systemTabHandlers) {
-			handler.removeHandler();
-		}
-		systemTabHandlers.clear();
-		
-		// Recall render to do the calculations
-		onRender(0, 0);
-	}
 	
 	private void loadPage(int pageNo) {
+		int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
+		
 		pageNo = pageNo > pageCount ? pageCount : pageNo;
 		currentPage = pageNo;
 		
@@ -265,12 +197,17 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		
 		// Draw the corresponding set of items
 		int startIndex = ((pageNo-1) * maxItemsPerPage);
+		
+		// Determine width per item and add handlers
+		int itemsOnPage = (items.size() - startIndex) > maxItemsPerPage ? maxItemsPerPage : (items.size() - startIndex);
+		widthPerItem = (int)Math.floor((double)displayWidth / itemsOnPage);
 
 		for (int i=startIndex; i<(startIndex+(maxItemsPerPage)); i++) {
 			if (i >= items.size()) {
 				break;
 			}
 			TabBarItemComponent item = items.get(i);
+			item.setWidth(widthPerItem + "px");
 			((HorizontalPanel)getWidget()).add(item);
 		}
 	}
@@ -330,6 +267,74 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 	public List<TabBarItemComponent> getItems() {
 		return items;
 	}
+	
+	/*
+	 * The position of this widget and the number of visible tab items
+	 * is dependent on the display size, get that from console display
+	 */
+	@Override
+	public void onRender(int width, int height) {
+		setHeight(getHeight() + "px");
+		setWidth("100%");
+		ConsoleDisplay display = WebConsole.getConsoleUnit().getConsoleDisplay();		
+		int displayWidth = display.getWidth();
+		int itemCount = items.size();
+		maxItemsPerPage = (displayWidth / TAB_ITEM_MIN_WIDTH);
+		pageCount = (int)Math.ceil(((double)itemCount/maxItemsPerPage));
+
+		// Insert Next and Prev Nav buttons if there is overflow
+		if (itemCount > maxItemsPerPage) {
+			for (int i=1; i<=pageCount; i++) {
+				int insertPos = (maxItemsPerPage * i) - 1;
+				// Insert next and previous if more screens
+				if (i < pageCount) {
+					this.insertItem(insertPos, createSystemTabItem(EnumSystemTabItemType.NEXT));
+					this.insertItem(insertPos+1, createSystemTabItem(EnumSystemTabItemType.PREVIOUS));
+				}
+				itemCount = items.size();
+				pageCount = (int)Math.round(((double)itemCount/maxItemsPerPage));
+			}
+		}
+		
+		for (TabBarItemComponent item : items) {
+			if (!isInitialised) {
+				if (item.getItem().getNavigate() != null || (item.getItem().getHasControlCommand() != null) && item.getItem().getHasControlCommand()) {
+					addInteractiveChild(item);
+				}
+			}
+		}
+		
+		// Load first page of items
+		loadPage(1);
+	}
+	
+	/*
+	 * When display dimensions change need to redraw the tab bar to
+	 * account for the change
+	 */
+	public void onUpdate(int width, int height) {
+		// Remove existing items
+		hideCurrentItems();
+		
+		// Remove the system tab items
+		List<TabBarItemComponent> removedItems = new ArrayList<TabBarItemComponent>();
+		for (TabBarItemComponent item : items) {
+			if (item.systemTabType != null) {
+				removedItems.add(item);
+			}
+		}
+		for (TabBarItemComponent item : removedItems) {
+			items.remove(item);
+		}
+		
+		for (HandlerRegistration handler : systemTabHandlers) {
+			handler.removeHandler();
+		}
+		systemTabHandlers.clear();
+		
+		// Recall render to do the calculations
+		onRender(width, height);
+	}
 
 	@Override
 	public void onScreenViewChange(ScreenViewChangeEvent event) {
@@ -347,16 +352,17 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 					} else {
 						item.removeStyleName("selected");
 					}
-				} else {
-					Integer toGroup = navigate.getToGroup();
-					if (toGroup != null) {
-						if (toGroup == event.getNewGroupId()) {
-							item.addStyleName("selected");
-						} else {
-							item.removeStyleName("selected");
-						}
-					}
 				}
+//				else {
+//					Integer toGroup = navigate.getToGroup();
+//					if (toGroup != null) {
+//						if (toGroup == event.getNewGroupId()) {
+//							item.addStyleName("selected");
+//						} else {
+//							item.removeStyleName("selected");
+//						}
+//					}
+//				}
 			}
 		}
 	}

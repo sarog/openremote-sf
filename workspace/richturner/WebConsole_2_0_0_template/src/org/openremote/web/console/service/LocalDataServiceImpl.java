@@ -132,6 +132,7 @@ public class LocalDataServiceImpl implements LocalDataService {
 	public String getObjectString(String objName) {
 		String obj = null;
 		obj = getData(objName);
+		if (obj != null && (obj.equals("") || obj.equals("{}"))) obj = null;
 		return obj;
 	}
 

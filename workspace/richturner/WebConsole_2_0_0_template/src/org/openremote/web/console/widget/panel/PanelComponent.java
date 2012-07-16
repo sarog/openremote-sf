@@ -2,31 +2,31 @@ package org.openremote.web.console.widget.panel;
 
 import java.util.List;
 import java.util.Set;
-
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.sensor.SensorChangeEvent;
-import org.openremote.web.console.event.sensor.SensorChangeHandler;
-import org.openremote.web.console.event.ui.BindingDataChangeHandler;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
-import com.google.gwt.event.shared.HandlerManager;
+
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class PanelComponent extends PassiveConsoleComponent implements Positional {
 	private static final String CLASS_NAME = "panelComponent";
-	private int left;
-	private int top;
-	protected int height;
-	protected int width;
+	private Integer left;
+	private Integer top;
+	private Integer right;
+	private Integer bottom;
+	protected Integer height;
+	protected Integer width;
 	private Double widthPercentage = null;
 	private Double heightPercentage = null;
 	private Double leftPercentage = null;
 	private Double topPercentage = null;
-	protected ScreenViewImpl parent = null;
+	private Double rightPercentage = null;
+	private Double bottomPercentage = null;
+	private AbsolutePanel parent = null;
 	
 	public static enum DimensionUnit {
 		PX,
@@ -76,11 +76,11 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		onAdd(null, screenWidth, screenHeight, null);
 	}
 	
-	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight) {
+	public void onAdd(AbsolutePanel parent, int screenWidth, int screenHeight) {
 		onAdd(parent, screenWidth, screenHeight, null);
 	}
 	
-	public void onAdd(ScreenViewImpl parent, int screenWidth, int screenHeight, List<DataValuePairContainer> data) {
+	public void onAdd(AbsolutePanel parent, int screenWidth, int screenHeight, List<DataValuePairContainer> data) {
 		this.parent = parent;
 		setPositionAndSize(screenWidth, screenHeight);
 		onRender(width, height, data);
@@ -97,11 +97,18 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	}
 	
 	public void onRefresh(int screenWidth, int screenHeight) {
+		int currentWidth = width;
+		int currentHeight = height;
 		setPositionAndSize(screenWidth, screenHeight);
-		onUpdate(width, height);
+		if (currentWidth != this.width || currentHeight != this.height) {
+			onUpdate(width, height);
+		}
 	}
 	
 	private void setPositionAndSize(int screenWidth, int screenHeight) {
+		Integer left = 0;
+		Integer top = 0;
+		
 		if (widthPercentage != null) {
 			width = (int)Math.round(widthPercentage * screenWidth); 
 		}
@@ -109,13 +116,41 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 			height = (int)Math.round(heightPercentage * screenHeight); 
 		}
 		if (leftPercentage != null) {
-			left = (int)Math.round(leftPercentage * screenWidth); 
+			this.left = (int)Math.round(leftPercentage * screenWidth); 
 		}
 		if (topPercentage != null) {
-			top = (int)Math.round(topPercentage * screenHeight); 
+			this.top = (int)Math.round(topPercentage * screenHeight); 
 		}
-		if (parent != null && (leftPercentage != null || topPercentage != null)) {
-			parent.getWidget().setWidgetPosition(this, left, top);
+		if (rightPercentage != null) {
+			right = (int)Math.round(rightPercentage * screenWidth); 
+		}
+		if (bottomPercentage != null) {
+			bottom = (int)Math.round(bottomPercentage * screenHeight); 
+		}
+		// Determine how to size and position the widget
+		if (width == null || width == 0) {
+			if (this.left != null && this.right != null) {
+				width = (screenWidth - this.left - right);
+			}
+		}
+		if (height == null || height == 0) {
+			if (this.top != null && bottom != null) {
+				height = (screenHeight - this.top - bottom);
+			}
+		}
+		if (this.left == null && right != null) {
+			left = (screenWidth - right - width);
+		} else {
+			left = this.left;
+		}
+		if (this.top == null && bottom != null) {
+			top = (screenHeight - bottom - height);
+		} else {
+			top = this.top;
+		}
+		
+		if (parent != null && left != null && top != null) {
+			parent.setWidgetPosition(this, left, top);
 		}
 		getWidget().setWidth(width + "px");
 		getWidget().setHeight(height + "px");
@@ -127,7 +162,7 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		if (result.getUnit() == DimensionUnit.PERCENTAGE) {
 			heightPercentage = result.getValue();
 		} else {
-			this.height = (int)Math.round(result.getValue());
+			setHeight((int)Math.round(result.getValue()));
 		}
 	}
 	
@@ -137,62 +172,95 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		if (result.getUnit() == DimensionUnit.PERCENTAGE) {
 			widthPercentage = result.getValue();
 		} else {
-			this.width = (int)Math.round(result.getValue());
+			setWidth((int)Math.round(result.getValue()));
 		}
 	}
 	
-	public void setHeight(int height) {
+	public void setHeight(Integer height) {
 		this.height = height;
 	}
 	
-	public void setWidth(int width) {
+	public void setWidth(Integer width) {
 		this.width = width;
 	}
 	
-	public int getHeight() {
+	public Integer getHeight() {
 		return height;
 	}
 	
-	public int getWidth() {
+	public Integer getWidth() {
 		return width;
 	}
 	
 	@Override
-	public void setPosition(int left, int top) {
+	public void setPosition(Integer left, Integer top, Integer right, Integer bottom) {
 		this.left = left;
 		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
 	}
 	
 	@Override
-	public void setPosition(String leftStr, String topStr) {
+	public void setPosition(String leftStr, String topStr, String rightStr, String bottomStr) {
 		DimensionResult left = getDimFromString(leftStr);
 		DimensionResult top = getDimFromString(topStr);
-		
-		if (left.getUnit() == DimensionUnit.PERCENTAGE) {
-			leftPercentage = left.getValue();
-		} else {
-			this.left = (int)Math.round(left.getValue()); 
+		DimensionResult right = getDimFromString(rightStr);
+		DimensionResult bottom = getDimFromString(bottomStr);
+		if (left != null) {
+			if (left.getUnit() == DimensionUnit.PERCENTAGE) {
+				leftPercentage = left.getValue();
+			} else {
+				this.left = (int)Math.round(left.getValue()); 
+			}
 		}
-		if (top.getUnit() == DimensionUnit.PERCENTAGE) {
-			topPercentage = top.getValue();
-		} else {
-			this.top = (int)Math.round(top.getValue()); 
+		if (top != null) {
+			if (top.getUnit() == DimensionUnit.PERCENTAGE) {
+				topPercentage = top.getValue();
+			} else {
+				this.top = (int)Math.round(top.getValue()); 
+			}
+		}
+		if (right != null) {
+			if (right.getUnit() == DimensionUnit.PERCENTAGE) {
+				rightPercentage = right.getValue();
+			} else {
+				this.right = (int)Math.round(right.getValue()); 
+			}
+		}
+		if (bottom != null) {
+			if (bottom.getUnit() == DimensionUnit.PERCENTAGE) {
+				bottomPercentage = bottom.getValue();
+			} else {
+				this.bottom = (int)Math.round(bottom.getValue()); 
+			}
 		}
 	}
 
 	@Override
-	public int getLeft() {
+	public Integer getLeft() {
 		return this.left;
 	}
 
 	@Override
-	public int getTop() {
+	public Integer getTop() {
 		return this.top;
+	}
+
+	@Override
+	public Integer getRight() {
+		return this.right;
+	}
+
+	@Override
+	public Integer getBottom() {
+		return this.bottom;
 	}
 	
 	public static DimensionResult getDimFromString(String dimStr) {
 		double dim = 0;
 		DimensionUnit unit = DimensionUnit.PX;
+		
+		if (dimStr == null) return null;
 		
 		if (dimStr.endsWith("%")) {
 			dimStr = dimStr.replaceAll("%", "");

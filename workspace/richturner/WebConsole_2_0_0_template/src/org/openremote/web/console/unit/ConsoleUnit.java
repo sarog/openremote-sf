@@ -1,5 +1,6 @@
 package org.openremote.web.console.unit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,14 +10,12 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
@@ -29,7 +28,8 @@ import org.openremote.web.console.event.swipe.*;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.ui.*;
 import org.openremote.web.console.panel.Panel;
-import org.openremote.web.console.panel.SystemPanel;
+import org.openremote.web.console.panel.PanelIdentityList;
+import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
@@ -38,19 +38,23 @@ import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.*;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.util.ImageContainer;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class ConsoleUnit extends VerticalPanel implements RotationHandler, WindowResizeHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
-	public static final int MIN_WIDTH = 310;
+	public static final int MIN_WIDTH = 320;
 	public static final int MIN_HEIGHT = 460;
-	public static final int DEFAULT_DISPLAY_WIDTH = 310;
+	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
 	public static final String DEFAULT_DISPLAY_COLOUR = "#000";
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
@@ -78,8 +82,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
 	private PopupPanel alertPopup;
-	private HorizontalPanel logoPanel;
 	private boolean invalidWarningDisplayed = false;
+	private Map<String, ImageContainer> imageCache = new HashMap<String, ImageContainer>();
 	
 	AsyncControllerCallback<Map<Integer, String>> pollingCallback = new AsyncControllerCallback<Map<Integer, String>>() {
 		@Override
@@ -158,154 +162,129 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public ConsoleUnit() {
-		this(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT);
+		this(false);
+	}
+	public ConsoleUnit(boolean fullscreen) {
+		this(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT, fullscreen);
 	}
 	
 	public ConsoleUnit(int width, int height) {
-		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		if (width > height) {
-			int tempWidth = height;
-			height = width;
-			width = tempWidth;
-		}
-		this.width = width;
-		this.height = height;
+		this(width, height, false);
+	}
+	
+	public ConsoleUnit(int width, int height, boolean fullscreen) {
+//		if (fullscreen) {
+//			width = BrowserUtils.getWindowWidth();
+//			height = BrowserUtils.getWindowHeight();
+//		}
+////		if (width > height) {
+////			int tempWidth = height;
+////			height = width;
+////			width = tempWidth;
+////		}
+//
+//		this.width = width;
+//		this.height = height;
 		
 		// Create a display and add to console container
 		consoleDisplay = new ConsoleDisplay();
+//		DOM.setStyleAttribute(consoleDisplay.getElement(), "borderStyle", "solid ");
+//		DOM.setStyleAttribute(consoleDisplay.getElement(), "borderWidth", BOSS_WIDTH + "px");
 		add(consoleDisplay);
-		consoleDisplay.getElement().getStyle().setBackgroundColor(DEFAULT_DISPLAY_COLOUR);
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", DEFAULT_DISPLAY_COLOUR);
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", DEFAULT_DISPLAY_COLOUR);
-		//RootPanel.getBodyElement().setAttribute("onselect", "return false;");
-		getElement().setAttribute("onselect", "return false;");
-		consoleDisplay.getElement().setAttribute("onselect", "return false;");
 		
-		// Set console unit properties
+		// Create Logo
+		SimplePanel logoPanel = new SimplePanel();
+		logoPanel.getElement().setId("consoleFrameLogo");
+		logoPanel.setHeight(FRAME_WIDTH_BOTTOM - BOSS_WIDTH + "px");
+		logoPanel.getElement().setAttribute("onselect", "return false;");
+		add(logoPanel);
+		
+		// Set static console unit styling
+		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		getElement().setId(CONSOLE_HTML_ELEMENT_ID);
-		addStyleName("portraitConsole");
-		addStyleName("consoleUnit");
+		addStyleName("portrait");
+		getElement().setAttribute("unselectable", "on");
+		BrowserUtils.setStyleAttributeAllBrowsers(getElement(), "userSelect", "none");
+		consoleDisplay.getElement().setAttribute("unselectable", "on");
+		
+		// Set Size
+		setSize(width, height, fullscreen);
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
 	}
 	
+	public void setSize(boolean fullscreen) {
+		setSize(0,0,true);
+	}
+	
 	public void setSize(int width, int height) {
-		boolean setFullscreen = false;
-
-		if (width > height) {
-			int tempWidth = height;
-			height = width;
-			width = tempWidth;
-		}
-
+		setSize(width,height, isFullscreen);
+	}
+	
+	public void setSize(int width, int height, boolean setFullscreen) {
+		int winWidth = BrowserUtils.getWindowWidth();
+		int winHeight = BrowserUtils.getWindowHeight();
+		int maxDim = 0;
+		String winOrientation = BrowserUtils.getWindowOrientation();
+		
 		if (BrowserUtils.isMobile) {
 			setFullscreen = true;
-		} else {
-			int winWidth = BrowserUtils.getWindowWidth();
-			int winHeight = BrowserUtils.getWindowHeight();
-			int maxDim = width > height ? width : height; 
-			String winOrientation = BrowserUtils.getWindowOrientation();
+		}
+		if (!setFullscreen) {
+			if (width > height) {
+				int tempWidth = height;
+				height = width;
+				width = tempWidth;
+			}
+			
+			maxDim = width > height ? width : height; 
 		
 			width = width < MIN_WIDTH ? MIN_WIDTH : width;
 			height = height < MIN_HEIGHT ? MIN_HEIGHT : height;	
 			
-			if (maxDim >= winWidth || maxDim >= winHeight) {
-				if (winOrientation.equals("portrait")) {
-					width = winWidth;
-					height = winHeight;
-				} else {
-					width = winHeight;
-					height = winWidth;
-				}
-				setFullscreen = true;
+//			if (maxDim >= winWidth || maxDim >= winHeight) {
+//				 setFullscreen = true;
+//			}
+		}
+		
+		if (setFullscreen) {
+			if (winOrientation.equals("portrait")) {
+				width = winWidth;
+				height = winHeight;
+			} else {
+				width = winHeight;
+				height = winWidth;
 			}
 		}
 		
-		if(isFullscreen != setFullscreen) {
-			showFrame(!setFullscreen);
-		}
+		toggleFrame(!setFullscreen);
 		
 		this.width = width;
 		this.height = height;
 		isFullscreen = setFullscreen;
 		
-		if (setFullscreen) {
+		if (setFullscreen || maxDim >= winWidth || maxDim >= winHeight) {
 			setOrientation(BrowserUtils.getWindowOrientation());
 		}
-		
-		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
 		
 		consoleDisplay.setSize(width, height);
 	}
 		
-	private void showFrame(boolean showFrame) {
+	private void toggleFrame(boolean showFrame) {
 		if (showFrame) {
-			removeStyleName("fullscreenConsole");
-			
-			// Create console frame
-			createFrame();
+			addStyleName("framed");
+			removeStyleName("fullscreen");
+			RootPanel.getBodyElement().removeClassName("fullscreen");
+			DOM.setStyleAttribute(consoleDisplay.getElement(), "margin", (FRAME_WIDTH_TOP - BOSS_WIDTH) + "px " + (FRAME_WIDTH_RIGHT - BOSS_WIDTH) + "px 0 " + (FRAME_WIDTH_LEFT - BOSS_WIDTH) + "px");
+			DOM.setStyleAttribute(getElement(), "position", "absolute");
 		} else {
-			// Set document body colour the same as the console display
-			removeFrame();
+			RootPanel.getBodyElement().addClassName("fullscreen");
+			addStyleName("fullscreen");
+			removeStyleName("framed");
+			DOM.setStyleAttribute(consoleDisplay.getElement(), "margin", "0");
+			DOM.setStyleAttribute(getElement(), "position", "static");
 		}
-	}
-	
-	private void createFrame() {
-		Style style = consoleDisplay.getElement().getStyle();
-		style.setMarginTop(FRAME_WIDTH_TOP-BOSS_WIDTH, Unit.PX);
-		style.setMarginRight(FRAME_WIDTH_RIGHT-BOSS_WIDTH, Unit.PX);
-		style.setMarginLeft(FRAME_WIDTH_LEFT-BOSS_WIDTH, Unit.PX);
-		style.setMarginBottom(-BOSS_WIDTH, Unit.PX);
-		addStyleName("consoleFrame");
-		addStyleName("resizableConsole");
-		removeStyleName("fullscreenConsole");
-		
-		// Clear document body colour setting
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", "");
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", "");
-		
-		// Add boss to screen
-		style.setBorderWidth(BOSS_WIDTH,Unit.PX);
-		style.setBorderStyle(BorderStyle.SOLID);
-		style.setBorderColor("#333");
-		
-		// Add the logo along the bottom of the frame
-		if (logoPanel == null) {
-			logoPanel = new HorizontalPanel();
-			logoPanel.setStylePrimaryName("consoleFrameLogo");
-			logoPanel.setHeight(FRAME_WIDTH_BOTTOM + "px");
-			DOM.setStyleAttribute(logoPanel.getElement(), "lineHeight", FRAME_WIDTH_BOTTOM + "px");
-			Label logoLeft = new Label();
-			logoLeft.setText(LOGO_TEXT_LEFT);
-			logoLeft.setHeight(FRAME_WIDTH_BOTTOM + "px");
-			logoLeft.getElement().setId("consoleFrameLogoLeft");
-			logoPanel.add(logoLeft);
-			Label logoRight = new Label();
-			logoRight.setText(LOGO_TEXT_RIGHT);
-			logoRight.setHeight(FRAME_WIDTH_BOTTOM + "px");
-			logoRight.getElement().setId("consoleFrameLogoRight");
-			logoPanel.add(logoRight);
-			logoPanel.getElement().setAttribute("onselect", "return false;");
-			logoLeft.getElement().setAttribute("onselect", "return false;");
-			logoRight.getElement().setAttribute("onselect", "return false;");
-		}
-		add(logoPanel);
-	}
-	
-	private void removeFrame() {
-		Style style = consoleDisplay.getElement().getStyle();
-		
-		style.clearMargin();		
-		style.clearBorderColor();
-		style.clearBorderStyle();
-		style.clearBorderWidth();
-		remove(logoPanel);
-		removeStyleName("resizableConsole");
-		addStyleName("fullscreenConsole");
-		removeStyleName("consoleFrame");
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"backgroundColor", DEFAULT_DISPLAY_COLOUR);
-		DOM.setStyleAttribute(RootPanel.getBodyElement(),"background", DEFAULT_DISPLAY_COLOUR);
 	}
 	
 	public ConsoleDisplay getConsoleDisplay() {
@@ -332,17 +311,26 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	/**
 	 * Position the console unit in the centre of the window
 	 */
-	public void setPosition(int winWidth, int winHeight) {
-		int xPos = 0;
-		int yPos = 0;
-		if (BrowserUtils.isIE && orientation.equalsIgnoreCase("landscape")) {
-			xPos = (int)Math.round(((double)winWidth/2)-(getHeight()/2));
-			yPos = (int)Math.round(((double)winHeight/2)-(getWidth()/2));
+	public void setPosition() {
+		int winWidth = BrowserUtils.getWindowWidth();
+		int winHeight = BrowserUtils.getWindowHeight();
+//		int xPos = 0;
+//		int yPos = 0;
+//		if (BrowserUtils.isIE && orientation.equalsIgnoreCase("landscape")) {
+//			xPos = (int)Math.round(((double)winWidth/2)-(getHeight()/2));
+//			yPos = (int)Math.round(((double)winHeight/2)-(getWidth()/2));
+//		} else {
+		if (!isFullscreen) {
+			int xPos = (int)Math.round(((double)winWidth/2)-(getWidth()/2));
+			int yPos = (int)Math.round(((double)winHeight/2)-(getHeight()/2));
+			DOM.setStyleAttribute(this.getElement(), "position", "absolute");
+			DOM.setStyleAttribute(this.getElement(), "top", yPos + "px");
+			DOM.setStyleAttribute(this.getElement(), "left", xPos + "px");
 		} else {
-			xPos = (int)Math.round(((double)winWidth/2)-(getWidth()/2));
-			yPos = (int)Math.round(((double)winHeight/2)-(getHeight()/2));
+			DOM.setStyleAttribute(this.getElement(), "position", "static");	
 		}
-		BrowserUtils.getConsoleContainer().setWidgetPosition(this, xPos, yPos);
+//		}
+//		BrowserUtils.getConsoleContainer().setWidgetPosition(this, xPos, yPos);
 	}
 
 	/**
@@ -350,16 +338,33 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	 * @param orientation
 	 */
 	public void setOrientation(String orientation) {
+		int halfOuterWidth = (width + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT) / 2;
+		int halfOuterHeight = (height + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM) / 2;
+	
 		if ("portrait".equals(orientation)) {
-			getElement().removeClassName("landscapeConsole");
-			getElement().addClassName("portraitConsole");
+			BrowserUtils.setStyleAttributeAllBrowsers(this.getElement(), "transform", "rotate(0deg) translate(0,0)");
+			this.addStyleName("portrait");
+			this.removeStyleName("landscape");
 		} else {
-			getElement().removeClassName("portraitConsole");
-			getElement().addClassName("landscapeConsole");
+			if (!isFullscreen) {
+				BrowserUtils.setStyleAttributeAllBrowsers(this.getElement(), "transform", "rotate(-90deg) translate( -" + (halfOuterHeight + halfOuterWidth) + "px,-" + (halfOuterHeight - halfOuterWidth) + "px)");
+			} else {
+				BrowserUtils.setStyleAttributeAllBrowsers(this.getElement(), "transform", "rotate(-90deg) translate( -" + width + "px,0)");
+			}
+			this.addStyleName("landscape");
+			this.removeStyleName("portrait");
+		}
+		
+		if (BrowserUtils.isMobile) {
+			Window.scrollTo(0, 1);
 		}
 		
 		this.orientation = orientation;
-		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
+//		setPosition(BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight());
+	}
+
+	public boolean getIsFullscreen() {
+		return isFullscreen;
 	}
 	
 	public String getOrientation() {
@@ -383,6 +388,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void loadController(ControllerCredentials controllerCreds) {
+		// Unload current controller
+		unloadControllerAndPanel();
+		
+		BrowserUtils.showLoadingMsg("Loading Controller");
+		
 		if (controllerCreds == null) {
 			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		} else {
@@ -400,7 +410,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 							dataService.setLastControllerCredentials(currentControllerCredentials);
 							loadPanel(currentPanelName);
 						} else {
-							loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
+							loadPanelSelection();
 						}
 					} else {
 						loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
@@ -410,20 +420,57 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 	}
 	
+	private void loadPanelSelection() {
+		// Retrieve panel identity list from controller and display panel selection screen
+		controllerService.getPanelIdentities(new AsyncControllerCallback<PanelIdentityList>() {
+			@Override
+			public void onSuccess(PanelIdentityList panelIdentities) {
+				if (panelIdentities != null) {
+					String dataValue = AutoBeanService.getInstance().toJsonString(panelIdentities);
+					DataValuePairContainer dvpC = AutoBeanService.getInstance().getFactory().create(DataValuePairContainer.class).as();
+					DataValuePair dvp = AutoBeanService.getInstance().getFactory().create(DataValuePair.class).as();
+					dvp.setName("panelIdentityList");
+					dvp.setValue(dataValue);
+					dvpC.setDataValuePair(dvp);
+					List<DataValuePairContainer> data = new ArrayList<DataValuePairContainer>();
+					data.add(dvpC);
+					
+					loadSettings(EnumSystemScreen.PANEL_SELECTION, data);
+				} else {
+					onError(EnumConsoleErrorCode.PANEL_LIST_ERROR);
+				}									
+			}
+			@Override
+			public void onFailure(Throwable error) {
+				onError(EnumConsoleErrorCode.PANEL_LIST_ERROR);
+			}								
+		});
+	}
+	
 	private void loadPanel(String panelName) {
+		unloadPanel();
+		BrowserUtils.showLoadingMsg("Loading Panel");
 		controllerService.getPanel(panelName, new AsyncControllerCallback<Panel>() {
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
+				BrowserUtils.hideLoadingMsg();
 				if(response == EnumControllerResponseCode.PANEL_NOT_FOUND) {
-					loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
+					loadPanelSelection();
 				}
 			}
 			
 			@Override
 			public void onSuccess(Panel result) {
+				BrowserUtils.hideLoadingMsg();
 				if (result != null) {
-					setPanel(result);
-					initialisePanel();
+					try {
+						setPanel(result);
+						initialisePanel();
+					} catch (Exception e) {
+						onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR, e.getMessage());
+					}
+				} else {
+					onError(EnumConsoleErrorCode.UNKNOWN_ERROR, "Load Panel Response Invalid");
 				}
 			}			
 		});
@@ -431,9 +478,21 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	
 	private void setPanel(Panel result) {
 		if (result != null) {
+			// Unload current panel
 			unloadPanel();
 			
+			// Set new panel and prefetch image resources
 			panelService.setCurrentPanel(result);
+			
+			try {
+				List<String> imageUrls = panelService.getImageResourceUrls();
+				
+				for(String imageUrl : imageUrls ) {
+					addImageToCache(imageUrl);
+				}
+			} catch (Exception e) {
+				onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR);
+			}
 		}
 //			// If desktop resize console unit to match panel definition
 //			if (!isFullscreen) {
@@ -508,15 +567,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePairContainer> data) {
-		if (systemPanel == null) {
-			systemPanel = SystemPanel.get();
-		}
-		
-		if (systemPanel == null) {
-			Window.alert("Cannot load system panel definition");
-			return;
-		}
-		
 		if (panelService.getCurrentPanel() != systemPanel) { 
 			unloadPanel();
 			setPanel(systemPanel);
@@ -582,8 +632,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				consoleDisplay.setScreenView(screenView, data);
 				currentScreenView = screenView;
 			} catch (Exception e) {
-				consoleDisplay.setScreenView(currentScreenView, data);
-				onError(EnumConsoleErrorCode.SCREEN_ERROR, "Screen ID = " + newScreenId);
+				try {
+					// Put screen back to previous one
+					consoleDisplay.setScreenView(currentScreenView, data);
+					onError(EnumConsoleErrorCode.SCREEN_ERROR, "Screen ID = " + newScreenId);
+				} catch (Exception ex) {
+					onError(EnumConsoleErrorCode.UNKNOWN_ERROR, ex.getMessage());
+				}
 				return;
 			}
 			
@@ -639,6 +694,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 		
 		if (screenChanged) {
+			consoleDisplay.updateTabBar();
 			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(newScreenId, newGroupId));		
 		}
 	}
@@ -684,34 +740,19 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		return this.dataService;
 	}
 	
-	/*
-	 * **********************************************
-	 * Event Handlers below here
-	 * **********************************************
-	 */
-	private void registerHandlers() {
-		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-		eventBus.addHandler(RotationEvent.getType(), this);
-		eventBus.addHandler(WindowResizeEvent.getType(), this);
-		eventBus.addHandler(SwipeEvent.getType(), this);
-		eventBus.addHandler(HoldEvent.getType(), this);
-		eventBus.addHandler(NavigateEvent.getType(), this);
-		eventBus.addHandler(CommandSendEvent.getType(), this);
+	public void addImageToCache(String url) {
+		imageCache.put(url, new ImageContainer(url));
 	}
 	
-	public void onAdd() {
+	public ImageContainer getImageFromCache(String url) {
+		return imageCache.get(url);
+	}
+	
+	private void initialiseConsole() {
 		ControllerCredentials controllerCreds;
 		String panelName = "";
 		
-		// Set size
-		setSize(width, height);
-		
-		// Configure display
-		consoleDisplay.onAdd(width, height);
-		
-		show();
-		
-		// TODO: Check for default Controller in Settings
+//		// TODO: Check for default Controller in Settings
 //		controllerCreds = dataService.getDefaultControllerCredentials();
 //		if (controllerCreds != null) {
 //			panelName = controllerCreds.getDefaultPanel();
@@ -724,8 +765,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //		
 //		if (panelName != null && !panelName.equals("")) {
 //			loadControllerAndPanel(controllerCreds, panelName);
-//		} else {
-		
+//		} else {		
 		// Display Welcome message
 		String welcomeString = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
 		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeString);
@@ -752,6 +792,63 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //		}
 	}
 	
+	/*
+	 * **********************************************
+	 * Event Handlers below here
+	 * **********************************************
+	 */
+	private void registerHandlers() {
+		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+		eventBus.addHandler(RotationEvent.getType(), this);
+		eventBus.addHandler(WindowResizeEvent.getType(), this);
+		eventBus.addHandler(SwipeEvent.getType(), this);
+		eventBus.addHandler(HoldEvent.getType(), this);
+		eventBus.addHandler(NavigateEvent.getType(), this);
+		eventBus.addHandler(CommandSendEvent.getType(), this);
+	}
+	
+	public void onAdd() {
+		// Set Position
+		setPosition();
+		
+		// Configure display
+		consoleDisplay.onAdd(width, height);
+		
+		show();
+		
+		// Initialise the system panel
+		String systemPanelStr = dataService.getObjectString(EnumDataMap.SYSTEM_PANEL.getDataName());
+		if (systemPanelStr == null) {
+			// Load from Server
+			BrowserUtils.showLoadingMsg("RETRIEVING SYSTEM PANEL");
+
+			try {
+				new RequestBuilder(RequestBuilder.GET, "resources/systempanel.json").sendRequest("", new RequestCallback() {
+					@Override
+					public void onResponseReceived(Request request, Response response) {
+						String systemPanelStr = response.getText();
+						systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
+						//dataService.setObject(EnumDataMap.SYSTEM_PANEL.getDataName(), AutoBeanService.getInstance().toJsonString(systemPanelStr));
+						initialiseConsole();
+					}
+
+					@Override
+					public void onError(Request request, Throwable exception) {
+						BrowserUtils.hideLoadingMsg();
+						BrowserUtils.showAlert("FATAL Error: Failed to retrieve System Panel Definition.");
+					}
+					});
+			} catch (RequestException e) {
+				BrowserUtils.hideLoadingMsg();
+				BrowserUtils.showAlert("FATAL Error: Failed to retrieve System Panel Definition.");
+			}
+		} else {
+			systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
+			initialiseConsole();
+		}
+		
+	}
+	
 	@Override
 	public void onRotate(RotationEvent event) {
 		String orientation = event.getOrientation();
@@ -767,7 +864,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
 				if (inverseScreen != null) {
 					loadDisplay(inverseScreen, true, null);
-					consoleDisplay.updateTabBar();
 				}
 			}
 		}
@@ -783,7 +879,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				setSize(event.getWindowHeight(), event.getWindowWidth());
 			}
 		} else {
-			setPosition(event.getWindowWidth(), event.getWindowHeight());
+//			setPosition(event.getWindowWidth(), event.getWindowHeight());
+			setPosition();
 		}
 	}
 	
@@ -873,7 +970,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				if (toScreenId == null) {
 					screen = panelService.getDefaultScreen(toGroupId);
 				} else {
-					screen = panelService.getScreenById(toScreenId);
+					screen = panelService.getScreenById(toScreenId, toGroupId);
 				}
 				loadDisplay(toGroupId, screen, data);
 			}
@@ -886,7 +983,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			switch (event.getCommandId()) {
 			case -1: //Controller Discovery
 				// Change tab bar search item image
-				String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_searching.gif";
+				String imageSrc = BrowserUtils.getSystemImageDir() + "controller_searching.gif";
 				consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
 				
 				// Do RPC
@@ -921,7 +1018,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					}
 					
 					private void resetTabItemImage() {
-						String imageSrc = BrowserUtils.getSystemImageDir() + "/" + "controller_search.png";
+						String imageSrc = BrowserUtils.getSystemImageDir() + "controller_search.png";
 						consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
 					}
 				};
@@ -941,14 +1038,20 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				dataService.clearAllData();
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				break;
+			case -4: // Load Panel
+				String panelName = event.getCommand();
+				loadPanel(panelName);
 			default:
 				controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (!result) {
-							Window.alert("Command Send Failed!");
+							BrowserUtils.showAlert("Command Send Failed!");
 						}
-					}			
+					}
+					public void onFailure(Throwable exception) {
+						// DO NOTHING HERE AS CONTROLLER MAY BE ALIVE BUT NOT AGREE WITH THE COMMAND REQUEST BUT DOESN'T EXPLICITLY TELL US THAT
+					}
 				});
 			}
 		}
@@ -963,7 +1066,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			case COMPONENT_INVALID:
 				// TODO: display message in alert popup
 				if (!invalidWarningDisplayed) {
-					Window.alert("Polling Failed\n\nAt least one command ID has not been recognised.");
+					BrowserUtils.showAlert("Polling Failed!\n\nAt least one command ID has not been recognised.");
 					invalidWarningDisplayed = true;
 				}
 				break;
@@ -977,7 +1080,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public void onError(EnumConsoleErrorCode errorCode, String additionalInfo) {
-		//TODO: Console unit error handling
 		String errorStr = errorCode.getDescription();
 		
 		if (additionalInfo != null && !additionalInfo.equals("")) {
@@ -985,8 +1087,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 		switch(errorCode) {
 		default:
-			Window.alert("Console Error: " + errorStr);
+			BrowserUtils.showAlert("Console Error:\n\n" + errorStr);
 			currentScreenId = 0;
 		}
+		loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 	}
 }

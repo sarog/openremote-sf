@@ -50,59 +50,11 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	protected List<Widget> getInteractiveChildren() {
 		return interactiveChildren;
 	}
-	
-	@Override
-	public void onTouchStart(TouchStartEvent event) {
-		event.stopPropagation();
-		startEvent = new PressStartEvent(event);
-		eventBus.fireEvent(startEvent);
-		this.fireEvent(startEvent);
-	}
-
-	@Override
-	public void onMouseDown(MouseDownEvent event) {
-		event.stopPropagation();
-		startEvent = new PressStartEvent(event);
-		eventBus.fireEvent(startEvent);
-		this.fireEvent(startEvent);
-	}
-
-	@Override
-	public void onTouchEnd(TouchEndEvent event) {
-		event.stopPropagation();
-		PressEndEvent endEvent = null;
-		if (lastMoveEvent != null) {
-			endEvent = new PressEndEvent(lastMoveEvent);
-		} else if (startEvent != null) {
-			endEvent = new PressEndEvent(startEvent);
-		}
-		if (endEvent != null) {
-			eventBus.fireEvent(endEvent);
-			this.fireEvent(endEvent);
-		}
-		reset();
-	}
-
-	@Override
-	public void onMouseUp(MouseUpEvent event) {
-		event.stopPropagation();
-		PressEndEvent endEvent = new PressEndEvent(event); 
-		eventBus.fireEvent(endEvent);
-		this.fireEvent(endEvent);
-		reset();
-	}
-	
-	@Override
-	public void onMouseOut(MouseOutEvent event) {
-		//eventBus.fireEvent(new PressCancelEvent(event));
-		this.fireEvent(new PressCancelEvent(event));
-	}
 
 	protected void reset() {
 		startEvent = null;
 		lastMoveEvent = null;
-	}
-	
+	}	
 	
 	/**
 	 * Add Mouse and Touch Handlers to either entire console component or specified
@@ -193,5 +145,57 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	public void onCommandSendResponse(Boolean success, String command) {
 		// DO NOTHING BY DEFAULT UP TO COMPONENTS IF THEY WANT TO REACT TO THIS
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
+	@Override
+	public void onTouchStart(TouchStartEvent event) {
+		event.stopPropagation();
+		startEvent = new PressStartEvent(event);
+		eventBus.fireEvent(startEvent);
+		this.fireEvent(startEvent);
+	}
+
+	@Override
+	public void onMouseDown(MouseDownEvent event) {
+		event.stopPropagation();
+		event.preventDefault();
+		startEvent = new PressStartEvent(event);
+		eventBus.fireEvent(startEvent);
+		this.fireEvent(startEvent);
+	}
+
+	@Override
+	public void onTouchEnd(TouchEndEvent event) {
+		event.stopPropagation();
+		PressEndEvent endEvent = null;
+		if (lastMoveEvent != null) {
+			endEvent = new PressEndEvent(lastMoveEvent);
+		} else if (startEvent != null) {
+			endEvent = new PressEndEvent(startEvent);
+		}
+		if (endEvent != null) {
+			eventBus.fireEvent(endEvent);
+			this.fireEvent(endEvent);
+		}
+		reset();
+	}
+
+	@Override
+	public void onMouseUp(MouseUpEvent event) {
+		event.stopPropagation();
+		PressEndEvent endEvent = new PressEndEvent(event); 
+		eventBus.fireEvent(endEvent);
+		this.fireEvent(endEvent);
+		reset();
+	}
+	
+	@Override
+	public void onMouseOut(MouseOutEvent event) {
+		//eventBus.fireEvent(new PressCancelEvent(event));
+		this.fireEvent(new PressCancelEvent(event));
 	}
 }

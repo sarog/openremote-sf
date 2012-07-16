@@ -1,19 +1,26 @@
 package org.openremote.web.console.util;
 
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
+import org.openremote.web.console.unit.ConsoleUnit;
+
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.Element;
 
 	public class BrowserUtils {
 		public static boolean isMobile;
@@ -23,7 +30,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		private static String windowOrientation = "portrait";
 		private static int windowHeight;
 		private static int windowWidth;
-		private static AbsolutePanel consoleContainer;
+//		private static AbsolutePanel consoleContainer;
 		private static String userAgent = Window.Navigator.getUserAgent();
 		static final String[] MOBILE_SPECIFIC_SUBSTRING = {
 	      "iphone","android","midp","opera mobi",
@@ -35,11 +42,20 @@ import com.google.gwt.user.client.ui.RootPanel;
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
 	      "sonyericsson","mmp","ucweb","ipod", "ipad"};
-
+	   // Scroll Window to hide address bar
+		private static Timer addressBarScroller = new Timer() {
+			public void run() {
+				int currentWinHeight = getWindowHeight();
+				if (currentWinHeight > windowWidth && currentWinHeight > windowHeight) {
+					Window.scrollTo(0, 1);
+					this.schedule(3000);
+				}
+			}
+		};
+		
 		static {
 			isMobile = isMobile();
 			isApple = isApple();
-			isCssDodgy = isCssDodgy();
 			isIE = isIE();
 		}
 		
@@ -63,16 +79,16 @@ import com.google.gwt.user.client.ui.RootPanel;
 			return windowOrientation;
 		}
 		
-		public static AbsolutePanel getConsoleContainer() {
-			return consoleContainer;
-		}
+//		public static AbsolutePanel getConsoleContainer() {
+//			return consoleContainer;
+//		}
 
 		public static void initWindow() {
-			consoleContainer = new AbsolutePanel();
-			consoleContainer.setWidth("3000px");
-			consoleContainer.setHeight("3000px");
-			RootPanel.get().add(consoleContainer, 0, 0);
-			
+//			consoleContainer = new AbsolutePanel();
+//			consoleContainer.setWidth("3000px");
+//			consoleContainer.setHeight("3000px");
+//			RootPanel.get().add(consoleContainer, 0, 0);
+//			//consoleContainer.getElement().getStyle().setPosition(Position.FIXED);
 			updateWindowInfo();
 			
 			if (isMobile) {
@@ -99,20 +115,20 @@ import com.google.gwt.user.client.ui.RootPanel;
 			updateWindowInfo();
 			
 			if ((oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowWidth || oldHeight != windowHeight)) || (!oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowHeight || oldHeight != windowWidth))) {
-				Window.scrollTo(0, 1);
-				int height = windowHeight;
-				int width = windowWidth;
-				if (isMobile) {
-					if (windowOrientation.equalsIgnoreCase("landscape")) {
-						int tempHeight = height;
-						height = width;
-						width = tempHeight;
-					}
-				}
+//				Window.scrollTo(0, 1);
+//				int height = windowHeight;
+//				int width = windowWidth;
+//				if (isMobile) {
+//					if (windowOrientation.equalsIgnoreCase("landscape")) {
+//						int tempHeight = height;
+//						height = width;
+//						width = tempHeight;
+//					}
+//				}
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new WindowResizeEvent(getWindowWidth(), getWindowHeight()));
 			}
 			
-			if (!windowOrientation.equalsIgnoreCase(oldOrientation)) {
+			if (WebConsole.getConsoleUnit().getIsFullscreen() && !windowOrientation.equalsIgnoreCase(oldOrientation)) {
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(getWindowOrientation(), getWindowWidth(), getWindowHeight()));
 			}
 		}
@@ -125,16 +141,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 				}
 			}, TouchMoveEvent.getType());
 			
-		   // Scroll Window to hide address bar
 			Window.scrollTo(0, 1);
-			Timer addressBarScroller = new Timer() {
+			new Timer() {
 				public void run() {
 					Window.scrollTo(0, 1);
 				}
-			};
-	
-			addressBarScroller.scheduleRepeating(5000);
-		   
+			}.schedule(1000);
+			
 			// Determine current window orientation
 			if (getWindowHeight() < getWindowWidth()) {
 				windowOrientation = "landscape";
@@ -151,6 +164,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		
 		private static void onRotate() {
 			doResizeAndRotate();
+			addressBarScroller.schedule(3000);
 		}
 
 		public static void updateWindowInfo() {
@@ -194,70 +208,61 @@ import com.google.gwt.user.client.ui.RootPanel;
 			return false;
 		}
 		
-		private static boolean isCssDodgy() {
-			if (userAgent.toLowerCase().contains("firefox") || userAgent.toLowerCase().contains("msie")) {
-//				int start = userAgent.indexOf("msie");
-//				int end = userAgent.indexOf(";", userAgent.indexOf("msie"));
-//				if (start >= 0 && end >= 0) {
-//					String version = userAgent.substring(start, end);
-//					try {
-//						double vNum = Double.parseDouble(version);
-//						if (vNum > 9) {
-//							return false;
-//						}
-//					} catch (Exception e) {}
-//				}
-				return true;
-			}
-			return false;			
-		}
-		
-		/*
-		 * This method creates a label widget somewhere and shortens the string
-		 * one character at a time until the label width is less than or equal
-		 * to the specified value
-		 */
-		public static String limitStringLength(String name, int width, int fontSize) {
-			Label label = new Label(name);
-			label.setHeight("auto");
-			label.setWidth("auto");
-			DOM.setStyleAttribute(label.getElement(), "position", "absolute");
-			DOM.setStyleAttribute(label.getElement(), "visibility", "hidden");
-			DOM.setStyleAttribute(label.getElement(), "fontSize", fontSize + "px");
-			
-			RootPanel.get().add(label);
-			String retName = name;
-			
-			// Check length of name and whether it is completely visible
-			boolean textResized = false;
-			String newName = name;
-			int currentWidth = label.getOffsetWidth();
-			int iterations = 0;
-			
-			while (currentWidth > width && iterations <= 100 && newName.length()>1) {
-				newName = newName.substring(0, newName.length()-1);
-				label.setText(newName);
-				textResized = true;
-				currentWidth = label.getOffsetWidth();
-				iterations++;
-			}
-			
-			if (textResized && newName.length() > 1) {
-				retName = newName.substring(0, newName.length()-1);
-				retName += "..";
-			}
-			RootPanel.get().remove(label);
-			return retName;
-		}
-		
 		public static String getSystemImageDir() {
-			String dir = "";
-			dir = Window.Location.getHost() + Window.Location.getPath();
-			dir = dir.replaceFirst("/+[a-z|A-Z|0-9]+\\.html*", "");
-			dir = dir.replaceFirst("^http://", "");
-			dir += "/resources/images";
-			dir = "http://" + dir;
-			return dir;
+//			String dir = "http://";
+//			dir = Window.Location.getHost() + Window.Location.getPath();
+//			dir = dir.replaceFirst("/+[a-z|A-Z|0-9]+\\.html*", "");
+//			dir = dir.replaceFirst("^http://", "");
+//			dir += "resources/images";
+			return "resources/images/";
+		}
+		
+		public static void setStyleAttributeAllBrowsers(Element elem, String attr, String value) {
+			String[] browsers = {"Webkit", "Moz", "O", "Ms", "Khtml"};
+			DOM.setStyleAttribute(elem, attr, value);
+			attr = Character.toUpperCase(attr.charAt(0)) + attr.substring(1);
+			for (String browser : browsers) {
+				DOM.setStyleAttribute(elem, browser + attr, value);
+			}
+		}
+		
+		public static void hideLoadingMsg() {
+			RootPanel.get("loading_image").setVisible(false);
+			RootPanel.get("loading_msg").setVisible(false);
+		}
+		
+		public static void showLoadingMsg() {
+			showLoadingMsg("");
+		}
+		
+		public static void showLoadingMsg(String msg) {
+			RootPanel.get("loading_msg").getElement().setInnerHTML("<span>" + msg  + "</span>");
+			RootPanel.get("loading_image").setVisible(true);
+			RootPanel.get("loading_msg").setVisible(true);
+		}
+		
+		public static void hideAlert() {
+			//WebConsole.getConsoleUnit().getConsoleDisplay().setVisible(true);
+			DOM.getElementById("alert_popup").getStyle().setVisibility(Visibility.HIDDEN);
+		}
+		
+		public static void showAlert(String msg) {
+			ConsoleUnit console = WebConsole.getConsoleUnit();
+			Element elem = DOM.getElementById("alert_popup");
+			
+			// Size based on console orientation
+			elem.removeClassName("portrait");
+			elem.removeClassName("landscape");
+			elem.addClassName(console.getOrientation());
+
+			DOM.getElementById("alert_popup_msg").setInnerHTML(msg);
+			
+			int halfHeight = (int) Math.round((double)elem.getClientHeight()/2);
+			
+			elem.getStyle().setMarginTop(-halfHeight, Unit.PX);
+			
+			//console.getConsoleDisplay().setVisible(false);
+			DOM.getElementById("alert_popup").getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		
 // -------------------------------------------------------------
@@ -297,5 +302,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 		  var s = [];
 		  for (var i = 0; i <36; i++) s.push(Math.floor(Math.random()*10));
 		  return s.join('');
+		}-*/;
+		
+		public static native void exportStaticMethod() /*-{
+			$wnd.hideAlert = $entry(@org.openremote.web.console.util.BrowserUtils::hideAlert());
 		}-*/;
 }

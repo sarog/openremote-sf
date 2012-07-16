@@ -1,10 +1,11 @@
 package org.openremote.web.console.widget.panel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.openremote.web.console.panel.entity.Cell;
-import org.openremote.web.console.panel.entity.DataValuePair;
+import org.openremote.web.console.panel.entity.Column;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
@@ -24,6 +25,7 @@ public class GridPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "gridPanelComponent";
 	private int rows;
 	private int cols;
+	private List<String> colWidths = new ArrayList<String>();
 	private CellData[][] cellDataArr;
 	private Set<ConsoleComponent> components = new HashSet<ConsoleComponent>();
 	
@@ -104,7 +106,7 @@ public class GridPanelComponent extends PanelComponent {
 		int colWidth = (int)Math.round((double)width / cols);
 		int rowHeight = (int)Math.round((double)height / rows);
 		for (ConsoleComponent component : components) {
-			component.onUpdate(colWidth, rowHeight);
+			component.onRefresh(colWidth, rowHeight);
 		}
 	}
 	
@@ -147,12 +149,20 @@ public class GridPanelComponent extends PanelComponent {
 		}
 		panel.setHeight(layout.getHeight());
 		panel.setWidth(layout.getWidth());
-		panel.setPosition(layout.getLeft(),layout.getTop());
+		panel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
 		panel.setColCount(layout.getCols());
 		panel.setRowCount(layout.getRows());
 		
 		// Initialise the table
 		panel.init();
+		
+		// Check for column definitions
+		List<Column> cols = layout.getCol();
+		if (cols != null) {
+			for (int i=0; i<cols.size(); i++) {
+				((FlexTable)panel.getWidget()).getColumnFormatter().setWidth(i, cols.get(i).getWidth());
+			}
+		}
 		
 		// Create cells
 		List<Cell> cells = layout.getCell();
@@ -204,7 +214,7 @@ public class GridPanelComponent extends PanelComponent {
 				if (colSpan != 1) {
 					((FlexTable)panel.getWidget()).getFlexCellFormatter().setColSpan(row, col, colSpan);
 				}
-			}
+			}			
 		}
 		
 		return panel;

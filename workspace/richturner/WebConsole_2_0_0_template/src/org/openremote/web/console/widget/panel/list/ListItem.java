@@ -85,15 +85,8 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	}
 	
 	private void addComponentToListItem(PanelComponent component) {
-		int left = 0;
-		int top = 0;
-		
-		if (component instanceof Positional) {
-			Positional positional = (Positional) component; 
-			left = positional.getLeft();
-			top = positional.getTop();
-		}
-		((AbsolutePanel)getWidget()).add((Widget) component, left, top);
+		// Add at 0,0 onRender will correctly position it when screen size is known
+		((AbsolutePanel)getWidget()).add((Widget) component, 0, 0);
 		itemComponents.add(component);
 	}
 	
@@ -129,7 +122,7 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	@Override
 	public void onRender(int width, int height, List<DataValuePairContainer> data) {
 		for (PanelComponent component : itemComponents) {
-			component.onAdd(width, height);
+			component.onAdd((AbsolutePanel)this.getWidget(), width, height, data);
 		}
 		
 		// If ontap defined then register on tap event

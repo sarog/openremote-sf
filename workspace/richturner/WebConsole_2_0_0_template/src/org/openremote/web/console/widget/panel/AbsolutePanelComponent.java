@@ -50,7 +50,9 @@ public class AbsolutePanelComponent extends PanelComponent {
 
 	@Override
 	public void onUpdate(int width, int height) {
-		component.onUpdate(width, height);
+		if (component != null) {
+			component.onRefresh(width, height);
+		}
 	}
 	
 	@Override
@@ -92,7 +94,7 @@ public class AbsolutePanelComponent extends PanelComponent {
 		}
 		absPanel.setHeight(layout.getHeight());
 		absPanel.setWidth(layout.getWidth());
-		absPanel.setPosition(layout.getLeft(),layout.getTop());
+		absPanel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
 		
 		// Create component
 		LabelComponent labelComponent = layout.getLabel();

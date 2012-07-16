@@ -13,6 +13,8 @@ public interface FormLayout {
    String getWidth();
    String getLeft();
    String getTop();
+   String getRight();
+   String getBottom();
    String getDataSource();
    String getItemBindingObject();
    List<Field> getField();
@@ -22,6 +24,8 @@ public interface FormLayout {
    void setWidth(String width);
    void setLeft(String left);
    void setTop(String top);
+   void setRight(String right);
+   void setBottom(String bottom);
    void setDataSource(String dataSource);
    void setItemBindingObject(String itemBindingObject);
    void setField(List<Field> field);

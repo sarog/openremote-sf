@@ -75,8 +75,8 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	}
 	
 	public static final class SwipeLimits {
-		private static final double PRIMARY_DISTANCE_RATIO = 0.7;
-		private static final double SECONDARY_DISTANCE_RATIO = 0.3;
+		private static final double PRIMARY_DISTANCE_RATIO = 0.6;
+		private static final double SECONDARY_DISTANCE_RATIO = 0.4;
 		private static final int MIN_SECONDARY_DISTANCE_PIXELS = 30;
 		private static final int MAX_SECONDARY_DISTANCE_PIXELS = 80;
 		public int primaryAxisMinDistance;

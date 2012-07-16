@@ -55,20 +55,6 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		return id;
 	}
 	
-	@Override
-	public void onAdd(int width, int height) {
-		// Set container to explicit size to avoid any issues using percentages
-		this.width = width;
-		this.height = height;
-		setWidth(width + "px");
-		setHeight(height + "px");
-		onRender(width, height);
-		setVisible(true);
-		isInitialised = true;
-		
-		initHandlers();
-	}
-	
 	protected void initHandlers() {
 		// Check that handlers have been registered if interactive if not register them on the top level widget
 		if (this instanceof InteractiveConsoleComponent) {
@@ -98,19 +84,6 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		}
 	}
 	
-	@Override
-	public void onRemove() {
-		unRegisterHandlers();
-	}
-	
-	@Override
-	public void onUpdate(int width, int height) {
-		this.width = width;
-		this.height = height;
-		setWidth(width + "px");
-		setHeight(height + "px");
-	}
-	
 	public void onSensorChange(SensorChangeEvent event) {
 		SensorChangeHandler sensorHandler = (SensorChangeHandler) this;
 		if (sensor != null && sensor.sensorRef == event.getSensorId()) {
@@ -129,5 +102,37 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 	protected void registerHandler(HandlerRegistration registration) {
 		handlerRegistrations.add(registration);
 		handlersRegistered = true;
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
+	@Override
+	public void onAdd(int width, int height) {
+		// Set container to explicit size to avoid any issues using percentages
+		this.width = width;
+		this.height = height;
+		setWidth(width + "px");
+		setHeight(height + "px");
+		onRender(width, height);
+		setVisible(true);
+		isInitialised = true;
+		
+		initHandlers();
+	}
+	
+	@Override
+	public void onRefresh(int width, int height) {
+		this.width = width;
+		this.height = height;
+		setWidth(width + "px");
+		setHeight(height + "px");
+		onUpdate(width, height);
+	}
+	
+	@Override
+	public void onRemove() {
+		unRegisterHandlers();
 	}
 }

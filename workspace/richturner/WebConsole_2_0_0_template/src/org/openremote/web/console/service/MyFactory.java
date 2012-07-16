@@ -39,4 +39,5 @@ public interface MyFactory extends AutoBeanFactory {
 	AutoBean<ListItemLayout> listItem();
 	AutoBean<WelcomeFlag> welcomeFlag();
 	AutoBean<AbsolutePosition> absolutePosition();
+	AutoBean<PanelSizeInfo> panelSizeInfo();
 }

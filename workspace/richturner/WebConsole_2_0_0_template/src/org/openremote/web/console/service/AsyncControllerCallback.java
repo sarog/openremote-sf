@@ -2,6 +2,7 @@ package org.openremote.web.console.service;
 
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
+import org.openremote.web.console.panel.PanelIdentityList;
 
 import com.google.gwt.jsonp.client.TimeoutException;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -19,6 +20,4 @@ public abstract class AsyncControllerCallback<T> implements AsyncCallback<T> {
 	public void onFailure(EnumControllerResponseCode response) {
 		WebConsole.getConsoleUnit().onError(response);
 	}
-	
-	public abstract void onSuccess(T result);
 }

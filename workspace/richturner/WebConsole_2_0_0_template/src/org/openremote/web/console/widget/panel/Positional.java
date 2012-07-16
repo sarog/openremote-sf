@@ -1,11 +1,15 @@
 package org.openremote.web.console.widget.panel;
 
 public interface Positional {
-	public void setPosition(int left, int top);
+	public void setPosition(Integer left, Integer top, Integer right, Integer bottom);
 	
-	public void setPosition(String left, String top);
+	public void setPosition(String left, String top, String right, String bottom);
 	
-	public int getLeft();
+	public Integer getLeft();
 	
-	public int getTop();
+	public Integer getTop();
+	
+	public Integer getRight();
+	
+	public Integer getBottom();
 }

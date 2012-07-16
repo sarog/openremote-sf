@@ -47,54 +47,6 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		((AbsolutePanel)getWidget()).add(label, 0, 0);
 	}
 	
-	@Override
-	public void onSensorAdd() {
-		Map<String, String> map = sensor.getStateMap();
-		for (String name : map.keySet()) {
-			String value = map.get(name);
-			String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
-			url += "/" + value;
-			ImageContainer container = new ImageContainer(new Image(url), loadedCallback);
-			stateImageMap.put(name, container);
-			((AbsolutePanel)getWidget()).add(container.getImage(), 0, 0);
-		}
-	}
-	
-	@Override
-	public void sensorChanged(String value) {
-		if (!value.equalsIgnoreCase("off") && !value.equalsIgnoreCase("on")) {
-			try {
-				int numValue = Integer.parseInt(value);
-				numValue = numValue > 0 ? 1 : 0;
-				value = numValue == 0 ? "off" : "on";
-			} catch (Exception e) {}
-		}
-		if (value.equalsIgnoreCase("off") || value.equalsIgnoreCase("on")) {
-			state = value;
-			label.setText(value.toUpperCase());
-			setImage(stateImageMap.get(value));
-		}
-	}
-	
-	@Override
-	public void onRender(int width, int height) {
-		if (!isInitialised) {
-			label.setWidth(width + "px");
-			label.setHeight(height + "px");
-			DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
-			sensorChanged("off");
-		}
-	}
-	
-	@Override
-	public void onTap(TapEvent event) {
-		if (navigate != null) {
-			eventBus.fireEvent(new NavigateEvent(navigate));
-		} else if (hasControlCommand) {
-			eventBus.fireEvent(new CommandSendEvent(getId(), getSendCommand(), this));
-		}
-	}
-	
 	private void setImage(ImageContainer container) {
 		boolean showLabel = true;
 		
@@ -129,6 +81,66 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		return sendCommand;
 	}
 	
+	// ---------------------------------------------------------------------------------
+	//			SUPER CLASS OVERRIDES BELOW
+	// ---------------------------------------------------------------------------------
+	
+	@Override
+	public void onRender(int width, int height) {
+		if (!isInitialised) {
+			label.setWidth(width + "px");
+			label.setHeight(height + "px");
+			DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
+			sensorChanged("off");
+		}
+	}
+
+	@Override
+	public void onUpdate(int width, int height) {
+		label.onUpdate(width, height);
+	}
+	
+	@Override
+	public void onSensorAdd() {
+		Map<String, String> map = sensor.getStateMap();
+		for (String name : map.keySet()) {
+			String value = map.get(name);
+			String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
+			url += value;
+			ImageContainer container = WebConsole.getConsoleUnit().getImageFromCache(url);
+			container.addCallback(loadedCallback);
+			stateImageMap.put(name, container);
+			if (container != null) {
+				((AbsolutePanel)getWidget()).add(container.getImage(), 0, 0);
+			}
+		}
+	}
+	
+	@Override
+	public void sensorChanged(String value) {
+		if (!value.equalsIgnoreCase("off") && !value.equalsIgnoreCase("on")) {
+			try {
+				int numValue = Integer.parseInt(value);
+				numValue = numValue > 0 ? 1 : 0;
+				value = numValue == 0 ? "off" : "on";
+			} catch (Exception e) {}
+		}
+		if (value.equalsIgnoreCase("off") || value.equalsIgnoreCase("on")) {
+			state = value;
+			label.setText(value.toUpperCase());
+			setImage(stateImageMap.get(value));
+		}
+	}
+	
+	@Override
+	public void onTap(TapEvent event) {
+		if (navigate != null) {
+			eventBus.fireEvent(new NavigateEvent(navigate));
+		} else if (hasControlCommand) {
+			eventBus.fireEvent(new CommandSendEvent(getId(), getSendCommand(), this));
+		}
+	}
+	
 	@Override
 	public void onCommandSendResponse(Boolean success, String command) {
 		// Update the state of the switch if send command was a success
@@ -136,6 +148,10 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 			sensorChanged(command);
 		}
 	}
+	
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SwitchComponent entity) {
 		SwitchComponent component = new SwitchComponent();

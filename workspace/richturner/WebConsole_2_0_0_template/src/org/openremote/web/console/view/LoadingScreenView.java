@@ -21,14 +21,14 @@ public class LoadingScreenView extends ScreenViewImpl {
 		AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
 		absPanel.setHeight("100%");
 		absPanel.setWidth("100%");
-		absPanel.setPosition(0,0);
+		absPanel.setPosition(0, 0, null, null);
 		absPanel.setComponent(htmlSpinner);
 		
 		// Create container for label
 		AbsolutePanelComponent absPanel2 = new AbsolutePanelComponent();
 		absPanel2.setHeight("100%");
 		absPanel2.setWidth("100%");
-		absPanel2.setPosition(0,0);
+		absPanel2.setPosition(0, 0, null, null);
 		absPanel2.setComponent(msgWidget);
 		
 		// Add components to screen view

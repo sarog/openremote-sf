@@ -1,3 +1,54 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/************************************************************************
+MAIN CSS FILE FOR WEBCONSOLE DO NOT CHANGE THIS
+
+For CSS customisations see custom.css
+************************************************************************/
+
+body {
+	font-family: verdana, arial, sans-serif;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+	-o-user-drag: none;
+	-ms-user-drag: none;
+	-moz-user-drag: none;
+	user-drag: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	-o-tap-highlight-color:rgba(0,0,0,0);
+	-ms-tap-highlight-color:rgba(0,0,0,0);
+	-moz-tap-highlight-color:rgba(0,0,0,0);
+	tap-highlight-color:rgba(0,0,0,0);
+	-webkit-touch-callout: none;
+	-ms-touch-callout: none;
+	-moz-touch-callout: none;
+	-o-touch-callout: none;
+	-touch-callout: none;
+}
+
 #noScriptError {
 	width: 22em;
 	position: absolute;
@@ -9,25 +60,41 @@
 	padding: 4px;	
 }
 
-body {
-	margin: 0;
-	padding: 0;
-	font-family: verdana, arial, sans-serif;
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
-	tap-highlight-color: rgba(0,0,0,0);
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-	cursor: pointer;
-}
-
 /************************************************************************
-TOOLBAR 
+	TOOLBAR 
 *************************************************************************/
 
 .toolbar {
 	color: #FFF;
+	z-index: 1000;
+}
+
+.toolbar .panelSizePanel {
+	border-radius: 5px;
+	background-color: #6FA02B;
+	padding: 10px 10px;
+}
+
+.toolbar input.panelSize {
+	width: 4em;
+	text-align: center;
+}
+
+.toolbar .panelSizePanel h3 {
+	margin: 0;	
+}
+
+#resizeBtn {
+	margin: 20px;
+}
+
+.toolbar .sizeInputBoxes {
+	margin: 10px 0 0 20px;
+}
+
+.toolbar .panelSizePanel .gwt-Label {
+	width: 3em;
+	text-align: center;
 }
 
 .toolbar .mainToolbarPanel {
@@ -48,166 +115,214 @@ TOOLBAR
 	font-size: 20px;
 }
 
-.toolbarInputLabel {
+.toolbar input.invalid {
+	color: #F00	
+}
+
+#alert_popup {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding: 10px;
+	background-color: #444;
+	border: 1px solid #FFF;
 	color: #FFF;
-	font-weight: bold;
 	font-size: 16px;
+	border-radius: 10px;
+	-o-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-ms-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	text-align: center;
 }
 
-.invalidToolbarField {
-	color: #F00;
+#alert_popup.portrait {
+	width: 280px;
+	margin-left: -150px;
 }
 
-.toolbarInput {}
+#alert_popup.landscape {
+	width: 340px;
+	margin-left: -180px;	
+}
+
+#alert_popup_header {
+	width: 100%;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #FFF;
+	text-align: center;
+}
+
+#alert_popup_msg {
+	margin: 10px 0;
+	width: 100%;
+}
 
 /************************************************************************
 CONSOLE UNIT
 *************************************************************************/
 
 #consoleUnit {
-	display:-moz-inline-stack;
-	display:inline-block;
-	*display:inline;
-	zoom:1;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	position: absolute;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+/*	display: -moz-inline-stack;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+*/
 	cursor: pointer;
 }
 
-.portraitConsole {
+#consoleUnit.portrait {
 
 }
 
-.landscapeConsole {
-     -moz-transform: rotate(-90deg);  
-       -o-transform: rotate(-90deg);  
-  -webkit-transform: rotate(-90deg);  
-      -ms-transform: rotate(-90deg);  
-          transform: rotate(-90deg);  
-/*             filter: progid:DXImageTransform.Microsoft.Matrix( 
-                     M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand'); */
-               zoom: 1;
+#consoleUnit {
+/* 	-moz-transform-origin: 50% 50%; */
+/* 	-o-transform-origin: 50% 50%; */
+/* 	-webkit-transform-origin: 50% 50%; */
+/* 	-ms-transform-origin: 50% 50%; */
+/*    	transform-origin: 50% 50%; */
+
+	-moz-transform-origin: 0% 0%;
+	-o-transform-origin: 0% 0%;
+	-webkit-transform-origin: 0% 0%;
+	-ms-transform-origin: 0% 0%;
+   	transform-origin: 0% 0%;
+
+	-moz-transition: all 0s linear;
+	-webkit-transition: all 0s linear;
+	-o-transition: all 0s linear;
+	-ms-transition: all 0s linear;
+	transition: all 0s linear;
 }
 
-#consoleUnit table {
-	margin: 0 auto;	
+#consoleUnit.landscape {
+/* 	-moz-transform: rotate(-90deg) translate(-100%,0);   */
+/*     -o-transform: rotate(-90deg);   */
+/*   	-webkit-transform: rotate(-90deg);   */
+/*     -ms-transform: rotate(-90deg); */
+/*     transform: rotate(-90deg); */
+    
+/*     transform: translate(50%,0); */
+/* 	-ms-transform: translate(50%,0); IE 9 */
+/* 	-webkit-transform: translate(50%,0); Safari and Chrome */
+/* 	-o-transform: translate(50%,0); Opera */
+/* 	-moz-transform: translate(50%,0); */
+/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
+                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
 }
 
-.consoleFrame {
-	background-color: #383838;
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(0,0,0)), color-stop(0.5, rgb(56,56,56)));
-	background-image: -moz-linear-gradient(center bottom, rgb(0,0,0) 0%, rgb(56,56,56) 50%);
-	/* ie10 */
-	background-image: -ms-linear-gradient(#383838,#000000);
-	/* opera 11.1 */
-	background-image: -o-linear-gradient(#383838,#000000);
-	/* The "standard" */
-	background-image: linear-gradient(#383838,#000000);			
-	-webkit-border-radius: 15px;
-	-o-border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+#consoleUnit.framed #consoleFrameLogo {
+ 	display: block;
+}
+ 
+#consoleUnit.fullscreen #consoleFrameLogo {
+ 	display: none;
 }
 
-.consoleFrame.portraitConsole {
-	/* ie 6+ */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000');
-	/* ie8 + */
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000');
-}
-
-.consoleFrame.landscapeConsole {
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000') progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
-	/* ie8 + */
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#383838', endColorstr='#000000') progid:DXImageTransform.Microsoft.Matrix(M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
-}
-
-#consoleFrameLogoLeft {
-	color: #245E36;
-}
-
-#consoleFrameLogoRight {
-	color: #4FA800;
-}
-
-.consoleFrameLogo div {
-	/*
-  	text-shadow:
-   		-1px -1px 0 #FFF,
-    	1px -1px 0 #FFF,
-    	-1px 1px 0 #FFF,
-     	1px 1px 0 #FFF;
-    */
-	font-weight: bold;
-	font-size: 25px;
-	border: none;
+#consoleFrameLogo {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
+	background: url(../../resources/images/logo.png);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
 }
 
 #consoleDisplay {
-	background-color: black;
-	overflow: hidden;
 	cursor: pointer;
+	border: none;
 }
 
-.consoleDisplay .portraitDisplay {
-
+.framed #consoleDisplayWrapper {
+	border-width: 2px;
+	border-style: solid;
 }
 
-.consoleDisplay .landscapeDisplay {
-     -moz-transform: rotate(90deg);  /* FF3.5+ */
-       -o-transform: rotate(90deg);  /* Opera 10.5 */
-  -webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
-      -ms-transform: rotate(90deg);  /* IE9 */
-          transform: rotate(90deg);  
+.fullscreen #consoleDisplayWrapper {
+	border: none;
+}
+
+#consoleDisplay.landscape {
+	-moz-transform-origin: 0% 0%;
+	-o-transform-origin: 0% 0%;
+	-webkit-transform-origin: 0% 0%;
+	-ms-transform-origin: 0% 0%;
+   	transform-origin: 0% 0%;
+	-moz-transform: rotate(90deg);  /* FF3.5+ */
+	-o-transform: rotate(90deg);  /* Opera 10.5 */
+  	-webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
+	-ms-transform: rotate(90deg);  /* IE9 */
+	transform: rotate(90deg);
 /*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
                      M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
-               zoom: 1;
+	zoom: 1;
 }
 
-.consoleDisplayBoss {
-	border: solid 2px #333333; 
-}
+/* .tabBarComponent * { */
+/* 	margin: 0; */
+/* 	padding: 0; */
+/* 	border: none; */
+/* } */
+
 
 
 /************************************************************************
 WIDGETS
 *************************************************************************/
 
-.sliderComponentBar {
-	background-color: buttonFace;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-	-o-border-radius: 6px;
-	border-radius: 6px;
-	border-width: 1px;
-	border-style: solid;
+/* Prevents dotted line around links, buttons etc. on focus */
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+
+input[type=text] {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
 }
 
-.sliderComponentBarTrack {
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
-	-o-border-radius: 6px;
-	border-radius: 6px;
-	background-color: #4FA800;
+img {
+	pointer-events: none;
+	-webkit-pointer-events: none;
+	-moz-pointer-events: none;
+	-ms-pointer-events: none;
 }
-  
-.sliderComponentHandle {
-   background-color: buttonFace;
-	-moz-border-radius: 13px;
-	-webkit-border-radius: 13px;
-	-o-border-radius: 13px;
-	border-radius: 13px;
+
+img, button {
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+.consoleWidget * {
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.sliderComponentBar {
 	border-width: 2px;
 	border-style: solid;
+}
+	
+.sliderComponentBarTrack {
+	border: none;
+}
+
+.buttonComponent, .switchComponent {
+	margin: 0px;
+	background-repeat: no-repeat;
+}
+
+.buttonComponent.hasImage, .switchComponent.hasImage {
+	background-color: inherit;
+}
+
+.buttonComponent.hasImage span {
+	visibility: hidden;
 }
 
 /*
@@ -257,85 +372,6 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 @-moz-keyframes fade {
 	from {opacity: 1;}
 	to {opacity: 0.25;}
-}
-
-.tabBarComponent {
-	background-color: #5A5A5A;
-	background-image: linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);	
-	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(0,0,0)), color-stop(1, rgb(90,90,90)));
-	/* ie6 */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
-	/* ie8 + */
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
-	margin: 0;
-	border: none;
-}
-
-.tabBarItem td {
-	padding: 0;
-}
-
-.tabBarItem.selected {
-	background-color: #6E6E6E;
-	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	background-image: -ms-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
-	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(20,20,20)),color-stop(1, rgb(110,110,110)));
-		/* ie6 */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
-	/* ie8 + */
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
-	margin: 0;
-	padding: 0;
-	border: none;
-}
-
-.tabBarItemText {
-	color: #CCC;
-}
-
-.tabBarItem.selected .tabBarItemText {
-	font-weight: bold;
-	color: #FFF;
-}
-
-.tabBarItemImage {
-	
-}
-
-.screenIndicatorItem {
-	-moz-border-radius: 3px;
-	-o-border-radius: 3px;
-	border-radius: 3px;
-	background-color: #6E6E6E;
-}
-
-.screenIndicatorItem.selected {
-	background-color: #FFF;
-}
-
-.buttonComponent, .switchComponent {
-	background-color: #5A697E;
-    border: none;
-    color: #FFF;
-    font-weight: bold;
-    font-family: arial;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -o-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -webkit-appearance: none;
-}
-
-.buttonComponent.pressed, .switchComponent.pressed {
-	background: #3A495E;
-	color: #DDD;
 }
 
 .formPanelComponent {
