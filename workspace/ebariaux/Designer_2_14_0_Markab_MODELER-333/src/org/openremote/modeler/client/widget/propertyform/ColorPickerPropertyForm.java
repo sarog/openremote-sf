@@ -66,9 +66,11 @@ public class ColorPickerPropertyForm extends PropertyForm {
    
    private void createImageUploadField(final ColorPicker colorPicker) {
      final ImageSelectAdapterField defaultImageField = new ImageSelectAdapterField("Image");
+     defaultImageField.setDeleteButtonEnabled(false);
      if (colorPicker.getImage() != null) {
        if (!ColorPicker.DEFAULT_COLORPICKER_URL.equals(colorPicker.getImage().getSrc())) {
          defaultImageField.setText(colorPicker.getImage().getImageFileName());
+         defaultImageField.setDeleteButtonEnabled(true);
        }
      }
      defaultImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -88,7 +90,8 @@ public class ColorPickerPropertyForm extends PropertyForm {
              } else {
                colorPicker.setImage(new ImageSource(imageURL));
              }
-             defaultImageField.setText(colorPicker.getImage().getImageFileName());              
+             defaultImageField.setText(colorPicker.getImage().getImageFileName());
+             defaultImageField.setDeleteButtonEnabled(true);
            }             
           });
         }
@@ -99,6 +102,7 @@ public class ColorPickerPropertyForm extends PropertyForm {
            if (colorPicker.getImage() != null) {
               defaultImageField.removeImageText();
               screenColorPicker.setImageSource(new ImageSource(ColorPicker.DEFAULT_COLORPICKER_URL));
+              defaultImageField.setDeleteButtonEnabled(false);
            }
         }
      });
