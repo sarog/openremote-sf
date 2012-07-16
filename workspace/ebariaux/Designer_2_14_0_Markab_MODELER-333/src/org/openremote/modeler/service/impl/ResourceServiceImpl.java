@@ -85,6 +85,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.SensorOwner;
@@ -724,6 +725,7 @@ public class ResourceServiceImpl implements ResourceService
             .getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
+      Collection<UIComponent> colorPickers = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(ColorPicker.class);
       Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
       configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
@@ -760,6 +762,7 @@ public class ResourceServiceImpl implements ResourceService
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
       context.put("images", uiImages);
+      context.put("colorPickers", colorPickers);
       context.put("maxId", maxId);
       context.put("configs", configs);
       context.put("stringUtils", StringUtils.class);
@@ -1196,10 +1199,12 @@ public class ResourceServiceImpl implements ResourceService
       }
 
       /*
-       * down load the default image.
+       * copy the default image and default colorpicker image.
        */
       File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
       FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
+      File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
+      FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
 
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
