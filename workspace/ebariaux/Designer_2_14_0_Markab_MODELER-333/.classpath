@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="mine"/>
 	<classpathentry kind="src" path="protocols"/>
 	<classpathentry kind="src" path="config"/>
 	<classpathentry kind="src" path="test"/>
@@ -48,7 +47,6 @@
 	<classpathentry kind="lib" path="lib/core/apache-commons/fileupload-1.2.1/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/httpclient-3.0/commons-httpclient-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/io-1.2/commons-io.jar"/>
-	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.1/commons-lang.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/logging-1.1/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/pool-1.2/commons-pool.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt/gxt-2.2.5-gwt22.jar"/>
@@ -62,5 +60,6 @@
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
 	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt3/gxt-3.0.0b.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

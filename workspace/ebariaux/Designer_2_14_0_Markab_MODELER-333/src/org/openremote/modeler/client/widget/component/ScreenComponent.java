@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.component;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIImage;
@@ -59,6 +60,8 @@ public abstract class ScreenComponent extends ComponentContainer {
          return new ScreenTabbar(canvas, (UITabbar)uiComponent, widgetSelectionUtil);
       } else if (uiComponent instanceof UIWebView) {
          return new ScreenWebView(canvas, (UIWebView)uiComponent, widgetSelectionUtil);
+      } else if (uiComponent instanceof ColorPicker) {
+         return new ScreenColorPicker(canvas,(ColorPicker)uiComponent, widgetSelectionUtil);
       }
       return null;
    }
