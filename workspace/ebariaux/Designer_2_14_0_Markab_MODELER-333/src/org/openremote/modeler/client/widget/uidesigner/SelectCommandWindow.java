@@ -39,27 +39,27 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class SelectCommandWindow extends Dialog {
    private TreePanel<BeanModel> devicesAndMacrosTree;
-   public SelectCommandWindow() {
+   public SelectCommandWindow(boolean includeMacros) {
       setHeading("Select Command");
       setHeight(300);
       setWidth(260);
       setLayout(new FitLayout());
       setModal(true);
-      initDevicesAndMacrosTree();
+      initDevicesAndMacrosTree(includeMacros);
       setButtons(Dialog.OKCANCEL);
       setHideOnButtonClick(true);
       addButtonListener();
       show();
    }
 
-   private void initDevicesAndMacrosTree() {
+   private void initDevicesAndMacrosTree(boolean includeMacros) {
       ContentPanel devicesAndMacrosTreeContainer = new ContentPanel();
       devicesAndMacrosTreeContainer.setBorders(false);
       devicesAndMacrosTreeContainer.setBodyBorder(false);
       devicesAndMacrosTreeContainer.setHeaderVisible(false);
       devicesAndMacrosTreeContainer.setLayout(new FitLayout());
       if (devicesAndMacrosTree == null) {
-         devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree();
+         devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree(includeMacros);
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
       
