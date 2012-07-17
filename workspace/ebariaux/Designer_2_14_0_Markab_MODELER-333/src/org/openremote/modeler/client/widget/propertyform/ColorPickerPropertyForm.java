@@ -115,7 +115,7 @@ public class ColorPickerPropertyForm extends PropertyForm {
      command.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-           SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
+           SelectCommandWindow selectCommandWindow = new SelectCommandWindow(false);
            selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
               @Override
               public void afterSubmit(SubmitEvent be) {

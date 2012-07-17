@@ -175,7 +175,7 @@ public class GestureWindow extends Dialog {
       commandTreeContainer.setLayout(new FitLayout());
       commandTreeContainer.setScrollMode(Scroll.AUTO);
       if (devicesAndMacrosTree == null) {
-        devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree();
+        devicesAndMacrosTree = TreePanelBuilder.buildCommandAndMacroTree(true);
          commandTreeContainer.add(devicesAndMacrosTree);
       }
       devicesAndMacrosTree.collapseAll();

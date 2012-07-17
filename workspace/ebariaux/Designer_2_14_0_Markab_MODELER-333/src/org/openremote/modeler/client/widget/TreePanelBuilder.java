@@ -171,9 +171,10 @@ public class TreePanelBuilder {
     * Builds a device command tree.
     * It list all devices on top level and when expanded, each device lists its commands.
     * 
+    * @param includeMacros indicate if macros should also be available in the tree or only commands
     * @return the a new device command tree
     */
-   public static TreePanel<BeanModel> buildCommandAndMacroTree() {
+   public static TreePanel<BeanModel> buildCommandAndMacroTree(boolean includeMacros) {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
@@ -221,11 +222,13 @@ public class TreePanelBuilder {
       TreeFolderBean devicesBean = new TreeFolderBean();
       devicesBean.setDisplayName("Devices");
       devicesBean.setType(Constants.DEVICES);
-      TreeFolderBean macrosBean = new TreeFolderBean();
-      macrosBean.setDisplayName("Macros");
-      macrosBean.setType(Constants.MACROS);
       commandsAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
-      commandsAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+      if (includeMacros) {
+        TreeFolderBean macrosBean = new TreeFolderBean();
+        macrosBean.setDisplayName("Macros");
+        macrosBean.setType(Constants.MACROS);
+        commandsAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+      }
       
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandsAndMacrosTreeStore);
       tree.setBorders(false);
