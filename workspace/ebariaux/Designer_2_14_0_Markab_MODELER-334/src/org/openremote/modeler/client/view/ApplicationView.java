@@ -30,6 +30,7 @@ import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -48,6 +49,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
@@ -155,8 +157,18 @@ public class ApplicationView implements View {
                           createNorth();
                           createCenter(authority);
                           show();
+                          uiDesignerView.getProfilePanel().setInitialized(true);
                        }                       
                     });
+                 }
+                 
+                 @Override
+                 public void onFailure(Throwable caught) {
+                    if (caught instanceof UIRestoreException) {
+                      uiDesignerView.getProfilePanel().setInitialized(true);
+                    }
+                    super.onFailure(caught);
+                    super.checkTimeout(caught);
                  }
 
                  private void initModelDataBase(Collection<Panel> panels) {
