@@ -1043,6 +1043,13 @@ public class ResourceServiceImpl implements ResourceService
         uiButton.setUiCommand(null);
       }
     }
+    if (component instanceof ColorPicker) {
+      ColorPicker colorPicker = (ColorPicker)component;
+      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
+        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
+        colorPicker.setUiCommand(null);
+      }
+    }
   }
 
   private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
@@ -1142,6 +1149,13 @@ public class ResourceServiceImpl implements ResourceService
       if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
         uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
         uiButton.setUiCommandDTO(null);
+      }
+    }
+    if (component instanceof ColorPicker) {
+      ColorPicker colorPicker = (ColorPicker)component;
+      if (colorPicker.getUiCommand() == null && colorPicker.getUiCommandDTO() != null) {
+        colorPicker.setUiCommand(lookupUiCommandFromDTO(colorPicker.getUiCommandDTO()));
+        colorPicker.setUiCommandDTO(null);
       }
     }
   }
