@@ -20,7 +20,6 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ColorPickerPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
