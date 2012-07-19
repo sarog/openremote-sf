@@ -30,6 +30,8 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.widget.Text;
@@ -55,6 +57,24 @@ public class ScreenLabel extends ScreenComponent {
    public ScreenLabel(ScreenCanvas canvas, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
       this.uiLabel = uiLabel;
+      uiLabel.addPropertyChangeListener("text", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          adjustTextLength();
+        }
+      });
+      uiLabel.addPropertyChangeListener("color", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          center.setStyleAttribute("color", "#" + evt.getNewValue());
+        }
+      });
+      uiLabel.addPropertyChangeListener("fontSize", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          center.setStyleAttribute("fontSize", evt.getNewValue() + "px");
+        }
+      });
       center.setText(uiLabel.getText());
       initial();
       adjustTextLength();
@@ -74,27 +94,8 @@ public class ScreenLabel extends ScreenComponent {
       layout();
    }
 
-   public void setText(String text) {
-      uiLabel.setText(text);
-      adjustTextLength();
-   }
-
    public UILabel getUiLabel() {
       return uiLabel;
-   }
-
-   public void setUiLabel(UILabel uiLabel) {
-      this.uiLabel = uiLabel;
-   }
-
-   public void setColor(String color) {
-      uiLabel.setColor(color);
-      center.setStyleAttribute("color", "#" + color);
-   }
-
-   public void setFontSize(int size) {
-      uiLabel.setFontSize(size);
-      center.setStyleAttribute("fontSize", size + "px");
    }
 
    @Override
@@ -145,8 +146,9 @@ public class ScreenLabel extends ScreenComponent {
    public void clearSensorStates() {
       stateIndex = -1;
       states.clear();
-      setText(uiLabel.getText());
+      adjustTextLength();
    }
+   
    public void onStateChange() {
       SensorWithInfoDTO sensor = uiLabel.getSensorDTO();
       if (sensor != null && states.isEmpty()) {
