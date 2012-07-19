@@ -31,12 +31,8 @@ import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
-import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
