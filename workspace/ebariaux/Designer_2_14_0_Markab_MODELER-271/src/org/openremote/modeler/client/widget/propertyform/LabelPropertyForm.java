@@ -54,11 +54,15 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class LabelPropertyForm extends PropertyForm {
    
    private ScreenLabel screenLabel;
+   
+   private UILabel uiLabel;
+   
    private FieldSet statesPanel; 
    
    
-   public LabelPropertyForm(ScreenLabel screenLabel, WidgetSelectionUtil widgetSelectionUtil) {
+   public LabelPropertyForm(ScreenLabel screenLabel, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenLabel, widgetSelectionUtil);
+      this.uiLabel = uiLabel;
       this.screenLabel = screenLabel;
       addFields();
       createSensorStates();
@@ -70,7 +74,6 @@ public class LabelPropertyForm extends PropertyForm {
       final TextField<String> textField = new TextField<String>();
       textField.setFieldLabel("Text");
       textField.setAllowBlank(false);
-      final UILabel uiLabel = screenLabel.getUiLabel();
       textField.setValue(uiLabel.getText());
       textField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override

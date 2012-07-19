@@ -104,7 +104,7 @@ public class ScreenLabel extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new LabelPropertyForm(this, widgetSelectionUtil);
+      return new LabelPropertyForm(this, uiLabel, widgetSelectionUtil);
    }
 
    @Override
