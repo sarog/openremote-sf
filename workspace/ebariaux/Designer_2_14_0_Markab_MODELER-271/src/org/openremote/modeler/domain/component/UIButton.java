@@ -131,7 +131,9 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    }
 
    public void setName(String name) {
-      this.name = name;
+     String oldName = this.name;
+     this.name = name;
+     this.pcSupport.firePropertyChange("name", oldName, this.name);
    }
 
    public void setRepeate(boolean repeate) {
@@ -139,7 +141,9 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    }
 
    public void setImage(ImageSource image) {
-      this.image = image;
+     ImageSource oldImage = this.image;
+     this.image = image;
+     this.pcSupport.firePropertyChange("image", oldImage, this.image);
    }
 
    public void setPressImage(ImageSource pressImage) {

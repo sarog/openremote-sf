@@ -23,10 +23,14 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 import org.openremote.modeler.utils.StringUtils;
 
 import com.google.gwt.user.client.ui.FlexTable;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * The Class ScreenButton. It display as a style box, can be adjust size, change icon and text.
@@ -66,7 +70,44 @@ public class ScreenButton extends ScreenComponent {
    public ScreenButton(ScreenCanvas canvas, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
       this(canvas, widgetSelectionUtil);
       this.uiButton = uiButton;
+      this.uiButton.addPropertyChangeListener("name", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+          adjustTextLength();
+        }
+      });
       adjustTextLength();
+
+      final PropertyChangeListener imageSourceSrcListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          if (evt.getNewValue() != null) {
+            setIcon((String)evt.getNewValue());
+          } else {
+            removeIcon();
+          }
+        }
+      };
+      this.uiButton.addPropertyChangeListener("image", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          ImageSource newSource = (ImageSource) evt.getNewValue();
+          if (newSource != null) {
+            setIcon(newSource.getSrc());
+          } else {
+            removeIcon();
+          }
+          
+          // ImageSource change, should "move" our src listener to the new one
+          if (evt.getOldValue() != null) {
+            ((ImageSource)evt.getOldValue()).removePropertyChangeListener("src", imageSourceSrcListener);
+          }
+          newSource.addPropertyChangeListener("src", imageSourceSrcListener);
+        }
+      });
+      if (this.uiButton.getImage() != null) {
+        this.uiButton.getImage().addPropertyChangeListener("src", imageSourceSrcListener);
+      }
       if (uiButton.getImage() != null) {
          setIcon(uiButton.getImage().getSrc());
       }
@@ -93,7 +134,7 @@ public class ScreenButton extends ScreenComponent {
     * Sets the center icon url.
     * 
     */
-   public void setIcon(String icon) {
+   private void setIcon(String icon) {
       btnTable.removeStyleName("screen-btn-cont");
       setStyleAttribute("backgroundImage", "url(" + icon + ")");
    }
@@ -119,7 +160,7 @@ public class ScreenButton extends ScreenComponent {
     * @param length
     *           the length
     */
-   public void adjustTextLength() {
+   private void adjustTextLength() {
       adjustTextLength(getWidth());
    }
 
@@ -148,7 +189,7 @@ public class ScreenButton extends ScreenComponent {
       }
    }
    
-   public void removeIcon() {
+   private void removeIcon() {
       btnTable.addStyleName("screen-btn-cont");
       adjustTextLength();
       setStyleAttribute("backgroundImage", "url()");

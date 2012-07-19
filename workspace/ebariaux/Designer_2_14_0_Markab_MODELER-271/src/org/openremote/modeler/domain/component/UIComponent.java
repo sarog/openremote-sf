@@ -24,6 +24,8 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.PropertyChangeSupport;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -46,6 +48,8 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
   private static final long serialVersionUID = -2311643498267814551L;
   
   private transient boolean removed = false;
+  
+  protected transient PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
 
    public UIComponent() {
    }
@@ -189,6 +193,12 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
 
    }
    
-
+   public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.addPropertyChangeListener(propertyName, listener);
+   }
+   
+   public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.removePropertyChangeListener(propertyName, listener);
+   }
 
 }

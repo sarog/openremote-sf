@@ -20,6 +20,8 @@
 package org.openremote.modeler.domain.component;
 
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.PropertyChangeSupport;
 
 
 /**
@@ -29,11 +31,16 @@ public class ImageSource extends BusinessEntity {
 
    private static final long serialVersionUID = 641025600256733725L;
    
+   protected transient PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
+
    private String src;
    public ImageSource() {
    }
+   
    public ImageSource(String src) {
-      this.src = src;
+     String oldSrc = this.src;
+     this.src = src;
+     this.pcSupport.firePropertyChange("src", oldSrc, this.src);
    }
    
    public String getSrc() {
@@ -72,4 +79,13 @@ public class ImageSource extends BusinessEntity {
       } else if (!src.equals(other.src)) return false;
       return true;
    }
+   
+   public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.addPropertyChangeListener(propertyName, listener);
+   }
+   
+   public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.removePropertyChangeListener(propertyName, listener);
+   }
+
 }

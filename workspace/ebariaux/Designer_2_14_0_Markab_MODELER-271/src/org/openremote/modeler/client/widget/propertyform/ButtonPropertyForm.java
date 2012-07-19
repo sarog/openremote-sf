@@ -75,14 +75,8 @@ public class ButtonPropertyForm extends PropertyForm {
       name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-           // TODO - EBR : Setting the name on the screen button (displayed widget) so that the setter will modify
-           // the UIButton (object model) as a side effect is bad design.
-           // Call here should only change model and other visual representations should update because they listen to changes on the bus.
-//            screenButton.setName(name.getValue());
-            
             String buttonName = name.getValue();
             uiButton.setName((buttonName != null)?buttonName:""); // Do not use null as button name, see MODELER-270
-            screenButton.adjustTextLength();
          }
       });
       
@@ -157,7 +151,6 @@ public class ButtonPropertyForm extends PropertyForm {
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
-              screenButton.setIcon(imageURL);
               if (image != null) {
                  image.setSrc(imageURL);
               } else {
@@ -174,7 +167,6 @@ public class ButtonPropertyForm extends PropertyForm {
             if (uiButton.getImage() != null) {
                defaultImageField.removeImageText();
                uiButton.setImage(null);
-               screenButton.removeIcon();
             }
          }
       });
