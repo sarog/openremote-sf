@@ -59,7 +59,6 @@ public class LabelPropertyForm extends PropertyForm {
    
    private FieldSet statesPanel; 
    
-   
    public LabelPropertyForm(ScreenLabel screenLabel, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenLabel, widgetSelectionUtil);
       this.uiLabel = uiLabel;
@@ -68,6 +67,7 @@ public class LabelPropertyForm extends PropertyForm {
       createSensorStates();
       super.addDeleteButton();
    }
+   
    private void addFields() {
       this.setLabelWidth(70);
       this.setFieldWidth(150);
@@ -78,7 +78,7 @@ public class LabelPropertyForm extends PropertyForm {
       textField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            if(textField.getValue()!=null&&textField.getValue().trim().length()!=0)
+            if (textField.getValue() != null && textField.getValue().trim().length() != 0)
             uiLabel.setText(textField.getValue());
          }
       });
@@ -123,7 +123,7 @@ public class LabelPropertyForm extends PropertyForm {
          sensorSelectBtn.setText(uiLabel.getSensorDTO().getDisplayName());
       }
       final Button colorSelectBtn = new Button("Select");
-      colorSelectBtn.setStyleAttribute("border", "2px solid #"+uiLabel.getColor());
+      colorSelectBtn.setStyleAttribute("border", "2px solid #" + uiLabel.getColor());
       colorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -134,7 +134,7 @@ public class LabelPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   String color = be.getData();
                   uiLabel.setColor(color);
-                  colorSelectBtn.setStyleAttribute("border", "2px solid #"+color);
+                  colorSelectBtn.setStyleAttribute("border", "2px solid #" + color);
                }
             });
          }
@@ -163,15 +163,14 @@ public class LabelPropertyForm extends PropertyForm {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
          statesPanel.hide();
-      }
-      
+      }      
    }
    
-   private void createSensorStates(){
+   private void createSensorStates() {
       statesPanel.removeAll();
       SensorLink sensorLink = uiLabel.getSensorLink();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
-      if(uiLabel.getSensorDTO()!=null && uiLabel.getSensorDTO().getType()==SensorType.SWITCH){
+      if(uiLabel.getSensorDTO() != null && uiLabel.getSensorDTO().getType() == SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
         final TextField<String> offField = new TextField<String>();
         
@@ -180,7 +179,7 @@ public class LabelPropertyForm extends PropertyForm {
         
         onField.setAllowBlank(false);
         offField.setAllowBlank(false);
-        if(sensorLink!=null){
+        if (sensorLink!=null) {
            onField.setValue(sensorLink.getStateValueByStateName("on"));
            offField.setValue(sensorLink.getStateValueByStateName("off"));
         }
@@ -212,29 +211,28 @@ public class LabelPropertyForm extends PropertyForm {
        
         statesPanel.add(onField);
         statesPanel.add(offField);
-      } else if(uiLabel.getSensorDTO()!=null && uiLabel.getSensorDTO().getType() == SensorType.CUSTOM){
+      } else if (uiLabel.getSensorDTO() != null && uiLabel.getSensorDTO().getType() == SensorType.CUSTOM) {
         SensorWithInfoDTO customSensor = uiLabel.getSensorDTO();
          List<String> stateNames = customSensor.getStateNames();
          for(final String stateName: stateNames){
            final TextField<String> stateTextField = new TextField<String>();
            stateTextField.setFieldLabel(stateName);
            stateTextField.setAllowBlank(false);
-           if(sensorLink!=null){
+           if (sensorLink != null) {
               stateTextField.setValue(sensorLink.getStateValueByStateName(stateName));
            }
-           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>(){
+           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>() {
 
             @Override
             public void handleEvent(BaseEvent be) {
                String stateText = stateTextField.getValue();
-               if(stateText!=null&&!stateText.trim().isEmpty()){
+               if (stateText != null && !stateText.trim().isEmpty()) {
                   sensorAttrs.put("name", stateName);
                   sensorAttrs.put("value", stateText);
                   uiLabel.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
                screenLabel.clearSensorStates();
             }
-              
            });
            statesPanel.add(stateTextField);
          }
