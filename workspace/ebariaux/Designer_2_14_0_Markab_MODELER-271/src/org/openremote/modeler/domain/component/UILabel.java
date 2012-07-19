@@ -85,7 +85,9 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
    }
 
    public void setText(String text) {
-      this.text = text;
+     String oldText = this.text;
+     this.text = text;
+     pcSupport.firePropertyChange("text", oldText, this.text);
    }
 
    public String getColor() {
@@ -93,7 +95,9 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
    }
 
    public void setColor(String color) {
-      this.color = color;
+     String oldColor = this.color;
+     this.color = color;
+     pcSupport.firePropertyChange("color", oldColor, this.color);
    }
 
    public int getFontSize() {
@@ -101,7 +105,9 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
    }
 
    public void setFontSize(int fontSize) {
-      this.fontSize = fontSize;
+     int oldFontSize = this.fontSize;
+     this.fontSize = fontSize;
+     pcSupport.firePropertyChange("fontSize", oldFontSize, fontSize);
    }
 
    public Sensor getSensor() {
