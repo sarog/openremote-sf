@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
@@ -232,21 +231,6 @@ public class ButtonPropertyForm extends PropertyForm {
       
    }
 
-   /**
-    * @param screenButton
-    * @param imageSource
-    * @return
-    */
-   private IconPreviewWidget createIconPreviewWidget(final ScreenButton screenButton, final ImageSource imageSource) {
-     // TODO EBR : UIButton should be passed instead of ScreenButton, but UIButton does not have width/height
-     // The Absolute it is part of has or it can compute it via Cell/Grid
-      IconPreviewWidget previewWidget = new IconPreviewWidget(screenButton.getWidth(), screenButton.getHeight());
-      previewWidget.setText(screenButton.getName());
-      if (imageSource != null) {
-         previewWidget.setIcon(imageSource.getSrc());
-      }
-      return previewWidget;
-   }
    @Override
    protected void afterRender() {
       super.afterRender();

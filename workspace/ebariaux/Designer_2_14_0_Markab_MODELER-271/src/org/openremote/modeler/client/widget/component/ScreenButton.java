@@ -30,7 +30,6 @@ import org.openremote.modeler.shared.PropertyChangeListener;
 import org.openremote.modeler.utils.StringUtils;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * The Class ScreenButton. It display as a style box, can be adjust size, change icon and text.
