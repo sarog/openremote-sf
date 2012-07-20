@@ -122,14 +122,13 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
       return sensorLink;
    }
 
-   public void setSensorLink(SensorLink sensorLinker) {
-     SensorLink oldLink = this.sensorLink;
-      this.sensorLink = sensorLinker;
-      pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
-   }
-
+  public void setSensorLink(SensorLink sensorLinker) {
+    SensorLink oldLink = this.sensorLink;
+    this.sensorLink = sensorLinker;
+    pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
+  }
    
-   public SensorWithInfoDTO getSensorDTO() {
+  public SensorWithInfoDTO getSensorDTO() {
     return sensorDTO;
   }
 
@@ -147,15 +146,13 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
     } else {
        sensorLink.clear();
     }
- }
-
+  }
   
   @Transient
-   @Override
-   public String getPanelXml() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
-            + "\">\n");
+  @Override
+  public String getPanelXml() {
+    StringBuilder sb = new StringBuilder();
+      sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text) + "\">\n");
       if (sensor != null) {
          sb.append(sensorLink.getXMLString());
       }
