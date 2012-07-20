@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.PropertyChangeSupport;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
@@ -48,6 +50,8 @@ public class SensorLink extends BusinessEntity {
    private SensorWithInfoDTO sensorDTO;
    
    private Set<LinkerChild> linkerChildren = new HashSet<LinkerChild>(5);
+   
+   private transient PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
    
    public SensorLink() {
    };
@@ -76,7 +80,10 @@ public class SensorLink extends BusinessEntity {
     * This method is useful when your change the sensor for a SensorOwner.
     */
    public void clear() {
+     @SuppressWarnings("unchecked")
+    Set<LinkerChild> oldChildren = (Set<LinkerChild>) ((HashSet<LinkerChild>)this.linkerChildren).clone();
       linkerChildren.removeAll(linkerChildren);
+      pcSupport.firePropertyChange("linkerChildren", oldChildren, this.linkerChildren);
    }
    /**
     * Get the XML string 
@@ -102,20 +109,26 @@ public class SensorLink extends BusinessEntity {
     * @param attrMap a map contains the all attribute for the sensor linker's child. 
     */
    public void addOrUpdateChildForSensorLinker(String childName, Map<String, String> attrMap) {
+     @SuppressWarnings("unchecked")
+    Set<LinkerChild> oldChildren = (Set<LinkerChild>) ((HashSet<LinkerChild>)this.linkerChildren).clone();
       LinkerChild child = new LinkerChild(childName);
       child.setAttributes(attrMap);
       if (linkerChildren.contains(child)) {
          linkerChildren.remove(child);
       }
       linkerChildren.add(child);
+      pcSupport.firePropertyChange("linkerChildren", oldChildren, this.linkerChildren);
    }
    
    public void removeChildForSensorLinker(String childName, Map<String, String> attrMap) {
+     @SuppressWarnings("unchecked")
+    Set<LinkerChild> oldChildren = (Set<LinkerChild>) ((HashSet<LinkerChild>)this.linkerChildren).clone();
       LinkerChild child = new LinkerChild(childName);
       child.setAttributes(attrMap);
       if (linkerChildren.contains(child)) {
          linkerChildren.remove(child);
       }
+      pcSupport.firePropertyChange("linkerChildren", oldChildren, this.linkerChildren);
    }
    @JSON(include = false)
    public Sensor getSensor() {
@@ -143,7 +156,9 @@ public class SensorLink extends BusinessEntity {
 
 
    public void setLinkerChildren(Set<LinkerChild> linkerChildren) {
+     Set<LinkerChild> oldChildren = this.linkerChildren;
       this.linkerChildren = linkerChildren;
+      pcSupport.firePropertyChange("linkerChildren", oldChildren, this.linkerChildren);
    }
 
 
@@ -219,5 +234,12 @@ public class SensorLink extends BusinessEntity {
       
    }
    
+   public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.addPropertyChangeListener(propertyName, listener);
+   }
+   
+   public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.removePropertyChangeListener(propertyName, listener);
+   }
    
 }
