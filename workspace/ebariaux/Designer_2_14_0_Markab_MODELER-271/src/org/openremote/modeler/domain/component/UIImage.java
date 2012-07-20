@@ -80,7 +80,9 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
    }
 
    public void setImageSource(ImageSource imageSource) {
+     ImageSource oldSource = this.imageSource;
       this.imageSource = imageSource;
+      pcSupport.firePropertyChange("imageSource", oldSource, this.imageSource);
    }
 
    public Sensor getSensor() {
@@ -94,7 +96,9 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
    public void setSensorAndInitSensorLink(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
+         SensorLink oldLink = this.sensorLink;
          this.sensorLink = new SensorLink(sensor);
+         pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
       } else {
          sensorLink.clear();
       }
@@ -111,8 +115,10 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
   public void setSensorDTOAndInitSensorLink(SensorWithInfoDTO sensorDTO) {
     this.sensorDTO = sensorDTO;
     if (sensorDTO != null) {
+      SensorLink oldLink = this.sensorLink;
       this.sensorLink = new SensorLink();
       this.sensorLink.setSensorDTO(sensorDTO);
+      pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
     } else {
        sensorLink.clear();
     }
@@ -131,7 +137,9 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
    }
 
    public void setSensorLink(SensorLink sensorLinker) {
+     SensorLink oldLink = this.sensorLink;
       this.sensorLink = sensorLinker;
+      pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
    }
 
    @Override
