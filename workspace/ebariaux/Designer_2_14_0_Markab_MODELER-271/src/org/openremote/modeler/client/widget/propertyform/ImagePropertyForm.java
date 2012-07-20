@@ -61,22 +61,24 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class ImagePropertyForm extends PropertyForm {
    private ScreenImage screenImage = null;
 
+   private UIImage uiImage;
+   
    private FieldSet statesPanel; 
    
-   public ImagePropertyForm(ScreenImage screenImage, WidgetSelectionUtil widgetSelectionUtil) {
+   public ImagePropertyForm(ScreenImage screenImage, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenImage, widgetSelectionUtil);
       this.screenImage = screenImage;
+      this.uiImage = uiImage;
       addFields(screenImage);
       createSensorStates();
       super.addDeleteButton();
    }
    private void addFields(final ScreenImage screenImage) {
       this.setLabelWidth(70);
-      final UIImage uiImage = screenImage.getUiImage();
       
       final Button sensorSelectBtn = new Button("Select");
-      if(screenImage.getUiImage().getSensorDTO()!=null){
-         sensorSelectBtn.setText(screenImage.getUiImage().getSensorDTO().getDisplayName());
+      if(uiImage.getSensorDTO()!=null){
+         sensorSelectBtn.setText(uiImage.getSensorDTO().getDisplayName());
       }
       sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -118,7 +120,7 @@ public class ImagePropertyForm extends PropertyForm {
       statesPanel.setLayout(layout);
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
-      SensorWithInfoDTO sensor = screenImage.getUiImage().getSensorDTO();
+      SensorWithInfoDTO sensor = uiImage.getSensorDTO();
       if (sensor == null) {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
@@ -138,8 +140,8 @@ public class ImagePropertyForm extends PropertyForm {
          }
       }
       //set the label for the image. 
-      if(screenImage.getUiImage().getLabel()!=null && !screenImage.getUiImage().getLabel().isRemoved()){
-         labelBox.setValue(new ComboBoxDataModel<UILabel>(screenImage.getUiImage().getLabel().getDisplayName(),screenImage.getUiImage().getLabel()));
+      if(uiImage.getLabel()!=null && !uiImage.getLabel().isRemoved()){
+         labelBox.setValue(new ComboBoxDataModel<UILabel>(uiImage.getLabel().getDisplayName(),uiImage.getLabel()));
       }
       labelBox.setStore(labelStore);
       labelBox.addSelectionChangedListener(new SelectionChangedListener<ModelData>(){
@@ -148,7 +150,7 @@ public class ImagePropertyForm extends PropertyForm {
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             ComboBoxDataModel<ModelData> labelData = (ComboBoxDataModel<ModelData>) se.getSelectedItem();
             UILabel label = (UILabel) labelData.getData();
-            screenImage.getUiImage().setLabel(label);
+            uiImage.setLabel(label);
          }
          
       });
@@ -157,11 +159,11 @@ public class ImagePropertyForm extends PropertyForm {
    
    private ImageSelectAdapterField createImageUploader() {
      final ImageSelectAdapterField imageSrcField = new ImageSelectAdapterField("Image");
-     imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+     imageSrcField.setText(uiImage.getImageSource().getImageFileName());
      imageSrcField.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-          final ImageSource image = screenImage.getUiImage().getImageSource();
+          final ImageSource image = uiImage.getImageSource();
           
           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
           imageAssetPicker.show();
@@ -170,16 +172,16 @@ public class ImagePropertyForm extends PropertyForm {
            @Override
            public void imagePicked(String imageURL) {
              screenImage.setImageSource(new ImageSource(imageURL));
-             imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+             imageSrcField.setText(uiImage.getImageSource().getImageFileName());
            }             
           });
         }
      });
      imageSrcField.addDeleteListener(new SelectionListener<ButtonEvent>() {
        public void componentSelected(ButtonEvent ce) {
-          if (!UIImage.DEFAULT_IMAGE_URL.equals(screenImage.getUiImage().getImageSource().getSrc())){
+          if (!UIImage.DEFAULT_IMAGE_URL.equals(uiImage.getImageSource().getSrc())){
              screenImage.setImageSource(new ImageSource(UIImage.DEFAULT_IMAGE_URL));
-             imageSrcField.setText(screenImage.getUiImage().getImageSource().getImageFileName());
+             imageSrcField.setText(uiImage.getImageSource().getImageFileName());
           }
        }
     });
@@ -187,8 +189,8 @@ public class ImagePropertyForm extends PropertyForm {
    }
    private void createSensorStates(){
       statesPanel.removeAll();
-      final SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
-      if(screenImage.getUiImage().getSensorDTO()!=null && screenImage.getUiImage().getSensorDTO().getType()==SensorType.SWITCH){
+      final SensorLink sensorLink = uiImage.getSensorLink();
+      if(uiImage.getSensorDTO()!=null && uiImage.getSensorDTO().getType()==SensorType.SWITCH){
         final ImageSelectAdapterField onImageUploadField = new ImageSelectAdapterField("on");
         onImageUploadField.addSelectionListener(new SelectionListener<ButtonEvent>() {
            @Override
@@ -202,7 +204,7 @@ public class ImagePropertyForm extends PropertyForm {
                 Map<String,String> sensorAttrMap = new HashMap<String,String>();
                 sensorAttrMap.put("name","on");
                 sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
-                SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                SensorLink sensorLink = uiImage.getSensorLink();
                 sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                 screenImage.clearSensorStates();
                 onImageUploadField.setText(sensorLink.getStateValueByStateName("on"));
@@ -228,7 +230,7 @@ public class ImagePropertyForm extends PropertyForm {
                 Map<String,String> sensorAttrMap = new HashMap<String,String>();
                 sensorAttrMap.put("name","off");
                 sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
-                SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                SensorLink sensorLink = uiImage.getSensorLink();
                 sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                 screenImage.clearSensorStates();
                 offImageUploadField.setText(sensorLink.getStateValueByStateName("off"));
@@ -251,8 +253,8 @@ public class ImagePropertyForm extends PropertyForm {
         
          statesPanel.add(onImageUploadField);
          statesPanel.add(offImageUploadField);
-      }else if(screenImage.getUiImage().getSensorDTO()!=null && screenImage.getUiImage().getSensorDTO().getType() == SensorType.CUSTOM){
-        SensorWithInfoDTO customSensor = screenImage.getUiImage().getSensorDTO();
+      }else if(uiImage.getSensorDTO()!=null && uiImage.getSensorDTO().getType() == SensorType.CUSTOM){
+        SensorWithInfoDTO customSensor = uiImage.getSensorDTO();
         List<String> stateNames = customSensor.getStateNames();
         for(final String stateName: stateNames){
            final ImageSelectAdapterField imageUploaderField = new ImageSelectAdapterField(stateName);
@@ -268,7 +270,7 @@ public class ImagePropertyForm extends PropertyForm {
                    Map<String,String> sensorAttrMap = new HashMap<String,String>();
                    sensorAttrMap.put("name", stateName);
                    sensorAttrMap.put("value", imageURL.substring(imageURL.lastIndexOf("/")+1));
-                   SensorLink sensorLink = screenImage.getUiImage().getSensorLink();
+                   SensorLink sensorLink = uiImage.getSensorLink();
                    sensorLink.addOrUpdateChildForSensorLinker("state", sensorAttrMap);
                    screenImage.clearSensorStates();
                    imageUploaderField.setText(sensorLink.getStateValueByStateName(stateName));
@@ -298,13 +300,13 @@ public class ImagePropertyForm extends PropertyForm {
    }
    
    private void removeSensorImage(String stateName) {
-      String sensorValue = screenImage.getUiImage().getSensorLink().getStateValueByStateName(stateName);
+      String sensorValue = uiImage.getSensorLink().getStateValueByStateName(stateName);
       if (!"".equals(sensorValue)) {
          screenImage.clearSensorStates();
          Map<String,String> sensorAttrMap = new HashMap<String,String>();
          sensorAttrMap.put("name", stateName);
          sensorAttrMap.put("value", sensorValue);
-         screenImage.getUiImage().getSensorLink().removeChildForSensorLinker("state", sensorAttrMap);
+         uiImage.getSensorLink().removeChildForSensorLinker("state", sensorAttrMap);
          createSensorStates();
       }
    }
