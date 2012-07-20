@@ -118,17 +118,6 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
       this.sensor = sensor;
    }
 
-   public void setSensorAndInitSensorLink(Sensor sensor) {
-      this.sensor = sensor;
-      if (sensor != null) {
-        SensorLink oldLink = this.sensorLink;
-         this.sensorLink = new SensorLink(sensor);
-         pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
-      } else {
-         sensorLink.clear();
-      }
-   }
-   
    public SensorLink getSensorLink() {
       return sensorLink;
    }
