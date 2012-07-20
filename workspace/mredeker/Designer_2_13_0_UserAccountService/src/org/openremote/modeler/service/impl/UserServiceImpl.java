@@ -239,7 +239,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    public User inviteUser(String email, String roleDisplayName, User currentUser) {
      StringBuffer url = new StringBuffer("user/" + currentUser.getOid() + "/inviteUser");
      url.append("?inviteeEmail=" + email);
-     url.append("&inviteeRole" + convertRoleDisplayStringToRoleString(roleDisplayName));
+     url.append("&inviteeRoles=" + convertRoleDisplayStringToRoleString(roleDisplayName));
      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + url.toString());
      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
      Representation r = cr.post(null);
@@ -320,11 +320,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public User updateUserRoles(long uid, String roles) {
-      UserDTO user = getUserDTOById(uid);
-      user.getRoles().clear();
-      convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
-      Hibernate.initialize(user.getRoles());
-      return null;
+     UserDTO user = getUserDTOById(uid);
+     user.getRoles().clear();
+     convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
+     updateUser(user);
+     return getUserById(uid);
    }
 
    private void convertRoleStringToRole(String roles, UserDTO user, List<Role> allRoles) {
@@ -340,17 +340,19 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
    
    private String convertRoleDisplayStringToRoleString(String roleDisplayName) {
+     StringBuffer roleNames = new StringBuffer();
      List<Role> allRoles = genericDAO.loadAll(Role.class);
      for (Role role : allRoles) {
         if(role.getName().equals(Role.ROLE_ADMIN) && roleDisplayName.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
-           return role.getName();
+           roleNames.append(role.getName()).append(",");
         } else if (role.getName().equals(Role.ROLE_MODELER) && roleDisplayName.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
-          return role.getName();
+          roleNames.append(role.getName()).append(",");
         } else if (role.getName().equals(Role.ROLE_DESIGNER) && roleDisplayName.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
-          return role.getName();
+          roleNames.append(role.getName()).append(",");
         }
      }
-     return null;
+     roleNames.deleteCharAt(roleNames.length()-1);
+     return roleNames.toString();
   }
 
    public void deleteUser(long uid) {
