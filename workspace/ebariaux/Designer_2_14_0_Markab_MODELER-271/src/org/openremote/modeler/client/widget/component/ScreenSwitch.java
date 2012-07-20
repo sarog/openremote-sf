@@ -23,7 +23,10 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -45,8 +48,44 @@ public class ScreenSwitch extends ScreenComponent {
       super(canvas, widgetSelectionUtil);
       this.uiSwitch = uiSwitch;
       initial();
-      if (uiSwitch.getOnImage() != null) {
-         setIcon(uiSwitch.getOnImage().getSrc());
+      
+      final PropertyChangeListener imageSourceSrcListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          if (evt.getNewValue() != null) {
+            setIcon((String)evt.getNewValue());
+          } else {
+            removeIcon();
+          }
+        }
+      };
+      // We listen to changes on both on and off image, but always display using the on image
+      // The means we reset to on image whenever we change the off image
+      final PropertyChangeListener imageListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          if (ScreenSwitch.this.uiSwitch.getOnImage() != null) {
+            setIcon(ScreenSwitch.this.uiSwitch.getOnImage().getSrc());
+          } else {
+            removeIcon();
+          }
+          
+          // ImageSource change, should "move" our src listener to the new one
+          if (evt.getOldValue() != null) {
+            ((ImageSource)evt.getOldValue()).removePropertyChangeListener("src", imageSourceSrcListener);
+          }
+          ImageSource newSource = (ImageSource) evt.getNewValue();
+          if (newSource != null) {
+            newSource.addPropertyChangeListener("src", imageSourceSrcListener);
+          }
+        }
+      };
+      this.uiSwitch.addPropertyChangeListener("onImage", imageListener);
+      this.uiSwitch.addPropertyChangeListener("offImage", imageListener);
+      
+      if (this.uiSwitch.getOnImage() != null) {
+        this.uiSwitch.getOnImage().addPropertyChangeListener("src", imageSourceSrcListener);
+        setIcon(uiSwitch.getOnImage().getSrc());
       }
    }
 
@@ -69,7 +108,7 @@ public class ScreenSwitch extends ScreenComponent {
       return new SwitchPropertyForm(this, uiSwitch, widgetSelectionUtil);
    }
 
-   public void setIcon(String icon) {
+   private void setIcon(String icon) {
       image.setUrl(icon);
       switchTable.removeStyleName("screen-btn-cont");
       switchTable.setWidget(1, 1, image);
@@ -87,7 +126,7 @@ public class ScreenSwitch extends ScreenComponent {
       }
    }
    
-   public void removeIcon() {
+   private void removeIcon() {
       center = new Text("Switch");
       switchTable.setWidget(1, 1, center);
       switchTable.addStyleName("screen-btn-cont");
