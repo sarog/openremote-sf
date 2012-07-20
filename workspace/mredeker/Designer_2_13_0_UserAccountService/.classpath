@@ -62,5 +62,8 @@
 	<classpathentry kind="lib" path="lib/core/sun/persistence-api-1.0-rev-1.jar"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
+	<classpathentry kind="lib" path="lib/core/mysql-connector/mysql-connector-java-5.1.17-bin.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/sun/transaction-api-1.1-rev-1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
