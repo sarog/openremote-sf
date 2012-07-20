@@ -110,6 +110,25 @@ public class DeviceIDTest
     Assert.assertArrayEquals(deviceIDbytes, id.asByteArray());
   }
 
+  @Test public void testResolve() throws Exception
+  {
+    DeviceID base = DeviceID.fromString("0xFF800000");
+    DeviceID relativeID = DeviceID.fromString("0x11");
+
+    DeviceID absoluteID = relativeID.resolve(base);
+
+    assertDeviceIDBytes(absoluteID, 0x11, 0x00, 0x80, 0xFF);
+  }
+
+  @Test (expected = InvalidDeviceIDException.class)
+  public void testOutOfBoundsResolve() throws Exception
+  {
+    DeviceID base = DeviceID.fromString("0xFF800000");
+    DeviceID relativeID = DeviceID.fromString("128");
+
+    DeviceID absoluteID = relativeID.resolve(base);
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidDeviceIDArrayLength() throws Exception
   {

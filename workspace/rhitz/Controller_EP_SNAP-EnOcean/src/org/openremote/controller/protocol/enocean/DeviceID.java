@@ -383,7 +383,6 @@ public class DeviceID
 
   // Object Overrides -----------------------------------------------------------------------------
 
-
   /**
    * Tests device ID object equality based on device ID value.
    *
@@ -443,4 +442,22 @@ public class DeviceID
     return deviceIDBytes;
   }
 
+  /**
+   * Resolves a relative device ID with given base ID to an absolute device ID.
+   *
+   * @param  baseID  Base ID of an EnOcean gateway module. The base ID has to be in the range [0xFF800000 - 0xFFFFFF80]
+   *                 and align to blocks of 128 ID's (the 7 least significant bits have to be zero). Valid base ID's
+   *                 are: 0xFF800000, 0xFF800080, 0xFF800100, 0xFF800180 ....
+   *
+   * @return a new device ID instance
+   *
+   * @throws InvalidDeviceIDException
+   *           if the resulting device ID is out of bounds
+   */
+  public DeviceID resolve(DeviceID baseID) throws InvalidDeviceIDException
+  {
+    String offset = this.toString();
+
+    return DeviceID.fromStringWithBaseID(offset, baseID);
+  }
 }
