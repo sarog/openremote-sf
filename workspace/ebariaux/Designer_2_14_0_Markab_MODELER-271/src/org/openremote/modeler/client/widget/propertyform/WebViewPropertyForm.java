@@ -55,12 +55,13 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class WebViewPropertyForm extends PropertyForm {
    
    private ScreenWebView screenWebView;
-   private FieldSet statesPanel; 
+   private UIWebView uiWebView;
+   private FieldSet statesPanel;
    
-   
-   public WebViewPropertyForm(ScreenWebView screenWebView, WidgetSelectionUtil widgetSelectionUtil) {
+   public WebViewPropertyForm(ScreenWebView screenWebView, UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenWebView, widgetSelectionUtil);
       this.screenWebView = screenWebView;
+      this.uiWebView = uiWebView;
       addFields();
       createSensorStates();
       super.addDeleteButton();
@@ -71,7 +72,6 @@ public class WebViewPropertyForm extends PropertyForm {
       final TextField<String> urlField = new TextField<String>();
       urlField.setFieldLabel("URL");
       urlField.setAllowBlank(false);
-      final UIWebView uiWebView = screenWebView.getUIWebView();
       urlField.setValue(uiWebView.getURL());
       urlField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -147,18 +147,18 @@ public class WebViewPropertyForm extends PropertyForm {
             });
          }
       });
-      if(screenWebView.getUIWebView().getSensor()!=null){
-         sensorSelectBtn.setText(screenWebView.getUIWebView().getSensor().getDisplayName());
+      if(uiWebView.getSensor()!=null){
+         sensorSelectBtn.setText(uiWebView.getSensor().getDisplayName());
       }
      
       /*
       final Button colorSelectBtn = new Button("Select");
-      colorSelectBtn.setStyleAttribute("border", "2px solid #"+screenWebView.getUIWebView().getColor());
+      colorSelectBtn.setStyleAttribute("border", "2px solid #"+uiWebView.getColor());
       colorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             SelectColorWindow selectColorWindow = new SelectColorWindow();
-            selectColorWindow.setDefaultColor(screenWebView.getUIWebView().getColor());
+            selectColorWindow.setDefaultColor(uiWebView.getColor());
             selectColorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -190,7 +190,7 @@ public class WebViewPropertyForm extends PropertyForm {
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
       
-      Sensor sensor = screenWebView.getUIWebView().getSensor();
+      Sensor sensor = uiWebView.getSensor();
       if (sensor == null) {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
@@ -201,9 +201,9 @@ public class WebViewPropertyForm extends PropertyForm {
    
    private void createSensorStates(){
       statesPanel.removeAll();
-      SensorLink sensorLink = screenWebView.getUIWebView().getSensorLink();
+      SensorLink sensorLink = uiWebView.getSensorLink();
       final Map<String,String> sensorAttrs = new HashMap<String,String>();
-      if(screenWebView.getUIWebView().getSensor()!=null && screenWebView.getUIWebView().getSensor().getType()==SensorType.SWITCH){
+      if(uiWebView.getSensor()!=null && uiWebView.getSensor().getType()==SensorType.SWITCH){
         final TextField<String> onField = new TextField<String>();
         final TextField<String> offField = new TextField<String>();
         
@@ -223,7 +223,7 @@ public class WebViewPropertyForm extends PropertyForm {
                if (onText != null && onText.trim().length() != 0) {
                   sensorAttrs.put("name", "on");
                   sensorAttrs.put("value", onText);
-                  screenWebView.getUIWebView().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
                screenWebView.clearSensorStates();
             }
@@ -236,7 +236,7 @@ public class WebViewPropertyForm extends PropertyForm {
                if (offText != null && offText.trim().length() != 0) {
                   sensorAttrs.put("name", "off");
                   sensorAttrs.put("value", offText);
-                  screenWebView.getUIWebView().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
                screenWebView.clearSensorStates();
             }
@@ -244,8 +244,8 @@ public class WebViewPropertyForm extends PropertyForm {
        
         statesPanel.add(onField);
         statesPanel.add(offField);
-      } else if(screenWebView.getUIWebView().getSensor()!=null && screenWebView.getUIWebView().getSensor().getType() == SensorType.CUSTOM){
-         CustomSensor customSensor = (CustomSensor) screenWebView.getUIWebView().getSensor();
+      } else if(uiWebView.getSensor()!=null && uiWebView.getSensor().getType() == SensorType.CUSTOM){
+         CustomSensor customSensor = (CustomSensor) uiWebView.getSensor();
          List<State> states = customSensor.getStates();
          for(final State state: states){
            final TextField<String> stateTextField = new TextField<String>();
@@ -262,7 +262,7 @@ public class WebViewPropertyForm extends PropertyForm {
                if(stateText!=null&&!stateText.trim().isEmpty()){
                   sensorAttrs.put("name", state.getName());
                   sensorAttrs.put("value", stateText);
-                  screenWebView.getUIWebView().getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
                screenWebView.clearSensorStates();
             }
