@@ -105,7 +105,7 @@ public class ScreenWebView extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new WebViewPropertyForm(this, widgetSelectionUtil);
+      return new WebViewPropertyForm(this, uiWebView, widgetSelectionUtil);
    }
 
    @Override
