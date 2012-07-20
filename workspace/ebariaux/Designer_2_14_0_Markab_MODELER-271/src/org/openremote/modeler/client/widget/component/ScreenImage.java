@@ -92,7 +92,7 @@ public class ScreenImage extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new ImagePropertyForm(this, widgetSelectionUtil);
+      return new ImagePropertyForm(this, uiImage, widgetSelectionUtil);
    }
 
    public void clearSensorStates() {
