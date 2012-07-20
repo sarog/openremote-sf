@@ -40,34 +40,9 @@ public class ScreenButton extends ScreenComponent {
 
    private UIButton uiButton = new UIButton();
 
-   /**
-    * Instantiates a new screen button.
-    */
-   public ScreenButton(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
+   public ScreenButton(ScreenCanvas canvas, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
       initial();
-   }
-
-   public ScreenButton(ScreenCanvas canvas, String text, WidgetSelectionUtil widgetSelectionUtil) {
-      super(canvas, widgetSelectionUtil);
-      setText(text);
-   }
-
-   /**
-    * Instantiates a new screen button.
-    * 
-    * @param width
-    *           the width
-    * @param height
-    *           the height
-    */
-   public ScreenButton(ScreenCanvas canvas, int width, int height, WidgetSelectionUtil widgetSelectionUtil) {
-      this(canvas, widgetSelectionUtil);
-      setSize(width, height);
-   }
-
-   public ScreenButton(ScreenCanvas canvas, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
-      this(canvas, widgetSelectionUtil);
       this.uiButton = uiButton;
       this.uiButton.addPropertyChangeListener("name", new PropertyChangeListener() {
         @Override

@@ -40,17 +40,11 @@ public class ScreenSwitch extends ScreenComponent {
    private UISwitch uiSwitch;
    protected Image image = new Image();
    private boolean isOn = true;
-   /**
-    * Instantiates a new screen button.
-    */
-   public ScreenSwitch(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
-      super(canvas, widgetSelectionUtil);
-      initial();
-   }
 
    public ScreenSwitch(ScreenCanvas canvas, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
-      this(canvas, widgetSelectionUtil);
+      super(canvas, widgetSelectionUtil);
       this.uiSwitch = uiSwitch;
+      initial();
       if (uiSwitch.getOnImage() != null) {
          setIcon(uiSwitch.getOnImage().getSrc());
       }
