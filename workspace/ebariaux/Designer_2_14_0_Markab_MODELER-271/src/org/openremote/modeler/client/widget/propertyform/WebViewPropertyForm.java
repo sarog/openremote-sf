@@ -109,21 +109,6 @@ public class WebViewPropertyForm extends PropertyForm {
        });         
       add(passwordField);       
       
- /*     
-      final TextField<String> fontSizeField = new TextField<String>();
-      fontSizeField.setFieldLabel("Font-Size");
-      fontSizeField.setValue(uiWebView.getFontSize()+"");
-      fontSizeField.setRegex("\\d+");
-      fontSizeField.getMessages().setRegexText("Only number is allowed");
-      fontSizeField.addListener(Events.Blur, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-            if (fontSizeField.isValid()) {
-               screenWebView.setFontSize(Integer.parseInt(fontSizeField.getValue()));
-            }
-         }
-      });
-      */
       final Button sensorSelectBtn = new Button("Select");
       sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
@@ -151,37 +136,10 @@ public class WebViewPropertyForm extends PropertyForm {
          sensorSelectBtn.setText(uiWebView.getSensor().getDisplayName());
       }
      
-      /*
-      final Button colorSelectBtn = new Button("Select");
-      colorSelectBtn.setStyleAttribute("border", "2px solid #"+uiWebView.getColor());
-      colorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         @Override
-         public void componentSelected(ButtonEvent ce) {
-            SelectColorWindow selectColorWindow = new SelectColorWindow();
-            selectColorWindow.setDefaultColor(uiWebView.getColor());
-            selectColorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  String color = be.getData();
-                  screenWebView.setColor(color);
-                  colorSelectBtn.setStyleAttribute("border", "2px solid #"+color);
-               }
-            });
-         }
-      });
-  
-     
-      add(fontSizeField);
-       */   
       AdapterField adapter = new AdapterField(sensorSelectBtn);
       adapter.setFieldLabel("Sensor");
       add(adapter);
-/*     
-      AdapterField colorBtnAdapter = new AdapterField(colorSelectBtn);
-      colorBtnAdapter.setFieldLabel("Color");
-      add(colorBtnAdapter);
-      
-    */  
+
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
       layout.setLabelWidth(65);
