@@ -47,11 +47,11 @@ public class SwitchPropertyForm extends PropertyForm {
    public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenSwitch, widgetSelectionUtil);
       setLabelWidth(90);
-      addFields(screenSwitch, uiSwitch);
+      addFields(uiSwitch);
       super.addDeleteButton();
    }
    
-   private void addFields(final ScreenSwitch screenSwitch, final UISwitch uiSwitch) {
+   private void addFields(final UISwitch uiSwitch) {
       final ImageSelectAdapterField imageONField = new ImageSelectAdapterField("Image(ON)");
       if (uiSwitch.getOnImage() != null) {
          imageONField.setText(uiSwitch.getOnImage().getImageFileName());
@@ -73,7 +73,6 @@ public class SwitchPropertyForm extends PropertyForm {
                  uiSwitch.setOnImage(new ImageSource(imageURL));
               }
               imageONField.setText(uiSwitch.getOnImage().getImageFileName());
-              screenSwitch.setIcon(imageURL);
             }             
            });
          }
@@ -83,7 +82,6 @@ public class SwitchPropertyForm extends PropertyForm {
          public void componentSelected(ButtonEvent ce) {
             if (uiSwitch.getOnImage() != null) {
                imageONField.removeImageText();
-               screenSwitch.removeIcon();
                uiSwitch.setOnImage(null);
             }
          }
@@ -120,9 +118,6 @@ public class SwitchPropertyForm extends PropertyForm {
             if (uiSwitch.getOffImage() != null) {
                imageOFFField.removeImageText();
                uiSwitch.setOffImage(null);
-               if (uiSwitch.getOnImage() != null) {
-                  screenSwitch.setIcon(uiSwitch.getOnImage().getSrc());
-               }
             }
          }
       });

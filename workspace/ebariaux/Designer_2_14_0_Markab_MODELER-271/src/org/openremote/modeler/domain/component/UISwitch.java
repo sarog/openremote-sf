@@ -76,11 +76,15 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
    }
 
    public void setOnImage(ImageSource onImage) {
-      this.onImage = onImage;
+     ImageSource oldImage = this.onImage;
+     this.onImage = onImage;
+     this.pcSupport.firePropertyChange("onImage", oldImage, this.onImage);
    }
 
    public void setOffImage(ImageSource offImage) {
-      this.offImage = offImage;
+     ImageSource oldImage = this.offImage;
+     this.offImage = offImage;
+     this.pcSupport.firePropertyChange("offImage", oldImage, this.offImage);
    }
 
    public Switch getSwitchCommand() {
