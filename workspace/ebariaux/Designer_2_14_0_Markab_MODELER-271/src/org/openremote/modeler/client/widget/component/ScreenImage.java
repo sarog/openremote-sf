@@ -33,6 +33,8 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.google.gwt.user.client.Cookies;
@@ -56,6 +58,35 @@ public class ScreenImage extends ScreenComponent {
    public ScreenImage(ScreenCanvas canvas, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
       this.uiImage = uiImage;
+      uiImage.addPropertyChangeListener("imageSource", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          image.setUrl(((ImageSource)evt.getNewValue()).getSrc());
+        }
+      });
+      final PropertyChangeListener linkerChildrenListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+        }
+      };      
+      uiImage.addPropertyChangeListener("sensorLink", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+
+          // SensorLink change, should "move" our linkerChildren listener to the new one
+          if (evt.getOldValue() != null) {
+            ((SensorLink)evt.getOldValue()).removePropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+          if (evt.getNewValue() != null) {
+            ((SensorLink)evt.getNewValue()).addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+        }
+      });
+      if (uiImage.getSensorLink() != null) {
+        uiImage.getSensorLink().addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+      }
       initial();
    }
 
@@ -78,11 +109,6 @@ public class ScreenImage extends ScreenComponent {
 
    public void setUiImage(UIImage uiImage) {
       this.uiImage = uiImage;
-   }
-
-   public void setImageSource(ImageSource imageURL) {
-      uiImage.setImageSource(imageURL);
-      image.setUrl(imageURL.getSrc());
    }
 
    @Override
