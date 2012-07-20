@@ -49,8 +49,10 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
- * A panel for display screen label properties.
+ * WebView property editor panel.
+ * 
  * @author Javen
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class WebViewPropertyForm extends PropertyForm {
    
@@ -66,6 +68,7 @@ public class WebViewPropertyForm extends PropertyForm {
       createSensorStates();
       super.addDeleteButton();
    }
+   
    private void addFields() {
       this.setLabelWidth(70);
       this.setFieldWidth(150);
@@ -90,8 +93,9 @@ public class WebViewPropertyForm extends PropertyForm {
       usernameField.addListener(Events.Blur, new Listener<BaseEvent>() {
           @Override
           public void handleEvent(BaseEvent be) {
-             if(usernameField.getValue()!=null&&usernameField.getValue().trim().length()!=0)
+             if (usernameField.getValue() !=null && usernameField.getValue().trim().length() != 0) {
                uiWebView.setUserName(usernameField.getValue());
+             }
           }
        });      
       add(usernameField); 
@@ -103,8 +107,9 @@ public class WebViewPropertyForm extends PropertyForm {
       passwordField.addListener(Events.Blur, new Listener<BaseEvent>() {
           @Override
           public void handleEvent(BaseEvent be) {
-             if(passwordField.getValue()!=null&&passwordField.getValue().trim().length()!=0)
+             if (passwordField.getValue() !=null && passwordField.getValue().trim().length() != 0) {
                uiWebView.setPassword(passwordField.getValue());
+             }
           }
        });         
       add(passwordField);       
@@ -132,7 +137,7 @@ public class WebViewPropertyForm extends PropertyForm {
             });
          }
       });
-      if(uiWebView.getSensor()!=null){
+      if (uiWebView.getSensor() != null) {
          sensorSelectBtn.setText(uiWebView.getSensor().getDisplayName());
       }
      
@@ -157,11 +162,11 @@ public class WebViewPropertyForm extends PropertyForm {
       
    }
    
-   private void createSensorStates(){
+   private void createSensorStates() {
       statesPanel.removeAll();
       SensorLink sensorLink = uiWebView.getSensorLink();
-      final Map<String,String> sensorAttrs = new HashMap<String,String>();
-      if(uiWebView.getSensor()!=null && uiWebView.getSensor().getType()==SensorType.SWITCH){
+      final Map<String,String> sensorAttrs = new HashMap<String, String>();
+      if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.SWITCH) {
         final TextField<String> onField = new TextField<String>();
         final TextField<String> offField = new TextField<String>();
         
@@ -170,7 +175,7 @@ public class WebViewPropertyForm extends PropertyForm {
         
         onField.setAllowBlank(false);
         offField.setAllowBlank(false);
-        if(sensorLink!=null){
+        if (sensorLink != null) {
            onField.setValue(sensorLink.getStateValueByStateName("on"));
            offField.setValue(sensorLink.getStateValueByStateName("off"));
         }
@@ -202,7 +207,7 @@ public class WebViewPropertyForm extends PropertyForm {
        
         statesPanel.add(onField);
         statesPanel.add(offField);
-      } else if(uiWebView.getSensor()!=null && uiWebView.getSensor().getType() == SensorType.CUSTOM){
+      } else if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.CUSTOM) {
          CustomSensor customSensor = (CustomSensor) uiWebView.getSensor();
          List<State> states = customSensor.getStates();
          for(final State state: states){
@@ -212,19 +217,17 @@ public class WebViewPropertyForm extends PropertyForm {
            if(sensorLink!=null){
               stateTextField.setValue(sensorLink.getStateValueByStateName(state.getName()));
            }
-           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>(){
-
+           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>() {
             @Override
             public void handleEvent(BaseEvent be) {
                String stateText = stateTextField.getValue();
-               if(stateText!=null&&!stateText.trim().isEmpty()){
+               if (stateText != null && !stateText.trim().isEmpty()) {
                   sensorAttrs.put("name", state.getName());
                   sensorAttrs.put("value", stateText);
                   uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
                screenWebView.clearSensorStates();
-            }
-              
+            }              
            });
            statesPanel.add(stateTextField);
          }
