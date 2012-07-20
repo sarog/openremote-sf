@@ -75,6 +75,31 @@ public class ScreenLabel extends ScreenComponent {
           center.setStyleAttribute("fontSize", evt.getNewValue() + "px");
         }
       });
+      
+      final PropertyChangeListener linkerChildrenListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+        }
+      };      
+      uiLabel.addPropertyChangeListener("sensorLink", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+
+          // SensorLink change, should "move" our linkerChildren listener to the new one
+          if (evt.getOldValue() != null) {
+            ((SensorLink)evt.getOldValue()).removePropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+          if (evt.getNewValue() != null) {
+            ((SensorLink)evt.getNewValue()).addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+        }
+      });
+      if (uiLabel.getSensorLink() != null) {
+        uiLabel.getSensorLink().addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+      }
+      
       center.setText(uiLabel.getText());
       initial();
       adjustTextLength();
@@ -143,7 +168,7 @@ public class ScreenLabel extends ScreenComponent {
       }
    }
    
-   public void clearSensorStates() {
+   private void clearSensorStates() {
       stateIndex = -1;
       states.clear();
       adjustTextLength();

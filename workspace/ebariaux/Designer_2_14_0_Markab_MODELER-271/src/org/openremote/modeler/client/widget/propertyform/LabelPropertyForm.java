@@ -53,8 +53,6 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class LabelPropertyForm extends PropertyForm {
    
-   private ScreenLabel screenLabel;
-   
    private UILabel uiLabel;
    
    private FieldSet statesPanel; 
@@ -62,7 +60,6 @@ public class LabelPropertyForm extends PropertyForm {
    public LabelPropertyForm(ScreenLabel screenLabel, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenLabel, widgetSelectionUtil);
       this.uiLabel = uiLabel;
-      this.screenLabel = screenLabel;
       addFields();
       createSensorStates();
       super.addDeleteButton();
@@ -114,7 +111,6 @@ public class LabelPropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
-                  screenLabel.clearSensorStates();
                }
             });
          }
@@ -192,7 +188,6 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", onText);
                   uiLabel.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
-               screenLabel.clearSensorStates();
             }
         });
         
@@ -205,7 +200,6 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", offText);
                   uiLabel.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
-               screenLabel.clearSensorStates();
             }
         });
        
@@ -231,7 +225,6 @@ public class LabelPropertyForm extends PropertyForm {
                   sensorAttrs.put("value", stateText);
                   uiLabel.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
                }
-               screenLabel.clearSensorStates();
             }
            });
            statesPanel.add(stateTextField);
