@@ -177,7 +177,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       {
         e.printStackTrace();
       }
-      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", Long.class).deserialize(str); 
+      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str); 
       if (res.getErrorMessage() != null) {
         throw new RuntimeException(res.getErrorMessage());
       }
