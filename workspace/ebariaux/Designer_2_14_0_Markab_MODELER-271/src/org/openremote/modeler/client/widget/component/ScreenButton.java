@@ -101,7 +101,9 @@ public class ScreenButton extends ScreenComponent {
           if (evt.getOldValue() != null) {
             ((ImageSource)evt.getOldValue()).removePropertyChangeListener("src", imageSourceSrcListener);
           }
-          newSource.addPropertyChangeListener("src", imageSourceSrcListener);
+          if (newSource != null) {
+            newSource.addPropertyChangeListener("src", imageSourceSrcListener);
+          }
         }
       });
       if (this.uiButton.getImage() != null) {
