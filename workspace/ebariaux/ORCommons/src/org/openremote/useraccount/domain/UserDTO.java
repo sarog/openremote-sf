@@ -215,11 +215,20 @@ public class UserDTO implements Serializable
   }
   
   public String getRole() {
-    List<String> roleStrs = new ArrayList<String>();
-    for (RoleDTO role : roles) {
-       roleStrs.add(role.getName());
-    }
-    return roleStrs.toString();
- }
-
+     List<String> roleStrs = new ArrayList<String>();
+     for (RoleDTO role : roles) {
+        roleStrs.add(role.getName());
+     }
+     String userRole = null;
+     if (roleStrs.contains(RoleDTO.ROLE_ADMIN)) {
+        userRole = RoleDTO.ROLE_ADMIN_DISPLAYNAME;
+     } else if(roleStrs.contains(RoleDTO.ROLE_MODELER) && roleStrs.contains(RoleDTO.ROLE_DESIGNER)) {
+        userRole = RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME;
+     } else if (roleStrs.contains(RoleDTO.ROLE_MODELER)) {
+        userRole = RoleDTO.ROLE_MODELER_DISPLAYNAME;
+     } else if(roleStrs.contains(RoleDTO.ROLE_DESIGNER)) {
+        userRole = RoleDTO.ROLE_DESIGNER_DISPLAYNAME;
+     }
+     return userRole;
+  }
 }

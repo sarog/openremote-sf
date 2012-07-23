@@ -33,14 +33,13 @@ public class AccountDTO implements Serializable
 
   private static final long serialVersionUID = 7809757129338695202L;
 
-  /** The oid. */
+  /** The oid */
   private Long oid;
   
-  /** The users. */
+  /** The users */
   private List<UserDTO> users;
 
-  private List<ControllerConfigDTO> configs;
-  
+  /** The controller */
   private List<ControllerDTO> controller;
 
   /**
@@ -48,11 +47,15 @@ public class AccountDTO implements Serializable
    */
   public AccountDTO()
   {
-    configs = new ArrayList<ControllerConfigDTO>();
     users = new ArrayList<UserDTO>();
     controller = new ArrayList<ControllerDTO>();
   }
 
+  public AccountDTO(long oid) {
+    this();
+    setOid(oid);
+  }
+  
   public List<UserDTO> getUsers()
   {
     return users;
@@ -61,16 +64,6 @@ public class AccountDTO implements Serializable
   public void setUsers(List<UserDTO> users)
   {
     this.users = users;
-  }
-
-  public List<ControllerConfigDTO> getConfigs()
-  {
-    return configs;
-  }
-
-  public void setConfigs(List<ControllerConfigDTO> configs)
-  {
-    this.configs = configs;
   }
 
   public List<ControllerDTO> getController()
