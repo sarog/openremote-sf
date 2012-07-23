@@ -19,13 +19,10 @@
 */
 package org.openremote.modeler.service;
 
-import java.util.List;
-
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.dao.GenericDAO;
-import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.testng.Assert;
@@ -42,7 +39,7 @@ public class UserServiceTest {
    private UserService userService = (UserService) SpringTestContext.getInstance().getBean("userService");
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
-   private User invitee;
+   private UserDTO invitee;
    
    public static final String TEST_EMAIL = "marcus@openremote.org";
    
@@ -107,8 +104,8 @@ public class UserServiceTest {
    @Test(dependsOnMethods = { "createAccountSuccessfully" })
    public void inviteUser() {
       User currentUser = userService.getUserById(1L);
-      User newInvitee = userService.inviteUser(TEST_EMAIL, Constants.ROLE_MODELER_DISPLAYNAME, currentUser);
-      Assert.assertEquals(newInvitee.getRole(), Constants.ROLE_MODELER_DISPLAYNAME);
+      UserDTO newInvitee = userService.inviteUser(TEST_EMAIL, RoleDTO.ROLE_MODELER_DISPLAYNAME, currentUser);
+      Assert.assertEquals(newInvitee.getRole(), RoleDTO.ROLE_MODELER_DISPLAYNAME);
       Assert.assertFalse(newInvitee.isValid());
       invitee = newInvitee; 
    }
@@ -121,8 +118,8 @@ public class UserServiceTest {
    
    @Test(dependsOnMethods = { "checkInvitation" })
    public void updateUserRoles() {
-      User user = userService.updateUserRoles(invitee.getOid(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-      Assert.assertEquals(user.getRole(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      UserDTO user = userService.updateUserRoles(invitee.getOid(), RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      Assert.assertEquals(user.getRole(), RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
    }
    
    @Test(dependsOnMethods = { "updateUserRoles" })

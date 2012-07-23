@@ -236,7 +236,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     }
 
    @Override
-   public User inviteUser(String email, String roleDisplayName, User currentUser) {
+   public UserDTO inviteUser(String email, String roleDisplayName, User currentUser) {
      StringBuffer url = new StringBuffer("user/" + currentUser.getOid() + "/inviteUser");
      url.append("?inviteeEmail=" + email);
      url.append("&inviteeRoles=" + convertRoleDisplayStringToRoleString(roleDisplayName));
@@ -255,8 +255,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
        throw new RuntimeException(res.getErrorMessage());
      }
      UserDTO inviteeDTO = (UserDTO)res.getResult();
-     User invitee = getUserById(inviteeDTO.getOid());
-     return invitee; 
+     return inviteeDTO; 
    }
    
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
@@ -319,21 +318,21 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return invitees;
    }
 
-   public User updateUserRoles(long uid, String roles) {
+   public UserDTO updateUserRoles(long uid, String roles) {
      UserDTO user = getUserDTOById(uid);
      user.getRoles().clear();
      convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
      updateUser(user);
-     return getUserById(uid);
+     return user;
    }
 
    private void convertRoleStringToRole(String roles, UserDTO user, List<Role> allRoles) {
       for (Role role : allRoles) {
-         if(role.getName().equals(Role.ROLE_ADMIN) && roles.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
+         if(role.getName().equals(Role.ROLE_ADMIN) && roles.indexOf(RoleDTO.ROLE_ADMIN_DISPLAYNAME) != -1) {
             user.addRole(new RoleDTO(Role.ROLE_ADMIN, role.getOid()));
-         } else if (role.getName().equals(Role.ROLE_MODELER) && roles.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
+         } else if (role.getName().equals(Role.ROLE_MODELER) && roles.indexOf(RoleDTO.ROLE_MODELER_DISPLAYNAME) != -1) {
             user.addRole(new RoleDTO(Role.ROLE_MODELER, role.getOid()));
-         } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
+         } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(RoleDTO.ROLE_DESIGNER_DISPLAYNAME) != -1) {
             user.addRole(new RoleDTO(Role.ROLE_DESIGNER, role.getOid()));
          }
       }
@@ -343,11 +342,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      StringBuffer roleNames = new StringBuffer();
      List<Role> allRoles = genericDAO.loadAll(Role.class);
      for (Role role : allRoles) {
-        if(role.getName().equals(Role.ROLE_ADMIN) && roleDisplayName.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
+        if(role.getName().equals(Role.ROLE_ADMIN) && roleDisplayName.indexOf(RoleDTO.ROLE_ADMIN_DISPLAYNAME) != -1) {
            roleNames.append(role.getName()).append(",");
-        } else if (role.getName().equals(Role.ROLE_MODELER) && roleDisplayName.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
+        } else if (role.getName().equals(Role.ROLE_MODELER) && roleDisplayName.indexOf(RoleDTO.ROLE_MODELER_DISPLAYNAME) != -1) {
           roleNames.append(role.getName()).append(",");
-        } else if (role.getName().equals(Role.ROLE_DESIGNER) && roleDisplayName.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
+        } else if (role.getName().equals(Role.ROLE_DESIGNER) && roleDisplayName.indexOf(RoleDTO.ROLE_DESIGNER_DISPLAYNAME) != -1) {
           roleNames.append(role.getName()).append(",");
         }
      }
