@@ -21,7 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
 
-import org.openremote.modeler.shared.dto.UserDTO;
+import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

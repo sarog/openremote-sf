@@ -138,4 +138,12 @@ public interface Icons extends ImageBundle {
    @Resource("user.png")
    AbstractImagePrototype userIcon();
 
+   @Resource("computer_link.png")
+   AbstractImagePrototype controllerLinkIcon();
+   
+   @Resource("computer_add.png")
+   AbstractImagePrototype controllerAddIcon();
+   
+   @Resource("computer_delete.png")
+   AbstractImagePrototype controllerDeleteIcon();
 }

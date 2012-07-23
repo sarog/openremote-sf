@@ -24,10 +24,12 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.openremote.modeler.client.rpc.UserRPCService;
+import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.shared.dto.UserDTO;
+import org.openremote.useraccount.domain.RoleDTO;
+import org.openremote.useraccount.domain.UserDTO;
 
 /**
  * The Class is for inviting user and managing invited user.
@@ -42,8 +44,8 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
       if (StringUtils.isEmpty(email) || StringUtils.isEmpty(role)) {
          throw new UserInvitationException("Failed to send invitation");
       }
-      User u = userService.inviteUser(email, role, userService.getCurrentUser());
-      return new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole());
+      UserDTO u = userService.inviteUser(email, role, userService.getCurrentUser());
+      return u;
    }
 
    public void setUserService(UserService userService) {
@@ -55,8 +57,8 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
    }
 
    public UserDTO updateUserRoles(long uid, String roles) {
-      User u = userService.updateUserRoles(uid, roles);
-      return new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole());
+      UserDTO u = userService.updateUserRoles(uid, roles);
+      return u;
    }
 
    public void deleteUser(long uid) {
@@ -74,7 +76,15 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
    private ArrayList<UserDTO> createUserDTOsFromUsers(List<User> users) {
      ArrayList<UserDTO> dtos = new ArrayList<UserDTO>();
      for (User u : users) {
-       dtos.add(new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole()));
+       UserDTO uDTO = new UserDTO();
+       uDTO.setOid(u.getOid());
+       uDTO.setEmail(u.getEmail());
+       uDTO.setUsername(u.getUsername());
+       for (Role role : u.getRoles())
+       {
+         uDTO.addRole(new RoleDTO(role.getName(), role.getOid()));
+       }
+       dtos.add(uDTO);
      }
      return dtos;
    }

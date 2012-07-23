@@ -31,7 +31,8 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.UserDTO;
+import org.openremote.useraccount.domain.RoleDTO;
+import org.openremote.useraccount.domain.UserDTO;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.IconAlign;
@@ -279,10 +280,10 @@ public class AccountManageWindow extends Dialog {
       combo.setForceSelection(true);
       combo.setEditable(false);
       combo.setTriggerAction(TriggerAction.ALL);
-      combo.add(Constants.ROLE_ADMIN_DISPLAYNAME);
-      combo.add(Constants.ROLE_MODELER_DISPLAYNAME);
-      combo.add(Constants.ROLE_DESIGNER_DISPLAYNAME);
-      combo.add(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
       combo.setValue(combo.findModel((String) model.get(property)));
       combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>(){
          public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
@@ -352,11 +353,11 @@ public class AccountManageWindow extends Dialog {
          
          final ComboBoxExt roleList = new ComboBoxExt();
          roleList.setFieldLabel("Role");
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_ADMIN_DISPLAYNAME, Constants.ROLE_ADMIN_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_DESIGNER_DISPLAYNAME, Constants.ROLE_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME, Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.setValue(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_ADMIN_DISPLAYNAME, RoleDTO.ROLE_ADMIN_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
+         roleList.setValue(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
          form.add(emailField);
          form.add(roleList);
          
