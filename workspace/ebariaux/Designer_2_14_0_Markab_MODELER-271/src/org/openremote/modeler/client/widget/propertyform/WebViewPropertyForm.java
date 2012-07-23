@@ -162,73 +162,46 @@ public class WebViewPropertyForm extends PropertyForm {
       
    }
    
+   private TextField<String> createTextFieldForState(SensorLink sensorLink, final String stateName) {
+     final TextField<String> textField = new TextField<String>();
+     final Map<String,String> sensorAttrs = new HashMap<String, String>();
+
+     textField.setAllowBlank(false);
+     if (sensorLink != null) {
+        textField.setValue(sensorLink.getStateValueByStateName(stateName));
+     }
+     textField.addListener(Events.Blur, new Listener<BaseEvent>() {
+        @Override
+        public void handleEvent(BaseEvent be) {
+            String onText = textField.getValue();
+            if (onText != null && onText.trim().length() != 0) {
+               sensorAttrs.put("name", stateName);
+               sensorAttrs.put("value", onText);
+               uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
+            }
+            screenWebView.clearSensorStates();
+         }
+     });
+     return textField;
+   }
+   
    private void createSensorStates() {
       statesPanel.removeAll();
       SensorLink sensorLink = uiWebView.getSensorLink();
-      final Map<String,String> sensorAttrs = new HashMap<String, String>();
       if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.SWITCH) {
-        final TextField<String> onField = new TextField<String>();
-        final TextField<String> offField = new TextField<String>();
-        
+        final TextField<String> onField = createTextFieldForState(sensorLink, "on");
         onField.setFieldLabel("On Text");
-        offField.setFieldLabel("Off Text");
-        
-        onField.setAllowBlank(false);
-        offField.setAllowBlank(false);
-        if (sensorLink != null) {
-           onField.setValue(sensorLink.getStateValueByStateName("on"));
-           offField.setValue(sensorLink.getStateValueByStateName("off"));
-        }
-        onField.addListener(Events.Blur, new Listener<BaseEvent>() {
-           @Override
-           public void handleEvent(BaseEvent be) {
-               String onText = onField.getValue();
-               if (onText != null && onText.trim().length() != 0) {
-                  sensorAttrs.put("name", "on");
-                  sensorAttrs.put("value", onText);
-                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
-               }
-               screenWebView.clearSensorStates();
-            }
-        });
-        
-        offField.addListener(Events.Blur, new Listener<BaseEvent>() {
-           @Override
-            public void handleEvent(BaseEvent be) {
-               String offText = offField.getValue();
-               if (offText != null && offText.trim().length() != 0) {
-                  sensorAttrs.put("name", "off");
-                  sensorAttrs.put("value", offText);
-                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
-               }
-               screenWebView.clearSensorStates();
-            }
-        });
-       
         statesPanel.add(onField);
+
+        final TextField<String> offField = createTextFieldForState(sensorLink, "off");
+        offField.setFieldLabel("Off Text");
         statesPanel.add(offField);
       } else if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.CUSTOM) {
          CustomSensor customSensor = (CustomSensor) uiWebView.getSensor();
          List<State> states = customSensor.getStates();
-         for(final State state: states){
-           final TextField<String> stateTextField = new TextField<String>();
+         for (final State state: states) {
+           final TextField<String> stateTextField = createTextFieldForState(sensorLink, state.getName());           
            stateTextField.setFieldLabel(state.getDisplayName());
-           stateTextField.setAllowBlank(false);
-           if(sensorLink!=null){
-              stateTextField.setValue(sensorLink.getStateValueByStateName(state.getName()));
-           }
-           stateTextField.addListener(Events.Blur, new Listener<BaseEvent>() {
-            @Override
-            public void handleEvent(BaseEvent be) {
-               String stateText = stateTextField.getValue();
-               if (stateText != null && !stateText.trim().isEmpty()) {
-                  sensorAttrs.put("name", state.getName());
-                  sensorAttrs.put("value", stateText);
-                  uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
-               }
-               screenWebView.clearSensorStates();
-            }              
-           });
            statesPanel.add(stateTextField);
          }
       }
