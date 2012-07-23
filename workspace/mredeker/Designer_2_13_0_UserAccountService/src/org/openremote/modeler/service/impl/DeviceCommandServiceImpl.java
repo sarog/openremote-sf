@@ -22,6 +22,7 @@ package org.openremote.modeler.service.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
@@ -29,10 +30,12 @@ import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -102,16 +105,21 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
 
    /**
     * {@inheritDoc}
-    * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
+    * @see org.openremote.modeler.service.DeviceCommandService#updateDeviceCommandWithDTO(DeviceCommandDetailsDTO)
     */
    @Transactional
-   public DeviceCommand update(DeviceCommand deviceCommand) {
-      DeviceCommand old = loadById(deviceCommand.getOid());
-      genericDAO.delete(old.getProtocol());
-      old.setName(deviceCommand.getName());
-      old.setProtocol(deviceCommand.getProtocol());
-      return old;
-
+   public void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto) {
+     DeviceCommand dc = loadById(dto.getOid());
+     genericDAO.delete(dc.getProtocol());
+     dc.setName(dto.getName());
+     Protocol protocol = new Protocol();
+     protocol.setDeviceCommand(dc);
+     dc.setProtocol(protocol);
+     protocol.setType(dto.getProtocolType());
+     for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
+     genericDAO.saveOrUpdate(dc);
    }
 
    /**
@@ -119,8 +127,25 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public DeviceCommand loadById(long id) {
+     return loadById(id, false);
+   }
+   
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.BaseAbstractService#loadById(long, boolean)
+    */
+   public DeviceCommand loadById(long id, boolean loadDeviceEagerly) {
       DeviceCommand deviceCommand = super.loadById(id);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      
+      if (loadDeviceEagerly) {
+        Hibernate.initialize(deviceCommand.getDevice());
+        Hibernate.initialize(deviceCommand.getDevice().getDeviceAttrs());
+        Hibernate.initialize(deviceCommand.getDevice().getSensors());
+        Hibernate.initialize(deviceCommand.getDevice().getSwitchs());
+        Hibernate.initialize(deviceCommand.getDevice().getSliders());
+      }
+      
       return deviceCommand;
    }
 

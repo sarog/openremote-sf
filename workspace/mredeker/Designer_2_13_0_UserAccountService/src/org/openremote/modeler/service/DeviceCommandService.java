@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 /**
  * The Interface DeviceCommandService.
@@ -48,15 +49,11 @@ public interface DeviceCommandService {
     */
    DeviceCommand save(DeviceCommand deviceCommand);
    
-   /**
-    * Update.
-    * 
-    * @param deviceCommand the device command
-    */
-   DeviceCommand update(DeviceCommand deviceCommand);
+   void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto);
    
    /**
     * Load by id.
+    * By default, do not load the device eagerly.
     * 
     * @param id the id
     * 
@@ -64,6 +61,16 @@ public interface DeviceCommandService {
     */
    DeviceCommand loadById(long id);
    
+   /**
+    * Load by id.
+    * 
+    * @param id the id
+    * @param loadDeviceEagerly indicates that the device associated with this command and all its relationships need to be eagerly loaded with the command.
+    * 
+    * @return the device command
+    */
+   DeviceCommand loadById(long id, boolean loadDeviceEagerly);
+
    /**
     * Delete command.
     * 

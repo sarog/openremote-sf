@@ -19,13 +19,18 @@
 */
 package org.openremote.modeler.client.view;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
+import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -39,7 +44,13 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.ControllerManageWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Role;
+import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
@@ -127,12 +138,64 @@ public class ApplicationView implements View {
             MessageBox.info("Info", caught.getMessage(), null);
          }
 
-         public void onSuccess(Authority authority) {
+         public void onSuccess(final Authority authority) {
             if (authority != null) {
                that.authority = authority;
-               createNorth();
-               createCenter(authority);
-               show();
+               
+               UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
+                 @Override
+                 public void onSuccess(Collection<Panel> panels) {                   
+                    if (panels.size() > 0) {
+                       initModelDataBase(panels);
+                       eventBus.fireEvent(new ScreenTableLoadedEvent());
+                    }
+                    UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+                       @Override
+                       public void onSuccess(Long maxID) {
+                          if (maxID > 0) {              // set the layout component's max id after refresh page.
+                             IDUtil.setCurrentID(maxID.longValue());
+                          }
+                          createNorth();
+                          createCenter(authority);
+                          show();
+                          uiDesignerView.getProfilePanel().setInitialized(true);
+                       }                       
+                    });
+                 }
+                 
+                 @Override
+                 public void onFailure(Throwable caught) {
+                    if (caught instanceof UIRestoreException) {
+                      uiDesignerView.getProfilePanel().setInitialized(true);
+                    }
+                    super.onFailure(caught);
+                    super.checkTimeout(caught);
+                 }
+
+                 private void initModelDataBase(Collection<Panel> panels) {
+                    BeanModelDataBase.panelTable.clear();
+                    BeanModelDataBase.groupTable.clear();
+                    BeanModelDataBase.screenTable.clear();
+                    Set<Group> groups = new LinkedHashSet<Group>();
+                    Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
+                    for (Panel panel : panels) {
+                       List<GroupRef> groupRefs = panel.getGroupRefs();
+                       for (GroupRef groupRef : groupRefs) {
+                          groups.add(groupRef.getGroup());
+                       }
+                       BeanModelDataBase.panelTable.insert(panel.getBeanModel());
+                    }
+                    
+                    for (Group group : groups) {
+                       List<ScreenPairRef> screenRefs = group.getScreenRefs();
+                       for (ScreenPairRef screenRef : screenRefs) {
+                          screens.add(screenRef.getScreen());
+                          BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
+                       }
+                       BeanModelDataBase.groupTable.insert(group.getBeanModel());
+                    }
+                 }
+              });
             } else {
                Window.open("login.jsp", "_self", null);
             }

@@ -85,6 +85,7 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UIWebView;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -790,6 +791,18 @@ public class TemplateServiceImpl implements TemplateService
       }
 
       uiImage.getSensorLink().setSensor(sensorOwner.getSensor());
+    }
+
+    else if (sensorOwner instanceof UIWebView)
+    {
+      UIWebView uiWebview = (UIWebView)sensorOwner;
+
+      if (uiWebview.getSensorLink() == null)
+      {
+        uiWebview.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+      }
+
+      uiWebview.getSensorLink().setSensor(sensorOwner.getSensor());
     }
   }
 

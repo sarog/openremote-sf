@@ -137,6 +137,10 @@ public interface Icons extends ImageBundle {
    
    @Resource("user.png")
    AbstractImagePrototype userIcon();
+   
+   //Added by Selva
+   @Resource("webview.png")
+   AbstractImagePrototype webviewIcon();
 
    @Resource("computer_link.png")
    AbstractImagePrototype controllerLinkIcon();
