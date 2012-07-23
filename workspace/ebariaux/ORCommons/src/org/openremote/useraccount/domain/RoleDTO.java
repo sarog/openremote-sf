@@ -32,6 +32,24 @@ public class RoleDTO implements Serializable
 
   private static final long serialVersionUID = -9067404807528205076L;
 
+  /** The Constant ROLE_MODELER. */
+  public static final String ROLE_MODELER = "ROLE_MODELER";
+  
+  /** The Constant ROLE_DESIGNER. */
+  public static final String ROLE_DESIGNER = "ROLE_DESIGNER";
+  
+  /** The Constant ROLE_ADMIN. */
+  public static final String ROLE_ADMIN = "ROLE_ADMIN";
+  
+  /** The Constant ROLE_ACCOUNT_MANAGER. */
+  public static final String ROLE_ACCOUNT_MANAGER = "ROLE_ACCOUNT_MANAGER";
+  
+  public static final String ROLE_MODELER_DISPLAYNAME = "Building Modeler";
+  public static final String ROLE_DESIGNER_DISPLAYNAME = "UI Designer";
+  public static final String ROLE_MODELER_DESIGNER_DISPLAYNAME = "Building Modeler & UI Designer";
+  public static final String ROLE_ADMIN_DISPLAYNAME = "Admin";
+  
+  
   /** The oid. */
   private Long oid;
   
