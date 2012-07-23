@@ -102,16 +102,8 @@ public class ProtocolCommandContainer {
          if (protocolDisplayName.equals(uiButtonEvent.getProtocolDisplayName())) {
             List<Command> uiButtonEvents = protocolEvents.get(protocolDisplayName);
             for (Command uiBtnEvent : uiButtonEvents) {
-               Map<String, String> protocolAttrs = uiBtnEvent.getProtocolAttrs();
-               Set<String> protocolAttrKeySet = protocolAttrs.keySet();
-               boolean flag = true; //whether find the same uiButtonEvent.
-               for (String key : protocolAttrKeySet) {
-                  if (!protocolAttrs.get(key).equals(uiButtonEvent.getProtocolAttrs().get(key))) {
-                     flag = false;
-                     break;
-                  }
-               }
-               if (flag) {
+              // MODELER-327: The way comparison was done was not working + should take label into account also
+               if (uiBtnEvent.getProtocolAttrs().equals(uiButtonEvent.getProtocolAttrs()) && uiBtnEvent.getLabel().equals(uiButtonEvent.getLabel())) {                
                   uiButtonEvent.setId(uiBtnEvent.getId());
                   return;
                }               

@@ -65,5 +65,6 @@
 	<classpathentry kind="lib" path="lib/core/mysql-connector/mysql-connector-java-5.1.17-bin.jar"/>
 	<classpathentry kind="lib" path="lib/core/sun/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/sun/transaction-api-1.1-rev-1.jar"/>
+	<classpathentry kind="lib" path="lib/core/gxt3/gxt-3.0.0b.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
