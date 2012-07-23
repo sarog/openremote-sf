@@ -30,11 +30,10 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
-import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UIWebView;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -123,10 +122,10 @@ public class WebViewPropertyForm extends PropertyForm {
                @Override
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
-                  Sensor sensor = dataModel.getBean();
-                  uiWebView.setSensorAndInitSensorLink(sensor);
-                  sensorSelectBtn.setText(sensor.getDisplayName());
-                  if (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM) {
+                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                  uiWebView.setSensorDTOAndInitSensorLink(sensorDTO);
+                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
+                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType()==SensorType.CUSTOM) {
                      statesPanel.show();
                      createSensorStates();
                   } else {
@@ -188,7 +187,7 @@ public class WebViewPropertyForm extends PropertyForm {
    private void createSensorStates() {
       statesPanel.removeAll();
       SensorLink sensorLink = uiWebView.getSensorLink();
-      if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.SWITCH) {
+      if (uiWebView.getSensorDTO() != null && uiWebView.getSensorDTO().getType() == SensorType.SWITCH) {
         final TextField<String> onField = createTextFieldForState(sensorLink, "on");
         onField.setFieldLabel("On Text");
         statesPanel.add(onField);
@@ -196,12 +195,12 @@ public class WebViewPropertyForm extends PropertyForm {
         final TextField<String> offField = createTextFieldForState(sensorLink, "off");
         offField.setFieldLabel("Off Text");
         statesPanel.add(offField);
-      } else if (uiWebView.getSensor() != null && uiWebView.getSensor().getType() == SensorType.CUSTOM) {
-         CustomSensor customSensor = (CustomSensor) uiWebView.getSensor();
-         List<State> states = customSensor.getStates();
-         for (final State state: states) {
-           final TextField<String> stateTextField = createTextFieldForState(sensorLink, state.getName());           
-           stateTextField.setFieldLabel(state.getDisplayName());
+      } else if (uiWebView.getSensorDTO() != null && uiWebView.getSensorDTO().getType() == SensorType.CUSTOM) {
+        SensorWithInfoDTO customSensor = uiWebView.getSensorDTO();
+        List<String> stateNames = customSensor.getStateNames();
+        for (final String stateName: stateNames) {
+          final TextField<String> stateTextField = createTextFieldForState(sensorLink, stateName);
+           stateTextField.setFieldLabel(stateName);
            statesPanel.add(stateTextField);
          }
       }
