@@ -157,6 +157,7 @@
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
             <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "enocean">enoceanCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -214,8 +215,13 @@
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
 		<property name="gateway" ref="lutronHomeWorksGateway"></property>
 	</bean>
-	      
-	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
+
+    <!-- EnOcean Command Builder -->
+    <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder">
+        <constructor-arg index="0" value="${enocean.com.port}" />
+    </bean>
+
+    <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
 		        <prop key = "button">buttonBuilder</prop>
