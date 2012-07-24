@@ -34,8 +34,7 @@
        xmlns:aop = "http://www.springframework.org/schema/aop"
        xmlns:tx = "http://www.springframework.org/schema/tx"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
-       default-autowire = "byName">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -74,6 +73,8 @@
     <property name = "resourceUploadAllowed" value = "${resource.upload.allowed}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+    <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
+    <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
@@ -207,6 +208,7 @@
     <constructor-arg ref = "configuration"/>
     <constructor-arg ref = "sensorBuilder"/>
     <constructor-arg ref = "commandBuilder"/>
+    <constructor-arg ref = "commandFactory"/>
     
   </bean>
 
