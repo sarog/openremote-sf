@@ -73,6 +73,8 @@ public class ControllerConfiguration extends Configuration
    * TODO : See ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
    */
   public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+  public static final String BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL = "beehiveAccountService.REST.Root.Url";
+  public static final String BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL = "beehiveDeviceDiscoveryService.REST.Root.Url";
 
   public static final String IRSEND_PATH = "irsend.path";
   public static final String MULTICAST_PORT = "multicast.port";
@@ -134,6 +136,8 @@ public class ControllerConfiguration extends Configuration
   private long macroIRExecutionDelay = 500;
   private String webappIp;
   private String beehiveRESTRootUrl;
+  private String beehiveAccountServiceRESTRootUrl;
+  private String beehiveDeviceDiscoveryServiceRESTRootUrl;
   private String webappName;
   private String irsendPath;
   private String lircdconfPath;
@@ -475,6 +479,22 @@ public class ControllerConfiguration extends Configuration
       this.beehiveRESTRootUrl = beehiveRESTRootUrl;
    }
    
+   public String getBeehiveAccountServiceRESTRootUrl() {
+      return preferAttrCustomValue(BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL, beehiveAccountServiceRESTRootUrl);
+   }
+
+   public void setBeehiveAccountServiceRESTRootUrl(String beehiveAccountServiceRESTRootUrl) {
+      this.beehiveAccountServiceRESTRootUrl = beehiveAccountServiceRESTRootUrl;
+   }
+   
+   public String getBeehiveDeviceDiscoveryServiceRESTRootUrl() {
+      return preferAttrCustomValue(BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL, beehiveDeviceDiscoveryServiceRESTRootUrl);
+   }
+
+   public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl) {
+      this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl;
+   }
+    
    public String getWebappName() {
       return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
    }
