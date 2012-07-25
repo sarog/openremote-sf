@@ -99,7 +99,7 @@ public class ControllerManageWindow extends Dialog {
                        createLinkedControllerGrid();
                      }
                      linkedControllerGrid.stopEditing();
-                     linkedControllerGrid.getStore().insert(DTOHelper.getBeanModel(controllerDTO), 0);
+//                     linkedControllerGrid.getStore().insert(DTOHelper.getBeanModel(controllerDTO), 0);
                      linkedControllerGrid.startEditing(0, 1);
                   }
                }
