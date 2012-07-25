@@ -28,19 +28,38 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Window;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -50,9 +69,23 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
  */
 public class AccountManageWindow extends Dialog {
   
+  // TODO EBR : change to Window, not using any of the Dialog functionality
+  
+  
+  
 //  private Icons icons = GWT.create(Icons.class);
   
   private static AccountManageWindowUiBinder uiBinder = GWT.create(AccountManageWindowUiBinder.class);
+
+  interface UserDTOProvider extends PropertyAccess<UserDTO> {    
+    @Path("oid")
+    ModelKeyProvider<UserDTO> key();
+    
+    ValueProvider<UserDTO, String> username();
+    ValueProvider<UserDTO, String> email();
+  }
+  
+  private UserDTOProvider users = GWT.create(UserDTOProvider.class);
 
   interface AccountManageWindowUiBinder extends UiBinder<Widget, AccountManageWindow> {
   }
@@ -62,29 +95,74 @@ public class AccountManageWindow extends Dialog {
     return this;
   }
 
-  
-  
-   
+  @UiField
+  TextButton inviteUserButton;
+     
    /** The invited users grid.
     *  The user has been invited, but not accept the invitation.
     */
-   private Grid<UserDTO> invitedUsersGrid = null;
+//   private Grid<UserDTO> invitedUsersGrid = null;
    
    private long cureentUserId = 0;
+   
+   private ColumnModel<UserDTO> cm;
+   private ListStore<UserDTO> store;
+   
    public AccountManageWindow(long cureentUserId) {
       this.cureentUserId = cureentUserId;
-      setHideOnButtonClick(true);
+      
 //      setButtonAlign(HorizontalAlignment.CENTER);
 //      setAutoHeight(true);
       setPredefinedButtons();
-//      setButtons("");
-      setWidth(452);
-      setMinHeight(280);
-//      addInviteUserButton();
+      
+     
 //      addInvitedUsers();
 //      createAccessUserGrid();
-      
+
+    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
+    emailColumn.setSortable(false);
+    emailColumn.setCell(new AbstractCell<String>() {
+      @Override
+      public void render(com.google.gwt.cell.client.Cell.Context context, String value, SafeHtmlBuilder sb) {
+        UserDTO user = store.findModelWithKey((String)context.getKey());
+        sb.appendHtmlConstant("<span title='");
+        sb.appendEscaped(user.getUsername());
+        sb.appendHtmlConstant("'>");
+        sb.appendEscaped(value);
+        if (AccountManageWindow.this.cureentUserId == Long.parseLong((String)context.getKey())) {
+          sb.appendHtmlConstant("<b> - me </b>");
+        }
+        sb.appendHtmlConstant("</span>");
+      }
+    });
+     List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+     l.add(emailColumn);
+      //l.add(fileNameColumn);
+     cm = new ColumnModel<UserDTO>(l);
+     store = new ListStore<UserDTO>(users.key());
+//      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
+
       uiBinder.createAndBindUi(this);
+      
+      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<UserDTO> accessUsers) {
+          store.addAll(accessUsers);
+
+        /*
+        if (accessUsers.size() > 0) {
+          accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
+          accessUsersGrid.unmask();
+        }
+        */          
+          
+          
+        }
+      });
+
+      
+      
+      
 
       show();
    }
@@ -94,34 +172,27 @@ public class AccountManageWindow extends Dialog {
     * After submit the window's data, there would send a invitation to the email, and the invited
     * user grid would be insert a record.  
     */
-   private void addInviteUserButton() {
-     /*
-      Button inviteUserButton = new Button("Invite other users");
-      inviteUserButton.setIcon(icons.add());
-      inviteUserButton.setIconAlign(IconAlign.LEFT);
-      inviteUserButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            final InviteUserWindow inviteUserWindow = new InviteUserWindow();
-            inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               public void afterSubmit(SubmitEvent be) {
-                  inviteUserWindow.hide();
-                  UserDTO userDTO = be.getData();
-                  if (userDTO != null) {
-                     if (invitedUsersGrid == null) {
-                        createInvitedUserGrid();
-                     }
-                     invitedUsersGrid.stopEditing();
-                     invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
-                     invitedUsersGrid.startEditing(0, 1);
-                  }
-               }
-            });
-         }
-      });
-      add(inviteUserButton);
-      */
-   }
    
+   @UiHandler("inviteUserButton")
+   void onAddClick(SelectEvent e) {
+     /*
+     final InviteUserWindow inviteUserWindow = new InviteUserWindow();
+     inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+        public void afterSubmit(SubmitEvent be) {
+           inviteUserWindow.hide();
+           UserDTO userDTO = be.getData();
+           if (userDTO != null) {
+              if (invitedUsersGrid == null) {
+                 createInvitedUserGrid();
+              }
+              invitedUsersGrid.stopEditing();
+              invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
+              invitedUsersGrid.startEditing(0, 1);
+           }
+        }
+        */
+   }
+
    /**
     * Initialize the invited user grid's store by getting the invited users from server.
     */
@@ -179,6 +250,13 @@ public class AccountManageWindow extends Dialog {
       center();
       */
    }
+   
+   @UiFactory
+   Grid<UserDTO> createGrid() {
+     Grid<UserDTO> grid = new Grid<UserDTO>(store, cm);
+     return grid;
+   }
+
 
    /**
     * Creates the user accessed grid, the grid stores the user that can access the account.
