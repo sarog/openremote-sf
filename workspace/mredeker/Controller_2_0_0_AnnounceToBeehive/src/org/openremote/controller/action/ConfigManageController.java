@@ -196,4 +196,23 @@ public class ConfigManageController extends MultiActionController
 
    }
 
+  public ModelAndView getControllerLinkedStatus(HttpServletRequest request, HttpServletResponse response)
+    throws IOException, ServletRequestBindingException
+  {
+    response.setContentType(MIME_TEXT_PLAIN);
+    PrintWriter writer = response.getWriter();
+    try {
+      String accountID = ServiceContext.getDeployer().getLinkedAccountId();
+      response.setStatus(HttpURLConnection.HTTP_OK);
+      writer.print(accountID); 
+    } catch (Throwable t) {
+      log.error("Error when checking controller link status", t.getMessage());
+      response.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+      writer.print(t.getMessage());
+    } finally {
+      writer.close();
+      response.flushBuffer();
+    }
+    return null;
+  }
 }

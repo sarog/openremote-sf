@@ -33,15 +33,31 @@
 						<TD width=20 background="image/rbox_3.gif" height=20></TD>
 					</TR>
 					<TR>
-						<TD align=left background="image/rbox_4.gif" rowSpan=2></TD>
+						<TD align=left background="image/rbox_4.gif" rowSpan=1></TD>
 						<TD style="border-bottom: 1px solid #ccc" colSpan=5 height=50>
 						<a href="http://www.openremote.org/"><img alt=""
 							src="image/global.logo.gif"></a></TD>
+						<TD align=left background="image/rbox_6.gif" rowSpan=1></TD>
+					</TR>
+					<TR>
+						<TD align=left background="image/rbox_4.gif" rowSpan=2></TD>
+						<TD style="border-bottom: 1px solid #ccc" colSpan=5 height=50>
+						  <p class="welcome">Welcome to OpenRemote Controller</p>
+						  <div id="not-linked">
+						    <p>Please link this controller to your designer account.<br>
+						    Your mac address to use is: <span id="macAddress"></span><br><br>
+						    Use "Controller management" in <a href="http://composer.openremote.org/demo/">OpenRemote designer</a> to create link.</p>
+						  </div>
+						  <div id="linked">
+						    <p>This controller is linked to account ID: <span id="accountId"></span><br>
+						    Use "Controller management" in <a href="http://composer.openremote.org/demo/">OpenRemote designer</a> to remove link.</p>
+						  </div>
+						</TD>
 						<TD align=left background="image/rbox_6.gif" rowSpan=2></TD>
 					</TR>
 					<TR>
 						<TD align=left colSpan=5 height=80>
-						<p class="welcome">Welcome to OpenRemote Controller</p>
+						<p>&nbsp;</p>
 						<p id="errMsg" class="errMsg" />
 						<p id="msg" class="msg" />
 						<p >

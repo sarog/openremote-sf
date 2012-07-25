@@ -677,6 +677,17 @@ public class Deployer
      }
   }
 
+  /**
+   * Method is called by the ConfigManageController which is invoked by index.html
+   * @return a String with the linked account Id or the MAC address with a leading '-'
+   */
+  public String getLinkedAccountId() throws Exception {
+     if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
+        return controllerDTO.getAccount().getOid().toString();
+     } else {
+        return "-"+NetworkUtil.getMACAddresses();
+     }
+  }
 
   // Protected Instance Methods -------------------------------------------------------------------
 
@@ -1489,6 +1500,7 @@ public class Deployer
           try {
              ClientResource cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
              Representation r = cr.post(null);
+             cr.release();
              String str;
              str = r.getText();
              GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
@@ -1524,6 +1536,7 @@ public class Deployer
                    try {   
                       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
                       Representation result = cr.post(rep);
+                      cr.release();
                       GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
                       if (res.getErrorMessage() != null) {
                          throw new RuntimeException(res.getErrorMessage());
@@ -1539,6 +1552,7 @@ public class Deployer
        }
      }
   }
+
 
 }
 
