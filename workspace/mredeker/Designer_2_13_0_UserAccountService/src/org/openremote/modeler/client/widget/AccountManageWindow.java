@@ -22,41 +22,23 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.model.ComboBoxDataModel;
-import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.shared.GraphicalAssetDTO;
-import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
-import com.sencha.gxt.data.shared.SortDir;
-import com.sencha.gxt.data.shared.Store.StoreSortInfo;
-import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -67,11 +49,7 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 /**
  * This window is for managing users that with the same account, except for the current user.
  */
-public class AccountManageWindow extends Dialog {
-  
-  // TODO EBR : change to Window, not using any of the Dialog functionality
-  
-  
+public class AccountManageWindow extends Window {  
   
 //  private Icons icons = GWT.create(Icons.class);
   
@@ -91,7 +69,7 @@ public class AccountManageWindow extends Dialog {
   }
   
   @UiFactory
-  Dialog itself() {
+  Window itself() {
     return this;
   }
 
@@ -113,9 +91,8 @@ public class AccountManageWindow extends Dialog {
       
 //      setButtonAlign(HorizontalAlignment.CENTER);
 //      setAutoHeight(true);
-      setPredefinedButtons();
+
       
-     
 //      addInvitedUsers();
 //      createAccessUserGrid();
 
@@ -327,12 +304,12 @@ public class AccountManageWindow extends Dialog {
          }
       };
       
-      ContentPanel accessUsersContainer = new ContentPanel();
-      accessUsersContainer.setBodyBorder(false);
-      accessUsersContainer.setHeading("Users with account access");
+//      ContentPanel accessUsersContainer = new ContentPanel();
+//      accessUsersContainer.setBodyBorder(false);
+//      accessUsersContainer.setHeading("Users with account access");
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-      accessUsersContainer.setSize(440, 150);
+//      accessUsersContainer.setSize(440, 150);
       accessUsersContainer.add(accessUsersGrid);
       add(accessUsersContainer);
       AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {

@@ -7,14 +7,16 @@
 
 	<ui:with type="org.openremote.modeler.client.icon.IconResources" field="icons" />
 
-	<gxt:Dialog pixelSize="452, 280" minHeight="280" hideOnButtonClick="true" modal="true" blinkModal="true" headingText="Account management">
+	<gxt:Window pixelSize="452, 280" minHeight="280" modal="true" blinkModal="true" headingText="Account management">
 		<container:VerticalLayoutContainer>
 			<container:child>
 				<button:TextButton text="Invite other users" icon="{icons.add}" ui:field="inviteUserButton" />
 			</container:child>
 			<container:child>
-				<grid:Grid />
+			  <gxt:ContentPanel headingText="Users with account access" bodyBorder="false" pixelSize="440, 150">
+          <grid:Grid />
+			  </gxt:ContentPanel>
 			</container:child>
 		</container:VerticalLayoutContainer>
-	</gxt:Dialog>
+	</gxt:Window>
 </ui:UiBinder>
