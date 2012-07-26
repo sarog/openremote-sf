@@ -7,22 +7,19 @@ import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.data.shared.LabelProvider;
-import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SubmitEvent;
 import com.sencha.gxt.widget.core.client.event.SubmitEvent.SubmitHandler;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -31,27 +28,24 @@ public class InviteUserWindow extends Window {
 
   private static InviteUserWindowUiBinder uiBinder = GWT.create(InviteUserWindowUiBinder.class);
 
-  interface RoleProvider extends PropertyAccess<Role> {
-    @Path("displayName")
-    ModelKeyProvider<Role> key();
-    
-    LabelProvider<Role> displayName();
-  }  
-  private RoleProvider roles = GWT.create(RoleProvider.class);
-  
-  private ListStore<Role> rolesStore = new ListStore<Role>(roles.key());
-
   interface InviteUserWindowUiBinder extends UiBinder<Widget, InviteUserWindow> {
   }
 
   public InviteUserWindow() {
-    rolesStore.add(new Role(RoleDTO.ROLE_ADMIN_DISPLAYNAME));
-    Role selectedRole = new Role(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-    rolesStore.add(selectedRole);
-    rolesStore.add(new Role(RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
-    rolesStore.add(new Role(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-
-            
+    rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
+    rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+    rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    
+    rolesCombo.setAllowBlank(false);
+    rolesCombo.setAllowTextSelection(false);
+    rolesCombo.setEditable(false);
+    rolesCombo.setForceSelection(true);
+    rolesCombo.setTriggerAction(TriggerAction.ALL);
+    rolesCombo.setWidth(220);
+    
     uiBinder.createAndBindUi(this);
    
 
@@ -59,16 +53,8 @@ public class InviteUserWindow extends Window {
     // Note: when widget is provided, none of the settings in the ui.xml file is taken into account  
 //      allowBlank="false" forceSelection="true"
 
-//    rolesCombo.setAllowBlank(false);
-
-   rolesCombo.setForceSelection(true);
    
-//   rolesCombo.setValue(selectedRole);
-
-
     emailField.addValidator(new RegExValidator(Constants.REG_EMAIL, "Please input a correct email."));
-    
-    rolesCombo.setWidth(220);
     
     form.addSubmitHandler(new SubmitHandler() {
       
@@ -79,7 +65,7 @@ public class InviteUserWindow extends Window {
         // TODO: where does validation happen on the form ???
         
         
-        AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(), rolesCombo.getValue().getDisplayName(), new AsyncSuccessCallbackGXT3<UserDTO>() {
+        AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(), rolesCombo.getValue(), new AsyncSuccessCallbackGXT3<UserDTO>() {
                    public void onSuccess(UserDTO userDTO) {
                       form.unmask();
 //                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
@@ -106,8 +92,12 @@ public class InviteUserWindow extends Window {
   TextField emailField;
   
   @UiField(provided = true)
-  ComboBox<Role> rolesCombo = new ComboBox<Role>(rolesStore, roles.displayName());
+  SimpleComboBox<String> rolesCombo;
 
+  // Even try with the provided, but doubt it'll work
+  // TODO: try with constructor and see if then XML can be used to define attributes
+  
+  
   @UiHandler("sendInvitationButton")
   void onSendClick(SelectEvent e) {
     
@@ -122,20 +112,7 @@ public class InviteUserWindow extends Window {
     this.hide();
   }
   
-  public class Role {
-    
-    private String displayName;
-    
-    public Role(String displayName) {
-      super();
-      this.displayName = displayName;
-    }
 
-    public String getDisplayName() {
-      return displayName;
-    }
-
-  }
 
   
   
@@ -143,8 +120,6 @@ public class InviteUserWindow extends Window {
   
   
   
-  
-
   /**
    * The inner class is for inviting a user have the same account, it would send a invitation to the email.
    */
