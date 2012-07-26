@@ -22,11 +22,13 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.icon.IconResources;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -35,6 +37,7 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.TextButtonCell;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -42,16 +45,18 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * This window is for managing users that with the same account, except for the current user.
  */
 public class AccountManageWindow extends Window {  
   
-//  private Icons icons = GWT.create(Icons.class);
+  private IconResources icons = GWT.create(IconResources.class);
   
   private static AccountManageWindowUiBinder uiBinder = GWT.create(AccountManageWindowUiBinder.class);
 
@@ -112,9 +117,36 @@ public class AccountManageWindow extends Window {
         sb.appendHtmlConstant("</span>");
       }
     });
+    
+    ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 50, "Delete");
+    deleteColumn.setSortable(false);
+    TextButtonCell button = new TextButtonCell() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {       
+        if (AccountManageWindow.this.cureentUserId != Long.parseLong((String)context.getKey())) {
+          super.render(context, "", sb);
+        }
+      }
+    };
+    button.setIcon(icons.delete());
+    button.addSelectHandler(new SelectHandler() { 
+      @Override
+      public void onSelect(SelectEvent event) {
+        final UserDTO user = store.get(event.getContext().getIndex());
+        AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
+          public void onSuccess(Void result) {
+             store.remove(user);
+             Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
+          }
+       });
+      }
+    });
+    deleteColumn.setCell(button);
+    
      List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
      l.add(emailColumn);
-      //l.add(fileNameColumn);
+     l.add(deleteColumn);
+
      cm = new ColumnModel<UserDTO>(l);
      store = new ListStore<UserDTO>(users.key());
 //      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
@@ -257,29 +289,12 @@ public class AccountManageWindow extends Window {
          }
       };
       
-      GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            Button deleteButton = createDeleteButton(model, store);
-            if (cureentUserId == (Long) model.get("oid")) {
-               deleteButton.disable();
-               deleteButton.hide();
-            }
-            return deleteButton;
-         }
-      };
-      
       
       ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
       roleColumn.setSortable(false);
       roleColumn.setRenderer(comboRenderer);
       accessUserConfigs.add(roleColumn);
-      
-      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
-      actionColumn.setSortable(false);
-      actionColumn.setRenderer(buttonRenderer);
-      accessUserConfigs.add(actionColumn);
-      
+            
       final Grid<UserDTO> accessUsersGrid = new Grid<UserDTO>(new ListStore<UserDTO>(), new ColumnModel(accessUserConfigs)) {
          @Override
          protected void afterRender() {
@@ -351,31 +366,4 @@ public class AccountManageWindow extends Window {
       return combo;
    }
       */
-
-   /**
-    * Creates the delete button to delete the user record in the grid.
-    * 
-    * @param model the model
-    * @param store the store
-    * 
-    * @return the button
-    */
-/*
-   private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store) {
-      Button deleteButton = new Button();
-      deleteButton.setIcon(icons.delete());
-      deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((UserDTO)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
-               public void onSuccess(Void result) {
-                  store.remove(model);
-                  Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");
-               }
-            });
-         }
-      });
-      return deleteButton;
-   }
-   */
-
 }
