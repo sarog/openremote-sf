@@ -151,9 +151,10 @@ public class AccountManageWindow extends Window {
     */
    
    @UiHandler("inviteUserButton")
-   void onAddClick(SelectEvent e) {
-     /*
+   void onInviteClick(SelectEvent e) {
      final InviteUserWindow inviteUserWindow = new InviteUserWindow();
+     inviteUserWindow.show();
+     /*
      inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
         public void afterSubmit(SubmitEvent be) {
            inviteUserWindow.hide();
@@ -398,8 +399,8 @@ public class AccountManageWindow extends Window {
 /*
    private class InviteUserWindow extends FormWindow {
       public InviteUserWindow() {
-         setSize(370, 150);
-         setHeading("Invite user");
+//         setSize(370, 150);
+//         setHeading("Invite user");
          form.setLabelAlign(LabelAlign.RIGHT);
          createFields();
          createButtons(this);
