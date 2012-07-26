@@ -28,7 +28,6 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -112,11 +111,24 @@ public class AccountManageWindow extends Window {
 //      addInvitedUsers();
 //      createAccessUserGrid();
 
+      SelectHandler deleteSelectHandler = new SelectHandler() { 
+        @Override
+        public void onSelect(SelectEvent event) {
+          final UserDTO user = accessUsersStore.get(event.getContext().getIndex());
+          AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
+            public void onSuccess(Void result) {
+               accessUsersStore.remove(user);
+               Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
+            }
+         });
+        }
+      };
+      
     ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
     emailColumn.setSortable(false);
     emailColumn.setCell(new AbstractCell<String>() {
       @Override
-      public void render(com.google.gwt.cell.client.Cell.Context context, String value, SafeHtmlBuilder sb) {
+      public void render(Context context, String value, SafeHtmlBuilder sb) {
         UserDTO user = accessUsersStore.findModelWithKey((String)context.getKey());
         sb.appendHtmlConstant("<span title='");
         sb.appendEscaped(user.getUsername());
@@ -140,18 +152,7 @@ public class AccountManageWindow extends Window {
       }
     };
     button.setIcon(icons.delete());
-    button.addSelectHandler(new SelectHandler() { 
-      @Override
-      public void onSelect(SelectEvent event) {
-        final UserDTO user = accessUsersStore.get(event.getContext().getIndex());
-        AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
-          public void onSuccess(Void result) {
-             accessUsersStore.remove(user);
-             Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
-          }
-       });
-      }
-    });
+    button.addSelectHandler(deleteSelectHandler);
     deleteColumn.setCell(button);
     
      List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
@@ -165,10 +166,23 @@ public class AccountManageWindow extends Window {
      
      accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
 
-     l.clear();
+     l = new ArrayList<ColumnConfig<UserDTO, ?>>();
      emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
 
+     deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 50, "Delete");
+     deleteColumn.setSortable(false);
+     button = new TextButtonCell() {
+       @Override
+       public void render(Context context, String value, SafeHtmlBuilder sb) {       
+           super.render(context, "", sb);
+       }
+     };
+     button.setIcon(icons.delete());
+     button.addSelectHandler(deleteSelectHandler);
+     deleteColumn.setCell(button);
+     
      l.add(emailColumn);
+     l.add(deleteColumn);
      
      invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
      invitedUsersStore = new ListStore<UserDTO>(users.key());
