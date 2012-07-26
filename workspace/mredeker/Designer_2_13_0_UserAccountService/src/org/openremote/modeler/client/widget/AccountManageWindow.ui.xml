@@ -14,9 +14,14 @@
 			</container:child>
 			<container:child>
 			  <gxt:ContentPanel headingText="Users with account access" bodyBorder="false" pixelSize="440, 150">
-          <grid:Grid />
+          <grid:Grid ui:field="accessUsersGrid"/>
 			  </gxt:ContentPanel>
 			</container:child>
+      <container:child>
+        <gxt:ContentPanel headingText="Pending invitations" bodyBorder="false" pixelSize="440, 150" ui:field="invitedUsersPanel">
+          <grid:Grid ui:field="invitedUsersGrid"/>
+        </gxt:ContentPanel>
+      </container:child>
 		</container:VerticalLayoutContainer>
 	</gxt:Window>
 </ui:UiBinder>
