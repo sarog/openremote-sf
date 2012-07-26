@@ -1,0 +1,43 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client'
+  xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
+  xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client" xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
+  xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid" xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form">
+
+	<ui:style>
+		
+	</ui:style>
+	
+	<gxt:Window pixelSize="370, 150" minHeight="150" modal="true" blinkModal="true" headingText="Invite user">
+	<form:FormPanel ui:field="form">
+    <container:VerticalLayoutContainer>
+      <container:child>
+        <form:FieldLabel text="Email address">
+          <form:widget>
+            <form:TextField allowBlank="false" width="220" ui:field="emailField"/>
+          </form:widget>
+        </form:FieldLabel>
+      </container:child>
+      <container:child>
+        <form:FieldLabel text="Role">
+          <form:widget>
+            <form:ComboBox ui:field="rolesCombo"/>
+          </form:widget>
+        </form:FieldLabel>
+      </container:child>
+      <container:child>
+        <container:HBoxLayoutContainer hBoxLayoutAlign="MIDDLE" pack="CENTER">
+          <container:child>
+            <button:TextButton text="Send invitation" ui:field="sendInvitationButton"/>
+          </container:child>
+          <container:child>
+            <button:TextButton text="Cancel" ui:field="cancelButton"/>
+          </container:child>
+        </container:HBoxLayoutContainer>
+      </container:child>      
+    </container:VerticalLayoutContainer>
+</form:FormPanel>
+	  
+	</gxt:Window>	
+</ui:UiBinder> 
