@@ -30,12 +30,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.openremote.modeler.client.Configuration;
-import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
@@ -236,7 +236,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     }
 
    @Override
-   public UserDTO inviteUser(String email, String roleDisplayName, User currentUser) {
+   public UserDTO inviteUser(String email, String roleDisplayName, User currentUser) throws UserInvitationException {
      StringBuffer url = new StringBuffer("user/" + currentUser.getOid() + "/inviteUser");
      url.append("?inviteeEmail=" + email);
      url.append("&inviteeRoles=" + convertRoleDisplayStringToRoleString(roleDisplayName));
@@ -252,7 +252,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      }
      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
      if (res.getErrorMessage() != null) {
-       throw new RuntimeException(res.getErrorMessage());
+       throw new UserInvitationException(res.getErrorMessage());
      }
      UserDTO inviteeDTO = (UserDTO)res.getResult();
      return inviteeDTO; 
