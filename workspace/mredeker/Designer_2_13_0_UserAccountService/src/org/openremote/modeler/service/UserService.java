@@ -24,7 +24,6 @@ import java.util.List;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
-import org.openremote.modeler.shared.exception.UserServiceException;
 import org.openremote.useraccount.domain.UserDTO;
 
 /**
