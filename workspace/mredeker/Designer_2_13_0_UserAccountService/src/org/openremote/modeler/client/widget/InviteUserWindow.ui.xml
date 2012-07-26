@@ -22,7 +22,7 @@
       <container:child>
         <form:FieldLabel text="Role">
           <form:widget>
-            <form:SimpleComboBox ui:field="rolesCombo"/>
+            <form:SimpleComboBox ui:field="rolesCombo" allowBlank="false" allowTextSelection="false" editable="false" forceSelection="true" triggerAction="ALL" width="220"/>
           </form:widget>
         </form:FieldLabel>
       </container:child>

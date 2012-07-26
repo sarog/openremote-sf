@@ -12,7 +12,6 @@ import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -39,20 +38,7 @@ public class InviteUserWindow extends Window {
     rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
     rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
     
-    rolesCombo.setAllowBlank(false);
-    rolesCombo.setAllowTextSelection(false);
-    rolesCombo.setEditable(false);
-    rolesCombo.setForceSelection(true);
-    rolesCombo.setTriggerAction(TriggerAction.ALL);
-    rolesCombo.setWidth(220);
-    
     uiBinder.createAndBindUi(this);
-   
-
-    
-    // Note: when widget is provided, none of the settings in the ui.xml file is taken into account  
-//      allowBlank="false" forceSelection="true"
-
    
     emailField.addValidator(new RegExValidator(Constants.REG_EMAIL, "Please input a correct email."));
     
@@ -93,10 +79,6 @@ public class InviteUserWindow extends Window {
   
   @UiField(provided = true)
   SimpleComboBox<String> rolesCombo;
-
-  // Even try with the provided, but doubt it'll work
-  // TODO: try with constructor and see if then XML can be used to define attributes
-  
   
   @UiHandler("sendInvitationButton")
   void onSendClick(SelectEvent e) {
