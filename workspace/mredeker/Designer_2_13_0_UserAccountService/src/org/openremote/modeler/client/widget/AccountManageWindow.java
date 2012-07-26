@@ -42,6 +42,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -81,16 +82,26 @@ public class AccountManageWindow extends Window {
   @UiField
   TextButton inviteUserButton;
      
-   /** The invited users grid.
-    *  The user has been invited, but not accept the invitation.
-    */
-//   private Grid<UserDTO> invitedUsersGrid = null;
-   
+  @UiField(provided=true)
+  Grid<UserDTO> accessUsersGrid;
+  
+  /** The invited users grid.
+   *  The user has been invited, but not accept the invitation.
+   */
+  @UiField(provided=true)
+  Grid<UserDTO> invitedUsersGrid;
+  
+  @UiField
+  ContentPanel invitedUsersPanel;
+  
    private long cureentUserId = 0;
    
-   private ColumnModel<UserDTO> cm;
-   private ListStore<UserDTO> store;
-   
+   private ColumnModel<UserDTO> accessUsersColumnModel;
+   private ListStore<UserDTO> accessUsersStore;
+
+   private ColumnModel<UserDTO> invitedUsersColumnModel;
+   private ListStore<UserDTO> invitedUsersStore;
+
    public AccountManageWindow(long cureentUserId) {
       this.cureentUserId = cureentUserId;
       
@@ -106,7 +117,7 @@ public class AccountManageWindow extends Window {
     emailColumn.setCell(new AbstractCell<String>() {
       @Override
       public void render(com.google.gwt.cell.client.Cell.Context context, String value, SafeHtmlBuilder sb) {
-        UserDTO user = store.findModelWithKey((String)context.getKey());
+        UserDTO user = accessUsersStore.findModelWithKey((String)context.getKey());
         sb.appendHtmlConstant("<span title='");
         sb.appendEscaped(user.getUsername());
         sb.appendHtmlConstant("'>");
@@ -132,10 +143,10 @@ public class AccountManageWindow extends Window {
     button.addSelectHandler(new SelectHandler() { 
       @Override
       public void onSelect(SelectEvent event) {
-        final UserDTO user = store.get(event.getContext().getIndex());
+        final UserDTO user = accessUsersStore.get(event.getContext().getIndex());
         AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
           public void onSuccess(Void result) {
-             store.remove(user);
+             accessUsersStore.remove(user);
              Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
           }
        });
@@ -147,16 +158,30 @@ public class AccountManageWindow extends Window {
      l.add(emailColumn);
      l.add(deleteColumn);
 
-     cm = new ColumnModel<UserDTO>(l);
-     store = new ListStore<UserDTO>(users.key());
+     accessUsersColumnModel = new ColumnModel<UserDTO>(l);
+     accessUsersStore = new ListStore<UserDTO>(users.key());
 //      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
 
+     
+     accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
+
+     l.clear();
+     emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
+
+     l.add(emailColumn);
+     
+     invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
+     invitedUsersStore = new ListStore<UserDTO>(users.key());
+     invitedUsersGrid = new Grid<UserDTO>(invitedUsersStore, invitedUsersColumnModel);
+     
       uiBinder.createAndBindUi(this);
+      
+      invitedUsersPanel.setVisible(false);
       
       AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
         @Override
         public void onSuccess(ArrayList<UserDTO> accessUsers) {
-          store.addAll(accessUsers);
+          accessUsersStore.addAll(accessUsers);
 
         /*
         if (accessUsers.size() > 0) {
@@ -169,7 +194,15 @@ public class AccountManageWindow extends Window {
         }
       });
 
-      
+      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+        public void onSuccess(ArrayList<UserDTO> invitedUsers) {
+           if (invitedUsers.size() > 0) {
+             invitedUsersStore.addAll(invitedUsers);
+             invitedUsersPanel.setVisible(true);
+           }
+        }
+     });
+
       
       
 
@@ -250,10 +283,10 @@ public class AccountManageWindow extends Window {
       
       invitedUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(invitedUserConfigs));
       ContentPanel pendingContainer = new ContentPanel();
-      pendingContainer.setBodyBorder(false);
-      pendingContainer.setHeading("Pending invitations");
+//      pendingContainer.setBodyBorder(false);
+//      pendingContainer.setHeading("Pending invitations");
       pendingContainer.setLayout(new FitLayout());
-      pendingContainer.setSize(440, 150);
+//      pendingContainer.setSize(440, 150);
       pendingContainer.add(invitedUsersGrid);
       insert(pendingContainer, 1);
       layout();
@@ -261,13 +294,6 @@ public class AccountManageWindow extends Window {
       */
    }
    
-   @UiFactory
-   Grid<UserDTO> createGrid() {
-     Grid<UserDTO> grid = new Grid<UserDTO>(store, cm);
-     return grid;
-   }
-
-
    /**
     * Creates the user accessed grid, the grid stores the user that can access the account.
     * The grid is used for managing the accessed users, except the current user, it has three 
