@@ -269,21 +269,6 @@ public class AccountManageWindow extends Window {
          }
       };
       
-      GridCellRenderer<BeanModel> emailRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            String html = (String) model.get(property);
-            if (cureentUserId == (Long) model.get("oid")) {
-               html += "<b> - me</b>";
-            }
-            return "<span title='" + (String) model.get("userName") + "'>" + html + "</span>";
-         }
-      };
-      
-      ColumnConfig emailColumn = new ColumnConfig("eMail", "OpenRemote user", 180);
-      emailColumn.setSortable(false);
-      emailColumn.setRenderer(emailRenderer);
-      accessUserConfigs.add(emailColumn);
       
       ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
       roleColumn.setSortable(false);
@@ -393,80 +378,4 @@ public class AccountManageWindow extends Window {
    }
    */
 
-   /**
-    * The inner class is for inviting a user have the same account, it would send a invitation to the email.
-    */
-/*
-   private class InviteUserWindow extends FormWindow {
-      public InviteUserWindow() {
-//         setSize(370, 150);
-//         setHeading("Invite user");
-         form.setLabelAlign(LabelAlign.RIGHT);
-         createFields();
-         createButtons(this);
-         add(form);
-         show();
-      }
-      */
-      /**
-       * Creates two fields: email address input and role combobox.
-       */
-/*
-      private void createFields() {
-         final TextField<String> emailField = new TextField<String>();
-         emailField.setFieldLabel("Email address");
-         emailField.setAllowBlank(false);
-         emailField.setRegex(Constants.REG_EMAIL);
-         emailField.getMessages().setRegexText("Please input a correct email.");
-         
-         final ComboBoxExt roleList = new ComboBoxExt();
-         roleList.setFieldLabel("Role");
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_ADMIN_DISPLAYNAME, RoleDTO.ROLE_ADMIN_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.setValue(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-         form.add(emailField);
-         form.add(roleList);
-         
-         form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-            public void handleEvent(FormEvent be) {
-               form.mask("sending email...");
-               AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(),
-                     roleList.getValue().get("data").toString(), new AsyncSuccessCallback<UserDTO>() {
-                        public void onSuccess(UserDTO userDTO) {
-                           form.unmask();
-                           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
-                        }
-                        public void onFailure(Throwable caught) {
-                           super.onFailure(caught);
-                           form.unmask();
-                        }
-                        
-                     });
-            }
-         });
-      }
-         */
-      
-      /**
-       * Creates two buttons to send invitation or cancel.
-       * 
-       * @param window the window
-       */
-      /*
-      private void createButtons(final InviteUserWindow window) {
-         Button send = new Button("Send invitation");
-         send.addSelectionListener(new FormSubmitListener(form, send));
-         Button cancel = new Button("Cancel");
-         cancel.addSelectionListener(new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent ce) {
-               window.hide();
-            }
-         });
-         form.addButton(send);
-         form.addButton(cancel);
-      }
-   }
-      */
 }
