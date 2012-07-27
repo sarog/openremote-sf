@@ -41,7 +41,7 @@ import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 
-/*
+/**
  * Dailog for inviting a user to "share" a designer account.
  * 
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
