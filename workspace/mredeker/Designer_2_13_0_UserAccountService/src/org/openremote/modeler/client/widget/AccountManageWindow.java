@@ -117,6 +117,8 @@ public class AccountManageWindow extends Window {
    public AccountManageWindow(long cureentUserId) {
       this.cureentUserId = cureentUserId;
       
+      
+      
 //      setButtonAlign(HorizontalAlignment.CENTER);
 //      setAutoHeight(true);
 
@@ -207,22 +209,14 @@ public class AccountManageWindow extends Window {
 //      invitedUsersGrid.getView().setStripeRows(true); // This is working
       
       
-      
-      invitedUsersPanel.setVisible(false);
+      invitedUsersPanel.setVisible(false);      
+      accessUsersGrid.mask("Loading users...");
       
       AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
         @Override
         public void onSuccess(ArrayList<UserDTO> accessUsers) {
           accessUsersStore.addAll(accessUsers);
-
-        /*
-        if (accessUsers.size() > 0) {
-          accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
           accessUsersGrid.unmask();
-        }
-        */          
-          
-          
         }
       });
 
@@ -239,11 +233,9 @@ public class AccountManageWindow extends Window {
    }
    
    /**
-    * Adds a button, if click it, it would pop up a window to input a email and select role.
-    * After submit the window's data, there would send a invitation to the email, and the invited
-    * user grid would be insert a record.  
-    */
-   
+    * Brings up a dialog to enter e-mail and role of user to invite.
+    * On success, pending invitations table is updated with newly invited user.
+    */   
    @UiHandler("inviteUserButton")
    void onInviteClick(SelectEvent e) {
      final InviteUserWindow inviteUserWindow = new InviteUserWindow();
@@ -253,6 +245,7 @@ public class AccountManageWindow extends Window {
         public void userInvited(UserDTO user) {
           if (user != null) {
             invitedUsersStore.add(user);
+            invitedUsersPanel.setVisible(true);
           }
           inviteUserWindow.hide();
         }
@@ -260,48 +253,15 @@ public class AccountManageWindow extends Window {
      inviteUserWindow.show();
    }
 
-   /**
-    * Creates the user accessed grid, the grid stores the user that can access the account.
-    * The grid is used for managing the accessed users, except the current user, it has three 
-    * columns: email, role and delete.
-    */
-   private void createAccessUserGrid() {
-      List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
       /*
-      
 
-      final Grid<UserDTO> accessUsersGrid = new Grid<UserDTO>(new ListStore<UserDTO>(), new ColumnModel(accessUserConfigs)) {
-         @Override
-         protected void afterRender() {
-            super.afterRender();
-            layout();
-            center();
-            this.mask("Loading users...");
-         }
-      };
-      
 //      ContentPanel accessUsersContainer = new ContentPanel();
 //      accessUsersContainer.setBodyBorder(false);
 //      accessUsersContainer.setHeading("Users with account access");
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
 //      accessUsersContainer.setSize(440, 150);
-      accessUsersContainer.add(accessUsersGrid);
-      add(accessUsersContainer);
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-         public void onSuccess(ArrayList<UserDTO> accessUsers) {
-            if (accessUsers.size() > 0) {
-               accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
-               accessUsersGrid.unmask();
-            }
-         }
-         public void onFailure(Throwable caught) {
-            super.onFailure(caught);
-            accessUsersGrid.unmask();
-         }
-      });
       */
-   }
    
    private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
      SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
@@ -348,10 +308,13 @@ public class AccountManageWindow extends Window {
      return new SelectHandler() { 
        @Override
        public void onSelect(SelectEvent event) {
-         final UserDTO user = store.get(event.getContext().getIndex());         
+         final UserDTO user = store.get(event.getContext().getIndex());
          AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
            public void onSuccess(Void result) {
               store.remove(user);
+              if (store == invitedUsersStore && store.getAll().isEmpty()) {
+                invitedUsersPanel.setVisible(false);
+              }
               Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
            }
         });
