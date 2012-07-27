@@ -49,6 +49,8 @@ import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent.BeforeStartEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -140,11 +142,6 @@ public class AccountManageWindow extends Window {
     
     ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
     
-    // TODO
-    
-    
-    
-    
     ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
       @Override
       public void render(Context context, String value, SafeHtmlBuilder sb) {       
@@ -158,13 +155,25 @@ public class AccountManageWindow extends Window {
      l.add(emailColumn);
      l.add(roleColumn);
      l.add(deleteColumn);
-
-     accessUsersColumnModel = new ColumnModel<UserDTO>(l);
-//      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
-
      
+     accessUsersColumnModel = new ColumnModel<UserDTO>(l);
+//   store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
      accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
+     
+     final GridInlineEditing<UserDTO> accessUsersGridEditing = new GridInlineEditing<UserDTO>(accessUsersGrid);
 
+     SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, invitedUsersStore);     
+     accessUsersGridEditing.addEditor(roleColumn, rolesCombo);
+     accessUsersGridEditing.addBeforeStartEditHandler(new BeforeStartEditHandler<UserDTO>() {
+      @Override
+      public void onBeforeStartEdit(BeforeStartEditEvent<UserDTO> event) {
+        UserDTO user = accessUsersStore.get(event.getEditCell().getRow());
+        if (AccountManageWindow.this.cureentUserId == user.getOid()) {
+          event.setCancelled(true);
+        }
+      }
+    });
+     
      invitedUsersStore = new ListStore<UserDTO>(users.key());
 
      l = new ArrayList<ColumnConfig<UserDTO, ?>>();
@@ -191,7 +200,7 @@ public class AccountManageWindow extends Window {
      
      // TODO: also have way to have comparison so editor is disabled when user is me
 
-     SimpleComboBox<String> rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
+     rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
      gridEditing.addEditor(roleColumn, rolesCombo);
 
       uiBinder.createAndBindUi(this);
