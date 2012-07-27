@@ -138,24 +138,21 @@ public class AccountManageWindow extends Window {
       }
     });
     
-  
     ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
-//    ComboBoxCell<String>
+    
+    // TODO
     
     
-    ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
-    deleteColumn.setSortable(false);
-    TextButtonCell button = new TextButtonCell() {
+    
+    
+    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
       @Override
       public void render(Context context, String value, SafeHtmlBuilder sb) {       
         if (AccountManageWindow.this.cureentUserId != Long.parseLong((String)context.getKey())) {
           super.render(context, "", sb);
         }
       }
-    };
-    button.setIcon(icons.delete());
-    button.addSelectHandler(createDeleteSelectHandler(accessUsersStore));
-    deleteColumn.setCell(button);
+    }, accessUsersStore);
     
      List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
      l.add(emailColumn);
@@ -174,22 +171,13 @@ public class AccountManageWindow extends Window {
      emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
 
      roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
-  
-// TODO
 
-     
-     
-     deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
-     deleteColumn.setSortable(false);
-     button = new TextButtonCell() {
+     deleteColumn = createDeleteColumn(new TextButtonCell() {
        @Override
        public void render(Context context, String value, SafeHtmlBuilder sb) {       
            super.render(context, "", sb);
        }
-     };
-     button.setIcon(icons.delete());
-     button.addSelectHandler(createDeleteSelectHandler(invitedUsersStore));
-     deleteColumn.setCell(button);
+     }, invitedUsersStore);
      
      l.add(emailColumn);
      l.add(roleColumn);
@@ -201,42 +189,11 @@ public class AccountManageWindow extends Window {
     
      final GridInlineEditing<UserDTO> gridEditing = new GridInlineEditing<UserDTO>(invitedUsersGrid);
      
-     SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
-     rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-     rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-     rolesCombo.setAllowBlank(false);
-     rolesCombo.setAllowTextSelection(false);
-     rolesCombo.setEditable(false);
-     rolesCombo.setForceSelection(true);
-     rolesCombo.setTriggerAction(TriggerAction.ALL);     
-     rolesCombo.addSelectionHandler(new SelectionHandler<String>() {
-      
-      @Override
-      public void onSelection(SelectionEvent<String> event) {
-        final UserDTO user = invitedUsersStore.get(gridEditing.getActiveCell().getRow()); // TODO: !! Use correct store
-        final String roleStrs = event.getSelectedItem();        
-        
-        if (!roleStrs.equals(user.getRole())) {
-           AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
-              public void onSuccess(UserDTO userDTO) {
-                user.setRoles(userDTO.getRoles());
-                 Info.display("Change role", "Change role to " + roleStrs + " success.");
-              }
-           });
-        }
-      }
-    });
-     
-     
      // TODO: also have way to have comparison so editor is disabled when user is me
-     
+
+     SimpleComboBox<String> rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
      gridEditing.addEditor(roleColumn, rolesCombo);
-     
-     
-     
+
       uiBinder.createAndBindUi(this);
       
       invitedUsersPanel.setVisible(false);
@@ -265,9 +222,6 @@ public class AccountManageWindow extends Window {
            }
         }
      });
-
-      
-      
 
       show();
    }
@@ -430,6 +384,47 @@ public class AccountManageWindow extends Window {
       return combo;
    }
       */
+   
+   private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
+     SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
+     rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+     rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+     rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+     rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+     rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+     rolesCombo.setAllowBlank(false);
+     rolesCombo.setAllowTextSelection(false);
+     rolesCombo.setEditable(false);
+     rolesCombo.setForceSelection(true);
+     rolesCombo.setTriggerAction(TriggerAction.ALL);     
+     rolesCombo.addSelectionHandler(new SelectionHandler<String>() {
+      
+      @Override
+      public void onSelection(SelectionEvent<String> event) {
+        final UserDTO user = store.get(gridEditing.getActiveCell().getRow());
+        final String roleStrs = event.getSelectedItem();        
+        
+        if (!roleStrs.equals(user.getRole())) {
+           AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
+              public void onSuccess(UserDTO userDTO) {
+                user.setRoles(userDTO.getRoles());
+                 Info.display("Change role", "Change role to " + roleStrs + " success.");
+              }
+           });
+        }
+      }
+    });
+     return rolesCombo;
+   }
+   
+   private ColumnConfig<UserDTO, String> createDeleteColumn(TextButtonCell button, ListStore<UserDTO> store) {
+     ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
+     deleteColumn.setSortable(false);
+     button.setIcon(icons.delete());
+     button.addSelectHandler(createDeleteSelectHandler(store));
+     deleteColumn.setCell(button);
+     return deleteColumn;
+   }
    
    private SelectHandler createDeleteSelectHandler(final ListStore<UserDTO> store) {
      return new SelectHandler() { 
