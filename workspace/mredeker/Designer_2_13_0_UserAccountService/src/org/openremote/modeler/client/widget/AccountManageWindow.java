@@ -117,10 +117,6 @@ public class AccountManageWindow extends Window {
 //      setButtonAlign(HorizontalAlignment.CENTER);
 //      setAutoHeight(true);
 
-      
-//      addInvitedUsers();
-//      createAccessUserGrid();
-      
       accessUsersStore = new ListStore<UserDTO>(users.key());
 
     ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
@@ -263,39 +259,6 @@ public class AccountManageWindow extends Window {
    }
 
    /**
-    * Initialize the invited user grid.
-    * The grid has three columns: invited user info, role combobox and the delete button. 
-    */
-   private void createInvitedUserGrid() {
-     /*
-      
-      
-       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            return createRoleCombo(model, property);
-         }
-      };
-            
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
-      roleColumn.setRenderer(comboRenderer);
-      invitedUserConfigs.add(roleColumn);
-      
-      
-      invitedUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(invitedUserConfigs));
-      ContentPanel pendingContainer = new ContentPanel();
-//      pendingContainer.setBodyBorder(false);
-//      pendingContainer.setHeading("Pending invitations");
-      pendingContainer.setLayout(new FitLayout());
-//      pendingContainer.setSize(440, 150);
-      pendingContainer.add(invitedUsersGrid);
-      insert(pendingContainer, 1);
-      layout();
-      center();
-      */
-   }
-   
-   /**
     * Creates the user accessed grid, the grid stores the user that can access the account.
     * The grid is used for managing the accessed users, except the current user, it has three 
     * columns: email, role and delete.
@@ -304,24 +267,7 @@ public class AccountManageWindow extends Window {
       List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
       /*
       
-       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            if (cureentUserId != (Long) model.get("oid")) {
-               return createRoleCombo(model, property);
-            } else {
-               return (String) model.get(property);
-            }
-            
-         }
-      };
-      
-      
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
-      roleColumn.setSortable(false);
-      roleColumn.setRenderer(comboRenderer);
-      accessUserConfigs.add(roleColumn);
-            
+
       final Grid<UserDTO> accessUsersGrid = new Grid<UserDTO>(new ListStore<UserDTO>(), new ColumnModel(accessUserConfigs)) {
          @Override
          protected void afterRender() {
@@ -354,45 +300,6 @@ public class AccountManageWindow extends Window {
       });
       */
    }
-   
-   /**
-    * Creates the role combobox for selecting role.
-    * 
-    * @param model the model
-    * @param property the property
-    * 
-    * @return the simple combo box< string>
-    */
-   /*
-   private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
-      SimpleComboBox<String> combo = new SimpleComboBox<String>();
-      combo.setWidth(182);
-      combo.setForceSelection(true);
-      combo.setEditable(false);
-      combo.setTriggerAction(TriggerAction.ALL);
-      combo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-      combo.setValue(combo.findModel((String) model.get(property)));
-      combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>(){
-         public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
-            final String roleStrs = se.getSelectedItem().getValue();
-            if (!roleStrs.equals(model.get("role"))) {
-               AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((UserDTO)model.getBean()).getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
-                  public void onSuccess(UserDTO userDTO) {
-                     ((UserDTO)model.getBean()).setRole(userDTO.getRole());
-                     Info.display("Change role", "Change role to " + roleStrs + " success.");
-                  }
-               });
-               
-            }
-         }
-         
-      });
-      return combo;
-   }
-      */
    
    private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
      SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
