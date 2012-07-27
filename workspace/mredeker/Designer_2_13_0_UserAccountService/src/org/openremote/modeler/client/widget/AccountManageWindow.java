@@ -25,6 +25,7 @@ import java.util.List;
 import org.openremote.modeler.client.icon.IconResources;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.InviteUserWindow.UserInvitedEvent;
 import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
@@ -244,22 +245,17 @@ public class AccountManageWindow extends Window {
    @UiHandler("inviteUserButton")
    void onInviteClick(SelectEvent e) {
      final InviteUserWindow inviteUserWindow = new InviteUserWindow();
-     inviteUserWindow.show();
-     /*
-     inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-        public void afterSubmit(SubmitEvent be) {
-           inviteUserWindow.hide();
-           UserDTO userDTO = be.getData();
-           if (userDTO != null) {
-              if (invitedUsersGrid == null) {
-                 createInvitedUserGrid();
-              }
-              invitedUsersGrid.stopEditing();
-              invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
-              invitedUsersGrid.startEditing(0, 1);
-           }
+
+     inviteUserWindow.addHandler(new InviteUserWindow.UserInvitedHandler() {
+        @Override
+        public void userInvited(UserDTO user) {
+          if (user != null) {
+            invitedUsersStore.add(user);
+          }
+          inviteUserWindow.hide();
         }
-        */
+     }, UserInvitedEvent.TYPE);
+     inviteUserWindow.show();
    }
 
    /**
