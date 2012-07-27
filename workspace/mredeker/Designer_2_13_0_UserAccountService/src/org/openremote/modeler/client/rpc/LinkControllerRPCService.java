@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
 
+import org.openremote.modeler.exception.ControllerManagementException;
 import org.openremote.useraccount.domain.ControllerDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -39,14 +40,14 @@ public interface LinkControllerRPCService extends RemoteService {
     * 
     * @return the linked controller
     */
-   ControllerDTO linkController(String macAddress);
+   ControllerDTO linkController(String macAddress) throws ControllerManagementException;
    
    /**
     * Delete the controller with the given oid
     * 
     * @param uid the uid
     */
-   void deleteController(long oid);
+   void deleteController(long oid) throws ControllerManagementException;
    
   
    /**
@@ -54,5 +55,5 @@ public interface LinkControllerRPCService extends RemoteService {
     * 
     * @return the linked controller
     */
-   ArrayList<ControllerDTO> getLinkedControllerDTOs();
+   ArrayList<ControllerDTO> getLinkedControllerDTOs() throws ControllerManagementException;
 }
