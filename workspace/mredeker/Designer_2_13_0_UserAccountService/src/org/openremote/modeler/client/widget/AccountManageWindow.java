@@ -43,6 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.TextButtonCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
@@ -50,6 +51,8 @@ import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent.BeforeStartEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -69,6 +72,14 @@ import com.sencha.gxt.widget.core.client.info.Info;
 public class AccountManageWindow extends Window {  
   
   private IconResources icons = GWT.create(IconResources.class);
+  
+  @UiField(provided = true)
+  BorderLayoutData northData = new BorderLayoutData(36);
+  
+  @UiField(provided = true)
+  VerticalLayoutData topPanelData = new VerticalLayoutData(1.0d, 0.5d, new Margins(0, 0, 0, 0));
+  @UiField(provided = true)
+  VerticalLayoutData bottomPanelData = new VerticalLayoutData(1.0d, 0.5d, new Margins(5, 0, 0, 0));
   
   private static AccountManageWindowUiBinder uiBinder = GWT.create(AccountManageWindowUiBinder.class);
 
@@ -117,21 +128,18 @@ public class AccountManageWindow extends Window {
   public AccountManageWindow(long cureentUserId) {
     this.cureentUserId = cureentUserId;
 
-//      setButtonAlign(HorizontalAlignment.CENTER);
-//      setAutoHeight(true);
-
     createAccessUsersGrid();
     createInvitedUsersGrid();
 
     uiBinder.createAndBindUi(this);
       
-    accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(2));
-    invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(1));
-//      invitedUsersGrid.getView().setStripeRows(true); // This is working
-      
+    accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(0));
+    invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(0));
     invitedUsersPanel.setVisible(false);      
     accessUsersGrid.mask("Loading users...");
-      
+
+    show();
+
     AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
       @Override
       public void onSuccess(ArrayList<UserDTO> accessUsers) {
@@ -148,13 +156,6 @@ public class AccountManageWindow extends Window {
         }
       }
     });
-
-      /*
-      accessUsersContainer.setLayout(new FitLayout());
-      accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-      */
-
-    show();
   }
 
   /**
