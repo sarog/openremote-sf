@@ -106,15 +106,15 @@ public class AccountManageWindow extends Window {
   @UiField
   ContentPanel invitedUsersPanel;
   
-   private long cureentUserId = 0;
-   
-   private ColumnModel<UserDTO> accessUsersColumnModel;
-   private ListStore<UserDTO> accessUsersStore;
+  private long cureentUserId = 0;
 
-   private ColumnModel<UserDTO> invitedUsersColumnModel;
-   private ListStore<UserDTO> invitedUsersStore;
+  private ColumnModel<UserDTO> accessUsersColumnModel;
+  private ListStore<UserDTO> accessUsersStore;
 
-   public AccountManageWindow(long cureentUserId) {
+  private ColumnModel<UserDTO> invitedUsersColumnModel;
+  private ListStore<UserDTO> invitedUsersStore;
+
+  public AccountManageWindow(long cureentUserId) {
     this.cureentUserId = cureentUserId;
 
 //      setButtonAlign(HorizontalAlignment.CENTER);
@@ -123,60 +123,60 @@ public class AccountManageWindow extends Window {
     createAccessUsersGrid();
     createInvitedUsersGrid();
 
-      uiBinder.createAndBindUi(this);
+    uiBinder.createAndBindUi(this);
       
-      accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(2));
-      invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(1));
+    accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(2));
+    invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(1));
 //      invitedUsersGrid.getView().setStripeRows(true); // This is working
       
-      invitedUsersPanel.setVisible(false);      
-      accessUsersGrid.mask("Loading users...");
+    invitedUsersPanel.setVisible(false);      
+    accessUsersGrid.mask("Loading users...");
       
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-        @Override
-        public void onSuccess(ArrayList<UserDTO> accessUsers) {
-          accessUsersStore.addAll(accessUsers);
-          accessUsersGrid.unmask();
-        }
-      });
+    AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+      @Override
+      public void onSuccess(ArrayList<UserDTO> accessUsers) {
+        accessUsersStore.addAll(accessUsers);
+        accessUsersGrid.unmask();
+      }
+    });
 
-      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-        public void onSuccess(ArrayList<UserDTO> invitedUsers) {
-           if (invitedUsers.size() > 0) {
-             invitedUsersStore.addAll(invitedUsers);
-             invitedUsersPanel.setVisible(true);
-           }
+    AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+      public void onSuccess(ArrayList<UserDTO> invitedUsers) {
+        if (invitedUsers.size() > 0) {
+          invitedUsersStore.addAll(invitedUsers);
+          invitedUsersPanel.setVisible(true);
         }
-     });
+      }
+    });
 
       /*
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
       */
 
-      show();
-   }
+    show();
+  }
 
   /**
-    * Brings up a dialog to enter e-mail and role of user to invite.
-    * On success, pending invitations table is updated with newly invited user.
-    */   
-   @UiHandler("inviteUserButton")
-   void onInviteClick(SelectEvent e) {
-     final InviteUserWindow inviteUserWindow = new InviteUserWindow();
+   * Brings up a dialog to enter e-mail and role of user to invite.
+   * On success, pending invitations table is updated with newly invited user.
+   */   
+  @UiHandler("inviteUserButton")
+  void onInviteClick(SelectEvent e) {
+    final InviteUserWindow inviteUserWindow = new InviteUserWindow();
 
-     inviteUserWindow.addHandler(new InviteUserWindow.UserInvitedHandler() {
-        @Override
-        public void userInvited(UserDTO user) {
-          if (user != null) {
-            invitedUsersStore.add(user);
-            invitedUsersPanel.setVisible(true);
-          }
-          inviteUserWindow.hide();
+    inviteUserWindow.addHandler(new InviteUserWindow.UserInvitedHandler() {
+      @Override
+      public void userInvited(UserDTO user) {
+        if (user != null) {
+          invitedUsersStore.add(user);
+          invitedUsersPanel.setVisible(true);
         }
-     }, UserInvitedEvent.TYPE);
-     inviteUserWindow.show();
-   }
+        inviteUserWindow.hide();
+      }
+    }, UserInvitedEvent.TYPE);
+    inviteUserWindow.show();
+  }
    
   private void createAccessUsersGrid() {
     accessUsersStore = new ListStore<UserDTO>(users.key());
@@ -260,62 +260,62 @@ public class AccountManageWindow extends Window {
     gridEditing.addEditor(roleColumn, rolesCombo);
   }
 
-   private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
-     SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
-     rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
-     rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-     rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-     rolesCombo.setAllowBlank(false);
-     rolesCombo.setAllowTextSelection(false);
-     rolesCombo.setEditable(false);
-     rolesCombo.setForceSelection(true);
-     rolesCombo.setTriggerAction(TriggerAction.ALL);     
-     rolesCombo.addSelectionHandler(new SelectionHandler<String>() {
+  private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
+    SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
+    rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+    rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    rolesCombo.setAllowBlank(false);
+    rolesCombo.setAllowTextSelection(false);
+    rolesCombo.setEditable(false);
+    rolesCombo.setForceSelection(true);
+    rolesCombo.setTriggerAction(TriggerAction.ALL);     
+    rolesCombo.addSelectionHandler(new SelectionHandler<String>() {
       
       @Override
       public void onSelection(SelectionEvent<String> event) {
         final UserDTO user = store.get(gridEditing.getActiveCell().getRow());
         final String roleStrs = event.getSelectedItem();        
-        
+          
         if (!roleStrs.equals(user.getRole())) {
-           AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
-              public void onSuccess(UserDTO userDTO) {
-                user.setRoles(userDTO.getRoles());
-                Info.display("Change role", "Change role to " + roleStrs + " success.");
-              }
-           });
+          AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
+            public void onSuccess(UserDTO userDTO) {
+              user.setRoles(userDTO.getRoles());
+              Info.display("Change role", "Change role to " + roleStrs + " success.");
+            }
+          });
         }
       }
     });
-     return rolesCombo;
-   }
+   return rolesCombo;
+  }
    
-   private ColumnConfig<UserDTO, String> createDeleteColumn(TextButtonCell button, ListStore<UserDTO> store) {
-     ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
-     deleteColumn.setSortable(false);
-     button.setIcon(icons.delete());
-     button.addSelectHandler(createDeleteSelectHandler(store));
-     deleteColumn.setCell(button);
-     return deleteColumn;
-   }
+  private ColumnConfig<UserDTO, String> createDeleteColumn(TextButtonCell button, ListStore<UserDTO> store) {
+    ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
+    deleteColumn.setSortable(false);
+    button.setIcon(icons.delete());
+    button.addSelectHandler(createDeleteSelectHandler(store));
+    deleteColumn.setCell(button);
+    return deleteColumn;
+  }
    
-   private SelectHandler createDeleteSelectHandler(final ListStore<UserDTO> store) {
-     return new SelectHandler() { 
-       @Override
-       public void onSelect(SelectEvent event) {
-         final UserDTO user = store.get(event.getContext().getIndex());
-         AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
-           public void onSuccess(Void result) {
-              store.remove(user);
-              if (store == invitedUsersStore && store.getAll().isEmpty()) {
-                invitedUsersPanel.setVisible(false);
-              }
-              Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
-           }
+  private SelectHandler createDeleteSelectHandler(final ListStore<UserDTO> store) {
+    return new SelectHandler() { 
+      @Override
+      public void onSelect(SelectEvent event) {
+        final UserDTO user = store.get(event.getContext().getIndex());
+        AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
+          public void onSuccess(Void result) {
+            store.remove(user);
+            if (store == invitedUsersStore && store.getAll().isEmpty()) {
+              invitedUsersPanel.setVisible(false);
+            }
+            Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
+          }
         });
-       }
-     };
-   }
+      }
+    };
+  }
 }
