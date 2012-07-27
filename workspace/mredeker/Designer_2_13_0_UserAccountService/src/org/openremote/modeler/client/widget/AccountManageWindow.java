@@ -179,7 +179,7 @@ public class AccountManageWindow extends Window {
 
      deleteColumn = createDeleteColumn(new TextButtonCell() {
        @Override
-       public void render(Context context, String value, SafeHtmlBuilder sb) {       
+       public void render(Context context, String value, SafeHtmlBuilder sb) {
            super.render(context, "", sb);
        }
      }, invitedUsersStore);
@@ -194,12 +194,16 @@ public class AccountManageWindow extends Window {
     
      final GridInlineEditing<UserDTO> gridEditing = new GridInlineEditing<UserDTO>(invitedUsersGrid);
      
-     // TODO: also have way to have comparison so editor is disabled when user is me
-
      rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
      gridEditing.addEditor(roleColumn, rolesCombo);
 
       uiBinder.createAndBindUi(this);
+      
+      accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(2));
+      invitedUsersGrid.getView().setAutoExpandColumn(emailColumn);
+//      invitedUsersGrid.getView().setStripeRows(true); // This is working
+      
+      
       
       invitedUsersPanel.setVisible(false);
       
