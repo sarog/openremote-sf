@@ -7,18 +7,26 @@
 
 	<ui:with type="org.openremote.modeler.client.icon.IconResources" field="icons" />
 
+	<ui:with type="com.sencha.gxt.core.client.util.Margins" field="panelMargins">
+    <ui:attributes top="40" right="0" bottom="0" left="0" />
+  </ui:with>
+
+  <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="panelData">
+    <ui:attributes width="1" height=".5d" margins="{panelMargins}" />
+  </ui:with>
+
 	<gxt:Window pixelSize="452, 280" minHeight="280" modal="true" blinkModal="true" headingText="Account management">
 		<container:VerticalLayoutContainer>
 			<container:child>
 				<button:TextButton text="Invite other users" icon="{icons.add}" ui:field="inviteUserButton" />
 			</container:child>
-      <container:child>
-        <gxt:ContentPanel headingText="Pending invitations" bodyBorder="false" pixelSize="440, 150" ui:field="invitedUsersPanel">
+      <container:child layoutData="{panelData}">
+        <gxt:ContentPanel headingText="Pending invitations" bodyBorder="false" ui:field="invitedUsersPanel">
           <grid:Grid ui:field="invitedUsersGrid"/>
         </gxt:ContentPanel>
       </container:child>
-      <container:child>
-        <gxt:ContentPanel headingText="Users with account access" bodyBorder="false" pixelSize="440, 150">
+      <container:child layoutData="{panelData}">
+        <gxt:ContentPanel headingText="Users with account access" bodyBorder="false">
           <grid:Grid ui:field="accessUsersGrid"/>
         </gxt:ContentPanel>
       </container:child>
