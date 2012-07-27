@@ -63,6 +63,8 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * This window is for managing users that with the same account, except for the current user.
+ * 
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class AccountManageWindow extends Window {  
   
@@ -159,7 +161,7 @@ public class AccountManageWindow extends Window {
      
      final GridInlineEditing<UserDTO> accessUsersGridEditing = new GridInlineEditing<UserDTO>(accessUsersGrid);
 
-     SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, invitedUsersStore);     
+     SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, accessUsersStore);     
      accessUsersGridEditing.addEditor(roleColumn, rolesCombo);
      accessUsersGridEditing.addBeforeStartEditHandler(new BeforeStartEditHandler<UserDTO>() {
       @Override
@@ -324,7 +326,7 @@ public class AccountManageWindow extends Window {
            AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
               public void onSuccess(UserDTO userDTO) {
                 user.setRoles(userDTO.getRoles());
-                 Info.display("Change role", "Change role to " + roleStrs + " success.");
+                Info.display("Change role", "Change role to " + roleStrs + " success.");
               }
            });
         }
