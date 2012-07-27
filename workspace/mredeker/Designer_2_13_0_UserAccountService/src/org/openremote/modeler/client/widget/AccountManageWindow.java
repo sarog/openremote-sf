@@ -110,20 +110,9 @@ public class AccountManageWindow extends Window {
       
 //      addInvitedUsers();
 //      createAccessUserGrid();
-
-      SelectHandler deleteSelectHandler = new SelectHandler() { 
-        @Override
-        public void onSelect(SelectEvent event) {
-          final UserDTO user = accessUsersStore.get(event.getContext().getIndex());
-          AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
-            public void onSuccess(Void result) {
-               accessUsersStore.remove(user);
-               Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
-            }
-         });
-        }
-      };
       
+      accessUsersStore = new ListStore<UserDTO>(users.key());
+
     ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
     emailColumn.setSortable(false);
     emailColumn.setCell(new AbstractCell<String>() {
@@ -152,7 +141,7 @@ public class AccountManageWindow extends Window {
       }
     };
     button.setIcon(icons.delete());
-    button.addSelectHandler(deleteSelectHandler);
+    button.addSelectHandler(createDeleteSelectHandler(accessUsersStore));
     deleteColumn.setCell(button);
     
      List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
@@ -160,11 +149,12 @@ public class AccountManageWindow extends Window {
      l.add(deleteColumn);
 
      accessUsersColumnModel = new ColumnModel<UserDTO>(l);
-     accessUsersStore = new ListStore<UserDTO>(users.key());
 //      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
 
      
      accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
+
+     invitedUsersStore = new ListStore<UserDTO>(users.key());
 
      l = new ArrayList<ColumnConfig<UserDTO, ?>>();
      emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
@@ -178,14 +168,13 @@ public class AccountManageWindow extends Window {
        }
      };
      button.setIcon(icons.delete());
-     button.addSelectHandler(deleteSelectHandler);
+     button.addSelectHandler(createDeleteSelectHandler(invitedUsersStore));
      deleteColumn.setCell(button);
      
      l.add(emailColumn);
      l.add(deleteColumn);
      
      invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
-     invitedUsersStore = new ListStore<UserDTO>(users.key());
      invitedUsersGrid = new Grid<UserDTO>(invitedUsersStore, invitedUsersColumnModel);
      
       uiBinder.createAndBindUi(this);
@@ -406,4 +395,19 @@ public class AccountManageWindow extends Window {
       return combo;
    }
       */
+   
+   private SelectHandler createDeleteSelectHandler(final ListStore<UserDTO> store) {
+     return new SelectHandler() { 
+       @Override
+       public void onSelect(SelectEvent event) {
+         final UserDTO user = store.get(event.getContext().getIndex());         
+         AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
+           public void onSuccess(Void result) {
+              store.remove(user);
+              Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
+           }
+        });
+       }
+     };
+   }
 }
