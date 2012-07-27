@@ -166,7 +166,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     public void updateUser(UserDTO user) {
       ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
+      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class", "registerTimeAsString").deepSerialize(user));
       Representation r = cr.put(rep);
 
       String str = null;
