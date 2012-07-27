@@ -115,99 +115,19 @@ public class AccountManageWindow extends Window {
    private ListStore<UserDTO> invitedUsersStore;
 
    public AccountManageWindow(long cureentUserId) {
-      this.cureentUserId = cureentUserId;
-      
-      
-      
+    this.cureentUserId = cureentUserId;
+
 //      setButtonAlign(HorizontalAlignment.CENTER);
 //      setAutoHeight(true);
 
-      accessUsersStore = new ListStore<UserDTO>(users.key());
-
-    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
-    emailColumn.setSortable(false);
-    emailColumn.setCell(new AbstractCell<String>() {
-      @Override
-      public void render(Context context, String value, SafeHtmlBuilder sb) {
-        UserDTO user = accessUsersStore.findModelWithKey((String)context.getKey());
-        sb.appendHtmlConstant("<span title='");
-        sb.appendEscaped(user.getUsername());
-        sb.appendHtmlConstant("'>");
-        sb.appendEscaped(value);
-        if (AccountManageWindow.this.cureentUserId == Long.parseLong((String)context.getKey())) {
-          sb.appendHtmlConstant("<b> - me </b>");
-        }
-        sb.appendHtmlConstant("</span>");
-      }
-    });
-    
-    ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
-    
-    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
-      @Override
-      public void render(Context context, String value, SafeHtmlBuilder sb) {       
-        if (AccountManageWindow.this.cureentUserId != Long.parseLong((String)context.getKey())) {
-          super.render(context, "", sb);
-        }
-      }
-    }, accessUsersStore);
-    
-     List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
-     l.add(emailColumn);
-     l.add(roleColumn);
-     l.add(deleteColumn);
-     
-     accessUsersColumnModel = new ColumnModel<UserDTO>(l);
-//   store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
-     accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
-     
-     final GridInlineEditing<UserDTO> accessUsersGridEditing = new GridInlineEditing<UserDTO>(accessUsersGrid);
-
-     SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, accessUsersStore);     
-     accessUsersGridEditing.addEditor(roleColumn, rolesCombo);
-     accessUsersGridEditing.addBeforeStartEditHandler(new BeforeStartEditHandler<UserDTO>() {
-      @Override
-      public void onBeforeStartEdit(BeforeStartEditEvent<UserDTO> event) {
-        UserDTO user = accessUsersStore.get(event.getEditCell().getRow());
-        if (AccountManageWindow.this.cureentUserId == user.getOid()) {
-          event.setCancelled(true);
-        }
-      }
-    });
-     
-     invitedUsersStore = new ListStore<UserDTO>(users.key());
-
-     l = new ArrayList<ColumnConfig<UserDTO, ?>>();
-     emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
-
-     roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
-
-     deleteColumn = createDeleteColumn(new TextButtonCell() {
-       @Override
-       public void render(Context context, String value, SafeHtmlBuilder sb) {
-           super.render(context, "", sb);
-       }
-     }, invitedUsersStore);
-     
-     l.add(emailColumn);
-     l.add(roleColumn);
-     l.add(deleteColumn);
-     
-     invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
-     invitedUsersGrid = new Grid<UserDTO>(invitedUsersStore, invitedUsersColumnModel);
-     
-    
-     final GridInlineEditing<UserDTO> gridEditing = new GridInlineEditing<UserDTO>(invitedUsersGrid);
-     
-     rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
-     gridEditing.addEditor(roleColumn, rolesCombo);
+    createAccessUsersGrid();
+    createInvitedUsersGrid();
 
       uiBinder.createAndBindUi(this);
       
       accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(2));
-      invitedUsersGrid.getView().setAutoExpandColumn(emailColumn);
+      invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(1));
 //      invitedUsersGrid.getView().setStripeRows(true); // This is working
-      
       
       invitedUsersPanel.setVisible(false);      
       accessUsersGrid.mask("Loading users...");
@@ -229,10 +149,15 @@ public class AccountManageWindow extends Window {
         }
      });
 
+      /*
+      accessUsersContainer.setLayout(new FitLayout());
+      accessUsersContainer.setStyleAttribute("paddingTop", "5px");
+      */
+
       show();
    }
-   
-   /**
+
+  /**
     * Brings up a dialog to enter e-mail and role of user to invite.
     * On success, pending invitations table is updated with newly invited user.
     */   
@@ -252,17 +177,89 @@ public class AccountManageWindow extends Window {
      }, UserInvitedEvent.TYPE);
      inviteUserWindow.show();
    }
-
-      /*
-
-//      ContentPanel accessUsersContainer = new ContentPanel();
-//      accessUsersContainer.setBodyBorder(false);
-//      accessUsersContainer.setHeading("Users with account access");
-      accessUsersContainer.setLayout(new FitLayout());
-      accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-//      accessUsersContainer.setSize(440, 150);
-      */
    
+  private void createAccessUsersGrid() {
+    accessUsersStore = new ListStore<UserDTO>(users.key());
+
+    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
+    emailColumn.setSortable(false);
+    emailColumn.setCell(new AbstractCell<String>() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {
+        UserDTO user = accessUsersStore.findModelWithKey((String)context.getKey());
+        sb.appendHtmlConstant("<span title='");
+        sb.appendEscaped(user.getUsername());
+        sb.appendHtmlConstant("'>");
+        sb.appendEscaped(value);
+        if (AccountManageWindow.this.cureentUserId == Long.parseLong((String)context.getKey())) {
+          sb.appendHtmlConstant("<b> - me </b>");
+        }
+        sb.appendHtmlConstant("</span>");
+      }
+    });
+     
+    ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
+     
+    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {       
+        if (AccountManageWindow.this.cureentUserId != Long.parseLong((String)context.getKey())) {
+          super.render(context, "", sb);
+        }
+      }
+    }, accessUsersStore);
+     
+    List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+    l.add(emailColumn);
+    l.add(roleColumn);
+    l.add(deleteColumn);
+    
+    accessUsersColumnModel = new ColumnModel<UserDTO>(l);
+    accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
+    
+    final GridInlineEditing<UserDTO> accessUsersGridEditing = new GridInlineEditing<UserDTO>(accessUsersGrid);
+
+    SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, accessUsersStore);     
+    accessUsersGridEditing.addEditor(roleColumn, rolesCombo);
+    accessUsersGridEditing.addBeforeStartEditHandler(new BeforeStartEditHandler<UserDTO>() {
+      @Override
+      public void onBeforeStartEdit(BeforeStartEditEvent<UserDTO> event) {
+        UserDTO user = accessUsersStore.get(event.getEditCell().getRow());
+        if (AccountManageWindow.this.cureentUserId == user.getOid()) {
+          event.setCancelled(true);
+        }
+      }
+    });
+  }
+
+  private void createInvitedUsersGrid() {
+    invitedUsersStore = new ListStore<UserDTO>(users.key());
+
+    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
+
+    ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
+
+    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {
+        super.render(context, "", sb);
+      }
+    }, invitedUsersStore);
+    
+    List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+    l.add(emailColumn);
+    l.add(roleColumn);
+    l.add(deleteColumn);
+    
+    invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
+    invitedUsersGrid = new Grid<UserDTO>(invitedUsersStore, invitedUsersColumnModel);
+   
+    final GridInlineEditing<UserDTO> gridEditing = new GridInlineEditing<UserDTO>(invitedUsersGrid);
+    
+    SimpleComboBox<String> rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
+    gridEditing.addEditor(roleColumn, rolesCombo);
+  }
+
    private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
      SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
      rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
