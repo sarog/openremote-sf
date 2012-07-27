@@ -9,7 +9,7 @@
 		
 	</ui:style>
 	
-	<gxt:Window pixelSize="370, 150" minHeight="150" modal="true" blinkModal="true" headingText="Invite user">
+	<gxt:Window pixelSize="370, 130" minHeight="130" modal="true" blinkModal="true" headingText="Invite user">
 	<form:FormPanel ui:field="form">
     <container:VerticalLayoutContainer>
       <container:child>

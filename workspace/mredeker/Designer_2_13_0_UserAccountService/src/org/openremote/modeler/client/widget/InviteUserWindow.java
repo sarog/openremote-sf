@@ -7,6 +7,8 @@ import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,13 +17,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SubmitEvent;
-import com.sencha.gxt.widget.core.client.event.SubmitEvent.SubmitHandler;
 import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 public class InviteUserWindow extends Window {
 
@@ -39,31 +38,10 @@ public class InviteUserWindow extends Window {
     rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
     
     uiBinder.createAndBindUi(this);
+    
+//    form.setLabelAlign(LabelAlign.RIGHT); // This was specified in previous version but is not supported as of GXT3.0.0b
    
     emailField.addValidator(new RegExValidator(Constants.REG_EMAIL, "Please input a correct email."));
-    
-    form.addSubmitHandler(new SubmitHandler() {
-      
-      @Override
-      public void onSubmit(SubmitEvent event) {
-        form.mask("sending email...");
-        
-        // TODO: where does validation happen on the form ???
-        
-        
-        AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(), rolesCombo.getValue(), new AsyncSuccessCallbackGXT3<UserDTO>() {
-                   public void onSuccess(UserDTO userDTO) {
-                      form.unmask();
-//                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
-                   }
-                   public void onFailure(Throwable caught) {
-                      super.onFailure(caught);
-                      form.unmask();
-                   }
-        });     
-        }
-    });
-    Info.display("INFO", "Out of constructor");
   }
 
   @UiFactory
@@ -82,11 +60,19 @@ public class InviteUserWindow extends Window {
   
   @UiHandler("sendInvitationButton")
   void onSendClick(SelectEvent e) {
-    
-    
-    // TODO: check how form validation works
-    
-    form.submit();
+    if (form.isValid()) {
+      form.mask("sending email...");      
+      AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(), rolesCombo.getValue(), new AsyncSuccessCallbackGXT3<UserDTO>() {
+         public void onSuccess(UserDTO userDTO) {
+            form.unmask();
+            fireEvent(new UserInvitedEvent(userDTO));
+         }
+         public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            form.unmask();
+         }
+      });     
+    }
   }
   
   @UiHandler("cancelButton")
@@ -94,88 +80,29 @@ public class InviteUserWindow extends Window {
     this.hide();
   }
   
-
-
-  
-  
-  
-  
-  
-  
-  /**
-   * The inner class is for inviting a user have the same account, it would send a invitation to the email.
-   */
-/*
-  private class InviteUserWindow extends FormWindow {
-     public InviteUserWindow() {
-//        setSize(370, 150);
-//        setHeading("Invite user");
-        form.setLabelAlign(LabelAlign.RIGHT);
-        createFields();
-        createButtons(this);
-        add(form);
-        show();
-     }
-     */
-     /**
-      * Creates two fields: email address input and role combobox.
-      */
-/*
-     private void createFields() {
-        final TextField<String> emailField = new TextField<String>();
-        emailField.setFieldLabel("Email address");
-        emailField.setAllowBlank(false);
-        emailField.setRegex(Constants.REG_EMAIL);
-        emailField.getMessages().setRegexText("Please input a correct email.");
-        
-        final ComboBoxExt roleList = new ComboBoxExt();
-        roleList.setFieldLabel("Role");
-        roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_ADMIN_DISPLAYNAME, RoleDTO.ROLE_ADMIN_DISPLAYNAME));
-        roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-        roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
-        roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-        roleList.setValue(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-        form.add(emailField);
-        form.add(roleList);
-        
-        form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-           public void handleEvent(FormEvent be) {
-              form.mask("sending email...");
-              AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(),
-                    roleList.getValue().get("data").toString(), new AsyncSuccessCallback<UserDTO>() {
-                       public void onSuccess(UserDTO userDTO) {
-                          form.unmask();
-                          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
-                       }
-                       public void onFailure(Throwable caught) {
-                          super.onFailure(caught);
-                          form.unmask();
-                       }
-                       
-                    });
-           }
-        });
-     }
-        */
-     
-     /**
-      * Creates two buttons to send invitation or cancel.
-      * 
-      * @param window the window
-      */
-     /*
-     private void createButtons(final InviteUserWindow window) {
-        Button send = new Button("Send invitation");
-        send.addSelectionListener(new FormSubmitListener(form, send));
-        Button cancel = new Button("Cancel");
-        cancel.addSelectionListener(new SelectionListener<ButtonEvent>() {
-           public void componentSelected(ButtonEvent ce) {
-              window.hide();
-           }
-        });
-        form.addButton(send);
-        form.addButton(cancel);
-     }
+  public interface UserInvitedHandler extends EventHandler {
+    void userInvited(UserDTO user);
   }
-     */
+  
+  public static class UserInvitedEvent extends GwtEvent<UserInvitedHandler> {
+    
+    public static Type<UserInvitedHandler> TYPE = new Type<UserInvitedHandler>();
+    
+    private UserDTO user;
+    
+    public UserInvitedEvent(UserDTO user) {
+      super();
+      this.user = user;
+    }
+
+    @Override
+    public Type<UserInvitedHandler> getAssociatedType() {
+      return TYPE;
+    }
+
+    @Override
+    protected void dispatch(UserInvitedHandler handler) {
+      handler.userInvited(this.user);
+    }    
+  }
 }
