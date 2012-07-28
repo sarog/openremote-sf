@@ -289,6 +289,7 @@ public class AccountManageWindow extends Window {
             public void onSuccess(UserDTO userDTO) {
               user.setRoles(userDTO.getRoles());
               Info.display("Change role", "Change role to " + roleStrs + " success.");
+              gridEditing.completeEditing();
             }
           });
         }
