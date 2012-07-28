@@ -137,10 +137,10 @@ public class ControllerManageWindow extends Window {
   private void createLinkedControllerGrid() {
     linkedControllerStore = new ListStore<ControllerDTO>(controllers.key());
 
-    ColumnConfig<ControllerDTO, Long> idColumn = new ColumnConfig<ControllerDTO, Long>(controllers.oid(), 20, "Id");
+    ColumnConfig<ControllerDTO, Long> idColumn = new ColumnConfig<ControllerDTO, Long>(controllers.oid(), 20, "ID");
     idColumn.setSortable(false);
      
-    ColumnConfig<ControllerDTO, String> macAddressColumn = new ColumnConfig<ControllerDTO, String>(controllers.macAddress(), 210, "MAC Address");
+    ColumnConfig<ControllerDTO, String> macAddressColumn = new ColumnConfig<ControllerDTO, String>(controllers.macAddress(), 310, "MAC Address");
      
     ColumnConfig<ControllerDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
       public void render(Context context, String value, SafeHtmlBuilder sb) {       
