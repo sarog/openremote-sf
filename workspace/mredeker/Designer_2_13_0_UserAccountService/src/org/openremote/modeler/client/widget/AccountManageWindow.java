@@ -139,23 +139,27 @@ public class AccountManageWindow extends Window {
     accessUsersGrid.mask("Loading users...");
 
     show();
-
+    
     AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
       @Override
       public void onSuccess(ArrayList<UserDTO> accessUsers) {
         accessUsersStore.addAll(accessUsers);
         accessUsersGrid.unmask();
+        AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+          public void onSuccess(ArrayList<UserDTO> invitedUsers) {
+            if (invitedUsers.size() > 0) {
+              invitedUsersStore.addAll(invitedUsers);
+              invitedUsersPanel.setVisible(true);
+            }
+            // Ensures that grids are sized & display content correctly.
+            // Seems that size must be different than original size set in XML in both directions.
+            // Setting it 1 pixel bigger in both directions, make sure to keep in sync if changed in XML.
+            setPixelSize(453, 281);
+          }
+        });
       }
     });
 
-    AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-      public void onSuccess(ArrayList<UserDTO> invitedUsers) {
-        if (invitedUsers.size() > 0) {
-          invitedUsersStore.addAll(invitedUsers);
-          invitedUsersPanel.setVisible(true);
-        }
-      }
-    });
   }
 
   /**
