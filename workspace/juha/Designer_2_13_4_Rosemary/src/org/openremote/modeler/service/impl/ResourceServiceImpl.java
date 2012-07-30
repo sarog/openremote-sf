@@ -1004,8 +1004,15 @@ public class ResourceServiceImpl implements ResourceService
   private void populateDTOReferences(UIComponent component) {    if (component instanceof SensorOwner) {
       SensorOwner owner = (SensorOwner) component;
       if (owner.getSensorDTO() == null && owner.getSensor() != null) {
-        owner.setSensorDTO(SensorController.createSensorWithInfoDTO(owner.getSensor()));
+        Sensor sensor = sensorService.loadById(owner.getSensor().getOid());
+
+        if (sensor != null)
+        {
+          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+        }
+
         owner.setSensor(null);
+
         if (owner instanceof SensorLinkOwner) {
           ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
           ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
@@ -1302,6 +1309,11 @@ public class ResourceServiceImpl implements ResourceService
       //    same comment applies, the processing is part of the domain object which should also
       //    help reduce the very brittle instanceof semantics seen in the populate and resolve
       //    DTO references here.
+      //
+      //    Also the error handling needs to be pushed to new DesignerState implementation
+      //    so that errors in the implementation below are correctly handled and potentially
+      //    preventing user data corruption.
+      // 
       //                                                                            [JPL]
 
       populateDTOReferences(result.getPanels());
