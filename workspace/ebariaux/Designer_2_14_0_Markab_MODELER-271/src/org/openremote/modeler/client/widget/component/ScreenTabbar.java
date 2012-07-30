@@ -128,7 +128,7 @@ public class ScreenTabbar extends ScreenComponent {
 
    @Override
    public PropertyForm getPropertiesForm() {
-      return new TabbarPropertyForm(this, widgetSelectionUtil);
+      return new TabbarPropertyForm(this, this.uiTabbar, widgetSelectionUtil);
    }
    
    @Override
