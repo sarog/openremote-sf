@@ -35,11 +35,11 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class TabbarPropertyForm extends PropertyForm {
    
-   private ScreenTabbar tabbar = null;
+   private ScreenTabbar screenTabBar = null;
    
-   public TabbarPropertyForm(ScreenTabbar tabbar, WidgetSelectionUtil widgetSelectionUtil) {
-      super(tabbar, widgetSelectionUtil);
-      this.tabbar = tabbar;
+   public TabbarPropertyForm(ScreenTabbar screenTabBar, WidgetSelectionUtil widgetSelectionUtil) {
+      super(screenTabBar, widgetSelectionUtil);
+      this.screenTabBar = screenTabBar;
       setLayout(new FormLayout());
       addFields();
       super.addDeleteButton();
@@ -50,10 +50,10 @@ public class TabbarPropertyForm extends PropertyForm {
       
       final Radio groupScopeRadio = new Radio();
       groupScopeRadio.setBoxLabel("Group");
-      groupScopeRadio.setValue(tabbar.isGroupScope());
+      groupScopeRadio.setValue(screenTabBar.isGroupScope());
       
       final Radio panelScopeRadio = new Radio();
-      panelScopeRadio.setValue(tabbar.isPanelScope());
+      panelScopeRadio.setValue(screenTabBar.isPanelScope());
       panelScopeRadio.setBoxLabel("Panel");
       
       panelScopeRadio.addListener(Events.Change, new Listener<FieldEvent>() {
@@ -62,9 +62,9 @@ public class TabbarPropertyForm extends PropertyForm {
          public void handleEvent(FieldEvent be) {
             boolean panelScope = panelScopeRadio.getValue();
             if (panelScope) {
-               tabbar.setToPanel();
+               screenTabBar.setToPanel();
             } else {
-               tabbar.setToGroup();
+               screenTabBar.setToGroup();
             }
          }
          
