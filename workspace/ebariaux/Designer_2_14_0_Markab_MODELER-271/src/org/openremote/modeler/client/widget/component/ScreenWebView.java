@@ -28,13 +28,11 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.WebViewPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
-import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UIWebView;
 import org.openremote.modeler.shared.PropertyChangeEvent;
 import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
@@ -182,7 +180,7 @@ public class ScreenWebView extends ScreenComponent {
       setText(uiWebView.getURL());
    }
    public void onStateChange() {
-      Sensor sensor = uiWebView.getSensor();
+      SensorWithInfoDTO sensor = uiWebView.getSensorDTO();
       if (sensor != null && states.isEmpty()) {
          if (sensor.getType() == SensorType.SWITCH) {
             if (!"".equals(uiWebView.getSensorLink().getStateValueByStateName("on"))) {
@@ -193,11 +191,11 @@ public class ScreenWebView extends ScreenComponent {
             }
          } else if (sensor.getType() == SensorType.CUSTOM) {
             SensorLink sensorLink = uiWebView.getSensorLink();
-            for (State state : ((CustomSensor)sensor).getStates()) {
-               if (!"".equals(uiWebView.getSensorLink().getStateValueByStateName(state.getName()))) {
-                  states.add(sensorLink.getStateValueByStateName(state.getName()));
-               }
-            }
+            for (String stateName : sensor.getStateNames()) {
+              if (!"".equals(uiWebView.getSensorLink().getStateValueByStateName(stateName))) {
+                 states.add(sensorLink.getStateValueByStateName(stateName));
+              }
+           }
          }
       }
       
