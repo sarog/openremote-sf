@@ -22,6 +22,7 @@ package org.openremote.modeler.client.widget.propertyform;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
+import org.openremote.modeler.domain.component.UITabbar;
 
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -36,10 +37,12 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class TabbarPropertyForm extends PropertyForm {
    
    private ScreenTabbar screenTabBar = null;
+   private UITabbar tabBar;
    
-   public TabbarPropertyForm(ScreenTabbar screenTabBar, WidgetSelectionUtil widgetSelectionUtil) {
+   public TabbarPropertyForm(ScreenTabbar screenTabBar, UITabbar tabBar, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenTabBar, widgetSelectionUtil);
       this.screenTabBar = screenTabBar;
+      this.tabBar = tabBar;
       setLayout(new FormLayout());
       addFields();
       super.addDeleteButton();
