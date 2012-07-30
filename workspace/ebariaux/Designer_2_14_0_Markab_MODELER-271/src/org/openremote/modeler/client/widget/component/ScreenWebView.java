@@ -33,6 +33,8 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UIWebView;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
@@ -62,6 +64,37 @@ public class ScreenWebView extends ScreenComponent {
    public ScreenWebView(ScreenCanvas canvas, UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
       this.uiWebView = uiWebView;
+      this.uiWebView.addPropertyChangeListener("URL", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          center.setText((String) evt.getNewValue());
+          adjustTextLength();
+        }
+      });
+      final PropertyChangeListener linkerChildrenListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+        }
+      };      
+      uiWebView.addPropertyChangeListener("sensorLink", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          clearSensorStates();
+
+          // SensorLink change, should "move" our linkerChildren listener to the new one
+          if (evt.getOldValue() != null) {
+            ((SensorLink)evt.getOldValue()).removePropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+          if (evt.getNewValue() != null) {
+            ((SensorLink)evt.getNewValue()).addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+          }
+        }
+      });
+      if (uiWebView.getSensorLink() != null) {
+        uiWebView.getSensorLink().addPropertyChangeListener("linkerChildren", linkerChildrenListener);
+      }
+
       center.setText(uiWebView.getURL());
       initial();
       adjustTextLength();

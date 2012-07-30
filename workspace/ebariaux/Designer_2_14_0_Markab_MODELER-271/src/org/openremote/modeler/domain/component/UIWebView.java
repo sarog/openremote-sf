@@ -65,7 +65,9 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 		   }
 	   
 	   public void setURL(String url) {
+	     String oldURL = this.url;
 	      this.url = url;
+        pcSupport.firePropertyChange("URL", oldURL, this.url);
 	   }
 
 	   public void setUserName(String userid) {
@@ -87,7 +89,9 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public void setSensorAndInitSensorLink(Sensor sensor) {
 	      this.sensor = sensor;
 	      if (sensor != null) {
+	         SensorLink oldLink = this.sensorLink;
 	         this.sensorLink = new SensorLink(sensor);
+	         pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
 	      } else {
 	         sensorLink.clear();
 	      }
@@ -98,7 +102,9 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   }
 
 	   public void setSensorLink(SensorLink sensorLinker) {
+	     SensorLink oldLink = this.sensorLink;
 	      this.sensorLink = sensorLinker;
+	      pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
 	   }
 
      public SensorWithInfoDTO getSensorDTO() {
@@ -112,8 +118,10 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
      public void setSensorDTOAndInitSensorLink(SensorWithInfoDTO sensorDTO) {
        this.sensorDTO = sensorDTO;
        if (sensorDTO != null) {
-          this.sensorLink = new SensorLink();
-          this.sensorLink.setSensorDTO(sensorDTO);
+         SensorLink oldLink = this.sensorLink;
+         this.sensorLink = new SensorLink();
+         this.sensorLink.setSensorDTO(sensorDTO);
+         pcSupport.firePropertyChange("sensorLink", oldLink, this.sensorLink);
        } else {
           sensorLink.clear();
        }
