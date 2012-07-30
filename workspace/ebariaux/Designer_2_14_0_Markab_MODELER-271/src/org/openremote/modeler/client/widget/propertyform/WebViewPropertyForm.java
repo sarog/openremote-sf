@@ -30,9 +30,9 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
-import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.component.UIWebView;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -55,13 +55,11 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class WebViewPropertyForm extends PropertyForm {
    
-   private ScreenWebView screenWebView;
    private UIWebView uiWebView;
    private FieldSet statesPanel;
    
    public WebViewPropertyForm(ScreenWebView screenWebView, UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenWebView, widgetSelectionUtil);
-      this.screenWebView = screenWebView;
       this.uiWebView = uiWebView;
       addFields();
       createSensorStates();
@@ -79,7 +77,6 @@ public class WebViewPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             if(urlField.getValue()!=null&&urlField.getValue().trim().length()!=0)
-            screenWebView.setText(urlField.getValue());
             uiWebView.setURL(urlField.getValue());
          }
       });
@@ -131,13 +128,12 @@ public class WebViewPropertyForm extends PropertyForm {
                   } else {
                      statesPanel.hide();
                   }
-                  screenWebView.clearSensorStates();
                }
             });
          }
       });
-      if (uiWebView.getSensor() != null) {
-         sensorSelectBtn.setText(uiWebView.getSensor().getDisplayName());
+      if (uiWebView.getSensorDTO() != null) {
+         sensorSelectBtn.setText(uiWebView.getSensorDTO().getDisplayName());
       }
      
       AdapterField adapter = new AdapterField(sensorSelectBtn);
@@ -152,7 +148,7 @@ public class WebViewPropertyForm extends PropertyForm {
       statesPanel.setHeading("Sensor State");
       add(statesPanel);
       
-      Sensor sensor = uiWebView.getSensor();
+      SensorWithInfoDTO sensor = uiWebView.getSensorDTO();
       if (sensor == null) {
          statesPanel.hide();
       } else if (sensor.getType() != SensorType.SWITCH && sensor.getType() != SensorType.CUSTOM) {
@@ -178,7 +174,6 @@ public class WebViewPropertyForm extends PropertyForm {
                sensorAttrs.put("value", onText);
                uiWebView.getSensorLink().addOrUpdateChildForSensorLinker("state", sensorAttrs);
             }
-            screenWebView.clearSensorStates();
          }
      });
      return textField;
