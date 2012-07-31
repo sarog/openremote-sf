@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol.enocean;
 
+import org.openremote.controller.utils.Strings;
+
 /**
  * Indicates a connectivity error related to an EnOcean Serial Protocol error.
  *
@@ -38,47 +40,81 @@ public class EspException extends ConnectionException
     /**
      * TODO
      */
-    RESP_ERROR,
+    RESP_ERROR(0x01),
 
     /**
      * TODO
      */
-    RESP_NOT_SUPPORTED,
+    RESP_NOT_SUPPORTED(0x02),
 
     /**
      * TODO
      */
-    RESP_WRONG_PARAM,
+    RESP_WRONG_PARAM(0x03),
 
     /**
      * TODO
      */
-    RESP_OPERATION_DENIED,
+    RESP_OPERATION_DENIED(0x04),
 
     /**
      * TODO
      */
-    RESP_INVALID_RESPONSE,
+    RESP_INVALID_RESPONSE(0x80),
 
     /**
      * TODO
      */
-    RESP_UNKNOWN_RETURN_CODE,
+    RESP_UNKNOWN_RETURN_CODE(0x81),
 
     /**
      * TODO
      */
-    RESP_UNKNOWN_PACKET_TYPE,
+    RESP_UNKNOWN_PACKET_TYPE(0x82),
 
     /**
      * TODO
      */
-    RESP_INVALID_DEVICE_ID,
+    RESP_INVALID_DEVICE_ID(0x83),
 
     /**
      * TODO
      */
-    RESP_TIMEOUT
+    RESP_TIMEOUT(0x84);
+
+    // Members ------------------------------------------------------------------------------------
+
+    public static ErrorCode resolve(int value) throws UnknownErrorCodeException
+    {
+      ErrorCode[] allCodes = ErrorCode.values();
+
+      byte errorCodeByte = (byte)(value & 0xFF);
+
+      for (ErrorCode errorCode : allCodes)
+      {
+        if (errorCode.value == errorCodeByte)
+        {
+          return errorCode;
+        }
+      }
+
+      throw new UnknownErrorCodeException(
+          "Unknown EspException error code : " +
+              Strings.byteToUnsignedHexString(errorCodeByte)
+      );
+    }
+
+    private byte value;
+
+    private ErrorCode(int value)
+    {
+      this.value = (byte)(value & 0xFF);
+    }
+
+    public byte getValue()
+    {
+      return value;
+    }
   }
 
   // Private Instance Fields ----------------------------------------------------------------------
@@ -158,5 +194,18 @@ public class EspException extends ConnectionException
   public ErrorCode getErrorCode()
   {
     return errorCode;
+  }
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  /**
+   * Indicates an unknown {@link EspException.ErrorCode error code}.
+   */
+  public static class UnknownErrorCodeException extends Exception
+  {
+    public UnknownErrorCodeException(String msg)
+    {
+      super(msg);
+    }
   }
 }

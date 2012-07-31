@@ -65,11 +65,134 @@ public abstract class EepType
   private final static Map<String, EepType> lookup = new HashMap<String, EepType>(100);
 
   /**
-   * EEP F6-02-01 type.
+   * EnOcean equipment profile (EEP) 'F6-02-01' type.
    */
   public final static EepType EEP_TYPE_F60201 = new EepTypeF60201();
 
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-01' type.
+   */
+  public final static EepType EEP_TYPE_A50201 = new EepTypeA50201();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-02' type.
+   */
+  public final static EepType EEP_TYPE_A50202 = new EepTypeA50202();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-03' type.
+   */
+  public final static EepType EEP_TYPE_A50203 = new EepTypeA50203();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-04' type.
+   */
+  public final static EepType EEP_TYPE_A50204 = new EepTypeA50204();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-05' type.
+   */
   public final static EepType EEP_TYPE_A50205 = new EepTypeA50205();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-06' type.
+   */
+  public final static EepType EEP_TYPE_A50206 = new EepTypeA50206();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-07' type.
+   */
+  public final static EepType EEP_TYPE_A50207 = new EepTypeA50207();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-08' type.
+   */
+  public final static EepType EEP_TYPE_A50208 = new EepTypeA50208();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-09' type.
+   */
+  public final static EepType EEP_TYPE_A50209 = new EepTypeA50209();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-0A' type.
+   */
+  public final static EepType EEP_TYPE_A5020A = new EepTypeA5020A();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-0B' type.
+   */
+  public final static EepType EEP_TYPE_A5020B = new EepTypeA5020B();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-10' type.
+   */
+  public final static EepType EEP_TYPE_A50210 = new EepTypeA50210();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-11' type.
+   */
+  public final static EepType EEP_TYPE_A50211 = new EepTypeA50211();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-12' type.
+   */
+  public final static EepType EEP_TYPE_A50212 = new EepTypeA50212();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-13' type.
+   */
+  public final static EepType EEP_TYPE_A50213 = new EepTypeA50213();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-14' type.
+   */
+  public final static EepType EEP_TYPE_A50214 = new EepTypeA50214();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-15' type.
+   */
+  public final static EepType EEP_TYPE_A50215 = new EepTypeA50215();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-16' type.
+   */
+  public final static EepType EEP_TYPE_A50216 = new EepTypeA50216();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-17' type.
+   */
+  public final static EepType EEP_TYPE_A50217 = new EepTypeA50217();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-18' type.
+   */
+  public final static EepType EEP_TYPE_A50218 = new EepTypeA50218();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-19' type.
+   */
+  public final static EepType EEP_TYPE_A50219 = new EepTypeA50219();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-1A' type.
+   */
+  public final static EepType EEP_TYPE_A5021A = new EepTypeA5021A();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-1B' type.
+   */
+  public final static EepType EEP_TYPE_A5021B = new EepTypeA5021B();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-20' type.
+   */
+  public final static EepType EEP_TYPE_A50220 = new EepTypeA50220();
+
+  /**
+   * EnOcean equipment profile (EEP) 'A5-02-30' type.
+   */
+  public final static EepType EEP_TYPE_A50230 = new EepTypeA50230();
 
   /**
    * End of FUNC value range: {@value}
@@ -280,7 +403,7 @@ public abstract class EepType
   }
 
   /**
-   * Represents the EEP number F6-02-01.
+   * EnOcean equipment profile (EEP) type 'F6-02-01'.
    */
   private static class EepTypeF60201 extends EepType
   {
@@ -303,7 +426,99 @@ public abstract class EepType
   }
 
   /**
-   * Represents the EEP number A5-02-05.
+   * EnOcean equipment profile (EEP) type 'A5-02-01'.
+   */
+  private static class EepTypeA50201 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-01' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50201()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x01);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50201(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-02'.
+   */
+  private static class EepTypeA50202 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-02' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50202()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x02);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50202(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-03'.
+   */
+  private static class EepTypeA50203 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-03' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50203()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x03);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50203(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-04'.
+   */
+  private static class EepTypeA50204 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-04' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50204()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x04);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50204(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-05'.
    */
   private static class EepTypeA50205 extends EepType
   {
@@ -321,7 +536,468 @@ public abstract class EepType
      */
     @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
     {
-      return new EepA50205(this, deviceID, command);
+      return new EepA50205(deviceID, command);
     }
   }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-06'.
+   */
+  private static class EepTypeA50206 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-06' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50206()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x06);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50206(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-07'.
+   */
+  private static class EepTypeA50207 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-07' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50207()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x07);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50207(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-08'.
+   */
+  private static class EepTypeA50208 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-08' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50208()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x08);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50208(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-09'.
+   */
+  private static class EepTypeA50209 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-09' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50209()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x09);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50209(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-0A'.
+   */
+  private static class EepTypeA5020A extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-0A' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA5020A()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x0A);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA5020A(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-0B'.
+   */
+  private static class EepTypeA5020B extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-0B' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA5020B()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x0B);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA5020B(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-10'.
+   */
+  private static class EepTypeA50210 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-10' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50210()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x10);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50210(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-11'.
+   */
+  private static class EepTypeA50211 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-11' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50211()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x11);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50211(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-12'.
+   */
+  private static class EepTypeA50212 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-12' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50212()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x12);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50212(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-13'.
+   */
+  private static class EepTypeA50213 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-13' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50213()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x13);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50213(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-14'.
+   */
+  private static class EepTypeA50214 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-14' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50214()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x14);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50214(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-15'.
+   */
+  private static class EepTypeA50215 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-15' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50215()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x15);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50215(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-16'.
+   */
+  private static class EepTypeA50216 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-16' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50216()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x16);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50216(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-17'.
+   */
+  private static class EepTypeA50217 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-17' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50217()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x17);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50217(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-18'.
+   */
+  private static class EepTypeA50218 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-18' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50218()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x18);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50218(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-19'.
+   */
+  private static class EepTypeA50219 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-19' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50219()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x19);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50219(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-1A'.
+   */
+  private static class EepTypeA5021A extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-1A' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA5021A()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x1A);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA5021A(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-1B'.
+   */
+  private static class EepTypeA5021B extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-1B' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA5021B()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x1B);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA5021B(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-20'.
+   */
+  private static class EepTypeA50220 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-20' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50220()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x20);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50220(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-02-30'.
+   */
+  private static class EepTypeA50230 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-02-30' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50230()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x02, 0x30);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50230(deviceID, command);
+    }
+  }
+
 }

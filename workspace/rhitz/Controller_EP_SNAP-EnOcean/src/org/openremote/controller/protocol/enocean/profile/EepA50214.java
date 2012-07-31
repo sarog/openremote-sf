@@ -29,21 +29,21 @@ import org.openremote.controller.utils.Logger;
 import static org.openremote.controller.protocol.enocean.profile.EepConstants.EEP_TEMPERATURE_DATA_FIELD_NAME;
 
 /**
- * Represents the EnOcean equipment profile (EEP) 'A5-02-05'. <p>
+ * Represents the EnOcean equipment profile (EEP) 'A5-02-14'. <p>
  *
  * <pre>
  *
- *     +------+------+---------------------------------------+
- *     | RORG |  A5  |            4BS Telegram               |
- *     +------+------+---------------------------------------+
- *     | FUNC |  02  |         Temperature Sensor            |
- *     +------+------+---------------------------------------+
- *     | TYPE |  05  | Temperature Sensor Range 0°C to +40°C |
- *     +------+------+---------------------------------------+
+ *     +------+------+------------------------------------------+
+ *     | RORG |  A5  |             4BS Telegram                 |
+ *     +------+------+------------------------------------------+
+ *     | FUNC |  02  |          Temperature Sensor              |
+ *     +------+------+------------------------------------------+
+ *     | TYPE |  14  | Temperature Sensor Range -20°C to +60°C  |
+ *     +------+------+------------------------------------------+
  *
  * </pre>
  *
- * The 'A5-02-05' profile data is transmitted by means of 4BS radio telegrams.
+ * The 'A5-02-14' profile data is transmitted by means of 4BS radio telegrams.
  * The EnOcean Equipment Profiles (EEP) 2.1 specification defines the profile
  * structure as follows:
  *
@@ -63,23 +63,23 @@ import static org.openremote.controller.protocol.enocean.profile.EepConstants.EE
  *            +-------------------------------+-------------------------------+
  *
  *
- *     +------------------------------------------------------------------------------------------+
- *     +Offset|Size|  Bitrange  |    Data   |ShortCut|   Description     |Valid Range| Scale |Unit|
- *     +------------------------------------------------------------------------------------------+
- *     |0     |16  |DB3.7..DB2.0|Not Used                                                         |
- *     +------------------------------------------------------------------------------------------+
- *     |16    |8   |DB1.7..DB1.0|Temperature|  TMP   |Temperature(linear)|   255..0  |0..+40 |°C  |
- *     +------------------------------------------------------------------------------------------+
- *     |24    |4   |DB0.7..DB4.0|Not Used                                                         |
- *     +------------------------------------------------------------------------------------------+
- *     |28    |1   |DB3.0       |Learn Bit  |  LRNB  |Learn bit          |Enum:                   |
- *     |      |    |            |           |        |                   +------------------------+
- *     |      |    |            |           |        |                   |0: Teach-in telegram    |
- *     |      |    |            |           |        |                   +------------------------+
- *     |      |    |            |           |        |                   |1: Data telegram        |
- *     +------------------------------------------------------------------------------------------+
- *     |0     |3   |DB0.2..DB0.0|Not Used                                                         |
- *     +------------------------------------------------------------------------------------------+
+ *     +----------------------------------------------------------------------------------------------+
+ *     |Offset|Size|  Bitrange  |    Data   |ShortCut|   Description     |Valid Range|   Scale   |Unit|
+ *     +----------------------------------------------------------------------------------------------+
+ *     |0     |16  |DB3.7..DB2.0|Not Used                                                             |
+ *     +----------------------------------------------------------------------------------------------+
+ *     |16    |8   |DB1.7..DB1.0|Temperature|  TMP   |Temperature(linear)|  255..0   | -20..+60  |°C  |
+ *     +----------------------------------------------------------------------------------------------+
+ *     |24    |4   |DB0.7..DB4.0|Not Used                                                             |
+ *     +----------------------------------------------------------------------------------------------+
+ *     |28    |1   |DB3.0       |Learn Bit  |  LRNB  |Learn bit          |Enum:                       |
+ *     |      |    |            |           |        |                   +----------------------------+
+ *     |      |    |            |           |        |                   |0: Teach-in telegram        |
+ *     |      |    |            |           |        |                   +----------------------------+
+ *     |      |    |            |           |        |                   |1: Data telegram            |
+ *     +----------------------------------------------------------------------------------------------+
+ *     |0     |3   |DB0.2..DB0.0|Not Used                                                             |
+ *     +----------------------------------------------------------------------------------------------+
  *
  * </pre>
  *
@@ -87,7 +87,7 @@ import static org.openremote.controller.protocol.enocean.profile.EepConstants.EE
  *
  * @author Rainer Hitz
  */
-public class EepA50205 extends EepA502XX
+public class EepA50214 extends EepA502XX
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -95,32 +95,32 @@ public class EepA50205 extends EepA502XX
   /**
    * Start bit of temperature data field.
    */
-  static final int EEP_A50205_TMP_OFFSET = 16;
+  static final int EEP_A50214_TMP_OFFSET = 16;
 
   /**
    * Bit size of temperature data field.
    */
-  static final int EEP_A50205_TMP_SIZE = 8;
+  static final int EEP_A50214_TMP_SIZE = 8;
 
   /**
    * Begin of raw temperature value range.
    */
-  static final int EEP_A50205_TMP_RAW_DATA_RANGE_MIN = 255;
+  static final int EEP_A50214_TMP_RAW_DATA_RANGE_MIN = 255;
 
   /**
    * End of raw temperature value range.
    */
-  static final int EEP_A50205_TMP_RAW_DATA_RANGE_MAX = 0;
+  static final int EEP_A50214_TMP_RAW_DATA_RANGE_MAX = 0;
 
   /**
    * Begin of scaled temperature value range.
    */
-  static final double EEP_A50205_TMP_UNITS_DATA_RANGE_MIN = 0;
+  static final double EEP_A50214_TMP_UNITS_DATA_RANGE_MIN = -20;
 
   /**
    * End of scaled temperature value range.
    */
-  static final double EEP_A50205_TMP_UNITS_DATA_RANGE_MAX = 40;
+  static final double EEP_A50214_TMP_UNITS_DATA_RANGE_MAX = 60;
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ public class EepA50205 extends EepA502XX
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a 'A5-02-05' EnOcean equipment profile (EEP) instance with given
+   * Constructs a 'A5-02-14' EnOcean equipment profile (EEP) instance with given
    * EnOcean device ID and command string.
    *
    * @param  deviceID       EnOcean device ID for filtering received radio telegrams
@@ -144,14 +144,14 @@ public class EepA50205 extends EepA502XX
    * @throws ConfigurationException
    *           if the command string cannot be used in combination with this profile
    */
-  public EepA50205(DeviceID deviceID, String commandString) throws ConfigurationException
+  public EepA50214(DeviceID deviceID, String commandString) throws ConfigurationException
   {
     super(
-        EepType.EEP_TYPE_A50205, deviceID, commandString,
+        EepType.EEP_TYPE_A50214, deviceID, commandString,
         Range.createRange(
-            EEP_TEMPERATURE_DATA_FIELD_NAME, EEP_A50205_TMP_OFFSET, EEP_A50205_TMP_SIZE,
-            EEP_A50205_TMP_RAW_DATA_RANGE_MIN, EEP_A50205_TMP_RAW_DATA_RANGE_MAX,
-            EEP_A50205_TMP_UNITS_DATA_RANGE_MIN, EEP_A50205_TMP_UNITS_DATA_RANGE_MAX,
+            EEP_TEMPERATURE_DATA_FIELD_NAME, EEP_A50214_TMP_OFFSET, EEP_A50214_TMP_SIZE,
+            EEP_A50214_TMP_RAW_DATA_RANGE_MIN, EEP_A50214_TMP_RAW_DATA_RANGE_MAX,
+            EEP_A50214_TMP_UNITS_DATA_RANGE_MIN, EEP_A50214_TMP_UNITS_DATA_RANGE_MAX,
             EEP_A502XX_TMP_FRACTIONAL_DIGITS
         )
     );
