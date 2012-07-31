@@ -50,6 +50,45 @@ public class Range implements DataType, EepDataListener
   private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
 
+  /**
+   * Factory method for creating new Range instances with given EnOcean equipment profile (EEP)
+   * data field and data range parameters.
+   *
+   * @param  name                EnOcean equipment profile (EEP) data field name
+   *
+   * @param  offset              start bit of EnOcean equipment profile (EEP) data field
+   *
+   * @param  size                bit size of EnOcean equipment profile (EEP) data field
+   *
+   * @param  rawDataRangeMin     begin of raw value data range
+   *
+   * @param  rawDataRangeMax     end of raw value data range
+   *
+   * @param  unitsDataRangeMin   begin of scaled data range
+   *
+   * @param  unitsDataRangeMax   end of scaled data range
+   *
+   * @param  fractionalDigits    number of fractional digits to be used for scaled values
+   *
+   * @return new Range instance
+   */
+  public static Range createRange(String name, int offset, int size,
+                                  int rawDataRangeMin, int rawDataRangeMax,
+                                  double unitsDataRangeMin, double unitsDataRangeMax,
+                                  int fractionalDigits)
+  {
+    EepDataField dataField = new EepDataField(name, offset, size);
+
+    DataRange rawDataRange = new DataRange(rawDataRangeMin, rawDataRangeMax);
+    DataRange unitsDataRange = new DataRange(unitsDataRangeMin, unitsDataRangeMax);
+    LinearScale scale = new LinearScale(rawDataRange, unitsDataRange, fractionalDigits);
+
+    Range range = new Range(dataField, scale);
+
+    return range;
+  }
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**

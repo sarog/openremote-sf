@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.enocean.profile;
 
 /**
- * A tagging interface to indicate that the EnOcean equipment profile (EEP)
+ * A kind of tagging interface to indicate that the EnOcean equipment profile (EEP)
  * implementation may receive and/or transmit EnOcean radio telegrams.
  *
  * @see EepReceive
@@ -32,4 +32,10 @@ package org.openremote.controller.protocol.enocean.profile;
  */
 public interface Eep
 {
+  /**
+   * Returns the EnOcean equipment profile (EEP) type.
+   *
+   * @return the EnOcean equipment profile (EEP) type.
+   */
+  EepType getType();
 }
