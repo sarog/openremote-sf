@@ -245,6 +245,16 @@
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
    -->
 
+<!-- 
+Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
+The config section of the controller.xml needs to provide information about the additional protocol and the commandBuilder class.
+Additional protocols can either be added manually when editing controller.xml or the designer can create the entry when commands for that
+protocol are defined. 
+
+The entry looks like this:  <property name="protocol.zwave.classname" value="org.openremote.controller.protocol.zwave.ZWaveCommandBuilder" />
+
+The needed classes have to be provided as a jar file and copied to lib folder.
+ -->
   <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
     <constructor-arg>
       <map>
