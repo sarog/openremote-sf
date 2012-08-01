@@ -63,7 +63,6 @@ public class PropertyPanel extends ContentPanel {
         return;
       } else {
         ComponentContainer component = components.get(0);
-        // TODO EBR : re-check this test, does not seem to work
         if (!component.equals(currentLayoutContainer)) {
            currentLayoutContainer =  component;
            if (component instanceof GridLayoutContainerHandle) {
