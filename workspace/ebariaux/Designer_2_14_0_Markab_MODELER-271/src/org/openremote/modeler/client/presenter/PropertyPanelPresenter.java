@@ -30,6 +30,7 @@ import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -56,7 +57,7 @@ public class PropertyPanelPresenter implements Presenter {
       @Override
       public void onElementSelected(UIElementSelectedEvent event) {
         PropertyEditable propertyEditable = PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus);
-        PropertyPanelPresenter.this.view.setPropertyForm(propertyEditable.getPropertiesForm());
+        PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(propertyEditable));
         PropertyPanelPresenter.this.view.setHeading(propertyEditable.getTitle());
         currentWidget = null;
       }
@@ -100,8 +101,18 @@ public class PropertyPanelPresenter implements Presenter {
       } else {
         currentWidget =  component;
       }
-      PropertyPanelPresenter.this.view.setPropertyForm(component.getPropertiesForm());
+      PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(component));
     }
+  }
+  
+  private PropertyForm getPropertyForm(Object o) {
+    if (o instanceof PropertyEditable) {
+      return ((PropertyEditable)o).getPropertiesForm();
+    }
+    if (o instanceof ComponentContainer) {
+      return ((ComponentContainer)o).getPropertiesForm();
+    }
+    return null;
   }
   
 }
