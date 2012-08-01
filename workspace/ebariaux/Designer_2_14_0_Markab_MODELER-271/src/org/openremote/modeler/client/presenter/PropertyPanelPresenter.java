@@ -35,6 +35,7 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.EventBus;
 
 public class PropertyPanelPresenter implements Presenter {
@@ -56,8 +57,7 @@ public class PropertyPanelPresenter implements Presenter {
     eventBus.addHandler(UIElementSelectedEvent.TYPE, new UIElementSelectedEventHandler() {
       @Override
       public void onElementSelected(UIElementSelectedEvent event) {
-        PropertyEditable propertyEditable = PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus);
-        PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(propertyEditable));
+        PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(event.getElement()));
         currentWidget = null;
       }
     });
@@ -105,11 +105,11 @@ public class PropertyPanelPresenter implements Presenter {
   }
   
   private PropertyForm getPropertyForm(Object o) {
-    if (o instanceof PropertyEditable) {
-      return ((PropertyEditable)o).getPropertiesForm();
-    }
     if (o instanceof ComponentContainer) {
       return ((ComponentContainer)o).getPropertiesForm();
+    }
+    if (o instanceof BeanModel) {
+      return PropertyEditableFactory.getPropertyEditable((BeanModel)o, eventBus).getPropertiesForm();
     }
     return null;
   }
