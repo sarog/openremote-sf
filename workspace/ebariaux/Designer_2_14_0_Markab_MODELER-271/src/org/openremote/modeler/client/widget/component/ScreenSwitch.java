@@ -20,8 +20,6 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
-import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISwitch;
@@ -103,11 +101,6 @@ public class ScreenSwitch extends ScreenComponent {
       return center.getText();
    }
 
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new SwitchPropertyForm(this, uiSwitch, widgetSelectionUtil);
-   }
-
    private void setIcon(String icon) {
       image.setUrl(icon);
       switchTable.removeStyleName("screen-btn-cont");
@@ -133,4 +126,9 @@ public class ScreenSwitch extends ScreenComponent {
       image.setUrl("");
       isOn = true;
    }
+
+  public UISwitch getUiSwitch() {
+    return uiSwitch;
+  }
+
 }

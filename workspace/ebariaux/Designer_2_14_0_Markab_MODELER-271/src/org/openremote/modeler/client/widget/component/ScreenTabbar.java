@@ -24,8 +24,6 @@ import java.util.List;
 
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
-import org.openremote.modeler.client.widget.propertyform.TabbarPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
@@ -44,7 +42,6 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.AbsoluteLayout;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * This class is to manage screen tabbar items.
@@ -127,11 +124,6 @@ public class ScreenTabbar extends ScreenComponent {
       return "Tabbar";
    }
 
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new TabbarPropertyForm(this, this.uiTabbar, widgetSelectionUtil);
-   }
-   
    @Override
    public void onComponentEvent(ComponentEvent ce) {
       if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
@@ -316,4 +308,9 @@ public class ScreenTabbar extends ScreenComponent {
          
       });
    }
+
+  public UITabbar getUiTabbar() {
+    return uiTabbar;
+  }
+
 }

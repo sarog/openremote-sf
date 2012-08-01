@@ -20,7 +20,6 @@
 package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
@@ -58,7 +57,4 @@ public class ComponentContainer extends LayoutContainer {
       screenCanvas.hideBackground();
    }
    
-   public PropertyForm getPropertiesForm() {
-      return new PropertyForm(this, widgetSelectionUtil);
-   }
 }

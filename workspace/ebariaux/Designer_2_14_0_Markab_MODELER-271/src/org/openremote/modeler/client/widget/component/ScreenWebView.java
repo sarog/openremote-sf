@@ -25,8 +25,6 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
-import org.openremote.modeler.client.widget.propertyform.WebViewPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.component.UIWebView;
@@ -132,11 +130,6 @@ public class ScreenWebView extends ScreenComponent {
    @Override
    public String getName() {
       return uiWebView.getName();
-   }
-
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new WebViewPropertyForm(this, uiWebView, widgetSelectionUtil);
    }
 
    @Override

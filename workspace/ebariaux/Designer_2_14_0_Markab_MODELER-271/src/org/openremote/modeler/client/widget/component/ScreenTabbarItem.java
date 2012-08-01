@@ -98,11 +98,6 @@ public class ScreenTabbarItem extends ScreenComponent {
       return uiTabbarItem.getNavigate();
    }
 
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new TabbarItemPropertyForm(this, widgetSelectionUtil);
-   }
-   
    public ImageSource getImageSource() {
       if (this.uiTabbarItem.getImage() == null ) return new ImageSource();
       return this.uiTabbarItem.getImage();
