@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.presenter;
 
+import java.util.List;
+
 import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.UIElementEditedEventHandler;
 import org.openremote.modeler.client.event.UIElementSelectedEvent;
@@ -28,6 +30,8 @@ import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 
 import com.google.gwt.event.shared.EventBus;
@@ -37,6 +41,7 @@ public class PropertyPanelPresenter implements Presenter {
   private EventBus eventBus;
   private WidgetSelectionUtil widgetSelectionUtil;
   private PropertyPanel view;
+  private ComponentContainer currentWidget;
   
   public PropertyPanelPresenter(EventBus eventBus, WidgetSelectionUtil widgetSelectionUtil, PropertyPanel view) {
     super();
@@ -53,24 +58,50 @@ public class PropertyPanelPresenter implements Presenter {
         PropertyEditable propertyEditable = PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus);
         PropertyPanelPresenter.this.view.setPropertyForm(propertyEditable.getPropertiesForm());
         PropertyPanelPresenter.this.view.setHeading(propertyEditable.getTitle());
+        currentWidget = null;
       }
     });
     
     eventBus.addHandler(UIElementEditedEvent.TYPE, new UIElementEditedEventHandler() {      
       @Override
       public void onElementEdited(UIElementEditedEvent event) {
+        setPropertyForm(widgetSelectionUtil.getSelectedWidgets());
         // TODO EBR - this is just a quick fix, need to review
-        view.update(widgetSelectionUtil.getSelectedWidgets());
       }
     });
     
     eventBus.addHandler(WidgetSelectedEvent.TYPE, new WidgetSelectedEventHandler() {
       @Override
       public void onSelectionChanged(WidgetSelectedEvent event) {
-        view.update(event.getSelectedWidgets());
+        setPropertyForm(event.getSelectedWidgets());
       }
     });
   }
   
+  private void setPropertyForm(List<ComponentContainer> components) {
+    if (components.isEmpty()) {
+      PropertyPanelPresenter.this.view.setPropertyForm(null);
+      PropertyPanelPresenter.this.view.setHeading("Properties");
+      currentWidget = null;
+      return;
+   }
+    
+   if (components.size() > 1) {
+     PropertyPanelPresenter.this.view.setPropertyForm(null);
+     PropertyPanelPresenter.this.view.setHeading("Multiple selection");
+     currentWidget = null;
+     return;
+   }
+   
+   ComponentContainer component = components.get(0);
+   if (!component.equals(currentWidget)) {
+      if (component instanceof GridLayoutContainerHandle) {
+        currentWidget = null;
+      } else {
+        currentWidget =  component;
+      }
+      PropertyPanelPresenter.this.view.setPropertyForm(component.getPropertiesForm());
+    }
+  }
   
 }

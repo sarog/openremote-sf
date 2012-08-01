@@ -32,7 +32,6 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
  */
 public class PropertyPanel extends ContentPanel {
 
-   private ComponentContainer currentWidget;
    private PropertyForm currentPropertyForm;
    
    public PropertyPanel(WidgetSelectionUtil widgetSelectionUtil) {
@@ -45,36 +44,6 @@ public class PropertyPanel extends ContentPanel {
       setFrame(true);      
    }
    
-   /**
-    * Update the panel's content follow with different component.
-    */
-   public void update(List<ComponentContainer> components) {
-      if (components.isEmpty()) {
-         removePropertiesForm();
-         setHeading("Properties");
-         layout();
-         return;
-      }
-      if (components.size() > 1) {
-        removePropertiesForm();
-        setHeading("Multiple selection");
-        layout();
-        return;
-      } else {
-        ComponentContainer component = components.get(0);
-        if (!component.equals(currentWidget)) {
-           currentWidget =  component;
-           if (component instanceof GridLayoutContainerHandle) {
-              addPropertiesForm(component);
-              currentWidget = null;
-           }else {
-              addPropertiesForm(component);
-           } 
-           layout();
-        }
-      }
-   }
-   
    public void setPropertyForm(PropertyForm propertyForm) {
       removePropertiesForm();
       if (propertyForm != null) {
@@ -84,22 +53,9 @@ public class PropertyPanel extends ContentPanel {
       layout();
    }
 
-   /**
-    * @param screenControl
-    * @param uiComponent
-    */
-   private void addPropertiesForm(ComponentContainer screenControl) {
-      if (currentPropertyForm != null) {
-         currentPropertyForm.removeFromParent();
-      }
-      currentPropertyForm = screenControl.getPropertiesForm();
-      add(currentPropertyForm);
-   }
-   
    private void removePropertiesForm() {
       if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
-         currentWidget = null;
          currentPropertyForm = null;
       }
    }
