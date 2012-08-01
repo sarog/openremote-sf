@@ -78,9 +78,4 @@ public class GroupPropertyEditable implements PropertyEditable {
       BeanModelDataBase.groupTable.update(group.getBeanModel());
    }
 
-   @Override
-   public String getTitle() {
-      return "Group Property";
-   }
-
 }
