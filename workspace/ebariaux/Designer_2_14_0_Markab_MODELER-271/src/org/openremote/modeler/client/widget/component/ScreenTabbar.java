@@ -32,8 +32,8 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbar;
-import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UITabbar.Scope;
+import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.DragEvent;
@@ -44,6 +44,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.AbsoluteLayout;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * This class is to manage screen tabbar items.
@@ -67,7 +68,7 @@ public class ScreenTabbar extends ScreenComponent {
    private LayoutContainer moveBackGround = null;
  
    public ScreenTabbar(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenCanvas, widgetSelectionUtil);
+      this(screenCanvas, null, widgetSelectionUtil);
    }
 
    /**
