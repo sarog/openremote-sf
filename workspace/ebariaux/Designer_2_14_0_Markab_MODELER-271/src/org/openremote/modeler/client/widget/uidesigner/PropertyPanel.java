@@ -68,9 +68,6 @@ public class PropertyPanel extends ContentPanel {
            if (component instanceof GridLayoutContainerHandle) {
               addPropertiesForm(component);
               currentLayoutContainer = null;
-           /*} else if (component.getParent() instanceof ScreenTabItem) {
-              addScreenPairPropertyForm(component);
-            */
            }else {
               addPropertiesForm(component);
            } 
@@ -107,11 +104,4 @@ public class PropertyPanel extends ContentPanel {
       }
    }
    
-   /*private void addScreenPairPropertyForm(ComponentContainer component) {
-      if (currentPropertyForm != null) {
-         currentPropertyForm.removeFromParent();
-      }
-      currentPropertyForm = new ScreenPairPropertyForm(component);
-      add(currentPropertyForm);
-   }*/
 }
