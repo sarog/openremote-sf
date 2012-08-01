@@ -23,6 +23,7 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.domain.component.UITabbar;
+import org.openremote.modeler.domain.component.UITabbar.Scope;
 
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -53,10 +54,10 @@ public class TabbarPropertyForm extends PropertyForm {
       
       final Radio groupScopeRadio = new Radio();
       groupScopeRadio.setBoxLabel("Group");
-      groupScopeRadio.setValue(screenTabBar.isGroupScope());
+      groupScopeRadio.setValue(tabBar.getScope() == Scope.GROUP);
       
       final Radio panelScopeRadio = new Radio();
-      panelScopeRadio.setValue(screenTabBar.isPanelScope());
+      panelScopeRadio.setValue(tabBar.getScope() == Scope.PANEL);
       panelScopeRadio.setBoxLabel("Panel");
       
       panelScopeRadio.addListener(Events.Change, new Listener<FieldEvent>() {
