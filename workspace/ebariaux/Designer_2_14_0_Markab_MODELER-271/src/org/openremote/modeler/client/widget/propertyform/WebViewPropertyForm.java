@@ -203,8 +203,7 @@ public class WebViewPropertyForm extends PropertyForm {
    }
    
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Label properties");
+   public String getPropertyFormTitle() {
+     return "Web View properties";
    }
 }

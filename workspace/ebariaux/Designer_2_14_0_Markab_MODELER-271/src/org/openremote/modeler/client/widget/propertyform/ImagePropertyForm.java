@@ -236,9 +236,8 @@ public class ImagePropertyForm extends PropertyForm {
    }
    
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Image properties");
+   public String getPropertyFormTitle() {
+     return "Image properties";
    }
    
    private void removeSensorImage(String stateName) {

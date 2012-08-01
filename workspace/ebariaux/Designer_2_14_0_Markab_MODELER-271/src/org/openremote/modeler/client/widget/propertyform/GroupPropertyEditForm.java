@@ -60,4 +60,9 @@ public class GroupPropertyEditForm extends PropertyForm {
 
       add(name);
    }
+   
+   @Override
+   public String getPropertyFormTitle() {
+     return "Group properties";
+   }
 }

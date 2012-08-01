@@ -163,8 +163,7 @@ public class SwitchPropertyForm extends PropertyForm {
    }
 
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Switch properties");
+   public String getPropertyFormTitle() {
+     return "Switch properties";
    }
 }

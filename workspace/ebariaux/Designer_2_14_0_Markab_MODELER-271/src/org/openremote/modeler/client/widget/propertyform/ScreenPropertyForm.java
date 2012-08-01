@@ -347,8 +347,7 @@ public class ScreenPropertyForm extends PropertyForm {
    }
    
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Screen properties");
+   public String getPropertyFormTitle() {
+     return "Screen properties";
    }
 }

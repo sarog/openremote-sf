@@ -59,4 +59,9 @@ public class PanelPropertyEditForm extends PropertyForm {
 
       add(name);
    }
+
+   @Override
+   public String getPropertyFormTitle() {
+     return "Panel properties";
+   }
 }

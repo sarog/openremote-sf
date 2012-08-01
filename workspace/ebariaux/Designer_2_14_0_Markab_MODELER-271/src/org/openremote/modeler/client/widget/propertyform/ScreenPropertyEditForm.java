@@ -144,4 +144,9 @@ public class ScreenPropertyEditForm extends PropertyForm {
          
       });
    }
+   
+   @Override
+   public String getPropertyFormTitle() {
+     return "Screen Pair properties";
+   }
 }
