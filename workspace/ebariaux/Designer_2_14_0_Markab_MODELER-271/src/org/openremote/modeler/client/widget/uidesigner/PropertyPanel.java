@@ -96,7 +96,7 @@ public class PropertyPanel extends ContentPanel {
       add(currentPropertyForm);
    }
    
-   public void removePropertiesForm() {
+   private void removePropertiesForm() {
       if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
          currentWidget = null;
