@@ -279,8 +279,7 @@ public class SliderPropertyForm extends PropertyForm {
    }
    
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Slider properties");
+   public String getPropertyFormTitle() {
+     return "Slider properties";
    }
 }

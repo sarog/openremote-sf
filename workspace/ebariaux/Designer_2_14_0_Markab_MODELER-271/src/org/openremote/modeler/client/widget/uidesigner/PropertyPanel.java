@@ -49,6 +49,7 @@ public class PropertyPanel extends ContentPanel {
       if (propertyForm != null) {
         currentPropertyForm = propertyForm;
         add(currentPropertyForm);
+        setHeading(currentPropertyForm.getPropertyFormTitle());
       }
       layout();
    }

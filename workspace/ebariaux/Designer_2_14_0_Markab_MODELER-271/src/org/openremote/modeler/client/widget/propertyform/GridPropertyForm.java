@@ -173,9 +173,8 @@ public class GridPropertyForm extends PropertyForm {
       gridContainer.update();
    }
    
-   @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Grid properties");
-   }
+  @Override
+  public String getPropertyFormTitle() {
+    return "Grid properties";
+  }
 }

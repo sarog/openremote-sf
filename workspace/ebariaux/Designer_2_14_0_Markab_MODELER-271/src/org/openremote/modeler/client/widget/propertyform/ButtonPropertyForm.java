@@ -231,10 +231,9 @@ public class ButtonPropertyForm extends PropertyForm {
       
    }
 
-   @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Button properties");
-   }
+  @Override
+  public String getPropertyFormTitle() {
+    return "Button properties";
+  }
    
 }

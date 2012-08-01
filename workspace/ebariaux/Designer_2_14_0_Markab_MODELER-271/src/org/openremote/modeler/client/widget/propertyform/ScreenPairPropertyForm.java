@@ -152,8 +152,7 @@ public class ScreenPairPropertyForm extends PropertyForm {
    }
    
    @Override
-   protected void afterRender() {
-      super.afterRender();
-      ((PropertyPanel)this.getParent()).setHeading("Screen pair properties");
+   public String getPropertyFormTitle() {
+     return "Screen pair properties";
    }
 }

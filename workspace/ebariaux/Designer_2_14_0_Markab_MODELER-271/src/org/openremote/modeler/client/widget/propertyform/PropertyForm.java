@@ -193,4 +193,8 @@ public class PropertyForm extends FormPanel {
       setFieldWidth(100);
       setScrollMode(Scroll.AUTO);
    }
+   
+   public String getPropertyFormTitle() {
+     return "- EMPTY FORM -";
+   }
 }
