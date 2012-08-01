@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import java.util.List;
 
-import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
@@ -76,11 +75,12 @@ public class PropertyPanel extends ContentPanel {
       }
    }
    
-   public void setPropertyForm(PropertyEditable propertyEditable) {
+   public void setPropertyForm(PropertyForm propertyForm) {
       removePropertiesForm();
-      currentPropertyForm = propertyEditable.getPropertiesForm();
-      add(currentPropertyForm);
-      this.setHeading(propertyEditable.getTitle());
+      if (propertyForm != null) {
+        currentPropertyForm = propertyForm;
+        add(currentPropertyForm);
+      }
       layout();
    }
 

@@ -25,6 +25,7 @@ import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
 import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
+import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -49,7 +50,9 @@ public class PropertyPanelPresenter implements Presenter {
     eventBus.addHandler(UIElementSelectedEvent.TYPE, new UIElementSelectedEventHandler() {
       @Override
       public void onElementSelected(UIElementSelectedEvent event) {
-        PropertyPanelPresenter.this.view.setPropertyForm(PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus));
+        PropertyEditable propertyEditable = PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus);
+        PropertyPanelPresenter.this.view.setPropertyForm(propertyEditable.getPropertiesForm());
+        PropertyPanelPresenter.this.view.setHeading(propertyEditable.getTitle());
       }
     });
     
