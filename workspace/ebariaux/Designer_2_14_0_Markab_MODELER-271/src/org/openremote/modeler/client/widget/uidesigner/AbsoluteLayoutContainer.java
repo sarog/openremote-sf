@@ -23,7 +23,6 @@ import org.openremote.modeler.client.model.ORBounds;
 import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Absolute;
 
 /**
@@ -71,9 +70,4 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
             new ORBounds(left, top, absolute.getWidth(), absolute.getHeight()));
    }
 
-   @Override
-   public PropertyForm getPropertiesForm() {
-     return this.screenComponent.getPropertiesForm();
-   }
-   
 }

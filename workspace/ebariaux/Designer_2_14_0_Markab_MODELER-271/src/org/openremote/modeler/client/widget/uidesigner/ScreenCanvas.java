@@ -32,8 +32,6 @@ import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
-import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Background.RelativeType;
@@ -757,11 +755,6 @@ public class ScreenCanvas extends ComponentContainer {
 
 //      event.stopPropagation();
       super.onBrowserEvent(event);
-   }
-
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new ScreenPropertyForm(this, widgetSelectionUtil);
    }
 
    public void addTabbar() {

@@ -21,8 +21,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -65,11 +63,6 @@ public class GridLayoutContainerHandle extends ScreenComponent {
          grid.setTop(top + DEFAULT_HANDLE_HEIGHT);
       }
       super.setPosition(left, top);
-   }
-
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new GridPropertyForm(this, widgetSelectionUtil);
    }
 
    @Override

@@ -20,10 +20,7 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
-import org.openremote.modeler.client.widget.propertyform.SliderPropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
-import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
@@ -88,11 +85,6 @@ public class ScreenSlider extends ScreenComponent {
    @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
-   }
-
-   @Override
-   public PropertyForm getPropertiesForm() {
-      return new SliderPropertyForm(this, widgetSelectionUtil);
    }
 
    public void setMinImage(String imageURL) {

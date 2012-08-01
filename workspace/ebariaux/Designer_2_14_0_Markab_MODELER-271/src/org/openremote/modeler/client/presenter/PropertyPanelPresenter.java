@@ -27,16 +27,39 @@ import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
 import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
-import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ScreenButton;
+import org.openremote.modeler.client.widget.component.ScreenComponent;
+import org.openremote.modeler.client.widget.component.ScreenImage;
+import org.openremote.modeler.client.widget.component.ScreenLabel;
+import org.openremote.modeler.client.widget.component.ScreenSlider;
+import org.openremote.modeler.client.widget.component.ScreenSwitch;
+import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
+import org.openremote.modeler.client.widget.component.ScreenWebView;
+import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
+import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
+import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.SliderPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.TabbarItemPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.TabbarPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.WebViewPropertyForm;
+import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridCellContainer;
+import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
+import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.EventBus;
+import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 
 public class PropertyPanelPresenter implements Presenter {
 
@@ -105,9 +128,61 @@ public class PropertyPanelPresenter implements Presenter {
   }
   
   private PropertyForm getPropertyForm(Object o) {
-    if (o instanceof ComponentContainer) {
-      return ((ComponentContainer)o).getPropertiesForm();
+    if (o instanceof ScreenLabel) {
+      ScreenLabel screenLabel = (ScreenLabel)o;
+      return new LabelPropertyForm(screenLabel, screenLabel.getUiLabel(), widgetSelectionUtil);
     }
+    if (o instanceof ScreenSlider) {
+      ScreenSlider screenSlider = (ScreenSlider)o;
+      return new SliderPropertyForm(screenSlider, widgetSelectionUtil);
+    }
+    if (o instanceof ScreenSwitch) {
+      ScreenSwitch screenSwitch = (ScreenSwitch)o;
+      return new SwitchPropertyForm(screenSwitch, screenSwitch.getUiSwitch(), widgetSelectionUtil);
+    }
+    if (o instanceof ScreenButton) {
+      ScreenButton screenButton = (ScreenButton)o;
+      return new ButtonPropertyForm(screenButton, screenButton.getUiButton(), widgetSelectionUtil);
+    }
+    if (o instanceof ScreenImage) {
+      ScreenImage screenImage = (ScreenImage)o;
+      return new ImagePropertyForm(screenImage, screenImage.getUiImage(), widgetSelectionUtil);
+    }
+    if (o instanceof ScreenTabbar) {
+      ScreenTabbar screenTabbar = (ScreenTabbar)o;
+      return new TabbarPropertyForm(screenTabbar, screenTabbar.getUiTabbar(), widgetSelectionUtil);
+    }
+    if (o instanceof ScreenWebView) {
+      ScreenWebView screenWebView = (ScreenWebView)o;
+      return new WebViewPropertyForm(screenWebView, screenWebView.getUIWebView(), widgetSelectionUtil);
+    }
+    if (o instanceof ScreenTabbarItem) {
+      ScreenTabbarItem screenTabbarItem = (ScreenTabbarItem)o;
+      return new TabbarItemPropertyForm(screenTabbarItem, widgetSelectionUtil);
+    }
+    if (o instanceof ScreenCanvas) {
+      ScreenCanvas screenCanvas = (ScreenCanvas)o;
+      return new ScreenPropertyForm(screenCanvas, widgetSelectionUtil);
+    }
+    if (o instanceof GridLayoutContainerHandle) {
+      GridLayoutContainerHandle gridLayoutContainerHandle = (GridLayoutContainerHandle)o;
+      return new GridPropertyForm(gridLayoutContainerHandle, widgetSelectionUtil);
+    }
+    if (o instanceof GridCellContainer) {
+      GridCellContainer gridCellContainer = (GridCellContainer)o;
+      return getPropertyForm(gridCellContainer.getScreenComponent());
+    }    
+    if (o instanceof AbsoluteLayoutContainer) {
+      AbsoluteLayoutContainer absoluteLayoutContainer = (AbsoluteLayoutContainer)o;
+      return getPropertyForm(absoluteLayoutContainer.getScreenComponent());
+    }
+    
+    if (o instanceof ScreenComponent || o instanceof GridLayoutContainer || o instanceof ComponentContainer) {
+      AlertMessageBox alert = new AlertMessageBox("Error", "Such a component should never display a property form, please report this error on the OpenRemote forums.");
+      alert.show();
+      return null;
+    }
+    
     if (o instanceof BeanModel) {
       return PropertyEditableFactory.getPropertyEditable((BeanModel)o, eventBus).getPropertiesForm();
     }

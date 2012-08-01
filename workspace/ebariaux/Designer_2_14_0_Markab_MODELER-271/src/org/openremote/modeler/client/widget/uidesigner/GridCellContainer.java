@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Cell;
 
 /**
@@ -100,11 +99,6 @@ public class GridCellContainer extends ComponentContainer {
             btnArea[x][y] = false;
          }
       }
-   }
-   
-   @Override
-   public PropertyForm getPropertiesForm() {
-     return this.screenComponent.getPropertiesForm();
    }
    
    public void setScreenComponent(ScreenComponent screenComponent) {

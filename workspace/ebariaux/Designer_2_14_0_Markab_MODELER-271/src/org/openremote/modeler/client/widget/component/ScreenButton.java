@@ -20,8 +20,6 @@
 package org.openremote.modeler.client.widget.component;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
-import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIButton;
@@ -116,11 +114,6 @@ public class ScreenButton extends ScreenComponent {
    }
 
    @Override
-   public PropertyForm getPropertiesForm() {
-      return new ButtonPropertyForm(this, uiButton, widgetSelectionUtil);
-   }
-
-   @Override
    public void setSize(int width, int height) {
       super.setSize(width, height);
       if (getWidth() == 0) {
@@ -180,5 +173,9 @@ public class ScreenButton extends ScreenComponent {
       super.afterRender();
       adjustTextLength();
    }
+
+  public UIButton getUiButton() {
+    return uiButton;
+  }
    
 }
