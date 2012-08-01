@@ -19,8 +19,6 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import java.util.List;
-
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 
@@ -29,6 +27,8 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
  * A panel for display and edit different component's properties.
+ * 
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class PropertyPanel extends ContentPanel {
 
@@ -59,5 +59,5 @@ public class PropertyPanel extends ContentPanel {
          currentPropertyForm = null;
       }
    }
-   
+  
 }
