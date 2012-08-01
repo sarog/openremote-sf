@@ -31,9 +31,5 @@ public interface PropertyEditable {
     * @return A property form. 
     */
    public PropertyForm getPropertiesForm();
-   /**
-    * Get a title for a property form. 
-    * @return
-    */
-   public String getTitle();
+
 }

@@ -78,9 +78,4 @@ public class ScreenPropertyEditable implements PropertyEditable {
      BeanModelDataBase.screenTable.update(screen.getBeanModel());
    }
 
-   @Override
-   public String getTitle() {
-      return "Screen Pair Property";
-   }
-   
 }

@@ -58,7 +58,6 @@ public class PropertyPanelPresenter implements Presenter {
       public void onElementSelected(UIElementSelectedEvent event) {
         PropertyEditable propertyEditable = PropertyEditableFactory.getPropertyEditable(event.getElement(), eventBus);
         PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(propertyEditable));
-        PropertyPanelPresenter.this.view.setHeading(propertyEditable.getTitle());
         currentWidget = null;
       }
     });

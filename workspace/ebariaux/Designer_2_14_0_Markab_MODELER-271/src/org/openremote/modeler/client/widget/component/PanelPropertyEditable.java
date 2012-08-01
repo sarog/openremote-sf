@@ -72,9 +72,4 @@ public class PanelPropertyEditable implements PropertyEditable {
       BeanModelDataBase.panelTable.update(panel.getBeanModel());
    }
 
-   @Override
-   public String getTitle() {
-      return "Panel Property";
-   }
-
 }
