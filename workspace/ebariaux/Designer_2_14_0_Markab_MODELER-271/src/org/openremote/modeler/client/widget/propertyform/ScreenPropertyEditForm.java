@@ -19,11 +19,13 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -34,19 +36,24 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * A panel for editing screen's name. 
  * @author Javen
  */
 public class ScreenPropertyEditForm extends PropertyForm {
-   private ScreenPropertyEditable editor = null;
+
+  private ScreenPairRef screenPairRef;
    private ScreenPair screenPair = null;
-   public ScreenPropertyEditForm(ScreenPropertyEditable editor, ScreenPair screenPair) {
-      super(editor);
+   private EventBus eventBus;
+   
+   public ScreenPropertyEditForm(ScreenPairRef screenPairRef, EventBus eventBus) {
+      super();
       setFieldWidth(130);
-      this.editor = editor;
-      this.screenPair = screenPair;
+      this.screenPairRef = screenPairRef;
+      this.screenPair = screenPairRef.getScreen();
+      this.eventBus = eventBus;
       addFields();
       show();
    }
@@ -55,15 +62,18 @@ public class ScreenPropertyEditForm extends PropertyForm {
       // initial name field.
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
-      name.setValue(editor.getName());
+      name.setValue((screenPair != null)?screenPair.getName():"");
       name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             if (name.getValue() != null && name.getValue().trim().length() > 0) {
-               editor.setName(name.getValue());
+              if (screenPair != null) {
+                screenPair.setName(name.getValue());
+                updateScreen();
+              }
             } else {
                MessageBox.alert("Error", "Empty name is not allowed!", null);
-               name.setValue(editor.getName());
+               name.setValue((screenPair != null)?screenPair.getName():"");
             }
          }
       });
@@ -109,7 +119,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screenPair.setPortraitScreen(screen);
                }
                screenPair.getPortraitScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition());               
-               editor.updateScreen();
+               updateScreen();
             } else if (OrientationType.LANDSCAPE.toString().equals(radio.getValueAttribute())) {
                screenPair.setOrientation(OrientationType.LANDSCAPE);
                if (screenPair.getLandscapeScreen() == null) {
@@ -120,7 +130,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screenPair.setLandscapeScreen(screen);
                }
                screenPair.getLandscapeScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition().getHorizontalDefinition());
-               editor.updateScreen();
+               updateScreen();
             } else if (OrientationType.BOTH.toString().equals(radio.getValueAttribute())) {
                screenPair.setOrientation(OrientationType.BOTH);
                if (screenPair.getPortraitScreen() == null) {
@@ -137,7 +147,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                   screenPair.setLandscapeScreen(screen);
                }
                screenPair.getLandscapeScreen().setTouchPanelDefinition(screenPair.getTouchPanelDefinition().getHorizontalDefinition());               
-               editor.updateScreen();
+               updateScreen();
             }
             screenPair.clearInverseScreenIds();
          }
@@ -149,4 +159,10 @@ public class ScreenPropertyEditForm extends PropertyForm {
    public String getPropertyFormTitle() {
      return "Screen Pair properties";
    }
+   
+  public void updateScreen() {
+    eventBus.fireEvent(new UIElementEditedEvent(screenPairRef));     
+    BeanModelDataBase.screenTable.update(screenPair.getBeanModel());
+  }
+
 }

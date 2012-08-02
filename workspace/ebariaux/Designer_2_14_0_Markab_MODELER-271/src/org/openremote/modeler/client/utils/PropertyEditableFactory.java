@@ -19,9 +19,6 @@
 */
 package org.openremote.modeler.client.utils;
 
-import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
-import org.openremote.modeler.domain.ScreenPairRef;
-
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.EventBus;
 
@@ -32,11 +29,7 @@ import com.google.gwt.event.shared.EventBus;
  */
 public class PropertyEditableFactory {
    public static PropertyEditable getPropertyEditable(BeanModel beanModel, EventBus eventBus) {
-      if(beanModel.getBean() instanceof ScreenPairRef ) {
-         ScreenPairRef screenPairRef = beanModel.getBean(); 
-         return new ScreenPropertyEditable(screenPairRef, eventBus);
-      }
-      
+
       return null;
    }
 }
