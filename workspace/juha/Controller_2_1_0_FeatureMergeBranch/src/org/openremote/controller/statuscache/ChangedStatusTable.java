@@ -127,7 +127,11 @@ public class ChangedStatusTable
   @Deprecated public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingSensorIDs)
   {
     ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingSensorIDs);
-    skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
+
+    if (skippedStatusRecord != null)
+    {
+      skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
+    }
   }
 
   /**
