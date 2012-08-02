@@ -45,6 +45,7 @@ import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PanelPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
+import org.openremote.modeler.client.widget.propertyform.ScreenPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SliderPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.SwitchPropertyForm;
@@ -60,6 +61,7 @@ import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.EventBus;
@@ -196,9 +198,10 @@ public class PropertyPanelPresenter implements Presenter {
         Panel panel = ((BeanModel)o).getBean();
         return new PanelPropertyEditForm(panel, eventBus);
       }
-      
-      
-      return PropertyEditableFactory.getPropertyEditable((BeanModel)o, eventBus).getPropertiesForm();
+      if (((BeanModel)o).getBean() instanceof ScreenPairRef) {
+        ScreenPairRef screenPairRef = ((BeanModel)o).getBean();
+        return new ScreenPropertyEditForm(screenPairRef, eventBus);
+      }
     }
     return null;
   }
