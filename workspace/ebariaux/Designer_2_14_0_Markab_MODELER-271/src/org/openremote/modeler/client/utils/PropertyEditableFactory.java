@@ -19,9 +19,7 @@
 */
 package org.openremote.modeler.client.utils;
 
-import org.openremote.modeler.client.widget.component.PanelPropertyEditable;
 import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
-import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -37,9 +35,6 @@ public class PropertyEditableFactory {
       if(beanModel.getBean() instanceof ScreenPairRef ) {
          ScreenPairRef screenPairRef = beanModel.getBean(); 
          return new ScreenPropertyEditable(screenPairRef, eventBus);
-      } else if (beanModel.getBean() instanceof Panel){
-         Panel panel = beanModel.getBean();
-         return new PanelPropertyEditable(panel, eventBus);
       }
       
       return null;

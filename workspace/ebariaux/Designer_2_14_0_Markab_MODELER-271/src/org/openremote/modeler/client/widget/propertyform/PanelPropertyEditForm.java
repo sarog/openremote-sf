@@ -19,23 +19,29 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.widget.component.PanelPropertyEditable;
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.domain.Panel;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.event.shared.EventBus;
 
 /**
  * A panel for editing panel's name. 
  */
 public class PanelPropertyEditForm extends PropertyForm {
-   private PanelPropertyEditable editor = null;
+  
+  private Panel panel;
+  private EventBus eventBus;
 
-   public PanelPropertyEditForm(PanelPropertyEditable editor) {
-      super(editor);
-      this.editor = editor;
+   public PanelPropertyEditForm(Panel panel, EventBus eventBus) {
+      super();
+      this.panel = panel;
+      this.eventBus = eventBus;
       addFields();
       show();
    }
@@ -44,15 +50,18 @@ public class PanelPropertyEditForm extends PropertyForm {
       // initial name field.
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
-      name.setValue(editor.getName());
+      name.setValue((panel != null)?panel.getName():"");
       name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             if (name.getValue() != null && name.getValue().trim().length() > 0) {
-               editor.setName(name.getValue());
+              if (panel != null) {
+                panel.setName(name.getValue());
+                updatePanel();
+              }
             } else {
                MessageBox.alert("Error", "Empty name is not allowed!", null);
-               name.setValue(editor.getName());
+               name.setValue((panel != null)?panel.getName():"");
             }
          }
       });
@@ -63,5 +72,10 @@ public class PanelPropertyEditForm extends PropertyForm {
    @Override
    public String getPropertyFormTitle() {
      return "Panel properties";
+   }
+   
+   private void updatePanel() {
+     eventBus.fireEvent(new UIElementEditedEvent(panel));     
+     BeanModelDataBase.panelTable.update(panel.getBeanModel());
    }
 }
