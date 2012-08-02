@@ -25,7 +25,6 @@ import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.AbsoluteBoundsListener;
 import org.openremote.modeler.client.model.ORBounds;
 import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
-import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
@@ -184,10 +183,6 @@ public class PropertyForm extends FormPanel {
    }
    
    public PropertyForm() {
-     this(null);
-   }
-   
-   public PropertyForm(PropertyEditable componentContainer) {
       setFrame(true);
       setHeaderVisible(false);
       setBorders(false);

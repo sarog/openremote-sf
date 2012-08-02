@@ -27,7 +27,6 @@ import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.event.UIElementSelectedEventHandler;
 import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
-import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
