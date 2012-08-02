@@ -55,16 +55,22 @@ public class PropertyForm extends FormPanel {
    private ComponentContainer componentContainer;
    protected WidgetSelectionUtil widgetSelectionUtil;
 
+   public PropertyForm() {
+     setFrame(true);
+     setHeaderVisible(false);
+     setBorders(false);
+     setBodyBorder(false);
+     setPadding(2);
+     setLabelWidth(60);
+     setFieldWidth(100);
+     setScrollMode(Scroll.AUTO);
+  }
+
    public PropertyForm(ComponentContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
+     this();
       this.componentContainer = componentContainer;
       this.widgetSelectionUtil = widgetSelectionUtil;
-      setFrame(true);
-      setHeaderVisible(false);
-      setBorders(false);
-      setBodyBorder(false);
-      setPadding(2);
       setLabelWidth(90);
-      setFieldWidth(150);
       setScrollMode(Scroll.AUTO);
       LayoutContainer layoutContainer = (LayoutContainer)componentContainer.getParent();
       if (layoutContainer instanceof AbsoluteLayoutContainer) {
@@ -180,17 +186,6 @@ public class PropertyForm extends FormPanel {
          });
          add(deleteButton);
       }
-   }
-   
-   public PropertyForm() {
-      setFrame(true);
-      setHeaderVisible(false);
-      setBorders(false);
-      setBodyBorder(false);
-      setPadding(2);
-      setLabelWidth(60);
-      setFieldWidth(100);
-      setScrollMode(Scroll.AUTO);
    }
    
    public String getPropertyFormTitle() {
