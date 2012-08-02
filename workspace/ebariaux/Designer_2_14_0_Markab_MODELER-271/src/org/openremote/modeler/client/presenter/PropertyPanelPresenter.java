@@ -40,6 +40,7 @@ import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
 import org.openremote.modeler.client.widget.propertyform.LabelPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
@@ -56,6 +57,7 @@ import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
+import org.openremote.modeler.domain.GroupRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.event.shared.EventBus;
@@ -184,6 +186,13 @@ public class PropertyPanelPresenter implements Presenter {
     }
     
     if (o instanceof BeanModel) {
+      if (((BeanModel)o).getBean() instanceof GroupRef ){
+        GroupRef groupRef = ((BeanModel)o).getBean();
+        return new GroupPropertyEditForm(groupRef, eventBus);
+      }
+
+      
+      
       return PropertyEditableFactory.getPropertyEditable((BeanModel)o, eventBus).getPropertiesForm();
     }
     return null;
