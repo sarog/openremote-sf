@@ -34,6 +34,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.component.SelectAndDeleteButtonWidget;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
@@ -58,6 +59,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.event.shared.EventBus;
+
 /**
  * The window to creates or update a slider and save it into server.
  * 
@@ -76,7 +78,7 @@ public class SliderWindow extends FormWindow {
    
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
-   protected Button setValueBtn = new Button("select");
+   protected SelectAndDeleteButtonWidget setValueBtn = new SelectAndDeleteButtonWidget();
    
    private boolean edit = false;
    
@@ -157,7 +159,7 @@ public class SliderWindow extends FormWindow {
 
       if (edit) {
          nameField.setValue(sliderDTO.getName());
-         setValueBtn.setText(sliderDTO.getCommandName());
+         setValueBtn.setText((sliderDTO.getCommandName() != null)?sliderDTO.getCommandName():"");
       }
 
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
@@ -176,6 +178,7 @@ public class SliderWindow extends FormWindow {
       form.addButton(resetButton);
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
+      setValueBtn.addDeleteListener(new CommandDeleteListener());
       
       form.addListener(Events.BeforeSubmit, new SliderSubmitListener());      
       add(form);
@@ -241,6 +244,15 @@ public class SliderWindow extends FormWindow {
                sliderDTO.setCommandName(dc.getDisplayName());
             }
          });
+      }
+   }
+   
+   class CommandDeleteListener extends SelectionListener<ButtonEvent> {
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+        sliderDTO.setCommand(null);
+        sliderDTO.setCommandName("");
+        setValueBtn.setText("");
       }
    }
    

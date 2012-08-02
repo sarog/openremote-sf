@@ -25,7 +25,6 @@ import org.openremote.modeler.client.rpc.SliderRPCService;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
@@ -107,30 +106,7 @@ public class SliderController extends BaseGWTSpringController implements SliderR
 
   @Override
   public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
-    Slider slider = sliderService.loadById(sliderDTO.getOid());
-    slider.setName(sliderDTO.getName());
-
-    if (slider.getSliderSensorRef().getSensor().getOid() != sliderDTO.getSensor().getId()) {
-      Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
-      slider.getSliderSensorRef().setSensor(sensor);
-    }
-
-    if (sliderDTO.getCommand() != null) {
-      if (slider.getSetValueCmd() == null || (slider.getSetValueCmd().getDeviceCommand().getOid() != sliderDTO.getCommand().getId())) {
-        DeviceCommand dc = deviceCommandService.loadById(sliderDTO.getCommand().getId());
-        if (slider.getSetValueCmd() != null) { 
-          slider.getSetValueCmd().setDeviceCommand(dc);
-        } else {
-          slider.setSetValueCmd(dc);
-        }
-      }
-    } else {
-      if (slider.getSetValueCmd() != null) {
-        slider.setSetValueCmd((SliderCommandRef)null);
-      }
-    }
-
-    sliderService.update(slider);
+    sliderService.updateSliderWithDTO(sliderDTO);
   }
 
   public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
