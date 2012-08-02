@@ -188,11 +188,7 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        if (sliderDTO.getCommand() == null) {
-          MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
-          submitBtn.enable();
-          return;
-        }
+        // MODELER-342: It's not mandatory that the slider has a command, this is the way a passive slider is configured.
         if (sliderDTO.getSensor() == null) {
           MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
           submitBtn.enable();

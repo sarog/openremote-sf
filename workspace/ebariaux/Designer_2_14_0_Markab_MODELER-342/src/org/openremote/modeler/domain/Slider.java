@@ -57,13 +57,11 @@ public class Slider extends BusinessEntity {
     super();
     setName(name);
     setDevice(sensor.getDevice());
-    SliderCommandRef setValueCmdRef = new SliderCommandRef();
-    setValueCmdRef.setDeviceCommand(setCmd);
-    setValueCmdRef.setDeviceName(setCmd.getDevice().getName());
-    setValueCmdRef.setSlider(this);
+    if (setCmd != null) {
+      setSetValueCmd(setCmd);
+    }
     SliderSensorRef sensorRef = new SliderSensorRef(this);
     sensorRef.setSensor(sensor);
-    setSetValueCmd(setValueCmdRef);
     setSliderSensorRef(sensorRef);
   }
 
@@ -82,6 +80,14 @@ public class Slider extends BusinessEntity {
 
    public void setSetValueCmd(SliderCommandRef setValueCmd) {
       this.setValueCmd = setValueCmd;
+   }
+   
+   public void setSetValueCmd(DeviceCommand setCmd) {
+     SliderCommandRef setValueCmdRef = new SliderCommandRef();
+     setValueCmdRef.setDeviceCommand(setCmd);
+     setValueCmdRef.setDeviceName(setCmd.getDevice().getName());
+     setValueCmdRef.setSlider(this);
+     setSetValueCmd(setValueCmdRef);
    }
 
    @ManyToOne
