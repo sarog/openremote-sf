@@ -19,24 +19,33 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.widget.component.GroupPropertyEditable;
-
+import org.openremote.modeler.client.event.UIElementEditedEvent;
+import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.event.shared.EventBus;
+
 
 /**
  * A panel for editing group's name. 
  * @author Javen
  */
 public class GroupPropertyEditForm extends PropertyForm {
-   private GroupPropertyEditable editor = null;
+  
+  private GroupRef groupRef;
+  private Group group;
+  private EventBus eventBus;
 
-   public GroupPropertyEditForm(GroupPropertyEditable editor) {
-      super(editor);
-      this.editor = editor;
+   public GroupPropertyEditForm(GroupRef groupRef, EventBus eventBus) {
+      super();
+      this.groupRef = groupRef;
+      this.group = groupRef.getGroup();
+      this.eventBus = eventBus;
       addFields();
       show();
    }
@@ -45,15 +54,18 @@ public class GroupPropertyEditForm extends PropertyForm {
       // initial name field.
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
-      name.setValue(editor.getName());
+      name.setValue((group != null)?group.getName():"");
       name.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
             if (name.getValue() != null && name.getValue().trim().length() > 0) {
-               editor.setName(name.getValue());
+              if (group != null) {
+                group.setName(name.getValue());
+                updateGroup();
+              }
             } else {
                MessageBox.alert("Error", "Empty name is not allowed!", null);
-               name.setValue(editor.getName());
+               name.setValue((group != null)?group.getName():"");
             }
          }
       });
@@ -65,4 +77,10 @@ public class GroupPropertyEditForm extends PropertyForm {
    public String getPropertyFormTitle() {
      return "Group properties";
    }
+   
+   private void updateGroup() {
+     eventBus.fireEvent(new UIElementEditedEvent(groupRef));     
+     BeanModelDataBase.groupTable.update(group.getBeanModel());
+   }
+
 }

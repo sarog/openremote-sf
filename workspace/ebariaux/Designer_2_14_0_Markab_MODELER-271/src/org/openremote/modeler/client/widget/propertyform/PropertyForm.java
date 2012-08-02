@@ -183,6 +183,10 @@ public class PropertyForm extends FormPanel {
       }
    }
    
+   public PropertyForm() {
+     this(null);
+   }
+   
    public PropertyForm(PropertyEditable componentContainer) {
       setFrame(true);
       setHeaderVisible(false);
