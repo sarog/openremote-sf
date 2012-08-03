@@ -71,7 +71,7 @@ public class PropertyForm extends FormPanel {
       this.componentContainer = componentContainer;
       this.widgetSelectionUtil = widgetSelectionUtil;
       setLabelWidth(90);
-      setScrollMode(Scroll.AUTO);
+      setFieldWidth(150);
       LayoutContainer layoutContainer = (LayoutContainer)componentContainer.getParent();
       if (layoutContainer instanceof AbsoluteLayoutContainer) {
          addAbsolutePositionAndSizeProperties((ComponentContainer)layoutContainer);
