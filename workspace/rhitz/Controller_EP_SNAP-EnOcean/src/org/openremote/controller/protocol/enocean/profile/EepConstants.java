@@ -31,6 +31,11 @@ public final class EepConstants
   // Constants ------------------------------------------------------------------------------------
 
   /**
+   * EnOcean equipment profile (EEP) contact input data field name.
+   */
+  public static final String EEP_CONTACT_DATA_FIELD_NAME = "CO";
+
+  /**
    * EnOcean equipment profile (EEP) temperature data field name.
    */
   public static final String EEP_TEMPERATURE_DATA_FIELD_NAME = "TMP";
@@ -46,6 +51,13 @@ public final class EepConstants
    * radio telegrams.
    */
   public static final int EEP_LEARN_BIT_DATA_FIELD_OFFSET_4BS = 28;
+
+  /**
+   * Bit offset of EnOcean equipment profile (EEP) learn bit data field for
+   * {@link org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram.RORG#BS1 1BS}
+   * radio telegrams.
+   */
+  public static final int EEP_LEARN_BIT_DATA_FIELD_OFFSET_1BS = 4;
 
   /**
    * Bit size of EnOcean equipment profile (EEP) learn bit data field.

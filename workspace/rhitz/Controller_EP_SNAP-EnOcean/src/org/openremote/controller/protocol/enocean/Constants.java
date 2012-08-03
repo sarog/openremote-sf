@@ -34,6 +34,12 @@ public final class Constants
    */
   public static final String TEMPERATURE_STATUS_COMMAND = EEP_TEMPERATURE_DATA_FIELD_NAME;
 
+  /**
+   * Command string for configuring a command which receives the state (open/closed) of
+   * an input contact.
+   */
+  public static final String CONTACT_STATUS_COMMAND = EEP_CONTACT_DATA_FIELD_NAME;
+
 
   // Constructors ---------------------------------------------------------------------------------
 
