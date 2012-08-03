@@ -157,9 +157,11 @@ public class SliderWindow extends FormWindow {
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
 
+      setValueBtn.setButtonWidth(185);
+      setValueBtn.setButtonTextLengthBeforeTruncation(28);
       if (edit) {
          nameField.setValue(sliderDTO.getName());
-         setValueBtn.setText((sliderDTO.getCommandName() != null)?sliderDTO.getCommandName():"");
+         setValueBtn.setText((sliderDTO.getCommandName() != null)?sliderDTO.getCommandName():"Select");
       }
 
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
@@ -233,13 +235,12 @@ public class SliderWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(device.getOid());
-         final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
                DeviceCommandDTO dc = dataModel.getBean();
-               command.setText(dc.getDisplayName());
+               setValueBtn.setText(dc.getDisplayName());
                sliderDTO.setCommand(new DTOReference(dc.getOid()));
                sliderDTO.setCommandName(dc.getDisplayName());
             }
@@ -252,7 +253,7 @@ public class SliderWindow extends FormWindow {
       public void componentSelected(ButtonEvent ce) {
         sliderDTO.setCommand(null);
         sliderDTO.setCommandName("");
-        setValueBtn.setText("");
+        setValueBtn.setText("Select");
       }
    }
    

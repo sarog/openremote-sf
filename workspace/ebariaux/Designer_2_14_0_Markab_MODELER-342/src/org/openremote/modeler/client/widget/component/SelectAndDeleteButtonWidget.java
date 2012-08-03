@@ -32,6 +32,8 @@ import com.google.gwt.core.client.GWT;
  */
 public class SelectAndDeleteButtonWidget extends LayoutContainer {
 
+  private int textLength = 15;
+  
    private Button selectButton = new Button("Select");
    private Button deleteButton = new Button();
    public SelectAndDeleteButtonWidget() {
@@ -53,11 +55,19 @@ public class SelectAndDeleteButtonWidget extends LayoutContainer {
    }
    
    public void setText(String text) {
-      if (text.length() > 15) {
-         this.selectButton.setText(text.substring(0, 15) + "...");
+      if (text.length() > textLength) {
+         this.selectButton.setText(text.substring(0, textLength) + "...");
       } else {
          this.selectButton.setText(text);
       }
       this.selectButton.setToolTip(text);
+   }
+   
+   public void setButtonWidth(int width) {
+     selectButton.setWidth(width);
+   }
+
+   public void setButtonTextLengthBeforeTruncation(int textLength) {
+     this.textLength = textLength;
    }
 }
