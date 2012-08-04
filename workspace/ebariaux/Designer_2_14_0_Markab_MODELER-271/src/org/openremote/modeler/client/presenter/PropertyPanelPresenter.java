@@ -37,6 +37,7 @@ import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
+import org.openremote.modeler.client.widget.propertyform.AbsoluteLayoutContainerPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
@@ -63,8 +64,10 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.shared.EventBus;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 public class PropertyPanelPresenter implements Presenter {
 
@@ -128,7 +131,12 @@ public class PropertyPanelPresenter implements Presenter {
       } else {
         currentWidget =  component;
       }
-      PropertyPanelPresenter.this.view.setPropertyForm(getPropertyForm(component));
+
+      PropertyForm form = getPropertyForm(component);
+      PropertyPanelPresenter.this.view.setPropertyForm(form);
+      if (component instanceof AbsoluteLayoutContainer) {
+        new AbsoluteLayoutContainerPropertyForm((AbsoluteLayoutContainer)component, widgetSelectionUtil).addAbsolutePositionAndSizeProperties(form);
+      }
     }
   }
   
