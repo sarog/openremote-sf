@@ -23,7 +23,6 @@ import org.openremote.modeler.client.event.AbsoluteBoundsEvent;
 import org.openremote.modeler.client.listener.AbsoluteBoundsListener;
 import org.openremote.modeler.client.model.ORBounds;
 import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
-import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.domain.Absolute;
 
@@ -40,15 +39,13 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 public class AbsoluteLayoutContainerPropertyForm {
 
   private AbsoluteLayoutContainer componentContainer;
-  protected WidgetSelectionUtil widgetSelectionUtil;
 
   /**
    * @param componentContainer
    * @param widgetSelectionUtil
    */
-  public AbsoluteLayoutContainerPropertyForm(AbsoluteLayoutContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
+  public AbsoluteLayoutContainerPropertyForm(AbsoluteLayoutContainer componentContainer) {
     this.componentContainer = componentContainer;
-    this.widgetSelectionUtil = widgetSelectionUtil;
  }
   
   /**
