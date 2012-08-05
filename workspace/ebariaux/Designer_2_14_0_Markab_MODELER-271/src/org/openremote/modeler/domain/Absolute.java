@@ -21,6 +21,8 @@ package org.openremote.modeler.domain;
 
 import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.PropertyChangeSupport;
 
 import flexjson.JSON;
 
@@ -30,6 +32,8 @@ import flexjson.JSON;
 public class Absolute extends BusinessEntity implements PositionableAndSizable {
 
    private static final long serialVersionUID = -114340249340271840L;
+
+   protected transient PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
 
    /** The left. */
    private int left;
@@ -99,7 +103,9 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param left the new left
     */
    public void setLeft(int left) {
-      this.left = left;
+     int oldLeft = this.left;
+     this.left = left;
+     this.pcSupport.firePropertyChange("left", oldLeft, this.left);
    }
    
    /**
@@ -108,7 +114,9 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param top the new top
     */
    public void setTop(int top) {
+     int oldTop = this.top;
       this.top = top;
+      this.pcSupport.firePropertyChange("top", oldTop, this.top);
    }
    
    /**
@@ -117,7 +125,9 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param width the new width
     */
    public void setWidth(int width) {
+     int oldWidth = this.width;
       this.width = width;
+      this.pcSupport.firePropertyChange("width", oldWidth, this.width);
    }
    
    /**
@@ -126,7 +136,9 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param height the new height
     */
    public void setHeight(int height) {
+     int oldHeight = this.height;
       this.height = height;
+      this.pcSupport.firePropertyChange("height", oldHeight, this.height);
    }
 
    /**
@@ -166,5 +178,12 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
       this.belongsTo = belongsTo;
    }
    
+   public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.addPropertyChangeListener(propertyName, listener);
+   }
+   
+   public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.removePropertyChangeListener(propertyName, listener);
+   }
    
 }
