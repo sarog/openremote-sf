@@ -131,7 +131,9 @@
     </bean>
 
     <!-- round-robin service -->
-    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
+    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" >
+    	<property name = "roundRobinConfig" ref = "roundRobinConfig"/>
+    </bean>
     
     <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
@@ -151,6 +153,7 @@
 
       <property name = "deployer" ref="deployer"/>
       <property name = "statusCache" ref="statusCache"/>
+      <property name = "changedStatusTable" ref = "changedStatusTable"/>
     </bean>
     
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
