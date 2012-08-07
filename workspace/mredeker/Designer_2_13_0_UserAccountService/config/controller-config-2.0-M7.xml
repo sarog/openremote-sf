@@ -272,6 +272,49 @@ If it's true, controller will auto-detect its groupmembers with multicast.
     </config>
   </category>
 
+  <category name="z-wave">
+    <description>
+        <![CDATA[
+          Configuration for the Z-Wave protocol
+        ]]>
+      </description>
+    <config name="protocol.zwave.classname" value="org.openremote.controller.protocol.zwave.ZWaveCommandBuilder">
+      <hint>
+          <![CDATA[
+           Z-Wave CommandBuilder class. This entry should not be changed.
+          ]]>
+        </hint>
+    </config>
+    <config name="zwave.commLayer" value="" options="PAD,RXTX">
+      <hint>
+          <![CDATA[
+            Choose either PAD or RXTX depending on your communication layer to use.
+          ]]>
+        </hint>
+    </config>
+    <config name="zwave.comPort" value="" >
+      <hint>
+          <![CDATA[
+            Serial port the Z-Wave stick is found on. Either local serial port or serial port on PAD host depending on commLayer setting.
+          ]]>
+        </hint>
+    </config>
+    <config name="zwave.pad.host" value="localhost" >
+      <hint>
+          <![CDATA[
+            If PAD is used for communication this defines the host/ip of the machine the PAD daemon is running on.
+          ]]>
+        </hint>
+    </config>
+    <config name="zwave.pad.port" value="7876" >
+      <hint>
+          <![CDATA[
+            If PAD is used for communication this defines the port the PAD daemon is listening on.
+          ]]>
+        </hint>
+    </config>
+  </category>
+  
   <!--
    |
    |  TODO : TEMPORARY
