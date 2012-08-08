@@ -372,7 +372,84 @@ public class ScalingTest
   
   }
 
+  @Test public void testScaleEmbeddedParameter()
+  {
+     String addr = "12/2/2";
 
+     Command cmd1 = getCommandNoArg("SCALE 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("SCALE 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+
+  @Test public void testScaleEmbeddedMixedCaseParameter()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("Scale 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("scAle 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+  
+  @Test public void testScaleEmbeddedParameterSpacesVariation()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("SCALE0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("SCALE    100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+  
   /**
    * Test missing command value argument with 'DIM'
    */
