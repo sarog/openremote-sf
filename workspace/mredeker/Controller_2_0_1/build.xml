@@ -101,6 +101,7 @@
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
   	<fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
+  	<fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
 
   </path>
 
@@ -201,6 +202,9 @@
       <fileset dir = "${lib.dir}/json">
     	  <include name = "*.jar"/>
       </fileset>
+      <fileset dir = "${lib.dir}/json-path">
+       <include name = "*.jar"/>
+      </fileset>
       <fileset dir = "${lib.dir}/onewire">
         <include name = "*.jar"/>
       </fileset>
@@ -266,7 +270,7 @@
 			</fileset>
  		</copy>
     
-    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}">
+    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}" encoding="utf-8">
       <src path = "${src.dir}"/>
     </javac>
   </target>

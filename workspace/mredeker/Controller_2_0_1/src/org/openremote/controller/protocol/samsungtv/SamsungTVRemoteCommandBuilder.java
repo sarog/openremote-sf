@@ -19,6 +19,7 @@
 */
 package org.openremote.controller.protocol.samsungtv;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import org.jdom.Element;
@@ -32,6 +33,7 @@ import org.openremote.controller.utils.Logger;
  * Builds a SamsungTVRemoteCommand which can be used to control Samsung TV's through LAN
  * 
  * @author Marcus Redeker
+ * @author Ivan Martinez
  */
 public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
 
@@ -40,6 +42,7 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
    public final static String SAMSUNG_TV_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "SamsungTV";
 
    private final static String STR_ATTRIBUTE_NAME_KEY_CODE = "keyCode";
+   private final static String STR_ATTRIBUTE_NAME_IP_ADDRESS = "ipAddress";
    
    private final static int SAMSUNG_TV_REMOTE_CONTROL_PORT = 55000;
    private final static String SAMSUNG_TV_REMOTE_APPLICATION_NAME = "OpenRemote";
@@ -50,10 +53,12 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
 
    // Instance Fields ------------------------------------------------------------------------------
    
-   private SamsungTVSession session;
    private String samsungTVIp;
+   // cached sessions for reusing session objects for different commands...
+   private Hashtable<String, SamsungTVSession> sessions = new Hashtable<String, SamsungTVSession>();
    
    // Constructors ---------------------------------------------------------------------------------
+   
 
    public SamsungTVRemoteCommandBuilder(String samsungTVIp) {
       this.samsungTVIp = samsungTVIp;
@@ -67,13 +72,10 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
     */
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
-      if (session == null) {
-         session = new SamsungTVSession(samsungTVIp, SAMSUNG_TV_REMOTE_CONTROL_PORT, SAMSUNG_TV_REMOTE_APPLICATION_NAME);      
-      }
       logger.debug("Building Samsung TV command");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-
       String keyCode = null;
+      String ip = samsungTVIp;
 
       // read values from config xml
 
@@ -84,6 +86,9 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
          if (STR_ATTRIBUTE_NAME_KEY_CODE.equals(elementName)) {
             keyCode = elementValue;
             logger.debug("Samsung TV Command: keyCode = " + keyCode);
+         } else if (STR_ATTRIBUTE_NAME_IP_ADDRESS.equals(elementName)) {
+            ip = elementValue;
+            logger.debug("Samsung TV Command: ipAddress = " + ip);
          }
       }
 
@@ -94,12 +99,19 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
       try {
          Key key = Key.valueOf(keyCode);
          logger.debug("Samsung TV Command created successfully");
-         return new SamsungTVCommand(session, key);
+         return new SamsungTVCommand(getSession(ip), key);
 
       } catch (Exception e) {
-         throw new NoSuchCommandException("Invlid keyCode: " + keyCode);
+         throw new NoSuchCommandException("Unable to create SamsungTVCommand keyCode: " + keyCode, e);
       }
       
+   }
+   
+   private SamsungTVSession getSession(String ip) {
+      if (!sessions.contains(ip)) {
+         sessions.put(ip, new SamsungTVSession(ip, SAMSUNG_TV_REMOTE_CONTROL_PORT, SAMSUNG_TV_REMOTE_APPLICATION_NAME));
+      }
+      return sessions.get(ip);
    }
    
 }
