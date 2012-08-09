@@ -139,8 +139,8 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
     }
     List<ControllerDTO> tempList = (List<ControllerDTO>)res.getResult();
     if (tempList.size() != 1) {
-      throw new ControllerManagementException("No controller with the given MAC address was found.\n" +
-              "Please start your controller before linking it and make sure it has internet access.");
+      throw new ControllerManagementException("No controller with the given MAC address was found or maybe it's linked already.<br>" +
+              "Please start your controller before linking it, make sure it is not linked yet and that it has internet access.");
     }
     ControllerDTO controllerToLink = tempList.get(0);
     controllerToLink.setLinked(true);
