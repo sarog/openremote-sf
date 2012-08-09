@@ -41,6 +41,11 @@ public final class EepConstants
   public static final String EEP_TEMPERATURE_DATA_FIELD_NAME = "TMP";
 
   /**
+   * EnOcean equipment profile (EEP) humidity data field name.
+   */
+  public static final String EEP_HUMIDITY_DATA_FIELD_NAME = "HUM";
+
+  /**
    * EnOcean equipment profile (EEP) learn bit data field name.
    */
   public static final String EEP_LEARN_BIT_DATA_FIELD_NAME = "LRNB";
