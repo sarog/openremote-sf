@@ -35,6 +35,11 @@ public final class Constants
   public static final String TEMPERATURE_STATUS_COMMAND = EEP_TEMPERATURE_DATA_FIELD_NAME;
 
   /**
+   * Command string for configuring a command which receives humidity sensor values.
+   */
+  public static final String HUMIDITY_STATUS_COMMAND = EEP_HUMIDITY_DATA_FIELD_NAME;
+
+  /**
    * Command string for configuring a command which receives the state (open/closed) of
    * an input contact.
    */
