@@ -20,11 +20,9 @@
  */
 package org.openremote.controller.statuscache;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * TODO:
@@ -45,11 +43,11 @@ import java.util.Set;
 public class ChangedStatusRecord
 {
    
-  /** A logical identity of panel */
-  private String deviceID;
+  /** A logical identity of panel+sensorIDs */
+  private String key;
 
   /** The ids a polling request contains */
-  private List<Integer> pollingSensorIDs = new ArrayList<Integer>(1);
+  private Set<Integer> pollingSensorIDs = new TreeSet<Integer>();
 
   /** The ids whose status had changed in the statusChangedSensorIDs */
   private Set<Integer> statusChangedSensorIDs = new HashSet<Integer>(3);
@@ -60,21 +58,21 @@ public class ChangedStatusRecord
 
 
 
-  public ChangedStatusRecord(String deviceID, List<Integer> pollingSensorIDs)
+  public ChangedStatusRecord(String key, Set<Integer> pollingSensorIDs)
   {
-    this.deviceID = deviceID;
+    this.key = key;
     this.pollingSensorIDs = pollingSensorIDs;
   }
 
 
 
 
-  public String getDeviceID()
+  public String getRecordKey()
   {
-    return deviceID;
+    return key;
   }
 
-  public List<Integer> getPollingSensorIDs()
+  public Set<Integer> getPollingSensorIDs()
   {
    return pollingSensorIDs;
   }
@@ -94,8 +92,6 @@ public class ChangedStatusRecord
 
   @Override public boolean equals(Object obj)
   {
-    // TODO : this implementation looks pretty bad  [JPL]
-
     if (obj == null || !(obj instanceof ChangedStatusRecord))
     {
        return false;
@@ -103,39 +99,25 @@ public class ChangedStatusRecord
 
     ChangedStatusRecord timeoutRecord = (ChangedStatusRecord) obj;
 
-    if ("".equals(timeoutRecord.getDeviceID()) || !timeoutRecord.getDeviceID().equals(this.deviceID))
-    {
+    if (timeoutRecord.getRecordKey().equals(getRecordKey())) {
+       return true;
+    } else {
        return false;
     }
-
-    if (timeoutRecord.getPollingSensorIDs().isEmpty()
-          || timeoutRecord.getPollingSensorIDs().size() != this.pollingSensorIDs.size())
-    {
-       return false;
-    }
-
-    Collections.sort(this.getPollingSensorIDs(), new PollingSensorIDListComparator());
-    Collections.sort(timeoutRecord.getPollingSensorIDs(), new PollingSensorIDListComparator());
-
-    for (int i = 0; i < timeoutRecord.getPollingSensorIDs().size(); i++)
-    {
-       if (!this.getPollingSensorIDs().get(i).equals(timeoutRecord.getPollingSensorIDs().get(i)))
-       {
-          return false;
-       }
-    }
-
-    return true;
   }
 
+  @Override
+   public int hashCode() {
+      return key.hashCode();
+   }
 
   @Override public String toString()
   {
      StringBuffer sb = new StringBuffer();
 
-     sb.append("DEVICEID:" + deviceID);
-     sb.append("\tsensorID:" + this.pollingSensorIDs.toString());
-     sb.append("statusChangedSensorID:" + this.statusChangedSensorIDs);
+     sb.append("ChangedStatusRecord:" + key);
+     sb.append(" sensorID:" + this.pollingSensorIDs.toString());
+     sb.append(" statusChangedSensorID:" + this.statusChangedSensorIDs);
      return sb.toString();
   }
 

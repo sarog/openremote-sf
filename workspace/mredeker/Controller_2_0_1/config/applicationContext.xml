@@ -265,6 +265,7 @@
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
+        <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -295,6 +296,9 @@
 	 | extend the implementation with additional command types.
 	 +-->
 
+	<!-- UDPListener Command Builder -->
+	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
+	
 	<!-- shellexe Command Builder -->
 	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	

@@ -16,12 +16,21 @@
  */
 package org.openremote.controller.protocol.shellexe;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.exec.CommandLine;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
 
-public class ShellExeCommand implements ExecutableCommand {
+public class ShellExeCommand implements ExecutableCommand, EventListener, Runnable {
 
    /** The logger. */
    private static Logger logger = Logger.getLogger(ShellExeCommandBuilder.SHELLEXE_PROTOCOL_LOG_CATEGORY);
@@ -31,33 +40,133 @@ public class ShellExeCommand implements ExecutableCommand {
 
    /** The params that should be attached to the executable */
    private String commandParams;
+   
+   /** The regex which is used to extract sensor data from received result */
+   private String regex;
 
+   /** The polling interval which is used for the sensor update thread */
+   private Integer pollingInterval;
+
+   /** The thread that is used to peridically update the sensor */
+   private Thread pollingThread;
+   
+   /** The map of sensors which all use the same command */
+   private Map<String,Sensor> sensors;
+   
+   /** The ordered list of sensors'names that corresponds to regex groups */
+   private String sensorNamesList;
+   
+   /** Boolean to indicate if polling thread should run */
+   boolean doPoll = false;
+   
    /**
     * ShellExeCommand is a protocol to start shell scripts on the controller
+    * 
     * @param commandPath
     * @param commandParams
     */
-   public ShellExeCommand(String commandPath, String commandParams) {
+   public ShellExeCommand(String commandPath, String commandParams, String regex, String sensorNamesList, Integer pollingInterval) {
       this.commandPath = commandPath;
       this.commandParams = commandParams;
+      this.regex = regex;
+      this.sensorNamesList = sensorNamesList;
+      this.pollingInterval = pollingInterval;
+      sensors = new HashMap<String,Sensor>();
    }
-   
+
    /**
     * {@inheritDoc}
     */
    @Override
    public void send() {
-      logger.debug("Will start shell command: " + commandPath + " and use params: " + commandParams);
-      try
-      {
-        if (commandParams == null) {
-          Runtime.getRuntime().exec(new String[]{commandPath});
-        } else {
-          Runtime.getRuntime().exec(new String[]{commandPath, commandParams});
-        }
-      } catch (IOException e)
-      {
-        logger.error("Could not execute shell command: "+commandPath, e);
+      executeCommand();
+   }
+
+   @Override
+   public void setSensor(Sensor sensor)
+   {
+     logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
+     if (pollingInterval == null) {
+       throw new RuntimeException("Could not set sensor because no polling interval was given");
+     }
+     this.sensors.put(sensor.getName(), sensor);
+     if (sensors.size() == 1) {
+        this.doPoll = true;
+        pollingThread = new Thread(this);
+        pollingThread.setName("Polling thread for sensor: " + sensor.getName()+ " " +sensor.getSensorID());
+        pollingThread.start();
+     }
+   }
+
+   @Override
+   public void stop(Sensor sensor)
+   {
+      this.sensors.remove(sensor);
+      if (sensors.size() == 0) {
+         this.doPoll = false;
       }
+   }
+   
+   private String executeCommand() {
+      logger.debug("Will start shell command: " + commandPath + " and use params: " + commandParams);
+      String result = "";
+      try {
+         // Use the commons-exec to parse correctly the arguments, respecting quotes and spaces to separate parameters
+         final CommandLine cmdLine = new CommandLine(commandPath);
+         if (commandParams != null) {
+            cmdLine.addArguments(commandParams);
+         }
+         final Process proc = Runtime.getRuntime().exec(cmdLine.toStrings());
+         final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+         final StringBuffer resultBuffer = new StringBuffer();
+         boolean first = true;
+         for (String tmp = reader.readLine(); tmp != null; tmp = reader.readLine()) {
+            if (!first) resultBuffer.append("\n");
+            first = false;
+            resultBuffer.append(tmp);
+         }
+         result = resultBuffer.toString();
+      } catch (IOException e) {
+         logger.error("Could not execute shell command: " + commandPath, e);
+      }
+      logger.debug("Shell command: " + commandPath + " returned: " + result);
+      return result;
+   }
+   
+   @Override
+   public void run() {
+      logger.debug("Thread started: " + pollingThread.getName());
+      String[] sensorNames = null;
+      if (sensorNamesList != null) {
+         sensorNames = sensorNamesList.split(";");          // get an array with all sensor'names
+      }
+      while (doPoll) {
+         String readValue = this.executeCommand();
+         if ( (regex != null) && (sensorNamesList != null) ) {
+           Pattern regexPattern = Pattern.compile(regex);
+           Matcher matcher = regexPattern.matcher(readValue);
+           if (matcher.find()) {
+              for (int i = 0; i < sensorNames.length; i++) {
+                 sensors.get(sensorNames[i]).update(matcher.group(i+1));
+              }
+           } else {
+             logger.info("regex evaluation did not find a match");
+             for (Sensor sensor : sensors.values()) {
+               sensor.update("N/A");
+            }
+           }
+         } else {
+            for (Sensor sensor : sensors.values()) {
+               sensor.update(readValue);
+            }
+         }
+         try {
+            Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
+         } catch (InterruptedException e) {
+            doPoll = false;
+            pollingThread.interrupt();
+         }
+      }
+      logger.debug("*** Out of run method: " + pollingThread.getName());
    }
 }

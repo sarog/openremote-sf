@@ -45,8 +45,7 @@ public class TelnetCommandBuilderTest {
    public void testTelnet() {
       TelnetCommand cmd = getCommand("192.168.1.1", "23", "test");
       Assert.assertEquals("192.168.1.1", cmd.getIp());
-      Assert.assertEquals("23", cmd.getPort());
-      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals(23, cmd.getPort().intValue());
       Assert.assertEquals("test", cmd.getCommand());
    }
    
@@ -54,8 +53,7 @@ public class TelnetCommandBuilderTest {
    public void testTelnetWithParam() {
       TelnetCommand cmd = getCommand("192.168.1.1", "23", "light1_${param}");
       Assert.assertEquals("192.168.1.1", cmd.getIp());
-      Assert.assertEquals("23", cmd.getPort());
-      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals(23, cmd.getPort().intValue());
       Assert.assertEquals("light1_255", cmd.getCommand());
    }
 
