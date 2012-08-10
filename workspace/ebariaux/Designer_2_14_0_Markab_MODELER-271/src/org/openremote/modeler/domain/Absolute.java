@@ -160,13 +160,13 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
    }
    
    public void setSize(int width, int height) {
-      this.width = width;
-      this.height = height;
+     setWidth(width);
+     setHeight(height);
    }
    
    public void setPosition(int left, int top) {
-      this.left = left;
-      this.top = top;
+     setLeft(left);
+     setTop(top);
    }
 
    @JSON(include=false)
