@@ -151,7 +151,6 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
          Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
          absolute.setLeft(absolute.getLeft() + left);
          absolute.setTop(absolute.getTop() + top);
-         eventBus.fireEvent(new UIElementEditedEvent(absolute));
        } else if (cc instanceof GridLayoutContainerHandle) {        
          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
          grid.setLeft(grid.getLeft() + left);

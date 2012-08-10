@@ -245,7 +245,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(leftPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(leftPosition);
@@ -270,7 +270,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(middlePosition - absolute.getWidth() / 2);
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(middlePosition - (grid.getWidth() / 2));
@@ -295,7 +295,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setLeft(rightPosition - absolute.getWidth());
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(rightPosition - grid.getWidth());
@@ -318,7 +318,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(topPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(topPosition);
@@ -343,7 +343,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(middlePosition - (absolute.getHeight() / 2));
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(middlePosition - (grid.getHeight() / 2));
@@ -368,7 +368,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         if (cc instanceof AbsoluteLayoutContainer) {
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setTop(bottomPosition - absolute.getHeight());
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(bottomPosition - grid.getHeight());
@@ -397,7 +397,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
           absolute.setWidth(referenceWidth);
           absolute.setHeight(referenceHeight);
-          eventBus.fireEvent(new UIElementEditedEvent(absolute));
+//          eventBus.fireEvent(new UIElementEditedEvent(absolute));
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setWidth(referenceWidth);
@@ -464,7 +464,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         for (PositionableAndSizable pas : elementsToProcess) {
           pas.setLeft((int)currentLeftPosition);
           currentLeftPosition += pas.getWidth() + spacing;
-          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
         }
       } else {
         // Fallback to other algorithm, distribute all elements between left and right most one on their center axis 
@@ -474,7 +474,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         int index = 1;
         for (PositionableAndSizable pas : elementsToProcess) {
           pas.setLeft(leftBorder + (index * centerSpacing) - (pas.getWidth() / 2));
-          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
           index++;
         }
       }
@@ -537,7 +537,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         for (PositionableAndSizable pas : elementsToProcess) {
           pas.setTop((int)currentTopPosition);
           currentTopPosition += pas.getHeight() + spacing;
-          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
         }
       } else {
         // Fallback to other algorithm, distribute all elements between left and right most one on their center axis 
@@ -547,7 +547,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         int index = 1;
         for (PositionableAndSizable pas : elementsToProcess) {
           pas.setTop(topBorder + (index * centerSpacing) - (pas.getHeight() / 2));
-          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//          eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
           index++;
         }
       }
@@ -588,7 +588,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
       int offset = (totalMargin / 2) - leftBorder;
       for (PositionableAndSizable pas : elementsToProcess) {
         pas.setLeft(pas.getLeft() + offset);
-        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
       }
     }    
   }
@@ -633,7 +633,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
       int offset = (totalMargin / 2) - topBorder;
       for (PositionableAndSizable pas : elementsToProcess) {
         pas.setTop(pas.getTop() + offset);
-        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
+//        eventBus.fireEvent(new UIElementEditedEvent((BusinessEntity)pas));
       }
     }    
   }
