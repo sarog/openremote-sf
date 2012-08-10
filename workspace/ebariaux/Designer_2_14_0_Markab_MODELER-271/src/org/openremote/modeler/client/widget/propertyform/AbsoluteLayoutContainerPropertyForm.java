@@ -19,12 +19,10 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.event.AbsoluteBoundsEvent;
-import org.openremote.modeler.client.listener.AbsoluteBoundsListener;
-import org.openremote.modeler.client.model.ORBounds;
-import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
 import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -63,8 +61,7 @@ public class AbsoluteLayoutContainerPropertyForm {
      posLeftField.addListener(Events.Blur, new Listener<BaseEvent>() {
         @Override
         public void handleEvent(BaseEvent be) {
-          componentContainer.setPosition(Integer.parseInt(posLeftField.getValue()), absolute.getTop());
-          componentContainer.layout();
+          absolute.setLeft(Integer.parseInt(posLeftField.getValue()));
         }
      });
      final TextField<String> posTopField = new TextField<String>();
@@ -77,8 +74,7 @@ public class AbsoluteLayoutContainerPropertyForm {
      posTopField.addListener(Events.Blur, new Listener<BaseEvent>() {
         @Override
         public void handleEvent(BaseEvent be) {
-          componentContainer.setPosition(absolute.getLeft(), Integer.parseInt(posTopField.getValue()));
-          componentContainer.layout();
+          absolute.setTop(Integer.parseInt(posTopField.getValue()));
         }
      });
      final TextField<String> widthField = new TextField<String>();
@@ -91,8 +87,7 @@ public class AbsoluteLayoutContainerPropertyForm {
      widthField.addListener(Events.Blur, new Listener<BaseEvent>() {
         @Override
         public void handleEvent(BaseEvent be) {
-          componentContainer.setSize(Integer.parseInt(widthField.getValue()), absolute.getHeight());
-          componentContainer.layout();
+          absolute.setWidth(Integer.parseInt(widthField.getValue()));
         }
      });
 
@@ -106,23 +101,39 @@ public class AbsoluteLayoutContainerPropertyForm {
      heightField.addListener(Events.Blur, new Listener<BaseEvent>() {
         @Override
         public void handleEvent(BaseEvent be) {
-          componentContainer.setSize(absolute.getWidth(), Integer.parseInt(heightField.getValue()));
-          componentContainer.layout();
+          absolute.setHeight(Integer.parseInt(heightField.getValue()));
         }
      });
      masterForm.insert(posLeftField, 0);
      masterForm.insert(posTopField, 1);
      masterForm.insert(widthField, 2);
      masterForm.insert(heightField, 3);
-     AbsoluteBoundsListenerManager.getInstance().addAbsoluteBoundsListener(componentContainer, new AbsoluteBoundsListener() {
-        public void handleEvent(AbsoluteBoundsEvent event) {
-           ORBounds bounds = event.getBounds();
-           posLeftField.setValue(bounds.getLeft() + "");
-           posTopField.setValue(bounds.getTop() + "");
-           widthField.setValue(bounds.getWidth() + "");
-           heightField.setValue(bounds.getHeight() + "");
-        }
+     
+     absolute.addPropertyChangeListener("left", new PropertyChangeListener() {      
+       @Override
+       public void propertyChange(PropertyChangeEvent evt) {
+         posLeftField.setValue(evt.getNewValue() + "");
+       }
      });
+     absolute.addPropertyChangeListener("top", new PropertyChangeListener() {      
+       @Override
+       public void propertyChange(PropertyChangeEvent evt) {
+         posTopField.setValue(evt.getNewValue() + "");
+       }
+     });
+     absolute.addPropertyChangeListener("width", new PropertyChangeListener() {      
+       @Override
+       public void propertyChange(PropertyChangeEvent evt) {
+         widthField.setValue(evt.getNewValue() + "");
+       }
+     });
+     absolute.addPropertyChangeListener("height", new PropertyChangeListener() {      
+       @Override
+       public void propertyChange(PropertyChangeEvent evt) {
+         heightField.setValue(evt.getNewValue() + "");
+       }
+     });
+
      masterForm.layout();
   }
 

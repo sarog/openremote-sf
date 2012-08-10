@@ -44,6 +44,8 @@ import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -55,6 +57,8 @@ import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.ResizeEvent;
+import com.extjs.gxt.ui.client.event.ResizeListener;
 import com.extjs.gxt.ui.client.fx.Resizable;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Point;
@@ -116,15 +120,13 @@ public class ScreenCanvas extends ComponentContainer {
       }
       if (screen.getAbsolutes().size() > 0) {
          List<Absolute> absolutes = screen.getAbsolutes();
-         for (Absolute absolute : absolutes) {
-            AbsoluteLayoutContainer componentContainer = createAbsoluteLayoutContainer(screen, absolute,
+         for (final Absolute absolute : absolutes) {
+            final AbsoluteLayoutContainer componentContainer = createAbsoluteLayoutContainer(screen, absolute,
                   ScreenComponent.build(this, widgetSelectionUtil, absolute.getUiComponent()));
             componentContainer.setSize(absolute.getWidth(), absolute.getHeight());
             componentContainer.setPosition(absolute.getLeft(), absolute.getTop());
             this.add(componentContainer);
-            Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-            resizable.setMinHeight(10);
-            resizable.setMinWidth(10);
+            addResizable(componentContainer);
             createDragSource(this, componentContainer);
          }
       }
@@ -150,6 +152,19 @@ public class ScreenCanvas extends ComponentContainer {
       sinkEvents(Event.ONKEYDOWN);
       sinkEvents(Event.ONKEYUP);
    }
+
+  protected void addResizable(final AbsoluteLayoutContainer componentContainer) {
+    Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
+    resizable.setMinHeight(10);
+    resizable.setMinWidth(10);
+    resizable.addResizeListener(new ResizeListener() {
+      @Override
+      public void resizeEnd(ResizeEvent re) {
+        super.resizeEnd(re);
+        componentContainer.getAbsolute().setSize(componentContainer.getWidth(), componentContainer.getHeight());
+      }
+    });
+  }
 
    public void updateGround() {
       Background bgd = screen.getBackground();
@@ -293,9 +308,7 @@ public class ScreenCanvas extends ComponentContainer {
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                         - absolutePosition.y);
-                  Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-                  resizable.setMinHeight(10);
-                  resizable.setMinWidth(10);
+                  addResizable(componentContainer);
                }
             } else if (data instanceof LayoutContainer) {
                if (data instanceof GridLayoutContainerHandle) {
@@ -348,7 +361,15 @@ public class ScreenCanvas extends ComponentContainer {
                      if (y + controlContainer.getHeight() > getHeight()) {
                         y = getHeight() - controlContainer.getHeight();
                      }
-                     controlContainer.setPosition(x, y);
+                     
+                     
+                     // TODO: this should not be required once listening in place
+//                     controlContainer.setPosition(x, y);
+                     
+                     
+                     controlContainer.getAbsolute().setPosition(x, y);
+                     
+                     // EBR: why those 2 lines ?
                      screen.removeAbsolute(controlContainer.getAbsolute());
                      screen.addAbsolute(controlContainer.getAbsolute());
                      controlContainer.el().updateZIndex(1);
@@ -391,17 +412,19 @@ public class ScreenCanvas extends ComponentContainer {
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
                      createDragSource(canvas, componentContainer);
-                     Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
-                     resizable.setMinHeight(10);
-                     resizable.setMinWidth(10);
+                     addResizable((AbsoluteLayoutContainer)componentContainer);
                   }
                   
                   // TODO EBR : OK, dragged from "palette" to screen, not grid
                   canvas.add(componentContainer);
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
+                    if (componentContainer instanceof AbsoluteLayoutContainer) {
+                      ((AbsoluteLayoutContainer)componentContainer).getAbsolute().setPosition(e.getClientX() - absolutePosition.x, e.getClientY() - absolutePosition.y);
+                    } else {
                      componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                            - absolutePosition.y);
+                    }
                   }
                   widgetSelectionUtil.setSelectWidget(componentContainer);
                }
@@ -582,6 +605,32 @@ public class ScreenCanvas extends ComponentContainer {
          }
       }.bind(controlContainer);
       absolute.setBelongsTo(controlContainer);
+      
+      absolute.addPropertyChangeListener("left", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          controlContainer.setPosition((Integer)evt.getNewValue(), absolute.getTop());
+        }
+      });
+      absolute.addPropertyChangeListener("top", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          controlContainer.setPosition(absolute.getLeft(), (Integer)evt.getNewValue());
+        }
+      });
+      absolute.addPropertyChangeListener("width", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          controlContainer.setSize((Integer)evt.getNewValue(), absolute.getHeight());
+        }
+      });
+      absolute.addPropertyChangeListener("height", new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          controlContainer.setSize(absolute.getWidth(), (Integer)evt.getNewValue());
+        }
+      });
+
       return controlContainer;
    }
 
@@ -595,21 +644,20 @@ public class ScreenCanvas extends ComponentContainer {
       UIComponent component = UIComponent.createNew(uiComponent);
       absolute.setUiComponent(component);
       controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, widgetSelectionUtil, component));
-      controlContainer.setSize(component.getPreferredWidth(), component.getPreferredHeight());
+      absolute.setSize(component.getPreferredWidth(), component.getPreferredHeight());
       screen.addAbsolute(absolute);
       return controlContainer;
    }
 
    private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,
          GridCellBounds recorder) {
-
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
       Absolute absolute = new Absolute(IDUtil.nextID());
       UIComponent component = UIComponent.copy(uiComponent);
       absolute.setUiComponent(component);
       controlContainer = createAbsoluteLayoutContainer(screen, absolute, ScreenComponent.build(this, widgetSelectionUtil, component));
-      controlContainer.setSize(recorder.getWidth(), recorder.getHeight());
+      absolute.setSize(recorder.getWidth(), recorder.getHeight());
       screen.addAbsolute(absolute);
       return controlContainer;
    }
@@ -773,8 +821,8 @@ public class ScreenCanvas extends ComponentContainer {
    public void setSizeToDefault(UIComponent component) {
       for (Absolute absolute : screen.getAbsolutes()) {
          if (absolute.getUiComponent().equals(component)) {
-            absolute.getBelongsTo().setSize(component.getPreferredWidth(), component.getPreferredHeight());
-         }
+//            absolute.getBelongsTo().setSize(component.getPreferredWidth(), component.getPreferredHeight());
+           absolute.setSize(component.getPreferredWidth(), component.getPreferredHeight());         }
       }
       this.layout();
    }
