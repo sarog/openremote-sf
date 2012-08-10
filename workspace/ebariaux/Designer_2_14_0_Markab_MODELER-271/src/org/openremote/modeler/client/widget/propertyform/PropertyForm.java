@@ -72,6 +72,10 @@ public class PropertyForm extends FormPanel {
    /**
     * Adds the delete button to delete select component.
     */
+   
+   // TODO: check mechanism for delete and event propagation and see if can get rid of need for componentContainer
+   // Can this be handled as a form extension ?
+   
    protected void addDeleteButton() {
       if (componentContainer instanceof ComponentContainer) {
          final ComponentContainer componentContainer = (ComponentContainer) this.componentContainer;

@@ -34,7 +34,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  * 
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class AbsoluteLayoutContainerPropertyForm implements PropertyFormExtension {
+public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFormExtension {
 
   private AbsoluteLayoutContainer componentContainer;
   
@@ -47,7 +47,7 @@ public class AbsoluteLayoutContainerPropertyForm implements PropertyFormExtensio
    * @param componentContainer
    * @param widgetSelectionUtil
    */
-  public AbsoluteLayoutContainerPropertyForm(AbsoluteLayoutContainer componentContainer) {
+  public AbsoluteLayoutContainerPropertyFormExtension(AbsoluteLayoutContainer componentContainer) {
     this.componentContainer = componentContainer;
  }
 

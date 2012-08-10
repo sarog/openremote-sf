@@ -37,7 +37,7 @@ import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
-import org.openremote.modeler.client.widget.propertyform.AbsoluteLayoutContainerPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.AbsoluteLayoutContainerPropertyFormExtension;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
@@ -134,7 +134,7 @@ public class PropertyPanelPresenter implements Presenter {
 
       PropertyForm form = getPropertyForm(component);
       if (component instanceof AbsoluteLayoutContainer) {
-        form.addFormExtension(new AbsoluteLayoutContainerPropertyForm((AbsoluteLayoutContainer)component));
+        form.addFormExtension(new AbsoluteLayoutContainerPropertyFormExtension((AbsoluteLayoutContainer)component));
       }
       PropertyPanelPresenter.this.view.setPropertyForm(form);
     }
