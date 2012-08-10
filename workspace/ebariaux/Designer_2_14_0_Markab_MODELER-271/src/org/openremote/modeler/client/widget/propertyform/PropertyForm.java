@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
@@ -44,6 +47,8 @@ import com.google.gwt.core.client.GWT;
 public class PropertyForm extends FormPanel {
    private ComponentContainer componentContainer;
    protected WidgetSelectionUtil widgetSelectionUtil;
+   
+   private List<PropertyFormExtension> formExtensions = new ArrayList<PropertyFormExtension>();
 
    public PropertyForm() {
      setFrame(true);
@@ -99,4 +104,25 @@ public class PropertyForm extends FormPanel {
    public String getPropertyFormTitle() {
      return "- EMPTY FORM -";
    }
+   
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    for (PropertyFormExtension extension : formExtensions) {
+      extension.install(this);
+    }
+  }
+
+  @Override
+  protected void onUnload() {
+    for (PropertyFormExtension extension : formExtensions) {
+      extension.cleanup(this);
+    }
+    super.onUnload();
+  }
+
+  public void addFormExtension(PropertyFormExtension extension) {
+     this.formExtensions.add(extension);
+  }
+   
 }
