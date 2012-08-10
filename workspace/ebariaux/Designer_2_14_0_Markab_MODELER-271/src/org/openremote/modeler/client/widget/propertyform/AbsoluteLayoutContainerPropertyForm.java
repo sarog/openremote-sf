@@ -34,9 +34,14 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
  * 
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class AbsoluteLayoutContainerPropertyForm {
+public class AbsoluteLayoutContainerPropertyForm implements PropertyFormExtension {
 
   private AbsoluteLayoutContainer componentContainer;
+  
+  private PropertyChangeListener leftListener;
+  private PropertyChangeListener topListener;
+  private PropertyChangeListener widthListener;
+  private PropertyChangeListener heightListener;
 
   /**
    * @param componentContainer
@@ -45,11 +50,27 @@ public class AbsoluteLayoutContainerPropertyForm {
   public AbsoluteLayoutContainerPropertyForm(AbsoluteLayoutContainer componentContainer) {
     this.componentContainer = componentContainer;
  }
+
   
+  @Override
+  public void install(PropertyForm form) {
+    addAbsolutePositionAndSizeProperties(form);
+  }
+
+  @Override
+  public void cleanup(PropertyForm form) {
+    final Absolute absolute = this.componentContainer.getAbsolute();
+    absolute.removePropertyChangeListener("left", leftListener);
+    absolute.removePropertyChangeListener("top", topListener);
+    absolute.removePropertyChangeListener("width", widthListener);
+    absolute.removePropertyChangeListener("height", heightListener);
+  }
+
+
   /**
    * Manage the absolute layoutcontainer's position and size accurately.
    */
-  public void addAbsolutePositionAndSizeProperties(PropertyForm masterForm) {
+  private void addAbsolutePositionAndSizeProperties(PropertyForm masterForm) {
      final Absolute absolute = this.componentContainer.getAbsolute();
      final TextField<String> posLeftField = new TextField<String>();
      posLeftField.setName("posLeft");
@@ -109,30 +130,34 @@ public class AbsoluteLayoutContainerPropertyForm {
      masterForm.insert(widthField, 2);
      masterForm.insert(heightField, 3);
      
-     absolute.addPropertyChangeListener("left", new PropertyChangeListener() {      
+     leftListener = new PropertyChangeListener() {      
        @Override
        public void propertyChange(PropertyChangeEvent evt) {
          posLeftField.setValue(evt.getNewValue() + "");
        }
-     });
-     absolute.addPropertyChangeListener("top", new PropertyChangeListener() {      
+     };
+     absolute.addPropertyChangeListener("left", leftListener);
+     topListener = new PropertyChangeListener() {      
        @Override
        public void propertyChange(PropertyChangeEvent evt) {
          posTopField.setValue(evt.getNewValue() + "");
        }
-     });
-     absolute.addPropertyChangeListener("width", new PropertyChangeListener() {      
+     };
+     absolute.addPropertyChangeListener("top", topListener);
+     widthListener = new PropertyChangeListener() {      
        @Override
        public void propertyChange(PropertyChangeEvent evt) {
          widthField.setValue(evt.getNewValue() + "");
        }
-     });
-     absolute.addPropertyChangeListener("height", new PropertyChangeListener() {      
+     };
+     absolute.addPropertyChangeListener("width", widthListener);
+     heightListener = new PropertyChangeListener() {      
        @Override
        public void propertyChange(PropertyChangeEvent evt) {
          heightField.setValue(evt.getNewValue() + "");
        }
-     });
+     };
+     absolute.addPropertyChangeListener("height", heightListener);
 
      masterForm.layout();
   }
