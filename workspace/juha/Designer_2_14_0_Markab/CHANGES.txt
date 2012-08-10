@@ -2,7 +2,15 @@
 Designer 2.14.0 (2012-08-XX Markab)
 ===================================
 
- - TODO
+ New Features:
+
+   - Z-Wave protocol configuration
+
+ Fixes:
+
+   - MODELER-346: regexp validation for IP fields in TCP
+     and Telnet protocols were wrong. Validations have
+     been disabled.
 
 
 Designer 2.13.4 (2012-07-29 Rosemary)
