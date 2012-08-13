@@ -55,6 +55,11 @@ public final class EepConstants
    */
   public static final String EEP_SUPPLY_VOLTAGE_DATA_FIELD_NAME = "SVC";
 
+  /**
+   * EnOcean equipment profile (EEP) 'PIR status' data field name.
+   */
+  public static final String EEP_PIR_DATA_FIELD_NAME = "PIRS";
+
 
   /**
    * EnOcean equipment profile (EEP) learn bit data field name.

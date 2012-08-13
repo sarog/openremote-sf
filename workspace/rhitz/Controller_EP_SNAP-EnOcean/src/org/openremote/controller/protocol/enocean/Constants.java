@@ -55,6 +55,12 @@ public final class Constants
    */
   public static final String CONTACT_STATUS_COMMAND = EEP_CONTACT_DATA_FIELD_NAME;
 
+  /**
+   * Command string for configuring a command which receives the state (on/off) of
+   * a PIR sensor (occupancy).
+   */
+  public static final String PIR_STATUS_COMMAND = EEP_PIR_DATA_FIELD_NAME;
+
 
   // Constructors ---------------------------------------------------------------------------------
 
