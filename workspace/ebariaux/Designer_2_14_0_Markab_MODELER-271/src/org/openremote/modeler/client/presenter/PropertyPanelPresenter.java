@@ -134,7 +134,7 @@ public class PropertyPanelPresenter implements Presenter {
 
       PropertyForm form = getPropertyForm(component);
       if (component instanceof AbsoluteLayoutContainer) {
-        form.addFormExtension(new AbsoluteLayoutContainerPropertyFormExtension((AbsoluteLayoutContainer)component));
+        form.addFormExtension(new AbsoluteLayoutContainerPropertyFormExtension(((AbsoluteLayoutContainer)component).getAbsolute()));
       }
       PropertyPanelPresenter.this.view.setPropertyForm(form);
     }

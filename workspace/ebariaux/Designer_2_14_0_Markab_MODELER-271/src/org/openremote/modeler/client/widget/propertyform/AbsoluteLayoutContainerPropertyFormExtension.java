@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.widget.uidesigner.AbsoluteLayoutContainer;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.shared.PropertyChangeEvent;
 import org.openremote.modeler.shared.PropertyChangeListener;
@@ -30,13 +29,13 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
- * An object that handles the fields used to edit position and size of widget embedded in AbsoluteLayout.
+ * An object that handles the fields used to edit position and size of widget embedded in Absolute.
  * 
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFormExtension {
 
-  private AbsoluteLayoutContainer componentContainer;
+  private Absolute absolute;
   
   private PropertyChangeListener leftListener;
   private PropertyChangeListener topListener;
@@ -44,11 +43,10 @@ public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFor
   private PropertyChangeListener heightListener;
 
   /**
-   * @param componentContainer
-   * @param widgetSelectionUtil
+   * @param absolute 
    */
-  public AbsoluteLayoutContainerPropertyFormExtension(AbsoluteLayoutContainer componentContainer) {
-    this.componentContainer = componentContainer;
+  public AbsoluteLayoutContainerPropertyFormExtension(Absolute absolute) {
+    this.absolute = absolute;
  }
 
   
@@ -59,7 +57,6 @@ public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFor
 
   @Override
   public void cleanup(PropertyForm form) {
-    final Absolute absolute = this.componentContainer.getAbsolute();
     absolute.removePropertyChangeListener("left", leftListener);
     absolute.removePropertyChangeListener("top", topListener);
     absolute.removePropertyChangeListener("width", widthListener);
@@ -71,7 +68,6 @@ public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFor
    * Manage the absolute layoutcontainer's position and size accurately.
    */
   private void addAbsolutePositionAndSizeProperties(PropertyForm masterForm) {
-     final Absolute absolute = this.componentContainer.getAbsolute();
      final TextField<String> posLeftField = new TextField<String>();
      posLeftField.setName("posLeft");
      posLeftField.setFieldLabel("Left");
