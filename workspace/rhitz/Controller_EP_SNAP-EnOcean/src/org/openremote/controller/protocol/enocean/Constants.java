@@ -61,6 +61,11 @@ public final class Constants
    */
   public static final String PIR_STATUS_COMMAND = EEP_PIR_DATA_FIELD_NAME;
 
+  /**
+   * Command string for configuring a command which receives the state (pressed/released) of
+   * an occupancy button.
+   */
+  public static final String OCCUPANCY_STATUS_COMMAND = EEP_OCCUPANCY_DATA_FIELD_NAME;
 
   // Constructors ---------------------------------------------------------------------------------
 

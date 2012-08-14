@@ -60,6 +60,11 @@ public final class EepConstants
    */
   public static final String EEP_PIR_DATA_FIELD_NAME = "PIRS";
 
+  /**
+   * EnOcean equipment profile (EEP) occupancy data field name.
+   */
+  public static final String EEP_OCCUPANCY_DATA_FIELD_NAME = "OCC";
+
 
   /**
    * EnOcean equipment profile (EEP) learn bit data field name.
