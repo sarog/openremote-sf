@@ -139,7 +139,9 @@ $(document).ready(function() {
 function getControllerLinkedStatus() {
     $.get("config.htm?method=getControllerLinkedStatus",
     	function(msg) {
-    		if (msg.substring(0, 1) == "-") {
+    		if (msg.substring(0, 2) == "no") {
+    			return;
+    		} else if (msg.substring(0, 1) == "-") {
     			showNotLinked();
     			$("#macAddress").append(msg.substring(1,msg.length));
     		} else {
