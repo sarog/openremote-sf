@@ -75,6 +75,7 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
     <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
+    <property name = "beehiveSyncing" value="${controller.performBeehiveSyncing}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
