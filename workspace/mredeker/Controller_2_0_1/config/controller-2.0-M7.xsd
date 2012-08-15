@@ -354,6 +354,7 @@
                           sensor value
           5. Image      - one sensor to display an image corresponding to a specified state value
                           returned by a sensor (switch-type sensor or custom sensor)
+          6. ColorPicker - one write command to send a new value to device
 
         ]]>
       </xsd:documentation>
@@ -366,6 +367,7 @@
       <xsd:element ref = "label" />
       <xsd:element ref = "gesture" />
       <xsd:element ref = "image"/>
+      <xsd:element ref = "colorpicker"/>
     </xsd:choice>
   </xsd:group>
 
@@ -586,6 +588,47 @@
 
 
 
+
+  <!--
+  =================================================================================================
+
+    ColorPicker Component (child element of <components>)
+
+  =================================================================================================
+  -->
+  <xsd:element name="colorpicker">
+    <xsd:annotation>
+      <xsd:documentation><![CDATA[
+
+          A color picker component is a simple one-way component to send write commands to a device.
+          One or more commands may be sent in sequence but no delays are allowed.
+
+          A color picker component must have a controller unique integer identifier.
+
+          An example color picker element is as follows:
+
+            <components>
+              <colorpicker id = "nnn">
+                  <include type = "command" ref = "nnn" />
+                  <include type = "command" ref = "nnn" />
+              </colorpicker>
+              ...
+            </components>
+
+      ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="idType" use="required" />
+    </xsd:complexType>
+  </xsd:element>
+
+
+
+
   <!--
   =================================================================================================
 
@@ -689,7 +732,7 @@
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref = "include" minOccurs = "0" maxOccurs = "unbounded"/>
+        <xsd:group ref = "macroGroup" minOccurs = "0" maxOccurs = "unbounded"/>
       </xsd:sequence>
       <xsd:attribute name = "id" type = "idType" use = "required" />
     </xsd:complexType>
