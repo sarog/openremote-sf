@@ -34,8 +34,7 @@
        xmlns:aop = "http://www.springframework.org/schema/aop"
        xmlns:tx = "http://www.springframework.org/schema/tx"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
-       default-autowire = "byName">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -74,6 +73,9 @@
     <property name = "resourceUploadAllowed" value = "${resource.upload.allowed}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+    <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
+    <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
+    <property name = "beehiveSyncing" value="${controller.performBeehiveSyncing}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
@@ -130,7 +132,9 @@
     </bean>
 
     <!-- round-robin service -->
-    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
+    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" >
+    	<property name = "roundRobinConfig" ref = "roundRobinConfig"/>
+    </bean>
     
     <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
@@ -150,6 +154,7 @@
 
       <property name = "deployer" ref="deployer"/>
       <property name = "statusCache" ref="statusCache"/>
+      <property name = "changedStatusTable" ref = "changedStatusTable"/>
     </bean>
     
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
@@ -207,6 +212,7 @@
     <constructor-arg ref = "configuration"/>
     <constructor-arg ref = "sensorBuilder"/>
     <constructor-arg ref = "commandBuilder"/>
+    <constructor-arg ref = "commandFactory"/>
     
   </bean>
 
@@ -243,6 +249,16 @@
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
    -->
 
+<!-- 
+Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
+The config section of the controller.xml needs to provide information about the additional protocol and the commandBuilder class.
+Additional protocols can either be added manually when editing controller.xml or the designer can create the entry when commands for that
+protocol are defined. 
+
+The entry looks like this:  <property name="protocol.zwave.classname" value="org.openremote.controller.protocol.zwave.ZWaveCommandBuilder" />
+
+The needed classes have to be provided as a jar file and copied to lib folder.
+ -->
   <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
     <constructor-arg>
       <map>

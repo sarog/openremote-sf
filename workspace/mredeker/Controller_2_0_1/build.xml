@@ -100,6 +100,7 @@
   	<fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
+  	<fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
   	<fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
   	<fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
 
@@ -215,6 +216,9 @@
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/drools-5.1.1">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/flexjson-2.1">
         <include name = "*.jar"/>
       </fileset>
     </copy>

@@ -247,7 +247,7 @@ public class DeployerTest
 
 
     Version20ModelBuilder builder =
-        new Version20ModelBuilder(cache, config, sensorBuilder, new Version20CommandBuilder(cf));
+        new Version20ModelBuilder(cache, config, sensorBuilder, new Version20CommandBuilder(cf), cf);
 
     Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
     modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
@@ -290,7 +290,8 @@ public class DeployerTest
         new Version20ModelBuilder(
             cache, config,
             new Version20SensorBuilder(),
-            new Version20CommandBuilder(new CommandFactory(null))
+            new Version20CommandBuilder(new CommandFactory(null)),
+            new CommandFactory(new HashMap<String, CommandBuilder>())
         )
     );
 

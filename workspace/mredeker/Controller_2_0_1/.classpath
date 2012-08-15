@@ -48,5 +48,9 @@
 	<classpathentry kind="lib" path="lib/json-path/json-path-0.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/json-path/json-smart-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-exec-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
+	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet-jse.jar"/>
+	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
+	<classpathentry kind="lib" path="lib/flexjson-2.1/flexjson-2.1.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

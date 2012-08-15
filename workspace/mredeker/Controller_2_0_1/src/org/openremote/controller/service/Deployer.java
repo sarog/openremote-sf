@@ -20,45 +20,59 @@
  */
 package org.openremote.controller.service;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URI;
-import java.net.URL;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.ProtocolException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
 import org.openremote.controller.deployer.ModelBuilder;
-import org.openremote.controller.deployer.Version30ModelBuilder;
 import org.openremote.controller.deployer.Version20ModelBuilder;
+import org.openremote.controller.deployer.Version30ModelBuilder;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.NetworkUtil;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.rest.GenericResourceResultWithErrorMessage;
+import org.openremote.useraccount.domain.ControllerDTO;
+import org.openremote.useraccount.domain.UserDTO;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 /**
  * Deployer service centralizes access to the controller's runtime state information. It maintains
@@ -190,8 +204,28 @@ public class Deployer
    */
   private String name = "<undefined>";
 
+  /**
+   * Reference to controller database object from Beehive. This object also links to the AccountDTO
+   * which can be used to perform automated deploy features and is needed for device discovery.
+   */
+  private ControllerDTO controllerDTO;
 
+  /**
+   * This list holds all discovered devices which are not announced to beehive yet 
+   */
+  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
 
+  /**
+   * Reference to the thread handling the controller announcement notifications
+   */
+  private ControllerAnnouncement controllerAnnouncement;
+  
+  /**
+   * Reference to the thread handling the announcement of discovered devices
+   */
+  private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
+  
+  
   // Constructors ---------------------------------------------------------------------------------
 
   /**
@@ -242,7 +276,9 @@ public class Deployer
     {
       ModelBuilder.SchemaVersion schema = ModelBuilder.SchemaVersion.toSchemaVersion(key);
       ModelBuilder builder = builders.get(key);
-
+      
+      builder.setDeployer(this);  //We inject the deployer manually, since Spring has a problem with circular dependencies
+      
       map.put(schema, builder);
     }
 
@@ -267,6 +303,16 @@ public class Deployer
   {
     // TODO : ORCJAVA-179 -- make sure this can only be called once, see related ORCJAVA-180
 
+    if (controllerConfig.getBeehiveSyncing()) {
+       //Start controller announcement thread
+       controllerAnnouncement = new ControllerAnnouncement();
+       controllerAnnouncement.start();
+   
+       //Start discovered devices announcement thread
+       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
+       discoveredDevicesAnnouncement.start();
+    }
+    
     try
     {
       startup();
@@ -628,7 +674,33 @@ public class Deployer
   }
 
 
+  /**
+   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices for his
+   * protocol that should be announced to Beehive.
+   * 
+   * @param list - the list of devices to announce
+   */
+  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list) {
+     synchronized (discoveredDevicesToAnnounce) {
+        discoveredDevicesToAnnounce.addAll(list);
+     }
+  }
 
+  /**
+   * Method is called by the ConfigManageController which is invoked by index.html
+   * @return a String with the linked account Id or the MAC address with a leading '-'
+   */
+  public String getLinkedAccountId() throws Exception {
+     if (controllerConfig.getBeehiveSyncing()) {
+        if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
+           return controllerDTO.getAccount().getOid().toString();
+        } else {
+           return "-"+NetworkUtil.getMACAddresses();
+        }
+     } else {
+        return "no";
+     }
+  }
 
   // Protected Instance Methods -------------------------------------------------------------------
 
@@ -1421,6 +1493,78 @@ public class Deployer
 
       return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
     }
+  }
+
+
+  /**
+   * Handles the announcement of the controller via it's MAC address to Beehive.<br>
+   * Once a user has linked this controller to an account and the returned ControllerDTO contains<br>
+   * a AccountDTO with users, this thread is ending.
+   * 
+   *
+   */
+  private class ControllerAnnouncement extends Thread {
+    ControllerAnnouncement() {
+       super("ConntrollerAnnouncement");
+    }
+
+    public void run() {
+       //As long as we are not linked to an account we periodically try to receive account info 
+       while ((controllerDTO == null) || (controllerDTO.getAccount() == null)) {
+          try {
+             ClientResource cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
+             Representation r = cr.post(null);
+             cr.release();
+             String str;
+             str = r.getText();
+             GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
+             controllerDTO = (ControllerDTO)res.getResult();
+          } catch (Exception e) {
+             log.error("!!! Unable to announce controller MAC address to Beehive", e);
+          }
+          try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
+       }
+    }
+
+  }
+
+  
+  /**
+   * Handles the announcement of discovered devices.<br>
+   * When discovered devices are available and the controller is linked to an account,<br>
+   * those devices are sent to Beehive.
+   */
+  private class DiscoveredDevicesAnnouncement extends Thread {
+     DiscoveredDevicesAnnouncement() {
+       super("DiscoveredDevicesAnnouncement");
+    }
+
+    public void run() {
+       while (true) {
+          if (!discoveredDevicesToAnnounce.isEmpty()) {
+             synchronized (discoveredDevicesToAnnounce) {
+                ClientResource cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices");
+                if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
+                   UserDTO user = controllerDTO.getAccount().getUsers().get(0);
+                   cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
+                   try {   
+                      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
+                      Representation result = cr.post(rep);
+                      cr.release();
+                      GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
+                      if (res.getErrorMessage() != null) {
+                         throw new RuntimeException(res.getErrorMessage());
+                      }
+                      discoveredDevicesToAnnounce.clear();
+                   } catch (Exception e) {
+                     log.error("Could not announce discovered devices", e);
+                   }
+                }
+             }
+          }
+          try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
+       }
+     }
   }
 
 
