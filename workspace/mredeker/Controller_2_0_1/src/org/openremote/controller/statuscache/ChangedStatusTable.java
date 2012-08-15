@@ -99,7 +99,11 @@ public class ChangedStatusTable
   @Deprecated public synchronized void resetChangedStatusIDs(String key)
   {
     ChangedStatusRecord skippedStatusRecord = this.query(key);
-    skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
+
+    if (skippedStatusRecord != null)
+    {
+      skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
+    }
   }
 
   /**
