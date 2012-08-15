@@ -57,7 +57,7 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
     }
 
     if ("FADE".equalsIgnoreCase(name) && level == null) {
-      throw new NoSuchCommandException("Level is required for a scene Fade command");
+      throw new NoSuchCommandException("Level is required for a dimmer Fade command");
     }
 
     return new DimmerCommand(name, gateway, address, level);
