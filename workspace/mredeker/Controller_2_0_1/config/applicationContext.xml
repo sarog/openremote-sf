@@ -282,6 +282,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "rrdGraphUrl"         value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -315,6 +316,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	<!-- UDPListener Command Builder -->
 	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
 	
+	<!-- rrdGraphUrl Command Builder -->
+	<bean id = "rrdGraphUrlCommandBuilder" class = "org.openremote.controller.protocol.rrdgraphurl.RrdGraphUrlCommandBuilder"/>
+
 	<!-- shellexe Command Builder -->
 	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	
@@ -432,10 +436,15 @@ The needed classes have to be provided as a jar file and copied to lib folder.
    +-->
   <bean id = "eventProcessorChain" class = "org.openremote.controller.statuscache.EventProcessorChain">
     <property name = "eventProcessors">
-      <bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    	<list>
+    		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    		<ref bean="rrd4jLogger"/>
+     		
+    	</list>
     </property>
   </bean>
 
+  <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
 
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |

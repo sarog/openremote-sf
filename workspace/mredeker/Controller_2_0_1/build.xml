@@ -97,13 +97,13 @@
     <fileset dir = "${lib.dir}/apache/commons-net" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/apache/commons-lang" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
-
+    <fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/rrd4j-2.1.1" includes = "**/*.jar"/>
   </path>
 
   <!--
@@ -219,6 +219,9 @@
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/flexjson-2.1">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/rrd4j-2.1.1">
         <include name = "*.jar"/>
       </fileset>
     </copy>
