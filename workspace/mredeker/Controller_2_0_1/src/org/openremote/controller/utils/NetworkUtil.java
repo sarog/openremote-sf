@@ -21,6 +21,7 @@ package org.openremote.controller.utils;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -104,5 +105,32 @@ public class NetworkUtil {
          logger.error("Can't get Network Interfaces", e);
       }
       return ip; 
+   }
+   
+   public static String getMACAddresses() throws Exception {
+      StringBuffer macs = new StringBuffer();
+      Enumeration<NetworkInterface> enum1 = NetworkInterface.getNetworkInterfaces();
+      while (enum1.hasMoreElements()) {
+         NetworkInterface networkInterface = (NetworkInterface) enum1.nextElement();
+         if (!networkInterface.isLoopback()) {
+            boolean onlyLinkLocal = true;
+            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+               if (!interfaceAddress.getAddress().isLinkLocalAddress()) onlyLinkLocal = false;
+            }
+            if (onlyLinkLocal) continue;
+            macs.append(getMACString(networkInterface.getHardwareAddress()));
+            macs.append(",");
+         }
+      }
+      macs.deleteCharAt(macs.length()-1);
+      return macs.toString();
+   }
+
+   public static String getMACString(byte[] mac) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < mac.length; i++) {
+         sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));     
+      }
+      return sb.toString();
    }
 }
