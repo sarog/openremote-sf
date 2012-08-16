@@ -137,7 +137,7 @@ public class PropertyPanelPresenter implements Presenter {
       if (component instanceof AbsoluteLayoutContainer) {
         form.addFormExtension(new AbsoluteLayoutContainerPropertyFormExtension(((AbsoluteLayoutContainer)component).getAbsolute()));
       }
-      if (!((form instanceof GroupPropertyEditForm) || (form instanceof PanelPropertyEditForm) || (form instanceof ScreenPropertyEditForm) || (form instanceof ScreenPropertyForm))) {
+      if (form.requiresDeleteButton()) {
         form.addFormExtension(new DeleteButtonPropertyFormExtension(component, widgetSelectionUtil));
       }
       PropertyPanelPresenter.this.view.setPropertyForm(form);

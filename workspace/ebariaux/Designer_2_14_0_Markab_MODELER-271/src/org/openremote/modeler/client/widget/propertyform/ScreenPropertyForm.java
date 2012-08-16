@@ -346,6 +346,11 @@ public class ScreenPropertyForm extends PropertyForm {
    }
    
    @Override
+   public boolean requiresDeleteButton() {
+     return false;
+   }
+
+   @Override
    public String getPropertyFormTitle() {
      return "Screen properties";
    }
