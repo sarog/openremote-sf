@@ -27,7 +27,6 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.component.UIWebView;
@@ -56,7 +55,7 @@ public class WebViewPropertyForm extends PropertyForm {
    private UIWebView uiWebView;
    private FieldSet statesPanel;
    
-   public WebViewPropertyForm(ScreenWebView screenWebView, UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
+   public WebViewPropertyForm(UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
       this.uiWebView = uiWebView;
       addFields();
