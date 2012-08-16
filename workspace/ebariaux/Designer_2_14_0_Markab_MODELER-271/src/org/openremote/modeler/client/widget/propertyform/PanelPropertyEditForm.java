@@ -70,6 +70,11 @@ public class PanelPropertyEditForm extends PropertyForm {
    }
 
    @Override
+   public boolean requiresDeleteButton() {
+     return false;
+   }
+
+   @Override
    public String getPropertyFormTitle() {
      return "Panel properties";
    }

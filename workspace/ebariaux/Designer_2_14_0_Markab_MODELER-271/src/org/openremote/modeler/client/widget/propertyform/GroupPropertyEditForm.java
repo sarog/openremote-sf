@@ -74,6 +74,11 @@ public class GroupPropertyEditForm extends PropertyForm {
    }
    
    @Override
+   public boolean requiresDeleteButton() {
+     return false;
+   }
+
+   @Override
    public String getPropertyFormTitle() {
      return "Group properties";
    }

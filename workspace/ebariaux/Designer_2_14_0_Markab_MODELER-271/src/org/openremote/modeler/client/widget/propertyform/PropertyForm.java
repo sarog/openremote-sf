@@ -58,6 +58,16 @@ public class PropertyForm extends FormPanel {
      return "- EMPTY FORM -";
    }
    
+  /**
+   * Indicates if the form will display a delete button.
+   * By default it does, subclasses for forms that do not must override this method.
+   * 
+   * @return true if a delete button should be part of the property form
+   */
+  public boolean requiresDeleteButton() {
+    return true;
+  }
+   
   @Override
   protected void onLoad() {
     super.onLoad();
