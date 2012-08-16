@@ -223,7 +223,8 @@ public class AMXNIGateway {
             }
             if (cmd != null) {
                log.info("Sending >" + cmd.toString() + "< on print writer " + pr);
-               pr.print(cmd.toString());
+               // We use CRLFCRLF as message delimiter, so AMX can reconstruct and detect individual messages correctly.
+               pr.print(cmd.toString() + "\r\n\r\n");
                pr.flush();
             }
          }
