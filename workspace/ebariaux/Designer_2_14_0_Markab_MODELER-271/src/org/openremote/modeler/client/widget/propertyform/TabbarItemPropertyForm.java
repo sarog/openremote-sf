@@ -49,7 +49,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
    private ScreenTabbarItem screenTabbarItem = null;
    
    public TabbarItemPropertyForm(ScreenTabbarItem screenTabbarItem, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenTabbarItem, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.screenTabbarItem = screenTabbarItem;
       addFields();
    }
