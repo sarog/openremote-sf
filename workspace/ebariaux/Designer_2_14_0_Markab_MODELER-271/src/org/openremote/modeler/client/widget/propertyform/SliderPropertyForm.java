@@ -51,7 +51,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
    public SliderPropertyForm(ScreenSlider screenSlider, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenSlider, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.screenSlider = screenSlider;
       setLabelWidth(100);
       addFields();

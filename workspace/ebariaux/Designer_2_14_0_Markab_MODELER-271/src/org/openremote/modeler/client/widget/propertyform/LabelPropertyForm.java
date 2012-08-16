@@ -58,7 +58,7 @@ public class LabelPropertyForm extends PropertyForm {
    private FieldSet statesPanel; 
    
    public LabelPropertyForm(ScreenLabel screenLabel, UILabel uiLabel, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenLabel, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.uiLabel = uiLabel;
       addFields();
       createSensorStates();

@@ -41,7 +41,7 @@ public class TabbarPropertyForm extends PropertyForm {
    private UITabbar tabBar;
    
    public TabbarPropertyForm(ScreenTabbar screenTabBar, UITabbar tabBar, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenTabBar, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.screenTabBar = screenTabBar;
       this.tabBar = tabBar;
       setLayout(new FormLayout());

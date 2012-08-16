@@ -86,7 +86,7 @@ public class ScreenPropertyForm extends PropertyForm {
    private ScreenCanvas canvas = null;
   
    public ScreenPropertyForm(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
-      super(canvas, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.canvas = canvas;
       createFields();
    }

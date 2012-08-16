@@ -59,7 +59,7 @@ public class WebViewPropertyForm extends PropertyForm {
    private FieldSet statesPanel;
    
    public WebViewPropertyForm(ScreenWebView screenWebView, UIWebView uiWebView, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenWebView, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.uiWebView = uiWebView;
       addFields();
       createSensorStates();

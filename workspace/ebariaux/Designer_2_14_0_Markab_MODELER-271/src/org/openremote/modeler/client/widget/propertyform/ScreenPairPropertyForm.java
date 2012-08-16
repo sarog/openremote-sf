@@ -45,7 +45,7 @@ public class ScreenPairPropertyForm extends PropertyForm {
    private ScreenTab screenTab;
    private ScreenPair screenPair;
    public ScreenPairPropertyForm(ComponentContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
-      super(componentContainer, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       setFieldWidth(130);
       this.screenTab = (ScreenTab) componentContainer.getParent().getParent();
       this.screenPair = screenTab.getScreenPair();

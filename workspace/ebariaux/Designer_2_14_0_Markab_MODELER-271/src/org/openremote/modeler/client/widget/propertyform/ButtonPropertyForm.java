@@ -62,7 +62,7 @@ public class ButtonPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;
    
    public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenButton, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       addFields(screenButton, uiButton);
    }
    private void addFields(final ScreenButton screenButton, final UIButton uiButton) {

@@ -41,7 +41,7 @@ public class GridPropertyForm extends PropertyForm {
    private GridLayoutContainerHandle gridContainer = null;
 
    public GridPropertyForm(GridLayoutContainerHandle gridContainer, WidgetSelectionUtil widgetSelectionUtil) {
-      super(gridContainer, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.gridContainer = gridContainer;
       initForm();
    }

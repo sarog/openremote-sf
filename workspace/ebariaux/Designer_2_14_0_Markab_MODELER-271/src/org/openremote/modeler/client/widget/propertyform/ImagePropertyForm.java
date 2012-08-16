@@ -66,7 +66,7 @@ public class ImagePropertyForm extends PropertyForm {
    private FieldSet statesPanel; 
    
    public ImagePropertyForm(ScreenImage screenImage, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
-      super(screenImage, widgetSelectionUtil);
+      super(widgetSelectionUtil);
       this.screenImage = screenImage;
       this.uiImage = uiImage;
       addFields();

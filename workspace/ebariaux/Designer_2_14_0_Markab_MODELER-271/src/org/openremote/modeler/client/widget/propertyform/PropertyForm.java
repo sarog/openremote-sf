@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -32,7 +31,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
  * The PropertyForm initialize the property form display style.
  */
 public class PropertyForm extends FormPanel {
-   private ComponentContainer componentContainer;
+
    protected WidgetSelectionUtil widgetSelectionUtil;
    
    private List<PropertyFormExtension> formExtensions = new ArrayList<PropertyFormExtension>();
@@ -48,9 +47,8 @@ public class PropertyForm extends FormPanel {
      setScrollMode(Scroll.AUTO);
   }
 
-   public PropertyForm(ComponentContainer componentContainer, WidgetSelectionUtil widgetSelectionUtil) {
+   public PropertyForm(WidgetSelectionUtil widgetSelectionUtil) {
      this();
-      this.componentContainer = componentContainer;
       this.widgetSelectionUtil = widgetSelectionUtil;
       setLabelWidth(90);
       setFieldWidth(150);
