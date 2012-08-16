@@ -24,7 +24,6 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
-import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.SelectSwitchWindow;
@@ -43,7 +42,7 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
  */
 public class SwitchPropertyForm extends PropertyForm {
 
-   public SwitchPropertyForm(ScreenSwitch screenSwitch, UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
+   public SwitchPropertyForm(UISwitch uiSwitch, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
       setLabelWidth(90);
       addFields(uiSwitch);

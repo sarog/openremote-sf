@@ -147,7 +147,7 @@ public class PropertyPanelPresenter implements Presenter {
   private PropertyForm getPropertyForm(Object o) {
     if (o instanceof ScreenLabel) {
       ScreenLabel screenLabel = (ScreenLabel)o;
-      return new LabelPropertyForm(screenLabel, screenLabel.getUiLabel(), widgetSelectionUtil);
+      return new LabelPropertyForm(screenLabel.getUiLabel(), widgetSelectionUtil);
     }
     if (o instanceof ScreenSlider) {
       ScreenSlider screenSlider = (ScreenSlider)o;
@@ -155,7 +155,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof ScreenSwitch) {
       ScreenSwitch screenSwitch = (ScreenSwitch)o;
-      return new SwitchPropertyForm(screenSwitch, screenSwitch.getUiSwitch(), widgetSelectionUtil);
+      return new SwitchPropertyForm(screenSwitch.getUiSwitch(), widgetSelectionUtil);
     }
     if (o instanceof ScreenButton) {
       ScreenButton screenButton = (ScreenButton)o;
@@ -171,7 +171,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof ScreenWebView) {
       ScreenWebView screenWebView = (ScreenWebView)o;
-      return new WebViewPropertyForm(screenWebView, screenWebView.getUIWebView(), widgetSelectionUtil);
+      return new WebViewPropertyForm(screenWebView.getUIWebView(), widgetSelectionUtil);
     }
     if (o instanceof ScreenTabbarItem) {
       ScreenTabbarItem screenTabbarItem = (ScreenTabbarItem)o;
