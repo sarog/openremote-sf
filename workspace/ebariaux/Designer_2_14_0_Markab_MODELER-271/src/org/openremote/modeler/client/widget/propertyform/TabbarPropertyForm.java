@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
-import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbar.Scope;
 
