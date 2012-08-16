@@ -71,7 +71,6 @@ public class ImagePropertyForm extends PropertyForm {
       this.uiImage = uiImage;
       addFields();
       createSensorStates();
-      super.addDeleteButton();
    }
    
    private void addFields() {

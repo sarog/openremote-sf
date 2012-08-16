@@ -52,7 +52,6 @@ public class TabbarItemPropertyForm extends PropertyForm {
       super(screenTabbarItem, widgetSelectionUtil);
       this.screenTabbarItem = screenTabbarItem;
       addFields();
-      super.addDeleteButton();
    }
    private void addFields() {
       // initial name field.

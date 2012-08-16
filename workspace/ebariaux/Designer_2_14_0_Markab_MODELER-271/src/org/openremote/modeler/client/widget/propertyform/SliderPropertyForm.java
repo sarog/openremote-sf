@@ -55,7 +55,6 @@ public class SliderPropertyForm extends PropertyForm {
       this.screenSlider = screenSlider;
       setLabelWidth(100);
       addFields();
-      super.addDeleteButton();
    }
    
    private void addFields() {

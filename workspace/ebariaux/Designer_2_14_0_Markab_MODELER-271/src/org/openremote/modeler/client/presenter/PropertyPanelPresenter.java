@@ -39,6 +39,7 @@ import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.propertyform.AbsoluteLayoutContainerPropertyFormExtension;
 import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
+import org.openremote.modeler.client.widget.propertyform.DeleteButtonPropertyFormExtension;
 import org.openremote.modeler.client.widget.propertyform.GridPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.GroupPropertyEditForm;
 import org.openremote.modeler.client.widget.propertyform.ImagePropertyForm;
@@ -135,6 +136,9 @@ public class PropertyPanelPresenter implements Presenter {
       PropertyForm form = getPropertyForm(component);
       if (component instanceof AbsoluteLayoutContainer) {
         form.addFormExtension(new AbsoluteLayoutContainerPropertyFormExtension(((AbsoluteLayoutContainer)component).getAbsolute()));
+      }
+      if (!((form instanceof GroupPropertyEditForm) || (form instanceof PanelPropertyEditForm) || (form instanceof ScreenPropertyEditForm) || (form instanceof ScreenPropertyForm))) {
+        form.addFormExtension(new DeleteButtonPropertyFormExtension(component, widgetSelectionUtil));
       }
       PropertyPanelPresenter.this.view.setPropertyForm(form);
     }
