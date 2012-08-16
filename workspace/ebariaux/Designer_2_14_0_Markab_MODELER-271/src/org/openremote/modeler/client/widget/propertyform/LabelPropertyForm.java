@@ -62,7 +62,6 @@ public class LabelPropertyForm extends PropertyForm {
       this.uiLabel = uiLabel;
       addFields();
       createSensorStates();
-      super.addDeleteButton();
    }
    
    private void addFields() {

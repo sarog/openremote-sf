@@ -63,7 +63,6 @@ public class WebViewPropertyForm extends PropertyForm {
       this.uiWebView = uiWebView;
       addFields();
       createSensorStates();
-      super.addDeleteButton();
    }
    
    private void addFields() {
