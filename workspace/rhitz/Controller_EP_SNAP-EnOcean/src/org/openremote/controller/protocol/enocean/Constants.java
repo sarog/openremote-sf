@@ -45,6 +45,11 @@ public final class Constants
   public static final String ILLUMINATION_STATUS_COMMAND = EEP_ILLUMINATION_DATA_FIELD_NAME;
 
   /**
+   * Command string for configuring a command which receives gas sensor values.
+   */
+  public static final String CONCENTRATION_STATUS_COMMAND = EEP_CONCENTRATION_DATA_FIELD_NAME;
+
+  /**
    * Command string for configuring a command which receives supply voltage sensor values.
    */
   public static final String SUPPLY_VOLTAGE_STATUS_COMMAND = EEP_SUPPLY_VOLTAGE_DATA_FIELD_NAME;

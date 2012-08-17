@@ -234,6 +234,10 @@ public abstract class EepType
    */
   public final static EepType EEP_TYPE_A50803 = new EepTypeA50803();
 
+  /**
+   * EnOcean equipment profile (EEP) 'A5-09-04' type.
+   */
+  public final static EepType EEP_TYPE_A50904 = new EepTypeA50904();
 
   /**
    * End of FUNC value range: {@value}
@@ -1223,6 +1227,29 @@ public abstract class EepType
     @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
     {
       return new EepA50803(deviceID, command);
+    }
+  }
+
+  /**
+   * EnOcean equipment profile (EEP) type 'A5-09-04'.
+   */
+  private static class EepTypeA50904 extends EepType
+  {
+    /**
+     * Constructs a new instance for the EEP number 'A5-09-04' and puts it into the
+     * lookup table of all supported profiles.
+     */
+    public EepTypeA50904()
+    {
+      super(EspRadioTelegram.RORG.BS4, 0x09, 0x04);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public Eep createEep(DeviceID deviceID, String command) throws ConfigurationException
+    {
+      return new EepA50904(deviceID, command);
     }
   }
 }

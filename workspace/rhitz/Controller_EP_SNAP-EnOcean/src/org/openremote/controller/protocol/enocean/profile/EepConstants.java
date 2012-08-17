@@ -46,6 +46,11 @@ public final class EepConstants
   public static final String EEP_HUMIDITY_DATA_FIELD_NAME = "HUM";
 
   /**
+   * EnOcean equipment profile (EEP) concentration data field name.
+   */
+  public static final String EEP_CONCENTRATION_DATA_FIELD_NAME = "CONC";
+
+  /**
    * EnOcean equipment profile (EEP) illumination data field name.
    */
   public static final String EEP_ILLUMINATION_DATA_FIELD_NAME = "ILL";
