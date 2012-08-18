@@ -31,10 +31,10 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
-import org.openremote.modeler.client.widget.component.ScreenImage;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIImage;
@@ -58,15 +58,15 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  * A panel for display screen Image properties.
  */
 public class ImagePropertyForm extends PropertyForm {
-   private ScreenImage screenImage = null;
+   private Screen screen;
 
    private UIImage uiImage;
    
    private FieldSet statesPanel; 
    
-   public ImagePropertyForm(ScreenImage screenImage, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
+   public ImagePropertyForm(Screen screen, UIImage uiImage, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
-      this.screenImage = screenImage;
+      this.screen = screen;
       this.uiImage = uiImage;
       addFields();
       createSensorStates();
@@ -129,7 +129,7 @@ public class ImagePropertyForm extends PropertyForm {
    private ComboBox<ModelData> createLabelSelector() {
       ComboBox<ModelData> labelBox = new ComboBoxExt();
       labelBox.setFieldLabel("FallbackLabel");
-      Collection<UILabel> labelsonScreen = (Collection<UILabel>) screenImage.getScreenCanvas().getScreen().getAllUIComponentByType(UILabel.class);
+      Collection<UILabel> labelsonScreen = (Collection<UILabel>) screen.getAllUIComponentByType(UILabel.class);
       ListStore<ModelData> labelStore = new ListStore<ModelData>();
       for (UILabel label : labelsonScreen) {
          if (!label.isRemoved()) {
