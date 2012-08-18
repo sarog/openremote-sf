@@ -183,7 +183,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof GridLayoutContainerHandle) {
       GridLayoutContainerHandle gridLayoutContainerHandle = (GridLayoutContainerHandle)o;
-      return new GridPropertyForm(gridLayoutContainerHandle, widgetSelectionUtil);
+      return new GridPropertyForm(gridLayoutContainerHandle, gridLayoutContainerHandle.getGridlayoutContainer().getGrid(), widgetSelectionUtil);
     }
     if (o instanceof GridCellContainer) {
       GridCellContainer gridCellContainer = (GridCellContainer)o;
