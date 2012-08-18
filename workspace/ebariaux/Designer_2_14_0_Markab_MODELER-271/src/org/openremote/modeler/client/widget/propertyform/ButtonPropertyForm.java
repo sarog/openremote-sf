@@ -26,11 +26,11 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
-import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker;
 import org.openremote.modeler.client.widget.uidesigner.ImageAssetPicker.ImageAssetPickerListener;
 import org.openremote.modeler.client.widget.uidesigner.SelectCommandWindow;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
@@ -60,11 +60,11 @@ public class ButtonPropertyForm extends PropertyForm {
    private CheckBox repeat = new CheckBox();
    private NavigateFieldSet navigateSet = null;
    
-   public ButtonPropertyForm(ScreenButton screenButton, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
+   public ButtonPropertyForm(Screen screen, UIButton uiButton, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
-      addFields(screenButton, uiButton);
+      addFields(screen, uiButton);
    }
-   private void addFields(final ScreenButton screenButton, final UIButton uiButton) {
+   private void addFields(final Screen screen, final UIButton uiButton) {
       // initial name field.
       final TextField<String> name = new TextField<String>();
       name.setFieldLabel("Name");
@@ -102,7 +102,7 @@ public class ButtonPropertyForm extends PropertyForm {
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
-      Group parentGroup = screenButton.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
+      Group parentGroup = screen.getScreenPair().getParentGroup();
       if (parentGroup != null) {
          navigateSet = new NavigateFieldSet(navigate, parentGroup.getParentPanel().getGroups());
       } else {

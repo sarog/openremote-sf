@@ -159,7 +159,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof ScreenButton) {
       ScreenButton screenButton = (ScreenButton)o;
-      return new ButtonPropertyForm(screenButton, screenButton.getUiButton(), widgetSelectionUtil);
+      return new ButtonPropertyForm(screenButton.getScreenCanvas().getScreen(), screenButton.getUiButton(), widgetSelectionUtil);
     }
     if (o instanceof ScreenImage) {
       ScreenImage screenImage = (ScreenImage)o;
