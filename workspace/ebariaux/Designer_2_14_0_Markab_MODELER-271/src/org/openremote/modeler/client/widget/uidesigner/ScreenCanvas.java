@@ -364,12 +364,7 @@ public class ScreenCanvas extends ComponentContainer {
                      if (y + controlContainer.getHeight() > getHeight()) {
                         y = getHeight() - controlContainer.getHeight();
                      }
-                     
-                     
-                     // TODO: this should not be required once listening in place
-//                     controlContainer.setPosition(x, y);
-                     
-                     
+
                      controlContainer.getAbsolute().setPosition(x, y);
                      
                      // EBR: why those 2 lines ?
