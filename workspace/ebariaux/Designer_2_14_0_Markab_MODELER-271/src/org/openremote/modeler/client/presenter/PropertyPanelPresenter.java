@@ -177,7 +177,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof ScreenCanvas) {
       ScreenCanvas screenCanvas = (ScreenCanvas)o;
-      return new ScreenPropertyForm(screenCanvas, widgetSelectionUtil);
+      return new ScreenPropertyForm(screenCanvas, screenCanvas.getScreen(), widgetSelectionUtil);
     }
     if (o instanceof GridLayoutContainerHandle) {
       GridLayoutContainerHandle gridLayoutContainerHandle = (GridLayoutContainerHandle)o;

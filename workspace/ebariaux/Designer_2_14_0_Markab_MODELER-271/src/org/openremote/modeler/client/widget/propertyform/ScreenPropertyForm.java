@@ -83,10 +83,12 @@ public class ScreenPropertyForm extends PropertyForm {
    
    private RadioGroup whetherFillScreen; 
    private ScreenCanvas canvas = null;
+   private Screen screen;
   
-   public ScreenPropertyForm(ScreenCanvas canvas, WidgetSelectionUtil widgetSelectionUtil) {
+   public ScreenPropertyForm(ScreenCanvas canvas, Screen screen, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
       this.canvas = canvas;
+      this.screen = screen;
       createFields();
    }
    
@@ -112,7 +114,7 @@ public class ScreenPropertyForm extends PropertyForm {
       createPositionField(positionSet,posLeftField,posTopField);
       positionSet.add(posLeftField);
       positionSet.add(posTopField);
-      if(canvas.getScreen().getBackground().isFillScreen()){
+      if(screen.getBackground().isFillScreen()){
          positionSet.hide();
       }
       this.add(background);
@@ -132,13 +134,13 @@ public class ScreenPropertyForm extends PropertyForm {
       posTopField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            Background bkGrd = canvas.getScreen().getBackground();
+            Background bkGrd = screen.getBackground();
             bkGrd.setTop(Integer.parseInt(posTopField.getValue()));
             canvas.updateGround();
          }
       });
       posTopField.setLabelStyle("text-align:right;");
-      posTopField.setValue(canvas.getScreen().getBackground().getTop()+"");
+      posTopField.setValue(screen.getBackground().getTop()+"");
       return posTopField;
    }
 
@@ -153,13 +155,13 @@ public class ScreenPropertyForm extends PropertyForm {
       posLeftField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
          public void handleEvent(BaseEvent be) {
-            Background bkGrd = canvas.getScreen().getBackground();
+            Background bkGrd = screen.getBackground();
             bkGrd.setLeft(Integer.parseInt(posLeftField.getValue()));
             canvas.updateGround();
          }
       });
       posLeftField.setLabelStyle("text-align:right;");
-      posLeftField.setValue(canvas.getScreen().getBackground().getLeft()+"");
+      posLeftField.setValue(screen.getBackground().getLeft()+"");
       return posLeftField;
    }
 
@@ -198,29 +200,29 @@ public class ScreenPropertyForm extends PropertyForm {
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            Background bkGrd = canvas.getScreen().getBackground();
+            Background bkGrd = screen.getBackground();
             ComboBoxDataModel<RelativeType> relativeItem;
             relativeItem = (ComboBoxDataModel<RelativeType>) se.getSelectedItem();
             bkGrd.setRelatedType(relativeItem.getData());
             canvas.updateGround();
          }
       });
-      relative.setValue(new ComboBoxDataModel<RelativeType>(canvas.getScreen().getBackground().getRelatedType().toString(),canvas.getScreen().getBackground().getRelatedType()));
+      relative.setValue(new ComboBoxDataModel<RelativeType>(screen.getBackground().getRelatedType().toString(),screen.getBackground().getRelatedType()));
       selectContainer.add(relative);
       
-      relative.setEnabled(!canvas.getScreen().getBackground().isAbsolute());
+      relative.setEnabled(!screen.getBackground().isAbsolute());
      
       relative.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       relative.setEmptyText("Please select one... ");
       
-      relativeRadio.setValue(!canvas.getScreen().getBackground().isAbsolute());
-      absoluteRadio.setValue(canvas.getScreen().getBackground().isAbsolute());
-      enableTextField(canvas.getScreen().getBackground().isAbsolute(), fields);
+      relativeRadio.setValue(!screen.getBackground().isAbsolute());
+      absoluteRadio.setValue(screen.getBackground().isAbsolute());
+      enableTextField(screen.getBackground().isAbsolute(), fields);
       
       radioGroup.addListener(Events.Change, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
             String value = radioGroup.getValue().getValueAttribute();
-            Background bkGrd = canvas.getScreen().getBackground();
+            Background bkGrd = screen.getBackground();
             if (SCREEN_ABSOLUTE.equals(value)) {
                bkGrd.setAbsolute(true);
                relative.setEnabled(false);
@@ -241,7 +243,7 @@ public class ScreenPropertyForm extends PropertyForm {
       fillScreen.setName(FILL_SCREEN);
       fillScreen.setBoxLabel("yes");
       fillScreen.setValueAttribute(yesFill);
-      fillScreen.setValue(canvas.getScreen().getBackground().isFillScreen());
+      fillScreen.setValue(screen.getBackground().isFillScreen());
       
       Radio notFillScreen = new Radio();
       notFillScreen.setName(FILL_SCREEN);
@@ -256,7 +258,7 @@ public class ScreenPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(FieldEvent be) {
             String value = whetherFieldGroup.getValue().getValueAttribute();
-            Background bkGrd = canvas.getScreen().getBackground();
+            Background bkGrd = screen.getBackground();
             if (yesFill.equals(value)) {
                positionSet.hide();
                bkGrd.setFillScreen(true);
@@ -269,8 +271,8 @@ public class ScreenPropertyForm extends PropertyForm {
          
       });
       whetherFieldGroup.hide();
-      whetherFieldGroup.setValue(canvas.getScreen().getBackground().isFillScreen()?fillScreen:notFillScreen);
-      String backgroundSrc = canvas.getScreen().getBackground().getImageSource().getSrc();
+      whetherFieldGroup.setValue(screen.getBackground().isFillScreen()?fillScreen:notFillScreen);
+      String backgroundSrc = screen.getBackground().getImageSource().getSrc();
       if (backgroundSrc != null && !backgroundSrc.equals("")) {
          whetherFieldGroup.show();
       }
@@ -279,11 +281,11 @@ public class ScreenPropertyForm extends PropertyForm {
 
    private ImageSelectAdapterField createBackgroundField() {
      final ImageSelectAdapterField backgroundField = new ImageSelectAdapterField("Background");
-     backgroundField.setText(canvas.getScreen().getBackground().getImageSource().getImageFileName());
+     backgroundField.setText(screen.getBackground().getImageSource().getImageFileName());
      backgroundField.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-          final ImageSource image = canvas.getScreen().getBackground().getImageSource();
+          final ImageSource image = screen.getBackground().getImageSource();
           
           ImageAssetPicker imageAssetPicker = new ImageAssetPicker((image != null)?image.getSrc():null);
           imageAssetPicker.show();
@@ -292,7 +294,7 @@ public class ScreenPropertyForm extends PropertyForm {
            @Override
            public void imagePicked(String imageURL) {
              setBackground(imageURL);
-             backgroundField.setText(canvas.getScreen().getBackground().getImageSource().getImageFileName());
+             backgroundField.setText(screen.getBackground().getImageSource().getImageFileName());
              whetherFillScreen.show();
            }             
           });
@@ -309,7 +311,6 @@ public class ScreenPropertyForm extends PropertyForm {
    }
 
    private void setBackground(String backgroundImgURL) {
-      Screen screen = canvas.getScreen();
       screen.setBackground(new Background(new ImageSource(backgroundImgURL)));
       canvas.setStyleAttribute("backgroundImage", "url(" + screen.getCSSBackground() + ")");
       canvas.unmask();
@@ -325,16 +326,16 @@ public class ScreenPropertyForm extends PropertyForm {
       Button configGesture = new Button("Config");
       configGesture.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            Group parentGroup = canvas.getScreen().getScreenPair().getParentGroup();
+            Group parentGroup = screen.getScreenPair().getParentGroup();
             List<Group> groups = new ArrayList<Group>();
             if (parentGroup != null) {
                groups = parentGroup.getParentPanel().getGroups();
             }
-            GestureWindow configGestureWindow = new GestureWindow(canvas.getScreen().getGestures(), groups);
+            GestureWindow configGestureWindow = new GestureWindow(screen.getGestures(), groups);
             configGestureWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @SuppressWarnings("unchecked")
                public void afterSubmit(SubmitEvent be) {
-                  canvas.getScreen().setGestures((List<Gesture>)be.getData());
+                  screen.setGestures((List<Gesture>)be.getData());
                }
             });
          }
