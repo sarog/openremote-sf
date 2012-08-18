@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.WidgetSelectedEvent;
 import org.openremote.modeler.client.event.WidgetSelectedEventHandler;
 import org.openremote.modeler.client.model.AutoSaveResponse;
@@ -44,7 +43,6 @@ import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle
 import org.openremote.modeler.client.widget.uidesigner.ScreenTabItem;
 import org.openremote.modeler.client.widget.uidesigner.UIDesignerToolbar;
 import org.openremote.modeler.domain.Absolute;
-import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.PositionableAndSizable;
 import org.openremote.modeler.domain.Screen;
