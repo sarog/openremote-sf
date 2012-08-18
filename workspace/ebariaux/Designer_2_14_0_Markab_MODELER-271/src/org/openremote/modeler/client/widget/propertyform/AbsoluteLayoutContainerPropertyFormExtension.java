@@ -58,9 +58,13 @@ public class AbsoluteLayoutContainerPropertyFormExtension implements PropertyFor
   @Override
   public void cleanup(PropertyForm form) {
     absolute.removePropertyChangeListener("left", leftListener);
+    leftListener = null;
     absolute.removePropertyChangeListener("top", topListener);
+    topListener = null;
     absolute.removePropertyChangeListener("width", widthListener);
+    widthListener = null;
     absolute.removePropertyChangeListener("height", heightListener);
+    heightListener = null;
   }
 
 
