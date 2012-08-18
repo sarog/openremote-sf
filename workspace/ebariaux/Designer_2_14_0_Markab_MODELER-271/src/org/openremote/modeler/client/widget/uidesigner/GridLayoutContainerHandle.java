@@ -22,8 +22,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.component.UIGrid;
-import org.openremote.modeler.shared.PropertyChangeEvent;
-import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.google.gwt.user.client.ui.FlexTable;

@@ -65,10 +65,8 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.shared.EventBus;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 public class PropertyPanelPresenter implements Presenter {
 

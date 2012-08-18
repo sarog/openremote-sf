@@ -19,10 +19,7 @@
 */
 package org.openremote.modeler.client.presenter;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ScreenSelectedEvent;
@@ -34,21 +31,16 @@ import org.openremote.modeler.client.event.UIElementSelectedEvent;
 import org.openremote.modeler.client.listener.PanelTreeStoreChangeListener;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
-import org.openremote.modeler.client.proxy.UtilsProxy;
-import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.uidesigner.CustomPanelWindow;
 import org.openremote.modeler.client.widget.uidesigner.GroupEditWindow;
 import org.openremote.modeler.client.widget.uidesigner.PanelWindow;
 import org.openremote.modeler.client.widget.uidesigner.ProfilePanel;
 import org.openremote.modeler.client.widget.uidesigner.ScreenWindow;
 import org.openremote.modeler.domain.BusinessEntity;
-import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
-import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
