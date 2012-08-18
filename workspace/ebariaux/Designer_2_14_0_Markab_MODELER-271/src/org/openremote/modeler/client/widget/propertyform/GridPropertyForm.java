@@ -37,17 +37,18 @@ import com.google.gwt.user.client.ui.FlexTable;
  * The grid has row, column, size and position properties.
  */
 public class GridPropertyForm extends PropertyForm {
+   private UIGrid grid;
    private GridLayoutContainerHandle gridContainer = null;
 
-   public GridPropertyForm(GridLayoutContainerHandle gridContainer, WidgetSelectionUtil widgetSelectionUtil) {
+   public GridPropertyForm(GridLayoutContainerHandle gridContainer, UIGrid grid, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
+      this.grid = grid;
       this.gridContainer = gridContainer;
       initForm();
    }
 
    protected void initForm() {
       this.setFieldWidth(5);
-      final UIGrid grid = gridContainer.getGridlayoutContainer().getGrid();
       Screen screen = gridContainer.getScreenCanvas().getScreen();
       FieldSet gridAttrSet = new FieldSet();
       FormLayout layout = new FormLayout();
