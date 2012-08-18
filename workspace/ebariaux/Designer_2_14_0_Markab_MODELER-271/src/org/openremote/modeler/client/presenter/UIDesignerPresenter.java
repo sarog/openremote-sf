@@ -249,7 +249,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(leftPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -274,7 +274,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(middlePosition - (grid.getWidth() / 2));
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -299,7 +299,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setLeft(rightPosition - grid.getWidth());
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -322,7 +322,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(topPosition);
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -347,7 +347,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(middlePosition - (grid.getHeight() / 2));
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -372,7 +372,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
         } else if (cc instanceof GridLayoutContainerHandle) {        
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setTop(bottomPosition - grid.getHeight());
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
@@ -402,7 +402,7 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
           UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
           grid.setWidth(referenceWidth);
           grid.setHeight(referenceHeight);
-          eventBus.fireEvent(new UIElementEditedEvent(grid));
+//          eventBus.fireEvent(new UIElementEditedEvent(grid));
         }
       }
     }
