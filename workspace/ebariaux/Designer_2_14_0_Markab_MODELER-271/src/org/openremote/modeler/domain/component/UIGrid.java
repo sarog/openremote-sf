@@ -83,7 +83,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setLeft(int left) {
-      this.left = left;
+     int oldLeft = this.left;
+     this.left = left;
+     this.pcSupport.firePropertyChange("left", oldLeft, this.left);
    }
 
    public int getTop() {
@@ -91,7 +93,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setTop(int top) {
-      this.top = top;
+     int oldTop = this.top;
+     this.top = top;
+     this.pcSupport.firePropertyChange("top", oldTop, this.top);
    }
 
    public int getWidth() {
@@ -99,7 +103,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setWidth(int width) {
-      this.width = width;
+     int oldWidth = this.width;
+     this.width = width;
+     this.pcSupport.firePropertyChange("width", oldWidth, this.width);
    }
 
    public int getHeight() {
@@ -107,7 +113,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setHeight(int height) {
-      this.height = height;
+     int oldHeight = this.height;
+     this.height = height;
+     this.pcSupport.firePropertyChange("height", oldHeight, this.height);
    }
 
    public int getRowCount() {
@@ -115,7 +123,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setRowCount(int rowCount) {
-      this.rowCount = rowCount;
+     int oldRowCount = this.rowCount;
+     this.rowCount = rowCount;
+     this.pcSupport.firePropertyChange("rowCount", oldRowCount, this.rowCount);
    }
 
    public int getColumnCount() {
@@ -123,7 +133,9 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setColumnCount(int columnCount) {
-      this.columnCount = columnCount;
+     int oldColumnCount = this.columnCount;
+     this.columnCount = columnCount;
+     this.pcSupport.firePropertyChange("columnCount", oldColumnCount, this.columnCount);
    }
 
    public List<Cell> getCells() {
