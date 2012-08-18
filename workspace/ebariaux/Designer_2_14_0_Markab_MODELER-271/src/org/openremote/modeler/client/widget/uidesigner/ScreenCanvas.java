@@ -113,7 +113,7 @@ public class ScreenCanvas extends ComponentContainer {
          for (UIGrid grid : grids) {
             GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
             this.add(gridContainer);
-            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
+            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, grid.getTop()
                   - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
             createGridDragSource(gridContainer, this);
          }
@@ -209,7 +209,7 @@ public class ScreenCanvas extends ComponentContainer {
                moveBackGround.show();
             } else if (data instanceof GridLayoutContainerHandle) {
                Point position = getGridPosition(e);
-               moveBackGround.setPosition(position.x + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, position.y
+               moveBackGround.setPosition(position.x + GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, position.y
                      + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
                moveBackGround.show();
             }
@@ -327,7 +327,7 @@ public class ScreenCanvas extends ComponentContainer {
                      });
                   } else {
                      Point position = getGridPosition(e);
-                     int gridX = position.x + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH;
+                     int gridX = position.x + GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH;
                      int gridY = position.y + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT;
                      if (gridX < 0) {
                         gridX = 0;
@@ -339,7 +339,7 @@ public class ScreenCanvas extends ComponentContainer {
                      } else if (gridY > getHeight() - moveBackGround.getHeight()) {
                         gridY = getHeight() - moveBackGround.getHeight();
                      }
-                     gridContainer.setPosition(gridX - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, gridY
+                     gridContainer.setPosition(gridX - GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, gridY
                            - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
                      widgetSelectionUtil.setSelectWidget(gridContainer);
                   }
@@ -392,7 +392,7 @@ public class ScreenCanvas extends ComponentContainer {
                   ComponentContainer componentContainer = new ComponentContainer(ScreenCanvas.this, widgetSelectionUtil);
                   if (dataModel.getBean() instanceof UIGrid) {
                      UIGrid grid = new UIGrid(e.getXY().x - getAbsoluteLeft()
-                           + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop()
+                           + GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, e.getXY().y - getAbsoluteTop()
                            + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT, UIGrid.DEFALUT_WIDTH,
                            UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
@@ -767,8 +767,8 @@ public class ScreenCanvas extends ComponentContainer {
             Point mousePoint = event.getXY();
             int x = mousePoint.x - componentContainer.getAbsoluteLeft();
             int y = mousePoint.y - componentContainer.getAbsoluteTop();
-            if (x < GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH) {
-               x = GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH;
+            if (x < GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH) {
+               x = GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH;
             }
             if (y < GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT) {
                y = GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT;
@@ -921,8 +921,8 @@ public class ScreenCanvas extends ComponentContainer {
       UIGrid grid = ((UIGrid)element);
       GridLayoutContainerHandle screenGrid = modelToScreenComponentsMapping.get(grid);
       // Container position has handle, need to take into account when re-positioning
-      screenGrid.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);      
-      screenGrid.setSize(grid.getWidth() + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getHeight() + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+      screenGrid.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, grid.getTop() - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);      
+      screenGrid.setSize(grid.getWidth() + GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, grid.getHeight() + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
       // This is required for size to be correctly taken into account
       screenGrid.update();
     }    
