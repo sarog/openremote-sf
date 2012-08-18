@@ -23,6 +23,8 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -30,7 +32,6 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * A form to edit grid properties.
@@ -39,6 +40,11 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class GridPropertyForm extends PropertyForm {
    private UIGrid grid;
    private GridLayoutContainerHandle gridContainer = null;
+   
+   private PropertyChangeListener leftListener;
+   private PropertyChangeListener topListener;
+   private PropertyChangeListener widthListener;
+   private PropertyChangeListener heightListener;
 
    public GridPropertyForm(GridLayoutContainerHandle gridContainer, UIGrid grid, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
@@ -46,7 +52,7 @@ public class GridPropertyForm extends PropertyForm {
       this.gridContainer = gridContainer;
       initForm();
    }
-
+   
    protected void initForm() {
       this.setFieldWidth(5);
       Screen screen = gridContainer.getScreenCanvas().getScreen();
@@ -71,7 +77,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setRowCount(Integer.parseInt(gridRowCountField.getValue()));
-            updateGrid();
          }
       });
 
@@ -86,7 +91,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setColumnCount(Integer.parseInt(gridColumnCountField.getValue()));
-            updateGrid();
          }
       });
       final TextField<String> posLeftField = new TextField<String>();
@@ -100,7 +104,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setLeft(Integer.parseInt(posLeftField.getValue()));
-            updateGrid();
          }
       });
       final TextField<String> posTopField = new TextField<String>();
@@ -114,7 +117,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setTop(Integer.parseInt(posTopField.getValue()));
-            updateGrid();
          }
       });
       final TextField<String> widthField = new TextField<String>();
@@ -127,7 +129,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setWidth(Integer.parseInt(widthField.getValue()));
-            updateGrid();
          }
       });
 
@@ -141,7 +142,6 @@ public class GridPropertyForm extends PropertyForm {
          @Override
          public void handleEvent(BaseEvent be) {
             grid.setHeight(Integer.parseInt(heightField.getValue()));
-            updateGrid();
          }
       });
       if (screen != null) {
@@ -158,22 +158,59 @@ public class GridPropertyForm extends PropertyForm {
       gridAttrSet.add(posTopField);
       gridAttrSet.add(widthField);
       gridAttrSet.add(heightField);
+      
+      leftListener = new PropertyChangeListener() {      
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          posLeftField.setValue(evt.getNewValue() + "");
+        }
+      };
+      grid.addPropertyChangeListener("left", leftListener);
+      topListener = new PropertyChangeListener() {      
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          posTopField.setValue(evt.getNewValue() + "");
+        }
+      };
+      grid.addPropertyChangeListener("top", topListener);
+      widthListener = new PropertyChangeListener() {      
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          widthField.setValue(evt.getNewValue() + "");
+        }
+      };
+      // Size can be changed via the "same size" function, so must listen to keep displayed values up to date
+      grid.addPropertyChangeListener("width", widthListener);
+      heightListener = new PropertyChangeListener() {      
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          heightField.setValue(evt.getNewValue() + "");
+        }
+      };
+      grid.addPropertyChangeListener("height", heightListener);
+      
+      // No property change on rows/columns count as can not be changed from any other place than here
+      
       add(gridAttrSet);
       layout();
-   }
-   
-   private void updateGrid() {
-      FlexTable screenTable = gridContainer.getGridlayoutContainer().getScreenTable();
-      int rowNums = screenTable.getRowCount();
-      for (int i = rowNums - 1; i >= 0; i--) {
-         screenTable.removeRow(i);
-      }
-
-      gridContainer.update();
    }
    
   @Override
   public String getPropertyFormTitle() {
     return "Grid properties";
   }
+  
+  @Override
+  protected void onUnload() {
+    grid.removePropertyChangeListener("left", leftListener);
+    leftListener = null;
+    grid.removePropertyChangeListener("top", topListener);
+    topListener = null;
+    grid.removePropertyChangeListener("width", widthListener);
+    widthListener = null;
+    grid.removePropertyChangeListener("height", heightListener);
+    heightListener = null;
+    super.onUnload();
+  }
+
 }

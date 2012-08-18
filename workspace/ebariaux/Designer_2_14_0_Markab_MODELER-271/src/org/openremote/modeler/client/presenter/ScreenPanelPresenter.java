@@ -155,7 +155,6 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
          grid.setLeft(grid.getLeft() + left);
          grid.setTop(grid.getTop() + top);
-         eventBus.fireEvent(new UIElementEditedEvent(grid));
        }          
      }
   }

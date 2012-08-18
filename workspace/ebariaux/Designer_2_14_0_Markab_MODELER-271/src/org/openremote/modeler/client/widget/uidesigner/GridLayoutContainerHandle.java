@@ -22,8 +22,11 @@ package org.openremote.modeler.client.widget.uidesigner;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.shared.PropertyChangeEvent;
+import org.openremote.modeler.shared.PropertyChangeListener;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.google.gwt.user.client.ui.FlexTable;
 
 /**
  * The container handle to indicate that the grid can be drag, which include a handle and a grid container.
@@ -38,7 +41,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
 
    public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
-      this.gridlayoutContainer = gridlayoutContainer;
+      this.gridlayoutContainer = gridlayoutContainer;      
       setSize(DEFAUlT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       setStyleAttribute("position", "absolute");
       LayoutContainer handle = new LayoutContainer();
@@ -56,21 +59,20 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    }
 
    @Override
-   public void setPosition(int left, int top) {
-      if (gridlayoutContainer != null) {
-         UIGrid grid = gridlayoutContainer.getGrid();
-         grid.setLeft(left + DEFAUlT_HANDLE_WIDTH);
-         grid.setTop(top + DEFAULT_HANDLE_HEIGHT);
-      }
-      super.setPosition(left, top);
-   }
-
-   @Override
    public String getName() {
       return "gridContainer";
    }
    
    public void update() {
+     
+     // EBR : was on GridPropertyForm update
+     FlexTable screenTable = getGridlayoutContainer().getScreenTable();
+     int rowNums = screenTable.getRowCount();
+     for (int i = rowNums - 1; i >= 0; i--) {
+        screenTable.removeRow(i);
+     }
+
+     
       UIGrid grid = gridlayoutContainer.getGrid();
       gridlayoutContainer.refreshGrid();
       setPosition(grid.getLeft() - DEFAUlT_HANDLE_WIDTH, grid.getTop() - DEFAULT_HANDLE_HEIGHT);

@@ -339,8 +339,11 @@ public class ScreenCanvas extends ComponentContainer {
                      } else if (gridY > getHeight() - moveBackGround.getHeight()) {
                         gridY = getHeight() - moveBackGround.getHeight();
                      }
-                     gridContainer.setPosition(gridX - GridLayoutContainerHandle.DEFAUlT_HANDLE_WIDTH, gridY
-                           - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+                     
+                     UIGrid grid = gridContainer.getGridlayoutContainer().getGrid();
+                     grid.setLeft(gridX);
+                     grid.setTop(gridY);
+
                      widgetSelectionUtil.setSelectWidget(gridContainer);
                   }
                } else {
@@ -734,6 +737,20 @@ public class ScreenCanvas extends ComponentContainer {
          }         
       }.bind(gridContainer);
       modelToScreenComponentsMapping.put(grid, gridContainer);
+      
+      PropertyChangeListener gridListener =  new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+          gridContainer.update();
+        }
+      };
+      grid.addPropertyChangeListener("left", gridListener);
+      grid.addPropertyChangeListener("top", gridListener);
+      grid.addPropertyChangeListener("width", gridListener);
+      grid.addPropertyChangeListener("height", gridListener);
+      grid.addPropertyChangeListener("rowCount", gridListener);
+      grid.addPropertyChangeListener("columnCount", gridListener);
+
       return gridContainer;
    }
 
@@ -909,6 +926,7 @@ public class ScreenCanvas extends ComponentContainer {
       }
    }
 
+   // TODO EBR : check if this is still used now that property change is used
   public void onUIElementEdited(BusinessEntity element) {    
     if (element instanceof Absolute) {
       
