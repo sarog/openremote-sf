@@ -20,8 +20,6 @@
 package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
-import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.shared.PropertyChangeEvent;
 import org.openremote.modeler.shared.PropertyChangeListener;
@@ -39,23 +37,20 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  */
 public class GridPropertyForm extends PropertyForm {
    private UIGrid grid;
-   private GridLayoutContainerHandle gridContainer = null;
    
    private PropertyChangeListener leftListener;
    private PropertyChangeListener topListener;
    private PropertyChangeListener widthListener;
    private PropertyChangeListener heightListener;
 
-   public GridPropertyForm(GridLayoutContainerHandle gridContainer, UIGrid grid, WidgetSelectionUtil widgetSelectionUtil) {
+   public GridPropertyForm(UIGrid grid, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
       this.grid = grid;
-      this.gridContainer = gridContainer;
       initForm();
    }
    
    protected void initForm() {
       this.setFieldWidth(5);
-      Screen screen = gridContainer.getScreenCanvas().getScreen();
       FieldSet gridAttrSet = new FieldSet();
       FormLayout layout = new FormLayout();
       layout.setLabelWidth(80);
@@ -144,14 +139,14 @@ public class GridPropertyForm extends PropertyForm {
             grid.setHeight(Integer.parseInt(heightField.getValue()));
          }
       });
-      if (screen != null) {
-         gridRowCountField.setValue(grid.getRowCount() + "");
-         gridColumnCountField.setValue(grid.getColumnCount() + "");
-         posLeftField.setValue(grid.getLeft() + "");
-         posTopField.setValue(grid.getTop() + "");
-         widthField.setValue(grid.getWidth() + "");
-         heightField.setValue(grid.getHeight() + "");
-      }
+
+      gridRowCountField.setValue(grid.getRowCount() + "");
+      gridColumnCountField.setValue(grid.getColumnCount() + "");
+      posLeftField.setValue(grid.getLeft() + "");
+      posTopField.setValue(grid.getTop() + "");
+      widthField.setValue(grid.getWidth() + "");
+      heightField.setValue(grid.getHeight() + "");
+
       gridAttrSet.add(gridRowCountField);
       gridAttrSet.add(gridColumnCountField);
       gridAttrSet.add(posLeftField);
