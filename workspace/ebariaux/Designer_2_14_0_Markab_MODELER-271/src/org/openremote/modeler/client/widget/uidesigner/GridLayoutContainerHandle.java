@@ -31,7 +31,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
  */
 public class GridLayoutContainerHandle extends ScreenComponent {
    
-   public static final int DEFALUT_HANDLE_WIDTH = 16;
+   public static final int DEFAUlT_HANDLE_WIDTH = 16;
    public static final int DEFAULT_HANDLE_HEIGHT = 16;
    public static final String GRID_DISTANCE_NAME = "gridDistance";
    private GridLayoutContainer gridlayoutContainer = null;
@@ -39,14 +39,14 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    public GridLayoutContainerHandle(ScreenCanvas canvas, GridLayoutContainer gridlayoutContainer, WidgetSelectionUtil widgetSelectionUtil) {
       super(canvas, widgetSelectionUtil);
       this.gridlayoutContainer = gridlayoutContainer;
-      setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
+      setSize(DEFAUlT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       setStyleAttribute("position", "absolute");
       LayoutContainer handle = new LayoutContainer();
-      handle.setSize(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
+      handle.setSize(DEFAUlT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
 //      handle.setStyleAttribute("background-color", "red");
       handle.addStyleName("move-cursor");
       add(handle);
-      gridlayoutContainer.setPosition(DEFALUT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
+      gridlayoutContainer.setPosition(DEFAUlT_HANDLE_WIDTH, DEFAULT_HANDLE_HEIGHT);
       gridlayoutContainer.addStyleName("cursor-move");
       add(gridlayoutContainer);
    }
@@ -59,7 +59,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    public void setPosition(int left, int top) {
       if (gridlayoutContainer != null) {
          UIGrid grid = gridlayoutContainer.getGrid();
-         grid.setLeft(left + DEFALUT_HANDLE_WIDTH);
+         grid.setLeft(left + DEFAUlT_HANDLE_WIDTH);
          grid.setTop(top + DEFAULT_HANDLE_HEIGHT);
       }
       super.setPosition(left, top);
@@ -73,7 +73,7 @@ public class GridLayoutContainerHandle extends ScreenComponent {
    public void update() {
       UIGrid grid = gridlayoutContainer.getGrid();
       gridlayoutContainer.refreshGrid();
-      setPosition(grid.getLeft() - DEFALUT_HANDLE_WIDTH, grid.getTop() - DEFAULT_HANDLE_HEIGHT);
+      setPosition(grid.getLeft() - DEFAUlT_HANDLE_WIDTH, grid.getTop() - DEFAULT_HANDLE_HEIGHT);
       layout();
    }
    
