@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.shared.PropertyChangeListener;
+import org.openremote.modeler.shared.PropertyChangeSupport;
 
 /**
  * This class is used to store the background image information for a screen. 
@@ -42,7 +44,9 @@ public class Background extends BusinessEntity {
    private int height = 0;
    private RelativeType relatedType = RelativeType.TOP_LEFT;
    private static Map<RelativeType, String> relativeMap;
-   
+
+   private transient PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
+
    public Background() {
       this.imageSource = new ImageSource("");
    }
@@ -56,15 +60,19 @@ public class Background extends BusinessEntity {
    }
    
    public void setImageSource(ImageSource imageSource) {
-      this.imageSource = imageSource;
+     ImageSource oldImage = this.imageSource;
+     this.imageSource = imageSource;
+     this.pcSupport.firePropertyChange("image", oldImage, this.imageSource);
    }
    
    public boolean isFillScreen() {
-      return fillScreen;
+     return fillScreen;
    }
    
    public void setFillScreen(boolean fillScreen) {
-      this.fillScreen = fillScreen;
+     boolean oldFillScreen = this.fillScreen;
+     this.fillScreen = fillScreen;
+     this.pcSupport.firePropertyChange("fillScreen", oldFillScreen, this.fillScreen);
    }
 
    public boolean isAbsolute() {
@@ -72,7 +80,9 @@ public class Background extends BusinessEntity {
    }
    
    public void setAbsolute(boolean absolute) {
-      this.absolute = absolute;
+     boolean oldAbsolute = this.absolute;
+     this.absolute = absolute;
+     this.pcSupport.firePropertyChange("absolute", oldAbsolute, this.absolute);
    }
    
    public int getLeft() {
@@ -80,7 +90,9 @@ public class Background extends BusinessEntity {
    }
    
    public void setLeft(int left) {
-      this.left = left;
+     int oldLeft = this.left;
+     this.left = left;
+     this.pcSupport.firePropertyChange("left", oldLeft, this.left);
    }
    
    public int getTop() {
@@ -88,7 +100,9 @@ public class Background extends BusinessEntity {
    }
    
    public void setTop(int top) {
-      this.top = top;
+     int oldTop = this.top;
+     this.top = top;
+     this.pcSupport.firePropertyChange("top", oldTop, this.top);
    }
    
    public int getWidth() {
@@ -96,7 +110,9 @@ public class Background extends BusinessEntity {
    }
    
    public void setWidth(int width) {
-      this.width = width;
+     int oldWidth = this.width;
+     this.width = width;
+     this.pcSupport.firePropertyChange("width", oldWidth, this.width);
    }
    
    public int getHeight() {
@@ -104,7 +120,9 @@ public class Background extends BusinessEntity {
    }
    
    public void setHeight(int height) {
-      this.height = height;
+     int oldHeight = this.height;
+     this.height = height;
+     this.pcSupport.firePropertyChange("height", oldHeight, this.height);
    }
    
    public RelativeType getRelatedType() {
@@ -112,7 +130,9 @@ public class Background extends BusinessEntity {
    }
 
    public void setRelatedType(RelativeType relatedType) {
-      this.relatedType = relatedType;
+     RelativeType oldRelatedType = this.relatedType;
+     this.relatedType = relatedType;
+     this.pcSupport.firePropertyChange("relatedType", oldRelatedType, this.relatedType);
    }
 
    /**
@@ -138,5 +158,13 @@ public class Background extends BusinessEntity {
          relativeMap.put(RelativeType.CENTER, "center center");
       }      
       return relativeMap;
+   }
+
+   public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.addPropertyChangeListener(propertyName, listener);
+   }
+   
+   public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+     this.pcSupport.removePropertyChangeListener(propertyName, listener);
    }
 }
