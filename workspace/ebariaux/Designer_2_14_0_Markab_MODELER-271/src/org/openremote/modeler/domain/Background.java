@@ -42,9 +42,11 @@ public class Background extends BusinessEntity {
    private int height = 0;
    private RelativeType relatedType = RelativeType.TOP_LEFT;
    private static Map<RelativeType, String> relativeMap;
+   
    public Background() {
       this.imageSource = new ImageSource("");
    }
+   
    public Background(ImageSource src) {
       this.imageSource = src;
    }
@@ -52,48 +54,58 @@ public class Background extends BusinessEntity {
    public ImageSource getImageSource() {
       return imageSource;
    }
+   
    public void setImageSource(ImageSource imageSource) {
       this.imageSource = imageSource;
    }
+   
    public boolean isFillScreen() {
       return fillScreen;
    }
+   
    public void setFillScreen(boolean fillScreen) {
       this.fillScreen = fillScreen;
    }
-   
-   
+
    public boolean isAbsolute() {
       return absolute;
    }
+   
    public void setAbsolute(boolean absolute) {
       this.absolute = absolute;
    }
+   
    public int getLeft() {
       return left;
    }
+   
    public void setLeft(int left) {
       this.left = left;
    }
+   
    public int getTop() {
       return top;
    }
+   
    public void setTop(int top) {
       this.top = top;
    }
+   
    public int getWidth() {
       return width;
    }
+   
    public void setWidth(int width) {
       this.width = width;
    }
+   
    public int getHeight() {
       return height;
    }
+   
    public void setHeight(int height) {
       this.height = height;
    }
-
    
    public RelativeType getRelatedType() {
       return relatedType;
@@ -124,8 +136,7 @@ public class Background extends BusinessEntity {
          relativeMap.put(RelativeType.TOP_RIGHT, "top right");
          relativeMap.put(RelativeType.BOTTOM_RIGHT, "bottom right");
          relativeMap.put(RelativeType.CENTER, "center center");
-      }
-      
+      }      
       return relativeMap;
    }
 }
