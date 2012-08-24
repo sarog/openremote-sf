@@ -326,8 +326,6 @@
                   <p>
                     <input id = "rememberme" type = "checkbox" name = "_spring_security_remember_me">
                       <label for = "rememberme">Remember Me</label>
-
-                    <a class = "register_btn" href = "register.jsp">Create a New Account</a>
                   </p>
 
                   <div>
@@ -368,7 +366,8 @@
 
             <p>
               In order to use all the latest Designer features, make sure you've
-              <a href = "http://download.openremote.org/2.0">installed OpenRemote Controller 2.0 or later</a>.
+              installed the latest OpenRemote Controller.<br><br>
+              You can access your version from the download menu, after you logged in.
             </p>
 
 <!--
