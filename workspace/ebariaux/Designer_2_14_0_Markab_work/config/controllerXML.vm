@@ -116,6 +116,17 @@
       #end
     </label>
   #end
+  ##<------------------------------------------------------------------------Color Picker------------------------------------------------------------------
+  #foreach($colorPicker in $colorPickers)
+   <colorpicker id="${colorPicker.getOid()}">
+      #if(${colorPicker.getUiCommand()})
+         #set($uiCmd=${colorPicker.getUiCommand()})
+         #foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+            <include type="command" ref="${cmd.getId()}"/>
+         #end
+      #end
+    </colorpicker>
+  #end
   </components>
   ##<------------------------------------------------------------------------Sensors------------------------------------------------------------------
   <sensors>

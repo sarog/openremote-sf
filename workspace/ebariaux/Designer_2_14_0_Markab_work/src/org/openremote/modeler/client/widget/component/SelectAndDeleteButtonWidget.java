@@ -70,4 +70,8 @@ public class SelectAndDeleteButtonWidget extends LayoutContainer {
    public void setButtonTextLengthBeforeTruncation(int textLength) {
      this.textLength = textLength;
    }
+   
+   public void setDeleteButtonEnabled(boolean enabled) {
+     this.deleteButton.setEnabled(enabled);
+   }
 }

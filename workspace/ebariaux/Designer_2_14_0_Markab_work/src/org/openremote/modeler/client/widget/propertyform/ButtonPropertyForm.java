@@ -91,7 +91,7 @@ public class ButtonPropertyForm extends PropertyForm {
       command.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
+            SelectCommandWindow selectCommandWindow = new SelectCommandWindow(true);
             selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
