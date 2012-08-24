@@ -26,15 +26,23 @@ import java.util.List;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.service.BaseAbstractService;
+import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
    private UserService userService = null;
+   private DeviceCommandService deviceCommandService;
+   private SensorService sensorService;
 
    @Override
    public Slider loadById(long id) {
@@ -63,21 +71,48 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    }
 
    @Override
-   @Transactional public Slider update(Slider slider) {
+   @Transactional public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
+     Slider slider = loadById(sliderDTO.getOid());
+     slider.setName(sliderDTO.getName());
+
+     if (slider.getSliderSensorRef().getSensor().getOid() != sliderDTO.getSensor().getId()) {
+       Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
+       slider.getSliderSensorRef().setSensor(sensor);
+     }
      /*
-      Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
-      if (oldSlider.getSliderSensorRef() != null) {
-         genericDAO.delete(oldSlider.getSliderSensorRef());
-      }
-      if (slider.getSliderSensorRef() == null) {
-         oldSlider.setSliderSensorRef(null);
-      } else if (slider.getSliderSensorRef() != null) {
-         slider.getSliderSensorRef().setSlider(oldSlider);
-         oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
-      }
+      * EBR : this is the old code. TODO: have unit tests to validate new works same as old.
+      * Note, old allows possibility that existing slider had no sensor or that update wants to remove sensor;
+      * this is not allowed and not foreseen by new code.
+     if (oldSlider.getSliderSensorRef() != null) {
+        genericDAO.delete(oldSlider.getSliderSensorRef());
+     }
+     if (slider.getSliderSensorRef() == null) {
+        oldSlider.setSliderSensorRef(null);
+     } else if (slider.getSliderSensorRef() != null) {
+        slider.getSliderSensorRef().setSlider(oldSlider);
+        oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
+     }
+     */
 
-      oldSlider.setName(slider.getName());
-
+     
+     if (sliderDTO.getCommand() != null) {
+       if (slider.getSetValueCmd() == null || (slider.getSetValueCmd().getDeviceCommand().getOid() != sliderDTO.getCommand().getId())) {
+         DeviceCommand dc = deviceCommandService.loadById(sliderDTO.getCommand().getId());
+         if (slider.getSetValueCmd() != null) { 
+           slider.getSetValueCmd().setDeviceCommand(dc);
+         } else {
+           slider.setSetValueCmd(dc);
+         }
+       }
+     } else {
+       if (slider.getSetValueCmd() != null) {
+         genericDAO.delete(slider.getSetValueCmd());
+         slider.setSetValueCmd((SliderCommandRef)null);
+       }
+     }
+     /*
+      * EBR : this is the old code. TODO: have unit tests to validate new works same as old.
+      * Old code seems to replace reference altogether, where new code updates it. TODO: validate which behaviour is appropriate.
       if (slider.getSetValueCmd() == null) {
          if (oldSlider.getSetValueCmd() != null) {
             genericDAO.delete(oldSlider.getSetValueCmd());
@@ -89,10 +124,9 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          slider.getSetValueCmd().setSlider(oldSlider);
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
       }
-      return oldSlider;
       */
+
      genericDAO.saveOrUpdate(slider);
-     return slider;
    }
    
    public List<Slider> loadSameSliders(Slider slider) {
@@ -124,4 +158,13 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
+
+  public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+   
 }
