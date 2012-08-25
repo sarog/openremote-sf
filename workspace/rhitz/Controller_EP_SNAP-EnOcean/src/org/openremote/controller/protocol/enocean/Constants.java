@@ -55,10 +55,22 @@ public final class Constants
   public static final String SUPPLY_VOLTAGE_STATUS_COMMAND = EEP_SUPPLY_VOLTAGE_DATA_FIELD_NAME;
 
   /**
+   * Command string for configuring a command which receives supply voltage sensor values
+   * (Room Operating Panel).
+   */
+  public static final String SUPPLY_VOLTAGE_ROP_STATUS_COMMAND = EEP_SUPPLY_VOLTAGE_ROP_DATA_FIELD_NAME;
+
+  /**
    * Command string for configuring a command which receives the state (open/closed) of
    * an input contact.
    */
   public static final String CONTACT_STATUS_COMMAND = EEP_CONTACT_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the state (open/closed) of
+   * an input contact (room operation panel).
+   */
+  public static final String CONTACT_STATE_STATUS_COMMAND = EEP_CONTACT_STATE_DATA_FIELD_NAME;
 
   /**
    * Command string for configuring a command which receives the state (on/off) of
@@ -71,6 +83,49 @@ public final class Constants
    * an occupancy button.
    */
   public static final String OCCUPANCY_STATUS_COMMAND = EEP_OCCUPANCY_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the occupancy
+   * enabled/disabled state.
+   */
+  public static final String OCCUPANCY_ENABLE_STATUS_COMMAND = EEP_OCCUPANCY_ENABLE_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the occupancy
+   * button pressed/released state.
+   */
+  public static final String OCCUPANCY_BUTTON_STATUS_COMMAND = EEP_OCCUPANCY_BUTTON_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the fan speed setting of
+   * a turn switch.
+   */
+  public static final String FAN_SPEED_STATUS_COMMAND = EEP_FAN_SPEED_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the set point value.
+   */
+  public static final String SET_POINT_STATUS_COMMAND = EEP_SET_POINT_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the temperature set point value.
+   */
+  public static final String TEMP_SET_POINT_STATUS_COMMAND = EEP_TEMP_SET_POINT_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the temperature set point value.
+   */
+  public static final String ILL_SET_POINT_STATUS_COMMAND = EEP_ILL_SET_POINT_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the humidity set point value.
+   */
+  public static final String HUM_SET_POINT_STATUS_COMMAND = EEP_HUM_SET_POINT_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives the slide switch status value.
+   */
+  public static final String SLIDE_SWITCH_STATUS_COMMAND = EEP_SLIDE_SWITCH_DATA_FIELD_NAME;
 
   // Constructors ---------------------------------------------------------------------------------
 
