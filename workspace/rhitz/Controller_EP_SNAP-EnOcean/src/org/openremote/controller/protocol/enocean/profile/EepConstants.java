@@ -36,6 +36,11 @@ public final class EepConstants
   public static final String EEP_CONTACT_DATA_FIELD_NAME = "CO";
 
   /**
+   * EnOcean equipment profile (EEP) contact state data field name (room operation panel).
+   */
+  public static final String EEP_CONTACT_STATE_DATA_FIELD_NAME = "CTST";
+
+  /**
    * EnOcean equipment profile (EEP) temperature data field name.
    */
   public static final String EEP_TEMPERATURE_DATA_FIELD_NAME = "TMP";
@@ -61,6 +66,11 @@ public final class EepConstants
   public static final String EEP_SUPPLY_VOLTAGE_DATA_FIELD_NAME = "SVC";
 
   /**
+   * EnOcean equipment profile (EEP) supply voltage data field name (Room Operating Panel).
+   */
+  public static final String EEP_SUPPLY_VOLTAGE_ROP_DATA_FIELD_NAME = "SV";
+
+  /**
    * EnOcean equipment profile (EEP) 'PIR status' data field name.
    */
   public static final String EEP_PIR_DATA_FIELD_NAME = "PIRS";
@@ -70,6 +80,45 @@ public final class EepConstants
    */
   public static final String EEP_OCCUPANCY_DATA_FIELD_NAME = "OCC";
 
+  /**
+   * EnOcean equipment profile (EEP) occupancy enable/disable data field name.
+   */
+  public static final String EEP_OCCUPANCY_ENABLE_DATA_FIELD_NAME = "OED";
+
+  /**
+   * EnOcean equipment profile (EEP) occupancy button data field name.
+   */
+  public static final String EEP_OCCUPANCY_BUTTON_DATA_FIELD_NAME = "OB";
+
+  /**
+   * EnOcean equipment profile (EEP) fan speed data field name.
+   */
+  public static final String EEP_FAN_SPEED_DATA_FIELD_NAME = "FAN";
+
+  /**
+   * EnOcean equipment profile (EEP) set point data field name.
+   */
+  public static final String EEP_SET_POINT_DATA_FIELD_NAME = "SP";
+
+  /**
+   * EnOcean equipment profile (EEP) temperature set point data field name.
+   */
+  public static final String EEP_TEMP_SET_POINT_DATA_FIELD_NAME = "TMPSP";
+
+  /**
+   * EnOcean equipment profile (EEP) illumination set point data field name.
+   */
+  public static final String EEP_ILL_SET_POINT_DATA_FIELD_NAME = "ILLSP";
+
+  /**
+   * EnOcean equipment profile (EEP) humidity set point data field name.
+   */
+  public static final String EEP_HUM_SET_POINT_DATA_FIELD_NAME = "HUMSP";
+
+  /**
+   * EnOcean equipment profile (EEP) slide switch data field name.
+   */
+  public static final String EEP_SLIDE_SWITCH_DATA_FIELD_NAME = "SLSW";
 
   /**
    * EnOcean equipment profile (EEP) learn bit data field name.
