@@ -67,6 +67,7 @@ import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -86,7 +87,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -271,6 +274,7 @@ public class ApplicationView implements View {
          applicationToolBar.add(createOnLineTestBtn());
       }
       applicationToolBar.add(new FillToolItem());
+      applicationToolBar.add(createDownloadControllerButton());
       applicationToolBar.add(createLogoutButton());
 
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
@@ -278,7 +282,19 @@ public class ApplicationView implements View {
       viewport.add(applicationToolBar, data);
    }
 
-   /**
+   private Component createDownloadControllerButton()
+  {
+     Button downloadButton = new Button("Download Controller");
+     downloadButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          Window.open("download/OpenRemote_Controller.zip", "_blank", "");
+        }
+     });
+     return downloadButton;
+  }
+
+  /**
     * Creates the button that can convert to building modeler view.
     * 
     * @return the toggle button
