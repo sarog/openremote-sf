@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserChangePasswordException;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.useraccount.domain.UserDTO;
 
@@ -161,4 +162,12 @@ public interface UserService {
     * @return true, if successful
     */
    boolean resetPassword(long uid, String password, String passwordToken);
+
+   /**
+    * Verify oldPassword and change the logged-in users password
+    * @param oldPassword
+    * @param newPassword
+    * @throws UserChangePasswordException
+    */
+   void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException;   
 }

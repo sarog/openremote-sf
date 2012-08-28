@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
 
+import org.openremote.modeler.exception.UserChangePasswordException;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.useraccount.domain.UserDTO;
 
@@ -82,4 +83,12 @@ public interface UserRPCService extends RemoteService {
     * @return the account access users
     */
    ArrayList<UserDTO> getAccountAccessUsersDTO();
+
+   
+   /**
+    * Change the logged in users password
+    * @param oldPassword
+    * @param newPassword
+    */
+   void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException;
 }
