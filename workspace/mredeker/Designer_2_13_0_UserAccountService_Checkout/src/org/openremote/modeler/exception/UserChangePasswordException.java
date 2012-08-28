@@ -17,27 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.rpc;
+package org.openremote.modeler.exception;
 
-import java.util.ArrayList;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-import org.openremote.useraccount.domain.UserDTO;
+/**
+ *  If change password fails, throw this exception.  
+ * 
+ * @author marcus 
+ */
+@SuppressWarnings("serial")
+public class UserChangePasswordException extends RuntimeException implements IsSerializable{
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
+   public UserChangePasswordException() {
+      super();
+   }
 
-public interface UserRPCServiceAsync {
+   public UserChangePasswordException(String s) {
+      super(s);
+   }
 
-   void inviteUser(String email, String role, AsyncCallback<UserDTO> callback);
-
-   void getPendingInviteesByAccount(AsyncCallback<ArrayList<UserDTO>> callback);
-
-   void updateUserRoles(long uid, String roles, AsyncCallback<UserDTO> callback);
-
-   void deleteUser(long uid, AsyncCallback<Void> callback);
-
-   void getUserId(AsyncCallback<Long> callback);
-
-   void getAccountAccessUsersDTO(AsyncCallback<ArrayList<UserDTO>> callback);
-   
-   void changePassword(String oldPassword, String newPassword, AsyncCallback<Void> callback);
+   public UserChangePasswordException(String s, Throwable throwable) {
+      super(s, throwable);
+   }
 }

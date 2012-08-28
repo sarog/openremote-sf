@@ -138,6 +138,9 @@ public interface Icons extends ImageBundle {
    @Resource("user.png")
    AbstractImagePrototype userIcon();
    
+   @Resource("user_edit.png")
+   AbstractImagePrototype userEditIcon();
+   
    //Added by Selva
    @Resource("webview.png")
    AbstractImagePrototype webviewIcon();

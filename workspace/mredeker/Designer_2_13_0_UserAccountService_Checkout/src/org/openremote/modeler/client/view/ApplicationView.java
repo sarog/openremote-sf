@@ -46,6 +46,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
+import org.openremote.modeler.client.widget.ChangePasswordWindow;
 import org.openremote.modeler.client.widget.ControllerManageWindow;
 import org.openremote.modeler.client.widget.buildingmodeler.CreateDeviceWizardWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
@@ -275,6 +276,7 @@ public class ApplicationView implements View {
       }
       applicationToolBar.add(new FillToolItem());
       applicationToolBar.add(createDownloadControllerButton());
+      applicationToolBar.add(createChangePasswordButton());
       applicationToolBar.add(createLogoutButton());
 
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
@@ -559,6 +561,23 @@ public class ApplicationView implements View {
          public void componentSelected(ButtonEvent ce) {
             new ControllerManageWindow();
          }
+      });
+      return accountManageBtn;
+   }
+   
+   /**
+    * Creates the button to pop up the change password window.
+    * 
+    * @return the button
+    */
+   private Button createChangePasswordButton() {
+      Button accountManageBtn = new Button();
+      accountManageBtn.setToolTip("Change password");
+      accountManageBtn.setIcon(icons.userEditIcon());
+      accountManageBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+        public void componentSelected(ButtonEvent ce) {
+          new ChangePasswordWindow();
+        }
       });
       return accountManageBtn;
    }
