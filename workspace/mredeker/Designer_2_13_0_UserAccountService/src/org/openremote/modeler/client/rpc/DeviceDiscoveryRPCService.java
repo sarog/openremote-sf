@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.modeler.exception.DeviceDiscoveryException;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -34,9 +35,27 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceDiscoveryRPCService extends RemoteService {
 
    /**
-    * Get the list of new discovered devices
+    * Get the list of discovered devices. Either only new ones or all
     * 
     * @return the list of devices
     */
-   ArrayList<DiscoveredDeviceDTO> loadNewDevices() throws DeviceDiscoveryException;
+   ArrayList<DiscoveredDeviceDTO> loadDevices(boolean onlyNew) throws DeviceDiscoveryException;
+   
+   /**
+    * Delete the given devices from the discovered device table
+    * @param devicesToDelete
+    * @throws DeviceDiscoveryException
+    */
+   void deleteDevices(ArrayList<DiscoveredDeviceDTO> devicesToDelete) throws DeviceDiscoveryException;
+
+   /**
+    * Create all needed OR objects (devices, commands, sensors, switches, sliders) for the given devices.
+    * If oneDevicePerProtocol is true all objects are put in one OR device per protocol otherwise each device
+    * and it's objects will be put into one OR device for each device.
+    * 
+    * @param itemsToCreate
+    * @param oneDevicePerProtocol
+    * @return
+    */
+   ArrayList<DeviceDTO> createORDevices(ArrayList<DiscoveredDeviceDTO> itemsToCreate, boolean oneDevicePerProtocol) throws DeviceDiscoveryException;
 }
