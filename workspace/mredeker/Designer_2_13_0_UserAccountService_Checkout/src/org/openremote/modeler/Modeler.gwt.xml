@@ -37,7 +37,9 @@
 	<source path='utils'>
 	  <include name="String*"/>
 	</source>
-
+	
+	<set-property name="gxt.user.agent" value="gecko1_8"/>
+  
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openremote.modeler.client.Modeler'/>
 </module>

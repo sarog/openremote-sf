@@ -1,0 +1,63 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+	xmlns:c='urn:import:com.google.gwt.user.cellview.client'
+	xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
+	xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client" 
+	xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button"
+	xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid"
+	xmlns:form="urn:import:com.sencha.gxt.widget.core.client.form"
+	xmlns:menu="urn:import:com.sencha.gxt.widget.core.client.menu">
+
+	<ui:with type="org.openremote.modeler.client.icon.IconResources" field="icons" />
+
+    <ui:style>
+    .menuBorder {
+        border-top: none;
+    }
+    .margin {
+       margin: 10px;
+     }
+  </ui:style>
+  
+	<gxt:Window pixelSize="610, 400" modal="true" blinkModal="true" headingText="Discovered Devices Wizard">
+	<container:NorthSouthContainer>
+      <container:north>
+        <menu:MenuBar borders="true" addStyleNames="{style.menuBorder}">
+          <menu:MenuBarItem text="Devices">
+            <menu:menu>
+              <menu:Menu>
+                <menu:MenuItem text="Show all" ui:field="menuItemAll"/>
+                <menu:MenuItem text="Show only new" ui:field="menuItemOnlyNew"/>
+                <menu:SeparatorMenuItem />
+                <menu:MenuItem text="Create selected devices" ui:field="menuItemCreate"/>
+                <menu:SeparatorMenuItem />
+                <menu:MenuItem text="Exit wizard" ui:field="menuItemExit"/>
+              </menu:Menu>
+            </menu:menu>
+          </menu:MenuBarItem>
+          <menu:MenuBarItem text="Edit">
+            <menu:menu>
+              <menu:Menu ui:field="menuEdit">
+                <menu:MenuItem text="Delete selected" />
+              </menu:Menu>
+            </menu:menu>
+          </menu:MenuBarItem>
+          <menu:MenuBarItem text="Options">
+            <menu:menu>
+              <menu:Menu ui:field="menuOptions">
+                <menu:CheckMenuItem text="Create objects per device" group="radios" checked="true" />
+                <menu:CheckMenuItem text="Create objects per protocol" group="radios" />
+              </menu:Menu>
+            </menu:menu>
+          </menu:MenuBarItem>
+        </menu:MenuBar>
+      </container:north>
+      <container:south>
+        <gxt:ContentPanel headingText="Discovered Devices" bodyBorder="false">
+          <grid:Grid ui:field="newDevicesGrid"/>
+        </gxt:ContentPanel>
+      </container:south>
+    </container:NorthSouthContainer>
+	</gxt:Window>
+</ui:UiBinder>
