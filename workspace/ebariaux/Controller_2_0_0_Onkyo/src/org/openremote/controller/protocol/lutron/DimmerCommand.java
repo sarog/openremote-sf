@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
@@ -30,6 +29,7 @@ import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Command to be sent to a dimmer device to actuate or query status.
@@ -57,7 +57,7 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
     }
 
     if ("FADE".equalsIgnoreCase(name) && level == null) {
-      throw new NoSuchCommandException("Level is required for a scene Fade command");
+      throw new NoSuchCommandException("Level is required for a dimmer Fade command");
     }
 
     return new DimmerCommand(name, gateway, address, level);

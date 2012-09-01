@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -29,6 +28,7 @@ import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.lutron.model.GrafikEye;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.utils.Logger;
 
 /**
  * 
