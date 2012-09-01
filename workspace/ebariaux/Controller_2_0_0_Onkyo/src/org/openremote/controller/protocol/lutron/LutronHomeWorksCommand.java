@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Command sent from the console that should result in action to the Lutron processor (through the gateway).

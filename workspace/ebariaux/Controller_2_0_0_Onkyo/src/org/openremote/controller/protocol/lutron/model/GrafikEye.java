@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,10 +20,10 @@
  */
 package org.openremote.controller.protocol.lutron.model;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddress;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksGateway;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Represents a GRAFIK Eye component on the Lutron bus.
