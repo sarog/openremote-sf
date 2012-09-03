@@ -21,39 +21,22 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.ArrayList;
 
-import org.openremote.modeler.exception.ControllerManagementException;
-import org.openremote.useraccount.domain.ControllerDTO;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.modeler.exception.DeviceDiscoveryException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface is for managing linked controller.
+ * The Interface is for managing discovered devices
  */
-@RemoteServiceRelativePath("linkController.smvc")
-public interface LinkControllerRPCService extends RemoteService {
+@RemoteServiceRelativePath("deviceDiscovery.smvc")
+public interface DeviceDiscoveryRPCService extends RemoteService {
 
    /**
-    * Link controller to this account
+    * Get the list of new discovered devices
     * 
-    * @param macAddress - The MAC address of the controller that should be linked
-    * 
-    * @return the linked controller
+    * @return the list of devices
     */
-   ControllerDTO linkController(String macAddress) throws ControllerManagementException;
-   
-   /**
-    * Delete the controller with the given oid
-    * 
-    * @param uid the uid
-    */
-   void deleteController(long oid) throws ControllerManagementException;
-   
-  
-   /**
-    * Get the list of linked controller
-    * 
-    * @return the linked controller
-    */
-   ArrayList<ControllerDTO> getLinkedControllerDTOs() throws ControllerManagementException;
+   ArrayList<DiscoveredDeviceDTO> loadNewDevices() throws DeviceDiscoveryException;
 }

@@ -84,6 +84,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + id);
      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
      Representation r = cr.get();
+     cr.release();
      String str;
      try { 
        str = r.getText();
@@ -144,6 +145,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
       Representation r = cr.post(rep);
+      cr.release();
       String str;
       try
       {
@@ -168,7 +170,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class", "registerTimeAsString").deepSerialize(user));
       Representation r = cr.put(rep);
-
+      cr.release();
       String str = null;
       try
       {
@@ -243,6 +245,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + url.toString());
      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
      Representation r = cr.post(null);
+     cr.release();
      String str;
      try { 
        str = r.getText();
@@ -358,6 +361,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + uid);
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
       Representation result = cr.delete();
+      cr.release();
       String str;
       try
       {
@@ -394,6 +398,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + username + "/forgotPassword");
      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
      Representation r = cr.get();
+     cr.release();
      String str;
      try { 
        str = r.getText();

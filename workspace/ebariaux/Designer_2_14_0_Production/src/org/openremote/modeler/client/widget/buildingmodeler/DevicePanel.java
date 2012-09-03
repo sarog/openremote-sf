@@ -89,6 +89,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.extjs.gxt.ui.client.widget.menu.SeparatorMenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
@@ -308,6 +309,7 @@ public class DevicePanel extends ContentPanel {
       Menu newMenu = new Menu();
       newMenu.add(createNewDeviceMenuItem());
       newMenu.add(createNewRussoundDeviceMenuItem());
+      newMenu.add(createNewDeviceFromWizardMenuItem());
       final MenuItem newCommandMemuItem = createNewCommandMenu();
 
       final MenuItem importCommandMemuItem = createImportMenuItem();
@@ -320,11 +322,13 @@ public class DevicePanel extends ContentPanel {
 
       final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
+      newMenu.add(new SeparatorMenuItem());
       newMenu.add(newCommandMemuItem);
       newMenu.add(importCommandMemuItem);
       newMenu.add(newSensorMenuItem);
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
+      newMenu.add(new SeparatorMenuItem());
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
 
@@ -419,6 +423,17 @@ public class DevicePanel extends ContentPanel {
      });
      return newDeviceItem;
   }
+   
+   private MenuItem createNewDeviceFromWizardMenuItem() {
+     MenuItem newDeviceItem = new MenuItem("New Device from Wizard");
+     newDeviceItem.setIcon(icon.device());
+     newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+        public void componentSelected(MenuEvent ce) {
+           new CreateDeviceWizardWindow();
+        }
+     });
+     return newDeviceItem;
+  }  
    
    /**
     * Creates the new command menu.
