@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.useraccount.domain.UserDTO;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,81 +44,15 @@ public class UserServiceTest {
    
    private User invitee;
    
-   public static final String TEST_EMAIL = "openremote@163.com";
+   public static final String TEST_EMAIL = "marcus@openremote.org";
    
-   @Test
-   public void initRoles() {
-      List<Role> allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 0);
-      
-      userService.initRoles();
-      allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 3);
-      
-      userService.initRoles();
-      allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 3);
-      
-   }
-   
-   @Test
-   public void sendActivationEmailSuccessfully() {
-      User user = new User();
-      user.setOid(11111);
-      user.setUsername("dan.cong");
-      user.setPassword("finalist");
-      user.setRawPassword("finalist");
-      user.setEmail(TEST_EMAIL);
-      Assert.assertTrue(userService.sendRegisterActivationEmail(user));
-   }
-   
-   @Test
-   public void sendActivationEmailWithNullUser() {
-      Assert.assertFalse(userService.sendRegisterActivationEmail(null));
-   }
-   
-   @Test
-   public void sendActivationEmailWithoutOid() {
-      User user = new User();
-      user.setUsername("dan.cong");
-      user.setPassword("finalist");
-      user.setEmail(TEST_EMAIL);
-      Assert.assertFalse(userService.sendRegisterActivationEmail(user));
-   }
-   
-   @Test
-   public void sendActivationEmailWihtoutUsername() {
-      User user = new User();
-      user.setOid(11111);
-      user.setPassword("finalist");
-      user.setEmail(TEST_EMAIL);
-      Assert.assertFalse(userService.sendRegisterActivationEmail(user));
-   }
-   
-   @Test
-   public void sendActivationEmailWihtoutPassword() {
-      User user = new User();
-      user.setOid(11111);
-      user.setUsername("dan.cong");
-      user.setEmail(TEST_EMAIL);
-      Assert.assertFalse(userService.sendRegisterActivationEmail(user));
-   }
-   
-   @Test
-   public void sendActivationEmailWihtoutEmail() {
-      User user = new User();
-      user.setOid(11111);
-      user.setUsername("dan.cong");
-      user.setPassword("finalist");
-      Assert.assertFalse(userService.sendRegisterActivationEmail(user));
-   }
    
    @Test
    public void createNullAccount() {
       Assert.assertFalse(userService.createUserAccount(null, null, null));
    }
    
-   @Test(dependsOnMethods = { "initRoles" })
+   @Test
    public void createAccountSuccessfully() {
       Assert.assertTrue(userService.createUserAccount("dan.cong", "finalist", TEST_EMAIL));
    }
@@ -195,11 +130,11 @@ public class UserServiceTest {
       Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getOid()), "tomsky", "hahahaha", TEST_EMAIL));
    }
    
-   @Test(dependsOnMethods = { "initRoles" })
+   @Test
    public void resetPassword() {
       String username = "tomsky.wang";
       Assert.assertTrue(userService.createUserAccount(username, "firstcreate", TEST_EMAIL));
-      User user = userService.forgetPassword(username);
+      UserDTO user = userService.forgotPassword(username);
       Assert.assertNotNull(user);
       Assert.assertTrue(userService.resetPassword(user.getOid(), "finalist", user.getToken()));
    }

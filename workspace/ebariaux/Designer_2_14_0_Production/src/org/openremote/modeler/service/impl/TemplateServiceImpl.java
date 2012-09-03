@@ -103,6 +103,7 @@ import org.springframework.transaction.annotation.Transactional;
 import flexjson.ClassLocator;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
+import flexjson.ObjectBinder;
 import flexjson.Path;
 
 /**
@@ -1157,8 +1158,8 @@ public class TemplateServiceImpl implements TemplateService
    private static class SimpleClassLocator implements ClassLocator {
 
       @SuppressWarnings("unchecked")
-      public Class locate(Map map, Path currentPath) throws ClassNotFoundException {
-         return Class.forName(map.get("class").toString());
+      public Class locate(ObjectBinder binder, Path currentPath) throws ClassNotFoundException {
+         return Class.forName(binder.getClass().toString());
       }
    }
 
