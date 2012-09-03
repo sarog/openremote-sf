@@ -22,36 +22,64 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.client.icon.IconResources;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.InviteUserWindow.UserInvitedEvent;
+import org.openremote.useraccount.domain.RoleDTO;
 import org.openremote.useraccount.domain.UserDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.TextButtonCell;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.StringLabelProvider;
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Window;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent.BeforeStartEditHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * This window is for managing users that with the same account, except for the current user.
+ * 
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class AccountManageWindow extends Window {  
   
-//  private Icons icons = GWT.create(Icons.class);
+  private IconResources icons = GWT.create(IconResources.class);
+  
+  @UiField(provided = true)
+  BorderLayoutData northData = new BorderLayoutData(36);
+  
+  @UiField(provided = true)
+  VerticalLayoutData topPanelData = new VerticalLayoutData(1.0d, 0.5d, new Margins(0, 0, 0, 0));
+  @UiField(provided = true)
+  VerticalLayoutData bottomPanelData = new VerticalLayoutData(1.0d, 0.5d, new Margins(5, 0, 0, 0));
   
   private static AccountManageWindowUiBinder uiBinder = GWT.create(AccountManageWindowUiBinder.class);
 
@@ -61,6 +89,7 @@ public class AccountManageWindow extends Window {
     
     ValueProvider<UserDTO, String> username();
     ValueProvider<UserDTO, String> email();
+    ValueProvider<UserDTO, String> role();
   }
   
   private UserDTOProvider users = GWT.create(UserDTOProvider.class);
@@ -76,32 +105,89 @@ public class AccountManageWindow extends Window {
   @UiField
   TextButton inviteUserButton;
      
-   /** The invited users grid.
-    *  The user has been invited, but not accept the invitation.
-    */
-//   private Grid<UserDTO> invitedUsersGrid = null;
-   
-   private long cureentUserId = 0;
-   
-   private ColumnModel<UserDTO> cm;
-   private ListStore<UserDTO> store;
-   
-   public AccountManageWindow(long cureentUserId) {
-      this.cureentUserId = cureentUserId;
-      
-//      setButtonAlign(HorizontalAlignment.CENTER);
-//      setAutoHeight(true);
+  @UiField(provided=true)
+  Grid<UserDTO> accessUsersGrid;
+  
+  /** The invited users grid.
+   *  The user has been invited, but not accept the invitation.
+   */
+  @UiField(provided=true)
+  Grid<UserDTO> invitedUsersGrid;
+  
+  @UiField
+  ContentPanel invitedUsersPanel;
+  
+  private long cureentUserId = 0;
 
+  private ColumnModel<UserDTO> accessUsersColumnModel;
+  private ListStore<UserDTO> accessUsersStore;
+
+  private ColumnModel<UserDTO> invitedUsersColumnModel;
+  private ListStore<UserDTO> invitedUsersStore;
+
+  public AccountManageWindow(long cureentUserId) {
+    this.cureentUserId = cureentUserId;
+
+    createAccessUsersGrid();
+    createInvitedUsersGrid();
+
+    uiBinder.createAndBindUi(this);
       
-//      addInvitedUsers();
-//      createAccessUserGrid();
+    accessUsersGrid.getView().setAutoExpandColumn(accessUsersGrid.getColumnModel().getColumn(0));
+    invitedUsersGrid.getView().setAutoExpandColumn(invitedUsersGrid.getColumnModel().getColumn(0));
+    invitedUsersPanel.setVisible(false);      
+    accessUsersGrid.mask("Loading users...");
+
+    show();
+
+    AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+      @Override
+      public void onSuccess(ArrayList<UserDTO> accessUsers) {
+        accessUsersStore.addAll(accessUsers);
+        accessUsersGrid.unmask();
+      }
+    });
+
+    AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+      public void onSuccess(ArrayList<UserDTO> invitedUsers) {
+        if (invitedUsers.size() > 0) {
+          invitedUsersStore.addAll(invitedUsers);
+          invitedUsersPanel.setVisible(true);
+        }
+      }
+    });
+  }
+
+  /**
+   * Brings up a dialog to enter e-mail and role of user to invite.
+   * On success, pending invitations table is updated with newly invited user.
+   */   
+  @UiHandler("inviteUserButton")
+  void onInviteClick(SelectEvent e) {
+    final InviteUserWindow inviteUserWindow = new InviteUserWindow();
+
+    inviteUserWindow.addHandler(new InviteUserWindow.UserInvitedHandler() {
+      @Override
+      public void userInvited(UserDTO user) {
+        if (user != null) {
+          invitedUsersStore.add(user);
+          invitedUsersPanel.setVisible(true);
+        }
+        inviteUserWindow.hide();
+      }
+    }, UserInvitedEvent.TYPE);
+    inviteUserWindow.show();
+  }
+   
+  private void createAccessUsersGrid() {
+    accessUsersStore = new ListStore<UserDTO>(users.key());
 
     ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
     emailColumn.setSortable(false);
     emailColumn.setCell(new AbstractCell<String>() {
       @Override
-      public void render(com.google.gwt.cell.client.Cell.Context context, String value, SafeHtmlBuilder sb) {
-        UserDTO user = store.findModelWithKey((String)context.getKey());
+      public void render(Context context, String value, SafeHtmlBuilder sb) {
+        UserDTO user = accessUsersStore.findModelWithKey((String)context.getKey());
         sb.appendHtmlConstant("<span title='");
         sb.appendEscaped(user.getUsername());
         sb.appendHtmlConstant("'>");
@@ -112,360 +198,125 @@ public class AccountManageWindow extends Window {
         sb.appendHtmlConstant("</span>");
       }
     });
-     List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
-     l.add(emailColumn);
-      //l.add(fileNameColumn);
-     cm = new ColumnModel<UserDTO>(l);
-     store = new ListStore<UserDTO>(users.key());
-//      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
-
-      uiBinder.createAndBindUi(this);
-      
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-        @Override
-        public void onSuccess(ArrayList<UserDTO> accessUsers) {
-          store.addAll(accessUsers);
-
-        /*
-        if (accessUsers.size() > 0) {
-          accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
-          accessUsersGrid.unmask();
+     
+    ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
+     
+    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {       
+        if (AccountManageWindow.this.cureentUserId != Long.parseLong((String)context.getKey())) {
+          super.render(context, "", sb);
         }
-        */          
+      }
+    }, accessUsersStore);
+     
+    List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+    l.add(emailColumn);
+    l.add(roleColumn);
+    l.add(deleteColumn);
+    
+    accessUsersColumnModel = new ColumnModel<UserDTO>(l);
+    accessUsersGrid = new Grid<UserDTO>(accessUsersStore, accessUsersColumnModel);
+    
+    final GridInlineEditing<UserDTO> accessUsersGridEditing = new GridInlineEditing<UserDTO>(accessUsersGrid);
+
+    SimpleComboBox<String> rolesCombo = createRoleComboBox(accessUsersGridEditing, accessUsersStore);     
+    accessUsersGridEditing.addEditor(roleColumn, rolesCombo);
+    accessUsersGridEditing.addBeforeStartEditHandler(new BeforeStartEditHandler<UserDTO>() {
+      @Override
+      public void onBeforeStartEdit(BeforeStartEditEvent<UserDTO> event) {
+        UserDTO user = accessUsersStore.get(event.getEditCell().getRow());
+        if (AccountManageWindow.this.cureentUserId == user.getOid()) {
+          event.setCancelled(true);
+        }
+      }
+    });
+  }
+
+  private void createInvitedUsersGrid() {
+    invitedUsersStore = new ListStore<UserDTO>(users.key());
+
+    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "Invited user");
+
+    ColumnConfig<UserDTO, String> roleColumn = new ColumnConfig<UserDTO, String>(users.role(), 210, "Role");
+
+    ColumnConfig<UserDTO, String> deleteColumn = createDeleteColumn(new TextButtonCell() {
+      @Override
+      public void render(Context context, String value, SafeHtmlBuilder sb) {
+        super.render(context, "", sb);
+      }
+    }, invitedUsersStore);
+    
+    List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+    l.add(emailColumn);
+    l.add(roleColumn);
+    l.add(deleteColumn);
+    
+    invitedUsersColumnModel = new ColumnModel<UserDTO>(l);
+    invitedUsersGrid = new Grid<UserDTO>(invitedUsersStore, invitedUsersColumnModel);
+   
+    final GridInlineEditing<UserDTO> gridEditing = new GridInlineEditing<UserDTO>(invitedUsersGrid);
+    
+    SimpleComboBox<String> rolesCombo = createRoleComboBox(gridEditing, invitedUsersStore);     
+    gridEditing.addEditor(roleColumn, rolesCombo);
+  }
+
+  private SimpleComboBox<String> createRoleComboBox(final GridInlineEditing<UserDTO> gridEditing, final ListStore<UserDTO> store) {
+    SimpleComboBox<String> rolesCombo = new SimpleComboBox<String>(new StringLabelProvider<String>());
+    rolesCombo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+    rolesCombo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+    rolesCombo.setValue(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+    rolesCombo.setAllowBlank(false);
+    rolesCombo.setAllowTextSelection(false);
+    rolesCombo.setEditable(false);
+    rolesCombo.setForceSelection(true);
+    rolesCombo.setTriggerAction(TriggerAction.ALL);     
+    rolesCombo.addSelectionHandler(new SelectionHandler<String>() {
+      
+      @Override
+      public void onSelection(SelectionEvent<String> event) {
+        final UserDTO user = store.get(gridEditing.getActiveCell().getRow());
+        final String roleStrs = event.getSelectedItem();        
           
-          
+        if (!roleStrs.equals(user.getRole())) {
+          AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(user.getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
+            public void onSuccess(UserDTO userDTO) {
+              user.setRoles(userDTO.getRoles());
+              Info.display("Change role", "Change role to " + roleStrs + " success.");
+            }
+          });
         }
-      });
-
-      
-      
-      
-
-      show();
-   }
-   
-   /**
-    * Adds a button, if click it, it would pop up a window to input a email and select role.
-    * After submit the window's data, there would send a invitation to the email, and the invited
-    * user grid would be insert a record.  
-    */
-   
-   @UiHandler("inviteUserButton")
-   void onAddClick(SelectEvent e) {
-     /*
-     final InviteUserWindow inviteUserWindow = new InviteUserWindow();
-     inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-        public void afterSubmit(SubmitEvent be) {
-           inviteUserWindow.hide();
-           UserDTO userDTO = be.getData();
-           if (userDTO != null) {
-              if (invitedUsersGrid == null) {
-                 createInvitedUserGrid();
-              }
-              invitedUsersGrid.stopEditing();
-              invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
-              invitedUsersGrid.startEditing(0, 1);
-           }
-        }
-        */
-   }
-
-   /**
-    * Initialize the invited user grid's store by getting the invited users from server.
-    */
-   private void addInvitedUsers() {
-      AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-         public void onSuccess(ArrayList<UserDTO> invitedUsers) {
-            if (invitedUsers.size() > 0) {
-               createInvitedUserGrid();
-//               invitedUsersGrid.getStore().add(DTOHelper.createModels(invitedUsers));
-            }
-         }
-      });
-   }
-   
-   /**
-    * Initialize the invited user grid.
-    * The grid has three columns: invited user info, role combobox and the delete button. 
-    */
-   private void createInvitedUserGrid() {
-     /*
-      List<ColumnConfig> invitedUserConfigs = new ArrayList<ColumnConfig>();
-      invitedUserConfigs.add(new ColumnConfig("eMail", "Invited user", 180));
-      
-       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            return createRoleCombo(model, property);
-         }
-      };
-      
-      GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            return createDeleteButton(model, store);
-         }
-      };
-      
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
-      roleColumn.setRenderer(comboRenderer);
-      invitedUserConfigs.add(roleColumn);
-      
-      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
-      actionColumn.setRenderer(buttonRenderer);
-      invitedUserConfigs.add(actionColumn);
-      
-      invitedUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(invitedUserConfigs));
-      ContentPanel pendingContainer = new ContentPanel();
-      pendingContainer.setBodyBorder(false);
-      pendingContainer.setHeading("Pending invitations");
-      pendingContainer.setLayout(new FitLayout());
-      pendingContainer.setSize(440, 150);
-      pendingContainer.add(invitedUsersGrid);
-      insert(pendingContainer, 1);
-      layout();
-      center();
-      */
-   }
-   
-   @UiFactory
-   Grid<UserDTO> createGrid() {
-     Grid<UserDTO> grid = new Grid<UserDTO>(store, cm);
-     return grid;
-   }
-
-
-   /**
-    * Creates the user accessed grid, the grid stores the user that can access the account.
-    * The grid is used for managing the accessed users, except the current user, it has three 
-    * columns: email, role and delete.
-    */
-   private void createAccessUserGrid() {
-      List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
-      /*
-      
-       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            if (cureentUserId != (Long) model.get("oid")) {
-               return createRoleCombo(model, property);
-            } else {
-               return (String) model.get(property);
-            }
-            
-         }
-      };
-      
-      GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            Button deleteButton = createDeleteButton(model, store);
-            if (cureentUserId == (Long) model.get("oid")) {
-               deleteButton.disable();
-               deleteButton.hide();
-            }
-            return deleteButton;
-         }
-      };
-      
-      GridCellRenderer<BeanModel> emailRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            String html = (String) model.get(property);
-            if (cureentUserId == (Long) model.get("oid")) {
-               html += "<b> - me</b>";
-            }
-            return "<span title='" + (String) model.get("userName") + "'>" + html + "</span>";
-         }
-      };
-      
-      ColumnConfig emailColumn = new ColumnConfig("eMail", "OpenRemote user", 180);
-      emailColumn.setSortable(false);
-      emailColumn.setRenderer(emailRenderer);
-      accessUserConfigs.add(emailColumn);
-      
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
-      roleColumn.setSortable(false);
-      roleColumn.setRenderer(comboRenderer);
-      accessUserConfigs.add(roleColumn);
-      
-      ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
-      actionColumn.setSortable(false);
-      actionColumn.setRenderer(buttonRenderer);
-      accessUserConfigs.add(actionColumn);
-      
-      final Grid<UserDTO> accessUsersGrid = new Grid<UserDTO>(new ListStore<UserDTO>(), new ColumnModel(accessUserConfigs)) {
-         @Override
-         protected void afterRender() {
-            super.afterRender();
-            layout();
-            center();
-            this.mask("Loading users...");
-         }
-      };
-      
-//      ContentPanel accessUsersContainer = new ContentPanel();
-//      accessUsersContainer.setBodyBorder(false);
-//      accessUsersContainer.setHeading("Users with account access");
-      accessUsersContainer.setLayout(new FitLayout());
-      accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-//      accessUsersContainer.setSize(440, 150);
-      accessUsersContainer.add(accessUsersGrid);
-      add(accessUsersContainer);
-      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-         public void onSuccess(ArrayList<UserDTO> accessUsers) {
-            if (accessUsers.size() > 0) {
-               accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
-               accessUsersGrid.unmask();
-            }
-         }
-         public void onFailure(Throwable caught) {
-            super.onFailure(caught);
-            accessUsersGrid.unmask();
-         }
-      });
-      */
-   }
-   
-   /**
-    * Creates the role combobox for selecting role.
-    * 
-    * @param model the model
-    * @param property the property
-    * 
-    * @return the simple combo box< string>
-    */
-   /*
-   private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
-      SimpleComboBox<String> combo = new SimpleComboBox<String>();
-      combo.setWidth(182);
-      combo.setForceSelection(true);
-      combo.setEditable(false);
-      combo.setTriggerAction(TriggerAction.ALL);
-      combo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
-      combo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-      combo.setValue(combo.findModel((String) model.get(property)));
-      combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>(){
-         public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
-            final String roleStrs = se.getSelectedItem().getValue();
-            if (!roleStrs.equals(model.get("role"))) {
-               AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((UserDTO)model.getBean()).getOid(), roleStrs, new AsyncSuccessCallback<UserDTO>() {
-                  public void onSuccess(UserDTO userDTO) {
-                     ((UserDTO)model.getBean()).setRole(userDTO.getRole());
-                     Info.display("Change role", "Change role to " + roleStrs + " success.");
-                  }
-               });
-               
-            }
-         }
-         
-      });
-      return combo;
-   }
-      */
-
-   /**
-    * Creates the delete button to delete the user record in the grid.
-    * 
-    * @param model the model
-    * @param store the store
-    * 
-    * @return the button
-    */
-/*
-   private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store) {
-      Button deleteButton = new Button();
-      deleteButton.setIcon(icons.delete());
-      deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((UserDTO)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
-               public void onSuccess(Void result) {
-                  store.remove(model);
-                  Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");
-               }
-            });
-         }
-      });
-      return deleteButton;
-   }
-   */
-
-   /**
-    * The inner class is for inviting a user have the same account, it would send a invitation to the email.
-    */
-/*
-   private class InviteUserWindow extends FormWindow {
-      public InviteUserWindow() {
-         setSize(370, 150);
-         setHeading("Invite user");
-         form.setLabelAlign(LabelAlign.RIGHT);
-         createFields();
-         createButtons(this);
-         add(form);
-         show();
       }
-      */
-      /**
-       * Creates two fields: email address input and role combobox.
-       */
-/*
-      private void createFields() {
-         final TextField<String> emailField = new TextField<String>();
-         emailField.setFieldLabel("Email address");
-         emailField.setAllowBlank(false);
-         emailField.setRegex(Constants.REG_EMAIL);
-         emailField.getMessages().setRegexText("Please input a correct email.");
-         
-         final ComboBoxExt roleList = new ComboBoxExt();
-         roleList.setFieldLabel("Role");
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_ADMIN_DISPLAYNAME, RoleDTO.ROLE_ADMIN_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.setValue(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
-         form.add(emailField);
-         form.add(roleList);
-         
-         form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-            public void handleEvent(FormEvent be) {
-               form.mask("sending email...");
-               AsyncServiceFactory.getUserRPCServiceAsync().inviteUser(emailField.getValue(),
-                     roleList.getValue().get("data").toString(), new AsyncSuccessCallback<UserDTO>() {
-                        public void onSuccess(UserDTO userDTO) {
-                           form.unmask();
-                           fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
-                        }
-                        public void onFailure(Throwable caught) {
-                           super.onFailure(caught);
-                           form.unmask();
-                        }
-                        
-                     });
+    });
+   return rolesCombo;
+  }
+   
+  private ColumnConfig<UserDTO, String> createDeleteColumn(TextButtonCell button, ListStore<UserDTO> store) {
+    ColumnConfig<UserDTO, String> deleteColumn = new ColumnConfig<UserDTO, String>(users.email(), 45, "Delete");
+    deleteColumn.setSortable(false);
+    button.setIcon(icons.delete());
+    button.addSelectHandler(createDeleteSelectHandler(store));
+    deleteColumn.setCell(button);
+    return deleteColumn;
+  }
+   
+  private SelectHandler createDeleteSelectHandler(final ListStore<UserDTO> store) {
+    return new SelectHandler() { 
+      @Override
+      public void onSelect(SelectEvent event) {
+        final UserDTO user = store.get(event.getContext().getIndex());
+        AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(user.getOid(), new AsyncSuccessCallback<Void>() {
+          public void onSuccess(Void result) {
+            store.remove(user);
+            if (store == invitedUsersStore && store.getAll().isEmpty()) {
+              invitedUsersPanel.setVisible(false);
             }
-         });
+            Info.display("Delete user", "Delete user " + user.getUsername() + " success.");
+          }
+        });
       }
-         */
-      
-      /**
-       * Creates two buttons to send invitation or cancel.
-       * 
-       * @param window the window
-       */
-      /*
-      private void createButtons(final InviteUserWindow window) {
-         Button send = new Button("Send invitation");
-         send.addSelectionListener(new FormSubmitListener(form, send));
-         Button cancel = new Button("Cancel");
-         cancel.addSelectionListener(new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent ce) {
-               window.hide();
-            }
-         });
-         form.addButton(send);
-         form.addButton(cancel);
-      }
-   }
-      */
+    };
+  }
 }

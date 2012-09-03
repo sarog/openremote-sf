@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.useraccount.domain.UserDTO;
 
 /**
@@ -73,8 +74,9 @@ public interface UserService {
     * @param currentUser the current user
     * 
     * @return the user
+    * @throws UserInvitationException 
     */
-   UserDTO inviteUser(String email, String role, User currentUser);
+   UserDTO inviteUser(String email, String role, User currentUser) throws UserInvitationException;
 
    
    /**
