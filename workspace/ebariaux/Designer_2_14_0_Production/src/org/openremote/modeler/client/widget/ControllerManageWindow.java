@@ -26,7 +26,8 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.useraccount.domain.ControllerDTO;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -40,6 +41,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
@@ -116,76 +118,51 @@ public class ControllerManageWindow extends Dialog {
     * columns: MACAddress and delete.
     */
    private void createLinkedControllerGrid() {
-      List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
-      
-       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-               return (String) model.get(property);
-         }
-      };
+      List<ColumnConfig> linkedControllerConfigs = new ArrayList<ColumnConfig>();
+      linkedControllerConfigs.add(new ColumnConfig("macAddress", "MAC Address", 180));
       
       GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            Button deleteButton = createDeleteButton(model, store);
-            return deleteButton;
-         }
+        public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
+              final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
+           Button deleteButton = createDeleteButton(model, store);
+           return deleteButton;
+        }
       };
-      
-      GridCellRenderer<BeanModel> emailRenderer = new GridCellRenderer<BeanModel>() {
-         public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
-               final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            String html = (String) model.get(property);
-            return "<span title='" + (String) model.get("userName") + "'>" + html + "</span>";
-         }
-      };
-      
-      ColumnConfig emailColumn = new ColumnConfig("eMail", "OpenRemote user", 180);
-      emailColumn.setSortable(false);
-      emailColumn.setRenderer(emailRenderer);
-      accessUserConfigs.add(emailColumn);
-      
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
-      roleColumn.setSortable(false);
-      roleColumn.setRenderer(comboRenderer);
-      accessUserConfigs.add(roleColumn);
-      
       ColumnConfig actionColumn = new ColumnConfig("delete", "Delete", 50);
       actionColumn.setSortable(false);
       actionColumn.setRenderer(buttonRenderer);
-      accessUserConfigs.add(actionColumn);
+      linkedControllerConfigs.add(actionColumn);
       
-      final EditorGrid<BeanModel> accessUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(accessUserConfigs)) {
+      final EditorGrid<BeanModel> linkedControllerGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(linkedControllerConfigs)) {
          @Override
          protected void afterRender() {
             super.afterRender();
             layout();
             center();
-            this.mask("Loading users...");
+            this.mask("Loading linked controller...");
          }
       };
       
       ContentPanel accessUsersContainer = new ContentPanel();
       accessUsersContainer.setBodyBorder(false);
-      accessUsersContainer.setHeading("Users with account access");
+      accessUsersContainer.setHeading("Linked controller");
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
       accessUsersContainer.setSize(440, 150);
-      accessUsersContainer.add(accessUsersGrid);
+      accessUsersContainer.add(linkedControllerGrid);
       add(accessUsersContainer);
-//      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
-//         public void onSuccess(ArrayList<UserDTO> accessUsers) {
-//            if (accessUsers.size() > 0) {
-//               accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
-//               accessUsersGrid.unmask();
-//            }
-//         }
-//         public void onFailure(Throwable caught) {
-//            super.onFailure(caught);
-//            accessUsersGrid.unmask();
-//         }
-//      });
+      AsyncServiceFactory.getLinkControllerRPCServiceAsync().getLinkedControllerDTOs(new AsyncSuccessCallback<ArrayList<ControllerDTO>>() {
+         public void onSuccess(ArrayList<ControllerDTO> linkedControllers) {
+            if (linkedControllers.size() > 0) {
+              //linkedControllerGrid.getStore().add(DTOHelper.createModels(linkedControllers));
+              linkedControllerGrid.unmask();
+            }
+         }
+         public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            linkedControllerGrid.unmask();
+         }
+      });
    }
    
 
@@ -202,12 +179,12 @@ public class ControllerManageWindow extends Dialog {
       deleteButton.setIcon(icons.controllerDeleteIcon());
       deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-//            AsyncServiceFactory.getUserRPCServiceAsync().deleteController(((ControllerDTO)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
-//               public void onSuccess(Void result) {
-//                  store.remove(model);
-//                  Info.display("Delete controller", "Delete controller" + model.get("macAddress").toString() + " success.");
-//               }
-//            });
+            AsyncServiceFactory.getLinkControllerRPCServiceAsync().deleteController(((ControllerDTO)model.getBean()).getOid(), new AsyncSuccessCallback<Void>() {
+               public void onSuccess(Void result) {
+                  store.remove(model);
+                  Info.display("Delete controller", "Delete controller '" + model.get("macAddress").toString() + "' success.");
+               }
+            });
          }
       });
       return deleteButton;
@@ -232,23 +209,23 @@ public class ControllerManageWindow extends Dialog {
        */
       private void createFields() {
          final TextField<String> macAddressField = new TextField<String>();
-         macAddressField.setFieldLabel("Controller MAC address");
+         macAddressField.setFieldLabel("MAC address");
          macAddressField.setAllowBlank(false);
          form.add(macAddressField);
          
          form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
             public void handleEvent(FormEvent be) {
                form.mask("Adding controller ...");
-//               AsyncServiceFactory.getUserRPCServiceAsync().addController(macAddressField.getValue(), new AsyncSuccessCallback<UserDTO>() {
-//                    public void onSuccess(UserDTO userDTO) {
-//                       form.unmask();
-//                       fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(userDTO));
-//                    }
-//                    public void onFailure(Throwable caught) {
-//                       super.onFailure(caught);
-//                       form.unmask();
-//                    }
-//                 });
+               AsyncServiceFactory.getLinkControllerRPCServiceAsync().linkController(macAddressField.getValue(), new AsyncSuccessCallback<ControllerDTO>() {
+                    public void onSuccess(ControllerDTO controller) {
+                       form.unmask();
+                       fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(controller));
+                    }
+                    public void onFailure(Throwable caught) {
+                       super.onFailure(caught);
+                       form.unmask();
+                    }
+                 });
             }
          });
       }
