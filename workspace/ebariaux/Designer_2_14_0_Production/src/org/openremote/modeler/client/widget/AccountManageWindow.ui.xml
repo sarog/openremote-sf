@@ -7,16 +7,33 @@
 
 	<ui:with type="org.openremote.modeler.client.icon.IconResources" field="icons" />
 
-	<gxt:Window pixelSize="452, 280" minHeight="280" modal="true" blinkModal="true" headingText="Account management">
-		<container:VerticalLayoutContainer>
-			<container:child>
-				<button:TextButton text="Invite other users" icon="{icons.add}" ui:field="inviteUserButton" />
-			</container:child>
-			<container:child>
-			  <gxt:ContentPanel headingText="Users with account access" bodyBorder="false" pixelSize="440, 150">
-          <grid:Grid />
-			  </gxt:ContentPanel>
-			</container:child>
-		</container:VerticalLayoutContainer>
+  <ui:with type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData" field="northData" />
+  <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="topPanelData"/>
+  <ui:with type="com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData" field="bottomPanelData"/>
+
+	<gxt:Window pixelSize="452, 280" minHeight="280" minWidth="400" modal="true" blinkModal="true" headingText="Account management">
+	  <container:BorderLayoutContainer borders="true">
+      <container:north layoutData="{northData}">
+        <container:HBoxLayoutContainer hBoxLayoutAlign="MIDDLE" pack="START">
+          <container:child>
+            <button:TextButton text="Invite other users" icon="{icons.add}" ui:field="inviteUserButton" />
+          </container:child>
+        </container:HBoxLayoutContainer>
+      </container:north>
+      <container:center>
+		    <container:VerticalLayoutContainer>
+		      <container:child layoutData="{topPanelData}">
+		        <gxt:ContentPanel headingText="Pending invitations" bodyBorder="false" ui:field="invitedUsersPanel">
+		          <grid:Grid ui:field="invitedUsersGrid"/>
+		        </gxt:ContentPanel>
+		      </container:child>
+		      <container:child layoutData="{bottomPanelData}">
+		        <gxt:ContentPanel headingText="Users with account access" bodyBorder="false">
+		          <grid:Grid ui:field="accessUsersGrid"/>
+		        </gxt:ContentPanel>
+		      </container:child>
+		    </container:VerticalLayoutContainer>
+      </container:center>
+    </container:BorderLayoutContainer>
 	</gxt:Window>
 </ui:UiBinder>
