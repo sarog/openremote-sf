@@ -19,11 +19,13 @@
 */
 package org.openremote.modeler.client.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
@@ -38,11 +40,14 @@ import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
+import org.openremote.modeler.client.rpc.DeviceDiscoveryRPCService;
+import org.openremote.modeler.client.rpc.DeviceDiscoveryRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.ControllerManageWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.CreateDeviceWizardWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -57,7 +62,9 @@ import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -196,6 +203,28 @@ public class ApplicationView implements View {
                     }
                  }
               });
+               
+               
+              final DeviceDiscoveryRPCServiceAsync auth = (DeviceDiscoveryRPCServiceAsync) GWT.create(DeviceDiscoveryRPCService.class);
+              auth.loadNewDevices(new AsyncCallback<ArrayList<DiscoveredDeviceDTO>>() {
+                  public void onFailure(Throwable caught) {
+                     MessageBox.alert("Info", caught.getMessage(), null);
+                  }
+                  public void onSuccess(final ArrayList<DiscoveredDeviceDTO> result)
+                  {
+                    if (result.size() > 0) {
+                      MessageBox.confirm("New devices available", "Your controller discovered new devices.<br>Do you want to configure them now?", new Listener<MessageBoxEvent>() {
+                        @Override
+                        public void handleEvent(MessageBoxEvent be)
+                        {
+                          if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                            new CreateDeviceWizardWindow(result);
+                          }
+                        }
+                      });
+                    }
+                  }
+              });
             } else {
                Window.open("login.jsp", "_self", null);
             }
@@ -227,6 +256,9 @@ public class ApplicationView implements View {
          if (roles.contains(Role.ROLE_ADMIN)) {
             applicationToolBar.add(createAccountManageButton());
             applicationToolBar.add(createControllerManageButton());
+            SeparatorToolItem separatorItem2 = new SeparatorToolItem();
+            separatorItem2.setWidth("20");
+            applicationToolBar.add(separatorItem2);
          }
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
