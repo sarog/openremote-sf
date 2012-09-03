@@ -19,19 +19,15 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.app.VelocityEngine;
 import org.hibernate.Hibernate;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -40,23 +36,29 @@ import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.openremote.rest.GenericResourceResultWithErrorMessage;
+import org.openremote.useraccount.domain.AccountDTO;
+import org.openremote.useraccount.domain.RoleDTO;
+import org.openremote.useraccount.domain.UserDTO;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.velocity.VelocityEngineUtils;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 /**
  * TODO
  * 
  * @author Dan 2009-7-14
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class UserServiceImpl extends BaseAbstractService<User> implements UserService {
@@ -69,52 +71,31 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
 
    private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
-   private JavaMailSenderImpl mailSender;
-   
-   private VelocityEngine velocityEngine;
-   
    private Configuration configuration;
    
    /**
     * {@inheritDoc}
     */
-   public void initRoles() {
-      boolean hasDesignerRole = false;
-      boolean hasModelerRole = false;
-      boolean hasAdminRole = false;
-      List<Role> allRoles = genericDAO.loadAll(Role.class);
-      for (Role r : allRoles) {
-         if (r.getName().equals(Role.ROLE_DESIGNER)) {
-            hasDesignerRole = true;
-         } else if (r.getName().equals(Role.ROLE_MODELER)) {
-            hasModelerRole = true;
-         } else if (r.getName().equals(Role.ROLE_ADMIN)) {
-            hasAdminRole = true;
-         }
-      }
-      if (!hasDesignerRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_DESIGNER);
-         genericDAO.save(r);
-      }
-      if (!hasModelerRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_MODELER);
-         genericDAO.save(r);
-      }
-      if (!hasAdminRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_ADMIN);
-         genericDAO.save(r);
-      }
-      
-   }
-   
-   /**
-    * {@inheritDoc}
-    */
-   public User getUserById(long id) {
+    public User getUserById(long id) {
       return genericDAO.getById(User.class, id);
+    }
+   
+   public UserDTO getUserDTOById(long id) {
+     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + id);
+     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+     Representation r = cr.get();
+     String str;
+     try { 
+       str = r.getText();
+     } catch (IOException e)
+     {
+       throw new RuntimeException(e);
+     }
+     GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
+     if (res.getErrorMessage() != null) {
+       throw new RuntimeException(res.getErrorMessage());
+     }
+     return (UserDTO)res.getResult(); 
    }
    
    /**
@@ -128,36 +109,78 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
-    @Transactional public boolean createUserAccount(String username, String password, String email) {
+    public boolean createUserAccount(String username, String password, String email) {
       if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
       }
-      User user = new User();
-      user.setUsername(username);
-      user.setRawPassword(password);
-      user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
-      user.setEmail(email);
       if (isUsernameAvailable(username)) {
-         user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_ADMIN));
-         saveUser(user);
-         return sendRegisterActivationEmail(user);
+         UserDTO user = new UserDTO();
+         user.setUsername(username);
+         user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
+         user.setEmail(email);
+         user.setRegisterTime(new Timestamp(System.currentTimeMillis()));
+         user.setAccount(new AccountDTO());
+         user.addRole(new RoleDTO(Role.ROLE_ADMIN));
+         saveUserDTO(user);
+         return true;
       } else {
          return false;
       }
    }
 
     /**
+     * {@inheritDoc}
+     */
+     @Transactional public void saveUser(User user) {
+         genericDAO.save(user.getAccount());
+         genericDAO.save(user);
+     }
+     
+    /**
     * {@inheritDoc}
     */
-    @Transactional public void saveUser(User user) {
-        genericDAO.save(user.getAccount());
-        genericDAO.save(user);
+    private void saveUserDTO(UserDTO user) {
+      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
+      Representation r = cr.post(rep);
+      String str;
+      try
+      {
+        str = r.getText();
+      } catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", Long.class).deserialize(str); 
+      if (res.getErrorMessage() != null) {
+        throw new RuntimeException(res.getErrorMessage());
+      }
+      Long addedUserOID = (Long)res.getResult();
+      user.setOid(addedUserOID);
     }
+    
     /**
      * {@inheritDoc}
      */
-    @Transactional public void updateUser(User user) {
-       genericDAO.update(user);
+    public void updateUser(UserDTO user) {
+      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
+      Representation r = cr.put(rep);
+
+      String str = null;
+      try
+      {
+        str = r.getText();
+      } catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", Long.class).deserialize(str); 
+      if (res.getErrorMessage() != null) {
+        throw new RuntimeException(res.getErrorMessage());
+      }
     }
     
     private void setDefaultConfigsForAccount(Account account){
@@ -170,114 +193,24 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
        genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);
     }
 
-
-  /**
-   * TODO
-   */
-  public boolean sendRegisterActivationEmail(final User user)
-  {
-    // TODO : use common log facade
-
-    final Logger mailLog = Logger.getLogger(ACTIVATION_MAIL_LOG_CATEGORY);
-
-    if (user == null || user.getOid() == 0 ||
-        StringUtils.isEmpty(user.getEmail()) ||
-        StringUtils.isEmpty(user.getUsername()) ||
-        StringUtils.isEmpty(user.getPassword()))
-    {
-      mailLog.warn(
-          "Attempted to send email with incomplete user information : " + user
-      );
-
-      return false;
-    }
-
-
-    MimeMessagePreparator preparator = new MimeMessagePreparator()
-    {
-      public void prepare(MimeMessage mimeMessage) throws Exception
-      {
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-        message.setSubject("OpenRemote Designer Account Registration");
-        message.setTo(user.getEmail());
-        message.setFrom(mailSender.getUsername());
-
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("user", user);
-
-//        String rpwd = user.getRawPassword();
-//        StringBuffer maskPwd = new StringBuffer();
-//        maskPwd.append(rpwd.substring(0, 1));
-//
-//        for (int i = 0; i < rpwd.length() - 2; i++)
-//        {
-//          maskPwd.append("*");
-//        }
-//
-//        maskPwd.append(rpwd.substring(rpwd.length() - 1));
-//        model.put("maskPassword", maskPwd.toString());
-        model.put("webapp", configuration.getWebappServerRoot());
-
-        // TODO : this needs to be fixed
-        model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
-
-        String text = VelocityEngineUtils.mergeTemplateIntoString(
-            velocityEngine,
-            Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME,
-            "UTF-8",
-            model
-        );
-
-        message.setText(text, true);
-      }
-    };
-
-
-    try
-    {
-      mailSender.send(preparator);
-
-      mailLog.info(
-          "Sent account registration email to " + user.getEmail() +
-          "(User : " + user.getOid() + ", " + user.getUsername() + ")."
-      );
-
-      return true;
-    }
-
-    catch (Throwable t)
-    {
-      mailLog.error(
-          "\n\n-----------------------------------------------------------\n\n" +
-          "FAILED to send registration email to " + user.getEmail() +
-          "(User : " + user.getOid() + ", " +user.getUsername() + ") : " +
-          t.getMessage() +
-          "\n\n-----------------------------------------------------------\n\n", t
-      );
-
-      return false;
-    }
-  }
-
-
     /**
     * {@inheritDoc}
     */
    @Override
-   @Transactional public boolean activateUser(String userOid, String aid) {
+   public boolean activateUser(String userOid, String aid) {
       long id = 0;
       try {
          id = Long.valueOf(userOid);
       } catch (NumberFormatException e) {
          return false;
       }
-      User user = getUserById(id);
+      UserDTO user = getUserDTOById(id);
       if (user != null && aid != null) {
          if (new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()).equals(aid)) {
             user.setValid(true);
             updateUser(user);
-            setDefaultConfigsForAccount(user.getAccount());
+            Account account = getUserByUsername(user.getUsername()).getAccount();
+            setDefaultConfigsForAccount(account);
             return true;
          }
       }
@@ -285,15 +218,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
    
    public boolean isUsernameAvailable(String username) {
-      return genericDAO.getByNonIdField(User.class, "username", username) == null;
-   }
-
-   public void setMailSender(JavaMailSenderImpl mailSender) {
-      this.mailSender = mailSender;
-   }
-
-   public void setVelocityEngine(VelocityEngine velocityEngine) {
-      this.velocityEngine = velocityEngine;
+      return getUserByUsername(username) == null;
    }
 
    public void setConfiguration(Configuration configuration) {
@@ -302,94 +227,38 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
 
    public User getCurrentUser() {
       String username = SecurityContextHolder.getContext().getAuthentication().getName();
+      User user = getUserByUsername(username);
+      return user;
+   }
+   
+   private User getUserByUsername(String username) {
       return genericDAO.getByNonIdField(User.class, "username", username);
+    }
+
+   @Override
+   public User inviteUser(String email, String roleDisplayName, User currentUser) {
+     StringBuffer url = new StringBuffer("user/" + currentUser.getOid() + "/inviteUser");
+     url.append("?inviteeEmail=" + email);
+     url.append("&inviteeRole" + convertRoleDisplayStringToRoleString(roleDisplayName));
+     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + url.toString());
+     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+     Representation r = cr.post(null);
+     String str;
+     try { 
+       str = r.getText();
+     } catch (IOException e)
+     {
+       throw new RuntimeException(e);
+     }
+     GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
+     if (res.getErrorMessage() != null) {
+       throw new RuntimeException(res.getErrorMessage());
+     }
+     UserDTO inviteeDTO = (UserDTO)res.getResult();
+     User invitee = getUserById(inviteeDTO.getOid());
+     return invitee; 
    }
-
-   @Transactional public User inviteUser(String email, String role, User currentUser) {
-      User invitee = null;
-      if (isUsernameAvailable(email)) {
-         invitee = new User(currentUser.getAccount());
-         invitee.setEmail(email);
-         invitee.setUsername(email);
-         invitee.setPassword("pending password");
-         convertRoleStringToRole(role, invitee, genericDAO.loadAll(Role.class));
-         genericDAO.save(invitee);
-         if (!sendInvitation(invitee, currentUser)) {
-            throw new UserInvitationException("Failed to send invitation.");
-         }
-         return invitee;
-      } else {
-         invitee = genericDAO.getByNonIdField(User.class, "username", email);
-         if (!sendInvitation(invitee, currentUser)) {
-            throw new UserInvitationException("Failed to send invitation.");
-         }
-         return null;
-      }
-   }
-
-  /**
-   * TODO
-   */
-  public boolean sendInvitation(final User invitee, final User currentUser)
-  {
-    if (invitee == null || invitee.getOid() == 0 ||
-        StringUtils.isEmpty(invitee.getEmail()))
-    {
-      return false;
-    }
-
-    // TODO : share some basics with sendRegisterActivationEmail(), e.g. aid handling
-
-    MimeMessagePreparator preparator = new MimeMessagePreparator()
-    {
-      public void prepare(MimeMessage mimeMessage) throws Exception
-      {
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        message.setSubject("Invitation to Share an OpenRemote Designer Account");
-        message.setTo(invitee.getEmail());
-        message.setFrom(mailSender.getUsername());
-
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("uid", invitee.getOid());
-        model.put("role", invitee.getRole());
-        model.put("cid", currentUser.getOid());
-        model.put("host", currentUser.getEmail());
-        model.put("webapp", configuration.getWebappServerRoot());
-
-        // TODO : this needs to be fixed
-        model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getEmail(), currentUser.getPassword()));
-
-        String text = VelocityEngineUtils.mergeTemplateIntoString(
-            velocityEngine,
-            Constants.REGISTRATION_INVITATION_EMAIL_VM_NAME,
-            "UTF-8",
-            model
-        );
-
-        message.setText(text, true);
-      }
-    };
-
-    try
-    {
-      mailSender.send(preparator);
-
-      Logger mailLog = Logger.getLogger(SHARED_ACCOUNT_MAIL_LOG_CATEGORY);
-      mailLog.info("Sent 'Modeler Account Invitation' email to " + invitee.getEmail());
-
-      return true;
-    }
-
-    catch (Throwable t)
-    {
-      Logger mailLog = Logger.getLogger(SHARED_ACCOUNT_MAIL_LOG_CATEGORY);
-      mailLog.error("Can't send 'Modeler Account Invitation' email", t);
-
-      return false;
-    }
-  }
-
-
+   
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
       long uid = 0;
       long hid = 0;
@@ -403,8 +272,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       } catch (NumberFormatException e) {
          return false;
       }
-      User user = getUserById(uid);
-      User hostUser = getUserById(hid);
+      UserDTO user = getUserDTOById(uid);
+      UserDTO hostUser = getUserDTOById(hid);
       if (user != null && hostUser != null && aid != null) {
          if (new Md5PasswordEncoder().encodePassword(user.getEmail(), hostUser.getPassword()).equals(aid)) {
             return true;
@@ -413,7 +282,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
 
-   @Transactional public boolean createInviteeAccount(String userOid, String username, String password, String email) {
+   public boolean createInviteeAccount(String userOid, String username, String password, String email) {
       if (StringUtils.isEmpty(userOid) || StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
       }
@@ -424,12 +293,12 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          return false;
       }
       if (isUsernameAvailable(username)) {
-         User user = getUserById(id);
+         UserDTO user = getUserDTOById(id);
          user.setValid(true);
          user.setUsername(username);
-         user.setRawPassword(password);
          user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
          user.setEmail(email);
+         user.setRegisterTime(new Timestamp(System.currentTimeMillis()));
          updateUser(user);
          return true;
       } else {
@@ -450,29 +319,56 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return invitees;
    }
 
-   @Transactional public User updateUserRoles(long uid, String roles) {
-      User user = getUserById(uid);
+   public User updateUserRoles(long uid, String roles) {
+      UserDTO user = getUserDTOById(uid);
       user.getRoles().clear();
       convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
       Hibernate.initialize(user.getRoles());
-      return user;
+      return null;
    }
 
-   private void convertRoleStringToRole(String roles, User user, List<Role> allRoles) {
+   private void convertRoleStringToRole(String roles, UserDTO user, List<Role> allRoles) {
       for (Role role : allRoles) {
          if(role.getName().equals(Role.ROLE_ADMIN) && roles.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
-            user.addRole(role);
+            user.addRole(new RoleDTO(Role.ROLE_ADMIN, role.getOid()));
          } else if (role.getName().equals(Role.ROLE_MODELER) && roles.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
-            user.addRole(role);
+            user.addRole(new RoleDTO(Role.ROLE_MODELER, role.getOid()));
          } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
-            user.addRole(role);
+            user.addRole(new RoleDTO(Role.ROLE_DESIGNER, role.getOid()));
          }
       }
    }
+   
+   private String convertRoleDisplayStringToRoleString(String roleDisplayName) {
+     List<Role> allRoles = genericDAO.loadAll(Role.class);
+     for (Role role : allRoles) {
+        if(role.getName().equals(Role.ROLE_ADMIN) && roleDisplayName.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
+           return role.getName();
+        } else if (role.getName().equals(Role.ROLE_MODELER) && roleDisplayName.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
+          return role.getName();
+        } else if (role.getName().equals(Role.ROLE_DESIGNER) && roleDisplayName.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
+          return role.getName();
+        }
+     }
+     return null;
+  }
 
-   @Transactional public void deleteUser(long uid) {
-      User user = getUserById(uid);
-      genericDAO.delete(user);
+   public void deleteUser(long uid) {
+      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + uid);
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+      Representation result = cr.delete();
+      String str;
+      try
+      {
+        str = result.getText();
+      } catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str);
+      if (res.getErrorMessage() != null) {
+        throw new RuntimeException(res.getErrorMessage());
+      }
    }
 
    public List<User> getAccountAccessUsers(User currentUser) {
@@ -490,49 +386,37 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return accessUsers;
    }
 
-   @Transactional public User forgetPassword(String username) {
-      final User user = genericDAO.getByNonIdField(User.class, "username", username);
-      final String passwordToken = UUID.randomUUID().toString();
-      
-      MimeMessagePreparator preparator = new MimeMessagePreparator() {
-         @SuppressWarnings("unchecked")
-         public void prepare(MimeMessage mimeMessage) throws Exception {
-            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            message.setSubject("OpenRemote Password Assistance");
-            message.setTo(user.getEmail());
-            message.setFrom(mailSender.getUsername());
-            Map model = new HashMap();
-            model.put("webapp", configuration.getWebappServerRoot());
-            model.put("username", user.getUsername());
-            model.put("uid", user.getOid());
-            model.put("aid", passwordToken);
-            String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                 Constants.FORGET_PASSWORD_EMAIL_VM_NAME, "UTF-8", model);
-            message.setText(text, true);
-         }
-      };
-      try {
-         this.mailSender.send(preparator);
-         log.info("Sent 'Reset password' email to " + user.getEmail());
-         user.setToken(passwordToken);
-         updateUser(user);
-         return user;
-      } catch (MailException e) {
-         log.error("Can't send 'Reset password' email", e);
-         return null;
-      }
+
+   @Override
+   public UserDTO forgotPassword(String username)
+   {
+     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + username + "/forgotPassword");
+     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+     Representation r = cr.get();
+     String str;
+     try { 
+       str = r.getText();
+     } catch (IOException e)
+     {
+       throw new RuntimeException(e);
+     }
+     GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
+     if (res.getErrorMessage() != null) {
+       throw new RuntimeException(res.getErrorMessage());
+     }
+     return (UserDTO)res.getResult(); 
    }
 
-   public User checkPasswordToken(long uid, String passwordToken) {
-      User user = getUserById(uid);
+   public UserDTO checkPasswordToken(long uid, String passwordToken) {
+      UserDTO user = getUserDTOById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
          return user;
       }
       return null;
    }
 
-   @Transactional public boolean resetPassword(long uid, String password, String passwordToken) {
-      User user = getUserById(uid);
+   public boolean resetPassword(long uid, String password, String passwordToken) {
+      UserDTO user = getUserDTOById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
          user.setPassword(new Md5PasswordEncoder().encodePassword(password, user.getUsername()));
          user.setToken(null);
@@ -541,5 +425,6 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
       return false;
    }
+
    
 }

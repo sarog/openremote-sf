@@ -23,6 +23,11 @@
 		<property name="webappServerRoot" value="${webapp.server.root}" />
 		<property name="controllerConfigPath" value="${controller.config.xml.path}" />
 		<property name="controllerConfigXsdPath" value="${controller.config.xsd.path}" />
+		
+		<property name="deviceDiscoveryServiceRESTRootUrl" value="${deviceDiscoveryService.REST.Root.Url}" />
+		<property name="userAccountServiceRESTRootUrl" value="${userAccountService.REST.Root.Url}" />
+		<property name="userAccountServiceRESTUsername" value="${userAccountService.REST.username}" />
+		<property name="userAccountServiceRESTPassword" value="${userAccountService.REST.password}" />
 	</bean>
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
@@ -65,29 +70,6 @@
 	</bean>
 
 	<bean id="genericDAO" class="org.openremote.modeler.dao.GenericDAO"></bean>
-	
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-  		<property name="host" value="${mail.sender.host}" /> 
-  		<property name="port" value="${mail.sender.port}" /> 
-  		<property name="username" value="${mail.sender.username}" /> 
-<!--  		<property name="password" value="${mail.sender.password}" />  -->
-		<property name="javaMailProperties">
-			<props>
-	  			<!--<prop key="mail.smtp.auth">${mail.smtp.auth.on}</prop>-->
-	  			<prop key="mail.smtp.timeout">{mail.smtp.timeout}</prop> 
-	  		</props>
-  		</property>
-  	</bean>
-
-	<bean id="velocityEngine"
-		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-		<property name="resourceLoaderPath" value="/WEB-INF/"></property>
-		<property name="velocityProperties">
-			<value>resource.loader=class
-				class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
-			</value>
-		</property>
-	</bean>
 
   <bean id="dispatch" class="net.customware.gwt.dispatch.server.spring.SpringDispatch">
     <constructor-arg index="0" ref="registry"/>

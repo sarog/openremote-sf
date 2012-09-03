@@ -32,6 +32,12 @@ public class Configuration {
    
    private String irServiceRESTRootUrl;
 
+   private String deviceDiscoveryServiceRESTRootUrl;
+   private String userAccountServiceRESTRootUrl;
+   private String userAccountServiceRESTUsername;
+   private String userAccountServiceRESTPassword;
+   
+   
    /** The relative path of panel xsd. 
     *  e.g.: "/panel-2.0-M7.xsd" 
     */
@@ -120,5 +126,47 @@ public class Configuration {
    public void setControllerConfigXsdPath(String controllerConfigXsdPath) {
       this.controllerConfigXsdPath = controllerConfigXsdPath;
    }
+
+  public String getDeviceDiscoveryServiceRESTRootUrl()
+  {
+    return deviceDiscoveryServiceRESTRootUrl;
+  }
+
+  public void setDeviceDiscoveryServiceRESTRootUrl(String deviceDiscoveryServiceRESTRootUrl)
+  {
+    this.deviceDiscoveryServiceRESTRootUrl = deviceDiscoveryServiceRESTRootUrl;
+  }
+
+  public String getUserAccountServiceRESTRootUrl()
+  {
+    return userAccountServiceRESTRootUrl;
+  }
+
+  public void setUserAccountServiceRESTRootUrl(String userAccountServiceRESTRootUrl)
+  {
+    this.userAccountServiceRESTRootUrl = userAccountServiceRESTRootUrl;
+  }
+
+  public String getUserAccountServiceRESTUsername()
+  {
+    return userAccountServiceRESTUsername;
+  }
+
+  public void setUserAccountServiceRESTUsername(String userAccountServiceRESTUsername)
+  {
+    this.userAccountServiceRESTUsername = userAccountServiceRESTUsername;
+  }
+
+  public String getUserAccountServiceRESTPassword()
+  {
+    return userAccountServiceRESTPassword;
+  }
+
+  public void setUserAccountServiceRESTPassword(String userAccountServiceRESTPassword)
+  {
+    this.userAccountServiceRESTPassword = userAccountServiceRESTPassword;
+  }
+   
+   
    
 }
