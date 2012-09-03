@@ -62,4 +62,13 @@ public interface IconResources extends ClientBundle {
   
   @Source("delete.png")
   ImageResource delete();
+  
+  
+  
+  
+  // Also in Icons
+  
+  @Source("add.png")
+  ImageResource add();
+
 }

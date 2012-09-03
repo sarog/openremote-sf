@@ -22,69 +22,125 @@ package org.openremote.modeler.client.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.UserDTO;
+import org.openremote.useraccount.domain.UserDTO;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
-import com.extjs.gxt.ui.client.Style.IconAlign;
-import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FormEvent;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
-import com.extjs.gxt.ui.client.event.SelectionChangedListener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
-import com.extjs.gxt.ui.client.widget.form.SimpleComboBox;
-import com.extjs.gxt.ui.client.widget.form.SimpleComboValue;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
-import com.extjs.gxt.ui.client.widget.grid.ColumnData;
-import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
-import com.extjs.gxt.ui.client.widget.grid.EditorGrid;
-import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.widget.core.client.Window;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
+import com.sencha.gxt.widget.core.client.grid.ColumnModel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
 
 /**
  * This window is for managing users that with the same account, except for the current user.
  */
-public class AccountManageWindow extends Dialog {
-   private Icons icons = GWT.create(Icons.class);
-   
+public class AccountManageWindow extends Window {  
+  
+//  private Icons icons = GWT.create(Icons.class);
+  
+  private static AccountManageWindowUiBinder uiBinder = GWT.create(AccountManageWindowUiBinder.class);
+
+  interface UserDTOProvider extends PropertyAccess<UserDTO> {    
+    @Path("oid")
+    ModelKeyProvider<UserDTO> key();
+    
+    ValueProvider<UserDTO, String> username();
+    ValueProvider<UserDTO, String> email();
+  }
+  
+  private UserDTOProvider users = GWT.create(UserDTOProvider.class);
+
+  interface AccountManageWindowUiBinder extends UiBinder<Widget, AccountManageWindow> {
+  }
+  
+  @UiFactory
+  Window itself() {
+    return this;
+  }
+
+  @UiField
+  TextButton inviteUserButton;
+     
    /** The invited users grid.
     *  The user has been invited, but not accept the invitation.
     */
-   private EditorGrid<BeanModel> invitedUsersGrid = null;
+//   private Grid<UserDTO> invitedUsersGrid = null;
+   
    private long cureentUserId = 0;
+   
+   private ColumnModel<UserDTO> cm;
+   private ListStore<UserDTO> store;
+   
    public AccountManageWindow(long cureentUserId) {
       this.cureentUserId = cureentUserId;
-      setHeading("Account management");
-      setHideOnButtonClick(true);
-      setButtonAlign(HorizontalAlignment.CENTER);
-      setAutoHeight(true);
-      setButtons("");
-      setWidth(452);
-      setMinHeight(280);
-      addInviteUserButton();
-      addInvitedUsers();
-      createAccessUserGrid();
+      
+//      setButtonAlign(HorizontalAlignment.CENTER);
+//      setAutoHeight(true);
+
+      
+//      addInvitedUsers();
+//      createAccessUserGrid();
+
+    ColumnConfig<UserDTO, String> emailColumn = new ColumnConfig<UserDTO, String>(users.email(), 180, "OpenRemote user");
+    emailColumn.setSortable(false);
+    emailColumn.setCell(new AbstractCell<String>() {
+      @Override
+      public void render(com.google.gwt.cell.client.Cell.Context context, String value, SafeHtmlBuilder sb) {
+        UserDTO user = store.findModelWithKey((String)context.getKey());
+        sb.appendHtmlConstant("<span title='");
+        sb.appendEscaped(user.getUsername());
+        sb.appendHtmlConstant("'>");
+        sb.appendEscaped(value);
+        if (AccountManageWindow.this.cureentUserId == Long.parseLong((String)context.getKey())) {
+          sb.appendHtmlConstant("<b> - me </b>");
+        }
+        sb.appendHtmlConstant("</span>");
+      }
+    });
+     List<ColumnConfig<UserDTO, ?>> l = new ArrayList<ColumnConfig<UserDTO, ?>>();
+     l.add(emailColumn);
+      //l.add(fileNameColumn);
+     cm = new ColumnModel<UserDTO>(l);
+     store = new ListStore<UserDTO>(users.key());
+//      store.addSortInfo(new StoreSortInfo<UserDTO>(assets.name(), SortDir.ASC));
+
+      uiBinder.createAndBindUi(this);
+      
+      AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
+        @Override
+        public void onSuccess(ArrayList<UserDTO> accessUsers) {
+          store.addAll(accessUsers);
+
+        /*
+        if (accessUsers.size() > 0) {
+          accessUsersGrid.getStore().add(DTOHelper.createModels(accessUsers));
+          accessUsersGrid.unmask();
+        }
+        */          
+          
+          
+        }
+      });
+
+      
+      
+      
+
       show();
    }
    
@@ -93,32 +149,27 @@ public class AccountManageWindow extends Dialog {
     * After submit the window's data, there would send a invitation to the email, and the invited
     * user grid would be insert a record.  
     */
-   private void addInviteUserButton() {
-      Button inviteUserButton = new Button("Invite other users");
-      inviteUserButton.setIcon(icons.add());
-      inviteUserButton.setIconAlign(IconAlign.LEFT);
-      inviteUserButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
-         public void componentSelected(ButtonEvent ce) {
-            final InviteUserWindow inviteUserWindow = new InviteUserWindow();
-            inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               public void afterSubmit(SubmitEvent be) {
-                  inviteUserWindow.hide();
-                  UserDTO userDTO = be.getData();
-                  if (userDTO != null) {
-                     if (invitedUsersGrid == null) {
-                        createInvitedUserGrid();
-                     }
-                     invitedUsersGrid.stopEditing();
-                     invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
-                     invitedUsersGrid.startEditing(0, 1);
-                  }
-               }
-            });
-         }
-      });
-      add(inviteUserButton);
-   }
    
+   @UiHandler("inviteUserButton")
+   void onAddClick(SelectEvent e) {
+     /*
+     final InviteUserWindow inviteUserWindow = new InviteUserWindow();
+     inviteUserWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+        public void afterSubmit(SubmitEvent be) {
+           inviteUserWindow.hide();
+           UserDTO userDTO = be.getData();
+           if (userDTO != null) {
+              if (invitedUsersGrid == null) {
+                 createInvitedUserGrid();
+              }
+              invitedUsersGrid.stopEditing();
+              invitedUsersGrid.getStore().insert(DTOHelper.getBeanModel(userDTO), 0);
+              invitedUsersGrid.startEditing(0, 1);
+           }
+        }
+        */
+   }
+
    /**
     * Initialize the invited user grid's store by getting the invited users from server.
     */
@@ -127,7 +178,7 @@ public class AccountManageWindow extends Dialog {
          public void onSuccess(ArrayList<UserDTO> invitedUsers) {
             if (invitedUsers.size() > 0) {
                createInvitedUserGrid();
-               invitedUsersGrid.getStore().add(DTOHelper.createModels(invitedUsers));
+//               invitedUsersGrid.getStore().add(DTOHelper.createModels(invitedUsers));
             }
          }
       });
@@ -138,6 +189,7 @@ public class AccountManageWindow extends Dialog {
     * The grid has three columns: invited user info, role combobox and the delete button. 
     */
    private void createInvitedUserGrid() {
+     /*
       List<ColumnConfig> invitedUserConfigs = new ArrayList<ColumnConfig>();
       invitedUserConfigs.add(new ColumnConfig("eMail", "Invited user", 180));
       
@@ -173,7 +225,15 @@ public class AccountManageWindow extends Dialog {
       insert(pendingContainer, 1);
       layout();
       center();
+      */
    }
+   
+   @UiFactory
+   Grid<UserDTO> createGrid() {
+     Grid<UserDTO> grid = new Grid<UserDTO>(store, cm);
+     return grid;
+   }
+
 
    /**
     * Creates the user accessed grid, the grid stores the user that can access the account.
@@ -182,6 +242,7 @@ public class AccountManageWindow extends Dialog {
     */
    private void createAccessUserGrid() {
       List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
+      /*
       
        GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
@@ -233,7 +294,7 @@ public class AccountManageWindow extends Dialog {
       actionColumn.setRenderer(buttonRenderer);
       accessUserConfigs.add(actionColumn);
       
-      final EditorGrid<BeanModel> accessUsersGrid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(accessUserConfigs)) {
+      final Grid<UserDTO> accessUsersGrid = new Grid<UserDTO>(new ListStore<UserDTO>(), new ColumnModel(accessUserConfigs)) {
          @Override
          protected void afterRender() {
             super.afterRender();
@@ -243,12 +304,12 @@ public class AccountManageWindow extends Dialog {
          }
       };
       
-      ContentPanel accessUsersContainer = new ContentPanel();
-      accessUsersContainer.setBodyBorder(false);
-      accessUsersContainer.setHeading("Users with account access");
+//      ContentPanel accessUsersContainer = new ContentPanel();
+//      accessUsersContainer.setBodyBorder(false);
+//      accessUsersContainer.setHeading("Users with account access");
       accessUsersContainer.setLayout(new FitLayout());
       accessUsersContainer.setStyleAttribute("paddingTop", "5px");
-      accessUsersContainer.setSize(440, 150);
+//      accessUsersContainer.setSize(440, 150);
       accessUsersContainer.add(accessUsersGrid);
       add(accessUsersContainer);
       AsyncServiceFactory.getUserRPCServiceAsync().getAccountAccessUsersDTO(new AsyncSuccessCallback<ArrayList<UserDTO>>() {
@@ -263,6 +324,7 @@ public class AccountManageWindow extends Dialog {
             accessUsersGrid.unmask();
          }
       });
+      */
    }
    
    /**
@@ -273,16 +335,17 @@ public class AccountManageWindow extends Dialog {
     * 
     * @return the simple combo box< string>
     */
+   /*
    private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
       SimpleComboBox<String> combo = new SimpleComboBox<String>();
       combo.setWidth(182);
       combo.setForceSelection(true);
       combo.setEditable(false);
       combo.setTriggerAction(TriggerAction.ALL);
-      combo.add(Constants.ROLE_ADMIN_DISPLAYNAME);
-      combo.add(Constants.ROLE_MODELER_DISPLAYNAME);
-      combo.add(Constants.ROLE_DESIGNER_DISPLAYNAME);
-      combo.add(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_ADMIN_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_MODELER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_DESIGNER_DISPLAYNAME);
+      combo.add(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME);
       combo.setValue(combo.findModel((String) model.get(property)));
       combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>(){
          public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
@@ -301,6 +364,7 @@ public class AccountManageWindow extends Dialog {
       });
       return combo;
    }
+      */
 
    /**
     * Creates the delete button to delete the user record in the grid.
@@ -310,6 +374,7 @@ public class AccountManageWindow extends Dialog {
     * 
     * @return the button
     */
+/*
    private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store) {
       Button deleteButton = new Button();
       deleteButton.setIcon(icons.delete());
@@ -325,10 +390,12 @@ public class AccountManageWindow extends Dialog {
       });
       return deleteButton;
    }
+   */
 
    /**
     * The inner class is for inviting a user have the same account, it would send a invitation to the email.
     */
+/*
    private class InviteUserWindow extends FormWindow {
       public InviteUserWindow() {
          setSize(370, 150);
@@ -339,10 +406,11 @@ public class AccountManageWindow extends Dialog {
          add(form);
          show();
       }
-      
+      */
       /**
        * Creates two fields: email address input and role combobox.
        */
+/*
       private void createFields() {
          final TextField<String> emailField = new TextField<String>();
          emailField.setFieldLabel("Email address");
@@ -352,11 +420,11 @@ public class AccountManageWindow extends Dialog {
          
          final ComboBoxExt roleList = new ComboBoxExt();
          roleList.setFieldLabel("Role");
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_ADMIN_DISPLAYNAME, Constants.ROLE_ADMIN_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_DESIGNER_DISPLAYNAME, Constants.ROLE_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME, Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.setValue(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME, Constants.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_ADMIN_DISPLAYNAME, RoleDTO.ROLE_ADMIN_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_DESIGNER_DISPLAYNAME));
+         roleList.getStore().add(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME));
+         roleList.setValue(new ComboBoxDataModel<String>(RoleDTO.ROLE_MODELER_DISPLAYNAME, RoleDTO.ROLE_MODELER_DISPLAYNAME));
          form.add(emailField);
          form.add(roleList);
          
@@ -378,12 +446,14 @@ public class AccountManageWindow extends Dialog {
             }
          });
       }
+         */
       
       /**
        * Creates two buttons to send invitation or cancel.
        * 
        * @param window the window
        */
+      /*
       private void createButtons(final InviteUserWindow window) {
          Button send = new Button("Send invitation");
          send.addSelectionListener(new FormSubmitListener(form, send));
@@ -397,4 +467,5 @@ public class AccountManageWindow extends Dialog {
          form.addButton(cancel);
       }
    }
+      */
 }

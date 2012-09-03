@@ -74,7 +74,7 @@ public interface UserService {
     * 
     * @return the user
     */
-   User inviteUser(String email, String role, User currentUser);
+   UserDTO inviteUser(String email, String role, User currentUser);
 
    
    /**
@@ -117,7 +117,7 @@ public interface UserService {
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles);
+   UserDTO updateUserRoles(long uid, String roles);
    
    void deleteUser(long uid);
    
