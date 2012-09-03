@@ -19,53 +19,27 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.modeler.client.ir.BrandsResultOverlay;
-import org.openremote.modeler.client.ir.CodeSetInfoOverlay;
-import org.openremote.modeler.client.ir.CodeSetsResultOverlay;
-import org.openremote.modeler.client.ir.DevicesResultOverlay;
-import org.openremote.modeler.client.ir.IRCommandInfoOverlay;
-import org.openremote.modeler.client.ir.IRCommandsResultOverlay;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
 import org.openremote.modeler.irfileparser.DeviceInfo;
-import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.restlet.client.Request;
-import org.restlet.client.Response;
-import org.restlet.client.Uniform;
-import org.restlet.client.data.MediaType;
-import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.BeanModelFactory;
-import com.extjs.gxt.ui.client.data.BeanModelLookup;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
-import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Padding;
 import com.extjs.gxt.ui.client.widget.Component;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
-import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
-import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.grid.GridView;
-import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
@@ -182,7 +156,9 @@ public class IRFileImportForm extends CommonForm {
    /**
     * populates and shows the brand combo box
     */
-   public void showBrands() {     
+   public void showBrands() {
+     /* NO DIRECT REST CALL TO IRSERVICE
+
     ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brands");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
@@ -229,6 +205,7 @@ public class IRFileImportForm extends CommonForm {
       }
     });
     clientResource.get(MediaType.APPLICATION_JSON);
+    */
   }
 
    /**
@@ -237,6 +214,7 @@ public class IRFileImportForm extends CommonForm {
     * @param brandInfo
     */
   private void showDevices(final BrandInfo brandInfo) {
+    /*
     ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + brandInfo.getBrandName() + "/devices");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
@@ -284,6 +262,7 @@ public class IRFileImportForm extends CommonForm {
       }
     });
     clientResource.get(MediaType.APPLICATION_JSON);
+    */
   }
 
    /**
@@ -293,6 +272,7 @@ public class IRFileImportForm extends CommonForm {
     * @param device
     */
   private void showCodeSets(final DeviceInfo device) {
+    /* NO DIRECT REST CALL TO IRSERVICE
     ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + device.getBrandInfo().getBrandName() + "/device/" + device.getModelName() + "/codeSets");
     clientResource.setOnResponse(new Uniform() {
       public void handle(Request request, Response response) {
@@ -345,6 +325,7 @@ public class IRFileImportForm extends CommonForm {
       }
     });
     clientResource.get(MediaType.APPLICATION_JSON);
+    */
   }
 
    /**
@@ -353,6 +334,7 @@ public class IRFileImportForm extends CommonForm {
     * @param selectedItem
     */
   private void showGrid(final CodeSetInfo selectedItem) {
+    /* NO DIRECT REST CALL TO IRSERVICE
     ClientResource clientResource = new ClientResource(irServiceRootRestURL + prontoFileHandle + "/brand/" + selectedItem.getDeviceInfo().getBrandInfo().getBrandName() + "/device/" + selectedItem.getDeviceInfo().getModelName() + "/codeSet/"
             + selectedItem.getIndex() + "/IRCommands");
     clientResource.setOnResponse(new Uniform() {
@@ -440,6 +422,7 @@ public class IRFileImportForm extends CommonForm {
       }
     });
     clientResource.get(MediaType.APPLICATION_JSON);
+    */
   }
 
    /**
