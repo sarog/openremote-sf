@@ -33,7 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openremote.modeler.client.Constants;
+import org.openremote.useraccount.domain.RoleDTO;
 
 
 
@@ -227,13 +227,13 @@ public class User extends BusinessEntity {
       }
       String userRole = null;
       if (roleStrs.contains(Role.ROLE_ADMIN)) {
-         userRole = Constants.ROLE_ADMIN_DISPLAYNAME;
+         userRole = RoleDTO.ROLE_ADMIN_DISPLAYNAME;
       } else if(roleStrs.contains(Role.ROLE_MODELER) && roleStrs.contains(Role.ROLE_DESIGNER)) {
-         userRole = Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME;
+         userRole = RoleDTO.ROLE_MODELER_DESIGNER_DISPLAYNAME;
       } else if (roleStrs.contains(Role.ROLE_MODELER)) {
-         userRole = Constants.ROLE_MODELER_DISPLAYNAME;
+         userRole = RoleDTO.ROLE_MODELER_DISPLAYNAME;
       } else if(roleStrs.contains(Role.ROLE_DESIGNER)) {
-         userRole = Constants.ROLE_DESIGNER_DISPLAYNAME;
+         userRole = RoleDTO.ROLE_DESIGNER_DISPLAYNAME;
       }
       return userRole;
    }

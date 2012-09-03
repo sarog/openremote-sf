@@ -42,6 +42,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
+import org.openremote.modeler.client.widget.ControllerManageWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -225,6 +226,7 @@ public class ApplicationView implements View {
          applicationToolBar.add(separatorItem);
          if (roles.contains(Role.ROLE_ADMIN)) {
             applicationToolBar.add(createAccountManageButton());
+            applicationToolBar.add(createControllerManageButton());
          }
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
@@ -491,6 +493,23 @@ public class ApplicationView implements View {
                   new AccountManageWindow(currentUserId);
                }
             });
+         }
+      });
+      return accountManageBtn;
+   }
+   
+   /**
+    * Creates the button to pop up the controller management window.
+    * 
+    * @return the button
+    */
+   private Button createControllerManageButton() {
+      Button accountManageBtn = new Button();
+      accountManageBtn.setToolTip("Controller management");
+      accountManageBtn.setIcon(icons.controllerLinkIcon());
+      accountManageBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+         public void componentSelected(ButtonEvent ce) {
+            new ControllerManageWindow();
          }
       });
       return accountManageBtn;

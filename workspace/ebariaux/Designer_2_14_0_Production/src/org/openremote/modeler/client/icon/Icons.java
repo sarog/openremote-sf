@@ -143,4 +143,12 @@ public interface Icons extends ImageBundle {
    
    @Resource("color_picker.png")
    AbstractImagePrototype colorpickerIcon();
+   @Resource("computer_link.png")
+   AbstractImagePrototype controllerLinkIcon();
+   
+   @Resource("computer_add.png")
+   AbstractImagePrototype controllerAddIcon();
+   
+   @Resource("computer_delete.png")
+   AbstractImagePrototype controllerDeleteIcon();
 }
