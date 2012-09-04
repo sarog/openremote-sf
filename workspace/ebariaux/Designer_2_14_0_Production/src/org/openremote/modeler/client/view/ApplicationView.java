@@ -48,7 +48,7 @@ import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.ChangePasswordWindow;
 import org.openremote.modeler.client.widget.ControllerManageWindow;
-import org.openremote.modeler.client.widget.buildingmodeler.CreateDeviceWizardWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.DiscoveredDevicesWizardWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -210,7 +210,7 @@ public class ApplicationView implements View {
                
                
               final DeviceDiscoveryRPCServiceAsync auth = (DeviceDiscoveryRPCServiceAsync) GWT.create(DeviceDiscoveryRPCService.class);
-              auth.loadNewDevices(new AsyncCallback<ArrayList<DiscoveredDeviceDTO>>() {
+              auth.loadDevices(true, new AsyncCallback<ArrayList<DiscoveredDeviceDTO>>() {
                   public void onFailure(Throwable caught) {
                      MessageBox.alert("Info", caught.getMessage(), null);
                   }
@@ -222,7 +222,7 @@ public class ApplicationView implements View {
                         public void handleEvent(MessageBoxEvent be)
                         {
                           if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                            new CreateDeviceWizardWindow(result);
+                            new DiscoveredDevicesWizardWindow(result, eventBus);
                           }
                         }
                       });

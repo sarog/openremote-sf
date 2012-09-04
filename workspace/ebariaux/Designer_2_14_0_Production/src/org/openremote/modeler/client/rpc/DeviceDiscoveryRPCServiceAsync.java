@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.ArrayList;
 
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -33,5 +34,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface DeviceDiscoveryRPCServiceAsync {
 
-  void loadNewDevices(AsyncCallback<ArrayList<DiscoveredDeviceDTO>> callback);
+  void loadDevices(boolean onlyNew, AsyncCallback<ArrayList<DiscoveredDeviceDTO>> callback);
+
+  void deleteDevices(ArrayList<DiscoveredDeviceDTO> devicesToDelete, AsyncCallback<Void> callback);
+
+  void createORDevices(ArrayList<DiscoveredDeviceDTO> itemsToCreate, boolean oneDevicePerProtocol, AsyncCallback<ArrayList<DeviceDTO>> callback);
 }
