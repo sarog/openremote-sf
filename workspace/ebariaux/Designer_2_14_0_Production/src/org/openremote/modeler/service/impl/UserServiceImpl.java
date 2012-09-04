@@ -35,6 +35,7 @@ import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserChangePasswordException;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
@@ -431,6 +432,25 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
       return false;
    }
+
+  @Override
+  public void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException
+  {
+    User currentUser = getCurrentUser();
+    UserDTO user = getUserDTOById(currentUser.getOid());
+    String oldPasswordEnc = new Md5PasswordEncoder().encodePassword(oldPassword, user.getUsername());
+    if (!oldPasswordEnc.equals(user.getPassword())) {
+      throw new UserChangePasswordException("The old password does not match!");
+    }
+    try
+    {
+      user.setPassword(new Md5PasswordEncoder().encodePassword(newPassword, user.getUsername()));
+      updateUser(user);
+    } catch (Exception e)
+    {
+      throw new UserChangePasswordException(e.getMessage());
+    }
+  }
 
    
 }
