@@ -8,6 +8,7 @@
 
     <security:http lowercase-comparisons="false"> <!-- note: no auto-config attribute! access="ROLE_MODELER,ROLE_DESIGNER"-->
         <security:intercept-url pattern="/login.jsp" filters="none"/>
+        <security:intercept-url pattern="/download/*" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/Modeler.jsp" access="ROLE_MODELER,ROLE_DESIGNER,ROLE_ADMIN"/>
         <security:intercept-url pattern="/fileUploadController.htm" access="ROLE_MODELER,ROLE_DESIGNER"/>
         <security:form-login login-page="/login.jsp" default-target-url="/Modeler.jsp" login-processing-url="/j_security_check" authentication-failure-url="/login.jsp?fail=true"/>

@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openremote.modeler.client.rpc.UserRPCService;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserChangePasswordException;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.UserService;
 import org.openremote.useraccount.domain.RoleDTO;
@@ -88,5 +89,12 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
      }
      return dtos;
    }
+
+  @Override
+  public void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException
+  {
+    userService.changePassword(oldPassword, newPassword);
+    
+  }
 
 }

@@ -46,6 +46,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
+import org.openremote.modeler.client.widget.ChangePasswordWindow;
 import org.openremote.modeler.client.widget.ControllerManageWindow;
 import org.openremote.modeler.client.widget.buildingmodeler.CreateDeviceWizardWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
@@ -67,6 +68,7 @@ import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -86,7 +88,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -271,6 +275,8 @@ public class ApplicationView implements View {
          applicationToolBar.add(createOnLineTestBtn());
       }
       applicationToolBar.add(new FillToolItem());
+      applicationToolBar.add(createDownloadControllerButton());
+      applicationToolBar.add(createChangePasswordButton());
       applicationToolBar.add(createLogoutButton());
 
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
@@ -278,7 +284,19 @@ public class ApplicationView implements View {
       viewport.add(applicationToolBar, data);
    }
 
-   /**
+   private Component createDownloadControllerButton()
+  {
+     Button downloadButton = new Button("Download Controller");
+     downloadButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          Window.open("download/OpenRemote_Controller.zip", "_blank", "");
+        }
+     });
+     return downloadButton;
+  }
+
+  /**
     * Creates the button that can convert to building modeler view.
     * 
     * @return the toggle button
@@ -543,6 +561,23 @@ public class ApplicationView implements View {
          public void componentSelected(ButtonEvent ce) {
             new ControllerManageWindow();
          }
+      });
+      return accountManageBtn;
+   }
+   
+   /**
+    * Creates the button to pop up the change password window.
+    * 
+    * @return the button
+    */
+   private Button createChangePasswordButton() {
+      Button accountManageBtn = new Button();
+      accountManageBtn.setToolTip("Change password");
+      accountManageBtn.setIcon(icons.userEditIcon());
+      accountManageBtn.addSelectionListener(new SelectionListener<ButtonEvent>(){
+        public void componentSelected(ButtonEvent ce) {
+          new ChangePasswordWindow();
+        }
       });
       return accountManageBtn;
    }
