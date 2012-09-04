@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
 import org.openremote.modeler.client.event.DevicesCreatedEvent;
@@ -43,6 +44,8 @@ import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.rpc.DeviceDiscoveryRPCService;
+import org.openremote.modeler.client.rpc.DeviceDiscoveryRPCServiceAsync;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -425,11 +428,20 @@ public class DevicePanel extends ContentPanel {
   }
    
    private MenuItem createNewDeviceFromWizardMenuItem() {
-     MenuItem newDeviceItem = new MenuItem("New Device from Wizard");
+     MenuItem newDeviceItem = new MenuItem("Discovered Devices Wizard");
      newDeviceItem.setIcon(icon.device());
      newDeviceItem.addSelectionListener(new SelectionListener<MenuEvent>() {
         public void componentSelected(MenuEvent ce) {
-           new CreateDeviceWizardWindow();
+          final DeviceDiscoveryRPCServiceAsync auth = (DeviceDiscoveryRPCServiceAsync) GWT.create(DeviceDiscoveryRPCService.class);
+          auth.loadDevices(false, new AsyncCallback<ArrayList<DiscoveredDeviceDTO>>() {
+              public void onFailure(Throwable caught) {
+                 MessageBox.alert("Info", caught.getMessage(), null);
+              }
+              public void onSuccess(final ArrayList<DiscoveredDeviceDTO> result)
+              {
+                new DiscoveredDevicesWizardWindow(result, eventBus);
+              }
+          });
         }
      });
      return newDeviceItem;
