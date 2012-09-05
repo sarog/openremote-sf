@@ -183,19 +183,17 @@ public abstract class EepA508XX implements EepReceive
   public static final String EEP_A508XX_OCC_BTN_PRESS_DESC = "Button pressed";
 
   /**
-   * Begin of the value range which represents the OFF state of the
-   * occupancy data field.
+   * Occupancy data field value which represents the button pressed state.
    */
   public static final int EEP_A508XX_OCC_BTN_PRESS_VALUE = 0;
 
   /**
-   * Description for the ON state of the 'PIR status' data field.
+   * Description for the 'Button released' state of the occupancy data field.
    */
   public static final String EEP_A508XX_OCC_BTN_RELEASE_DESC = "Button released";
 
   /**
-   * Begin of the value range which represents the ON state of the
-   * 'PIR status' data field.
+   * Occupancy data field value which represents the button released state.
    */
   public static final int EEP_A508XX_OCC_BTN_RELEASE_VALUE = 1;
 
