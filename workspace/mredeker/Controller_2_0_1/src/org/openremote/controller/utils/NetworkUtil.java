@@ -30,6 +30,8 @@ import java.util.Enumeration;
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
 
+import sun.java2d.loops.MaskBlit;
+
 /**
  * This class is used to provide utility method about network. 
  * @author Javen
@@ -37,8 +39,7 @@ import org.openremote.controller.ControllerConfiguration;
  */
 public class NetworkUtil {
    public static final Logger logger = Logger.getLogger(NetworkUtil.class);
-   private static ControllerConfiguration configuration = ControllerConfiguration.readXML();
-   
+   private static ControllerConfiguration configuration = null;   
    private NetworkUtil(){}
    
    /**
@@ -57,7 +58,7 @@ public class NetworkUtil {
    }
    
    private static String getLocalHostFromWindows(){
-      String ip = configuration.getWebappIp();
+      String ip = getConfiguration().getWebappIp();
       if ((ip != null) && (!ip.isEmpty())) {
           return ip;
       }
@@ -78,8 +79,15 @@ public class NetworkUtil {
       return ipAddrStr.toString();
    }
    
+   private synchronized static ControllerConfiguration getConfiguration() {
+      if (configuration == null) {
+         configuration = ControllerConfiguration.readXML();
+      }
+      return configuration;
+   }
+
    private static String getLocalHostFromLinux(){
-      String ip = configuration.getWebappIp();
+      String ip = getConfiguration().getWebappIp();
       if ((ip != null) && (!ip.isEmpty())) {
           return ip;
       }
@@ -115,12 +123,17 @@ public class NetworkUtil {
          if (!networkInterface.isLoopback()) {
             boolean onlyLinkLocal = true;
             for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-               if (!interfaceAddress.getAddress().isLinkLocalAddress()) onlyLinkLocal = false;
+               if (!interfaceAddress.getAddress().isLinkLocalAddress()) {
+                  onlyLinkLocal = false;
+               }
             }
             if (onlyLinkLocal) continue;
             macs.append(getMACString(networkInterface.getHardwareAddress()));
             macs.append(",");
          }
+      }
+      if (macs.length()==0) {
+         return "no-mac-address-found";
       }
       macs.deleteCharAt(macs.length()-1);
       return macs.toString();
@@ -133,4 +146,5 @@ public class NetworkUtil {
       }
       return sb.toString();
    }
+   
 }
