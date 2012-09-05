@@ -350,7 +350,7 @@ public class EepA50401 implements EepReceive
     this.deviceID = deviceID;
 
     this.teachInFlag = Bool.createTeachInFlag4BS();
-    this.temperatureFlag = createTemperatureAvailabiltyFlag();
+    this.temperatureFlag = createTemperatureAvailabilityFlag();
     this.controlData = new EepData(this.eepType, 4, this.teachInFlag, this.temperatureFlag);
 
     this.temperature = createTemperatureRange();
@@ -552,7 +552,7 @@ public class EepA50401 implements EepReceive
    *
    * @return new bool data type instance
    */
-  private Bool createTemperatureAvailabiltyFlag()
+  private Bool createTemperatureAvailabilityFlag()
   {
      return Bool.createBool(
          EEP_A50401_TSN_DATA_FIELD_NAME, EEP_A50401_TSN_OFFSET, EEP_A50401_TSN_SIZE,
@@ -562,7 +562,7 @@ public class EepA50401 implements EepReceive
   }
 
   /**
-   * Creates a bool data type which represents the temperature data field.
+   * Creates a range data type which represents the temperature data field.
    *
    * @return new range data type instance
    */
@@ -577,7 +577,7 @@ public class EepA50401 implements EepReceive
   }
 
   /**
-   * Creates a bool data type which represents the humidity data field.
+   * Creates a range data type which represents the humidity data field.
    *
    * @return new range data type instance
    */
