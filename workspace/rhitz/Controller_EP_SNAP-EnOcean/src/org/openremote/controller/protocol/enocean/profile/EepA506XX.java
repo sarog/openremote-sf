@@ -38,7 +38,7 @@ import static org.openremote.controller.protocol.enocean.Constants.SUPPLY_VOLTAG
  *
  * @author Rainer Hitz
  */
-public class EepA506XX implements EepReceive
+public abstract class EepA506XX implements EepReceive
 {
 
   // Constants ------------------------------------------------------------------------------------
