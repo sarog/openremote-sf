@@ -133,7 +133,7 @@ public abstract class EepA502XX implements EepReceive
     if(!TEMPERATURE_STATUS_COMMAND.equalsIgnoreCase(commandString))
     {
       throw new ConfigurationException(
-          "Invalid command ''{0}'' for EnOcean equipment profile (EEP) ''{1}''.",
+          "Invalid command ''{0}'' in combination with EnOcean equipment profile (EEP) ''{1}''.",
           commandString, eepType
       );
     }
@@ -186,13 +186,14 @@ public abstract class EepA502XX implements EepReceive
       return false;
     }
 
+
     this.teachInData.update(telegram.getPayload());
 
-    if(teachInFlag.boolValue())
+    if(isTeachInTelegram())
     {
-      // Teach-in telegram
       return false;
     }
+
 
     Double oldTempValue = temperature.rangeValue();
 
@@ -210,7 +211,7 @@ public abstract class EepA502XX implements EepReceive
    */
   @Override public void updateSensor(Sensor sensor)
   {
-    if(teachInFlag.boolValue())
+    if(isTeachInTelegram())
     {
       return;
     }
@@ -231,4 +232,18 @@ public abstract class EepA502XX implements EepReceive
   {
     return temperature.rangeValue();
   }
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  /**
+   * Checks if the last received radio telegram was a teach in telegram.
+   *
+   * @return <tt>true</tt> if the last received radio telegram was a tech in telegram,
+   *         <tt>false</tt> otherwise
+   */
+  private boolean isTeachInTelegram()
+  {
+    return (teachInFlag.boolValue() != null && teachInFlag.boolValue());
+  }
+
 }
