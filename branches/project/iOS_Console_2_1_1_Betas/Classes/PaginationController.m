@@ -273,12 +273,6 @@
 	
 	[self updateViewForCurrentPage];
 	CGRect frame = scrollView.bounds;
-	
-	//HACK: make ContentSize larger to show last view correctly, it's a hack, beause last view is half.
-	//TODO: should fix this hack.
-	if (selectedIndex == pageControl.numberOfPages - 1) {
-		[scrollView setContentSize:CGSizeMake(frameWidth * (pageControl.numberOfPages + 0.5), frameHeight)];
-	} 
 
 	frame.origin.x = frameWidth * selectedIndex;
 	frame.origin.y = 0;
