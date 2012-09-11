@@ -340,8 +340,8 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
 	// Switch the indicator when more than 50% of the previous/next page is visible
-	selectedIndex = floor((scrollView.contentOffset.x - frameWidth / 2) / frameWidth) + 1;
-	
+    int calculatedIndex = floor((scrollView.contentOffset.x - frameWidth / 2) / frameWidth) + 1;
+    selectedIndex = MIN(MAX(0, calculatedIndex), [viewControllers count] - 1);
 	[self updateViewForCurrentPageAndBothSides];
 }
 
