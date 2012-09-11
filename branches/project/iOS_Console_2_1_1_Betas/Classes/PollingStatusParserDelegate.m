@@ -21,6 +21,12 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 
+@interface PollingStatusParserDelegate()
+
+@property (nonatomic, retain) NSMutableString *statusValue;
+
+@end
+
 @implementation PollingStatusParserDelegate
 
 - (id)init {
@@ -36,22 +42,29 @@
 	
 	if ([elementName isEqualToString:@"status"]) {
 		lastId = [[attributeDict valueForKey:@"id"] copy];
+        self.statusValue = [NSMutableString string];
 	}
 }
 
 
 //find status element body
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-	NSString *status = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];//trim found string
-	
-	//assign lastest status to sensor id
-	if (lastId && ![@"" isEqualToString:status]) {
-		NSLog(@"change %@ to %@  !!!", lastId, status);
-		[statusMap setObject:status forKey:lastId];
-		
-		// notify latest sensor status to component listener by sensor id
-		[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
-	}
+    [self.statusValue appendString:string];
+}
+
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+	if ([elementName isEqualToString:@"status"]) {
+        NSString *status = [self.statusValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; //trim found string
+        
+        //assign lastest status to sensor id
+        if (lastId && ![@"" isEqualToString:status]) {
+            NSLog(@"change %@ to %@  !!!", lastId, status);
+            [statusMap setObject:status forKey:lastId];
+            
+            // notify latest sensor status to component listener by sensor id
+            [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
+        }
+    }
 }
 
 - (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId {
@@ -60,6 +73,7 @@
 }
 
 - (void)dealloc {
+    self.statusValue = nil;
 	[statusMap release];
 	[lastId release];
 
@@ -67,5 +81,6 @@
 }
 
 @synthesize lastId, statusMap;
+@synthesize statusValue;
 
 @end
