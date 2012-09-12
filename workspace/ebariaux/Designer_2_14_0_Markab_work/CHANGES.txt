@@ -1,4 +1,11 @@
 
+Designer 2.13.4 (2012-07-29 Rosemary)
+=====================================
+
+ - MODELER-338: correctly reconstruct sensor data from
+   database on load/restore
+
+
 Designer 2.13.3 (2012-07-15 Rosemary)
 =====================================
 
