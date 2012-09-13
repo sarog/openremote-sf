@@ -23,10 +23,10 @@ package org.openremote.modeler.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
-import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,8 +42,8 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -66,6 +66,7 @@ import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -77,16 +78,16 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -96,22 +97,30 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
+import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
-import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.protocol.ProtocolContainer;
+import org.openremote.modeler.server.SensorController;
+import org.openremote.modeler.server.SliderController;
+import org.openremote.modeler.server.SwitchController;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
-import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.service.SwitchService;
-import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.SliderService;
+import org.openremote.modeler.service.SwitchService;
+import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -119,18 +128,8 @@ import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
-import org.openremote.modeler.cache.LocalFileCache;
-import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.logging.AdministratorAlert;
-import org.openremote.modeler.shared.GraphicalAssetDTO;
-import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.MacroDTO;
-import org.openremote.modeler.shared.dto.UICommandDTO;
-import org.openremote.modeler.server.SensorController;
-import org.openremote.modeler.server.SliderController;
-import org.openremote.modeler.server.SwitchController;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -849,18 +848,43 @@ public class ResourceServiceImpl implements ResourceService
       // PATCH R3181 BEGIN ---8<------
       List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
 
-      for (Sensor dbSensor : dbSensors)
+      try
       {
-        for (Sensor clientSensor : sensorWithoutDuplicate)
+        for (Sensor dbSensor : dbSensors)
         {
-          if (dbSensor.getOid() == clientSensor.getOid())
+          for (Sensor clientSensor : sensorWithoutDuplicate)
           {
-            duplicateDBSensors.add(dbSensor);
+            if (dbSensor.getOid() == clientSensor.getOid())
+            {
+              duplicateDBSensors.add(dbSensor);
+            }
           }
         }
       }
 
-      dbSensors.removeAll(duplicateDBSensors);
+      // TODO :
+      //        strictly speaking this should be unnecessary if database schema has been configured
+      //        to enforce correct referential integrity constraints -- this hasn't always been the
+      //        case so catching the error here. Unfortunately there isn't much we can do in terms
+      //        of recovery other than have the DBA step in.
+
+      catch (ObjectNotFoundException e)
+      {
+          AdministratorAlert.getInstance(AdministratorAlert.Type.DATABASE).alert(
+              "Database integrity error -- referencing an unknown entity: {0}, id: {1}, message: {2}",
+              e, e.getEntityName(), e.getIdentifier(), e.getMessage()
+          );
+
+          //TODO: the wrong exception type, but it will get propagated back to user's browser
+
+          throw new FileOperationException(
+              "Save/Export failed due to database integrity error. This requires administrator intervention " +
+              "to solve. Please avoid making any further changes to your account until this issue has been " +
+              "resolved (the integrity offender: " + e.getEntityName() + ", id: " + e.getIdentifier() + ")."
+          );
+      }
+
+       dbSensors.removeAll(duplicateDBSensors);
       // PATCH R3181 END --->8-------
 
 
