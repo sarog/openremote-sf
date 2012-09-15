@@ -1025,7 +1025,8 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
-  private void populateDTOReferences(UIComponent component) {    if (component instanceof SensorOwner) {
+  private void populateDTOReferences(UIComponent component) {
+    if (component instanceof SensorOwner) {
       SensorOwner owner = (SensorOwner) component;
       if (owner.getSensorDTO() == null && owner.getSensor() != null) {
         Sensor sensor = sensorService.loadById(owner.getSensor().getOid());
@@ -1073,24 +1074,53 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
-  private UICommandDTO createUiCommandDTO(UICommand uiCommand) {
-    if (uiCommand instanceof DeviceCommandRef) {
-      try {
+  private UICommandDTO createUiCommandDTO(UICommand uiCommand)
+  {
+    if (uiCommand instanceof DeviceCommandRef)
+    {
+      try
+      {
         DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
         return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
-      } catch (ObjectNotFoundException e) {
+      }
+
+      catch (ObjectNotFoundException e)
+      {
         serviceLog.warn("Button is referencing inexistent command with id " + ((DeviceCommandRef)uiCommand).getDeviceCommand().getOid(), e);
         return null;
       }
-    } else if (uiCommand instanceof DeviceMacroRef) {
-      try {
-        DeviceMacro dm = deviceMacroService.loadById(((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid());
-        return (dm != null)?new MacroDTO(dm.getOid(), dm.getDisplayName()):null;
-      } catch (ObjectNotFoundException e) {
+    }
+
+    else if (uiCommand instanceof DeviceMacroRef)
+    {
+      try
+      {
+        DeviceMacro targetMacro = ((DeviceMacroRef)uiCommand).getTargetDeviceMacro();
+
+        if (targetMacro != null)
+        {
+          long oid = targetMacro.getOid();
+
+          DeviceMacro dm = deviceMacroService.loadById(oid);
+
+          return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
+        }
+
+        else
+        {
+          serviceLog.error("DeviceMacroRef had a null target device macro reference");
+
+          return null;
+        }
+      }
+
+      catch (ObjectNotFoundException e)
+      {
         serviceLog.warn("Button is referencing inexistent macro with id " + ((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid(), e);
         return null;
       }
     }
+
     throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
   }
 
@@ -1337,10 +1367,29 @@ public class ResourceServiceImpl implements ResourceService
       //    Also the error handling needs to be pushed to new DesignerState implementation
       //    so that errors in the implementation below are correctly handled and potentially
       //    preventing user data corruption.
-      // 
       //                                                                            [JPL]
+      //
+      //    UPDATE 2012-09-13: Have not accomplished the task above yet (pushing call down
+      //    to DesignerState implementation which would have more robust error handling
+      //    *and* better error reporting due to user and account references that are carried
+      //    in it. Duplicating some error handling here until have time to reorganize the
+      //    code better, at which point the duplicate error handling can probably be removed. [JPL]
 
-      populateDTOReferences(result.getPanels());
+      try
+      {
+        populateDTOReferences(result.getPanels());
+      }
+
+      catch (Throwable t)
+      {
+        // This exception type and message will propagate to the user...
+
+        throw new UIRestoreException(
+            "Restoring your account data has failed. Please contact an administrator for " +
+            "assistance. Avoid making further changes to your account and design to prevent " +
+            "any potential data corruption issues: " + t.getMessage(), t
+        );
+      }
       
       // EBR - MODELER-315
       replaceNullNamesWithEmptyString(result.getPanels());      
