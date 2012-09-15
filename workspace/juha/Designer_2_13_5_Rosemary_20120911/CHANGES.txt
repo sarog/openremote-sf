@@ -1,4 +1,13 @@
 
+Designer 2.13.5 (2012-09-11 Rosemary)
+=====================================
+
+ - Log errors related to data integrity issues with
+   commands associated to sensors
+ - Transform macro references to DTOs more defensively
+   and guard against errors
+
+
 Designer 2.13.4 (2012-07-29 Rosemary)
 =====================================
 
