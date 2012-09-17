@@ -23,7 +23,6 @@
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
-		60366B6B144DCB9C004FED3B /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		60366B6C144DCB9C004FED3B /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
 		60366B6D144DCB9C004FED3B /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 		60366B6E144DCB9C004FED3B /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
@@ -447,7 +446,6 @@
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
-		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
 		8C3DE30A1163492C00DD4EE7 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3021163492C00DD4EE7 /* Default.png */; };
@@ -964,7 +962,6 @@
 		60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerCommandSender.m; sourceTree = "<group>"; };
 		60AFCEE713729AA400A811D4 /* ControllerRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerRequest.h; sourceTree = "<group>"; };
 		60AFCEE813729AA400A811D4 /* ControllerRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerRequest.m; sourceTree = "<group>"; };
-		60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OpenRemote.entitlements; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
 		60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_screenIdForOrientation.xml; sourceTree = "<group>"; };
@@ -1002,7 +999,6 @@
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = URLConnectionHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
-		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
 		8C3DE3021163492C00DD4EE7 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = image/Default.png; sourceTree = "<group>"; };
@@ -1172,7 +1168,6 @@
 		8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8CFDB2760FBBBF4500D204CB /* appSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = appSettings.plist; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		974DAC871063ADEF00B1B04B /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		97B0011F106127AF00C31E4A /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1300,7 +1295,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				60C1DAA314504FE0005A44BD /* OpenRemote.entitlements */,
 				6068DEA413744ED0007746F1 /* SystemConfiguration.framework */,
 				6068DEA113744EBB007746F1 /* CFNetwork.framework */,
 				6068DE9713744E36007746F1 /* CoreData.framework */,
@@ -1319,7 +1313,6 @@
 				8C896B9911AE637400655CA5 /* Resources-iPad */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				974DAC871063ADEF00B1B04B /* Entitlements.plist */,
 				8C460E4B109552C800C7A686 /* UnitTest-Info.plist */,
 				60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */,
 			);
@@ -1364,7 +1357,6 @@
 				8CECF3E010E9DD1400C0E1BB /* database.db */,
 				97B0011F106127AF00C31E4A /* iTunesArtwork */,
 				8D1107310486CEB800E47090 /* Info.plist */,
-				8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */,
 				8CFDB2760FBBBF4500D204CB /* appSettings.plist */,
 				8C49724011B20D660039A293 /* InitViewController~iPhone.xib */,
 				8C4974C111B24B020039A293 /* ErrorViewController~iPhone.xib */,
@@ -2285,7 +2277,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
 				8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */,
 				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
 				8CECF3E110E9DD1400C0E1BB /* database.db in Resources */,
@@ -2328,7 +2319,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60366B6B144DCB9C004FED3B /* Entitlements.plist in Resources */,
 				60366B6C144DCB9C004FED3B /* appSettings.plist in Resources */,
 				60366B6D144DCB9C004FED3B /* iTunesArtwork in Resources */,
 				60366B6E144DCB9C004FED3B /* database.db in Resources */,
@@ -2882,9 +2872,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2900,15 +2889,15 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "include/**";
 				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2919,9 +2908,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2936,13 +2925,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "include/**";
 				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9B51A2EA-3104-4AF9-A3D5-22A24ADF6236";
+				PROVISIONING_PROFILE = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2953,9 +2943,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2970,13 +2959,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "include/**";
 				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9B51A2EA-3104-4AF9-A3D5-22A24ADF6236";
+				PROVISIONING_PROFILE = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9565E363-BB73-4CA6-BB2A-FBD63650655F";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
