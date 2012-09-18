@@ -241,71 +241,82 @@ public class TemplateServiceImpl implements TemplateService
    }
 
    @Override
+   @SuppressWarnings("rawtypes")
    public ScreenPair buildScreen(Template template) {
       String screenJson = template.getContent();
-      @SuppressWarnings("rawtypes")
-      ScreenPair screenPair = new JSONDeserializer<ScreenPair>()
-            .use(null, ScreenPair.class)
-            // portraitScreen
-            .use("portraitScreen.absolutes.values.uiComponent", new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent", new SimpleClassLocator())
-            //1,absolutes
-            //    1.1, uiCommand
-            .use("portraitScreen.absolutes.values.uiComponent.uiCommand", new SimpleClassLocator())
-            .use("portraitScreen.absolutes.values.uiComponent.uiCommandDTO", (Class)null)
-            .use("portraitScreen.gestures.values.uiCommand", new SimpleClassLocator())
-            .use("portraitScreen.gestures.values.uiCommandDTO", (Class)null)
-            //    1.2, sensor 
-            .use("portraitScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
-            .use("portraitScreen.absolutes.values.uiComponent.sensorDTO", (Class)null)
-            .use("portraitScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.absolutes.values.uiComponent.sliderDTO", (Class)null)
-            .use("portraitScreen.absolutes.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.absolutes.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.absolutes.values.uiComponent.switchDTO", (Class)null)
-            //2,grids
-            //    2.1 uiCommand
-            .use("portraitScreen.grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent.uiCommandDTO", (Class)null)
-            //    2.2 sensor 
-            .use("portraitScreen.grids.values.cells.values.uiComponent.sensor",new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent.sensorDTO", (Class)null)
-            .use("portraitScreen.grids.values.cells.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent.sliderDTO", (Class)null)
-            .use("portraitScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
-            .use("portraitScreen.grids.values.cells.values.uiComponent.switchDTO", (Class)null)
-            // landscapeScreen
-            .use("landscapeScreen.absolutes.values.uiComponent", new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent", new SimpleClassLocator())
-            //1,absolutes
-            //    1.1, uiCommand
-            .use("landscapeScreen.absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
-            .use("landscapeScreen.absolutes.values.uiComponent.uiCommandDTO", (Class)null)
-            .use("landscapeScreen.gestures.values.uiCommand",new SimpleClassLocator())
-            .use("landscapeScreen.gestures.values.uiCommandDTO", (Class)null)
-            //    1.2, sensor 
-            .use("landscapeScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.absolutes.values.uiComponent.sensorDTO", (Class)null)
-            .use("landscapeScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.absolutes.values.uiComponent.sliderDTO", (Class)null)
-            .use("landscapeScreen.absolutes.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.absolutes.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.absolutes.values.uiComponent.switchDTO", (Class)null)
-            //2,grids
-            //    2.1 uiCommand
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.uiCommandDTO", (Class)null)
-            //    2.2 sensor 
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.sensorDTO", (Class)null)
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.sliderDTO", (Class)null)
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
-            .use("landscapeScreen.grids.values.cells.values.uiComponent.switchDTO", (Class)null)
-            .deserialize(screenJson);
-      resetGestureForScreenPair(screenPair);
+      log.trace("buildScreen from JSON >" + screenJson + "<");
+      
+      ScreenPair screenPair = null;
+      
+      try {
+         screenPair = new JSONDeserializer<ScreenPair>()
+              .use(null, ScreenPair.class)
+              // portraitScreen
+              .use("portraitScreen.absolutes.values.uiComponent", new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent", new SimpleClassLocator())
+              //1,absolutes
+              //    1.1, uiCommand
+              .use("portraitScreen.absolutes.values.uiComponent.uiCommand", new SimpleClassLocator())
+              .use("portraitScreen.absolutes.values.uiComponent.uiCommandDTO", (Class)null)
+              .use("portraitScreen.gestures.values.uiCommand", new SimpleClassLocator())
+              .use("portraitScreen.gestures.values.uiCommandDTO", (Class)null)
+              //    1.2, sensor 
+              .use("portraitScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
+              .use("portraitScreen.absolutes.values.uiComponent.sensorDTO", (Class)null)
+              .use("portraitScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.absolutes.values.uiComponent.sliderDTO", (Class)null)
+              .use("portraitScreen.absolutes.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.absolutes.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.absolutes.values.uiComponent.switchDTO", (Class)null)
+              //2,grids
+              //    2.1 uiCommand
+              .use("portraitScreen.grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent.uiCommandDTO", (Class)null)
+              //    2.2 sensor 
+              .use("portraitScreen.grids.values.cells.values.uiComponent.sensor",new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent.sensorDTO", (Class)null)
+              .use("portraitScreen.grids.values.cells.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent.sliderDTO", (Class)null)
+              .use("portraitScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
+              .use("portraitScreen.grids.values.cells.values.uiComponent.switchDTO", (Class)null)
+              // landscapeScreen
+              .use("landscapeScreen.absolutes.values.uiComponent", new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent", new SimpleClassLocator())
+              //1,absolutes
+              //    1.1, uiCommand
+              .use("landscapeScreen.absolutes.values.uiComponent.uiCommand",new SimpleClassLocator())
+              .use("landscapeScreen.absolutes.values.uiComponent.uiCommandDTO", (Class)null)
+              .use("landscapeScreen.gestures.values.uiCommand",new SimpleClassLocator())
+              .use("landscapeScreen.gestures.values.uiCommandDTO", (Class)null)
+              //    1.2, sensor 
+              .use("landscapeScreen.absolutes.values.uiComponent.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.absolutes.values.uiComponent.sensorDTO", (Class)null)
+              .use("landscapeScreen.absolutes.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.absolutes.values.uiComponent.sliderDTO", (Class)null)
+              .use("landscapeScreen.absolutes.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.absolutes.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.absolutes.values.uiComponent.switchDTO", (Class)null)
+              //2,grids
+              //    2.1 uiCommand
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.uiCommand",new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.uiCommandDTO", (Class)null)
+              //    2.2 sensor 
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.sensorDTO", (Class)null)
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.slider.sliderSensorRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.sliderDTO", (Class)null)
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
+              .use("landscapeScreen.grids.values.cells.values.uiComponent.switchDTO", (Class)null)
+              .deserialize(screenJson);
+        log.debug("screenPair created");
+        resetGestureForScreenPair(screenPair);
+      } catch (Exception e) {
+        log.error("Issue creating Screen from JSON representation", e);
+        
+        // TODO - EBR : Must do something with this exception e.g. re-package in more appropriate one but NO SWALLOW IT !!!
+      }
       return screenPair;
    }
    
