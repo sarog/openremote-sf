@@ -62,7 +62,16 @@ public class AdministratorAlert
      */
     RESOURCE_CACHE(RESOURCE_CACHE_ADMIN_ALERT_LOG_CATEGORY, "Resource Cache Administrator Alerts"),
 
-    ;
+      /**
+     * Administrator alerts raised by database operations (integrity issues, etc.).
+     *
+     * The canonical log category name is defined in
+     * {@link AdministratorAlert#DATABASE_ADMIN_ALERT_LOG_CATEGORY}
+     *
+     */
+    DATABASE(DATABASE_ADMIN_ALERT_LOG_CATEGORY, "Database Administrator Alerts"),
+
+      ;
 
 
 
@@ -125,8 +134,18 @@ public class AdministratorAlert
       LogFacade.STATE_LOG_CATEGORY + ALERT_LOG_CATEGORY;
 
 
+  /**
+   * Canonical log hierarchy name for database integrity related alerts. <p>
+   *
+   * This is a child category of {@link LogFacade.Category#PERSISTENCE}.
+   *
+   * @see AdministratorAlert.Type#DATABASE
+   */
+  public final static String DATABASE_ADMIN_ALERT_LOG_CATEGORY =
+          LogFacade.PERSISTENCE_LOG_CATEGORY + ALERT_LOG_CATEGORY;
 
-  // Class Members --------------------------------------------------------------------------------
+
+    // Class Members --------------------------------------------------------------------------------
 
 
   /**
