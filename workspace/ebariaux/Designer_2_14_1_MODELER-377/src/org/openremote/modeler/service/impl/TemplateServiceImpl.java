@@ -228,11 +228,15 @@ public class TemplateServiceImpl implements TemplateService
 
    @Override
    public ScreenFromTemplate buildFromTemplate(Template template) {
+     log.debug("buildFromTemplate " + template.getDisplayName());
       ScreenPair screen = buildScreen(template);
+      log.debug("Did build screen " + screen.getDisplayName());
       resetImageSourceLocationForScreen(screen);
+      log.debug("Did resetImageSourceLocationForScreen");
       
       // ---------------download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
+      log.debug("Resource downloaded");
       return reBuildCommand(screen);
    }
 
