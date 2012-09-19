@@ -58,7 +58,7 @@
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet-jse.jar" sourcepath="/Users/marcus/Downloads/restlet-jse-2.0.11/src/org.restlet"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/core/flexjson-2.1/flexjson-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/flexjson-2.1/flexjson-2.1.jar" sourcepath="lib/core/flexjson-2.1/flexjson-2.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/core/sun/persistence-api-1.0-rev-1.jar"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/activation-1.1.1.jar"/>
