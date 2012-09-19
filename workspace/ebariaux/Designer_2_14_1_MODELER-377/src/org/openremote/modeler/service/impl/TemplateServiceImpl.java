@@ -1174,6 +1174,7 @@ public class TemplateServiceImpl implements TemplateService
 
       @SuppressWarnings("unchecked")
       public Class locate(ObjectBinder binder, Path currentPath) throws ClassNotFoundException {
+        log.debug("Locating class " + binder.getClass().toString() + " for path " + currentPath);
          return Class.forName(binder.getClass().toString());
       }
    }
