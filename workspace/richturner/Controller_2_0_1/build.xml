@@ -52,9 +52,12 @@
   <property name = "test.dir" value = "test"/>
   <property name = "lib.dir" value = "lib"/>
   <property name = "build.dir" value = "build"/>
+  <property name = "installer.dir" value = "installer/output"/>
+  <property name = "jre.dir" value = "jre"/>
   <property name = "classes.dir" value = "${build.dir}/classes"/>
+  <property name = "output.tmp.dir" value = "output/tmp"/>
   <property name = "output.dir" value = "output"/>
-  <property name = "output.controller.dir" value = "${output.dir}/OpenRemote-Controller-${version}/webapps/controller"/>
+  <property name = "output.controller.dir" value = "${output.tmp.dir}/controller/webapps/controller"/>
   <property name = "runtime.dir" value = "runtime/apache-tomcat-6.0.18"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "web.dir" value = "web"/>
@@ -189,6 +192,7 @@
     <mkdir dir = "${build.dir}/testcontainer/logs/isy99"/>
 
     <mkdir dir = "${output.dir}"/>
+	<mkdir dir = "${output.tmp.dir}"/>
 
     <copy todir = "${build.dir}/lib" flatten = "true">
       <fileset dir = "${lib.dir}/core">
@@ -322,12 +326,12 @@
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
 
-    <mkdir dir = "${output.dir}/OpenRemote-Controller-${version}"/>
+    <mkdir dir = "${output.tmp.dir}/controller"/>
 
     <!--
      | Copy the pre-configured runtime...
      +-->
-    <copy todir = "${output.dir}/OpenRemote-Controller-${version}">
+    <copy todir = "${output.tmp.dir}/controller">
       <fileset dir = "${runtime.dir}"/>
     </copy>
 
@@ -353,14 +357,35 @@
     </copy>
 
     <!--
-     | Zip it up...
+     | Copy installer files...
      +-->
-    <zip basedir = "${output.dir}"
+    <copy todir = "${output.tmp.dir}">
+      <fileset dir = "${installer.dir}"/>
+    </copy>
+	
+    <!--
+     | Create Zip without JRE...
+     +-->
+    <zip basedir = "${output.tmp.dir}"
+         destfile = "${output.dir}/OpenRemote-Controller-nojre-${version}.zip"
+         whenempty = "fail">
+    </zip>
+	
+    <!--
+     | Copy jre files...
+     +-->
+	<mkdir dir = "${output.tmp.dir}/controller/jre"/>
+    <copy todir = "${output.tmp.dir}/controller/jre">
+      <fileset dir = "${jre.dir}"/>
+    </copy>
+
+	 <!--
+     | Create Zip with JRE...
+     +-->
+    <zip basedir = "${output.tmp.dir}"
          destfile = "${output.dir}/OpenRemote-Controller-${version}.zip"
          whenempty = "fail">
-
-    </zip> 
-
+    </zip>
   </target>
 
   

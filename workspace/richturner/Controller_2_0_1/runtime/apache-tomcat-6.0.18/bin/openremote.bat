@@ -14,6 +14,9 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
+rem Set Title
+@TITLE=OpenRemote Controller
+
 if "%OS%" == "Windows_NT" setlocal
 rem ---------------------------------------------------------------------------
 rem Start/Stop Script for the CATALINA Server
@@ -68,26 +71,31 @@ rem $Id: catalina.bat 656834 2008-05-15 21:04:04Z markt $
 rem ---------------------------------------------------------------------------
 
 rem Guess CATALINA_HOME if not defined
+pushd "%~dp0"
 set CURRENT_DIR=%cd%
 if not "%CATALINA_HOME%" == "" goto gotHome
 set CATALINA_HOME=%CURRENT_DIR%
 if exist "%CATALINA_HOME%\bin\openremote.bat" goto okHome
-cd ..
+cd..
 set CATALINA_HOME=%cd%
 cd %CURRENT_DIR%
 :gotHome
 if exist "%CATALINA_HOME%\bin\openremote.bat" goto okHome
 echo The CATALINA_HOME environment variable is not defined correctly
 echo This environment variable is needed to run this program
-goto end
+goto error
 :okHome
 
 rem Get standard Java environment variables
 if exist "%CATALINA_HOME%\bin\tomcat\setclasspath.bat" goto okSetclasspath
 echo Cannot find %CATALINA_HOME%\bin\tomcat\setclasspath.bat
 echo This file is needed to run this program
-goto end
+goto error
 :okSetclasspath
+rem Set JRE to our embedded one if variable not set
+if not "%JRE_HOME%" == "" goto gotJreHome
+set JRE_HOME=%CATALINA_HOME%\jre\win
+:gotJreHome
 set BASEDIR=%CATALINA_HOME%
 call "%CATALINA_HOME%\bin\tomcat\setclasspath.bat" %1
 if errorlevel 1 goto end
@@ -157,6 +165,9 @@ if ""%1"" == ""start"" goto doStart
 if ""%1"" == ""stop"" goto doStop
 if ""%1"" == ""version"" goto doVersion
 
+rem Assume we're running
+goto doRun
+
 echo Usage:  catalina ( commands ... )
 echo commands:
 rem echo   debug             Start Catalina in a debugger
@@ -168,7 +179,7 @@ echo   start             Start Catalina in a separate window
 rem echo   start -security   Start in a separate window with security manager
 echo   stop              Stop Catalina
 echo   version           What version of tomcat are you running?
-goto end
+goto error
 
 :doDebug
 shift
@@ -181,12 +192,13 @@ set SECURITY_POLICY_FILE=%CATALINA_BASE%\conf\catalina.policy
 goto execCmd
 
 :doRun
+rem Launch of controller web page
+start /B cmd /c call "%cd%\launcher.bat" >NUL 2>&1
 shift
 if not ""%1"" == ""-security"" goto execCmd
 shift
 echo Using Security Manager
 set SECURITY_POLICY_FILE=%CATALINA_BASE%\conf\catalina.policy
-goto execCmd
 
 :doStart
 shift
@@ -238,5 +250,8 @@ goto end
 :doSecurityJpda
 %_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% %JPDA_OPTS% %DEBUG_OPTS% -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Djava.security.manager -Djava.security.policy=="%SECURITY_POLICY_FILE%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
+
+:error
+pause
 
 :end
