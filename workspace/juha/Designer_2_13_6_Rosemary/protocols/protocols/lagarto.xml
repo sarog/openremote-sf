@@ -2,7 +2,7 @@
 <openremote xmlns="http://www.openremote.org" 
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.openremote.org protocol.xsd">
-  <protocol displayName="panStamp's lagarto protocol" tagName="lagarto">
+  <protocol displayName="panStamp lagarto" tagName="lagarto">
     <attr name="network" label="Server name">
       <validations>
         <allowBlank>false</allowBlank>
@@ -13,7 +13,7 @@
         <allowBlank>false</allowBlank>
       </validations>
     </attr>
-    <attr name="value" label="New value (leave empty for sensor)">
+    <attr name="value" label="New value">
       <validations>
         <allowBlank>true</allowBlank>
       </validations>
