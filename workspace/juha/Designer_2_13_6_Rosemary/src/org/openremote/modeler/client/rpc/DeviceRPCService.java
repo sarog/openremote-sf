@@ -28,6 +28,7 @@ import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.exception.gwt.ClientPersistenceException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -47,7 +48,7 @@ public interface DeviceRPCService extends RemoteService {
    
    ArrayList<DeviceDTO> loadAllDTOs();
 
-   DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid);
+   DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) throws ClientPersistenceException;
    
    DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid);
    
