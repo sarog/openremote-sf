@@ -1,4 +1,3 @@
-
 Designer 2.14.0 (2012-08-XX Markab)
 ===================================
 
@@ -13,17 +12,36 @@ Designer 2.14.0 (2012-08-XX Markab)
      been disabled.
 
 
+Designer 2.13.6 (2012-09-20 Rosemary)
+=====================================
+
+Bug fix release:
+ 
+ - Increase maximum command field length from 1000
+   characters to 4000 characters for UDP, TCP, HTTP
+   and Telnet protocols
+ - MODELER-379: attempting to delete an already deleted
+   device shows up as an error to the user
+ - MODELER-380: Log errors related to data integrity
+   issues when loading switches for a device
+ - Add panStamps lagarto server protocol configuration
+
+
 Designer 2.13.5 (2012-09-11 Rosemary)
 =====================================
 
- - Log errors related to data integrity issues with
-   commands associated to sensors
- - Transform macro references to DTOs more defensively
-   and guard against errors
+Bug fix release:
+
+ - MODELER-376: Log errors related to data integrity 
+   issues with commands associated to sensors
+ - MODELER-375: Transform macro references to DTOs 
+   more defensively and guard against errors
 
 
 Designer 2.13.4 (2012-07-29 Rosemary)
 =====================================
+
+Bug fix release:
 
  - MODELER-338: correctly reconstruct sensor data from
    database on load/restore

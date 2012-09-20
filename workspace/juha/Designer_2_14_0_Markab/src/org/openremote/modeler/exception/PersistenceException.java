@@ -20,6 +20,9 @@
  */
 package org.openremote.modeler.exception;
 
+import org.openremote.modeler.exception.gwt.ClientPersistenceException;
+
+
 /**
  * Exception class indicating a data access error in designer. Often this means
  * an unrecoverable error related to data integrity or constraints and there are
@@ -35,6 +38,53 @@ package org.openremote.modeler.exception;
  */
 public class PersistenceException extends OpenRemoteException
 {
+
+  /**
+   * Creates a GWT compatible client side persistence exception type and throws it. <p>
+   *
+   * This method satisfies the GWT compiler which does not support a simulated JRE environment
+   * for client-side (Javascript) code for java.text package (used in parent
+   * {@link org.openremote.modeler.exception.OpenRemoteException} class of this
+   * PersistenceException instance. <p>
+   *
+   * See {@link org.openremote.modeler.exception.gwt.ClientPersistenceException} class level
+   * JavaDoc for more information.
+   *
+   * @param msg       exception message
+   * @param params    message parameters as per the {@link java.text.MessageFormat} API
+   */
+  public static void throwAsGWTClientException(String msg, Object... params)
+  {
+    String formattedMessage = format(msg, params);
+
+    throw new ClientPersistenceException(formattedMessage);
+  }
+
+  /**
+   * Creates a GWT compatible client side persistence exception type and throws it. <p>
+   *
+   * This method satisfies the GWT compiler which does not support a simulated JRE environment
+   * for client-side (Javascript) code for java.text package (used in parent
+   * {@link org.openremote.modeler.exception.OpenRemoteException} class of this
+   * PersistenceException instance. <p>
+   *
+   * See {@link org.openremote.modeler.exception.gwt.ClientPersistenceException} class level
+   * JavaDoc for more information.
+   *
+   * @param msg       exception message
+   * @param cause     root cause exception
+   * @param params    message parameters as per the {@link java.text.MessageFormat} API
+   */
+  public static void throwAsGWTClientException(String msg, Throwable cause, Object... params)
+  {
+    String formattedMessage = format(msg, params);
+
+    throw new ClientPersistenceException(formattedMessage, cause);
+  }
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
 
   /**
    * Constructs a new exception with a given message.
@@ -85,6 +135,7 @@ public class PersistenceException extends OpenRemoteException
   {
     super(format(msg, params), cause);
   }
+
 
 }
 
