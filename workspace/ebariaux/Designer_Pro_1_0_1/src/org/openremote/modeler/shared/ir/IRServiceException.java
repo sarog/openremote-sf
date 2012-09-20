@@ -17,30 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.irfileparser;
-
-import com.extjs.gxt.ui.client.data.BeanModelTag;
+package org.openremote.modeler.shared.ir;
 
 /**
- * Adds BeanModelTag capability to BrandInfo for compatibility with GXT stores.
  * 
- * @author Eric Bariaux (eric@openremote.org)
- *
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class BrandInfo extends org.openremote.ir.domain.BrandInfo implements BeanModelTag {
+public class IRServiceException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  public BrandInfo() {
+  
+  public IRServiceException() {
     super();
   }
 
-  public BrandInfo(String brandName) {
-    super(brandName);
+  public IRServiceException(String message) {
+    super(message);
   }
   
-  public BrandInfo(org.openremote.ir.domain.BrandInfo bi) {
-    this(bi.getBrandName());
-  }
-   
 }

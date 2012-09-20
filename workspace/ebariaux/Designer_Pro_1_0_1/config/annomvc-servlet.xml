@@ -61,6 +61,7 @@
                 <prop key="/modeler/user.smvc">userController</prop>
                 <prop key="/modeler/linkController.smvc">linkControllerService</prop>
                 <prop key="/modeler/deviceDiscovery.smvc">deviceDiscoveryService</prop>
+                <prop key="/modeler/ir.smvc">irController</prop>
             </props>
         </property>
     </bean>
@@ -93,4 +94,5 @@
     <bean id="userController" class="org.openremote.modeler.server.UserController"></bean>
     <bean id="linkControllerService" class="org.openremote.modeler.server.LinkControllerService"></bean>
     <bean id="deviceDiscoveryService" class="org.openremote.modeler.server.DeviceDiscoveryService"></bean>
+    <bean id="irController" class="org.openremote.modeler.server.ir.IRServiceController"></bean>
 </beans>

@@ -19,8 +19,6 @@
 */
 package org.openremote.modeler.irfileparser;
 
-import org.openremote.ir.domain.BrandInfo;
-
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 /**
@@ -39,6 +37,10 @@ public class DeviceInfo extends org.openremote.ir.domain.DeviceInfo implements B
 
   public DeviceInfo(BrandInfo brand, String modelName) {
     super(brand, modelName);
+  }
+  
+  public DeviceInfo(org.openremote.ir.domain.DeviceInfo di) {
+    this(new BrandInfo(di.getBrandInfo()), di.getModelName());
   }
 
 }

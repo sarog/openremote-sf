@@ -23,6 +23,7 @@ package org.openremote.modeler.action;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,13 +31,22 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.KnxGroupAddress;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
 import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
 import org.openremote.modeler.utils.MultipartFileUtil;
@@ -59,6 +69,10 @@ public class FileUploadController extends MultiActionController implements BeanF
    
     /** The resource service. */
     private ResourceService resourceService;
+    
+    private UserService userService;
+
+    private Configuration configuration;
 
     private BeanFactory beanFactory;
 
@@ -138,6 +152,34 @@ public class FileUploadController extends MultiActionController implements BeanF
       response.setCharacterEncoding("UTF-8");
       response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
+    
+    public void importIRPronto(HttpServletRequest request, HttpServletResponse response) throws IOException {     
+      // Relay upload to IRService
+      HttpClient client = new HttpClient();
+      
+      client.getParams().setAuthenticationPreemptive(true);
+      User user = userService.getCurrentUser();
+      Credentials defaultCredentials = new UsernamePasswordCredentials(user.getUsername(), user.getPassword());
+
+      URL url = new URL(configuration.getIrServiceRESTRootUrl());
+      client.getState().setCredentials(new AuthScope(url.getHost(), url.getPort(), AuthScope.ANY_REALM), defaultCredentials);
+        
+      PostMethod postMethod = new PostMethod(configuration.getIrServiceRESTRootUrl() + "ProntoFile");
+      postMethod.setRequestEntity(new InputStreamRequestEntity(request.getInputStream()));
+      postMethod.setRequestHeader("Content-type", request.getHeader("Content-type"));
+
+      int statusCode = client.executeMethod(postMethod);
+      
+      response.setHeader("Content-type", "text/html");
+      response.setCharacterEncoding("UTF-8");      
+      response.flushBuffer();
+      if (statusCode == 200) {
+        response.getWriter().print(postMethod.getResponseBodyAsString());
+      } else {
+        response.getWriter().print("{\"errorMessage\":\"Communication error with IRService\",\"result\":null}");
+      }
+      postMethod.releaseConnection();
+    }
 
     /**
      * Sets the resource service.
@@ -187,6 +229,14 @@ public class FileUploadController extends MultiActionController implements BeanF
     private void rotateBackgroud(File sourceFile) {
         String targetImagePath = sourceFile.getParent() + File.separator + sourceFile.getName().replace(".", "_h.");
         ImageRotateUtil.rotate(sourceFile, targetImagePath, -90);
+    }
+
+    public void setUserService(UserService userService) {
+      this.userService = userService;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
     }
 
 }

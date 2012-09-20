@@ -36,18 +36,12 @@ import org.openremote.modeler.irfileparser.IRLed;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
-import org.restlet.client.Request;
-import org.restlet.client.Response;
-import org.restlet.client.Uniform;
-import org.restlet.client.resource.ClientResource;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.Component;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -168,6 +162,8 @@ public class IRFileImportToProtocolForm extends FormWindow {
                 if (result.getErrorMessage() != null) {
                   reportError(result.getErrorMessage());
                 } else {
+                  /* NO DIRECT REST CALL TO IRSERVICE
+
                   // Clean-up imported Pronto file as we're done importing
                   ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
                   clientResource.setOnResponse(new Uniform() {
@@ -176,6 +172,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
                     }
                   });
                   clientResource.delete();
+                  */
   
                   IRFileImportToProtocolForm.this.hide();                
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
