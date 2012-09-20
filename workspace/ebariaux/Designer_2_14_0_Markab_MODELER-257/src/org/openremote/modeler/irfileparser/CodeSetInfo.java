@@ -19,8 +19,6 @@
 */
 package org.openremote.modeler.irfileparser;
 
-import org.openremote.ir.domain.DeviceInfo;
-
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 /**
@@ -39,6 +37,10 @@ public class CodeSetInfo extends org.openremote.ir.domain.CodeSetInfo implements
 
   public CodeSetInfo(DeviceInfo device, String description, String category, int index) {
     super(device, description, category, index);
+  }
+  
+  public CodeSetInfo(org.openremote.ir.domain.CodeSetInfo csi) {
+    this(new DeviceInfo(csi.getDeviceInfo()), csi.getDescription(), csi.getCategory(), csi.getIndex());
   }
    
 }

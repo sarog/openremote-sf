@@ -59,6 +59,7 @@
                 <prop key="/modeler/configCategory.smvc">configCategory</prop>
                 <prop key="/modeler/template.smvc">templateController</prop>
                 <prop key="/modeler/user.smvc">userController</prop>
+                <prop key="/modeler/ir.smvc">irController</prop>
             </props>
         </property>
     </bean>
@@ -89,4 +90,5 @@
     <bean id="configCategory" class="org.openremote.modeler.server.ConfigCategoryController"></bean>
     <bean id="templateController" class="org.openremote.modeler.server.TemplateController"></bean>
     <bean id="userController" class="org.openremote.modeler.server.UserController"></bean>
+    <bean id="irController" class="org.openremote.modeler.server.ir.IRServiceController"></bean>
 </beans>
