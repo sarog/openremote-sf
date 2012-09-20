@@ -33,19 +33,13 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
-import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
-import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.PersistenceException;
-import org.openremote.modeler.exception.OpenRemoteException;
-import org.openremote.modeler.exception.gwt.ClientPersistenceException;
 import org.springframework.transaction.annotation.Transactional;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
