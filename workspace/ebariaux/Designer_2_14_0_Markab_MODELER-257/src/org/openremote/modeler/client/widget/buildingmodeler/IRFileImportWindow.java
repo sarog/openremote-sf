@@ -67,10 +67,6 @@ public class IRFileImportWindow extends FormWindow {
       deviceChooser.add(importForm);
       deviceChooser.setLayoutData(new FillLayout());
       add(deviceChooser);
-      
-      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importIRPronto");
-
-      
       importForm.disable();
       show();
    }
@@ -82,34 +78,8 @@ public class IRFileImportWindow extends FormWindow {
     */
    private void initial(String heading) {
       setHeading(heading);
-      
-      /* NO DIRECT REST CALL TO IRSERVICE
-      UtilsProxy.getIrServiceRestRootUrl(new AsyncSuccessCallback<String>() {        
-        @Override
-        public void onSuccess(final String result) {
-          form.setAction(result + "ProntoFile");
-          importForm.setIrServiceRootRestURL(result);
-          
-          addWindowListener(new WindowListener() {
 
-            @Override
-            public void windowHide(WindowEvent we) {
-              if (prontoFileHandle != null) {
-                // Clean-up imported Pronto file as we're done importing
-                ClientResource clientResource = new ClientResource(result + "ProntoFile/" + prontoFileHandle);
-                clientResource.setOnResponse(new Uniform() {
-                  // Even if empty, the onReponse handler is required or call does not go through
-                  public void handle(Request request, Response response) {
-                  }
-                });
-                clientResource.delete();
-              }
-              super.windowHide(we);
-            }            
-          });
-        }
-      });
-      */
+      form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importIRPronto");
       form.setEncoding(Encoding.MULTIPART);
       form.setMethod(Method.POST);
 

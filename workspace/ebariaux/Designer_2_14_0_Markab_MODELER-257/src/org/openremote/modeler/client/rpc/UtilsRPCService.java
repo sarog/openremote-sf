@@ -152,5 +152,4 @@ public interface UtilsRPCService extends RemoteService {
    
    void deleteImage(String imageName);
    
-   String getIrServiceRestRootURL();
 }

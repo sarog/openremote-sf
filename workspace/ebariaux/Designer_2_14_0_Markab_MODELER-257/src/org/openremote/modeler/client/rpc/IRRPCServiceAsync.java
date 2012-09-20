@@ -17,30 +17,27 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.irfileparser;
+package org.openremote.modeler.client.rpc;
 
-import com.extjs.gxt.ui.client.data.BeanModelTag;
+import java.util.ArrayList;
+
+import org.openremote.ir.domain.CodeSetInfo;
+import org.openremote.ir.domain.IRCommandInfo;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Adds BeanModelTag capability to BrandInfo for compatibility with GXT stores.
  * 
- * @author Eric Bariaux (eric@openremote.org)
- *
+ * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class BrandInfo extends org.openremote.ir.domain.BrandInfo implements BeanModelTag {
+public interface IRRPCServiceAsync {
 
-  private static final long serialVersionUID = 1L;
-
-  public BrandInfo() {
-    super();
-  }
-
-  public BrandInfo(String brandName) {
-    super(brandName);
-  }
+  void getBrands(String prontoHandle, AsyncCallback<ArrayList<String>> callback);
   
-  public BrandInfo(org.openremote.ir.domain.BrandInfo bi) {
-    this(bi.getBrandName());
-  }
-   
+  void getDevices(String prontoHandle, String brandName, AsyncCallback<ArrayList<String>> callback);
+  
+  void getCodeSets(String prontoHandle, String brandName, String deviceName, AsyncCallback<ArrayList<CodeSetInfo>> callback);
+  
+  void getIRCommands(String prontoHandle, String brandName, String deviceName, int index, AsyncCallback<ArrayList<IRCommandInfo>> callback);
+
 }
