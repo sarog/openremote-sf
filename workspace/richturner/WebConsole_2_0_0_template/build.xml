@@ -172,6 +172,7 @@ Test targets suppressed because -junit argument was not specified when running w
 
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />
+    <delete dir="war/WEB-INF/lib" failonerror="false" />
     <delete dir="war/webconsole" failonerror="false" />
   </target>
 
