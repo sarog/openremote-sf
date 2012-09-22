@@ -1,7 +1,6 @@
 <module rename-to='webconsole'>	
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
-	<inherits name="org.w3c.dom.DOM"/>
 	<inherits name="com.google.gwt.json.JSON"/>
 	<inherits name="com.google.web.bindery.autobean.AutoBean"/>
 	
