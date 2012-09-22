@@ -1,0 +1,165 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/************************************************************************
+CUSTOM CSS FILE FOR WEBCONSOLE CHANGE TO SUIT YOUR REQUIREMENTS
+
+This CSS file can be customised to suit your needs
+************************************************************************/
+
+
+/************************************************************************
+CONSOLE UNIT
+************************************************************************/
+
+#consoleUnit {
+	background-color: #383838;
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(0,0,0)), color-stop(0.5, rgb(56,56,56)));
+	background-image: -moz-linear-gradient(center bottom, rgb(0,0,0) 0%, rgb(56,56,56) 50%);
+	/* ie10 */
+	background-image: -ms-linear-gradient(#383838,#000000);
+	/* opera 11.1 */
+	background-image: -o-linear-gradient(#383838,#000000);
+	/* The "standard" */
+	background-image: linear-gradient(#383838,#000000);			
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+
+#consoleDisplayWrapper {
+	border-color: #333333;
+}
+
+#consoleDisplay, body.fullscreen {
+	background-color: black;
+}
+
+/************************************************************************
+TAB BAR
+************************************************************************/
+
+.tabBarComponent {
+	color: #CCC;
+	background-color: #5A5A5A;
+	background-image: linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);	
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(0,0,0)), color-stop(1, rgb(90,90,90)));
+	/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+}
+
+.tabBarComponent .selected {
+	font-weight: bold;
+	color: #FFF;
+	background-color: #6E6E6E;
+	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(20,20,20)),color-stop(1, rgb(110,110,110)));
+		/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+}
+
+.tabBarItem {
+	border-right: 1px solid black;
+}
+
+.screenIndicatorItem {
+	background-color: #6E6E6E;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.screenIndicatorItem.selected {
+	background-color: #FFF;
+}
+
+
+/************************************************************************
+WIDGETS
+*************************************************************************/
+
+.sliderComponentBar, .sliderComponentBarTrack {
+	background-color: buttonFace;
+	border-color: #000;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;	
+}
+
+.sliderComponentBarTrack {
+	background-color: #4FA800;
+}
+
+.sliderComponentHandle {
+   background-color: buttonFace;
+	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
+	-o-border-radius: 16px;
+	border-radius: 16px;
+	border-width: 2px;
+	border-style: solid;
+}
+
+.buttonComponent, .switchComponent {
+	background-color: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-color: -ms-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-color: -o-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-color: -webkit-gradient(linear, left top, left bottom, from(#dddee1), to(#b4b7be));
+	background-color: linear-gradient(-90deg, #dddee1, #b4b7be);
+	border: 0px;
+	-moz-border-radius: 4px;
+	-ms-border-radius: 4px;
+	-o-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	-moz-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-ms-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-o-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-webkit-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	color: #525c69;
+	font: bold 16px/18px "Helvetica Neue", "Arial", "sans-serif";
+	padding: 0;
+	text-shadow: 0 1px #fff;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+}
+
+.buttonComponent.pressed, .switchComponent.pressed {
+	background-color: #3A495E;
+	color: #DDD;
+}
+
