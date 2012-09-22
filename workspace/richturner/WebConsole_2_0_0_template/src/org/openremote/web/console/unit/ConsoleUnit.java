@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.web.console.unit;
 
 import java.util.ArrayList;
@@ -6,27 +25,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.core.client.GWT;
+
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.hold.*;
-import org.openremote.web.console.event.rotate.*;
+import org.openremote.web.console.event.hold.HoldEvent;
+import org.openremote.web.console.event.hold.HoldHandler;
+import org.openremote.web.console.event.rotate.RotationEvent;
+import org.openremote.web.console.event.rotate.RotationHandler;
 import org.openremote.web.console.event.sensor.SensorChangeEvent;
-import org.openremote.web.console.event.swipe.*;
+import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
-import org.openremote.web.console.event.ui.*;
+import org.openremote.web.console.event.swipe.SwipeHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.event.ui.CommandSendHandler;
+import org.openremote.web.console.event.ui.NavigateEvent;
+import org.openremote.web.console.event.ui.NavigateHandler;
+import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
+import org.openremote.web.console.event.ui.WindowResizeEvent;
+import org.openremote.web.console.event.ui.WindowResizeHandler;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentityList;
 import org.openremote.web.console.panel.entity.DataValuePair;
@@ -36,19 +55,41 @@ import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.WelcomeFlag;
-import org.openremote.web.console.service.*;
+import org.openremote.web.console.service.AsyncControllerCallback;
+import org.openremote.web.console.service.AutoBeanService;
+import org.openremote.web.console.service.AutoDiscoveryRPCService;
+import org.openremote.web.console.service.AutoDiscoveryRPCServiceAsync;
+import org.openremote.web.console.service.ControllerService;
+import org.openremote.web.console.service.EnumDataMap;
+import org.openremote.web.console.service.JSONPControllerService;
+import org.openremote.web.console.service.LocalDataService;
+import org.openremote.web.console.service.LocalDataServiceImpl;
+import org.openremote.web.console.service.PanelService;
+import org.openremote.web.console.service.PanelServiceImpl;
+import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.ImageContainer;
 import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class ConsoleUnit extends VerticalPanel implements RotationHandler, WindowResizeHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
