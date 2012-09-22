@@ -1,10 +1,29 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.web.console.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
@@ -12,12 +31,13 @@ import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
 import org.openremote.web.console.panel.entity.Navigate;
-import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.TabBarItem;
+import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.unit.ConsoleDisplay;
 import org.openremote.web.console.util.BrowserUtils;
+
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -25,9 +45,7 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;

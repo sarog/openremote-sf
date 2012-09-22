@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.web.console.service;
 
 import java.util.ArrayList;
@@ -12,7 +31,6 @@ import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.Cell;
 import org.openremote.web.console.panel.entity.ComponentContainer;
-import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Image;
@@ -25,21 +43,14 @@ import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.TabBarItem;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
-import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SliderMinMax;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
 import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionResult;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionUnit;
-import org.openremote.web.console.widget.panel.form.FormPanelComponent;
-import org.openremote.web.console.widget.panel.list.ListPanelComponent;
-
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 
 public class PanelServiceImpl implements PanelService {
 	private static PanelServiceImpl instance;

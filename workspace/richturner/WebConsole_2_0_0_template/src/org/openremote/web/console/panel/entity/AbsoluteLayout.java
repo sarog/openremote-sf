@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -18,13 +18,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel.entity;
-
-import org.openremote.web.console.panel.entity.component.ButtonComponent;
-import org.openremote.web.console.panel.entity.component.ImageComponent;
-import org.openremote.web.console.panel.entity.component.LabelComponent;
-import org.openremote.web.console.panel.entity.component.SliderComponent;
-import org.openremote.web.console.panel.entity.component.SwitchComponent;
-
 
 /**
  * The subclass of LayoutContainer which includes a component.

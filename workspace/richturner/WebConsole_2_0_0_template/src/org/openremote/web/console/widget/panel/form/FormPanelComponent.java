@@ -1,12 +1,29 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.web.console.widget.panel.form;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.controller.EnumControllerCommand;
+
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.Field;
@@ -15,11 +32,12 @@ import org.openremote.web.console.panel.entity.FormLayout;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.DataBindingService;
 import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.Sensor;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonAction;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
 import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
-import org.openremote.web.console.widget.Sensor;
+
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -28,10 +46,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import com.google.web.bindery.autobean.shared.Splittable;
-import com.google.web.bindery.autobean.shared.impl.AutoBeanCodexImpl.Coder;
-import com.google.web.bindery.autobean.shared.impl.SplittableList;
 
 public class FormPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "formPanelComponent";
