@@ -208,7 +208,7 @@ CONSOLE UNIT
 /* 	-o-transform: translate(50%,0); Opera */
 /* 	-moz-transform: translate(50%,0); */
 /*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
-                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
+/*                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
 }
 
 #consoleUnit.framed #consoleFrameLogo {

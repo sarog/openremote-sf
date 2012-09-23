@@ -235,7 +235,7 @@
                         ],
                         "width": "95%",
                         "itemBindingObject": "controllerCredentials",
-                        "left": "2%",
+                        "left": "2.5%",
                         "top": "55"
                     }
                 ],
