@@ -33,6 +33,7 @@ import org.openremote.web.console.panel.entity.component.ImageComponent;
 import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
+import org.openremote.web.console.panel.entity.component.WebElementComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
 
@@ -210,6 +211,7 @@ public class GridPanelComponent extends PanelComponent {
 				SliderComponent sliderComponent = cell.getSlider();
 				SwitchComponent switchComponent = cell.getSwitch();
 				ButtonComponent buttonComponent = cell.getButton();
+				WebElementComponent webComponent = cell.getWeb();
 				
 				// Create Console Component
 				ConsoleComponent component = null;
@@ -224,6 +226,8 @@ public class GridPanelComponent extends PanelComponent {
 					component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
 				} else if (buttonComponent != null) {
 					component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
+				} else if (webComponent != null) {
+					component = org.openremote.web.console.widget.WebElementComponent.build(webComponent);
 				} else {
 					org.openremote.web.console.widget.LabelComponent lblComponent = new org.openremote.web.console.widget.LabelComponent();
 					lblComponent.setText("COMPONENT TYPE NOT SUPPORTED.");

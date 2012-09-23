@@ -22,7 +22,6 @@ package org.openremote.web.console.widget.panel;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
@@ -30,9 +29,9 @@ import org.openremote.web.console.panel.entity.component.ImageComponent;
 import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
+import org.openremote.web.console.panel.entity.component.WebElementComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
-
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -126,6 +125,7 @@ public class AbsolutePanelComponent extends PanelComponent {
 		SliderComponent sliderComponent = layout.getSlider();
 		SwitchComponent switchComponent = layout.getSwitch();
 		ButtonComponent buttonComponent = layout.getButton();
+		WebElementComponent webComponent = layout.getWeb();
 		
 		// Create Console Component
 		ConsoleComponent component = null;
@@ -140,6 +140,8 @@ public class AbsolutePanelComponent extends PanelComponent {
 			component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
 		} else if (buttonComponent != null) {
 			component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
+		} else if (webComponent != null) {
+			component = org.openremote.web.console.widget.WebElementComponent.build(webComponent);
 		} else {
 			org.openremote.web.console.widget.LabelComponent lblComponent = new org.openremote.web.console.widget.LabelComponent();
 			lblComponent.setText("COMPONENT TYPE NOT SUPPORTED.");

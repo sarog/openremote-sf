@@ -24,6 +24,7 @@ import org.openremote.web.console.panel.entity.component.ImageComponent;
 import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
+import org.openremote.web.console.panel.entity.component.WebElementComponent;
 /**
  * 
  *  
@@ -35,10 +36,12 @@ public interface ComponentContainer {
 	SliderComponent getSlider();
 	ImageComponent getImage();
 	SwitchComponent getSwitch();
+	WebElementComponent getWeb();
 	
 	void setButton(ButtonComponent component);
 	void setLabel(LabelComponent component);
 	void setSlider(SliderComponent component);
 	void setImage(ImageComponent component);
 	void setSwitch(SwitchComponent component);
+	void setWeb(WebElementComponent component);
 }
