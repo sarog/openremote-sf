@@ -187,7 +187,7 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	@Override
 	public void onMouseDown(MouseDownEvent event) {
 		event.stopPropagation();
-		event.preventDefault();
+		//event.preventDefault();
 		startEvent = new PressStartEvent(event);
 		eventBus.fireEvent(startEvent);
 		this.fireEvent(startEvent);
