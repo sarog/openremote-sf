@@ -20,10 +20,11 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
 /**
  * Forwards to screen or do other logical functions.
  * Includes to group, to screen, to previous screen , to next screen, back, login, logout and setting.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface Navigate {
    String getTo();

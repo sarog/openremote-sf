@@ -35,7 +35,11 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class FormField extends InteractiveConsoleComponent implements KeyUpHandler, BlurHandler, FocusHandler {
 	public static final String CLASS_NAME = "formFieldComponent";
 	public static final String LABEL_CLASS_NAME = "formFieldLabelComponent";

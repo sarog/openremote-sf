@@ -24,11 +24,10 @@ import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.shared.EventHandler;
-
 /**
- * This event defines press move event
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class PressMoveEvent extends PressEvent<PressMoveHandler> {
 	private static final Type<PressMoveHandler> TYPE = new Type<PressMoveHandler>();

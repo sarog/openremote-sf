@@ -30,7 +30,11 @@ import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public abstract class PanelComponent extends PassiveConsoleComponent implements Positional {
 	private static final String CLASS_NAME = "panelComponent";
 	private Integer left;

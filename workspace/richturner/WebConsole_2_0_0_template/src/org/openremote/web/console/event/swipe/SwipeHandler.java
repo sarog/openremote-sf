@@ -20,7 +20,11 @@
 package org.openremote.web.console.event.swipe;
 
 import com.google.gwt.event.shared.EventHandler;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface SwipeHandler extends EventHandler {
 	void onSwipe(SwipeEvent event);
 }

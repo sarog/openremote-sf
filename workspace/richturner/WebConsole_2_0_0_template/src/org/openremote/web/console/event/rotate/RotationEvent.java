@@ -20,10 +20,10 @@
 package org.openremote.web.console.event.rotate;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class RotationEvent extends GwtEvent<RotationHandler> {
 	private static final Type<RotationHandler> TYPE = new Type<RotationHandler>();

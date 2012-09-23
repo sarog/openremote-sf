@@ -20,10 +20,10 @@
 package org.openremote.web.console.panel.entity.component;
 
 import org.openremote.web.console.panel.entity.Link;
-
-
 /**
  * The label can set font size and color, change text by polling status.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface LabelComponent {
 	Integer getId();

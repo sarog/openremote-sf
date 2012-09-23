@@ -20,9 +20,10 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
 /**
  * The tabBar contains tabBarItems, which displayed as toolbars.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface TabBar {   
    public List<TabBarItem> getItem();

@@ -37,7 +37,11 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class JSONPControllerService extends ControllerService {
 	private static JSONPControllerService instance = null;
 	private String uuid;

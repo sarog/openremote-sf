@@ -20,7 +20,11 @@
 package org.openremote.web.console.event.press;
 
 import com.google.gwt.event.shared.EventHandler;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface PressMoveHandler extends EventHandler {
 	void onPressMove(PressMoveEvent event);
 }

@@ -38,7 +38,11 @@ import org.openremote.web.console.util.ImageLoadedCallback;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	public static final int LABEL_FONT_SIZE = 12;

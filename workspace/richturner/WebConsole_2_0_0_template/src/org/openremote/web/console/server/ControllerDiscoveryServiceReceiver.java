@@ -27,7 +27,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-
 /**
  * Controller IP auto discovery server, this is a TCP server receiving IP from Controllers.
  * 

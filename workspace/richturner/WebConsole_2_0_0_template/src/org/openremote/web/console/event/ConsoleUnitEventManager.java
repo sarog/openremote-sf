@@ -27,7 +27,11 @@ import org.openremote.web.console.event.press.PressMoveReleaseHandlerImpl;
 import org.openremote.web.console.event.press.PressStartEvent;
 
 import com.google.gwt.event.shared.HandlerManager;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ConsoleUnitEventManager {
 	private static ConsoleUnitEventManager instance;
 	private HandlerManager eventBus;

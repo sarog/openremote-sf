@@ -24,12 +24,11 @@ import java.util.Date;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
-
 /**
  * This event provides an amalgamation of touchstart and mousedown events
  * so it can be used for mobile and desktop human interaction detection
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public abstract class PressEvent<H extends EventHandler> extends GwtEvent<H> {
 	protected int clientXPos;

@@ -20,7 +20,11 @@
 package org.openremote.web.console.widget;
 
 import com.google.gwt.user.client.ui.HTML;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class HTMLComponent extends PassiveConsoleComponent {
 	public static final String CLASS_NAME = "htmlComponent";
 	

@@ -26,11 +26,10 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
- * This event defines the end of a press event
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class PressEndEvent extends PressEvent<PressEndHandler> {
 	private static final Type<PressEndHandler> TYPE = new Type<PressEndHandler>();

@@ -33,7 +33,11 @@ import org.openremote.web.console.util.ImageLoadedCallback;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler, TapHandler {
 	public static final String CLASS_NAME = "switchComponent";
 	public static final int LABEL_FONT_SIZE = 12;

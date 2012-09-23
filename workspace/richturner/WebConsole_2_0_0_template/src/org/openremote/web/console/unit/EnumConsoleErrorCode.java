@@ -18,7 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.unit;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public enum EnumConsoleErrorCode {
 	
 	UNKNOWN_ERROR (1000,"Unknown console error"),

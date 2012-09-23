@@ -20,12 +20,11 @@
 package org.openremote.web.console.event.sensor;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
  * This event provides a high level semantic event to indicate a quick press
  * and release event on a component with restricted X, Y movement during event
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class SensorChangeEvent extends GwtEvent<SensorChangeHandler> {
 	private static final Type<SensorChangeHandler> TYPE = new Type<SensorChangeHandler>();

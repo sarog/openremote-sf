@@ -47,7 +47,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class FormPanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "formPanelComponent";
 	private List<FormField> fields = new ArrayList<FormField>();

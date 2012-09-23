@@ -51,7 +51,11 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class TabBarComponent extends InteractiveConsoleComponent implements ScreenViewChangeHandler {
 	public static final String CLASS_NAME = "tabBarComponent";
 	public static final String TAB_ITEM_CLASS_NAME = "tabBarItem";

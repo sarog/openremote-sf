@@ -63,7 +63,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.Splittable;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ListPanelComponent extends PanelComponent implements Draggable, Interactive, BindingDataChangeHandler {
 	private static final String CLASS_NAME = "listPanelComponent";
 	private static final String BINDING_FIELD_REGEX = "\\$\\{(\\w+)\\}";

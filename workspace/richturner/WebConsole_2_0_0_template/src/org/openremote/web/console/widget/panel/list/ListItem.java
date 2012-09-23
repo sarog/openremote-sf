@@ -55,7 +55,11 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ListItem extends PanelComponent implements Interactive, TapHandler, TouchMoveHandler, MouseMoveHandler {
 	public static final String CLASS_NAME = "listItemComponent";
 	private static final int DEFAULT_ITEM_HEIGHT = 50;

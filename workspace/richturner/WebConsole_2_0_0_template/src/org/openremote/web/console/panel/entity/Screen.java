@@ -20,9 +20,10 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
 /**
  * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface Screen {
    Integer getId();

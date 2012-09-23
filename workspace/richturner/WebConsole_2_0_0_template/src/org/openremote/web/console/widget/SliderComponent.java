@@ -37,7 +37,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class SliderComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "sliderComponent";
 	public static final String HANDLE_CLASS_NAME = "sliderComponentHandle";

@@ -23,7 +23,11 @@ import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.WelcomeFlag;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public enum EnumDataMap {
 	CONTROLLER_CREDENTIALS_LIST("controllerCredentialsList", ControllerCredentialsList.class, "{\"controllerCredentials\":[]}"),
 	CONTROLLER_CREDENTIALS("controllerCredentials", ControllerCredentials.class),

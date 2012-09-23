@@ -25,7 +25,11 @@ import java.util.Map;
 
 import org.openremote.web.console.panel.entity.Link;
 import org.openremote.web.console.panel.entity.StateMap;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class Sensor {
 	Integer sensorRef;
 	boolean valid = false;

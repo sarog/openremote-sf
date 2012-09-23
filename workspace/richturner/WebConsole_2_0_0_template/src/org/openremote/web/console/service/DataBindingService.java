@@ -30,7 +30,6 @@ import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
-
 /**
  * Used as a crude way of providing data binding, bindable objects must
  * be defined in the binding map, all bindable objects must exist in local

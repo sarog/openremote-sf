@@ -21,11 +21,10 @@ package org.openremote.web.console.event.drag;
 
 import org.openremote.web.console.event.press.PressEvent;
 import org.openremote.web.console.event.press.PressStartHandler;
-
 /**
- * This event defines press move event
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class DragStartEvent extends DragEvent<DragStartHandler> {
 	private static final Type<DragStartHandler> TYPE = new Type<DragStartHandler>();

@@ -25,7 +25,11 @@ import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelSize;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface PanelService {
 	Integer getDefaultGroupId();
 	

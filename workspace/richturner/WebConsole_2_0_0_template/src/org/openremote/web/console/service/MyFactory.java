@@ -49,7 +49,11 @@ import org.openremote.web.console.panel.entity.component.LabelComponent;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface MyFactory extends AutoBeanFactory {
 	AutoBean<ControllerCredentials> controllerCredentials();
 	AutoBean<ControllerCredentials> controllerCredentials(ControllerCredentials toWrap);

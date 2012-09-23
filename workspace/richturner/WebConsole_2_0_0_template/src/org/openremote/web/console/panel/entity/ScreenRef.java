@@ -18,7 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel.entity;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface ScreenRef {
 	int getRef();
 	void setRef(int ref);

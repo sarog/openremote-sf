@@ -24,13 +24,13 @@ import java.util.Map;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentityList;
-
 /**
  * Controller Service Interface for defining the communication with
  * a controller, based along the lines of GWT RPC but controller service
  * may use alternative communication mechanism (JSON, Socket, etc) but the
  * idea is that it must be an Asynchronous service.
- * @author rich
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public abstract class ControllerService {
 	Controller controller;

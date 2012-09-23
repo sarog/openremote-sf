@@ -20,7 +20,6 @@
 package org.openremote.web.console.event.ui;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
  * Binding data source changed event
  *  

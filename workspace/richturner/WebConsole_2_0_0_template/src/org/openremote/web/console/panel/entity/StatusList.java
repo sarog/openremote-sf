@@ -20,7 +20,11 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface StatusList {
 	List<Status> getStatus();
 	void setStatus(List<Status> statusList);

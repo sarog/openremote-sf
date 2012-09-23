@@ -36,6 +36,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  * and determines the size of the window we have to work with:
  * windowHeight = Longest window dimension (i.e. portrait)
  * windowWidth = Shortest window dimension
+ * 
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class WebConsole implements EntryPoint {
 	private static ConsoleUnit consoleUnit;

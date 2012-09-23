@@ -29,7 +29,11 @@ import org.openremote.web.console.event.ui.BindingDataChangeEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.Cookies;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class LocalDataServiceImpl implements LocalDataService {
 	private static LocalDataServiceImpl instance;
 	private static final String PREFIX = "ConsoleUnit";

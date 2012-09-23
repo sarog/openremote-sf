@@ -24,7 +24,11 @@ import java.util.Set;
 
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.widget.panel.PanelComponent;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface ScreenView {
 	public Set<PanelComponent> getPanelComponents();
 	

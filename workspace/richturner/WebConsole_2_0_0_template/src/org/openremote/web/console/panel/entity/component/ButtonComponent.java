@@ -22,7 +22,11 @@ package org.openremote.web.console.panel.entity.component;
 import org.openremote.web.console.panel.entity.ButtonDefault;
 import org.openremote.web.console.panel.entity.ButtonPressed;
 import org.openremote.web.console.panel.entity.Navigate;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface ButtonComponent {
 	Integer getId();
 	String getName();

@@ -25,8 +25,8 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * This event provides an amalgamation of touchstart and mousedown events
  * so it can be used for mobile and desktop human interaction detection
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class HoldEvent extends GwtEvent<HoldHandler> {
 	private static final Type<HoldHandler> TYPE = new Type<HoldHandler>();

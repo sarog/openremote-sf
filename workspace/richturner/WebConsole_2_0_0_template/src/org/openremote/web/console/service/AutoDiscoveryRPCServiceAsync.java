@@ -22,7 +22,11 @@ package org.openremote.web.console.service;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface AutoDiscoveryRPCServiceAsync {
    void getAutoDiscoveryServers(AsyncCallback<List<String>> callback);
 }

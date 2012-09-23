@@ -23,9 +23,10 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 /**
  * The Interface IPAutoDiscoveryRPCService is for auto discovery controllers in the same network segment.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 @RemoteServiceRelativePath("autodiscovery")
 public interface AutoDiscoveryRPCService extends RemoteService {

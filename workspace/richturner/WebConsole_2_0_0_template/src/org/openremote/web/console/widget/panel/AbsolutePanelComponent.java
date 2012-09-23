@@ -36,7 +36,11 @@ import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class AbsolutePanelComponent extends PanelComponent {
 	private static final String CLASS_NAME = "absolutePanelComponent";
 	private ConsoleComponent component;

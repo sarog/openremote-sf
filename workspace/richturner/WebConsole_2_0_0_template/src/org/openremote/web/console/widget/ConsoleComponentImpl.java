@@ -32,7 +32,11 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public abstract class ConsoleComponentImpl extends Composite implements ConsoleComponent {
 	protected boolean isInitialised = false;
 	protected Sensor sensor;

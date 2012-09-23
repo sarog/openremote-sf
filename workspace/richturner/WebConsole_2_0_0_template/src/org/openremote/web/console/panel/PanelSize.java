@@ -18,7 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class PanelSize {
 	int width = 0;
 	int height = 0;

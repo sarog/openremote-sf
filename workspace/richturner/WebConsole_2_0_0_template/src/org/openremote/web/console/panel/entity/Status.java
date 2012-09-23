@@ -18,9 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel.entity;
-
 /**
  * The label can set font size and color, change text by polling status.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface Status {
    String getContent();

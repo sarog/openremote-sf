@@ -22,10 +22,13 @@ package org.openremote.web.console.util;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.service.AsyncControllerCallback;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class PollingHelper {
 	private Set<Integer> monitoredSensorIds = new HashSet<Integer>();
 	private boolean monitorActive = false;

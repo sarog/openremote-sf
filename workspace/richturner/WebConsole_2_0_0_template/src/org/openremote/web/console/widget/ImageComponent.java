@@ -28,7 +28,11 @@ import org.openremote.web.console.util.ImageContainer;
 import org.openremote.web.console.util.ImageLoadedCallback;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ImageComponent extends PassiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "imageComponent";
 	private String state;

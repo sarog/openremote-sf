@@ -33,7 +33,11 @@ import org.openremote.web.console.widget.panel.AbsolutePanelComponent;
 import org.openremote.web.console.widget.panel.GridPanelComponent;
 import org.openremote.web.console.widget.panel.form.FormPanelComponent;
 import org.openremote.web.console.widget.panel.list.ListPanelComponent;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ScreenViewService {
 	private static ScreenViewService instance = null;
 	Map<Integer, ScreenViewImpl> screenViewMap = new HashMap<Integer, ScreenViewImpl>();	

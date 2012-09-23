@@ -18,7 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.util;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public abstract class ImageLoadedCallback {
 	public abstract void onImageLoaded(ImageContainer container);
 }
