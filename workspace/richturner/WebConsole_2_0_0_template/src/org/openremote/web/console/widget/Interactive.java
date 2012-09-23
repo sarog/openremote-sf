@@ -28,7 +28,11 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.dom.client.TouchStartHandler;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface Interactive extends MouseDownHandler, TouchStartHandler, MouseUpHandler, MouseOutHandler, TouchEndHandler {
 	public void onTouchStart(TouchStartEvent event);
 	public void onMouseDown(MouseDownEvent event);

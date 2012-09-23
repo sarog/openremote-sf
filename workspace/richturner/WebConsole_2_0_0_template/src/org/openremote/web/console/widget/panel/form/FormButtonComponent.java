@@ -24,7 +24,11 @@ import org.openremote.web.console.widget.ButtonComponent;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class FormButtonComponent extends ButtonComponent {
 	public static final String CLASS_NAME = "formButtonComponent";
 	private EnumFormButtonType buttonType = null;

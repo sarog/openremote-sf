@@ -31,7 +31,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class ScreenIndicator extends PassiveConsoleComponent implements ScreenViewChangeHandler {
 	private static final String CLASS_NAME = "screenIndicatorComponent";
 	private static final String ITEM_CLASS_NAME = "screenIndicatorItem";

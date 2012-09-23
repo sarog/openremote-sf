@@ -38,12 +38,11 @@ import org.openremote.web.console.widget.panel.PanelComponent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
-
 /**
  * Defines a set of widgets that form a specific
  * screen for display on the console display
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	Set<PanelComponent> panelComponents = new HashSet<PanelComponent>();

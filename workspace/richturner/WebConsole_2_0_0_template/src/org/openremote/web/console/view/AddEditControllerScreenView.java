@@ -22,7 +22,11 @@ package org.openremote.web.console.view;
 import org.openremote.web.console.widget.panel.form.FormField;
 import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
 import org.openremote.web.console.widget.panel.form.FormPanelComponent;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class AddEditControllerScreenView extends ScreenViewImpl {
 	public static final String TITLE = "Add/Edit Controller";
 	private FormPanelComponent form;

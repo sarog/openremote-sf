@@ -22,7 +22,6 @@ package org.openremote.web.console.server;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-
 /**
  * Controller IP auto discovery client, this is a Multicast UDP client broadcasting request to Controllers for asking
  * their IPs.

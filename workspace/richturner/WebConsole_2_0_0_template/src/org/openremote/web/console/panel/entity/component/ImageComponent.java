@@ -21,11 +21,11 @@ package org.openremote.web.console.panel.entity.component;
 
 import org.openremote.web.console.panel.entity.Include;
 import org.openremote.web.console.panel.entity.Link;
-
-
 /**
  * The image component can has sensor and can change status.
  * It can also has a linked label to display as a label. 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface ImageComponent {
    

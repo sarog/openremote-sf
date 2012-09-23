@@ -24,7 +24,11 @@ import org.openremote.web.console.controller.EnumControllerResponseCode;
 
 import com.google.gwt.jsonp.client.TimeoutException;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public abstract class AsyncControllerCallback<T> implements AsyncCallback<T> {
 	@Override
 	public void onFailure(Throwable exception) {

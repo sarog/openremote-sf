@@ -20,7 +20,11 @@
 package org.openremote.web.console.widget.panel.form;
 
 import com.google.gwt.core.client.JavaScriptObject;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface FormHandler {
 	public void onValidationSuccess(JavaScriptObject obj);
 	

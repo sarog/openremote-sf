@@ -20,11 +20,10 @@
 package org.openremote.web.console.event.drag;
 
 import org.openremote.web.console.event.press.PressEndEvent;
-
 /**
- * This event defines a drag cancel event
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class DragEndEvent extends DragEvent<DragEndHandler> {
 	private static final Type<DragEndHandler> TYPE = new Type<DragEndHandler>();

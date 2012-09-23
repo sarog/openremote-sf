@@ -21,12 +21,11 @@ package org.openremote.web.console.event.tap;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
-
 /**
  * This event provides a high level semantic event to indicate a quick press
  * and release event on a component with restricted X, Y movement during event
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class TapEvent extends GwtEvent<TapHandler> {
 	private static final Type<TapHandler> TYPE = new Type<TapHandler>();

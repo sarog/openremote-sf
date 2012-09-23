@@ -22,11 +22,10 @@ package org.openremote.web.console.event.ui;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
  * Indicates that the screen view has changed on the controller
  *  
- * @author rich
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class CommandSendEvent extends GwtEvent<CommandSendHandler> {
 	private static final Type<CommandSendHandler> TYPE = new Type<CommandSendHandler>();

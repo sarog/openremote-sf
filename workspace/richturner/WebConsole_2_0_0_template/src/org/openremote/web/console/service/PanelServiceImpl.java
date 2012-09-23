@@ -51,7 +51,11 @@ import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionResult;
 import org.openremote.web.console.widget.panel.PanelComponent.DimensionUnit;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class PanelServiceImpl implements PanelService {
 	private static PanelServiceImpl instance;
 	private Panel currentPanel;

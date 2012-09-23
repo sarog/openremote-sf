@@ -20,7 +20,11 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface ScreenList {
 	List<Screen> getScreen();
 	void setScreen(List<Screen> screenList);

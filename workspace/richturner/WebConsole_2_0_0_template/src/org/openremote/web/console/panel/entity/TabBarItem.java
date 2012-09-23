@@ -18,9 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel.entity;
-
 /**
  * This class is responsible for storing data about tabBarItem.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface TabBarItem {
    String getName();

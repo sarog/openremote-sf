@@ -18,12 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.panel.entity;
-
-
 /**
  * The screen gesture, which contains 4 swipe types: "top-to-bottom", "bottom-to-top", "left-to-right" and "right-to-left".
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
-
 public interface Gesture {
 	Integer getId();
 	String getType();

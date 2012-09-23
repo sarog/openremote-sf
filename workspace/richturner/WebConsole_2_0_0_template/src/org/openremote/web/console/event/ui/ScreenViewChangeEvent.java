@@ -20,11 +20,10 @@
 package org.openremote.web.console.event.ui;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
  * Indicates that the screen view has changed on the controller
  *  
- * @author rich
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class ScreenViewChangeEvent extends GwtEvent<ScreenViewChangeHandler> {
 	private static final Type<ScreenViewChangeHandler> TYPE = new Type<ScreenViewChangeHandler>();

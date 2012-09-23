@@ -22,7 +22,11 @@ package org.openremote.web.console.panel;
 import org.openremote.web.console.panel.entity.GroupList;
 import org.openremote.web.console.panel.entity.ScreenList;
 import org.openremote.web.console.panel.entity.TabBar;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface Panel {
    GroupList getGroups();
    ScreenList getScreens();

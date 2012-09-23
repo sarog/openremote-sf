@@ -22,7 +22,11 @@ package org.openremote.web.console.view;
 import org.openremote.web.console.panel.entity.ListItemLayout;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.widget.panel.list.ListPanelComponent;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class TestScreenView extends ScreenViewImpl {
 	public TestScreenView() {
 		// Create a list panel

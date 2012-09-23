@@ -20,7 +20,11 @@
 package org.openremote.web.console.event.sensor;
 
 import com.google.gwt.event.shared.EventHandler;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface SensorChangeHandler extends EventHandler {
 	void onSensorChange(SensorChangeEvent event);
 	

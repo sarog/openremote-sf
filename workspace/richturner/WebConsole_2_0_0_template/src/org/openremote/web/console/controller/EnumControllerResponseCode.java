@@ -18,7 +18,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.web.console.controller;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public enum EnumControllerResponseCode {
 	OK (200,"OK"),
 	BAD_COMMAND (400, "Invalid Command Request"),

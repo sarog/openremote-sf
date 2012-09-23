@@ -20,7 +20,11 @@
 package org.openremote.web.console.panel.entity.component;
 
 import org.openremote.web.console.panel.entity.Link;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface SwitchComponent {
 	Integer getId();
 	Link getLink();

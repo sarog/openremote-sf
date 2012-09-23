@@ -40,13 +40,12 @@ import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-
 /**
  * This is the container where content will actually be displayed
  * An absolute panel is used as a wrapper to ease with repositioning
  * the display within the console unit during orientation change
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class ConsoleDisplay extends InteractiveConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
 	public static final String CLASS_NAME = "consoleDisplay";

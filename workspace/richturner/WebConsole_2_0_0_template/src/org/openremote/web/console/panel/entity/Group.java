@@ -20,9 +20,10 @@
 package org.openremote.web.console.panel.entity;
 
 import java.util.List;
-
 /**
  * Group is parsed by group node, which contains id, name, screens and tabBar.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface Group {
    public int getId();

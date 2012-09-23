@@ -20,7 +20,11 @@
 package org.openremote.web.console.controller;
 
 import java.util.List;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public interface ControllerCredentialsList {
 	public List<ControllerCredentials> getControllerCredentials();
 	

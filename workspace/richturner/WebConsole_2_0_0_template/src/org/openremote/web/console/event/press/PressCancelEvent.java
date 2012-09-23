@@ -23,9 +23,9 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 
 /**
- * This event defines the end of a press event
- * @author rich
- *
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class PressCancelEvent extends PressEvent<PressCancelHandler> {
 	private static final Type<PressCancelHandler> TYPE = new Type<PressCancelHandler>();

@@ -22,11 +22,10 @@ package org.openremote.web.console.event.drag;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
-
 /**
  * 
- * @author rich
- *
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public abstract class DragEvent<H extends EventHandler> extends GwtEvent<H> {
 	protected int xPos;

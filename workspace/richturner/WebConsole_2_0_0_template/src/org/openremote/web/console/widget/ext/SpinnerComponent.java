@@ -20,7 +20,11 @@
 package org.openremote.web.console.widget.ext;
 
 import org.openremote.web.console.widget.HTMLComponent;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class SpinnerComponent extends HTMLComponent {
 	private int size = 70;
 	private static final String SPINNER_HTML_CODE = 

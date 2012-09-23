@@ -37,7 +37,11 @@ import org.openremote.web.console.unit.ConsoleUnit;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Widget;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndHandler, PressMoveHandler, PressCancelHandler { 
 	public boolean pressStarted = false;
 	private PressStartEvent pressStartEvent;

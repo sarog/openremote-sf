@@ -23,7 +23,11 @@ import org.openremote.web.console.event.sensor.SensorChangeHandler;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Label;
-
+/**
+ * 
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class LabelComponent extends PassiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "labelComponent";
 	

@@ -20,7 +20,12 @@
 package org.openremote.web.console.controller;
 
 import org.openremote.web.console.service.AutoBeanService;
-
+/**
+ * Implementation of Controller Credentials that contains all the information
+ * about a given controller.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class Controller implements ControllerCredentials {
 	private boolean isAlive;
 	private boolean isSecure;

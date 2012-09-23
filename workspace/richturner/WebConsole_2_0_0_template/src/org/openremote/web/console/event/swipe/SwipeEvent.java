@@ -21,10 +21,10 @@ package org.openremote.web.console.event.swipe;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;
-
 /**
  * This is a Swipe event and has an axis (horizontal, vertical) and direction (up, down, left, right)
- * @author rich
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	private static final Type<SwipeHandler> TYPE = new Type<SwipeHandler>();

@@ -24,9 +24,10 @@ import java.util.List;
 import org.openremote.web.console.service.AutoDiscoveryRPCService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
 /**
  * Discover controllers in the same network segment.
+ *  
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class ControllerDiscoveryService extends RemoteServiceServlet implements AutoDiscoveryRPCService {
 

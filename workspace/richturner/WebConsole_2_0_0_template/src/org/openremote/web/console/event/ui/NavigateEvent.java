@@ -22,11 +22,10 @@ package org.openremote.web.console.event.ui;
 import org.openremote.web.console.panel.entity.Navigate;
 
 import com.google.gwt.event.shared.GwtEvent;
-
 /**
  * Indicates that the screen view has changed on the controller
  *  
- * @author rich
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class NavigateEvent extends GwtEvent<NavigateHandler> {
 	private static final Type<NavigateHandler> TYPE = new Type<NavigateHandler>();
