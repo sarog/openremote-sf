@@ -44,4 +44,6 @@ public interface IRRPCService extends RemoteService {
   
   ArrayList<IRCommandInfo> getIRCommands(String prontoHandle, String brandName, String deviceName, int index) throws IRServiceException;
 
+  void unregisterFile(String prontoHandle);
+
 }

@@ -30,6 +30,8 @@ import org.openremote.modeler.client.ModelerGinjector;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
+import org.openremote.modeler.client.rpc.AsyncServiceFactory;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRLed;
@@ -162,17 +164,13 @@ public class IRFileImportToProtocolForm extends FormWindow {
                 if (result.getErrorMessage() != null) {
                   reportError(result.getErrorMessage());
                 } else {
-                  /* NO DIRECT REST CALL TO IRSERVICE
-
                   // Clean-up imported Pronto file as we're done importing
-                  ClientResource clientResource = new ClientResource(irServiceRootRestURL + "ProntoFile/" + prontoFileHandle);
-                  clientResource.setOnResponse(new Uniform() {
-                    // Even if empty, the onReponse handler is required or call does not go through
-                    public void handle(Request request, Response response) {
+                  AsyncServiceFactory.getIRRPCServiceAsync().unregisterFile(prontoFileHandle, new AsyncSuccessCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                      // Nothing to be done
                     }
                   });
-                  clientResource.delete();
-                  */
   
                   IRFileImportToProtocolForm.this.hide();                
                   wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
