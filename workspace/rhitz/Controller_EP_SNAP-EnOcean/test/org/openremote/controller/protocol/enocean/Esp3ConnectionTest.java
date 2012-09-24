@@ -175,7 +175,7 @@ public class Esp3ConnectionTest
     mockProcessor.verifyData();
   }
 
-  @Test (expected = IllegalStateException.class)
+  @Test (expected = ConnectionException.class)
   public void testMissingConnectCall() throws Exception
   {
     Esp3Connection conn = new Esp3Connection(mockProcessor, mockListener);

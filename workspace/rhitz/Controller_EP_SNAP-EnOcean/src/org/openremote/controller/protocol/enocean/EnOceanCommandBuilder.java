@@ -311,9 +311,8 @@ public class EnOceanCommandBuilder implements CommandBuilder
    * Creates EnOcean gateway instance if not already done and establishes a connection
    * to the EnOcean module.
    */
-  private void initEnOceanGateway()
+  private synchronized void initEnOceanGateway()
   {
-    // TODO : synchronize
     if(this.gateway == null)
     {
       this.gateway = new EnOceanGateway(new EnOceanConnectionManager(), configuration);

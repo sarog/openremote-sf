@@ -27,7 +27,7 @@ import org.openremote.controller.utils.Logger;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 /**
  * EnOcean connection manager for providing an established connection to the EnOcean module.
@@ -50,7 +50,7 @@ public class EnOceanConnectionManager
   /**
    * Map contains all established connections using the COM port as the key.
    */
-  ConcurrentHashMap<String, EnOceanConnection> connections = new ConcurrentHashMap<String, EnOceanConnection>();
+  HashMap<String, EnOceanConnection> connections = new HashMap<String, EnOceanConnection>();
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ public class EnOceanConnectionManager
    * @throws ConnectionException
    *           if connection cannot be established because of an connection error
    */
-  public EnOceanConnection getConnection(EspPortConfiguration configuration, RadioTelegramListener listener)
+  public synchronized EnOceanConnection getConnection(EspPortConfiguration configuration, RadioTelegramListener listener)
       throws ConfigurationException, ConnectionException
   {
     if(configuration == null)
@@ -97,7 +97,6 @@ public class EnOceanConnectionManager
       throw new ConfigurationException("Missing COM port configuration.");
     }
 
-    // TODO : synchronize
     if(connections.containsKey(configuration.getComPort()))
     {
       return connections.get(configuration.getComPort());

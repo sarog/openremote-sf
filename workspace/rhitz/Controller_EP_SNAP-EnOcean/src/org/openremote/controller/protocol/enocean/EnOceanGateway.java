@@ -24,9 +24,9 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.utils.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * EnOcean gateway for sending and receiving radio telegrams.
@@ -60,7 +60,8 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
    * Map containing all radio telegram listeners using the EnOcean device ID
    * as the key.
    */
-  private HashMap<DeviceID, List<RadioTelegramListener>> radioListeners = new HashMap<DeviceID, List<RadioTelegramListener>>();
+  private ConcurrentHashMap<DeviceID, CopyOnWriteArrayList<RadioTelegramListener>> radioListeners =
+      new ConcurrentHashMap<DeviceID, CopyOnWriteArrayList<RadioTelegramListener>>();
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -111,17 +112,17 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
    */
   public void addRadioListener(DeviceID deviceID, RadioTelegramListener listener)
   {
-    List<RadioTelegramListener> listenerList = null;
+    CopyOnWriteArrayList<RadioTelegramListener> listenerList = null;
 
     listenerList = radioListeners.get(deviceID);
 
     if(listenerList == null)
     {
-      listenerList = new ArrayList<RadioTelegramListener>();
-      radioListeners.put(deviceID, listenerList);
+      radioListeners.putIfAbsent(deviceID, new CopyOnWriteArrayList<RadioTelegramListener>());
+      listenerList = radioListeners.get(deviceID);
     }
 
-    listenerList.add(listener);
+    listenerList.addIfAbsent(listener);
   }
 
 

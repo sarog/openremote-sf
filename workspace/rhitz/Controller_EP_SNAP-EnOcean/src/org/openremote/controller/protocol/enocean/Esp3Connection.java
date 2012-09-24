@@ -36,6 +36,15 @@ import org.openremote.controller.utils.Logger;
 public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
 {
 
+  // Enums ----------------------------------------------------------------------------------------
+
+  public enum ConnectionState
+  {
+    CONNECTED,
+    DISCONNECTED
+  }
+
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -45,6 +54,11 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
 
 
   // Private Instance Fields ----------------------------------------------------------------------
+
+  /**
+   * Connection state.
+   */
+  private ConnectionState state = ConnectionState.DISCONNECTED;
 
   /**
    * Object for handling the EnOcean serial protocol 3 (ESP3).
@@ -90,8 +104,13 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
   /**
    * {@inheritDoc}
    */
-  @Override public void connect() throws ConnectionException, ConfigurationException
+  @Override public synchronized void connect() throws ConnectionException, ConfigurationException
   {
+    if(state == ConnectionState.CONNECTED)
+    {
+      return;
+    }
+
     processor.start();
 
     Esp3RdIDBaseCommand readBaseIDCmd = new Esp3RdIDBaseCommand();
@@ -102,29 +121,40 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
     }
     catch (InterruptedException e)
     {
-      throw new ConnectionException("Interrupted while connecting to EnOcean module.");
+      Thread.currentThread().interrupt();
+
+      return;
     }
 
     this.baseID = readBaseIDCmd.getBaseID();
+
+    state = ConnectionState.CONNECTED;
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public void disconnect() throws ConnectionException
+  @Override public synchronized void disconnect() throws ConnectionException
   {
+    if(state == ConnectionState.DISCONNECTED)
+    {
+      return;
+    }
+
     processor.stop();
+
+    state = ConnectionState.DISCONNECTED;
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
+  @Override public synchronized void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
       throws ConnectionException, ConfigurationException
   {
-    if(baseID == null)
+    if(state == ConnectionState.DISCONNECTED)
     {
-      throw new IllegalStateException("Connect hasn't been successfully called.");
+      throw new ConnectionException("Missing EnOcean interface connection.");
     }
 
     try
@@ -171,7 +201,7 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
 
       catch (InterruptedException e)
       {
-        throw new ConnectionException("Interrupted while sending radio telegram.");
+        Thread.currentThread().interrupt();
       }
     }
   }
