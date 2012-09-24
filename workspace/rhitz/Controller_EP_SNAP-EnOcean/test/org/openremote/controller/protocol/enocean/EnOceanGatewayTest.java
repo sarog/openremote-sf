@@ -58,13 +58,34 @@ public class EnOceanGatewayTest
     gateway.radioTelegramReceived(telegram1);
 
     Assert.assertEquals(id1, listener1.receivedTelegram.getSenderID());
+    Assert.assertEquals(1, listener1.receiveCount);
     Assert.assertNull(listener2_1.receivedTelegram);
     Assert.assertNull(listener2_2.receivedTelegram);
 
     gateway.radioTelegramReceived(telegram2);
+    gateway.radioTelegramReceived(telegram2);
 
     Assert.assertEquals(id2, listener2_1.receivedTelegram.getSenderID());
+    Assert.assertEquals(2, listener2_1.receiveCount);
     Assert.assertEquals(id2, listener2_2.receivedTelegram.getSenderID());
+    Assert.assertEquals(2, listener2_2.receiveCount);
+  }
+
+  @Test public void testRegisterRadioListenerTwice() throws Exception
+  {
+    DeviceID id = DeviceID.fromString("0xFF800001");
+    TestRadioListener listener = new TestRadioListener();
+    Esp3RPSTelegram telegram = new Esp3RPSTelegram(id, (byte)0x00, (byte)0x00);
+
+    EnOceanGateway gateway = new EnOceanGateway(new EnOceanConnectionManager(), new EspPortConfiguration());
+
+    gateway.addRadioListener(id, listener);
+    gateway.addRadioListener(id, listener);
+
+    gateway.radioTelegramReceived(telegram);
+
+    Assert.assertEquals(id, listener.receivedTelegram.getSenderID());
+    Assert.assertEquals(1, listener.receiveCount);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -109,10 +130,12 @@ public class EnOceanGatewayTest
   private static class TestRadioListener implements RadioTelegramListener
   {
     EspRadioTelegram receivedTelegram;
+    int receiveCount;
 
     @Override public void radioTelegramReceived(EspRadioTelegram telegram)
     {
       this.receivedTelegram = telegram;
+      ++receiveCount;
     }
   }
 
