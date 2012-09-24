@@ -39,5 +39,7 @@ public interface IRRPCServiceAsync {
   void getCodeSets(String prontoHandle, String brandName, String deviceName, AsyncCallback<ArrayList<CodeSetInfo>> callback);
   
   void getIRCommands(String prontoHandle, String brandName, String deviceName, int index, AsyncCallback<ArrayList<IRCommandInfo>> callback);
+  
+  void unregisterFile(String prontoHandle, AsyncCallback<Void> callback);
 
 }

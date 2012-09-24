@@ -40,6 +40,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import flexjson.JSONDeserializer;
 
 /**
@@ -99,7 +101,14 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
     }
   }
 
-  
+  public void unregisterFile(String prontoHandle) {
+    User currentUser = userService.getCurrentUser();
+    ClientResource cr = new ClientResource(configuration.getIrServiceRESTRootUrl() + "ProntoFile/" + prontoHandle);
+    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+    cr.delete();
+    cr.release();
+  }
+
   private Object restCallToIRService(String url, JSONDeserializer<GenericResourceResultWithErrorMessage> deserializer) throws IRServiceException {
     User currentUser = userService.getCurrentUser();
     ClientResource cr = new ClientResource(url);
