@@ -790,7 +790,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public ImageContainer getImageFromCache(String url) {
-		return imageCache.get(url);
+		ImageContainer container = null;
+		container = imageCache.get(url);
+		if (container != null) container = container.clone();
+		return container;
 	}
 	
 	private void initialiseConsole() {

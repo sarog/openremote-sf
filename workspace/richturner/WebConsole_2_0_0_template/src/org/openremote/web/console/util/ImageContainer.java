@@ -144,4 +144,16 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 	public void onError(ErrorEvent event) {
 		loadAttempted = true;		
 	}
+	
+	private void setImage(Image image)
+	{
+		this.image = image;
+	}
+	
+	public ImageContainer clone()
+	{
+		ImageContainer container = this;
+		container.setImage(new Image(this.getUrl()));
+		return container;
+	}
 }
