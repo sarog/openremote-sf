@@ -23,12 +23,9 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.google.gwt.user.client.Element;
 
 /**
  * A panel for display all components which can be drag into screen canvas.
@@ -38,21 +35,10 @@ public class WidgetPanel extends ContentPanel {
    public WidgetPanel() {
       setBodyBorder(false);
       setHeading("Widgets");
-      setScrollMode(Scroll.AUTO);
       
       final TreePanel<BeanModel> widgetTree = TreePanelBuilder.buildWidgetTree();
       createDrapSource(widgetTree);
-      LayoutContainer treeContainer = new LayoutContainer() {
-         @Override
-         protected void onRender(Element parent, int index) {
-            super.onRender(parent, index);
-            add(widgetTree);
-         }
-      };
-      // overflow-auto style is for IE hack.
-      treeContainer.addStyleName("overflow-auto");
-      treeContainer.setStyleAttribute("backgroundColor", "white");
-      add(treeContainer);
+      add(widgetTree);
    }
    
    private void createDrapSource(TreePanel<BeanModel> widgetTree) {
