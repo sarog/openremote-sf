@@ -392,7 +392,6 @@
 
 	<!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
 	<bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
-    <property name="gateway" ref="lutronHomeWorksGateway"/>
   </bean>
 
   <!-- TODO -->
