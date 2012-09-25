@@ -3,6 +3,8 @@ Pro 1.0.1
 
 - MODELER-384: Property form title is wrong for webview
   and color picker components
+- MODELER-360: Command, Sensor, Switch names are
+  not correctly encoded/decoded
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
