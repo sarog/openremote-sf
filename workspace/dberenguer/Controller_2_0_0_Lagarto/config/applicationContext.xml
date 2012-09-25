@@ -265,6 +265,7 @@
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
+        <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -280,7 +281,8 @@
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lagarto">lagartoCommandBuilder</prop>
 		    </props>
 		</property>
 -->
@@ -388,7 +390,10 @@
     <constructor-arg index="1" value="${hsc40.interface.port}" type="int" />
   </bean>
 
-
+	<!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
+	<bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
+    <property name="gateway" ref="lutronHomeWorksGateway"/>
+  </bean>
 
   <!-- TODO -->
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
