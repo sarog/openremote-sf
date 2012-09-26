@@ -6,6 +6,8 @@ Pro 1.0.1
 - MODELER-360: Command, Sensor, Switch names are
   not correctly encoded/decoded
 - MODELER-385: Double scrollbar on widget selection
+- MODELER-391: Add Domintell connection configuration
+  possibility
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
