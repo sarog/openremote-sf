@@ -31,8 +31,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * A common superclass implementation for different versions of the EnOcean Serial Protocol
@@ -46,11 +45,6 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractEspProcessor<T extends EspPacket> implements EspProcessor<T>
 {
-  // TODO :
-  //
-  //    synchronization
-  //
-
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -91,6 +85,11 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
    */
   protected SynchronousQueue<T> responseQueue = new SynchronousQueue<T>();
 
+  /**
+   * Executor for calling listeners on a separate thread than the {@link #portReader} thread
+   * to prevent deadlocks.
+   */
+  protected ExecutorService executor = Executors.newSingleThreadExecutor(new ListenerThreadFactory());
 
   // Constructors -------------------------------------------------------------------------------
 
@@ -139,6 +138,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     portReader.stop();
 
     port.stop();
+
+    executor.shutdownNow();
 
     started = false;
   }
@@ -275,6 +276,19 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
 
       readerThread = new Thread(
           this, "EnOcean ESP port reader"
+      );
+
+      readerThread.setUncaughtExceptionHandler(
+          new Thread.UncaughtExceptionHandler()
+          {
+            @Override public void uncaughtException(Thread t, Throwable e)
+            {
+              log.error(
+                  "Implementation error in ESP port reader : {0}",
+                  e, e.getMessage()
+              );
+            }
+          }
       );
 
       readerThread.start();
@@ -431,5 +445,39 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     public abstract T getEspPacket();
 
 
+  }
+
+  /**
+   * Custom thread factory for executor thread pool.
+   *
+   * @see AbstractEspProcessor#executor
+   */
+  private static class ListenerThreadFactory implements ThreadFactory
+  {
+
+    /**
+     * Creates a new thread and configures the thread with an uncaught exception handler.
+     */
+    @Override public Thread newThread(Runnable r)
+    {
+      // TODO : OpenRemoteRuntime.createThread
+
+      Thread t = new Thread(r);
+
+      t.setUncaughtExceptionHandler(
+          new Thread.UncaughtExceptionHandler()
+          {
+            @Override public void uncaughtException(Thread t, Throwable e)
+            {
+              log.error(
+                  "Implementation error in ESP processor listener : {0}",
+                  e, e.getMessage()
+              );
+            }
+          }
+      );
+
+      return t;
+    }
   }
 }
