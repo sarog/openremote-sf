@@ -124,7 +124,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public String getPanelXml() {
 	      StringBuilder sb = new StringBuilder();
 	      sb.append("<web id=\"" + getOid() + "\" src=\"" + StringUtils.escapeXml(url)
-	            + "\" username=\"" + StringUtils.escapeXml(userid) + "\" password=\"" + StringUtils.escapeXml(userid)	            
+	            + "\" username=\"" + StringUtils.escapeXml(userid) + "\" password=\"" + StringUtils.escapeXml(password)	            
 	            + "\">\n");
 	      if (sensor != null) {
 	         sb.append(sensorLink.getXMLString());
