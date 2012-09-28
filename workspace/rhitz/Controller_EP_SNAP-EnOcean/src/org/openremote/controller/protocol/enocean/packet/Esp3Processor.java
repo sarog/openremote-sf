@@ -144,11 +144,19 @@ public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
    *
    * @param radioPacket radio telegram
    */
-  private void dispatchRadio(Esp3Packet radioPacket)
+  private void dispatchRadio(final Esp3Packet radioPacket)
   {
     if((radioPacket instanceof EspRadioTelegram) && listener != null)
     {
-      listener.radioTelegramReceived((EspRadioTelegram)radioPacket);
+      executor.execute(
+          new Runnable()
+          {
+            @Override public void run()
+            {
+              listener.radioTelegramReceived((EspRadioTelegram)radioPacket);
+            }
+          }
+      );
     }
   }
 
