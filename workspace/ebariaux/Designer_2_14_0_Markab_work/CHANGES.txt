@@ -10,6 +10,8 @@ Pro 1.0.1
   possibility
 - MODELER-395: Incorrect password field generated
   in panel.xml for Web element
+- MODELER-389: LazyInitializationException on
+  Device.deviceAttrs
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
