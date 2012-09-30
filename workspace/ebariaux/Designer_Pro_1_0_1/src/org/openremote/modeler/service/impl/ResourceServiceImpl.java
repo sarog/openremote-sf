@@ -626,7 +626,7 @@ public class ResourceServiceImpl implements ResourceService
   }
 
 
-   @Override
+   @Override @Transactional
    public String getPanelsJson(Collection<Panel> panels) {
       try {
          String[] includedPropertyNames = { "groupRefs", "tabbar.tabbarItems", "tabbar.tabbarItems.navigate",
@@ -1140,7 +1140,7 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * {@inheritDoc}
    */
-  @Override
+  @Override @Transactional
   public void resolveDTOReferences(Collection<Panel> panels) {
     for (Panel panel : panels) {
       for (GroupRef groupRef : panel.getGroupRefs()) {
@@ -1241,7 +1241,7 @@ public class ResourceServiceImpl implements ResourceService
    //
    //  - should be internalized to resource cache as part of MODELER-287
    //
-   @Override public void initResources(Collection<Panel> panels, long maxOid) {
+   @Override @Transactional public void initResources(Collection<Panel> panels, long maxOid) {
       // 1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as
       // device command, sensor ...)
       // the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a
@@ -1442,7 +1442,7 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * This implementation has been moved and delegates to {@link DesignerState#save}.
    */
-  @Override @Deprecated public void saveResourcesToBeehive(Collection<Panel> panels)
+  @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels)
   {
     // Create a set of panels to eliminate potential duplicate instances...
 
