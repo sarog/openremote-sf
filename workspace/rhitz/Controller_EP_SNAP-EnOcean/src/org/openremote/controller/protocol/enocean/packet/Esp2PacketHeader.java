@@ -159,10 +159,20 @@ public class Esp2PacketHeader
   public static final int ESP2_HEADER_SYNC_BYTE_1_INDEX = 0;
 
   /**
+   * The fixed size of the first ESP2 sync. byte field  : {@value}
+   */
+  public static final int ESP2_HEADER_SYNC_BYTE_1_LENGTH = 1;
+
+  /**
    * Byte order index of the second synchronization byte field (see {@link #ESP2_SYNC_BYTE_2} in
    * ESP2 header : {@value}
    */
   public static final int ESP2_HEADER_SYNC_BYTE_2_INDEX = 1;
+
+  /**
+   * The fixed size of the second ESP2 sync. byte field  : {@value}
+   */
+  public static final int ESP2_HEADER_SYNC_BYTE_2_LENGTH = 1;
 
   /**
    * Byte order index of the H_SEQ and LENGTH field : {@value}
