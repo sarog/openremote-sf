@@ -30,10 +30,10 @@ package org.openremote.controller.device.protocol;
 public interface PassiveProtocol {
    /**
     * Used by the gateway to send data to the device, for passive
-    * devices it is expected that the response be returned from the
+    * devices it is expected that no response be returned from the
     * send command. 
     * 
     * @param payload to send to the device
     */
-   Payload send(Payload payload);
+   void send(Payload payload);
 }
