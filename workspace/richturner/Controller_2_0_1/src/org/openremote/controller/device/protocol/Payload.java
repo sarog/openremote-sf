@@ -32,23 +32,23 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public class Payload {
    public String content;
-   public EnumPayloadFormat format;
+   public PayloadFormat format = PayloadFormat.TEXT;
    
    public Payload(Byte[] bytes)
    {
       //TODO: Convert Bytes to String representation
-      format = EnumPayloadFormat.BINARY;
+      format = PayloadFormat.BINARY;
    }
    
    public Payload(String content)
    {
-      this(content, EnumPayloadFormat.TEXT);
+      this(content, null);
    }
    
-   public Payload(String content, EnumPayloadFormat format)
+   public Payload(String content, PayloadFormat format)
    {
       this.content = content;
-      this.format = format;
+      if (format != null) this.format = format;
    }
    
    public Byte[] getBytes()
@@ -70,5 +70,15 @@ public class Payload {
       }
       
       return result.toArray(new Byte[0]);
+   }
+   
+   public String getContent()
+   {
+      return content;
+   }
+   
+   public void setContent(String content)
+   {
+      this.content = content;
    }
 }
