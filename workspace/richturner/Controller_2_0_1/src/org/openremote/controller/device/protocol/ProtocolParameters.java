@@ -64,6 +64,7 @@ public class ProtocolParameters {
     */
    public void setParameterValues(String parameterName, LinkedHashSet<String> parameterValues)
    {
+      parameterName = parameterName.toLowerCase();
       if (!paramMap.containsKey(parameterName)) paramMap.put(parameterName, new LinkedHashSet<String>());
       
       LinkedHashSet<String> values = paramMap.get(parameterName);
@@ -83,6 +84,7 @@ public class ProtocolParameters {
    public String getParameterValue(String parameterName)
    {
       String result = null;
+      parameterName = parameterName.toLowerCase();
       LinkedHashSet<String> values = paramMap.get(parameterName);
       
       if (values != null)
@@ -101,6 +103,7 @@ public class ProtocolParameters {
     */
    public LinkedHashSet<String> getParameterValues(String parameterName)
    {
+      parameterName = parameterName.toLowerCase();
       return paramMap.get(parameterName);
    }
    
