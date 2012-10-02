@@ -19,297 +19,150 @@
 */
 package org.openremote.controller.device;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-
-import org.openremote.controller.device.protocol.ActiveProtocol;
-import org.openremote.controller.device.protocol.EnumProtocolStatus;
+import org.openremote.controller.device.protocol.PayloadFormat;
 import org.openremote.controller.device.protocol.Payload;
 import org.openremote.controller.device.protocol.Protocol;
-import org.openremote.controller.device.protocol.ProtocolParameters;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.model.sensor.Sensor;
+
 /**
- * The Gateway is responsible for bridging between the controller and the
- * protocol. All command requests are initiated through the gateway not
- * directly to the protocol. In this way the protocol has no dependency on
- * the controller. The gateway should live in it's own thread and communication
- * is carried out via the gateway manager, the gateway thread is responsible
- * for managing a separate protocol thread.
+ * The Gateway is responsible for bridging between the controller and the protocol. All command requests are initiated
+ * through the gateway not directly to the protocol. In this way the protocol has no dependency on the controller. The
+ * gateway should live in it's own thread and communication is carried out via the gateway manager, the gateway thread
+ * is responsible for managing a separate protocol thread.
  * 
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
- *
+ * 
  */
 public class Gateway {
-   /** 
-    * Sleep duration in milliseconds of listener loop this
-    * comes into play with active protocols whose read method
-    * does not block
+   /**
+    * Sleep duration in milliseconds of listener loop this comes into play with active protocols whose read method does
+    * not block
     */
    public static final int LISTENER_SLEEP_DURATION = 1000;
-   
+
    public static final int DEFAULT_POLLING_INTERVAL = 2000;
-   
-   private Protocol protocol; 
-   private ProtocolParameters protocolParameters;
+
+   public static final int MIN_POLLING_INTERVAL = 500;
+
+   public static final String PAYLOAD_PARAMETER_NAME = "command";
+
+   public static final String PAYLOAD_FORMAT_PARAMETER_NAME = "format";
+
+   public static final String LEGACY_DYNAMIC_PARAM_PLACEHOLDER_REGEXP = "\\$\\{param\\}";
+
    private HashMap<Integer, Command> commands = new HashMap<Integer, Command>();
    private HashMap<Integer, Sensor> sensors = new HashMap<Integer, Sensor>();
    private HashMap<Integer, HashSet<Integer>> pollingCommandMap = new HashMap<Integer, HashSet<Integer>>();
-   private ArrayList<CommandSendRequest> commandQueue = new ArrayList<CommandSendRequest>(); 
-   private Thread gatewayThread;
-   private Thread protocolThread;
+   private GatewayWatcher gatewayWatcher;
    private boolean isAlive;
-   private int pollingInterval = DEFAULT_POLLING_INTERVAL;
-         
-   protected Gateway(Protocol protocol, ProtocolParameters protocolParameters)
-   {
-      this.protocol = protocol;
-      this.protocolParameters = protocolParameters;
-      if (protocol != null) protocol.setParameters(protocolParameters);
+
+   protected Gateway(Protocol protocol) {
+      gatewayWatcher = new GatewayWatcher(this, protocol);
    }
-   
-   // Methods Called by Gateway Manager -------------------------------------------
-   
-   protected void addCommand(Command command)
-   {
+
+   // Public Methods --------------------------------------------------------------------
+
+   public boolean getIsAlive() {
+      return isAlive;
+   }
+
+   public Command getCommand(int commandID) {
+      return commands.get(commandID);
+   }
+
+   // Methods Called by Gateway Manager -------------------------------------------------
+
+   protected void addCommand(Command command) {
       commands.put(command.getId(), command);
    }
-   
-   protected void addSensor(Sensor sensor)
-   {
+
+   protected void addSensor(Sensor sensor) {
       // Add sensor to sensor map
       sensors.put(sensor.getSensorID(), sensor);
-      
+
       // Add command of sensor to polling command map, a
       // command may be associated with multiple sensors
       // that's why an Integer set is used in the polling map
       // to support the one to many relationship
       int sensorCommandId = sensor.getEventProducerID();
-      
-      if (!pollingCommandMap.containsKey(sensorCommandId))
-      {
+
+      if (!pollingCommandMap.containsKey(sensorCommandId)) {
          HashSet<Integer> sensorIDs = new HashSet<Integer>();
          sensorIDs.add(sensor.getSensorID());
          pollingCommandMap.put(sensorCommandId, sensorIDs);
-      }
-      else
-      {
+      } else {
          pollingCommandMap.get(sensorCommandId).add(sensor.getSensorID());
-      }      
+      }
    }
-   
-   
+
+   /**
+    * Called to start the gateway - it will poll the sensor commands it owns as well as be ready to receive incoming
+    * command requests
+    */
+   protected void start() {
+      isAlive = true;
+
+      /*
+       * Start the gateway watcher this will in turn start the protocol thread.
+       */
+      gatewayWatcher.start();
+   }
+
+   /**
+    * Stops the gateway gracefully
+    */
+   protected void stop() {
+      isAlive = false;
+      synchronized (gatewayWatcher) {
+         gatewayWatcher.notify();
+      }
+   }
+
    /**
     * Send a command using this gateway
+    * 
     * @param commandId
     */
-   protected void Send(CommandSendRequest sendRequest)
-   {
-      Send(new CommandSendRequest[] {sendRequest});
+   protected void Send(CommandSendRequest commandSendRequest) {
+      Send(new CommandSendRequest[] { commandSendRequest });
    }
-   
-   
+
    /**
     * Send multiple commands using this gateway
+    * 
     * @param commandIds
     */
-   protected synchronized void Send(CommandSendRequest[] sendRequests)
-   {
+   protected synchronized void Send(CommandSendRequest[] commandSendRequests) {
       /*
-       * Add each request to the command queue and let the
-       * gateway thread handle them
+       * Add each request to the command queue and let the gateway thread handle them
        */
-      for(CommandSendRequest sendRequest : sendRequests)
-      {
-            addRemoveCommandSendRequest(sendRequest);
-      }
-      
-      // Notify gateway thread
-      gatewayThread.notify();
-   }
-   
-   
-   /**
-    * Called to start the gateway - it will poll the sensor commands
-    * it owns as well as be ready to receive incoming command requests
-    */
-   protected void start()
-   {
-      if (protocol != null && commands.size() != 0)
-      {
-         isAlive = true;
-         
-         // Start the gateway thread
-         gatewayThread = new Thread() {
-            public void run() {
-               gatewayRun();
-            }
-         };
-         gatewayThread.start();
-      }
-   }
-   
-   protected void stop()
-   {
-      isAlive = false;
-   }
-   
-   // Gateway Thread Methods ------------------------------------------------------------
-   
-   /*
-    * This is the work loop of the gateway thread it's purpose is to check for incoming
-    * command send requests and to periodically poll sensor commands to check for changes
-    */
-   private synchronized void gatewayRun()
-   {
-      // Start the protocol thread
-      protocolThread = new Thread() {
-         public void run() {
-            protocolRun();
-         }
-      };
-      protocolThread.start();
-
-      while(isAlive)
-      {
-         try {
-            // Check if we have work to do
-            if (commandQueue.size() > 0) {
-               processSendRequests();
-            } else {
-               // TODO: Improve polling initiation logic
-               // Assume we've been woken to poll sensor commands
-            }
-            
-            gatewayThread.wait(pollingInterval);
-         } catch (InterruptedException e)
-         {
-            // Ignore any interrupts
-         }
-      }
-   }
-   
-   /**
-    * This is called by the gateway thread when it has command send
-    * requests to fulfil; each send request needs some standard processing
-    * done to it by the gateway before it is sent to the protocol for actual
-    * sending 
-    */
-   private void processSendRequests()
-   {
-      CommandSendRequest sendRequest = addRemoveCommandSendRequest(null);
-      
-      while(sendRequest != null) {
-         int commandID = sendRequest.commandID;
-         String[] dynamicParams = sendRequest.commandDynamicParameters;
-         Command command = commands.get(commandID);
+      for (CommandSendRequest sendRequest : commandSendRequests) {
+         Command command = getCommand(sendRequest.getCommandID());
          Map<String, String> commandParams = command.getProperties();
-   
+
          // Retrieve the Payload
          // TODO: Implement a better means of getting the payload, maybe
          // this should be separately exposed in the command model
-         String commandString = commandParams.get("command");
-         
+         String commandString = commandParams.get(PAYLOAD_PARAMETER_NAME);
+
          if (commandString != null) {
-            // Send request via script engine
-            
-            // Substitute dynamic params in payload
-            
-            // Send payload to the protocol
-         }
-         sendRequest = addRemoveCommandSendRequest(null);
-      }
-   }
-   
-   // Shared Methods --------------------------------------------------------------------
-   
-   /**
-    * Single method for modifying the Command Queue; as both the gateway and protocol threads
-    * need to access the command queue we need to do it in a sensible way. If a CommandSendRequest
-    * object is supplied into this method an add request is assumed.
-    * 
-    * @return Command Send Request if remove requested otherwise null
-    */
-   private synchronized CommandSendRequest addRemoveCommandSendRequest(CommandSendRequest newCommandSendRequest)
-   {
-      CommandSendRequest result = null;
-      
-      if (newCommandSendRequest != null)
-      {
-         // We're adding a new request
-         commandQueue.add(newCommandSendRequest);
-      } else {
-         // We're removing a request
-         result = commandQueue.size() > 0 ? commandQueue.remove(0) : null;
-      }
-      
-      return result;
-   }
-   
-   
-   // Protocol Thread Methods -----------------------------------------------------------
-   
-   private synchronized void protocolRun()
-   {
-      while(isAlive && protocol.getStatus() != EnumProtocolStatus.ERROR)
-      {
-         try
-         {
-            // Check if we have commands to send; these take priority
-            
-            
-            // No more commands to send so start listener
-            startListener();
-         }
-         catch (InterruptedException e) {
-            // If we've been interrupted then it means that the gateway
-            // wants us to do something so just ignore this interrupt as
-            // the start of the while loop will deal with the request
+            // Build the payload
+            String payloadFormat = commandParams.get(Gateway.PAYLOAD_FORMAT_PARAMETER_NAME);
+            PayloadFormat payloadFormatType = PayloadFormat.fromString(payloadFormat);
+            Payload payload = new Payload(commandString, payloadFormatType);
+
+            GatewayProtocolPacket packet = new GatewayProtocolPacket(payload, sendRequest);
+            gatewayWatcher.addOutboundRequest(packet);
          }
       }
-   }
-   
-   /**
-    * This is the listener handler, for active protocols it will keep calling the
-    * protocol read method until it is interrupted to allow commands to be sent. If
-    * the protocol read method blocks on call then the interrupt method must also be
-    * correctly implemented to allow for detection of interrupts. For passive protocols
-    * it does nothing apart from wait for a thread interrupt. 
-    * 
-    * THIS NEEDS LOOKING AT - CURRENTLY IF AN ACTIVE PROTOCOL DOESN'T CORRECTLY
-    * IMPLEMENT THE INTERRUPT METHOD THE GATEWAY WON'T BE ABLE TO SEND COMMANDS.
-    * 
-    */
-   private synchronized void startListener() throws InterruptedException
-   {
-      // Start Reading if this is an active protocol
-      if (protocol instanceof ActiveProtocol)
-      {
-         ActiveProtocol activeProtocol = (ActiveProtocol)protocol;
-         activeProtocol.clearReadBuffer();
-         
-         while(isAlive)
-         {
-            Payload response = activeProtocol.read();
-            if (response != null)
-            {
-               // We have a response so let's deal with it
-               
-            }
-            // Check for an interrupt signal
-            if (Thread.interrupted()) {
-               throw new InterruptedException();
-            }
-            Thread.sleep(LISTENER_SLEEP_DURATION);
-         }
-      } else {
-         /*
-          *  We have nothing to listen for so just wait for
-          *  notification of a command to send
-          */
-         protocolThread.wait();
+
+      // Notify gateway watcher that there's command(s) to process
+      synchronized (gatewayWatcher) {
+         gatewayWatcher.notify();
       }
    }
 }
