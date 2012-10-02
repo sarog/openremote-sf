@@ -25,7 +25,7 @@ package org.openremote.controller.device.protocol;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-public enum EnumProtocolStatus {
+public enum ProtocolStatus {
    CONNECTED,
    DISCONNECTED,
    CONNECTIONLESS,
