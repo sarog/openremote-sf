@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.device.protocol;
 
+import java.util.LinkedHashSet;
+
 /**
  * Abstract Protocol implementation, actual protocols need to extend this
  * and implement either Active or Passive or Passive Responsive Protocol
@@ -28,15 +30,30 @@ package org.openremote.controller.device.protocol;
  *
  */
 public abstract class ProtocolImpl implements Protocol {
-   String protocolURL;
-   ProtocolParameters protocolParameters;
+   private ProtocolStatus status;
+   private ProtocolParameters protocolParameters;
    
-   public String getProtocolURL() {
-      return protocolURL;
-   }
-   
-   public void setProtocolParameters(ProtocolParameters protocolParameters)
-   {
+   public ProtocolImpl(ProtocolParameters protocolParameters) {
       this.protocolParameters = protocolParameters;
    }
+   
+   public ProtocolParameters getParameters() {
+      return protocolParameters;
+   }
+   
+   public String getParameterValue(String parameterName) {
+      return protocolParameters.getParameterValue(parameterName);
+   }
+   
+   public LinkedHashSet<String> getParameterValues(String parameterName) {
+      return protocolParameters.getParameterValues(parameterName);
+   }
+   
+   protected void setStatus(ProtocolStatus status) {
+      this.status = status;
+   }
+   
+   public ProtocolStatus getStatus() {
+      return status;
+   }   
 }

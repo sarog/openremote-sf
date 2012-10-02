@@ -51,11 +51,21 @@ public interface Protocol {
     * 
     * @return The current status of this protocol
     */
-   EnumProtocolStatus getStatus();
+   ProtocolStatus getStatus();
+
+   /**
+    * Get the parameters for this protocol
+    * 
+    * @return ProtocolParameters
+    */
+   public ProtocolParameters getParameters();
+
    
    /**
-    * Sets the parameters for this protocol
-    * @param parameters
+    * Get an array of required parameter names; these must exist in the protocol
+    * parameters.
+    * 
+    * @return Array of required parameter names
     */
-   void setParameters(ProtocolParameters parameters);
+   public String[] getRequiredParameterNames();
 }
