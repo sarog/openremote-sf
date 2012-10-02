@@ -20,38 +20,30 @@
 package org.openremote.controller.device;
 
 /**
- *
+ * Encapsulates a request to execute a command on a gateway, it includes the command ID as well as an array of dynamic
+ * parameter values.
  * 
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
- *
+ * 
  */
 public class CommandSendRequest {
-   int commandID;
-   String[] commandDynamicParameters;
-   
-   public CommandSendRequest(int commandID)
-   {
+   private int commandID;
+   private String[] dynamicParameterValues;
+
+   public CommandSendRequest(int commandID) {
       this(commandID, new String[0]);
    }
-   
-   public CommandSendRequest(int commandID, String commandDynamicParameter)
-   {
-      this(commandID, new String[]{commandDynamicParameter});
-   }
-   
-   public CommandSendRequest(int commandID, String[] commandDynamicParameters)
-   {
+
+   public CommandSendRequest(int commandID, String[] dynamicParameterValues) {
       this.commandID = commandID;
-      this.commandDynamicParameters = commandDynamicParameters;
+      this.dynamicParameterValues = dynamicParameterValues;
    }
-   
-   public String[] getDynamicParameters()
-   {
-      return commandDynamicParameters;
-   }
-   
-   public int getCommandID()
-   {
+
+   public int getCommandID() {
       return commandID;
+   }
+
+   public String[] getDynamicParameterValues() {
+      return dynamicParameterValues;
    }
 }
