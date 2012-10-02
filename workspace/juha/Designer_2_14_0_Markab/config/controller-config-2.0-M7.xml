@@ -341,4 +341,21 @@ If it's true, controller will auto-detect its groupmembers with multicast.
    			</hint>
 		</config>
 	</category>
+
+
+  <category name="lagarto_network">
+    <description>
+      <![CDATA[
+        Configuration for Lagarto network
+      ]]>
+    </description>
+    <config name="lagarto_network.broadcast" value="tcp://127.0.0.1:5001">
+      <hint>
+      <![CDATA[
+        Broadcast address and port used by all lagarto servers to publish network events (ZeroMQ pub/sub endpoint).
+      ]]>
+      </hint>
+    </config>
+  </category>
+
 </configs>
