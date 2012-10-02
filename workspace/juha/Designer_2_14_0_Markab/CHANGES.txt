@@ -4,6 +4,8 @@ Designer 2.14.0 (2012-08-XX Markab)
  New Features:
 
    - Z-Wave protocol configuration
+   - panStamps Lagarto configuration (MODELER-397)
+   - Round-robin database (RRD) configuration (MODELER-394)
 
  Fixes:
 
