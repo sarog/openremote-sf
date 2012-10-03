@@ -14,6 +14,7 @@ Designer 2.14.0 (2012-10-xx Markab)
   Device.deviceAttrs
 - MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
   when saving UI design
+- MODELER-398: Setting a sensor on a Web element does not work
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
