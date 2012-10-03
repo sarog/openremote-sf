@@ -23,19 +23,18 @@ package org.openremote.controller.protocol.socket;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
-import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.protocol.DeviceProtocol;
 import org.openremote.controller.protocol.bus.Message;
 import org.openremote.controller.protocol.bus.PhysicalBus;
-import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 
 
@@ -43,68 +42,56 @@ import org.openremote.controller.utils.Logger;
  *
  * @author Marcus 2009-4-26
  */
-public class TCPSocketCommandBuilder implements CommandBuilder
+public class TCPSocketCommandBuilder extends DeviceProtocol
 {
   protected static Logger log = Logger.getLogger(Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "tcp");
 
 
-  public Command build(Element element)
+  // Constructors ---------------------------------------------------------------------------------
+
+  TCPSocketCommandBuilder()
   {
-    int socketPort = -1;
-    String ipAddress = null;
-    String payload = null;
-    String cmdName = null;
-    boolean keepAlive = false;
-    boolean waitForResponse = true;
+    super(
+        DeviceProtocol.Option.ENABLE_PIPED_MESSAGES,
+        DeviceProtocol.Option.INCLUDE_CR_AT_END_OF_MESSAGE,
+        DeviceProtocol.Option.ENABLE_HEX_STRING_MESSAGES
+    );
+  }
 
-    List<Element> propertyEles = element.getChildren("property", element.getNamespace());
 
-    for(Element ele : propertyEles)
+  // Implements DeviceProtocol --------------------------------------------------------------------
+
+  @Override public Command create(Properties properties, Set<Message> messages)
+  {
+    Boolean keepAlive = false;
+    Boolean waitForResponse = true;
+
+    String commandName = properties.getMandatoryProperty("name");
+    int socketPort = properties.getMandatoryNumber("port").intValue();
+    InetAddress ipAddress = properties.getMandatoryInetAddress("ipAddress");
+
+    Boolean b = properties.getOptionalBoolean("keepAlive");
+
+    if (b != null)
     {
-       if("name".equals(ele.getAttributeValue("name")))
-       {
-         cmdName = ele.getAttributeValue("value");
-       }
+      keepAlive = b;
+    }
 
-       else if("port".equals(ele.getAttributeValue("name")))
-       {
-         socketPort = Integer.valueOf(ele.getAttributeValue("value"));
-       }
+    b = properties.getOptionalBoolean("waitForResponse");
 
-       else if("ipAddress".equals(ele.getAttributeValue("name")))
-       {
-         ipAddress = ele.getAttributeValue("value");
-       }
-
-       else if("command".equals(ele.getAttributeValue("name")))
-       {
-         payload = CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value"));
-       }
-
-       else if("keepAlive".equals(ele.getAttributeValue("name")))
-       {
-         String val = ele.getAttributeValue("value");
-
-         keepAlive = (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("true")) ? true : false;
-       }
-
-       else if ("waitForResponse".equals(ele.getAttributeValue("name")))
-       {
-         String val = ele.getAttributeValue("value");
-
-         waitForResponse = (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("true")) ? true : false;
-       }
-
+    if (b != null)
+    {
+      waitForResponse = b;
     }
 
     InetSocketAddress socketAddress = new InetSocketAddress(ipAddress, socketPort);
 
     TCPConnection connection = getConnection(socketAddress, keepAlive);
 
-    return new TCPSocketCommand(cmdName, payload, connection, waitForResponse);
+    return new TCPSocketCommand(commandName, messages, connection, waitForResponse);
   }
 
-  
+
   private static Map<InetSocketAddress, TCPConnection> connections = new HashMap<InetSocketAddress, TCPConnection>();
 
   private final static Object MUTEX = new Object();
@@ -136,6 +123,10 @@ public class TCPSocketCommandBuilder implements CommandBuilder
       }
     }
   }
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+  
 
   protected static class TCPConnection implements PhysicalBus
   {
