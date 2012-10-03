@@ -1,5 +1,5 @@
-Pro 1.0.1
-=========
+Designer 2.14.0 (2012-10-xx Markab)
+===================================
 
 - MODELER-384: Property form title is wrong for webview
   and color picker components
@@ -12,6 +12,8 @@ Pro 1.0.1
   in panel.xml for Web element
 - MODELER-389: LazyInitializationException on
   Device.deviceAttrs
+- MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
+  when saving UI design
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
