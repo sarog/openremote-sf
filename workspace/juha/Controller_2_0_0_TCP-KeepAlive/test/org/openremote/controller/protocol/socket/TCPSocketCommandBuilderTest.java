@@ -24,6 +24,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.util.StringTokenizer;
 import java.nio.ByteBuffer;
 
@@ -68,7 +71,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("123"));
+      Assert.assertTrue(server.getReceivedPayload().equals("123"));
       Assert.assertTrue(server.isSocketOpen());
 
 
@@ -80,7 +83,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("987"));
+      Assert.assertTrue(server.getReceivedPayload().equals("987"));
 
       Thread.sleep(1000);
 
@@ -114,7 +117,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("123"));
+      Assert.assertTrue(server.getReceivedPayload().equals("123"));
       Assert.assertTrue(server.isSocketOpen());
 
 
@@ -124,7 +127,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("987"));
+      Assert.assertTrue(server.getReceivedPayload().equals("987"));
 
       Thread.sleep(100);
 
@@ -156,7 +159,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("523"));
+      Assert.assertTrue(server.getReceivedPayload().equals("523"));
 
       Thread.sleep(100);
 
@@ -169,7 +172,7 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getResponse().equals("985"));
+      Assert.assertTrue(server.getReceivedPayload().equals("985"));
 
       Thread.sleep(100);
 
@@ -202,12 +205,99 @@ public class TCPSocketCommandBuilderTest
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getByteResponse() [0] == 1);
+      Assert.assertTrue(server.getReceivedBytes() [0] == 1);
 
       Thread.sleep(100);
 
       Assert.assertTrue(!server.isSocketOpen());
     }
+    finally
+    {
+      server.stop();
+    }
+
+  }
+
+
+
+  /**
+   * Tests send and receive on text based server that expects '\r' delimited messages
+   * and will close connection after responding.
+   *
+   * @throws Exception  if there's an error
+   */
+  @Test public void testReadCommandOnSocketClose() throws Exception
+  {
+    RespondingStringTCPServer server = new RespondingStringTCPServer(11117);
+
+    try
+    {
+      server.start();
+
+      TCPSocketCommand cmd = getResponseCommand("resp1", "localhost", "11117", "GET 1");
+
+      String response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("1"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+      cmd = getResponseCommand("resp2", "localhost", "11117", "GET 123456789");
+
+      response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("123456789"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+    }
+    
+    finally
+    {
+      server.stop();
+    }
+  }
+
+  /**
+   * Tests send and receive with keepalive on text based server that expects '\r' delimited messages
+   * and will close connection after responding.
+   *
+   * @throws Exception  if there's an error
+   */
+  @Test public void testKeepAliveReadCommandOnSocketClose() throws Exception
+  {
+    RespondingStringTCPServer server = new RespondingStringTCPServer(11118);
+
+    try
+    {
+      server.start();
+
+      TCPSocketCommand cmd = getKeepAliveResponseCommand("resp1", "localhost", "11118", "GET 1");
+
+      String response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("1"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+      cmd = getKeepAliveResponseCommand("resp2", "localhost", "11118", "GET 123456789");
+
+      response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("123456789"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+    }
+
     finally
     {
       server.stop();
@@ -244,16 +334,15 @@ public class TCPSocketCommandBuilderTest
    */
   private void waitForResponse(StringTCPServer server) throws Exception
   {
-    synchronized (server.getResponseMonitor())
+    synchronized (server.getReceiveMonitor())
     {
-      server.getResponseMonitor().wait();
+      server.getReceiveMonitor().wait();
     }
   }
 
 
   /**
-   * Constructs a one-way command definition that will not expect a response back from the server
-   * and has no keep-alive bit set.
+   * Constructs a send-and-receive command with no keep-alive (default)
    *
    * @param name      command name
    * @param address   ip address
@@ -262,7 +351,22 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getOneWayCommand(String name, String address, String port, String command)
+  private TCPSocketCommand getResponseCommand(String name, String address, String port, String command)
+  {
+    return getCommand(name, address, port, command, true);
+  }
+
+  /**
+   * Constructs a send-and-receive command with keep-alive bit set.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getKeepAliveResponseCommand(String name, String address, String port, String command)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -287,7 +391,78 @@ public class TCPSocketCommandBuilderTest
 
     Element waitForResp = new Element("property");
     waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", "false");
+    waitForResp.setAttribute("value", "true");
+
+    Element keepAlive = new Element("property");
+    keepAlive.setAttribute("name", "keepAlive");
+    keepAlive.setAttribute("value", "true");
+
+    ele.addContent(propName);
+    ele.addContent(propAddr);
+    ele.addContent(propPort);
+    ele.addContent(propCommand);
+    ele.addContent(waitForResp);
+    ele.addContent(keepAlive);
+
+    return (TCPSocketCommand) builder.build(ele);
+
+  }
+
+  /**
+   * Constructs a one-way command definition that will not expect a response back from the server
+   * and has no keep-alive bit set.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getOneWayCommand(String name, String address, String port, String command)
+  {
+    return getCommand(name, address, port, command, false);
+  }
+
+
+  /**
+   * Constructs a command definition with no keepalive (default).
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param payload   command payload
+   * @param waitForResponse  whether command should consume response from server before continuing
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getCommand(String name, String address, String port, String payload,
+                                      Boolean waitForResponse)
+  {
+    Element ele = new Element("command");
+    ele.setAttribute("id", "test");
+    ele.setAttribute("protocol", "tcpSocket");
+    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+
+    Element propName = new Element("property");
+    propName.setAttribute("name", "name");
+    propName.setAttribute("value", name);
+
+    Element propAddr = new Element("property");
+    propAddr.setAttribute("name", "ipAddress");
+    propAddr.setAttribute("value", address);
+
+    Element propPort = new Element("property");
+    propPort.setAttribute("name", "port");
+    propPort.setAttribute("value", port);
+
+    Element propCommand = new Element("property");
+    propCommand.setAttribute("name", "command");
+    propCommand.setAttribute("value", payload);
+
+    Element waitForResp = new Element("property");
+    waitForResp.setAttribute("name", "waitForResponse");
+    waitForResp.setAttribute("value", waitForResponse.toString());
 
     ele.addContent(propName);
     ele.addContent(propAddr);
@@ -356,8 +531,96 @@ public class TCPSocketCommandBuilderTest
 
 
   /**
+   * TCP/IP Server that expects text payloads delimited by '\r'. Responds to each payload and
+   * closes the client socket after.
+   */
+  private static class RespondingStringTCPServer extends StringTCPServer
+  {
+
+    RespondingStringTCPServer(int port)
+    {
+      super(port);
+    }
+
+    @Override protected void start() throws Exception
+    {
+      server = new ServerSocket(port);
+
+      reader = new ResponseTextReader();
+
+      t = new Thread(reader);
+      t.start();
+    }
+
+
+    private class ResponseTextReader extends SocketReader
+    {
+      @Override public void run()
+      {
+        while (running)
+        {
+          try
+          {
+            // block and wait for connecting client socket...
+
+            Socket s = server.accept();
+
+            BufferedInputStream bin = new BufferedInputStream(s.getInputStream());
+
+            isSocketOpen = s.isBound() && s.isConnected();
+
+            StringBuffer sbuf = new StringBuffer();
+
+            boolean endofstream = false;
+
+            while (!endofstream)
+            {
+              while (true)
+              {
+                int b = bin.read();
+
+                if (b == '\r')
+                  break;
+
+                if (b == -1)
+                {
+                  endofstream = true;
+
+                  break;
+                }
+
+                sbuf.append((char)b);
+              }
+
+              String payload = sbuf.toString();
+
+              if (payload.startsWith("GET "))
+              {
+                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
+
+                out.writeChars(payload.substring(4, payload.length()));
+
+                out.close();
+              }
+            }
+
+            isSocketOpen = false;   // s.isClosed() won't work if/when SO_LINGER is set on the client
+          }
+
+          catch (Throwable t)
+          {
+            t.printStackTrace();
+          }
+        }
+      }
+    }
+  }
+
+  
+
+  /**
    * TCP/IP Server that expects binary payloads. Does not acknowledge or respond to incoming
-   * connections.
+   * connections. Keeps reading until client closes the socket.
    */
   private static class HexTCPServer extends StringTCPServer
   {
@@ -379,11 +642,11 @@ public class TCPSocketCommandBuilderTest
 
     }
 
-    byte[] response;
+    byte[] receivedBytes;
 
-    byte[] getByteResponse()
+    byte[] getReceivedBytes()
     {
-      return response;
+      return receivedBytes;
     }
 
 
@@ -397,7 +660,17 @@ public class TCPSocketCommandBuilderTest
           {
             // block and wait for connecting client socket...
 
-            Socket s = server.accept();
+            Socket s = null;
+
+            try
+            {
+              s = server.accept();
+            }
+            catch (Throwable t)
+            {
+              running = false;
+              break;
+            }
 
             BufferedInputStream in = new BufferedInputStream(s.getInputStream());
 
@@ -418,7 +691,7 @@ public class TCPSocketCommandBuilderTest
 
             Thread.sleep(100);
 
-            response = payload.array();
+            receivedBytes = payload.array();
 
             synchronized (RESPONSE_MONITOR)
             {
@@ -441,7 +714,8 @@ public class TCPSocketCommandBuilderTest
 
   /**
    * TCP/IP Server that expects text payloads. Does not acknowledge or respond to incoming
-   * connections.
+   * connections. Continues reading until client socket is closed. Expects payloads to be
+   * delimited by '\r'.
    */
   private static class StringTCPServer
   {
@@ -450,7 +724,7 @@ public class TCPSocketCommandBuilderTest
     protected SocketReader reader;
     protected ServerSocket server;
 
-    private String response;
+    private String receivedPayload;
 
     private StringTCPServer(int port)
     {
@@ -478,14 +752,14 @@ public class TCPSocketCommandBuilderTest
 
     protected final static Object RESPONSE_MONITOR = new Object();
 
-    private Object getResponseMonitor()
+    private Object getReceiveMonitor()
     {
       return RESPONSE_MONITOR;
     }
 
-    private String getResponse()
+    private String getReceivedPayload()
     {
-      return (response == null) ? "<null>" : response;
+      return (receivedPayload == null) ? "<null>" : receivedPayload;
     }
 
     boolean isSocketOpen = false;
@@ -509,7 +783,17 @@ public class TCPSocketCommandBuilderTest
           {
             // block and wait for connecting client socket...
 
-            Socket s = server.accept();
+            Socket s = null;
+
+            try
+            {
+              s = server.accept();
+            }
+            catch (Throwable t)
+            {
+              running = false;
+              break;
+            }
 
             BufferedInputStream in = new BufferedInputStream(s.getInputStream());
 
@@ -546,7 +830,7 @@ public class TCPSocketCommandBuilderTest
 
                   String msg = tokenizer.nextToken();
 
-                  response = msg;
+                  receivedPayload = msg;
 
                   synchronized (RESPONSE_MONITOR)
                   {
@@ -567,10 +851,12 @@ public class TCPSocketCommandBuilderTest
 
                   String msg = tokenizer.nextToken();
 
-                  response = msg;
+                  receivedPayload = msg;
 
                   RESPONSE_MONITOR.notify();
                 }
+
+                sbuf = new StringBuffer();
               }
             }
 
