@@ -31,16 +31,18 @@ import org.openremote.controller.utils.Strings;
  * The ESP2 header structure is as follows:
  *
  * <pre>
- *   +---------+---------+------------+
- *   |Sync Byte|Sync Byte|H_SEQ|LENGTH|
- *   |  (0xA5) |  (0x5A) |     |      |
- *   +---------+---------+------------+
- *     1 byte     1 byte     1 byte
+ *       +---------------+---------------+---------------+
+ *       |   Sync Byte   |   Sync Byte   |H_SEQ| LENGTH  |
+ *       |     (0xA5)    |     (0x5A)    |     |         |
+ *       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * bits  |7|6|5|4|3|2|1|0|7|6|5|4|3|2|1|0|7|6|5|4|3|2|1|0|
+ *       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
  *</pre>
  *
- * The ESP2 header starts with two synchronization bytes followed by the H_SEQ field (1 nibble)
- * which contains the packet type. The last LENGTH nibble contains the size of the following data
- * section (including the CHECKSUM field) and the value is always 11 bytes.
+ * The ESP2 header starts with two synchronization bytes followed by the H_SEQ field (3 bits)
+ * which contains the packet type. The last LENGTH field (5 bits) contains the size of the following
+ * data section (including the CHECKSUM field) and the value is always 11 bytes.
  *
  * @see Esp2Packet
  *
@@ -219,10 +221,10 @@ public class Esp2PacketHeader
       );
     }
 
-    this.length = headerData[ESP2_HEADER_H_SEQ_LENGTH_INDEX] & 0x0F;
+    this.length = headerData[ESP2_HEADER_H_SEQ_LENGTH_INDEX] & 0x1F;
 
     this.packetType = PacketType.resolve(
-        (headerData[ESP2_HEADER_H_SEQ_LENGTH_INDEX] & 0xF0) >> 4
+        (headerData[ESP2_HEADER_H_SEQ_LENGTH_INDEX] & 0xE0) >> 5
     );
   }
 
@@ -233,7 +235,7 @@ public class Esp2PacketHeader
       throw new IllegalArgumentException("null packet type");
     }
 
-    if(length > 0x0F)
+    if(length > 0x1F)
     {
       throw new IllegalArgumentException("Data length out of valid range.");
     }
@@ -300,8 +302,8 @@ public class Esp2PacketHeader
     headerBytes[ESP2_HEADER_SYNC_BYTE_1_INDEX] = ESP2_SYNC_BYTE_1;
     headerBytes[ESP2_HEADER_SYNC_BYTE_2_INDEX] = ESP2_SYNC_BYTE_2;
 
-    headerBytes[ESP2_HEADER_H_SEQ_LENGTH_INDEX] |= (byte)(packetType.getValue() << 4);
-    headerBytes[ESP2_HEADER_H_SEQ_LENGTH_INDEX] |= (byte)(length & 0x0F);
+    headerBytes[ESP2_HEADER_H_SEQ_LENGTH_INDEX] |= (byte)(packetType.getValue() << 5);
+    headerBytes[ESP2_HEADER_H_SEQ_LENGTH_INDEX] |= (byte)(length & 0x1F);
 
     return headerBytes;
   }
