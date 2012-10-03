@@ -1,3 +1,9 @@
+Pro 1.0.2
+=========
+
+- MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
+  when saving UI design
+
 Pro 1.0.1
 =========
 
