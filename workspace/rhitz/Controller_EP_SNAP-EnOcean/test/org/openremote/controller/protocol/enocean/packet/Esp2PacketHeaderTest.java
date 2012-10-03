@@ -45,7 +45,7 @@ public class Esp2PacketHeaderTest
   {
     headerBytes = new byte[]
     {
-        (byte)0xA5, (byte)0x5A, (byte)((0x01 << 4) + 11)
+        (byte)0xA5, (byte)0x5A, (byte)((0x01 << 5) + 11)
     };
   }
 
@@ -103,7 +103,7 @@ public class Esp2PacketHeaderTest
   public void testLengthOutOfRange() throws Exception
   {
     Esp2PacketHeader header = new Esp2PacketHeader(
-        Esp2PacketHeader.PacketType.TRT, 0x1F
+        Esp2PacketHeader.PacketType.TRT, 0x2F
     );
   }
 
@@ -156,7 +156,7 @@ public class Esp2PacketHeaderTest
 
     header[0] = (byte)0xA5;
     header[1] = (byte)0x5A;
-    header[2] = (byte)((packetType.getValue() << 4) + (length & 0x0F));
+    header[2] = (byte)((packetType.getValue() << 5) + (length & 0x1F));
 
     return header;
   }
