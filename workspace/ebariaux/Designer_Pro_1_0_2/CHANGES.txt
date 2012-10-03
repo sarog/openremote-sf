@@ -3,6 +3,7 @@ Pro 1.0.2
 
 - MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
   when saving UI design
+- MODELER-398: Setting a sensor on a Web element does not work
 
 Pro 1.0.1
 =========
