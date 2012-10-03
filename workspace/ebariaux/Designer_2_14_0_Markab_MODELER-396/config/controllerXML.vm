@@ -156,7 +156,7 @@
   		</sensor>
   	#end
   	#foreach($sensor in $dbSensors)
-  		<sensor id="${resouceServiceImpl.getMaxId($maxId)}" name="${sensor.getName()}" type="${sensor.getType()}">
+  		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">
   			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
   				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
   				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer,$maxId)})
