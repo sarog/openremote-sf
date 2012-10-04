@@ -76,17 +76,32 @@ public class TCPSocketCommandBuilderTest
       Assert.assertTrue(server.isSocketOpen());
 
 
-      // send connection close command...
 
-      cmd = getOneWayCommand("name2", "localhost", "11110", "987");
+
+      cmd = getOneWayStickyKeepAliveCommand("sticky", "localhost", "11110", "sticky");
+
+      // send keep-alive command...
 
       cmd.send();
 
       waitForResponse(server);
 
-      Assert.assertTrue(server.getReceivedPayload().equals("987"));
+      Assert.assertTrue(server.getReceivedPayload().equals("sticky"));
+      Assert.assertTrue(server.isSocketOpen());
 
-      Thread.sleep(1000);
+
+
+      // send connection close command...
+
+      cmd = getOneWayCommand("name2", "localhost", "11110", "98765");
+
+      cmd.send();
+
+      waitForResponse(server);
+
+      Assert.assertTrue(server.getReceivedPayload().equals("98765"));
+
+      Thread.sleep(100);
 
       Assert.assertTrue(!server.isSocketOpen());
     }
@@ -436,8 +451,8 @@ public class TCPSocketCommandBuilderTest
 
 
   /**
-   * Constructs a send-and-receive command with no keep-alive (default) and read-available
-   * response handling.
+   * Constructs a send-and-receive command with no keep-alive (default, connection sticky) and
+   * read-available response handling.
    *
    * @param name      command name
    * @param address   ip address
@@ -451,7 +466,6 @@ public class TCPSocketCommandBuilderTest
   {
     Element el = getElement(name, address, port, command);
 
-    addWaitForResponse(el);
     addReadAvailable(el);
 
     return (TCPSocketCommand) builder.build(el);
@@ -460,7 +474,8 @@ public class TCPSocketCommandBuilderTest
 
 
   /**
-   * Constructs a send-and-receive command with keep-alive and read-until-close response handling.
+   * Constructs a send-and-receive command with default keep-alive (connection sticky) and
+   * read-until-close response handling.
    *
    * @param name      command name
    * @param address   ip address
@@ -474,15 +489,13 @@ public class TCPSocketCommandBuilderTest
   {
     Element el = getElement(name, address, port, command);
 
-    addWaitForResponse(el);
-    addKeepAlive(el);
     addReadUntilClose(el);
 
     return (TCPSocketCommand) builder.build(el);
   }
 
   /**
-   * Constructs a send-and-receive command with keep-alive and read-until-close response handling.
+   * Constructs a send-and-receive command with keep-alive and read-available response handling.
    *
    * @param name      command name
    * @param address   ip address
@@ -496,7 +509,6 @@ public class TCPSocketCommandBuilderTest
   {
     Element el = getElement(name, address, port, command);
 
-    addWaitForResponse(el);
     addKeepAlive(el);
     addReadAvailable(el);
 
@@ -504,28 +516,31 @@ public class TCPSocketCommandBuilderTest
   }
 
 
-  private Element addWaitForResponse(Element el)
-  {
-    return addWaitForResponse(el, true);
-  }
-
-  private Element addWaitForResponse(Element el, Boolean b)
-  {
-    Element waitForResp = new Element("property");
-    waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", b.toString());
-
-    el.addContent(waitForResp);
-
-    return el;
-  }
-
-
+  /**
+   * Adds keep-alive property
+   *
+   * @param el    parent XML element
+   *
+   * @return  modified parent XML element
+   */
   private Element addKeepAlive(Element el)
+  {
+    return addKeepAlive(el, true);
+  }
+
+  /**
+   * Adds keep-alive property with given value
+   *
+   * @param el    parent XML element
+   * @param b     keep-alive value
+   *
+   * @return    modified parent XML element
+   */
+  private Element addKeepAlive(Element el, Boolean b)
   {
     Element keepAlive = new Element("property");
     keepAlive.setAttribute("name", "keepAlive");
-    keepAlive.setAttribute("value", "true");
+    keepAlive.setAttribute("value", b.toString());
 
     el.addContent(keepAlive);
 
@@ -536,7 +551,7 @@ public class TCPSocketCommandBuilderTest
   private Element addReadUntilClose(Element el)
   {
     Element readUntilClose = new Element("property");
-    readUntilClose.setAttribute("name", "responseHandling");
+    readUntilClose.setAttribute("name", "responsePolicy");
     readUntilClose.setAttribute("value", "read_until_close");
 
     el.addContent(readUntilClose);
@@ -544,10 +559,22 @@ public class TCPSocketCommandBuilderTest
     return el;
   }
 
+  private Element addNoReadResponse(Element el)
+  {
+    Element readUntilClose = new Element("property");
+    readUntilClose.setAttribute("name", "responsePolicy");
+    readUntilClose.setAttribute("value", "read_nothing");
+
+    el.addContent(readUntilClose);
+
+    return el;
+  }
+
+
   private Element addReadAvailable(Element el)
   {
     Element readUntilClose = new Element("property");
-    readUntilClose.setAttribute("name", "responseHandling");
+    readUntilClose.setAttribute("name", "responsePolicy");
     readUntilClose.setAttribute("value", "read_available");
 
     el.addContent(readUntilClose);
@@ -620,81 +647,22 @@ public class TCPSocketCommandBuilderTest
     propCommand.setAttribute("name", "command");
     propCommand.setAttribute("value", command);
 
-    Element waitForResp = new Element("property");
-    waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", "true");
-
     Element keepAlive = new Element("property");
-    keepAlive.setAttribute("name", "responseHandling");
-    keepAlive.setAttribute("value", "read_until_close");
+    keepAlive.setAttribute("name", "responsePolicy");
+    keepAlive.setAttribute("value", "read until close");
 
     ele.addContent(propName);
     ele.addContent(propAddr);
     ele.addContent(propPort);
     ele.addContent(propCommand);
-    ele.addContent(waitForResp);
     ele.addContent(keepAlive);
 
     return (TCPSocketCommand) builder.build(ele);
 
   }
-
-
-  /**
-   * Constructs a send-and-receive command with keep-alive bit set.
-   *
-   * @param name      command name
-   * @param address   ip address
-   * @param port      server port
-   * @param command   command payload
-   *
-   * @return    command ready to send
-   */
-  private TCPSocketCommand getKeepAliveResponseCommand(String name, String address, String port, String command)
-  {
-    Element ele = new Element("command");
-    ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "tcpSocket");
-    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
-
-    Element propName = new Element("property");
-    propName.setAttribute("name", "name");
-    propName.setAttribute("value", name);
-
-    Element propAddr = new Element("property");
-    propAddr.setAttribute("name", "ipAddress");
-    propAddr.setAttribute("value", address);
-
-    Element propPort = new Element("property");
-    propPort.setAttribute("name", "port");
-    propPort.setAttribute("value", port);
-
-    Element propCommand = new Element("property");
-    propCommand.setAttribute("name", "command");
-    propCommand.setAttribute("value", command);
-
-    Element waitForResp = new Element("property");
-    waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", "true");
-
-    Element keepAlive = new Element("property");
-    keepAlive.setAttribute("name", "keepAlive");
-    keepAlive.setAttribute("value", "true");
-
-    ele.addContent(propName);
-    ele.addContent(propAddr);
-    ele.addContent(propPort);
-    ele.addContent(propCommand);
-    ele.addContent(waitForResp);
-    ele.addContent(keepAlive);
-
-    return (TCPSocketCommand) builder.build(ele);
-
-  }
-
   /**
    * Constructs a one-way command definition that will not expect a response back from the server
-   * and has no keep-alive bit set.
+   * and has keep-alive set explicitly to false (forcing close of connection after send).
    *
    * @param name      command name
    * @param address   ip address
@@ -705,12 +673,28 @@ public class TCPSocketCommandBuilderTest
    */
   private TCPSocketCommand getOneWayCommand(String name, String address, String port, String command)
   {
-    return getCommand(name, address, port, command, false);
+     return getCommand(name, address, port, command, false, false);
+  }
+
+  /**
+   * Constructs a one-way command definition that will not expect a response back from the server
+   * and has no keep-alive bit set (respecting connection's current sticky setting).
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getOneWayStickyKeepAliveCommand(String name, String address, String port, String command)
+  {
+     return getCommand(name, address, port, command, false);
   }
 
 
   /**
-   * Constructs a command definition with no keepalive (default).
+   * Constructs a command definition which either consumes or ignores server response.
    *
    * @param name      command name
    * @param address   ip address
@@ -725,7 +709,40 @@ public class TCPSocketCommandBuilderTest
   {
     Element el = getElement(name, address, port, payload);
 
-    addWaitForResponse(el, waitForResponse);
+    if (!waitForResponse)
+    {
+      addNoReadResponse(el);
+    }
+
+    return (TCPSocketCommand) builder.build(el);
+  }
+
+
+
+  /**
+   * Constructs a command definition which either consumes or ignores server response and
+   * has a given keep-alive bit.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param payload   command payload
+   * @param waitForResponse  whether command should consume response from server before continuing
+   * @param keepAlive   whether to close connection after the command is finished
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getCommand(String name, String address, String port, String payload,
+                                      Boolean waitForResponse, Boolean keepAlive)
+  {
+    Element el = getElement(name, address, port, payload);
+
+    addKeepAlive(el, keepAlive);
+
+    if (!waitForResponse)
+    {
+      addNoReadResponse(el);
+    }
 
     return (TCPSocketCommand) builder.build(el);
   }
@@ -768,17 +785,17 @@ public class TCPSocketCommandBuilderTest
     keepAlive.setAttribute("name", "keepAlive");
     keepAlive.setAttribute("value", "true");
 
-    Element waitForResp = new Element("property");
-    waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", "false");
+    Element responsePolicy = new Element("property");
+    responsePolicy.setAttribute("name", "responsePolicy");
+    responsePolicy.setAttribute("value", "read_nothing");
 
     ele.addContent(propName);
     ele.addContent(propAddr);
     ele.addContent(propPort);
     ele.addContent(propCommand);
     ele.addContent(keepAlive);
-    ele.addContent(waitForResp);
-    
+    ele.addContent(responsePolicy);
+
     return (TCPSocketCommand) builder.build(ele);
   }
 
