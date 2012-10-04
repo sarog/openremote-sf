@@ -31,12 +31,16 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
+import java.io.IOException;
 
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.protocol.bus.Message;
+import org.openremote.controller.protocol.bus.PhysicalBus;
 import org.openremote.controller.utils.CommandUtil;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 import org.jdom.Element;
 
 /**
@@ -44,7 +48,7 @@ import org.jdom.Element;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public abstract class DeviceProtocol implements CommandBuilder, ExecutableCommand
+public abstract class DeviceProtocol<T extends PhysicalBus> implements CommandBuilder
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -69,24 +73,83 @@ public abstract class DeviceProtocol implements CommandBuilder, ExecutableComman
 
   private Set<Option> options = new HashSet<Option>(1);
 
+  protected Logger connectionLog =
+      Logger.getLogger(Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "connection");
+
+  private Map<InetSocketAddress, T> connections = new HashMap<InetSocketAddress, T>();
+
+  private final Object CONNECTIONS_MUTEX = new Object();
+
 
 
   // Constructors ---------------------------------------------------------------------------------
 
-  protected DeviceProtocol()
-  {
-
-  }
-
   protected DeviceProtocol(Option... opts)
   {
     this.options.addAll(Arrays.asList(opts));
+
+    connectionLog.info("Created device protocol implementation with options = ({0})", formatOptions(opts));
   }
 
 
 
+  // Protected Instance Methods -------------------------------------------------------------------
 
-  public abstract Command create(Properties properties, Set<Message> messages);
+
+  /**
+   * TODO
+   *
+   * This implementation manages a generic pool of connections.
+   */
+  protected T getConnection(InetSocketAddress socketAddress)
+  {
+    synchronized (CONNECTIONS_MUTEX)
+    {
+      if (connections.keySet().contains(socketAddress))
+      {
+        return connections.get(socketAddress);
+      }
+
+      else
+      {
+        T connection = createConnection();
+
+        connections.put(socketAddress, connection);
+
+        connection.start(socketAddress, socketAddress);
+
+        return connection;
+      }
+    }
+  }
+
+  protected void removeConnection(InetSocketAddress socketAddress)
+  {
+    synchronized (CONNECTIONS_MUTEX)
+    {
+      try
+      {
+        closeConnection();
+      }
+
+      catch (IOException e)
+      {
+        e.printStackTrace();
+      }
+
+      connections.remove(socketAddress);
+
+      connectionLog.info("Connection ID ''{0}'' removed.", socketAddress);
+    }
+  }
+
+
+
+  protected abstract Command create(Properties properties, Set<Message> messages);
+
+  protected abstract T createConnection();
+
+  protected abstract void closeConnection() throws IOException;
 
 
 
@@ -128,15 +191,6 @@ public abstract class DeviceProtocol implements CommandBuilder, ExecutableComman
 
 
 
-  // Implements ExecutableCommand -----------------------------------------------------------------
-
-  @Override public void send()
-  {
-    
-  }
-
-
-
   // Private Instance Methods ---------------------------------------------------------------------
 
 
@@ -162,9 +216,32 @@ public abstract class DeviceProtocol implements CommandBuilder, ExecutableComman
     return element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY, element.getNamespace());
   }
 
+  private String formatOptions(Option... opts)
+  {
+    StringBuffer sbuf = new StringBuffer(10);
+
+    if (opts.length <= 1)
+    {
+      return opts[0].toString();
+    }
+
+    else
+    {
+      sbuf.append(opts[0]);
+
+      for (int i = 1; i < opts.length; i++)
+      {
+        sbuf.append(", ");
+        sbuf.append(opts[i]);
+      }
+    }
+
+    return sbuf.toString();
+  }
 
 
   // Nested Classes -------------------------------------------------------------------------------
+
 
   private static class ByteArrayMessage extends Message
   {
