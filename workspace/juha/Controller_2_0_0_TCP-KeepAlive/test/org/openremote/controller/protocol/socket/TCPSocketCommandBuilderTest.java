@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.socket;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -226,15 +227,17 @@ public class TCPSocketCommandBuilderTest
    *
    * @throws Exception  if there's an error
    */
-  @Test public void testReadCommandOnSocketClose() throws Exception
+  @Test public void testReadUntilCloseOnSocketClose() throws Exception
   {
-    RespondingStringTCPServer server = new RespondingStringTCPServer(11117);
+    RespondingStringTCPServer server = new RespondingStringTCPServer(
+        11117, RespondingStringTCPServer.SocketPolicy.CLOSE_AFTER_RESPONSE
+    );
 
     try
     {
       server.start();
 
-      TCPSocketCommand cmd = getResponseCommand("resp1", "localhost", "11117", "GET 1");
+      TCPSocketCommand cmd = getReadUntilCloseResponseCommand("resp1", "localhost", "11117", "GET 1");
 
       String response = cmd.read(null);
 
@@ -242,9 +245,9 @@ public class TCPSocketCommandBuilderTest
 
       Thread.sleep(100);
 
-      Assert.assertTrue(server.isSocketOpen());
+      Assert.assertTrue(!server.isSocketOpen());
 
-      cmd = getResponseCommand("resp2", "localhost", "11117", "GET 123456789");
+      cmd = getReadUntilCloseResponseCommand("resp2", "localhost", "11117", "GET 123456789");
 
       response = cmd.read(null);
 
@@ -252,7 +255,7 @@ public class TCPSocketCommandBuilderTest
 
       Thread.sleep(100);
 
-      Assert.assertTrue(server.isSocketOpen());
+      Assert.assertTrue(!server.isSocketOpen());
 
     }
     
@@ -268,15 +271,17 @@ public class TCPSocketCommandBuilderTest
    *
    * @throws Exception  if there's an error
    */
-  @Test public void testKeepAliveReadCommandOnSocketClose() throws Exception
+  @Test public void testKeepAliveReadUntilCloseOnSocketClose() throws Exception
   {
-    RespondingStringTCPServer server = new RespondingStringTCPServer(11118);
+    RespondingStringTCPServer server = new RespondingStringTCPServer(
+        11118, RespondingStringTCPServer.SocketPolicy.CLOSE_AFTER_RESPONSE
+    );
 
     try
     {
       server.start();
 
-      TCPSocketCommand cmd = getKeepAliveResponseCommand("resp1", "localhost", "11118", "GET 1");
+      TCPSocketCommand cmd = getKeepAliveReadUntilCloseResponseCommand("resp1", "localhost", "11118", "GET 1");
 
       String response = cmd.read(null);
 
@@ -284,9 +289,53 @@ public class TCPSocketCommandBuilderTest
 
       Thread.sleep(100);
 
+      Assert.assertTrue(!server.isSocketOpen());
+
+      cmd = getKeepAliveReadUntilCloseResponseCommand("resp2", "localhost", "11118", "GET 123456789");
+
+      response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("123456789"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(!server.isSocketOpen());
+
+    }
+
+    finally
+    {
+      server.stop();
+    }
+  }
+
+  /**
+   * Tests send and receive with keepalive on text based server that expects '\r' delimited messages
+   * and will not signal on response end-of-message (read available).
+   *
+   * @throws Exception  if there's an error
+   */
+  @Test public void testKeepAliveReadAvailable() throws Exception
+  {
+    RespondingStringTCPServer server = new RespondingStringTCPServer(
+        11119, RespondingStringTCPServer.SocketPolicy.NO_INDICATOR
+    );
+
+    try
+    {
+      server.start();
+
+      TCPSocketCommand cmd = getKeepAliveReadAvailableResponseCommand("resp1", "localhost", "11119", "GET 9");
+
+      String response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("9"));
+
+      Thread.sleep(100);
+
       Assert.assertTrue(server.isSocketOpen());
 
-      cmd = getKeepAliveResponseCommand("resp2", "localhost", "11118", "GET 123456789");
+      cmd = getKeepAliveReadAvailableResponseCommand("resp2", "localhost", "11119", "GET 123456789");
 
       response = cmd.read(null);
 
@@ -305,6 +354,50 @@ public class TCPSocketCommandBuilderTest
 
   }
 
+
+  /**
+   * Tests send and receive with no keep-alive (default) on text based server that expects '\r'
+   * delimited messages and will not signal on response end-of-message (read available).
+   *
+   * @throws Exception  if there's an error
+   */
+  @Test public void testReadAvailable() throws Exception
+  {
+    RespondingStringTCPServer server = new RespondingStringTCPServer(
+        11120, RespondingStringTCPServer.SocketPolicy.NO_INDICATOR
+    );
+
+    try
+    {
+      server.start();
+
+      TCPSocketCommand cmd = getReadAvailableResponseCommand("resp1", "localhost", "11120", "GET 44");
+
+      String response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("44"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+      cmd = getReadAvailableResponseCommand("resp2", "localhost", "11120", "GET 123456789");
+
+      response = cmd.read(null);
+
+      Assert.assertTrue("GOT " + response, response.equals("123456789"));
+
+      Thread.sleep(100);
+
+      Assert.assertTrue(server.isSocketOpen());
+
+    }
+
+    finally
+    {
+      server.stop();
+    }
+  }
 
 
   /**
@@ -341,8 +434,10 @@ public class TCPSocketCommandBuilderTest
   }
 
 
+
   /**
-   * Constructs a send-and-receive command with no keep-alive (default)
+   * Constructs a send-and-receive command with no keep-alive (default) and read-available
+   * response handling.
    *
    * @param name      command name
    * @param address   ip address
@@ -351,10 +446,199 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getResponseCommand(String name, String address, String port, String command)
+  private TCPSocketCommand getReadAvailableResponseCommand(String name, String address,
+                                                                     String port, String command)
   {
-    return getCommand(name, address, port, command, true);
+    Element el = getElement(name, address, port, command);
+
+    addWaitForResponse(el);
+    addReadAvailable(el);
+
+    return (TCPSocketCommand) builder.build(el);
   }
+
+
+
+  /**
+   * Constructs a send-and-receive command with keep-alive and read-until-close response handling.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getKeepAliveReadUntilCloseResponseCommand(String name, String address,
+                                                                     String port, String command)
+  {
+    Element el = getElement(name, address, port, command);
+
+    addWaitForResponse(el);
+    addKeepAlive(el);
+    addReadUntilClose(el);
+
+    return (TCPSocketCommand) builder.build(el);
+  }
+
+  /**
+   * Constructs a send-and-receive command with keep-alive and read-until-close response handling.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getKeepAliveReadAvailableResponseCommand(String name, String address,
+                                                                     String port, String command)
+  {
+    Element el = getElement(name, address, port, command);
+
+    addWaitForResponse(el);
+    addKeepAlive(el);
+    addReadAvailable(el);
+
+    return (TCPSocketCommand) builder.build(el);
+  }
+
+
+  private Element addWaitForResponse(Element el)
+  {
+    return addWaitForResponse(el, true);
+  }
+
+  private Element addWaitForResponse(Element el, Boolean b)
+  {
+    Element waitForResp = new Element("property");
+    waitForResp.setAttribute("name", "waitForResponse");
+    waitForResp.setAttribute("value", b.toString());
+
+    el.addContent(waitForResp);
+
+    return el;
+  }
+
+
+  private Element addKeepAlive(Element el)
+  {
+    Element keepAlive = new Element("property");
+    keepAlive.setAttribute("name", "keepAlive");
+    keepAlive.setAttribute("value", "true");
+
+    el.addContent(keepAlive);
+
+    return el;
+  }
+
+
+  private Element addReadUntilClose(Element el)
+  {
+    Element readUntilClose = new Element("property");
+    readUntilClose.setAttribute("name", "responseHandling");
+    readUntilClose.setAttribute("value", "read_until_close");
+
+    el.addContent(readUntilClose);
+
+    return el;
+  }
+
+  private Element addReadAvailable(Element el)
+  {
+    Element readUntilClose = new Element("property");
+    readUntilClose.setAttribute("name", "responseHandling");
+    readUntilClose.setAttribute("value", "read_available");
+
+    el.addContent(readUntilClose);
+
+    return el;
+  }
+
+
+  private Element getElement(String name, String address, String port, String command)
+  {
+    Element ele = new Element("command");
+    ele.setAttribute("id", "test");
+    ele.setAttribute("protocol", "tcpSocket");
+    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+
+    Element propName = new Element("property");
+    propName.setAttribute("name", "name");
+    propName.setAttribute("value", name);
+
+    Element propAddr = new Element("property");
+    propAddr.setAttribute("name", "ipAddress");
+    propAddr.setAttribute("value", address);
+
+    Element propPort = new Element("property");
+    propPort.setAttribute("name", "port");
+    propPort.setAttribute("value", port);
+
+    Element propCommand = new Element("property");
+    propCommand.setAttribute("name", "command");
+    propCommand.setAttribute("value", command);
+
+    ele.addContent(propName);
+    ele.addContent(propAddr);
+    ele.addContent(propPort);
+    ele.addContent(propCommand);
+
+    return ele;
+  }
+
+  /**
+   * Constructs a send-and-receive command with read-until-close response policy.
+   *
+   * @param name      command name
+   * @param address   ip address
+   * @param port      server port
+   * @param command   command payload
+   *
+   * @return    command ready to send
+   */
+  private TCPSocketCommand getReadUntilCloseResponseCommand(String name, String address, String port, String command)
+  {
+    Element ele = new Element("command");
+    ele.setAttribute("id", "test");
+    ele.setAttribute("protocol", "tcpSocket");
+    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+
+    Element propName = new Element("property");
+    propName.setAttribute("name", "name");
+    propName.setAttribute("value", name);
+
+    Element propAddr = new Element("property");
+    propAddr.setAttribute("name", "ipAddress");
+    propAddr.setAttribute("value", address);
+
+    Element propPort = new Element("property");
+    propPort.setAttribute("name", "port");
+    propPort.setAttribute("value", port);
+
+    Element propCommand = new Element("property");
+    propCommand.setAttribute("name", "command");
+    propCommand.setAttribute("value", command);
+
+    Element waitForResp = new Element("property");
+    waitForResp.setAttribute("name", "waitForResponse");
+    waitForResp.setAttribute("value", "true");
+
+    Element keepAlive = new Element("property");
+    keepAlive.setAttribute("name", "responseHandling");
+    keepAlive.setAttribute("value", "read_until_close");
+
+    ele.addContent(propName);
+    ele.addContent(propAddr);
+    ele.addContent(propPort);
+    ele.addContent(propCommand);
+    ele.addContent(waitForResp);
+    ele.addContent(keepAlive);
+
+    return (TCPSocketCommand) builder.build(ele);
+
+  }
+
 
   /**
    * Constructs a send-and-receive command with keep-alive bit set.
@@ -439,38 +723,11 @@ public class TCPSocketCommandBuilderTest
   private TCPSocketCommand getCommand(String name, String address, String port, String payload,
                                       Boolean waitForResponse)
   {
-    Element ele = new Element("command");
-    ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "tcpSocket");
-    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+    Element el = getElement(name, address, port, payload);
 
-    Element propName = new Element("property");
-    propName.setAttribute("name", "name");
-    propName.setAttribute("value", name);
+    addWaitForResponse(el, waitForResponse);
 
-    Element propAddr = new Element("property");
-    propAddr.setAttribute("name", "ipAddress");
-    propAddr.setAttribute("value", address);
-
-    Element propPort = new Element("property");
-    propPort.setAttribute("name", "port");
-    propPort.setAttribute("value", port);
-
-    Element propCommand = new Element("property");
-    propCommand.setAttribute("name", "command");
-    propCommand.setAttribute("value", payload);
-
-    Element waitForResp = new Element("property");
-    waitForResp.setAttribute("name", "waitForResponse");
-    waitForResp.setAttribute("value", waitForResponse.toString());
-
-    ele.addContent(propName);
-    ele.addContent(propAddr);
-    ele.addContent(propPort);
-    ele.addContent(propCommand);
-    ele.addContent(waitForResp);
-
-    return (TCPSocketCommand) builder.build(ele);
+    return (TCPSocketCommand) builder.build(el);
   }
 
   /**
@@ -536,10 +793,20 @@ public class TCPSocketCommandBuilderTest
    */
   private static class RespondingStringTCPServer extends StringTCPServer
   {
+    enum SocketPolicy
+    {
+      CLOSE_AFTER_RESPONSE,
+      NO_INDICATOR
+    }
 
-    RespondingStringTCPServer(int port)
+    private SocketPolicy policy;
+
+
+    RespondingStringTCPServer(int port, SocketPolicy policy)
     {
       super(port);
+
+      this.policy = policy;
     }
 
     @Override protected void start() throws Exception
@@ -563,21 +830,42 @@ public class TCPSocketCommandBuilderTest
           {
             // block and wait for connecting client socket...
 
-            Socket s = server.accept();
+            Socket s = null;
+            
+            try
+            {
+              s = server.accept();
+            }
+            catch (SocketException e)
+            {
+              running = false;
+              break;
+            }
 
             BufferedInputStream bin = new BufferedInputStream(s.getInputStream());
+            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
 
             isSocketOpen = s.isBound() && s.isConnected();
-
-            StringBuffer sbuf = new StringBuffer();
 
             boolean endofstream = false;
 
             while (!endofstream)
             {
+              StringBuffer sbuf = new StringBuffer();
+
               while (true)
               {
-                int b = bin.read();
+                int b = -1;
+
+                try
+                {
+                  b = bin.read();
+                }
+
+                catch (SocketException e)
+                {
+                  System.out.println("Closing client socket at " + port);
+                }
 
                 if (b == '\r')
                   break;
@@ -596,11 +884,25 @@ public class TCPSocketCommandBuilderTest
 
               if (payload.startsWith("GET "))
               {
-                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
-
                 out.writeChars(payload.substring(4, payload.length()));
 
-                out.close();
+                switch (policy)
+                {
+                  case CLOSE_AFTER_RESPONSE:
+
+                    out.close();
+
+                    endofstream = true;
+
+                    System.out.println("CLOSED CLIENT SOCKET AFTER RESPONSE AT " + port);
+
+                    break;
+
+                  case NO_INDICATOR:
+
+                    out.flush();
+                    break;
+                }
               }
             }
 
