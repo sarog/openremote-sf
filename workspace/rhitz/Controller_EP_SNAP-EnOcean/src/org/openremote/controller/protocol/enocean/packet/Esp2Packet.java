@@ -97,7 +97,7 @@ public class Esp2Packet implements EspPacket
 
     this.data = (data == null) ? new byte[ESP2_PACKET_DATA_LENGTH] : data;
 
-    this.header = new Esp2PacketHeader(packetType, this.data.length);
+    this.header = new Esp2PacketHeader(packetType, this.data.length + 1);
   }
 
 
