@@ -29,6 +29,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.ReadCommand;
+import org.openremote.controller.protocol.ip.IPConnection;
 import org.openremote.controller.protocol.bus.Message;
 import org.openremote.controller.utils.Logger;
 
@@ -52,22 +53,22 @@ public class TCPSocketCommand extends ReadCommand implements ExecutableCommand
   // Instance Fields ------------------------------------------------------------------------------
 
   private String name;
-  private TCPSocketCommandBuilder.TCPConnection connection;
+  private IPConnection connection;
   private Set<Message> messages;
   private Boolean waitForResponse;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
-  TCPSocketCommand(String name, Set<Message> messages, TCPSocketCommandBuilder.TCPConnection connection,
-                   Boolean waitForResponse)
+  TCPSocketCommand(String name, Set<Message> messages, IPConnection connection,
+                   IPConnection.Option responsePolicy)
   {
-    log.info("Created TCP command ''{0}'' for connection {1} ",name, connection);
+    log.info("Created TCP command ''{0}'' for connection {1} ", name, connection);
 
     this.connection = connection;
     this.messages = messages;
     this.name = name;
-    this.waitForResponse = waitForResponse;
+    this.waitForResponse = (responsePolicy != IPConnection.Option.RESPONSE_READ_NOTHING);
   }
 
 
@@ -116,13 +117,11 @@ public class TCPSocketCommand extends ReadCommand implements ExecutableCommand
     {
       for (Message m : messages)
       {
-        log.info("Sent " + m);
-
         connection.send(m);
       }
     }
 
-    catch (IOException e)
+    catch (Exception e)
     {
       e.printStackTrace();
     }
@@ -136,8 +135,6 @@ public class TCPSocketCommand extends ReadCommand implements ExecutableCommand
     {
       for (Message m : messages)
       {
-        log.info("Sent " + m);
-
         connection.send(m);
 
         Message response = connection.receive();
@@ -146,7 +143,7 @@ public class TCPSocketCommand extends ReadCommand implements ExecutableCommand
       }
     }
 
-    catch (IOException e)
+    catch (Exception e)
     {
       e.printStackTrace();
     }
