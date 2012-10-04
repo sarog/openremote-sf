@@ -4,6 +4,8 @@ Pro 1.0.2
 - MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
   when saving UI design
 - MODELER-398: Setting a sensor on a Web element does not work
+- MODELER-392: Fractional Widget Coordinates when Browser
+  has non-default zoom
 
 Pro 1.0.1
 =========

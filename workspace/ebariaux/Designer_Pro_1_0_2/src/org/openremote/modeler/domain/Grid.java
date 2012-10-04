@@ -146,7 +146,7 @@ public class Grid extends BusinessEntity {
     * @param left the new left
     */
    public void setLeft(int left) {
-      this.left = left;
+      this.left = Math.round(left);
    }
 
    /**
@@ -155,7 +155,7 @@ public class Grid extends BusinessEntity {
     * @param top the new top
     */
    public void setTop(int top) {
-      this.top = top;
+      this.top = Math.round(top);
    }
 
    /**
@@ -164,7 +164,7 @@ public class Grid extends BusinessEntity {
     * @param width the new width
     */
    public void setWidth(int width) {
-      this.width = width;
+      this.width = Math.round(width);
    }
 
    /**
@@ -173,7 +173,7 @@ public class Grid extends BusinessEntity {
     * @param height the new height
     */
    public void setHeight(int height) {
-      this.height = height;
+      this.height = Math.round(height);
    }
 
    /**
