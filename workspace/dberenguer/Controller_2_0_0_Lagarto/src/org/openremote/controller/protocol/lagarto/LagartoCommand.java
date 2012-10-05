@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * along with lagarto; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
  *
@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.command.ExecutableCommand;
@@ -37,6 +39,11 @@ import org.openremote.controller.command.ExecutableCommand;
  */
 public class LagartoCommand implements ExecutableCommand, EventListener
 {
+  /**
+   * Logger
+   */
+  private final static Logger logger = Logger.getLogger(LagartoCommandBuilder.LAGARTO_PROTOCOL_LOG_CATEGORY);
+
   /**
   * Lagarto client thread
   */
@@ -93,6 +100,8 @@ public class LagartoCommand implements ExecutableCommand, EventListener
 
     // Add endpoint (sensor) to the network
     network.addEndpoint(epId, sensor);
+
+    logger.info("Endpoint command created for " + epId);
   }
 
   @Override
@@ -109,7 +118,7 @@ public class LagartoCommand implements ExecutableCommand, EventListener
     }
     catch (LagartoException ex)
     {
-      ex.log();
+      ex.logError();
     }
   }
 
@@ -134,24 +143,29 @@ public class LagartoCommand implements ExecutableCommand, EventListener
     try
     {
       String strUrl = "http://" + network.getHttpAddr() + "/values/" + this.epId + "/?";
-      if (this.epValue != null)
-        strUrl += "value=" + this.epValue;
 
-      URL cmdurl = new URL(strUrl);
-
-      in = new BufferedReader(new InputStreamReader(cmdurl.openStream()));
-      StringBuffer result = new StringBuffer();
-      String str;
-      while ((str = in.readLine()) != null)
+      if (this.epValue == null)
+        logger.error("Tried to send http command to input endpoint");
+      else
       {
-        result.append(str);
-      }
+        strUrl += "value=" + this.epValue;
+        URL cmdurl = new URL(strUrl);
 
-      return result.toString();
+        in = new BufferedReader(new InputStreamReader(cmdurl.openStream()));
+        StringBuffer result = new StringBuffer();
+        String str;
+        while ((str = in.readLine()) != null)
+        {
+          result.append(str);
+        }
+
+        logger.info("Command sent to endpoint " + this.epId + ". New value = " + this.epValue);
+        return result.toString();
+      }
     }
     catch (Exception e)
     {
-      //logger.error("HttpGetCommand could not execute", e);
+      logger.error("HttpGetCommand could not execute", e);
     }
     finally
     {
@@ -163,7 +177,7 @@ public class LagartoCommand implements ExecutableCommand, EventListener
         }
         catch (IOException e)
         {
-          //logger.error("BufferedReader could not be closed", e);
+          logger.error("BufferedReader could not be closed", e);
         }
       }
     }

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * along with lagarto; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
  *
@@ -24,7 +24,6 @@
 
 package org.openremote.controller.protocol.lagarto;
 
-import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -33,43 +32,49 @@ import org.openremote.controller.utils.Logger;
 public class LagartoException extends Exception
 {
   /**
-   * Description of the exception
+   * Logger
    */
-   private String description;
+  private final static Logger logger = Logger.getLogger(LagartoCommandBuilder.LAGARTO_PROTOCOL_LOG_CATEGORY);
 
   /**
-   * The logger
-   */
-   public final static String LAGARTOLISTENER_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "LAGARTO_LISTENER";
-   private final static Logger logger = Logger.getLogger(LAGARTOLISTENER_PROTOCOL_LOG_CATEGORY);
+  * Description of the exception
+  */
+  private String description;
 
   /**
-   * Class constructor
-   */
-   public LagartoException(String message)
-   {
-       super(message);
-       description = message;
-   }
+  * Class constructor
+  */
+  public LagartoException(String message)
+  {
+    super(message);
+    description = message;
+  }
 
-   /**
-    * Log exception
-    */
-   public void log() 
-   {
-     System.out.println("LagartoException: " + description);
-     logger.error("LagartoException: " + description);
-   }
+  /**
+  * Log exception as an error
+  */
+  public void logError()
+  {
+    logger.error("LagartoException: " + description);
+  }
 
-   /**
-    * out
-    * 
-    * Display exception on the stdout output
-    */
-   public void out() 
-   {
-      System.out.println("Exception: " + description);
-      if (this.getCause() != null)
-        System.out.println("Origin: " + this.getCause().toString());
-   }
+  /**
+  * Log exception as an info
+  */
+  public void logInfo()
+  {
+    logger.info("LagartoException: " + description);
+  }
+
+  /**
+  * out
+  *
+  * Display exception on the stdout output
+  */
+  public void out()
+  {
+    System.out.println("Exception: " + description);
+    if (this.getCause() != null)
+      System.out.println("Origin: " + this.getCause().toString());
+  }
 }
