@@ -53,5 +53,6 @@
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.0.11/org.restlet.ext.json-jse.jar"/>
 	<classpathentry kind="lib" path="lib/flexjson-2.1/flexjson-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/rrd4j-2.1.1/rrd4j-2.1.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ORCommons"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
