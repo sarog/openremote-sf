@@ -30,6 +30,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
+import org.openremote.controller.protocol.domintell.model.InputModule;
 
 /**
  * 
@@ -101,6 +102,17 @@ public abstract class DomintellCommand implements Command {
       commandClasses.put("PBLREAD_MODE", TemperatureCommand.class);
       commandClasses.put("PBLSET_MODE", TemperatureCommand.class);
       commandClasses.put("PBLREAD_PRESET_SET_POINT", TemperatureCommand.class);
+      
+      commandClasses.put("IS4BEGIN_SHORT_PUSH", InputCommand.class);
+      commandClasses.put("IS4END_SHORT_PUSH", InputCommand.class);
+      commandClasses.put("IS4BEGIN_LONG_PUSH", InputCommand.class);
+      commandClasses.put("IS4END_LONG_PUSH", InputCommand.class);
+      commandClasses.put("IS4STATUS", InputCommand.class);
+      commandClasses.put("IS8BEGIN_SHORT_PUSH", InputCommand.class);
+      commandClasses.put("IS8END_SHORT_PUSH", InputCommand.class);
+      commandClasses.put("IS8BEGIN_LONG_PUSH", InputCommand.class);
+      commandClasses.put("IS8END_LONG_PUSH", InputCommand.class);
+      commandClasses.put("IS8STATUS", InputCommand.class);
    }
 
    /**
@@ -224,5 +236,23 @@ public abstract class DomintellCommand implements Command {
     * @param sensor Sensor to update
     */
    abstract protected  void updateSensor(DomintellModule module, Sensor sensor);
+   
+   public void stop(Sensor sensor, Class<? extends DomintellModule> moduleClass) {
+      removeSensor(sensor);
+      if (sensors.isEmpty()) {
+         // Last sensor removed, we may unregister ourself from device
+         try {
+            DomintellModule module = (DomintellModule) gateway.getDomintellModule(moduleType, address, moduleClass);
+            if (module == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a module we're receiving feedback for (" + address + ")");
+            }
+
+            module.removeCommand(this);
+         } catch (DomintellModuleException e) {
+            log.error("Impossible to get module", e);
+         }
+      }
+   }
 
 }

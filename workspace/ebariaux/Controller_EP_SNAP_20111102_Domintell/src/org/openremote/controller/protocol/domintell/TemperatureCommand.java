@@ -105,21 +105,7 @@ public class TemperatureCommand extends DomintellCommand implements ExecutableCo
 
    @Override
    public void stop(Sensor sensor) {
-      removeSensor(sensor);
-      if (sensors.isEmpty()) {
-         // Last sensor removed, we may unregister ourself from device
-         try {
-            TemperatureModule temperature = (TemperatureModule) gateway.getDomintellModule(moduleType, address, TemperatureModule.class);
-            if (temperature == null) {
-              // This should never happen as above command is supposed to create device
-              log.warn("Gateway could not create a Temperature module we're receiving feedback for (" + address + ")");
-            }
-
-            temperature.removeCommand(this);
-         } catch (DomintellModuleException e) {
-            log.error("Impossible to get module", e);
-         }
-      }
+      stop(sensor, TemperatureModule.class);
    }
 
    private void updateSensorForCurrentTemperature(TemperatureModule temperature, Sensor sensor) {
