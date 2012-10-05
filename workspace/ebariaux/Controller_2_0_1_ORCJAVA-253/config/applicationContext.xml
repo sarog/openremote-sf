@@ -44,6 +44,7 @@
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
+            <value>classpath:domintell.properties</value>
           </list>
       </property>
   </bean>
@@ -99,6 +100,13 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="domintellConfig" class="org.openremote.controller.DomintellConfig">
+    <property name="address" value="${domintell.address}"/>
+    <property name="port" value="${domintell.port}"/>
+  </bean>
+
+  <bean id="domintellGateway" class="org.openremote.controller.protocol.domintell.DomintellGateway"/>
 
   <!-- TODO -->
   <bean id = "controlCommandService"
@@ -272,6 +280,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "domintell"        value-ref = "domintellCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
@@ -385,6 +394,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+    <bean id="domintellCommandBuilder" class = "org.openremote.controller.protocol.domintell.DomintellCommandBuilder">
+      <property name="gateway" ref="domintellGateway"/>
+    </bean>
 
   <!-- DateTime Command Builder -->
   <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
