@@ -97,7 +97,6 @@ public class LagartoCommandBuilder implements CommandBuilder
    */
   public void setConfiguration(ControllerConfiguration configuration)
   {
-    System.out.println("CONTROLLER CONFIG BEING RECEIVED!!! " + configuration.getLagartoBroadcastAddress());
     controllerConfig = configuration;
   }
 }

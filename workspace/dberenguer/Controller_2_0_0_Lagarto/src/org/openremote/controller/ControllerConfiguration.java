@@ -489,11 +489,11 @@ public class ControllerConfiguration extends Configuration
    * Returns the broadcast address used to publish network events (ZeroMQ)
    * from Lagarto servers
    *
-   * @see #setLagartoBroadcastAddress(String)
+   * @see #setLagartoBroadcastAddr(String)
    *
    * @return IP broadcast address as a string
    */
-  public String getLagartoBroadcastAddress()
+  public String getLagartoBroadcastAddr()
   {
     return preferAttrCustomValue(LAGARTO_BROADCAST_ADDRESS, lagartoBroadcastAddr);
   }
@@ -502,11 +502,11 @@ public class ControllerConfiguration extends Configuration
    * Sets the broadcast address used to receive network events (ZeroMQ) from
    * Lagarto servers
    *
-   * @see #getLagartoBroadcastAddress()
+   * @see #getLagartoBroadcastAddr()
    *
    * @param IP broadcast address as a string
    */
-  public void setLagartoBroadcastAddress(String broadcastAddress)
+  public void setLagartoBroadcastAddr(String broadcastAddress)
   {
     this.lagartoBroadcastAddr = broadcastAddress.trim();
   }
