@@ -388,6 +388,50 @@ public abstract class DeviceProtocol<T extends PhysicalBus> implements CommandBu
       }
     }
 
+    public int getMandatoryInteger(String name) throws RuntimeException
+    {
+      if (name == null || name.equals(""))
+      {
+        throw new RuntimeException("");
+      }
+
+      String value = commandProperties.get(name.toLowerCase());
+
+      if (value == null || value.equals(""))
+      {
+        throw new RuntimeException("");
+      }
+
+      return new Integer(value);
+    }
+
+    public boolean getMandatoryBoolean(String name) throws RuntimeException
+    {
+      if (name == null || name.equals(""))
+      {
+        throw new RuntimeException("");
+      }
+
+      String value = commandProperties.get(name.toLowerCase());
+
+      if (value == null || value.equals(""))
+      {
+        throw new RuntimeException("");
+      }
+
+      if (value.equalsIgnoreCase("true"))
+      {
+        return true;
+      }
+
+      else if (value.equalsIgnoreCase("false"))
+      {
+        return false;
+      }
+
+      else throw new RuntimeException();
+    }
+
     public String getOptionalProperty(String name)
     {
       if (name == null || name.equals(""))
@@ -396,6 +440,31 @@ public abstract class DeviceProtocol<T extends PhysicalBus> implements CommandBu
       }
 
       return commandProperties.get(name.toLowerCase());
+    }
+
+    public Integer getOptionalInteger(String name)
+    {
+      if (name == null || name.equals(""))
+      {
+        return null;
+      }
+
+      String value = commandProperties.get(name.toLowerCase());
+
+      if (value == null || name.equals(""))
+      {
+        return null;
+      }
+
+      try
+      {
+        return new Integer(value);
+      }
+
+      catch (NumberFormatException e)
+      {
+        return null;
+      }
     }
 
     public Boolean getOptionalBoolean(String name)
