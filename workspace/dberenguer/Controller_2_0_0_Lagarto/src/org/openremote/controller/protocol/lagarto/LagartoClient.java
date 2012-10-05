@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * along with lagarto; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
  *
@@ -32,6 +32,8 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import org.openremote.controller.Configuration;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.ServiceContext;
@@ -41,6 +43,11 @@ import org.openremote.controller.service.ServiceContext;
  */
 public class LagartoClient extends Thread
 {
+  /**
+   * Logger
+   */
+  private final static Logger logger = Logger.getLogger(LagartoCommandBuilder.LAGARTO_PROTOCOL_LOG_CATEGORY);
+
   /**
    * Map containing all endpoints managed by the lagarto client
    */
@@ -56,20 +63,13 @@ public class LagartoClient extends Thread
    */
   public LagartoClient()
   {
-    /*
-    try
-    {
-      LagartoConfiguration config = new LagartoConfiguration();
-      this.broadcastAddr = config.getBroadcastAddr();
-    }
-    catch (LagartoException ex)
-    {
-      ex.log();
-    }
-    */
+    broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddress();
 
-    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
-    
+    System.out.println("**************************************************************");
+    System.out.println("");
+    System.out.println("ZEROMQ BROADCAST ADDRESS = " + broadcastAddr);
+    System.out.println("");
+    System.out.println("**************************************************************");
   }
 
   /**
@@ -142,21 +142,26 @@ public class LagartoClient extends Thread
       subscriber.connect(this.broadcastAddr);
       subscriber.subscribe("".getBytes());
 
+      logger.info("Lagarto client subscribed to " + this.broadcastAddr);
+
       // Endless loop
       while(true)
       {
-        // Listen to updates from Lagarto server
-        String msg = new String(subscriber.recv(0));
-        parseLagartoMsg(msg);
+        try
+        {
+          // Listen to updates from Lagarto server
+          String msg = new String(subscriber.recv(0));
+          parseLagartoMsg(msg);
+        }
+        catch (LagartoException ex)
+        {
+          ex.logInfo();
+        }
       }
-    }
-    catch (LagartoException ex)
-    {
-      ex.out();
     }
     catch (Exception ex)
     {
-      //logger.error("Error in Lagarto Client thread", ex);
+      logger.error("Unable to connect to ZeroMQ socket on " + this.broadcastAddr, ex);
     }
   }
 

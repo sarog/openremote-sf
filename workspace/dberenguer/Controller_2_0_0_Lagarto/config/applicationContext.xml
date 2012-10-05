@@ -76,6 +76,7 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
+    <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
   </bean>
 
   <!-- round-robin variables -->
@@ -392,6 +393,7 @@
 
 	<!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
 	<bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
+    <property name="configuration" ref="configuration"/>
   </bean>
 
   <!-- TODO -->

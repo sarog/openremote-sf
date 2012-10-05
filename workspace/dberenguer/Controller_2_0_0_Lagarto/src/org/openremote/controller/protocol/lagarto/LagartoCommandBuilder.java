@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * along with lagarto; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
  *
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.jdom.Element;
 import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -43,13 +44,14 @@ public class LagartoCommandBuilder implements CommandBuilder
   public final static String LAGARTO_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "lagarto";
   private final static Logger logger = Logger.getLogger(LAGARTO_PROTOCOL_LOG_CATEGORY);
 
+  public static ControllerConfiguration controllerConfig;
 
   /**
    * Class constructor
    */
   public LagartoCommandBuilder()
   {
-    logger.debug("First try to log something");
+    logger.error("First try to log something");
   }
 
   /**
@@ -58,7 +60,7 @@ public class LagartoCommandBuilder implements CommandBuilder
   @SuppressWarnings("unchecked")
   public Command build(Element element)
   {
-    logger.debug("Second try to log something");
+    logger.info("Second try to log something");
     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
     String networkName = null;
     String epId = null;
@@ -80,5 +82,22 @@ public class LagartoCommandBuilder implements CommandBuilder
     LagartoCommand cmd = new LagartoCommand(networkName, epId, epValue);
 
     return cmd;
+  }
+
+  /**
+   * Get controller configuration
+   */
+  public ControllerConfiguration getConfiguration()
+  {
+    return controllerConfig;
+  }
+
+  /**
+   * Set controller configuration
+   */
+  public void setConfiguration(ControllerConfiguration configuration)
+  {
+    System.out.println("CONTROLLER CONFIG BEING RECEIVED!!! " + configuration.getLagartoBroadcastAddress());
+    controllerConfig = configuration;
   }
 }
