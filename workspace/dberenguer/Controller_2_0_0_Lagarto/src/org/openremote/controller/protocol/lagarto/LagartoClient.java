@@ -63,7 +63,7 @@ public class LagartoClient extends Thread
    */
   public LagartoClient()
   {
-    broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddress();
+    broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
 
     System.out.println("**************************************************************");
     System.out.println("");
