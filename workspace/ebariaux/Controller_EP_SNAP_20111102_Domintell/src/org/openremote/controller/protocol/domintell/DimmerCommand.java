@@ -105,21 +105,7 @@ public class DimmerCommand extends DomintellCommand implements ExecutableCommand
    
    @Override
    public void stop(Sensor sensor) {
-      removeSensor(sensor);
-      if (sensors.isEmpty()) {
-         // Last sensor removed, we may unregister ourself from device
-         try {
-            DimmerModule dimmer = (DimmerModule) gateway.getDomintellModule(moduleType, address, DimmerModule.class);
-            if (dimmer == null) {
-              // This should never happen as above command is supposed to create device
-              log.warn("Gateway could not create a Relay module we're receiving feedback for (" + address + ")");
-            }
-
-            dimmer.removeCommand(this);
-         } catch (DomintellModuleException e) {
-            log.error("Impossible to get module", e);
-         }
-      }
+      stop(sensor, DimmerModule.class);
    }
 
    @Override
