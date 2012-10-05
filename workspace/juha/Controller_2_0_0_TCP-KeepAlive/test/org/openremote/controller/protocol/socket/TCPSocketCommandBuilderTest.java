@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
-import java.io.DataInputStream;
 import java.util.StringTokenizer;
 import java.nio.ByteBuffer;
 
@@ -36,8 +35,9 @@ import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Test;
 import org.openremote.controller.command.Command;
-import org.openremote.controller.protocol.socket.TCPSocketCommand;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.socket.TCPSocketCommandBuilder;
+import org.openremote.controller.protocol.ReadCommand;
 
 
 /**
@@ -64,7 +64,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getOneWayKeepAliveCommand("name1", "localhost", "11110", "123");
+      ExecutableCommand cmd = getOneWayKeepAliveCommand("name1", "localhost", "11110", "123");
 
       // send keep-alive command...
 
@@ -127,7 +127,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getOneWayKeepAliveCommand("name1", "localhost", "11111", "123");
+      ExecutableCommand cmd = getOneWayKeepAliveCommand("name1", "localhost", "11111", "123");
 
       cmd.send();
 
@@ -169,7 +169,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getOneWayCommand("name1", "localhost", "11115", "523");
+      ExecutableCommand cmd = getOneWayCommand("name1", "localhost", "11115", "523");
 
       cmd.send();
 
@@ -215,7 +215,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getOneWayCommand("hex", "localhost", "11116", "0x 01");
+      ExecutableCommand cmd = getOneWayCommand("hex", "localhost", "11116", "0x 01");
 
       cmd.send();
 
@@ -252,7 +252,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getReadUntilCloseResponseCommand("resp1", "localhost", "11117", "GET 1");
+      ReadCommand cmd = getReadUntilCloseResponseCommand("resp1", "localhost", "11117", "GET 1");
 
       String response = cmd.read(null);
 
@@ -296,7 +296,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getKeepAliveReadUntilCloseResponseCommand("resp1", "localhost", "11118", "GET 1");
+      ReadCommand cmd = getKeepAliveReadUntilCloseResponseCommand("resp1", "localhost", "11118", "GET 1");
 
       String response = cmd.read(null);
 
@@ -340,7 +340,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getKeepAliveReadAvailableResponseCommand("resp1", "localhost", "11119", "GET 9");
+      ReadCommand cmd = getKeepAliveReadAvailableResponseCommand("resp1", "localhost", "11119", "GET 9");
 
       String response = cmd.read(null);
 
@@ -386,7 +386,7 @@ public class TCPSocketCommandBuilderTest
     {
       server.start();
 
-      TCPSocketCommand cmd = getReadAvailableResponseCommand("resp1", "localhost", "11120", "GET 44");
+      ReadCommand cmd = getReadAvailableResponseCommand("resp1", "localhost", "11120", "GET 44");
 
       String response = cmd.read(null);
 
@@ -461,14 +461,14 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getReadAvailableResponseCommand(String name, String address,
+  private ReadCommand getReadAvailableResponseCommand(String name, String address,
                                                                      String port, String command)
   {
-    Element el = getElement(name, address, port, command);
+    Element el = getElement(name, address, port, command, true);
 
     addReadAvailable(el);
 
-    return (TCPSocketCommand) builder.build(el);
+    return (ReadCommand) builder.build(el);
   }
 
 
@@ -484,14 +484,14 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getKeepAliveReadUntilCloseResponseCommand(String name, String address,
+  private ReadCommand getKeepAliveReadUntilCloseResponseCommand(String name, String address,
                                                                      String port, String command)
   {
-    Element el = getElement(name, address, port, command);
+    Element el = getElement(name, address, port, command, true);
 
     addReadUntilClose(el);
 
-    return (TCPSocketCommand) builder.build(el);
+    return (ReadCommand) builder.build(el);
   }
 
   /**
@@ -504,15 +504,15 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getKeepAliveReadAvailableResponseCommand(String name, String address,
+  private ReadCommand getKeepAliveReadAvailableResponseCommand(String name, String address,
                                                                      String port, String command)
   {
-    Element el = getElement(name, address, port, command);
+    Element el = getElement(name, address, port, command, true);
 
     addKeepAlive(el);
     addReadAvailable(el);
 
-    return (TCPSocketCommand) builder.build(el);
+    return (ReadCommand) builder.build(el);
   }
 
 
@@ -583,7 +583,7 @@ public class TCPSocketCommandBuilderTest
   }
 
 
-  private Element getElement(String name, String address, String port, String command)
+  private Element getElement(String name, String address, String port, String command, Boolean pollReader)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -606,10 +606,15 @@ public class TCPSocketCommandBuilderTest
     propCommand.setAttribute("name", "command");
     propCommand.setAttribute("value", command);
 
+    Element propPollingReader = new Element("property");
+    propPollingReader.setAttribute("name", "pollingReader");
+    propPollingReader.setAttribute("value", pollReader.toString());
+
     ele.addContent(propName);
     ele.addContent(propAddr);
     ele.addContent(propPort);
     ele.addContent(propCommand);
+    ele.addContent(propPollingReader);
 
     return ele;
   }
@@ -624,7 +629,7 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getReadUntilCloseResponseCommand(String name, String address, String port, String command)
+  private ReadCommand getReadUntilCloseResponseCommand(String name, String address, String port, String command)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -647,6 +652,10 @@ public class TCPSocketCommandBuilderTest
     propCommand.setAttribute("name", "command");
     propCommand.setAttribute("value", command);
 
+    Element propPollingReader = new Element("property");
+    propPollingReader.setAttribute("name", "pollingReader");
+    propPollingReader.setAttribute("value", "true");
+
     Element keepAlive = new Element("property");
     keepAlive.setAttribute("name", "responsePolicy");
     keepAlive.setAttribute("value", "read until close");
@@ -656,8 +665,9 @@ public class TCPSocketCommandBuilderTest
     ele.addContent(propPort);
     ele.addContent(propCommand);
     ele.addContent(keepAlive);
+    ele.addContent(propPollingReader);
 
-    return (TCPSocketCommand) builder.build(ele);
+    return (ReadCommand) builder.build(ele);
 
   }
   /**
@@ -671,7 +681,7 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getOneWayCommand(String name, String address, String port, String command)
+  private ExecutableCommand getOneWayCommand(String name, String address, String port, String command)
   {
      return getCommand(name, address, port, command, false, false);
   }
@@ -687,7 +697,7 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getOneWayStickyKeepAliveCommand(String name, String address, String port, String command)
+  private ExecutableCommand getOneWayStickyKeepAliveCommand(String name, String address, String port, String command)
   {
      return getCommand(name, address, port, command, false);
   }
@@ -704,17 +714,17 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getCommand(String name, String address, String port, String payload,
+  private ExecutableCommand getCommand(String name, String address, String port, String payload,
                                       Boolean waitForResponse)
   {
-    Element el = getElement(name, address, port, payload);
+    Element el = getElement(name, address, port, payload, false);
 
     if (!waitForResponse)
     {
       addNoReadResponse(el);
     }
 
-    return (TCPSocketCommand) builder.build(el);
+    return (ExecutableCommand) builder.build(el);
   }
 
 
@@ -732,10 +742,10 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getCommand(String name, String address, String port, String payload,
+  private ExecutableCommand getCommand(String name, String address, String port, String payload,
                                       Boolean waitForResponse, Boolean keepAlive)
   {
-    Element el = getElement(name, address, port, payload);
+    Element el = getElement(name, address, port, payload, false);
 
     addKeepAlive(el, keepAlive);
 
@@ -744,7 +754,7 @@ public class TCPSocketCommandBuilderTest
       addNoReadResponse(el);
     }
 
-    return (TCPSocketCommand) builder.build(el);
+    return (ExecutableCommand) builder.build(el);
   }
 
   /**
@@ -758,7 +768,7 @@ public class TCPSocketCommandBuilderTest
    *
    * @return    command ready to send
    */
-  private TCPSocketCommand getOneWayKeepAliveCommand(String name, String address, String port, String command)
+  private ExecutableCommand getOneWayKeepAliveCommand(String name, String address, String port, String command)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -781,6 +791,10 @@ public class TCPSocketCommandBuilderTest
     propCommand.setAttribute("name", "command");
     propCommand.setAttribute("value", command);
 
+    Element propPollingReader = new Element("property");
+    propPollingReader.setAttribute("name", "pollingReader");
+    propPollingReader.setAttribute("value", "false");
+
     Element keepAlive = new Element("property");
     keepAlive.setAttribute("name", "keepAlive");
     keepAlive.setAttribute("value", "true");
@@ -789,14 +803,16 @@ public class TCPSocketCommandBuilderTest
     responsePolicy.setAttribute("name", "responsePolicy");
     responsePolicy.setAttribute("value", "read_nothing");
 
+
     ele.addContent(propName);
     ele.addContent(propAddr);
     ele.addContent(propPort);
     ele.addContent(propCommand);
     ele.addContent(keepAlive);
     ele.addContent(responsePolicy);
+    ele.addContent(propPollingReader);
 
-    return (TCPSocketCommand) builder.build(ele);
+    return (ExecutableCommand) builder.build(ele);
   }
 
 
