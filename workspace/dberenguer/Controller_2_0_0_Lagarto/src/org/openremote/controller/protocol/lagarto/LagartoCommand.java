@@ -28,7 +28,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import org.apache.log4j.Logger;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.command.ExecutableCommand;
@@ -38,11 +37,6 @@ import org.openremote.controller.command.ExecutableCommand;
  */
 public class LagartoCommand implements ExecutableCommand, EventListener
 {
-  /**
-  * The logger
-  */
-  private static Logger logger = Logger.getLogger(LagartoCommandBuilder.LAGARTO_PROTOCOL_LOG_CATEGORY);
-
   /**
   * Lagarto client thread
   */
@@ -153,12 +147,11 @@ public class LagartoCommand implements ExecutableCommand, EventListener
         result.append(str);
       }
 
-      logger.info("received message: " + result);
       return result.toString();
     }
     catch (Exception e)
     {
-      logger.error("HttpGetCommand could not execute", e);
+      //logger.error("HttpGetCommand could not execute", e);
     }
     finally
     {
@@ -170,7 +163,7 @@ public class LagartoCommand implements ExecutableCommand, EventListener
         }
         catch (IOException e)
         {
-          logger.error("BufferedReader could not be closed", e);
+          //logger.error("BufferedReader could not be closed", e);
         }
       }
     }
