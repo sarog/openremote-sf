@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.ServiceContext;
@@ -42,11 +41,6 @@ import org.openremote.controller.service.ServiceContext;
  */
 public class LagartoClient extends Thread
 {
-  /**
-   * The logger
-   */
-  private static Logger logger = Logger.getLogger(LagartoCommandBuilder.LAGARTO_PROTOCOL_LOG_CATEGORY);
-
   /**
    * Map containing all endpoints managed by the lagarto client
    */
@@ -122,8 +116,6 @@ public class LagartoClient extends Thread
 
               Sensor sensor = entry.getValue();
               sensor.update(strVal);
-
-              System.out.println("Updating " + epId + " to " + strVal);
             }
           }
         }
@@ -149,25 +141,22 @@ public class LagartoClient extends Thread
       ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
       subscriber.connect(this.broadcastAddr);
       subscriber.subscribe("".getBytes());
-      logger.debug("Subscribing to ZMQ endpoint " + this.broadcastAddr);
 
       // Endless loop
       while(true)
       {
         // Listen to updates from Lagarto server
         String msg = new String(subscriber.recv(0));
-        logger.debug("Received Lagarto packet: " + msg.length());
-
         parseLagartoMsg(msg);
       }
     }
     catch (LagartoException ex)
     {
-      ex.log();
+      ex.out();
     }
     catch (Exception ex)
     {
-      logger.error("Error in Lagarto Client thread", ex);
+      //logger.error("Error in Lagarto Client thread", ex);
     }
   }
 
