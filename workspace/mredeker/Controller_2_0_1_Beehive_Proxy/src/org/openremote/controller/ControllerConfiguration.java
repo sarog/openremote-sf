@@ -75,6 +75,7 @@ public class ControllerConfiguration extends Configuration
   public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
   public static final String BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL = "beehiveAccountService.REST.Root.Url";
   public static final String BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL = "beehiveDeviceDiscoveryService.REST.Root.Url";
+  public static final String BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL = "beehiveControllerCommandService.REST.Root.Url";
   public static final String BEEHIVE_SYNCING = "controller.performBeehiveSyncing";
   
   public static final String IRSEND_PATH = "irsend.path";
@@ -84,7 +85,8 @@ public class ControllerConfiguration extends Configuration
   public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
   public static final String LIRCD_CONF_PATH = "lircd.conf.path";
   public static final String WEBAPP_IP = "webapp.ip";
-
+  public static final String PROXY_TIMEOUT = "proxy.timeout";
+  public static final String BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL = "beehiveCommandService.check.interval";
  
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
 
@@ -139,10 +141,13 @@ public class ControllerConfiguration extends Configuration
   private String beehiveRESTRootUrl;
   private String beehiveAccountServiceRESTRootUrl;
   private String beehiveDeviceDiscoveryServiceRESTRootUrl;
+  private String beehiveControllerCommandServiceRESTRootUrl;
   private boolean beehiveSyncing;
   private String webappName;
   private String irsendPath;
   private String lircdconfPath;
+  private int proxyTimeout;
+  private int beehiveCommandServiceCheckInterval;
 
   /** Whether copy lircd.conf for user. */
   private boolean copyLircdconf;
@@ -496,6 +501,14 @@ public class ControllerConfiguration extends Configuration
    public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl) {
       this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl;
    }
+
+   public String getBeehiveControllerCommandServiceRESTRootUrl() {
+      return preferAttrCustomValue(BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL, beehiveControllerCommandServiceRESTRootUrl);
+   }
+
+   public void setBeehiveControllerCommandServiceRESTRootUrl(String beehiveControllerCommandServiceRESTRootUrl) {
+      this.beehiveControllerCommandServiceRESTRootUrl = beehiveControllerCommandServiceRESTRootUrl;
+   }
    
    public boolean getBeehiveSyncing() {
       return preferAttrCustomValue(BEEHIVE_SYNCING, beehiveSyncing);
@@ -513,5 +526,20 @@ public class ControllerConfiguration extends Configuration
       this.webappName = webappName;
    }
 
+   public int getProxyTimeout() {
+      return preferAttrCustomValue(PROXY_TIMEOUT, proxyTimeout);
+   }
+   
+   public void setProxyTimeout(int proxyTimeout) {
+      this.proxyTimeout = proxyTimeout;
+   }
+
+   public void setBeehiveCommandServiceCheckInterval(int interval) {
+      this.beehiveCommandServiceCheckInterval = interval;
+   }
+   
+   public int getBeehiveCommandServiceCheckInterval() {
+      return preferAttrCustomValue(BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL, beehiveCommandServiceCheckInterval);
+   }
 
 }
