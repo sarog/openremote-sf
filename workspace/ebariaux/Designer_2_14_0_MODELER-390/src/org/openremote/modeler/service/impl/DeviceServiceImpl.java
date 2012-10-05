@@ -20,6 +20,7 @@
  */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.text.MessageFormat;
 
@@ -33,9 +34,19 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.server.SensorController;
+import org.openremote.modeler.server.SliderController;
+import org.openremote.modeler.server.SwitchController;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.exception.PersistenceException;
@@ -187,7 +198,66 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override   
+   public ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account) {
+     List<Device> devices = loadAll(account);
+     ArrayList<DeviceWithChildrenDTO> dtos = new ArrayList<DeviceWithChildrenDTO>();
+     for (Device d : devices) {
+       dtos.add(createDeviceWithChildrenDTO(d));
+     }
+     return dtos;
+   }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
+     Device device = loadById(oid);
+     return createDeviceWithChildrenDTO(device);
+   }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
+     Device device = loadById(oid);
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
+     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
+     return deviceDTO;
+   }
+
+   private DeviceWithChildrenDTO createDeviceWithChildrenDTO(Device device) {
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
+      deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
+      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+      for (Sensor sensor : device.getSensors()) {
+        sensorDTOs.add(SensorController.createSensorDTO(sensor));
+      }
+      deviceDTO.setSensors(sensorDTOs);
+      ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+      for (Switch s : device.getSwitchs()) {
+        switchDTOs.add(SwitchController.createSwitchDTO(s));
+      }
+      deviceDTO.setSwitches(switchDTOs);
+      ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+      for (Slider s : device.getSliders()) {
+        sliderDTOs.add(SliderController.createSliderDTO(s));
+      }
+      deviceDTO.setSliders(sliderDTOs);
+      return deviceDTO;
+   }
+
+   private ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
+     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
+      for (DeviceCommand dc : deviceCommands) {
+        dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+      }
+     return dcDTOs;
+   }
 
 }
