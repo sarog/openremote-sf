@@ -20,9 +20,6 @@ public class RelayModule extends DomintellModule implements Output {
    
    @Override
    public void on(Integer output) {
-      // moduleType is supposed to be BIR
-      // address should be in hex, formatted on 6 characters
-      
       gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%I");
    }
 
@@ -41,7 +38,7 @@ public class RelayModule extends DomintellModule implements Output {
       gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%S");
    }
    
-   // Feedback method from HomeWorksDevice ---------------------------------------------------------
+   // Feedback method from Domintell system ---------------------------------------------------------
 
    @Override
    public void processUpdate(String info) {
@@ -54,7 +51,7 @@ public class RelayModule extends DomintellModule implements Output {
            bitmask = bitmask<<1;
         }
      } catch (NumberFormatException e) {
-       // Not understood as a scene, do not update ourself
+       // Not understood as an output feedback, do not update ourself
        log.warn("Invalid feedback received " + info, e);
      }
        
