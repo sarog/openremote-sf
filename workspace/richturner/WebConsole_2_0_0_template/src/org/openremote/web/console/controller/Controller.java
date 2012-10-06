@@ -19,7 +19,11 @@
 */
 package org.openremote.web.console.controller;
 
+import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.AutoBeanService;
+import org.openremote.web.console.service.ControllerService;
+import org.openremote.web.console.service.JSONPControllerConnector;
+import org.openremote.web.console.util.BrowserUtils;
 /**
  * Implementation of Controller Credentials that contains all the information
  * about a given controller.
@@ -29,12 +33,16 @@ import org.openremote.web.console.service.AutoBeanService;
 public class Controller implements ControllerCredentials {
 	private boolean isAlive;
 	private boolean isSecure;
+	private boolean isEncrypted;
 	private boolean isSupported;
+	private boolean isSameOrigin;
+	private boolean isInitialised;
 	private String name;
 	private String url;
 	private String username;
 	private String password;
 	private String defaultPanel;
+	private AsyncControllerCallback<Boolean> callback;
 	
 	public Controller() {
 		this(null);
@@ -48,6 +56,56 @@ public class Controller implements ControllerCredentials {
 			setPassword(credentials.getPassword());
 			setDefaultPanel(credentials.getDefaultPanel());
 		}
+	}
+	
+	/**
+	 * This method will initialise the controller by checking it's
+	 * alive, secure, same origin and supported statuses.
+	 */
+	public void initialise(AsyncControllerCallback<Boolean> callback) {
+		this.callback = callback;
+		if (isInitialised) {
+			callCallback();
+			return;
+		}
+		
+		// Check if same origin
+		BrowserUtils.isURLSameOrigin(getUrl(), new AsyncControllerCallback<Boolean>() {
+			@Override
+			public void onSuccess(Boolean result) {
+				if(!(isSameOrigin = result)) {
+					// Make sure controller is using JSONP connector
+					ControllerService.getInstance().setConnector(new JSONPControllerConnector());
+				}
+				
+				ControllerService.getInstance().isAlive(getController(), new AsyncControllerCallback<Boolean>() {
+					@Override
+					public void onSuccess(Boolean result) {
+						if (!(isAlive = result)) {
+							callCallback();
+						} else {
+							// Check if secure
+							ControllerService.getInstance().isSecure(getController(), new AsyncControllerCallback<Boolean>() {
+								@Override
+								public void onSuccess(Boolean result) {
+									isSecure = result;
+									callCallback();
+								}
+							});
+						}
+					}
+				});
+			}
+		});
+	}
+	
+	private Controller getController() {
+		return this;
+	}
+	
+	private void callCallback() {
+		callback.onSuccess(true);
+		isInitialised = true;
 	}
 	
 	public boolean isAlive() {
@@ -64,9 +122,25 @@ public class Controller implements ControllerCredentials {
 	public void setSecure(boolean isSecure) {
 		this.isSecure = isSecure;
 	}
+
+	public boolean isEncrypted() {
+		return isEncrypted;
+	}
+	
+	public void setEncrypted(boolean isEncrypted) {
+		this.isEncrypted = isEncrypted;
+	}
 	
 	public boolean isSupported() {
 		return isSupported;
+	}
+	
+	public void setIsSameOrigin(boolean isSameOrigin) {
+		this.isSameOrigin = isSameOrigin;
+	}
+	
+	public boolean isSameOrigin() {
+		return isSameOrigin;
 	}
 	
 	public void setIsSupported(boolean isSupported) {
@@ -82,10 +156,12 @@ public class Controller implements ControllerCredentials {
 	}
 	
 	public String getUrl() {
+		//if (username.length() > 0) return "http://" + username + ":" + password + "@" + url.substring(7);
 		return url;
 	}
 	
 	public void setUrl(String url) {
+		if (url.indexOf("https://") == 0) setEncrypted(true);
 		if (!url.endsWith("/")) url += "/";
 		this.url = url;
 	}

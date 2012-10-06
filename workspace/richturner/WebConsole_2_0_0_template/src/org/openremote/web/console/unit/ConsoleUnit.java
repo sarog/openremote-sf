@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.controller.ControllerCredentialsList;
@@ -61,7 +60,8 @@ import org.openremote.web.console.service.AutoDiscoveryRPCService;
 import org.openremote.web.console.service.AutoDiscoveryRPCServiceAsync;
 import org.openremote.web.console.service.ControllerService;
 import org.openremote.web.console.service.EnumDataMap;
-import org.openremote.web.console.service.JSONPControllerService;
+import org.openremote.web.console.service.JSONPControllerConnector;
+import org.openremote.web.console.service.JSONControllerConnector;
 import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.service.PanelService;
@@ -115,7 +115,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	protected int width;
 	protected int height;
 	private String orientation = "portrait";
-	private ControllerService controllerService = JSONPControllerService.getInstance();
+	private ControllerService controllerService = ControllerService.getInstance();
 	private PanelService panelService = PanelServiceImpl.getInstance();
 	private LocalDataService dataService = LocalDataServiceImpl.getInstance();
 	private ScreenViewService screenViewService = ScreenViewService.getInstance();
@@ -126,7 +126,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	private Integer currentScreenId = 0;
 	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	private Map<Integer, PollingHelper> pollingHelperMap = new HashMap<Integer, PollingHelper>();
-	private PopupPanel alertPopup;
 	private boolean invalidWarningDisplayed = false;
 	private Map<String, ImageContainer> imageCache = new HashMap<String, ImageContainer>();
 	
@@ -424,41 +423,51 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		 setVisible(true);
 	}
 	
-	public void alert(String msg) {
-		if (msg != null && msg.length() > 0) {
-			Label label = (Label)alertPopup.getWidget();
-			label.setText(msg);
-			alertPopup.show();
-		}
-	}
-	
 	private void loadController(ControllerCredentials controllerCreds) {
 		// Unload current controller
 		unloadControllerAndPanel();
+		
+		// Clear last controller credentials
+		dataService.setLastControllerCredentials(null);
 		
 		BrowserUtils.showLoadingMsg("Loading Controller");
 		
 		if (controllerCreds == null) {
 			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		} else {
-			// Instantiate controller from credentials and check it is alive then load the panel by name
+			// Check if controller uses security and doesn't have the same origin if this
+			// is the case then warn user that we can't connect to it.
 			currentControllerCredentials = controllerCreds;
-			controllerService.setController(new Controller(controllerCreds));
-			controllerService.isAlive(new AsyncControllerCallback<Boolean>() {
+			final Controller controller = new Controller(controllerCreds);
+			controller.initialise(new AsyncControllerCallback<Boolean>(){
 				@Override
-				public void onSuccess(Boolean isAlive) {
-					if (isAlive) {
-						currentPanelName = currentControllerCredentials.getDefaultPanel();
-						
-						// If current panel name set try and load it otherwise prompt for panel to load
-						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
-							dataService.setLastControllerCredentials(currentControllerCredentials);
-							loadPanel(currentPanelName);
-						} else {
-							loadPanelSelection();
-						}
-					} else {
+				public void onSuccess(Boolean result) {
+					// Controller is fully initialised
+					if (controller.isSecure() && !controller.isSameOrigin()) {
+						// Alert the user
+						BrowserUtils.showAlert("Connection Error!<br /><br />Controller '" + controller.getUrl() + "' is secure and in a different domain which is not supported. Either disable security or host the web console on the same domain as the controller.");
 						loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+					} else {
+						if (!controller.isSameOrigin()) {
+							controllerService.setConnector(new JSONPControllerConnector());
+						} else {
+							controllerService.setConnector(new JSONControllerConnector());
+						}
+						
+						if (controller.isAlive()) {
+							controllerService.setController(controller);
+							currentPanelName = currentControllerCredentials.getDefaultPanel();
+							
+							// If current panel name set try and load it otherwise prompt for panel to load
+							if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
+								dataService.setLastControllerCredentials(currentControllerCredentials);
+								loadPanel(currentPanelName);
+							} else {
+								loadPanelSelection();
+							}
+						} else {
+							loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+						}
 					}
 				}
 			});
@@ -499,9 +508,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				BrowserUtils.hideLoadingMsg();
-				if(response == EnumControllerResponseCode.PANEL_NOT_FOUND) {
-					loadPanelSelection();
-				}
+				onError(response);
 			}
 			
 			@Override
@@ -1114,10 +1121,15 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			case COMPONENT_INVALID:
 				// TODO: display message in alert popup
 				if (!invalidWarningDisplayed) {
-					BrowserUtils.showAlert("Polling Failed!\n\nAt least one command ID has not been recognised.");
+					BrowserUtils.showAlert("Polling Failed!<br /><br />At least one command ID has not been recognised.");
 					invalidWarningDisplayed = true;
 				}
 				break;
+			case PANEL_NOT_FOUND:
+					loadPanelSelection();
+					break;
+			case FORBIDDEN:
+					BrowserUtils.showAlert("Security Error!<br /><br />Controller is secured and supplied credentials are invalid.");
 			default:
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		}

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentityList;
+import org.openremote.web.console.util.BrowserUtils;
 /**
  * Controller Service Interface for defining the communication with
  * a controller, based along the lines of GWT RPC but controller service
@@ -32,85 +33,180 @@ import org.openremote.web.console.panel.PanelIdentityList;
  *  
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
-public abstract class ControllerService {
+public class ControllerService {
+	private static ControllerService instance = null;
+	private String uuid;
 	Controller controller;
+	ControllerConnector connector = new JSONPControllerConnector();
 	
+	private ControllerService() {
+		uuid = BrowserUtils.randomUUID();
+	}	
+	
+	public static ControllerService getInstance() {
+		if (instance == null) instance = new ControllerService();
+		
+		return instance;
+	}
+	
+	/**
+	 * Set the current controller (default that the service will use)
+	 * @param controller
+	 */
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
 	
+	/**
+	 * Get the current controller (default that the service uses)
+	 * @return {@link org.openremote.web.console.controller.Controller}
+	 */
 	public Controller getController() {
 		return controller;
 	}
 	
-	/*
-	 * Method for retrieving panel identities for requested controller
+	public void setConnector(ControllerConnector connector) {
+		this.connector = connector;
+	}
+	
+	/**
+	 * Retrieve panel identities for current controller
+	 * @param callback
 	 */
 	public void getPanelIdentities(AsyncControllerCallback<PanelIdentityList> callback) {
-		if (controller != null) {
-			getPanelIdentities(controller.getUrl(), callback);
-		}
+		getPanelIdentities(controller, callback);
 	}
 	
-	public abstract void getPanelIdentities(String controllerUrl, AsyncControllerCallback<PanelIdentityList> callback);
-	
-	/*
-	 * Method for retrieving panel definition from requested controller
+	/**
+	 * Retrieve panel identities for the specified controller
+	 * @param controller
+	 * @param callback
+	 */
+	public void getPanelIdentities(Controller controller, AsyncControllerCallback<PanelIdentityList> callback) {	
+		if (controller != null) {
+			connector.getPanelIdentities(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
+		}
+	}
+
+	/**
+	 * Retrieve Panel definition for the current controller
+	 * @param panelName
+	 * @param callback
 	 */
 	public void getPanel(String panelName, AsyncControllerCallback<Panel> callback) {
+		getPanel(controller, panelName, callback);
+	}
+
+	/**
+	 * Retrieve Panel definition for the specified controller
+	 * @param controller
+	 * @param panelName
+	 * @param callback
+	 */
+	public void getPanel(Controller controller, String panelName, AsyncControllerCallback<Panel> callback) {
 		if (controller != null) {
-			getPanel(controller.getUrl(), panelName, callback);
+			connector.getPanel(controller.getUrl(), controller.getUsername(), controller.getPassword(), panelName, callback);
 		}
 	}
-	public abstract void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback);
 
-	/*
-	 * Static Method for retrieving controller security status
+	/**
+	 * Determine if the current controller is secured
+	 * @param callback
 	 */
 	public void isSecure(AsyncControllerCallback<Boolean> callback) {
+		isSecure(controller, callback);
+	}
+
+	/**
+	 * Determine if the specified controller is secured
+	 * @param controller
+	 * @param callback
+	 */
+	public void isSecure(Controller controller, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
-			isSecure(controller.getUrl(), callback);
+			connector.isSecure(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
 		}
 	}
-	public abstract void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback);
-	
-	/*
-	 * Static Method for retrieving controller alive status
+
+	/**
+	 * Determine if the current controller is alive
+	 * @param callback
 	 */
 	public void isAlive(AsyncControllerCallback<Boolean> callback) {
+		isAlive(controller, callback);
+	}
+
+	/**
+	 * Determine if the specified controller is alive
+	 * @param controller
+	 * @param callback
+	 */
+	public void isAlive(Controller controller, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
-			isAlive(controller.getUrl(), callback);
+			connector.isAlive(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
 		}
 	}
-	public abstract void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback);
-	
-	/*
-	 * Method for sending a command request to the controller
+
+	/**
+	 * Send a command to the current controller
+	 * @param command
+	 * @param callback
 	 */
 	public void sendCommand(String command, AsyncControllerCallback<Boolean> callback) {
+		sendCommand(controller, command, callback);
+	}
+	
+	/**
+	 * Send a command to the specified controller
+	 * @param controller
+	 * @param command
+	 * @param callback
+	 */
+	public void sendCommand(Controller controller, String command, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
-			sendCommand(controller.getUrl(), command, callback);
+			connector.sendCommand(controller.getUrl(), controller.getUsername(), controller.getPassword(), command, callback);
 		}
 	}
-	public abstract void sendCommand(String controllerUrl, String command, AsyncControllerCallback<Boolean> callback);
-	
-	/*
-	 * Monitor sensors for change
+
+	/**
+	 * Monitor the specified sensors for value changes on the current controller
+	 * @param sensorIds
+	 * @param callback
 	 */
 	public void monitorSensors(Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		monitorSensors(controller, sensorIds, callback);
+	}
+	
+	/**
+	 * Monitor the specified sensors for value changes on the specified controller
+	 * @param controller
+	 * @param sensorIds
+	 * @param callback
+	 */
+	public void monitorSensors(Controller controller, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		if (controller != null) {
-			monitorSensors(controller.getUrl(), sensorIds, callback);
+			connector.monitorSensors(controller.getUrl(), controller.getUsername(), controller.getPassword(), sensorIds, uuid, callback);
 		}
 	}
-	public abstract void monitorSensors(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback);
-	
-	/*
-	 * Get sensor values
+
+	/**
+	 * Get the current values of the specified sensors for the current controller
+	 * @param sensorIds
+	 * @param callback
 	 */
 	public void getSensorValues(Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
+		getSensorValues(controller, sensorIds, callback);
+	}
+
+	/**
+	 * Get the current values of the specified sensors for the specified controller
+	 * @param controller
+	 * @param sensorIds
+	 * @param callback
+	 */
+	public void getSensorValues(Controller controller, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		if (controller != null) {
-			getSensorValues(controller.getUrl(), sensorIds, callback);
+			connector.getSensorValues(controller.getUrl(), controller.getUsername(), controller.getPassword(), sensorIds, callback);
 		}
 	}
-	public abstract void getSensorValues(String controllerUrl, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback);
 }
