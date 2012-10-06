@@ -23,14 +23,20 @@ import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
+import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.unit.ConsoleUnit;
-
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -284,6 +290,30 @@ import com.google.gwt.user.client.ui.RootPanel;
 			DOM.getElementById("alert_popup").getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		
+		public static void isURLSameOrigin(String url, final AsyncControllerCallback<Boolean> callback) {
+			RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+			
+	    try {
+	      Request request = builder.sendRequest(null, new RequestCallback() {
+	        public void onError(Request request, Throwable exception) {
+	        	callback.onSuccess(true);
+	        }
+
+	        public void onResponseReceived(Request request, Response response) {
+	        	if (response.getStatusCode() == 0) {
+	        		// We get here for modern browsers that will allow CORS
+	        		callback.onSuccess(false);
+	        	} else {
+	        		callback.onSuccess(true);
+	        	}
+	        }
+	      });
+	    } catch (RequestException e) {
+    		// Violates SOP
+    		callback.onSuccess(false);
+	    }
+		}
+		
 // -------------------------------------------------------------
 //			NATIVE METHODS BELOW HERE
 // -------------------------------------------------------------		
@@ -325,5 +355,13 @@ import com.google.gwt.user.client.ui.RootPanel;
 		
 		public static native void exportStaticMethod() /*-{
 			$wnd.hideAlert = $entry(@org.openremote.web.console.util.BrowserUtils::hideAlert());
+		}-*/;
+		
+		public static native JavaScriptObject evalJSON(String jsonStr) /*-{
+			return eval(jsonStr);
+		}-*/;
+		
+		public static native String base64Encode(String str) /*-{
+			return $wnd.btoa(str);
 		}-*/;
 }
