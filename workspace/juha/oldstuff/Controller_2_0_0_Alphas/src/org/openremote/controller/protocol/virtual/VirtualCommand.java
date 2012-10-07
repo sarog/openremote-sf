@@ -22,6 +22,8 @@ package org.openremote.controller.protocol.virtual;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
@@ -77,6 +79,8 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   {
     this.address = address;
     this.command = command;
+
+    startDoubleTapThread();
   }
 
   public VirtualCommand(String address, String command, String commandParam)
@@ -94,6 +98,16 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
     if (commandParam == null)
     {
       virtualDevices.put(address, command);
+    }
+
+    else if (commandParam.equalsIgnoreCase("DOUBLE_TAP"))
+    {
+      doubleTap(address, command);
+    }
+
+    else if (commandParam.equalsIgnoreCase("PRESS_BUTTON"))
+    {
+      pressButton(address, command);
     }
 
     else
@@ -197,6 +211,51 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
 
         return "";
     }
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private void doubleTap(String address, String command)
+  {
+
+  }
+
+  private void pressButton(String address, String command)
+  {
+
+  }
+
+  private void startDoubleTapThread()
+  {
+
+    Runnable r = new Runnable()
+    {
+      private volatile boolean running = true;
+      private List<Long> clickRecords = new ArrayList<Long>(10);
+
+      @Override public void run()
+      {
+        try
+        {
+          while (running)
+          {
+            Thread.sleep(100);
+
+            long currentTime = System.currentTimeMillis();
+
+          
+          }
+        }
+
+        catch (InterruptedException e)
+        {
+          log.debug("Double Tap Thread Exiting...");
+
+          Thread.interrupted();
+        }
+      }
+    };
   }
 }
 

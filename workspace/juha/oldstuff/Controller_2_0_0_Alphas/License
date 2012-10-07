@@ -707,6 +707,8 @@ OpenRemote Sub-components:
   Public License (LGPL) Version 2.1, or any later version. For the purpose of
   this distribution, classes are relicensed under GNU Lesser General Public
   License (LGPL) Version 3.0
+* Base64 encoding in class org.openremote.util.Base64 is licensed released
+  in public domain (http://iharder.sourceforge.net/current/java/base64/).
 * Classes in org.json package are licensed under the terms included below.
 * Clink library is licensed under the terms included below.
 * Library org.owfs.jowfsclient_0.9.0.jar is licensed under the terms included
