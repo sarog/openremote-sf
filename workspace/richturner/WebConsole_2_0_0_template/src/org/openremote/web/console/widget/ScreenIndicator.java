@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScreenIndicator extends PassiveConsoleComponent implements ScreenViewChangeHandler {
 	private static final String CLASS_NAME = "screenIndicatorComponent";
 	private static final String ITEM_CLASS_NAME = "screenIndicatorItem";
-	private static final int INDICATOR_SIZE = 5;
+	private static final int INDICATOR_SIZE = 6;
 	private static final int INDICATOR_SPACING = 8;
 	private List<Integer> screenIds;
 	private List<Widget> screenIndicators;
@@ -84,8 +84,8 @@ public class ScreenIndicator extends PassiveConsoleComponent implements ScreenVi
 			int cellWidth = INDICATOR_SIZE;
 			cellWidth = i != screenIds.size()-1 ? cellWidth + INDICATOR_SPACING : cellWidth;
 			Widget screenIndicator = new HTML();
-			screenIndicator.setWidth(INDICATOR_SIZE + "px");
-			screenIndicator.setHeight(INDICATOR_SIZE + "px");
+			screenIndicator.setWidth(INDICATOR_SIZE-1 + "px");
+			screenIndicator.setHeight(INDICATOR_SIZE-1 + "px");
 			screenIndicator.setStylePrimaryName(ITEM_CLASS_NAME);
 			screenIndicators.add(screenIndicator);
 			container.add(screenIndicator);

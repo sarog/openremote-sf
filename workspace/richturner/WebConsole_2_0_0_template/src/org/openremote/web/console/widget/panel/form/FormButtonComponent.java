@@ -36,6 +36,7 @@ public class FormButtonComponent extends ButtonComponent {
 	private EnumFormButtonAction action = null;
 	
 	public enum EnumFormButtonType {
+		GENERIC("generic","GENERIC"),
 		SUBMIT("submit","SUBMIT"),
 		CLEAR("clear","CLEAR"),
 		CANCEL("cancel","CANCEL");
@@ -69,6 +70,7 @@ public class FormButtonComponent extends ButtonComponent {
 	}
 	
 	public enum EnumFormButtonAction {
+		NONE,
 		ADD,
 		DELETE,
 		UPDATE;

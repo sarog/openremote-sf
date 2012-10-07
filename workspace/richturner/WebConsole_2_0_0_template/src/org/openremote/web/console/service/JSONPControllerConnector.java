@@ -69,6 +69,8 @@ public class JSONPControllerConnector implements ControllerConnector {
 			case IS_ALIVE:
 				methodUrl = "rest/panels/";
 				break;
+			case LOGOUT:
+				methodUrl = "rest/logout/";
 		}
 		return methodUrl;
 	}
@@ -119,6 +121,12 @@ public class JSONPControllerConnector implements ControllerConnector {
 	public void getSensorValues(String controllerUrl, String username, String password, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_SENSOR_STATUS;
 		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), new JSONPControllerCallback(command, callback),20000);
+	}
+	
+	@Override
+	public void logout(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.LOGOUT;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),20000);
 	}
 	
 	// ------------------------   Interface Overrides End -------------------------------------------
@@ -224,6 +232,14 @@ public class JSONPControllerConnector implements ControllerConnector {
 								}
 							}
 							statusCallback.onSuccess(statusValues);
+						}
+						break;
+					case LOGOUT:
+						AsyncControllerCallback<Boolean> logoutCallback = (AsyncControllerCallback<Boolean>)callback;
+						if (errorCode == 401) {
+							logoutCallback.onSuccess(true);
+						} else {
+							logoutCallback.onSuccess(false);
 						}
 						break;
 				}

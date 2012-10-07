@@ -357,10 +357,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 			$wnd.hideAlert = $entry(@org.openremote.web.console.util.BrowserUtils::hideAlert());
 		}-*/;
 		
-		public static native JavaScriptObject evalJSON(String jsonStr) /*-{
-			return eval(jsonStr);
-		}-*/;
-		
 		public static native String base64Encode(String str) /*-{
 			return $wnd.btoa(str);
 		}-*/;

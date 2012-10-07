@@ -109,4 +109,13 @@ public interface ControllerConnector {
 	 * @param callback {@link AsyncControllerCallback} callback for handling the response asynchronously
 	 */
 	void getSensorValues(String controllerUrl, String username, String password, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback);
+	
+
+	/**
+	 * Logs out of the specified controller.
+	 * 
+	 * @param controllerUrl The URL of the controller including http|https prefix
+	 * @param callback {@link AsyncControllerCallback} callback for handling the response asynchronously
+	 */
+	void logout(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 }

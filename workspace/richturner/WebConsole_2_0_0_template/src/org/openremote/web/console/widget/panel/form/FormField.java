@@ -47,6 +47,7 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 	private String label = null;
 	private EnumFormInputType inputType;
 	private Label lbl = null;
+	private String id = "";
 	private Widget input = null;
 	private String validationStr = null;
 	private boolean isValid;
@@ -100,6 +101,10 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 	
 	public void setInputType(EnumFormInputType inputType) {
 		this.inputType = inputType;
+	}
+	
+	public void setId(String id) {
+		if (id != null)	this.id = id;
 	}
 	
 	public EnumFormInputType getInputType() {
@@ -209,6 +214,7 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 			}
 			
 			if (label != null && input != null) {
+				input.getElement().setId(id);
 				int fieldWidth = (int)Math.round(width*.95);
 				int leftMargin = (int)Math.round(width*.02);				
 				lbl.setText(label);

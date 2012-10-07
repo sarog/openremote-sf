@@ -377,6 +377,7 @@ public class FormPanelComponent extends PanelComponent {
 				fieldComp.setValidationString(field.getValidationString());
 				fieldComp.setIsOptional(field.getOptional());
 				fieldComp.setName(field.getName());
+				fieldComp.setId(field.getId());
 				panel.addField(fieldComp);
 			}
 		}

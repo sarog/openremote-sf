@@ -27,7 +27,8 @@ public enum EnumControllerCommand {
 	DO_SENSOR_POLLING,
 	GET_ROUND_ROBIN_LIST,
 	IS_ALIVE,
-	IS_SECURE;
+	IS_SECURE,
+	LOGOUT;
 	
    @Override
    public String toString() {

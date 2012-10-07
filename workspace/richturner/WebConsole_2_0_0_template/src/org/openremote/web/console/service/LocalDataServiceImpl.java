@@ -134,8 +134,12 @@ public class LocalDataServiceImpl implements LocalDataService {
 	@Override
 	public void setLastControllerCredentials(ControllerCredentials credentials) {
 		EnumDataMap map = EnumDataMap.LAST_CONTROLLER_CREDENTIALS;
-		String data = AutoBeanService.getInstance().toJsonString(credentials);
-		setData(map.getDataName(), data);
+		if (credentials == null) {
+			clearData(map.getDataName());
+		} else {
+			String data = AutoBeanService.getInstance().toJsonString(credentials);
+			setData(map.getDataName(), data);
+		}
 	}
 
 	@Override
@@ -149,8 +153,12 @@ public class LocalDataServiceImpl implements LocalDataService {
 	@Override
 	public void setControllerCredentialsList(ControllerCredentialsList credentialsList) {
 		EnumDataMap map = EnumDataMap.CONTROLLER_CREDENTIALS_LIST;
-		String data = AutoBeanService.getInstance().toJsonString(credentialsList);
-		setData(map.getDataName(), data);
+		if (credentialsList == null) {
+			clearData(map.getDataName());
+		} else {
+			String data = AutoBeanService.getInstance().toJsonString(credentialsList);
+			setData(map.getDataName(), data);
+		}
 	}
 
 	@Override
