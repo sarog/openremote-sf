@@ -34,8 +34,10 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
- * Builds HTTP GET command from XML element.
- * example:
+ * Builds HTTP GET command from XML element.  <p>
+ *
+ * Example:
+ *
  * <pre>
  * {@code 
  * <command id="xxx" protocol="httpGet">
@@ -43,6 +45,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * </command>
  * }
  * </pre>
+ *
  *
  * @author Marcus 2009-4-26
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -129,12 +132,6 @@ public class HttpGetCommandBuilder implements CommandBuilder
      }
      catch (MalformedURLException e)
      {
-       // TODO:
-       //
-       //  bind the JUL logging to runtime log implementation...
-
-       //log.warn("Configuration error in HTTP protocol URL: " + e.getMessage(), e);
-
        throw new NoSuchCommandException("Invalid URL: " + e.getMessage(), e);
      }
    }

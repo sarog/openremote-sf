@@ -166,12 +166,48 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
       return "";
    }
 
-   private String readReply(java.net.Socket socket) throws IOException {
-      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      char[] buffer = new char[200];
-      int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
-      String reply = new String(buffer, 0, readChars);
-      return reply;
+   private String readReply(java.net.Socket socket) throws IOException 
+   {
+     BufferedReader bufferedReader = null;
+
+     try
+     {
+      bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+      StringBuffer buf = new StringBuffer(200);
+      String readLine = bufferedReader.readLine();
+
+     while (readLine != null)
+     {
+       buf.append(readLine);
+
+       readLine = bufferedReader.readLine();
+     }
+      //char[] buffer = new char[200];
+      //int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
+      //String reply = new String(buffer, 0, readChars);
+      return buf.toString();
+     }
+
+     catch (Throwable t)
+     {
+       t.printStackTrace(); 
+     }
+
+     finally
+     {
+       if (bufferedReader != null)
+       {
+         try 
+         {
+           bufferedReader.close();
+         }
+         catch (IOException e)
+         {
+           System.out.println("Failed to close stream : " + e.getMessage());
+         }
+       }
+     }
    }
 
 

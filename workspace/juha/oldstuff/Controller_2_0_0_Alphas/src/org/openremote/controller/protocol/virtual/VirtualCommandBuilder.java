@@ -152,7 +152,7 @@ public class VirtualCommandBuilder implements CommandBuilder
     {
       throw new NoSuchCommandException(
          "OpenRemote virtual protocol command is missing '" + XML_COMMAND + "' property"
-      );
+      );s
     }
 
     if (address == null || ("").equals(address))

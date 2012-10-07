@@ -23,7 +23,6 @@ package org.openremote.controller.protocol.x10;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.apache.log4j.Logger;
 
