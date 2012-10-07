@@ -117,8 +117,7 @@
                             "name": ">"
                         },
                         "width": "30",
-                        "left": "",
-                        "right": 5,
+                        "right": "5",
                         "top": "70"
                     }
                 ],
@@ -140,6 +139,47 @@
                         "top": "0"
                     }
                 ],
+				"form": [
+                    {
+                        "field": [
+                            {
+                                "name": "username",
+								"id": "loginuserid",
+                                "inputType": "textbox",
+                                "optional": false,
+                                "label": "Username:"
+                            },
+                            {
+                                "name": "password",
+								"id": "loginpassword",
+                                "inputType": "password",
+                                "optional": true,
+                                "validationString": "^.+$",
+                                "label": "Password:"
+                            }
+                        ],
+                        "dataSource": "controllerCredentialsList",
+                        "height": "200",
+                        "button": [
+                            {
+								"id": -3,
+								"name": "LOGIN",
+                                "action": "none",
+                                "type": "generic",
+								"hasControlCommand": true,
+                            },
+                            {
+                                "navigate": {
+                                    "to": "controllerlist"
+                                },
+                                "type": "cancel"
+                            }
+                        ],
+                        "width": "95%",
+                        "left": "2.5%",
+                        "top": "55"
+                    }
+                ],
                 "id": 52,
                 "name": "login"
             },
@@ -156,6 +196,17 @@
                         },
                         "left": "0",
                         "top": "0"
+                    },
+					{
+                        "height": "10%",
+                        "width": "40%",
+                        "button": {
+                            "id": -5,
+                            "hasControlCommand": true,
+                            "name": "LOGOUT"
+						},
+                        "left": "30%",
+                        "top": "45%"
                     }
                 ],
                 "id": 53,
@@ -357,7 +408,7 @@
                         ],
                         "width": "95%",
                         "itemBindingObject": "controllerCredentials",
-                        "left": "2%",
+                        "left": "2.5%",
                         "top": "55"
                     }
                 ],

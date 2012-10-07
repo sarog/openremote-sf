@@ -25,6 +25,12 @@ import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentityList;
 import org.openremote.web.console.util.BrowserUtils;
+
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 /**
  * Controller Service Interface for defining the communication with
  * a controller, based along the lines of GWT RPC but controller service
@@ -85,6 +91,8 @@ public class ControllerService {
 	public void getPanelIdentities(Controller controller, AsyncControllerCallback<PanelIdentityList> callback) {	
 		if (controller != null) {
 			connector.getPanelIdentities(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -106,6 +114,8 @@ public class ControllerService {
 	public void getPanel(Controller controller, String panelName, AsyncControllerCallback<Panel> callback) {
 		if (controller != null) {
 			connector.getPanel(controller.getUrl(), controller.getUsername(), controller.getPassword(), panelName, callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -125,6 +135,8 @@ public class ControllerService {
 	public void isSecure(Controller controller, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
 			connector.isSecure(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -144,6 +156,8 @@ public class ControllerService {
 	public void isAlive(Controller controller, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
 			connector.isAlive(controller.getUrl(), controller.getUsername(), controller.getPassword(), callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -165,6 +179,8 @@ public class ControllerService {
 	public void sendCommand(Controller controller, String command, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
 			connector.sendCommand(controller.getUrl(), controller.getUsername(), controller.getPassword(), command, callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -186,6 +202,8 @@ public class ControllerService {
 	public void monitorSensors(Controller controller, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		if (controller != null) {
 			connector.monitorSensors(controller.getUrl(), controller.getUsername(), controller.getPassword(), sensorIds, uuid, callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
 		}
 	}
 
@@ -207,6 +225,18 @@ public class ControllerService {
 	public void getSensorValues(Controller controller, Integer[] sensorIds, AsyncControllerCallback<Map<Integer, String>> callback) {
 		if (controller != null) {
 			connector.getSensorValues(controller.getUrl(), controller.getUsername(), controller.getPassword(), sensorIds, callback);
+		} else {
+			callback.onFailure(new Exception("Unable to complete command as no controller specified."));
+		}
+	}
+	
+	public void logout(AsyncControllerCallback<Boolean> callback) {
+		logout(controller, callback);
+	}
+	
+	public void logout(Controller controller, AsyncControllerCallback<Boolean> callback) {
+		if (controller != null) {
+			connector.logout(controller.getUrl(), callback);
 		}
 	}
 }

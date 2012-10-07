@@ -27,12 +27,14 @@ public interface Field {
 	String getLabel();
 	String getInputType();
 	String getName();
+	String getId();
 	String getValidationString();
 	Boolean getOptional();
 	
 	void setLabel(String label);
 	void setInputType(String inputType);
 	void setName(String name);
+	void setId(String id);
 	void setValidationString(String validationString);
 	void setOptional(Boolean optional);
 }

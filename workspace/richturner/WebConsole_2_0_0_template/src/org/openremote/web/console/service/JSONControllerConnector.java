@@ -30,7 +30,6 @@ import org.openremote.web.console.panel.PanelIdentityList;
 import org.openremote.web.console.panel.entity.Status;
 import org.openremote.web.console.panel.entity.StatusList;
 import org.openremote.web.console.util.BrowserUtils;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -38,6 +37,8 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 
 /**
  * JSON Controller Service uses standard Request Builder allowing headers
@@ -74,6 +75,8 @@ public class JSONControllerConnector implements ControllerConnector {
 			case IS_ALIVE:
 				methodUrl = "rest/panels/";
 				break;
+			case LOGOUT:
+				methodUrl = "rest/logout/";
 		}
 		return methodUrl;
 	}
@@ -126,6 +129,12 @@ public class JSONControllerConnector implements ControllerConnector {
 		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {Arrays.toString(sensorIds).replace(", ", ",").replace("]","").replace("[","")}, command), username, password, new JSONControllerCallback(command, callback),20000);
 	}
 	
+	@Override
+	public void logout(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.LOGOUT;
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), null, null, new JSONControllerCallback(command, callback),20000);
+	}
+	
 	// ------------------------   Interface Overrides End -------------------------------------------
 	
 	@SuppressWarnings("unchecked")
@@ -150,24 +159,26 @@ public class JSONControllerConnector implements ControllerConnector {
 
 		@Override
 		public void onResponseReceived(Request request, Response response) {
-			JavaScriptObject jsObj = null;
-
-			String str = response.getText();
-			if (response != null) jsObj = BrowserUtils.evalJSON(str);
+			JSONObject jsonObj = null;
 			
-			if (jsObj == null) {
+			if (response != null) {
+				String str = response.getText();
+				JSONValue value = JSONParser.parseStrict(str);
+				jsonObj = (JSONObject)value;
+			}
+			
+			if (jsonObj == null) {
 				//callback.onFailure(new Exception(new Exception("Unknown Error JSON Response is Empty")));
 				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
 				return;
 			}
 			
 			// Check for JSONP Error Response and if set throw appropriate exception
-			JSONObject jsonObj = new JSONObject(jsObj);
 			int errorCode = 0;
 			
 			if (jsonObj.containsKey("error")) {
 				errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
-				if (!((command == EnumControllerCommand.IS_SECURE && errorCode == 403) || (command == EnumControllerCommand.DO_SENSOR_POLLING && errorCode == 504) || errorCode == 200)) {
+				if (!((command == EnumControllerCommand.IS_SECURE) || (command == EnumControllerCommand.DO_SENSOR_POLLING && errorCode == 504) || errorCode == 200)) {
 					callback.onFailure(EnumControllerResponseCode.getResponseCode(errorCode));
 					return;
 				}
@@ -236,6 +247,14 @@ public class JSONControllerConnector implements ControllerConnector {
 							statusCallback.onSuccess(statusValues);
 						}
 						break;
+					case LOGOUT:
+						AsyncControllerCallback<Boolean> logoutCallback = (AsyncControllerCallback<Boolean>)callback;
+						if (errorCode == 401) {
+							logoutCallback.onSuccess(true);
+						} else {
+							logoutCallback.onSuccess(false);
+						}
+						break;
 				}
 			} catch (Exception e) {
 				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
@@ -249,6 +268,9 @@ public class JSONControllerConnector implements ControllerConnector {
 	private void doJsonRequest(String url, String username, String password, JSONControllerCallback callback, Integer timeout) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
 		Request request = null;
+		
+		// Add accept header
+		builder.setHeader("Accept", "application/json");
 		
 		if (username != null && username.length() > 0) {
 			if (password == null) password = "";
@@ -297,8 +319,6 @@ public class JSONControllerConnector implements ControllerConnector {
 				url = url.endsWith("/") ? url : url + "/";
 			}
 		}
-		
-		url += "?callback=callback";
 		
 		url = URL.encode(url);
 		return url;

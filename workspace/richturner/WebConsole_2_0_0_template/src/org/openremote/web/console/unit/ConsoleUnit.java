@@ -75,12 +75,15 @@ import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -156,7 +159,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		ADD_CONTROLLER(56, 7, "addcontroller"),
 		CONSOLE_SETTING(51, 3, "setting"),
 		CONSOLE_SETTINGS(51, 3, "settings"),
-		LOGIN(50, 2, "login"),
+		LOGIN(52, 4, "login"),
 		LOGOUT(50, 2, "logout"),
 		PANEL_SELECTION(55, 6, "panelselection");
 		
@@ -424,8 +427,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void loadController(ControllerCredentials controllerCreds) {
-		// Unload current controller
-		unloadControllerAndPanel();
+		// Unload current panel
+		unloadPanel();
 		
 		// Clear last controller credentials
 		dataService.setLastControllerCredentials(null);
@@ -508,7 +511,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				BrowserUtils.hideLoadingMsg();
-				onError(response);
+				if (response == EnumControllerResponseCode.FORBIDDEN) {
+					// Take them to the login screen
+					loadSettings(EnumSystemScreen.LOGIN, null);
+				} else {
+					onError(response);
+				}
 			}
 			
 			@Override
@@ -597,6 +605,17 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void unloadController() {
+		// Logout of controller
+		controllerService.logout(new AsyncControllerCallback<Boolean>() {
+			@Override
+			public void onSuccess(Boolean result) {}
+			@Override
+			public void onFailure(Throwable error) {}
+			
+			@Override
+			public void onFailure(EnumControllerResponseCode response) {}
+		});
+		
 		controllerService.setController(null);
 	}
 	
@@ -619,8 +638,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePairContainer> data) {
-		if (panelService.getCurrentPanel() != systemPanel) { 
+		if (panelService.getCurrentPanel() != systemPanel) {
 			unloadPanel();
+			if (systemScreen == EnumSystemScreen.CONTROLLER_LIST) {
+				unloadController();
+			}
 			setPanel(systemPanel);
 		}
 		
@@ -1036,6 +1058,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public void onCommandSend(CommandSendEvent event) {
 		if (event != null) {
 			switch (event.getCommandId()) {
+			
 			case -1: //Controller Discovery
 				// Change tab bar search item image
 				String imageSrc = BrowserUtils.getSystemImageDir() + "controller_searching.gif";
@@ -1096,6 +1119,22 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			case -4: // Load Panel
 				String panelName = event.getCommand();
 				loadPanel(panelName);
+				break;
+			case -5: // Login
+				InputElement userElem = DOM.getElementById("loginuserid").cast();
+				InputElement passElem = DOM.getElementById("loginpassword").cast();
+				
+				// If we get here user is submitting login form
+				Controller controller = controllerService.getController();
+				String username = userElem.getValue().trim();
+				controller.setUsername(username);
+				String password = passElem.getValue().trim();
+				controller.setPassword(password);
+
+				Window.alert(username + " : " + password);
+				
+				loadPanelSelection();
+				break;
 			default:
 				controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
 					@Override
