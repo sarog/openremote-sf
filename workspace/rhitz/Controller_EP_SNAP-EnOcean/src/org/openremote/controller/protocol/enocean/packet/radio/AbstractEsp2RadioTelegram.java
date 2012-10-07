@@ -237,13 +237,15 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
   /**
    * Constructs a new radio telegram instance.
    *
+   * @param type  ESP2 packet type (H_SEQ)
+   *
    * @param org   radio telegram type
    *
    * @param data  data group
    */
-  public AbstractEsp2RadioTelegram(RORG org, byte[] data)
+  public AbstractEsp2RadioTelegram(Esp2PacketHeader.PacketType type, RORG org, byte[] data)
   {
-    super(Esp2PacketHeader.PacketType.TRT, data);
+    super(type, data);
 
     if(org == null)
     {
