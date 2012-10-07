@@ -67,7 +67,7 @@ public class Esp24BSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp24BSTelegram(telegram.getData());
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
   }
@@ -81,7 +81,7 @@ public class Esp24BSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp24BSTelegram(telegram.getData());
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
 
@@ -94,7 +94,7 @@ public class Esp24BSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp24BSTelegram(telegram.getData());
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
 
@@ -107,7 +107,7 @@ public class Esp24BSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp24BSTelegram(telegram.getData());
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
   }
@@ -162,7 +162,7 @@ public class Esp24BSTelegramTest
   public void testNullArg2() throws Exception
   {
     byte[] data = null;
-    Esp24BSTelegram telegram = new Esp24BSTelegram(data);
+    Esp24BSTelegram telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, data);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -174,7 +174,7 @@ public class Esp24BSTelegramTest
 
     dataBytes[0] = AbstractEsp2RadioTelegram.RORG.RPS_ESP2.getValue();
 
-    telegram = new Esp24BSTelegram(dataBytes);
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, dataBytes);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -189,7 +189,7 @@ public class Esp24BSTelegramTest
         dataBytes, 0, dataBytesTooLong, 0, dataBytes.length
     );
 
-    telegram = new Esp24BSTelegram(dataBytesTooLong);
+    telegram = new Esp24BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, dataBytesTooLong);
   }
 
   @Test public void testSend() throws Exception

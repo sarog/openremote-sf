@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.enocean.packet.radio;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.packet.Esp2PacketHeader;
 
 /**
  * Represents a 1 byte communication (1BS) radio telegram. <p>
@@ -69,6 +70,7 @@ public class Esp21BSTelegram extends AbstractEsp2RadioTelegram
   public Esp21BSTelegram(DeviceID senderID, byte payload, byte status)
   {
     super(
+        Esp2PacketHeader.PacketType.TRT,
         RORG.BS1_ESP2,
         AbstractEsp2RadioTelegram.createDataGroup(
             RORG.BS1_ESP2, senderID,
@@ -79,12 +81,14 @@ public class Esp21BSTelegram extends AbstractEsp2RadioTelegram
   }
 
   /**
-   * Constructs a 1BS radio telegram instance with given data.
+   * Constructs a 1BS radio telegram instance with given packet type and data.
+   *
+   * @param type  ESP2 packet type (H_SEQ)
    *
    * @param data  data group
    */
-  public Esp21BSTelegram(byte[] data)
+  public Esp21BSTelegram(Esp2PacketHeader.PacketType type, byte[] data)
   {
-    super(RORG.BS1_ESP2, data);
+    super(type, RORG.BS1_ESP2, data);
   }
 }

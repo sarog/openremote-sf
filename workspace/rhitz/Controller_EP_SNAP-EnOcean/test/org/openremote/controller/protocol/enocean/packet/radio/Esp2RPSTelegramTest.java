@@ -67,7 +67,7 @@ public class Esp2RPSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp2RPSTelegram(telegram.getData());
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
   }
@@ -81,7 +81,7 @@ public class Esp2RPSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp2RPSTelegram(telegram.getData());
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
 
@@ -94,7 +94,7 @@ public class Esp2RPSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp2RPSTelegram(telegram.getData());
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
 
@@ -107,7 +107,7 @@ public class Esp2RPSTelegramTest
     assertTelegramAttributes(telegram, senderID, payload, status);
 
 
-    telegram = new Esp2RPSTelegram(telegram.getData());
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
     assertTelegramAttributes(telegram, senderID, payload, status);
   }
@@ -162,7 +162,7 @@ public class Esp2RPSTelegramTest
   public void testNullArg2() throws Exception
   {
     byte[] data = null;
-    Esp2RPSTelegram telegram = new Esp2RPSTelegram(data);
+    Esp2RPSTelegram telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, data);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -174,7 +174,7 @@ public class Esp2RPSTelegramTest
 
     dataBytes[0] = AbstractEsp2RadioTelegram.RORG.BS1_ESP2.getValue();
 
-    telegram = new Esp2RPSTelegram(dataBytes);
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, dataBytes);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -189,7 +189,7 @@ public class Esp2RPSTelegramTest
         dataBytes, 0, dataBytesTooLong, 0, dataBytes.length
     );
 
-    telegram = new Esp2RPSTelegram(dataBytesTooLong);
+    telegram = new Esp2RPSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, dataBytesTooLong);
   }
 
   @Test public void testSend() throws Exception

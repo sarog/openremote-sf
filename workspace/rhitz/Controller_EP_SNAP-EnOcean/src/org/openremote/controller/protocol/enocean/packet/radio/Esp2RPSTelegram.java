@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.enocean.packet.radio;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.packet.Esp2PacketHeader;
 
 /**
  * Represents a repeated switch communication (RPS) radio telegram. <p>
@@ -69,6 +70,7 @@ public class Esp2RPSTelegram extends AbstractEsp2RadioTelegram
   public Esp2RPSTelegram(DeviceID senderID, byte payload, byte status)
   {
     super(
+        Esp2PacketHeader.PacketType.TRT,
         RORG.RPS_ESP2,
         AbstractEsp2RadioTelegram.createDataGroup(
             RORG.RPS_ESP2, senderID,
@@ -79,12 +81,14 @@ public class Esp2RPSTelegram extends AbstractEsp2RadioTelegram
   }
 
   /**
-   * Constructs a RPS radio telegram instance with given data.
+   * Constructs a RPS radio telegram instance with given packet type and data.
+   *
+   * @param type  ESP2 packet type (H_SEQ)
    *
    * @param data  data group
    */
-  public Esp2RPSTelegram(byte[] data)
+  public Esp2RPSTelegram(Esp2PacketHeader.PacketType type, byte[] data)
   {
-    super(RORG.RPS_ESP2, data);
+    super(type, RORG.RPS_ESP2, data);
   }
 }
