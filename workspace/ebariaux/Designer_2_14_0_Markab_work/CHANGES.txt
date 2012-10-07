@@ -1,22 +1,33 @@
-Designer 2.14.0 (2012-10-xx Markab)
+Designer 2.14.0 (2012-08-XX Markab)
 ===================================
 
-- MODELER-384: Property form title is wrong for webview
-  and color picker components
-- MODELER-360: Command, Sensor, Switch names are
-  not correctly encoded/decoded
-- MODELER-385: Double scrollbar on widget selection
-- MODELER-391: Add Domintell connection configuration
-  possibility
-- MODELER-395: Incorrect password field generated
-  in panel.xml for Web element
-- MODELER-389: LazyInitializationException on
-  Device.deviceAttrs
-- MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
-  when saving UI design
-- MODELER-398: Setting a sensor on a Web element does not work
-- MODELER-392: Fractional Widget Coordinates when Browser
-  has non-default zoom
+ New Features:
+
+   - Z-Wave protocol configuration
+   - panStamps Lagarto configuration (MODELER-397)
+   - Round-robin database (RRD) configuration (MODELER-394)
+   - Add Domintell configuration (MODELER-391)
+
+ Fixes:
+
+   - MODELER-346: regexp validation for IP fields in TCP
+     and Telnet protocols were wrong. Validations have
+     been disabled.
+   - MODELER-384: Property form title is wrong for webview
+     and color picker components
+   - MODELER-360: Command, Sensor, Switch names are
+     not correctly encoded/decoded
+   - MODELER-385: Double scrollbar on widget selection
+   - MODELER-395: Incorrect password field generated
+     in panel.xml for Web element
+   - MODELER-389: LazyInitializationException on
+     Device.deviceAttrs
+   - MODELER-396: org.springframework.orm.hibernate3.HibernateSystemException
+     when saving UI design
+   - MODELER-398: Setting a sensor on a Web element does not work
+   - MODELER-392: Fractional Widget Coordinates when Browser
+     has non-default zoom
+
 
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
