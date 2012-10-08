@@ -20,9 +20,11 @@
  */
 package org.openremote.modeler.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
@@ -32,24 +34,29 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.server.SensorController;
-import org.openremote.modeler.server.SliderController;
-import org.openremote.modeler.server.SwitchController;
+import org.openremote.modeler.exception.PersistenceException;
+import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
-import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
-import org.openremote.modeler.shared.dto.SensorDTO;
-import org.openremote.modeler.shared.dto.SliderDTO;
-import org.openremote.modeler.shared.dto.SwitchDTO;
-import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.logging.AdministratorAlert;
-import org.openremote.modeler.exception.PersistenceException;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.utils.dtoconverter.DeviceDTOConverter;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -202,11 +209,24 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * {@inheritDoc}
     */
    @Override   
-   public ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account) {
+   public ArrayList<DeviceDetailsDTO> loadAllDeviceDetailsDTOs(Account account) {
      List<Device> devices = loadAll(account);
-     ArrayList<DeviceWithChildrenDTO> dtos = new ArrayList<DeviceWithChildrenDTO>();
+     ArrayList<DeviceDetailsDTO> dtos = new ArrayList<DeviceDetailsDTO>();
+     for (Device device : devices) {
+       dtos.add(device.getDeviceDetailsDTO());
+     }
+     return dtos;
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   @Override   
+   public ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account) {
+     List<Device> devices = loadAll(account);
+     ArrayList<DeviceDetailsWithChildrenDTO> dtos = new ArrayList<DeviceDetailsWithChildrenDTO>();
      for (Device d : devices) {
-       dtos.add(createDeviceWithChildrenDTO(d));
+       dtos.add(DeviceDTOConverter.createDeviceDetailsWithChildrenDTO(d));
      }
      return dtos;
    }
@@ -217,7 +237,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = loadById(oid);
-     return createDeviceWithChildrenDTO(device);
+     return (device != null)?device.getDeviceWithChildrenDTO():null;
    }
 
    /**
@@ -226,38 +246,88 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override
    public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
      Device device = loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     return deviceDTO;
+     return (device != null)?device.getDeviceWithCommandChildrenDTO():null;
    }
+ 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+  public DeviceDTO saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
+    Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
+    deviceBean.setAccount(account);
 
-   private DeviceWithChildrenDTO createDeviceWithChildrenDTO(Device device) {
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-      deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
-      for (Sensor sensor : device.getSensors()) {
-        sensorDTOs.add(SensorController.createSensorDTO(sensor));
-      }
-      deviceDTO.setSensors(sensorDTOs);
-      ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
-      for (Switch s : device.getSwitchs()) {
-        switchDTOs.add(SwitchController.createSwitchDTO(s));
-      }
-      deviceDTO.setSwitches(switchDTOs);
-      ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
-      for (Slider s : device.getSliders()) {
-        sliderDTOs.add(SliderController.createSliderDTO(s));
-      }
-      deviceDTO.setSliders(sliderDTOs);
-      return deviceDTO;
-   }
+    Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
+    for (DeviceCommandDetailsDTO command : commands) {
+      DeviceCommand dc = new DeviceCommand();
+      dc.setDevice(deviceBean);
 
-   private ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
-     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
-      for (DeviceCommand dc : deviceCommands) {
-        dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+      dc.setName(command.getName());
+      Protocol protocol = new Protocol();
+      protocol.setDeviceCommand(dc);
+      dc.setProtocol(protocol);
+      protocol.setType(command.getProtocolType());
+      for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
+        protocol.addProtocolAttribute(e.getKey(), e.getValue());
       }
-     return dcDTOs;
-   }
+      commandBeans.put(command, dc);
+    }
+    deviceBean.setDeviceCommands(new ArrayList<DeviceCommand>(commandBeans.values()));
+
+    Map<SensorDetailsDTO, Sensor> sensorBeans = new HashMap<SensorDetailsDTO, Sensor>();
+    for (SensorDetailsDTO sensorDTO : sensors) {
+      Sensor sensor = null;
+      if (sensorDTO.getType() == SensorType.RANGE) {
+        sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+      } else if (sensorDTO.getType() == SensorType.CUSTOM) {
+        CustomSensor customSensor = new CustomSensor();
+        for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
+          customSensor.addState(new State(e.getKey(), e.getValue()));
+        }
+        sensor = customSensor;
+      } else {
+        sensor = new Sensor(sensorDTO.getType());
+      }
+
+      sensor.setDevice(deviceBean);
+      sensor.setName(sensorDTO.getName());
+      sensor.setAccount(account);
+
+      DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
+      SensorCommandRef commandRef = new SensorCommandRef();
+      commandRef.setSensor(sensor);
+      commandRef.setDeviceCommand(deviceCommand);
+      sensor.setSensorCommandRef(commandRef);
+      sensorBeans.put(sensorDTO, sensor);
+    }
+    deviceBean.setSensors(new ArrayList<Sensor>(sensorBeans.values()));
+
+    List<Switch> switchBeans = new ArrayList<Switch>();
+    for (SwitchDetailsDTO switchDTO : switches) {
+      Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
+      DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
+      DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
+
+      Switch sw = new Switch(onCommand, offCommand, sensor);
+      sw.setName(switchDTO.getName());
+      sw.setAccount(account);
+      switchBeans.add(sw);
+    }
+    deviceBean.setSwitchs(switchBeans);
+
+    List<Slider> sliderBeans = new ArrayList<Slider>();
+    for (SliderDetailsDTO sliderDTO : sliders) {
+      Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
+      DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
+
+      Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+      slider.setAccount(account);
+      sliderBeans.add(slider);
+    }
+    deviceBean.setSliders(sliderBeans);
+
+    saveDevice(deviceBean);
+    return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
+  }   
 
 }

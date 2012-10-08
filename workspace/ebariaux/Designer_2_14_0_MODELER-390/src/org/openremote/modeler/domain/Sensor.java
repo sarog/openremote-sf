@@ -24,13 +24,18 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.FetchType;
+
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 import flexjson.JSON;
 
@@ -160,4 +165,31 @@ public class Sensor extends BusinessEntity {
       } else if (other.sensorCommandRef != null && !sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
       return true;
    }
+   
+  @Transient
+  public SensorDTO getSensorDTO() {
+    SensorDTO sensorDTO = new SensorDTO(getOid(), getDisplayName(), getType());
+    DeviceCommand dc = getSensorCommandRef().getDeviceCommand();
+    sensorDTO.setCommand(dc.getDeviceCommandDTO());
+    return sensorDTO;
+  }
+
+  @Transient
+  public SensorDetailsDTO getSensorDetailsDTO() {
+    SensorDetailsDTO dto;
+
+    dto = new SensorDetailsDTO(
+
+    getOid(), getName(), getType(), getSensorCommandRef().getDisplayName(), null, null, null);
+    if (getSensorCommandRef() != null) {
+      dto.setCommand(new DTOReference(getSensorCommandRef().getDeviceCommand().getOid()));
+    }
+    return dto;
+  }
+
+  @Transient
+  public SensorWithInfoDTO getSensorWithInfoDTO() {
+    return new SensorWithInfoDTO(getOid(), getDisplayName(), getType(), getSensorCommandRef().getDisplayName(), null, null, null);
+  }
+
 }
