@@ -28,17 +28,12 @@ import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.packet.command.Esp2RdIDBaseCommand;
 import org.openremote.controller.protocol.enocean.packet.command.Esp2RdIDBaseResponse;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp21BSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp24BSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp2RPSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 import org.openremote.controller.protocol.enocean.port.Esp2ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.protocol.enocean.port.MockPort;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -49,6 +44,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Esp2ProcessorTest
 {
+
   // Class Members --------------------------------------------------------------------------------
 
   private static final String COM_PORT = "/dev/cu.usbserial-EOU9ERRYB";
@@ -89,7 +85,7 @@ public class Esp2ProcessorTest
     rdIDBaseCommand = new Esp2RdIDBaseCommand();
     rdIDBaseResponse = createRdIDBaseResponse(Esp2ResponsePacket.ReturnCode.INF_BASEID);
 
-    radioTelegram = new Esp2RPSTelegram(senderID, (byte)0x00, (byte)0x00);
+    radioTelegram = new Esp2RPSTelegram(senderID, (byte)0x01, (byte)0x02);
     radioTelegramRespose = createRadioTelegramResponse(Esp2ResponsePacket.ReturnCode.OK);
   }
 
@@ -202,7 +198,7 @@ public class Esp2ProcessorTest
     Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
   }
 
-  @Test public void testFragmentedResponse() throws Exception
+  @Test public void testFragmentedResponse1() throws Exception
   {
     List<Integer> boundaries = new ArrayList<Integer>();
 
@@ -227,6 +223,65 @@ public class Esp2ProcessorTest
     Assert.assertEquals(baseID, rdIDBaseCommand.getBaseID());
   }
 
+  @Test public void testFragmentedResponse2() throws Exception
+  {
+    int numOfTelegrams = 30000;
+    Deque<Byte> buffer = new LinkedList<Byte>();
+    Random rand = new Random(47);
+    int payload = 0;
+
+    for(int i = 0; i < numOfTelegrams; i++)
+    {
+      Esp2RPSTelegram telegram = new Esp2RPSTelegram(senderID, (byte)payload, (byte)0x00);
+      ++payload;
+
+      byte[] packetBytes = setPacketType(
+          Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.asByteArray()
+      );
+
+      for(byte dataByte : packetBytes)
+      {
+        buffer.add(dataByte);
+      }
+    }
+
+    while(buffer.size() > 0)
+    {
+      int size = Math.min(rand.nextInt(AbstractEsp2RadioTelegram.ESP2_RADIO_PACKET_LENGTH / 2), buffer.size());
+
+      byte[] data = new byte[size];
+
+      for(int i = 0; i < size; i++)
+      {
+        data[i] = buffer.removeFirst();
+      }
+
+      mockPort.addDataToReturn(data);
+    }
+
+
+    RadioListener listener = new RadioListener(120, numOfTelegrams);
+
+    processor.setProcessorListener(listener);
+    processor.start();
+
+    List<EspRadioTelegram> receivedTelegrams = listener.waitForRadioTelegrams();
+
+
+    Assert.assertNotNull(receivedTelegrams);
+    Assert.assertEquals(numOfTelegrams, receivedTelegrams.size());
+
+    int expectedPayload = 0;
+
+    for(EspRadioTelegram telegram : receivedTelegrams)
+    {
+      byte receivedPayload = telegram.getPayload()[0];
+
+      Assert.assertTrue((byte)expectedPayload == receivedPayload);
+      ++expectedPayload;
+    }
+  }
+
   @Test public void testReceiveRadioTelegrams() throws Exception
   {
     List<EspRadioTelegram> expectedTelegrams = new ArrayList<EspRadioTelegram>();
@@ -246,7 +301,7 @@ public class Esp2ProcessorTest
       );
     }
 
-    RadioListener listener = new RadioListener(expectedTelegrams.size());
+    RadioListener listener = new RadioListener(2, expectedTelegrams.size());
 
     processor.setProcessorListener(listener);
     processor.start();
@@ -379,22 +434,19 @@ public class Esp2ProcessorTest
   private static class RadioListener implements Esp2ProcessorListener
   {
 
-    // Constants ----------------------------------------------------------------------------------
-
-    private static final int TIMEOUT = 2;
-
-
     // Private Instance Fields --------------------------------------------------------------------
 
     private List<EspRadioTelegram> radioTelegrams;
     private SynchronousQueue<List<EspRadioTelegram>> queue;
     private int numOfExpectedTelegrams;
+    private int timeout;
 
 
     // Constructors -------------------------------------------------------------------------------
 
-    public RadioListener(int numOfExpectedTelegrams)
+    public RadioListener(int timeout, int numOfExpectedTelegrams)
     {
+      this.timeout = timeout;
       this.numOfExpectedTelegrams = numOfExpectedTelegrams;
 
       radioTelegrams = new ArrayList<EspRadioTelegram>();
@@ -412,7 +464,7 @@ public class Esp2ProcessorTest
       {
         try
         {
-          queue.offer(radioTelegrams, TIMEOUT, TimeUnit.SECONDS);
+          queue.offer(radioTelegrams, 1, TimeUnit.SECONDS);
         }
         catch (InterruptedException e)
         {
@@ -426,7 +478,7 @@ public class Esp2ProcessorTest
 
     public List<EspRadioTelegram> waitForRadioTelegrams() throws InterruptedException
     {
-      return queue.poll(TIMEOUT, TimeUnit.SECONDS);
+      return queue.poll(timeout, TimeUnit.SECONDS);
     }
   };
 }
