@@ -139,19 +139,19 @@
                         "top": "0"
                     }
                 ],
-				"form": [
+                "form": [
                     {
                         "field": [
                             {
                                 "name": "username",
-								"id": "loginuserid",
+                                "id": "loginuserid",
                                 "inputType": "textbox",
                                 "optional": false,
                                 "label": "Username:"
                             },
                             {
                                 "name": "password",
-								"id": "loginpassword",
+                                "id": "loginpassword",
                                 "inputType": "password",
                                 "optional": true,
                                 "validationString": "^.+$",
@@ -162,11 +162,12 @@
                         "height": "200",
                         "button": [
                             {
-								"id": -3,
-								"name": "LOGIN",
+                                "id": -5,
+                                "name": "LOGIN",
                                 "action": "none",
                                 "type": "generic",
-								"hasControlCommand": true,
+                                "hasControlCommand": true
+                                
                             },
                             {
                                 "navigate": {
@@ -197,14 +198,14 @@
                         "left": "0",
                         "top": "0"
                     },
-					{
+                    {
                         "height": "10%",
                         "width": "40%",
                         "button": {
-                            "id": -5,
+                            "id": -6,
                             "hasControlCommand": true,
                             "name": "LOGOUT"
-						},
+                        },
                         "left": "30%",
                         "top": "45%"
                     }

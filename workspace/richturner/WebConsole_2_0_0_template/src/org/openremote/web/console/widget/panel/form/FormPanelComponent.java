@@ -394,6 +394,10 @@ public class FormPanelComponent extends PanelComponent {
 					buttonComp = new FormButtonComponent(panel, EnumFormButtonType.getButtonType(button.getType()));
 				}
 				buttonComp.setNavigate(button.getNavigate());
+				if (button.getHasControlCommand() != null && button.getId() != null) {
+					buttonComp.setHasControlCommand(button.getHasControlCommand());
+					buttonComp.setId(button.getId());
+				}
 				buttonComp.setAction(EnumFormButtonAction.enumValueOf(button.getAction()));
 				panel.addButton(buttonComp);
 			}

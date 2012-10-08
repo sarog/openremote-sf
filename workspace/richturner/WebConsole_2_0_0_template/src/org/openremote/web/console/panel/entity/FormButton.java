@@ -24,13 +24,17 @@ package org.openremote.web.console.panel.entity;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface FormButton {
+	Integer getId();
 	String getType();
 	String getName();
 	Navigate getNavigate();
-   String getAction();
+	Boolean getHasControlCommand();
+  String getAction();
 	
+  void setId(Integer id);
 	void setType(String type);
 	void setName(String name);
 	void setNavigate(Navigate navigate);
-   void setAction(String action);
+	void setHasControlCommand(Boolean hasControlCommand);
+  void setAction(String action);
 }
