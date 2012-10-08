@@ -26,6 +26,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
+
 import flexjson.JSON;
 
 /**
@@ -37,7 +40,7 @@ import flexjson.JSON;
 public class Switch extends BusinessEntity {
 
   private static final long serialVersionUID  = 156984492491427373L;
-  
+
   private String name;
    private SwitchCommandOnRef switchCommandOnRef;
    private SwitchCommandOffRef switchCommandOffRef;
@@ -194,5 +197,22 @@ public class Switch extends BusinessEntity {
       return true;
    }
 
+   @Transient
+   public SwitchDTO getSwitchDTO() {
+     SwitchDTO switchDTO = new SwitchDTO(getOid(), getDisplayName());
+     DeviceCommand dc = getSwitchCommandOnRef().getDeviceCommand();
+     switchDTO.setOnCommand(dc.getDeviceCommandDTO());
+     dc = getSwitchCommandOffRef().getDeviceCommand();
+     switchDTO.setOffCommand(dc.getDeviceCommandDTO());
+     return switchDTO;
+   }
    
+   @Transient
+   public SwitchWithInfoDTO getSwitchWithInfoDTO() {
+     return new SwitchWithInfoDTO(getOid(), getDisplayName(),
+                   (getSwitchCommandOnRef() != null)?getSwitchCommandOnRef().getDisplayName():null,
+                   (getSwitchCommandOffRef() != null)?getSwitchCommandOffRef().getDisplayName():null,
+                   (getSwitchSensorRef() != null)?getSwitchSensorRef().getDisplayName():null,
+                   getDevice().getDisplayName());
+   }
 }

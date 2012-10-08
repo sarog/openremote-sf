@@ -24,7 +24,14 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The Interface DeviceService.
@@ -82,6 +89,8 @@ public interface DeviceService {
    
    List<Device> loadSameDevices(Device device);
    
+   ArrayList<DeviceDetailsDTO> loadAllDeviceDetailsDTOs(Account account);
+
    /**
     * Loads a device by id and creates a DTO with all information on the device and its related objects (commands, sensors, switches and sliders).
     * 
@@ -104,6 +113,8 @@ public interface DeviceService {
     * @param account the account owning the devices to load
     * @return a list of DTOs with information about the devices and their commands
     */
-   ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account);
+   ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account);
+
+   DeviceDTO saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
 
 }
