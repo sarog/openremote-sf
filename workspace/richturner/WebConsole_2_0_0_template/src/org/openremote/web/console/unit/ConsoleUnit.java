@@ -638,11 +638,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void loadSettings(EnumSystemScreen systemScreen, List<DataValuePairContainer> data) {
+		if (systemScreen == EnumSystemScreen.CONTROLLER_LIST || systemScreen == EnumSystemScreen.LOGOUT) {
+			unloadController();
+		}
+		
 		if (panelService.getCurrentPanel() != systemPanel) {
 			unloadPanel();
-			if (systemScreen == EnumSystemScreen.CONTROLLER_LIST) {
-				unloadController();
-			}
+
 			setPanel(systemPanel);
 		}
 		
@@ -1131,9 +1133,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				String password = passElem.getValue().trim();
 				controller.setPassword(password);
 
-				Window.alert(username + " : " + password);
-				
 				loadPanelSelection();
+				break;
+			case -6: // Logout
+				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				break;
 			default:
 				controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
@@ -1170,6 +1173,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			case FORBIDDEN:
 					BrowserUtils.showAlert("Security Error!<br /><br />Controller is secured and supplied credentials are invalid.");
 			default:
+				BrowserUtils.showAlert("Error!<br /><br />The following error occurred: -<br /><br />" + errorCode.getDescription());
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		}
 	}
