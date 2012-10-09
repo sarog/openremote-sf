@@ -282,7 +282,8 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
-        <entry key = "rrdGraphUrl"         value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "mpd"      		value-ref = "mpdCommandBuilder"/>
       </map>
     </constructor-arg>
 <!--
@@ -313,6 +314,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	 | extend the implementation with additional command types.
 	 +-->
 
+	<!-- MPD Command Builder -->
+	<bean id = "mpdCommandBuilder" class = "org.openremote.controller.protocol.mpd.MpdCommandBuilder"/>
+	
 	<!-- UDPListener Command Builder -->
 	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
 	
