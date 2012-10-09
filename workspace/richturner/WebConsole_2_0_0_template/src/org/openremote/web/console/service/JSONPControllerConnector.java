@@ -143,16 +143,12 @@ public class JSONPControllerConnector implements ControllerConnector {
 		
 		@Override
 		public void onFailure(Throwable caught) {
-			if (command == EnumControllerCommand.IS_ALIVE) {
-				AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callback;
-				isAliveCallback.onSuccess(false);
-			} else {
 				callback.onFailure(caught);
-			}
 		}
 
 		@Override
 		public void onSuccess(JavaScriptObject jsObj) {
+
 			if (jsObj == null) {
 				//callback.onFailure(new Exception(new Exception("Unknown Error JSON Response is Empty")));
 				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
@@ -190,7 +186,7 @@ public class JSONPControllerConnector implements ControllerConnector {
 						break;
 					case IS_SECURE:
 						AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-						if (errorCode == 403) {
+						if (errorCode == 403 || errorCode == 401) {
 							isSecureCallback.onSuccess(true);
 						} else {
 							isSecureCallback.onSuccess(false);

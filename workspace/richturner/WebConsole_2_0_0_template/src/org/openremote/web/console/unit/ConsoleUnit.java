@@ -438,40 +438,39 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (controllerCreds == null) {
 			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		} else {
-			// Check if controller uses security and doesn't have the same origin if this
-			// is the case then warn user that we can't connect to it.
 			currentControllerCredentials = controllerCreds;
+			
 			final Controller controller = new Controller(controllerCreds);
+			
 			controller.initialise(new AsyncControllerCallback<Boolean>(){
 				@Override
 				public void onSuccess(Boolean result) {
-					// Controller is fully initialised
-					if (controller.isSecure() && !controller.isSameOrigin()) {
+					// Controller is fully initialised let's see what state it's in
+					if (!controller.isValid()) {
 						// Alert the user
-						BrowserUtils.showAlert("Connection Error!<br /><br />Controller '" + controller.getUrl() + "' is secure and in a different domain which is not supported. Either disable security or host the web console on the same domain as the controller.");
+						BrowserUtils.showAlert("Controller Error!<br /><br />Controller '" + controller.getUrl() + "' either can't be reached or is secure and in a different domain. Make sure controller is running and either disable security or host the web console on the same domain as the controller.");
 						loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
-					} else {
+						return;
+					}
+
+						// Set the appropriate controller connector
 						if (!controller.isSameOrigin()) {
 							controllerService.setConnector(new JSONPControllerConnector());
 						} else {
 							controllerService.setConnector(new JSONControllerConnector());
 						}
 						
-						if (controller.isAlive()) {
-							controllerService.setController(controller);
-							currentPanelName = currentControllerCredentials.getDefaultPanel();
-							
-							// If current panel name set try and load it otherwise prompt for panel to load
-							if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
-								dataService.setLastControllerCredentials(currentControllerCredentials);
-								loadPanel(currentPanelName);
-							} else {
-								loadPanelSelection();
-							}
+						// Load the controller
+						controllerService.setController(controller);
+						currentPanelName = currentControllerCredentials.getDefaultPanel();
+						
+						// If current panel name set try and load it otherwise prompt for panel to load
+						if (currentPanelName != null && !currentPanelName.equalsIgnoreCase("")) {
+							dataService.setLastControllerCredentials(currentControllerCredentials);
+							loadPanel(currentPanelName);
 						} else {
-							loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+							loadPanelSelection();
 						}
-					}
 				}
 			});
 		}
