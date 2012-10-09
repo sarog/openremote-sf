@@ -149,16 +149,22 @@ public class JSONControllerConnector implements ControllerConnector {
 		
 		@Override
 		public void onError(Request request, Throwable caught) {
-			if (command == EnumControllerCommand.IS_ALIVE) {
-				AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callback;
-				isAliveCallback.onSuccess(false);
-			} else {
 				callback.onFailure(caught);
-			}
 		}
 
 		@Override
 		public void onResponseReceived(Request request, Response response) {
+			// Check secure request
+			if (command == EnumControllerCommand.IS_SECURE) {
+				AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
+				if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+					isSecureCallback.onSuccess(true);
+				} else {
+					isSecureCallback.onSuccess(false);
+				}
+				return;
+			}
+			
 			JSONObject jsonObj = null;
 			
 			if (response != null) {
@@ -203,7 +209,7 @@ public class JSONControllerConnector implements ControllerConnector {
 						break;
 					case IS_SECURE:
 						AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-						if (errorCode == 403) {
+						if (errorCode == 403 || errorCode == 401) {
 							isSecureCallback.onSuccess(true);
 						} else {
 							isSecureCallback.onSuccess(false);

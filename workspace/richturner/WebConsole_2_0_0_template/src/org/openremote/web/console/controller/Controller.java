@@ -22,6 +22,7 @@ package org.openremote.web.console.controller;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.ControllerService;
+import org.openremote.web.console.service.JSONControllerConnector;
 import org.openremote.web.console.service.JSONPControllerConnector;
 import org.openremote.web.console.util.BrowserUtils;
 /**
@@ -33,16 +34,22 @@ import org.openremote.web.console.util.BrowserUtils;
 public class Controller implements ControllerCredentials {
 	private boolean isAlive;
 	private boolean isSecure;
-	private boolean isEncrypted;
+	private boolean isEncrypted; //HTTPS flag - not used at present
 	private boolean isSupported;
 	private boolean isSameOrigin;
-	private boolean isInitialised;
+	private boolean isValid = true;
+	
 	private String name;
 	private String url;
 	private String username;
 	private String password;
 	private String defaultPanel;
-	private AsyncControllerCallback<Boolean> callback;
+	
+	// Initialisation variables
+	private boolean sopChecked;
+	private boolean aliveChecked;
+	private boolean securedChecked;
+	private AsyncControllerCallback<Boolean> initCallback;
 	
 	public Controller() {
 		this(null);
@@ -58,43 +65,72 @@ public class Controller implements ControllerCredentials {
 		}
 	}
 	
+
 	/**
 	 * This method will initialise the controller by checking it's
 	 * alive, secure, same origin and supported statuses.
 	 */
 	public void initialise(AsyncControllerCallback<Boolean> callback) {
-		this.callback = callback;
-		if (isInitialised) {
-			callCallback();
-			return;
-		}
+		initCallback = callback;
 		
 		// Check if same origin
 		BrowserUtils.isURLSameOrigin(getUrl(), new AsyncControllerCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
-				if(!(isSameOrigin = result)) {
-					// Make sure controller is using JSONP connector
-					ControllerService.getInstance().setConnector(new JSONPControllerConnector());
-				}
-				
-				ControllerService.getInstance().isAlive(getController(), new AsyncControllerCallback<Boolean>() {
-					@Override
-					public void onSuccess(Boolean result) {
-						if (!(isAlive = result)) {
-							callCallback();
-						} else {
-							// Check if secure
-							ControllerService.getInstance().isSecure(getController(), new AsyncControllerCallback<Boolean>() {
-								@Override
-								public void onSuccess(Boolean result) {
-									isSecure = result;
-									callCallback();
-								}
-							});
-						}
-					}
-				});
+				isSameOrigin = result;
+				sopChecked = true;
+				checkAliveSecureStatus();
+			}}
+		);
+	}
+
+	
+	private void initCompleteCheck() {
+		if (sopChecked && aliveChecked && securedChecked) {
+			callCallback();
+		}
+	}
+	
+	
+	private void checkAliveSecureStatus() {
+		// If not SOP then have to use JSONP
+		if (!isSameOrigin) {
+			ControllerService.getInstance().setConnector(new JSONPControllerConnector());
+		} else {
+			ControllerService.getInstance().setConnector(new JSONControllerConnector());
+		}
+		
+		// Check if secure
+		ControllerService.getInstance().isSecure(getController(), new AsyncControllerCallback<Boolean>() {
+			@Override
+			public void onSuccess(Boolean result) {
+				isSecure = result;
+				securedChecked = true;
+				isAlive = true;
+				aliveChecked = true;
+				initCompleteCheck();
+			}
+			
+			@Override
+			public void onFailure(EnumControllerResponseCode code) {
+				// Had a response but not what expected
+				isAlive = true;
+				aliveChecked = true;
+				isSecure = false;
+				securedChecked = true;
+				isValid = false;
+				initCompleteCheck();
+			}
+			
+			@Override
+			public void onFailure(Throwable e) {
+				// The request either went un-answered or not correctly formatted
+				isAlive = false;
+				aliveChecked = true;
+				isSecure = false;
+				securedChecked = true;
+				isValid = false;
+				initCompleteCheck();
 			}
 		});
 	}
@@ -104,8 +140,7 @@ public class Controller implements ControllerCredentials {
 	}
 	
 	private void callCallback() {
-		callback.onSuccess(true);
-		isInitialised = true;
+		initCallback.onSuccess(true);
 	}
 	
 	public boolean isAlive() {
@@ -135,6 +170,10 @@ public class Controller implements ControllerCredentials {
 		return isSupported;
 	}
 	
+	public void setIsSupported(boolean isSupported) {
+		this.isSupported = isSupported;
+	}
+	
 	public void setIsSameOrigin(boolean isSameOrigin) {
 		this.isSameOrigin = isSameOrigin;
 	}
@@ -143,8 +182,8 @@ public class Controller implements ControllerCredentials {
 		return isSameOrigin;
 	}
 	
-	public void setIsSupported(boolean isSupported) {
-		this.isSupported = isSupported;
+	public boolean isValid() {
+		return isValid;
 	}
 	
 	public String getName() {
