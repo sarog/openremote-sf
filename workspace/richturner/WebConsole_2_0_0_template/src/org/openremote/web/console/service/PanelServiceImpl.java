@@ -88,7 +88,7 @@ public class PanelServiceImpl implements PanelService {
 			groupContainsScreen = true;
 		} else {
 			for (Integer sId : getGroupScreenIds(groupId)) {
-				if (sId == screenId) {
+				if (sId.equals(screenId)) {
 					groupContainsScreen = true;
 					break;
 				}
