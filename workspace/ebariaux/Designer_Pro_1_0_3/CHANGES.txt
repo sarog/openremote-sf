@@ -6,6 +6,7 @@ Fixes:
  - MODELER-346: regexp validation for IP fields in TCP
    and Telnet protocols were wrong. Validations have
    been disabled.
+ - MODELER-399: Order of windows
 
 New features:
  - LPD protocol support (MODELER-406)
