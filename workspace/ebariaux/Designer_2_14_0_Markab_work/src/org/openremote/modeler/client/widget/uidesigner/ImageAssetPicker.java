@@ -18,6 +18,7 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
 
+import com.extjs.gxt.ui.client.core.XDOM;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -193,6 +194,15 @@ public class ImageAssetPicker extends Window {
     });
     gridView = grid.getView();
     return grid;
+  }
+  
+  @Override
+  public void show() {
+    super.show();
+    // MODELER-399: Most UI elements are rendered using GXT2, this one uses GXT3.
+    // Both XDOM classes in GXT2 and GXT3 maintain the top z index, but independently of each other.
+    // Set our zIndex here in GXT3 "world" based on top index from GXT2 "world".
+    setZIndex(XDOM.getTopZIndex() + 1);
   }
 
   @UiField
