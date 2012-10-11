@@ -8,7 +8,7 @@ Fixes:
    been disabled.
 
 New features:
-
+ - LPD protocol support (MODELER-406)
  - panStamps Lagarto configuration (MODELER-397)
  - Round-robin database (RRD) configuration (MODELER-394)
 
