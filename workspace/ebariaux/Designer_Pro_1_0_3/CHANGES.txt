@@ -1,11 +1,11 @@
 Pro 1.0.3
 =========
-	
+
 Fixes:
 
-- MODELER-346: regexp validation for IP fields in TCP
-  and Telnet protocols were wrong. Validations have
-  been disabled.
+ - MODELER-346: regexp validation for IP fields in TCP
+   and Telnet protocols were wrong. Validations have
+   been disabled.
 
 Pro 1.0.2
 =========
@@ -36,7 +36,6 @@ Designer 2.13.6 (2012-09-20 Rosemary)
 
 Bug fix release:
 
- 
  - Increase maximum command field length from 1000
    characters to 4000 characters for UDP, TCP, HTTP
    and Telnet protocols
