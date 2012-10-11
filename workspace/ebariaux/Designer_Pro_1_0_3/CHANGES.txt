@@ -1,3 +1,12 @@
+Pro 1.0.3
+=========
+	
+Fixes:
+
+- MODELER-346: regexp validation for IP fields in TCP
+  and Telnet protocols were wrong. Validations have
+  been disabled.
+
 Pro 1.0.2
 =========
 
@@ -47,7 +56,6 @@ Bug fix release:
    issues with commands associated to sensors
  - MODELER-375: Transform macro references to DTOs 
    more defensively and guard against errors
-
 
 Designer 2.13.4 (2012-07-29 Rosemary)
 =====================================
