@@ -7,6 +7,11 @@ Fixes:
    and Telnet protocols were wrong. Validations have
    been disabled.
 
+New features:
+
+ - panStamps Lagarto configuration (MODELER-397)
+ - Round-robin database (RRD) configuration (MODELER-394)
+
 Pro 1.0.2
 =========
 
