@@ -64,12 +64,12 @@ public class Esp21BSTelegramTest
   {
     Esp21BSTelegram telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     telegram = new Esp21BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.RRT_UNKNOWN, senderID, payload, status);
   }
 
   @Test public void testSenderID() throws Exception
@@ -78,12 +78,12 @@ public class Esp21BSTelegramTest
 
     Esp21BSTelegram telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     telegram = new Esp21BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.RRT_UNKNOWN, senderID, payload, status);
 
 
 
@@ -91,12 +91,12 @@ public class Esp21BSTelegramTest
 
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     telegram = new Esp21BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.RRT_UNKNOWN, senderID, payload, status);
 
 
 
@@ -104,12 +104,12 @@ public class Esp21BSTelegramTest
 
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     telegram = new Esp21BSTelegram(Esp2PacketHeader.PacketType.RRT_UNKNOWN, telegram.getData());
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.RRT_UNKNOWN, senderID, payload, status);
   }
 
   @Test public void testPayload() throws Exception
@@ -117,19 +117,19 @@ public class Esp21BSTelegramTest
     payload = 0x21;
     Esp21BSTelegram telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     payload = (byte)0xFF;
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     payload = (byte)0x00;
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
   }
 
   @Test public void testStatus() throws Exception
@@ -137,19 +137,19 @@ public class Esp21BSTelegramTest
     status = 0x12;
     Esp21BSTelegram telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     status = (byte)0xFF;
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
 
 
     status = (byte)0x00;
     telegram = new Esp21BSTelegram(senderID, payload, status);
 
-    assertTelegramAttributes(telegram, senderID, payload, status);
+    assertTelegramAttributes(telegram, Esp2PacketHeader.PacketType.TRT, senderID, payload, status);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -241,28 +241,26 @@ public class Esp21BSTelegramTest
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private void assertTelegramAttributes(Esp21BSTelegram telegram, DeviceID senderID,
-                                        byte payload, byte status)
+  private void assertTelegramAttributes(Esp21BSTelegram telegram, Esp2PacketHeader.PacketType type,
+                                        DeviceID senderID, byte payload, byte status)
   {
-    Assert.assertEquals(Esp2PacketHeader.PacketType.TRT, telegram.getPacketType());
+    Assert.assertEquals(type, telegram.getPacketType());
     Assert.assertEquals(AbstractEsp2RadioTelegram.RORG.BS1_ESP2, telegram.getRORG());
     Assert.assertEquals(senderID, telegram.getSenderID());
 
     Assert.assertArrayEquals(createDataGroup(senderID, payload, status), telegram.getData());
     Assert.assertArrayEquals(
-        createTelegramAsByteArray(senderID, payload, status), telegram.asByteArray()
+        createTelegramAsByteArray(type, senderID, payload, status), telegram.asByteArray()
     );
   }
 
-  private byte[] createTelegramAsByteArray(DeviceID deviceID, byte payload, byte status)
+  private byte[] createTelegramAsByteArray(Esp2PacketHeader.PacketType type, DeviceID deviceID, byte payload, byte status)
   {
     byte[] packetBytes = new byte[14];
 
     // Header ...
 
-    Esp2PacketHeader header = new Esp2PacketHeader(
-        Esp2PacketHeader.PacketType.TRT, 11
-    );
+    Esp2PacketHeader header = new Esp2PacketHeader(type, 11);
 
     int copyIndex = 0;
 
