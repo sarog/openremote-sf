@@ -54,12 +54,25 @@ public class EepA5100ATest
 
   @Test public void testBasicConstruction() throws Exception
   {
+
+    // New EEP number ...
+
     Eep eep = EepType.lookup("A5-10-0A").createEep(
         deviceID, Constants.TEMPERATURE_STATUS_COMMAND
     );
 
     Assert.assertTrue(eep instanceof EepA5100A);
     Assert.assertEquals(EepType.EEP_TYPE_A5100A, eep.getType());
+
+    // Old EEP number ...
+
+    eep = EepType.lookup("07-10-0A").createEep(
+        deviceID, Constants.TEMPERATURE_STATUS_COMMAND
+    );
+
+    Assert.assertTrue(eep instanceof EepA5100A);
+    Assert.assertEquals(EepType.EEP_TYPE_A5100A, eep.getType());
+
   }
 
   @Test public void testUpdateSetPoint() throws Exception

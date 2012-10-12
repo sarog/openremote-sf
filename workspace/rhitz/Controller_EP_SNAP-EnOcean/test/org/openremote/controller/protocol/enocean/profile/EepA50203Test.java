@@ -39,12 +39,25 @@ public class EepA50203Test extends EepA502XXTest
 
   @Test public void testBasicConstruction() throws Exception
   {
+
+    // New EEP number ...
+
     Eep eep = EepType.lookup("A5-02-03").createEep(
         deviceID, Constants.TEMPERATURE_STATUS_COMMAND
     );
 
     Assert.assertTrue(eep instanceof EepA50203);
     Assert.assertEquals(EepType.EEP_TYPE_A50203, eep.getType());
+
+    // Old EEP number ...
+
+    eep = EepType.lookup("07-02-03").createEep(
+        deviceID, Constants.TEMPERATURE_STATUS_COMMAND
+    );
+
+    Assert.assertTrue(eep instanceof EepA50203);
+    Assert.assertEquals(EepType.EEP_TYPE_A50203, eep.getType());
+
   }
 
   @Test public void testUpdate() throws Exception
