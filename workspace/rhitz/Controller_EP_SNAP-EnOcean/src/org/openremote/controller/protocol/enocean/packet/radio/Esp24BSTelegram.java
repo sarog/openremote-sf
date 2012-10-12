@@ -57,6 +57,14 @@ import org.openremote.controller.protocol.enocean.packet.Esp2PacketHeader;
 public class Esp24BSTelegram extends AbstractEsp2RadioTelegram
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Length of 4BS payload field: {@value}
+   */
+  public static final int ESP2_RADIO_4BS_PAYLOAD_LENGTH = 4;
+
+
   // Constructors ---------------------------------------------------------------------------------
 
   /**
@@ -73,6 +81,7 @@ public class Esp24BSTelegram extends AbstractEsp2RadioTelegram
     super(
         Esp2PacketHeader.PacketType.TRT,
         RORG.BS4_ESP2,
+        ESP2_RADIO_4BS_PAYLOAD_LENGTH,
         AbstractEsp2RadioTelegram.createDataGroup(
             RORG.BS4_ESP2, senderID,
             payload, status
@@ -89,6 +98,6 @@ public class Esp24BSTelegram extends AbstractEsp2RadioTelegram
    */
   public Esp24BSTelegram(Esp2PacketHeader.PacketType type, byte[] data)
   {
-    super(type, RORG.BS4_ESP2, data);
+    super(type, RORG.BS4_ESP2, ESP2_RADIO_4BS_PAYLOAD_LENGTH, data);
   }
 }
