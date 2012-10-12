@@ -97,15 +97,19 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
   public static final int ESP2_RADIO_STATUS_LENGTH = 1;
 
   /**
-   * Fixed size of the ESP2 radio telegram payload: {@value}
+   * Fixed size of the ESP2 radio telegram payload field: {@value}
+   *
+   * Note that the payload field has a fixed size but
+   * the payload length within the payload field for each
+   * radio telegram is different.
    */
-  public static final int ESP2_RADIO_PAYLOAD_LENGTH = 4;
+  public static final int ESP2_RADIO_PAYLOAD_FIELD_LENGTH = 4;
 
   /**
    * Fixed size of data group: {@value}
    */
   public static final int ESP2_RADIO_DATA_LENGTH = ESP2_RADIO_ORG_LENGTH +
-                                                   ESP2_RADIO_PAYLOAD_LENGTH +
+                                                   ESP2_RADIO_PAYLOAD_FIELD_LENGTH +
                                                    DeviceID.ENOCEAN_ESP_ID_LENGTH +
                                                    ESP2_RADIO_STATUS_LENGTH;
 
@@ -167,7 +171,7 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
       throw new IllegalArgumentException("null payload data");
     }
 
-    if(payload.length != ESP2_RADIO_PAYLOAD_LENGTH)
+    if(payload.length != ESP2_RADIO_PAYLOAD_FIELD_LENGTH)
     {
       throw new IllegalArgumentException("Invalid payload length.");
     }
@@ -181,14 +185,14 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
     // Payload...
 
     System.arraycopy(
-        payload, 0, dataBytes, ESP2_RADIO_ORG_LENGTH, ESP2_RADIO_PAYLOAD_LENGTH
+        payload, 0, dataBytes, ESP2_RADIO_ORG_LENGTH, ESP2_RADIO_PAYLOAD_FIELD_LENGTH
     );
 
     // Sender ID...
 
     System.arraycopy(
         senderID.asByteArray(), 0 , dataBytes,
-        ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_LENGTH, DeviceID.ENOCEAN_ESP_ID_LENGTH
+        ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_FIELD_LENGTH, DeviceID.ENOCEAN_ESP_ID_LENGTH
     );
 
     // Status...
@@ -211,7 +215,7 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
     byte[] senderIDBytes = new byte[DeviceID.ENOCEAN_ESP_ID_LENGTH];
 
     System.arraycopy(
-        data, ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_LENGTH, senderIDBytes,
+        data, ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_FIELD_LENGTH, senderIDBytes,
         0 , DeviceID.ENOCEAN_ESP_ID_LENGTH
     );
 
@@ -225,6 +229,11 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
    * Radio telegram type.
    */
   private RORG org;
+
+  /**
+   * Length of payload field.
+   */
+  private int payloadLength;
 
   /**
    * Sender ID.
@@ -243,7 +252,7 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
    *
    * @param data  data group
    */
-  public AbstractEsp2RadioTelegram(Esp2PacketHeader.PacketType type, RORG org, byte[] data)
+  public AbstractEsp2RadioTelegram(Esp2PacketHeader.PacketType type, RORG org, int payloadLength, byte[] data)
   {
     super(type, data);
 
@@ -268,6 +277,8 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
     }
 
     this.org = org;
+
+    this.payloadLength = payloadLength;
 
     this.senderID = AbstractEsp2RadioTelegram.getSenderIDFromDataGroup(data);
   }
@@ -322,9 +333,9 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
    */
   @Override public byte[] getPayload()
   {
-    byte[] payload = new byte[ESP2_RADIO_PAYLOAD_LENGTH];
+    byte[] payload = new byte[payloadLength];
 
-    System.arraycopy(data, ESP2_RADIO_ORG_LENGTH, payload, 0, ESP2_RADIO_PAYLOAD_LENGTH);
+    System.arraycopy(data, ESP2_RADIO_ORG_LENGTH, payload, 0, payloadLength);
 
     return payload;
   }
@@ -334,7 +345,7 @@ public class AbstractEsp2RadioTelegram extends AbstractEsp2RequestPacket impleme
    */
   @Override public byte getStatusByte()
   {
-    int statusIndex = ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_LENGTH +
+    int statusIndex = ESP2_RADIO_ORG_LENGTH + ESP2_RADIO_PAYLOAD_FIELD_LENGTH +
                       DeviceID.ENOCEAN_ESP_ID_LENGTH;
 
     return data[statusIndex];
