@@ -9,6 +9,6 @@ if (callback == null || callback.equals("")) { %>
 <%
 } else {
    response.setStatus(HttpServletResponse.SC_OK);
-   out.println(callback + " && " + callback + "({\"error\":{\"message\":\"Not authorised\",\"code\":403}})");
+   out.println(callback + " && " + callback + "({\"error\":{\"message\":\"Not authorised\",\"code\":401}})");
 }
 %>
