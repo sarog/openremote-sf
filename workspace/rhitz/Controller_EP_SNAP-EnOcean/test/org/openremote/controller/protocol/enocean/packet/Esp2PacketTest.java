@@ -67,7 +67,7 @@ public class Esp2PacketTest
 
   private byte[] createPacketAsByteArray(Esp2PacketHeader.PacketType packetType, byte[] data)
   {
-    Esp2PacketHeader header = new Esp2PacketHeader(packetType, data.length);
+    Esp2PacketHeader header = new Esp2PacketHeader(packetType, data.length + 1);
 
     int packetSize = Esp2PacketHeader.ESP2_HEADER_SIZE + 11;
     byte[] byteArray = new byte[packetSize];
