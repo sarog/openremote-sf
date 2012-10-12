@@ -54,7 +54,19 @@ public class EepA50904Test
 
   @Test public void testBasicConstruction() throws Exception
   {
+
+    // New EEP number ...
+
     Eep eep = EepType.lookup("A5-09-04").createEep(
+        deviceID, Constants.CONCENTRATION_STATUS_COMMAND
+    );
+
+    Assert.assertTrue(eep instanceof EepA50904);
+    Assert.assertEquals(EepType.EEP_TYPE_A50904, eep.getType());
+
+    // Old EEP number ...
+
+    eep = EepType.lookup("07-09-04").createEep(
         deviceID, Constants.CONCENTRATION_STATUS_COMMAND
     );
 

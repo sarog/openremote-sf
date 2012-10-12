@@ -430,6 +430,21 @@ public abstract class EepType
     return eepType;
   }
 
+  /**
+   * Returns string representation of EEP type with the common EEP format XX-XX-XX.
+   *
+   * @param rorg  First part of the EEP number: RORG-XX-XX.
+   *
+   * @param func  Second part of the EEP number: XX-FUNC-XX.
+   *
+   * @param type  Third part of the EEP number: XX-XX-TYPE.
+   *
+   * @return EEP number
+   */
+  public static String getEepTypeAsString(EspRadioTelegram.RORG rorg, int func, int type)
+  {
+    return String.format("%02X-%02X-%02X", rorg.getValue(), func, type);
+  }
 
 
   // Private Instance Fields ----------------------------------------------------------------------
@@ -468,7 +483,22 @@ public abstract class EepType
     this.func = func;
     this.type = type;
 
-    lookup.put(getEepTypeAsString(), this);
+    lookup.put(EepType.getEepTypeAsString(rorg, func, type), this);
+
+    if(rorg == EspRadioTelegram.RORG.RPS)
+    {
+      lookup.put(EepType.getEepTypeAsString(EspRadioTelegram.RORG.RPS_ESP2, func, type), this);
+    }
+
+    else if(rorg == EspRadioTelegram.RORG.BS1)
+    {
+      lookup.put(EepType.getEepTypeAsString(EspRadioTelegram.RORG.BS1_ESP2, func, type), this);
+    }
+
+    else if(rorg == EspRadioTelegram.RORG.BS4)
+    {
+      lookup.put(EepType.getEepTypeAsString(EspRadioTelegram.RORG.BS4_ESP2, func, type), this);
+    }
   }
 
   // Object Overrides -----------------------------------------------------------------------------
@@ -486,9 +516,12 @@ public abstract class EepType
 
     EepType eep = (EepType)o;
 
-    return this.rorg == eep.rorg &&
-           this.func == eep.func &&
-           this.type == eep.type;
+    return (this.rorg == eep.rorg ||
+           (this.rorg == EspRadioTelegram.RORG.RPS && eep.rorg == EspRadioTelegram.RORG.RPS_ESP2) ||
+           (this.rorg == EspRadioTelegram.RORG.BS1 && eep.rorg == EspRadioTelegram.RORG.BS1_ESP2) ||
+           (this.rorg == EspRadioTelegram.RORG.BS4 && eep.rorg == EspRadioTelegram.RORG.BS4_ESP2)) &&
+            this.func == eep.func &&
+            this.type == eep.type;
   }
 
   /**
@@ -507,7 +540,7 @@ public abstract class EepType
    */
   @Override public String toString()
   {
-    return getEepTypeAsString();
+    return EepType.getEepTypeAsString(rorg, func, type);
   }
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -556,18 +589,6 @@ public abstract class EepType
     return type;
   }
 
-
-  // Private Instance Methods ---------------------------------------------------------------------
-
-  /**
-   * Returns string representation of EEP type.
-   *
-   * @return string representation of EEP type
-   */
-  private String getEepTypeAsString()
-  {
-    return String.format("%02X-%02X-%02X", rorg.getValue(), func, type);
-  }
 
   // Nested Classes -------------------------------------------------------------------------------
 
