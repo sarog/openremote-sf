@@ -78,13 +78,25 @@ public class MpdSession implements TrackPositionChangeListener, PlaylistBasicCha
          if (mpd.getMPDPlayer().getCurrentSong() != null) {
             MPDSong song = mpd.getMPDPlayer().getCurrentSong();
             if (sensors.get("GET_SONG_NAME") != null) {
-               sensors.get("GET_SONG_NAME").update(song.getName());
+               if (song.getName() != null) {
+                  sensors.get("GET_SONG_NAME").update(song.getName());
+               } else {
+                  sensors.get("GET_SONG_NAME").update("unknown");
+               }
             }
             if (sensors.get("GET_ALBUM_NAME") != null) {
-               sensors.get("GET_ALBUM_NAME").update(song.getAlbum().getName());
+               if ((song.getAlbum() != null) && (song.getAlbum().getName() != null)){
+                  sensors.get("GET_ALBUM_NAME").update(song.getAlbum().getName());
+               } else {
+                  sensors.get("GET_ALBUM_NAME").update("unknown");
+               }
             }
             if (sensors.get("GET_ARTIST_NAME") != null) {
-               sensors.get("GET_ARTIST_NAME").update(song.getArtist().getName());
+               if ((song.getArtist() != null) && (song.getArtist().getName() != null)){
+                  sensors.get("GET_ARTIST_NAME").update(song.getArtist().getName());
+               } else {
+                  sensors.get("GET_ARTIST_NAME").update("unknown");
+               }
             }
             if (sensors.get("GET_SONG_LENGTH") != null) {
                int min= song.getLength() / 60;
