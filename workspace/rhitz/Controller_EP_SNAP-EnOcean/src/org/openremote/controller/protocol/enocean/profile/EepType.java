@@ -589,6 +589,43 @@ public abstract class EepType
     return type;
   }
 
+  /**
+   * Checks if the RORG type of the given radio telegram is compatible
+   * with the EEP type.
+   *
+   * @param   telegram  radio telegram
+   *
+   * @return  <tt>true</tt> if valid, <tt>false</tt> otherwise
+   */
+  public boolean isValidRadioTelegramRORG(EspRadioTelegram telegram)
+  {
+
+    if(this.rorg == telegram.getRORG())
+    {
+      return true;
+    }
+
+    else if(EspRadioTelegram.RORG.RPS == this.rorg &&
+            EspRadioTelegram.RORG.RPS_ESP2 == telegram.getRORG())
+    {
+      return true;
+    }
+
+    else if(EspRadioTelegram.RORG.BS1 == this.rorg &&
+            EspRadioTelegram.RORG.BS1_ESP2 == telegram.getRORG())
+    {
+      return true;
+    }
+
+    else if(EspRadioTelegram.RORG.BS4 == this.rorg &&
+            EspRadioTelegram.RORG.BS4_ESP2 == telegram.getRORG())
+    {
+      return true;
+    }
+
+    return false;
+  }
+
 
   // Nested Classes -------------------------------------------------------------------------------
 

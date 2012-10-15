@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.Constants;
 import org.openremote.controller.protocol.enocean.DeviceID;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 
 /**
  * Unit tests for {@link EepA5101A} class.
@@ -90,7 +89,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -103,7 +102,7 @@ public class EepA5101ATest
 
     rawSupplyVoltageValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -116,7 +115,7 @@ public class EepA5101ATest
 
     rawSupplyVoltageValue = 250;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -130,7 +129,7 @@ public class EepA5101ATest
     rawSupplyVoltageValue = 0;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -159,7 +158,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -172,7 +171,7 @@ public class EepA5101ATest
 
     rawSetPointValue = 250;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -185,7 +184,7 @@ public class EepA5101ATest
 
     rawSetPointValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -199,7 +198,7 @@ public class EepA5101ATest
     isTeachIn = true;
     rawSetPointValue = 250;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -227,7 +226,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -240,7 +239,7 @@ public class EepA5101ATest
 
     rawTempValue = 250;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -253,7 +252,7 @@ public class EepA5101ATest
 
     rawTempValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -267,7 +266,7 @@ public class EepA5101ATest
     rawTempValue = 250;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -295,7 +294,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -308,7 +307,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -321,7 +320,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 1;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -334,7 +333,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 2;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -347,7 +346,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 3;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -360,7 +359,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 4;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -373,7 +372,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 5;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -386,7 +385,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 6;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -399,7 +398,7 @@ public class EepA5101ATest
 
     rawFanSpeedValue = 7;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -426,7 +425,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -439,7 +438,7 @@ public class EepA5101ATest
 
     isOccupancyEnabled = false;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -452,7 +451,7 @@ public class EepA5101ATest
 
     isOccupancyEnabled = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -466,7 +465,7 @@ public class EepA5101ATest
     isOccupancyEnabled = false;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -494,7 +493,7 @@ public class EepA5101ATest
     boolean isOccupied = false;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -507,7 +506,7 @@ public class EepA5101ATest
 
     isOccupied = false;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -520,7 +519,7 @@ public class EepA5101ATest
 
     isOccupied = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -534,7 +533,7 @@ public class EepA5101ATest
     isOccupied = false;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -560,11 +559,19 @@ public class EepA5101ATest
         deviceID, Constants.TEMPERATURE_STATUS_COMMAND
     );
 
-    Esp31BSTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+    EspRadioTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
 
     boolean isUpdate = eep.update(invalidTelegram);
 
     Assert.assertFalse(isUpdate);
+
+
+    invalidTelegram = new Esp21BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+
+    isUpdate = eep.update(invalidTelegram);
+
+    Assert.assertFalse(isUpdate);
+
   }
 
   @Test public void testInvalidDeviceID() throws Exception
@@ -582,7 +589,7 @@ public class EepA5101ATest
     boolean isTeachIn = false;
     DeviceID invalidDeviceID = DeviceID.fromString("0xFF800002");
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         invalidDeviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
         rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
     );
@@ -590,14 +597,24 @@ public class EepA5101ATest
     Boolean isUpdate = eep.update(telegram);
 
     Assert.assertFalse(isUpdate);
+
+
+    telegram = createRadioTelegramESP2(
+        invalidDeviceID, rawSupplyVoltageValue, rawSetPointValue, rawTempValue,
+        rawFanSpeedValue, isOccupancyEnabled, isOccupied, isTeachIn
+    );
+
+    isUpdate = eep.update(telegram);
+
+    Assert.assertFalse(isUpdate);
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Esp34BSTelegram createRadioTelegram(DeviceID deviceID, int rawSupplyVoltageValue, int rawSetPointValue,
-                                              int rawTempValue, int rawFanSpeedValue, boolean isOccupancyEnabled,
-                                              boolean isOccupied, boolean isTeachIn)
+  private Esp34BSTelegram createRadioTelegramESP3(DeviceID deviceID, int rawSupplyVoltageValue, int rawSetPointValue,
+                                                  int rawTempValue, int rawFanSpeedValue, boolean isOccupancyEnabled,
+                                                  boolean isOccupied, boolean isTeachIn)
   {
     byte[] payload = new byte[4];
     payload[0] = (byte)rawSupplyVoltageValue;
@@ -609,6 +626,24 @@ public class EepA5101ATest
     payload[3] |= (byte)(isOccupied ? 0x00 : 0x01);
 
     Esp34BSTelegram telegram = new Esp34BSTelegram(deviceID, payload, (byte)0x00);
+
+    return telegram;
+  }
+
+  private Esp24BSTelegram createRadioTelegramESP2(DeviceID deviceID, int rawSupplyVoltageValue, int rawSetPointValue,
+                                                  int rawTempValue, int rawFanSpeedValue, boolean isOccupancyEnabled,
+                                                  boolean isOccupied, boolean isTeachIn)
+  {
+    byte[] payload = new byte[4];
+    payload[0] = (byte)rawSupplyVoltageValue;
+    payload[1] = (byte)rawSetPointValue;
+    payload[2] = (byte)rawTempValue;
+    payload[3] = (byte)(rawFanSpeedValue << 4);
+    payload[3] |= (byte)(isTeachIn ? 0x00 : 0x08);
+    payload[3] |= (byte)(isOccupancyEnabled ? 0x00 : 0x02);
+    payload[3] |= (byte)(isOccupied ? 0x00 : 0x01);
+
+    Esp24BSTelegram telegram = new Esp24BSTelegram(deviceID, payload, (byte)0x00);
 
     return telegram;
   }

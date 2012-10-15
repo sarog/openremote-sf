@@ -259,8 +259,16 @@ public class EepA50701 implements EepReceive
       return false;
     }
 
-    if(eepType.getRORG() != telegram.getRORG())
+    if(!eepType.isValidRadioTelegramRORG(telegram))
     {
+      log.warn(
+          "Discarded received radio telegram from device " +
+          "with ID {0} because of a configuration error: " +
+          "Command for device with ID {0} has been configured " +
+          "with an invalid EEP {1} for this device.",
+          deviceID, getType()
+      );
+
       return false;
     }
 

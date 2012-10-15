@@ -23,9 +23,11 @@ package org.openremote.controller.protocol.enocean.profile;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
 import org.openremote.controller.protocol.enocean.datatype.Bool;
 import org.openremote.controller.protocol.enocean.datatype.Range;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
+import org.openremote.controller.utils.Logger;
 
 import static org.openremote.controller.protocol.enocean.Constants.*;
 
@@ -294,6 +296,14 @@ public abstract class EepA508XX implements EepReceive
   }
 
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
+   */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
@@ -431,8 +441,16 @@ public abstract class EepA508XX implements EepReceive
       return false;
     }
 
-    if(eepType.getRORG() != telegram.getRORG())
+    if(!eepType.isValidRadioTelegramRORG(telegram))
     {
+      log.warn(
+          "Discarded received radio telegram from device " +
+          "with ID {0} because of a configuration error: " +
+          "Command for device with ID {0} has been configured " +
+          "with an invalid EEP {1} for this device.",
+          deviceID, getType()
+      );
+
       return false;
     }
 

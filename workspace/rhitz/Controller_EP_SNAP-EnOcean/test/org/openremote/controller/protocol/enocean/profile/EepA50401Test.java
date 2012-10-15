@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.Constants;
 import org.openremote.controller.protocol.enocean.DeviceID;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 
 /**
  * Unit tests for {@link EepA50201} class.
@@ -86,7 +85,7 @@ public class EepA50401Test
     int rawTemperatureValue = 0;
     boolean isTemperatureAvailable = true;
     boolean isTeachIn = false;
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -97,7 +96,7 @@ public class EepA50401Test
 
 
     rawTemperatureValue = 0;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -108,7 +107,7 @@ public class EepA50401Test
 
 
     rawTemperatureValue = 250;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -120,7 +119,7 @@ public class EepA50401Test
 
     isTemperatureAvailable = false;
     rawTemperatureValue = 100;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -132,7 +131,7 @@ public class EepA50401Test
 
     isTemperatureAvailable = true;
     rawTemperatureValue = 0;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -143,7 +142,7 @@ public class EepA50401Test
 
 
     rawTemperatureValue = 251; // out of range
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
@@ -165,7 +164,7 @@ public class EepA50401Test
     int rawHumidityValue = 0;
     boolean isTemperatureAvailable = true;
     boolean isTeachIn = false;
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, 0, rawHumidityValue, isTemperatureAvailable, isTeachIn
     );
 
@@ -176,7 +175,7 @@ public class EepA50401Test
 
 
     rawHumidityValue = 0;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, 0, rawHumidityValue, isTemperatureAvailable, isTeachIn
     );
 
@@ -187,7 +186,7 @@ public class EepA50401Test
 
 
     rawHumidityValue = 250;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, 0, rawHumidityValue, isTemperatureAvailable, isTeachIn
     );
 
@@ -199,7 +198,7 @@ public class EepA50401Test
 
     isTemperatureAvailable = false;
     rawHumidityValue = 0;
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, 0, rawHumidityValue, isTemperatureAvailable, isTeachIn
     );
 
@@ -210,7 +209,7 @@ public class EepA50401Test
 
 
     rawHumidityValue = 251; // out of range
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, 0, rawHumidityValue, isTemperatureAvailable, isTeachIn
     );
 
@@ -234,9 +233,16 @@ public class EepA50401Test
         deviceID, Constants.TEMPERATURE_STATUS_COMMAND
     );
 
-    Esp31BSTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+    EspRadioTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
 
     boolean isUpdate = eep.update(invalidTelegram);
+
+    Assert.assertFalse(isUpdate);
+
+
+    invalidTelegram = new Esp21BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+
+    isUpdate = eep.update(invalidTelegram);
 
     Assert.assertFalse(isUpdate);
   }
@@ -252,19 +258,28 @@ public class EepA50401Test
     boolean isTeachIn = false;
     DeviceID invalidDeviceID = DeviceID.fromString("0xFF800002");
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         invalidDeviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
     );
 
     Boolean isUpdate = eep.update(telegram);
 
     Assert.assertFalse(isUpdate);
+
+
+    telegram = createRadioTelegramESP2(
+        invalidDeviceID, rawTemperatureValue, 0, isTemperatureAvailable, isTeachIn
+    );
+
+    isUpdate = eep.update(telegram);
+
+    Assert.assertFalse(isUpdate);
   }
 
   // Helpers --------------------------------------------------------------------------------------
 
-  protected Esp34BSTelegram createRadioTelegram(DeviceID deviceID, int rawTempValue, int rawHumValue,
-                                                boolean isTempAvailable, boolean isTeachIn)
+  protected Esp34BSTelegram createRadioTelegramESP3(DeviceID deviceID, int rawTempValue, int rawHumValue,
+                                                    boolean isTempAvailable, boolean isTeachIn)
   {
     byte[] payload = new byte[4];
     payload[1] = (byte)rawHumValue;
@@ -273,6 +288,20 @@ public class EepA50401Test
     payload[3] |= (byte)(isTempAvailable ? 0x02 : 0x00);
 
     Esp34BSTelegram telegram = new Esp34BSTelegram(deviceID, payload, (byte)0x00);
+
+    return telegram;
+  }
+
+  protected Esp24BSTelegram createRadioTelegramESP2(DeviceID deviceID, int rawTempValue, int rawHumValue,
+                                                    boolean isTempAvailable, boolean isTeachIn)
+  {
+    byte[] payload = new byte[4];
+    payload[1] = (byte)rawHumValue;
+    payload[2] = (byte)rawTempValue;
+    payload[3] |= (byte)(isTeachIn ? 0x00 : 0x08);
+    payload[3] |= (byte)(isTempAvailable ? 0x02 : 0x00);
+
+    Esp24BSTelegram telegram = new Esp24BSTelegram(deviceID, payload, (byte)0x00);
 
     return telegram;
   }
