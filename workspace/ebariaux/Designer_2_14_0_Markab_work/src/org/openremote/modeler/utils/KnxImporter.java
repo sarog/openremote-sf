@@ -86,7 +86,7 @@ public class KnxImporter
 
       // Query all GroupAddress elements
       XPath xpath = XPath.newInstance("//knx:GroupAddress");
-      xpath.addNamespace("knx", "http://knx.org/xml/project/10");
+      xpath.addNamespace("knx", document.getRootElement().getNamespaceURI());
       List<Element> xresult = xpath.selectNodes(document);
       for (Element element : xresult)
       {
