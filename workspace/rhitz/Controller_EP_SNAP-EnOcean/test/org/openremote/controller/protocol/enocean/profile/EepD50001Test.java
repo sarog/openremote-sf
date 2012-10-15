@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.Constants;
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp21BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
 
 /**
@@ -82,20 +83,20 @@ public class EepD50001Test
 
     boolean isLearn = false;
     boolean isContactClosed = true;
-    Boolean isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    Boolean isUpdate = eep.update(createRadioTelegramESP3(deviceID, isContactClosed, isLearn));
 
     Assert.assertTrue(isUpdate);
     Assert.assertTrue(eep.isClosed());
 
 
-    isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    isUpdate = eep.update(createRadioTelegramESP3(deviceID, isContactClosed, isLearn));
 
     Assert.assertFalse(isUpdate);
     Assert.assertTrue(eep.isClosed());
 
 
     isContactClosed = false;
-    isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    isUpdate = eep.update(createRadioTelegramESP2(deviceID, isContactClosed, isLearn));
 
     Assert.assertTrue(isUpdate);
     Assert.assertFalse(eep.isClosed());
@@ -112,7 +113,7 @@ public class EepD50001Test
 
     boolean isLearn = false;
     boolean isContactClosed = true;
-    Boolean isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    Boolean isUpdate = eep.update(createRadioTelegramESP3(deviceID, isContactClosed, isLearn));
 
     Assert.assertTrue(isUpdate);
     Assert.assertTrue(eep.isClosed());
@@ -122,7 +123,7 @@ public class EepD50001Test
 
     isLearn = true;
     isContactClosed = false;
-    isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    isUpdate = eep.update(createRadioTelegramESP3(deviceID, isContactClosed, isLearn));
 
     Assert.assertFalse(isUpdate);
     Assert.assertTrue(eep.isClosed());
@@ -132,7 +133,7 @@ public class EepD50001Test
 
     isLearn = false;
     isContactClosed = false;
-    isUpdate = eep.update(createRadioTelegram(deviceID, isContactClosed, isLearn));
+    isUpdate = eep.update(createRadioTelegramESP2(deviceID, isContactClosed, isLearn));
 
     Assert.assertTrue(isUpdate);
     Assert.assertFalse(eep.isClosed());
@@ -140,7 +141,7 @@ public class EepD50001Test
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Esp31BSTelegram createRadioTelegram(DeviceID deviceID, boolean isContactClosed, boolean isLearn)
+  private Esp31BSTelegram createRadioTelegramESP3(DeviceID deviceID, boolean isContactClosed, boolean isLearn)
   {
     byte payload;
 
@@ -152,6 +153,22 @@ public class EepD50001Test
     }
 
     Esp31BSTelegram telegram = new Esp31BSTelegram(deviceID, payload, (byte)0x00);
+
+    return telegram;
+  }
+
+  private Esp21BSTelegram createRadioTelegramESP2(DeviceID deviceID, boolean isContactClosed, boolean isLearn)
+  {
+    byte payload;
+
+    payload = (byte)(isLearn ? 0x00 : 0x08);
+
+    if(isContactClosed)
+    {
+      payload |= 0x01;
+    }
+
+    Esp21BSTelegram telegram = new Esp21BSTelegram(deviceID, payload, (byte)0x00);
 
     return telegram;
   }

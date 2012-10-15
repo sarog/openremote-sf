@@ -26,8 +26,7 @@ import org.junit.Test;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.Constants;
 import org.openremote.controller.protocol.enocean.DeviceID;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.*;
 
 /**
  * Unit tests for {@link EepA50904} class.
@@ -90,7 +89,7 @@ public class EepA50904Test
     boolean isTemperature = true;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -103,7 +102,7 @@ public class EepA50904Test
 
     rawHumValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -116,7 +115,7 @@ public class EepA50904Test
 
     rawHumValue = 200;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -129,7 +128,7 @@ public class EepA50904Test
 
     rawHumValue = 201;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -143,7 +142,7 @@ public class EepA50904Test
     rawHumValue = 0;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -159,7 +158,7 @@ public class EepA50904Test
     isTeachIn = false;
 
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -187,7 +186,7 @@ public class EepA50904Test
     boolean isTemperature = true;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -200,7 +199,7 @@ public class EepA50904Test
 
     rawTempValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -213,7 +212,7 @@ public class EepA50904Test
 
     rawTempValue = 255;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -227,7 +226,7 @@ public class EepA50904Test
     rawTempValue = 0;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -243,7 +242,7 @@ public class EepA50904Test
     isTeachIn = false;
 
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -270,7 +269,7 @@ public class EepA50904Test
     boolean isTemperature = true;
     boolean isTeachIn = false;
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -283,7 +282,7 @@ public class EepA50904Test
 
     rawConcValue = 0;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP3(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -296,7 +295,7 @@ public class EepA50904Test
 
     rawConcValue = 255;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -310,7 +309,7 @@ public class EepA50904Test
     rawConcValue = 0;
     isTeachIn = true;
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -327,7 +326,7 @@ public class EepA50904Test
     isTeachIn = false;
 
 
-    telegram = createRadioTelegram(
+    telegram = createRadioTelegramESP2(
         deviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -352,9 +351,16 @@ public class EepA50904Test
         deviceID, Constants.CONCENTRATION_STATUS_COMMAND
     );
 
-    Esp31BSTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+    EspRadioTelegram invalidTelegram = new Esp31BSTelegram(deviceID, (byte)0x00, (byte)0x00);
 
     boolean isUpdate = eep.update(invalidTelegram);
+
+    Assert.assertFalse(isUpdate);
+
+
+    invalidTelegram = new Esp21BSTelegram(deviceID, (byte)0x00, (byte)0x00);
+
+    isUpdate = eep.update(invalidTelegram);
 
     Assert.assertFalse(isUpdate);
   }
@@ -373,7 +379,7 @@ public class EepA50904Test
     boolean isTeachIn = false;
     DeviceID invalidDeviceID = DeviceID.fromString("0xFF800002");
 
-    Esp34BSTelegram telegram = createRadioTelegram(
+    EspRadioTelegram telegram = createRadioTelegramESP3(
         invalidDeviceID, rawConcValue, rawTempValue, rawHumValue,
         isHumidity, isTemperature, isTeachIn
     );
@@ -381,14 +387,24 @@ public class EepA50904Test
     Boolean isUpdate = eep.update(telegram);
 
     Assert.assertFalse(isUpdate);
+
+
+    telegram = createRadioTelegramESP2(
+        invalidDeviceID, rawConcValue, rawTempValue, rawHumValue,
+        isHumidity, isTemperature, isTeachIn
+    );
+
+    isUpdate = eep.update(telegram);
+
+    Assert.assertFalse(isUpdate);
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Esp34BSTelegram createRadioTelegram(DeviceID deviceID, int rawConcValue, int rawTempValue,
-                                              int rawHumValue, boolean isHumidity, boolean isTemperature,
-                                              boolean isTeachIn)
+  private Esp34BSTelegram createRadioTelegramESP3(DeviceID deviceID, int rawConcValue, int rawTempValue,
+                                                  int rawHumValue, boolean isHumidity, boolean isTemperature,
+                                                  boolean isTeachIn)
   {
     byte[] payload = new byte[4];
     payload[0] = (byte)rawHumValue;
@@ -399,6 +415,23 @@ public class EepA50904Test
     payload[3] |= (byte)(isTemperature ? 0x02 : 0x01);
 
     Esp34BSTelegram telegram = new Esp34BSTelegram(deviceID, payload, (byte)0x00);
+
+    return telegram;
+  }
+
+  private Esp24BSTelegram createRadioTelegramESP2(DeviceID deviceID, int rawConcValue, int rawTempValue,
+                                                  int rawHumValue, boolean isHumidity, boolean isTemperature,
+                                                  boolean isTeachIn)
+  {
+    byte[] payload = new byte[4];
+    payload[0] = (byte)rawHumValue;
+    payload[1] = (byte)rawConcValue;
+    payload[2] = (byte)rawTempValue;
+    payload[3] |= (byte)(isTeachIn ? 0x00 : 0x08);
+    payload[3] |= (byte)(isHumidity ? 0x04 : 0x00);
+    payload[3] |= (byte)(isTemperature ? 0x02 : 0x01);
+
+    Esp24BSTelegram telegram = new Esp24BSTelegram(deviceID, payload, (byte)0x00);
 
     return telegram;
   }

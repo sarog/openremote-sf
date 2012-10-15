@@ -73,26 +73,51 @@ public class EepA50205Test extends EepA502XXTest
 
   }
 
-  @Test public void testUpdate() throws Exception
+  @Test public void testUpdateESP3() throws Exception
   {
     EepA50205 eep = (EepA50205)EepType.lookup("A5-02-05").createEep(
         deviceID, Constants.TEMPERATURE_STATUS_COMMAND
     );
 
     int rawTemperatureValue = 255;
-    Boolean isUpdate = eep.update(createRadioTelegram(deviceID, rawTemperatureValue));
+    Boolean isUpdate = eep.update(createRadioTelegramESP3(deviceID, rawTemperatureValue));
 
     Assert.assertTrue(isUpdate);
     Assert.assertEquals(Double.valueOf(0), eep.getTemperature(), 0.0);
 
 
     rawTemperatureValue = 255;
-    isUpdate = eep.update(createRadioTelegram(deviceID, rawTemperatureValue));
+    isUpdate = eep.update(createRadioTelegramESP3(deviceID, rawTemperatureValue));
     Assert.assertFalse(isUpdate);
 
 
     rawTemperatureValue = 0;
-    isUpdate = eep.update(createRadioTelegram(deviceID, rawTemperatureValue));
+    isUpdate = eep.update(createRadioTelegramESP3(deviceID, rawTemperatureValue));
+
+    Assert.assertTrue(isUpdate);
+    Assert.assertEquals(Double.valueOf(40), eep.getTemperature(), 0.0);
+  }
+
+  @Test public void testUpdateESP2() throws Exception
+  {
+    EepA50205 eep = (EepA50205)EepType.lookup("A5-02-05").createEep(
+        deviceID, Constants.TEMPERATURE_STATUS_COMMAND
+    );
+
+    int rawTemperatureValue = 255;
+    Boolean isUpdate = eep.update(createRadioTelegramESP2(deviceID, rawTemperatureValue));
+
+    Assert.assertTrue(isUpdate);
+    Assert.assertEquals(Double.valueOf(0), eep.getTemperature(), 0.0);
+
+
+    rawTemperatureValue = 255;
+    isUpdate = eep.update(createRadioTelegramESP2(deviceID, rawTemperatureValue));
+    Assert.assertFalse(isUpdate);
+
+
+    rawTemperatureValue = 0;
+    isUpdate = eep.update(createRadioTelegramESP2(deviceID, rawTemperatureValue));
 
     Assert.assertTrue(isUpdate);
     Assert.assertEquals(Double.valueOf(40), eep.getTemperature(), 0.0);
@@ -107,7 +132,7 @@ public class EepA50205Test extends EepA502XXTest
     // Regular update...
 
     int rawTemperatureValue = 255;
-    Boolean isUpdate = eep.update(createRadioTelegram(deviceID, rawTemperatureValue));
+    Boolean isUpdate = eep.update(createRadioTelegramESP3(deviceID, rawTemperatureValue));
 
     Assert.assertTrue(isUpdate);
     Assert.assertEquals(Double.valueOf(0), eep.getTemperature(), 0.0);
@@ -125,7 +150,7 @@ public class EepA50205Test extends EepA502XXTest
     // Regular update...
 
     rawTemperatureValue = 0;
-    isUpdate = eep.update(createRadioTelegram(deviceID, rawTemperatureValue));
+    isUpdate = eep.update(createRadioTelegramESP3(deviceID, rawTemperatureValue));
 
     Assert.assertTrue(isUpdate);
     Assert.assertEquals(Double.valueOf(40), eep.getTemperature(), 0.0);

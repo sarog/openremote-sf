@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean.profile;
 
 import org.junit.Before;
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp24BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
 
 /**
@@ -48,7 +49,7 @@ public class EepA502XXTest
 
   // Helpers --------------------------------------------------------------------------------------
 
-  protected Esp34BSTelegram createRadioTelegram(DeviceID deviceID, int rawTempValue)
+  protected Esp34BSTelegram createRadioTelegramESP3(DeviceID deviceID, int rawTempValue)
   {
     byte[] payload = new byte[4];
     payload[1] = (byte)((rawTempValue & 0xFF00) >> 8);
@@ -56,6 +57,18 @@ public class EepA502XXTest
     payload[3] = 0x08; // Regular telegram
 
     Esp34BSTelegram telegram = new Esp34BSTelegram(deviceID, payload, (byte)0x00);
+
+    return telegram;
+  }
+
+  protected Esp24BSTelegram createRadioTelegramESP2(DeviceID deviceID, int rawTempValue)
+  {
+    byte[] payload = new byte[4];
+    payload[1] = (byte)((rawTempValue & 0xFF00) >> 8);
+    payload[2] = (byte)rawTempValue;
+    payload[3] = 0x08; // Regular telegram
+
+    Esp24BSTelegram telegram = new Esp24BSTelegram(deviceID, payload, (byte)0x00);
 
     return telegram;
   }
