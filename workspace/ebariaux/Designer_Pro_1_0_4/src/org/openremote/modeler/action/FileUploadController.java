@@ -107,7 +107,7 @@ public class FileUploadController extends MultiActionController implements BeanF
     }
 
     public void importETS4(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "knxproj");
+        MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "file");
         String contentType = multipartFile.getContentType();
         List<KnxGroupAddress> addresses = null;
         HashMap<String, Object> data = new HashMap<String, Object>();

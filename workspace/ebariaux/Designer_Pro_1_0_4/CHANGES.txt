@@ -1,3 +1,9 @@
+Pro 1.0.4
+=========
+
+Fixes:
+ - MODELER-410: KNX import not working anymore
+
 Pro 1.0.3
 =========
 
