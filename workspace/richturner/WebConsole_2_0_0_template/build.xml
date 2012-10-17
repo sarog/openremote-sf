@@ -3,7 +3,7 @@
   <!-- Arguments to gwtc and devmode targets -->
   <property file="build.properties"/>
   <property name="gwt.args" value="" />
-  <property name="project.name" value="webconsole2" />
+  <property name="project.name" value="webconsole" />
   <property name="output.dir" value="output" />
 
   

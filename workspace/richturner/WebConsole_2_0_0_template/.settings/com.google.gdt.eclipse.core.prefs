@@ -1,5 +1,5 @@
-#Wed Sep 21 17:34:17 BST 2011
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
+launchConfigExternalUrlPrefix=http\://192.168.1.57\:8080/webconsole
 warSrcDir=war
 warSrcDirIsOutput=true

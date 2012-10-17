@@ -20,4 +20,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>controllerDiscoveryService</servlet-name>
     <url-pattern>/webconsole/autodiscovery</url-pattern>
   </servlet-mapping>
+  
+  <!-- Image Proxy Service -->
+  <servlet>
+    <servlet-name>imageProxyService</servlet-name>
+    <servlet-class>org.openremote.web.console.server.ImageProxyService</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>imageProxyService</servlet-name>
+    <url-pattern>/webconsole/imageproxy</url-pattern>
+  </servlet-mapping>
 </web-app>

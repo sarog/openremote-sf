@@ -31,6 +31,7 @@ import org.openremote.web.console.panel.entity.Status;
 import org.openremote.web.console.panel.entity.StatusList;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -148,7 +149,13 @@ public class JSONPControllerConnector implements ControllerConnector {
 
 		@Override
 		public void onSuccess(JavaScriptObject jsObj) {
-
+			// If logout then ignore response
+			if (command == EnumControllerCommand.LOGOUT) {
+				AsyncControllerCallback<Boolean> logoutCallback = (AsyncControllerCallback<Boolean>)callback;
+				logoutCallback.onSuccess(true);
+				return;
+			}
+			
 			if (jsObj == null) {
 				//callback.onFailure(new Exception(new Exception("Unknown Error JSON Response is Empty")));
 				callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
@@ -160,7 +167,17 @@ public class JSONPControllerConnector implements ControllerConnector {
 			int errorCode = 0;
 			
 			if (jsonObj.containsKey("error")) {
-				errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
+				JSONObject jsonObj2 = jsonObj.get("error").isObject();
+				if (jsonObj2 == null) {
+					callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
+					return;
+				}
+				JSONNumber number = jsonObj2.get("code").isNumber();
+				if (number == null) {
+					callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
+					return;
+				}
+				errorCode = (int)number.doubleValue();
 				if (!((command == EnumControllerCommand.IS_SECURE) || (command == EnumControllerCommand.DO_SENSOR_POLLING && errorCode == 504) || errorCode == 200)) {
 					callback.onFailure(EnumControllerResponseCode.getResponseCode(errorCode));
 					return;
@@ -186,7 +203,7 @@ public class JSONPControllerConnector implements ControllerConnector {
 						break;
 					case IS_SECURE:
 						AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-						if (errorCode == 403 || errorCode == 401) {
+						if (errorCode == 401) {
 							isSecureCallback.onSuccess(true);
 						} else {
 							isSecureCallback.onSuccess(false);
