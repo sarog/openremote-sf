@@ -73,9 +73,7 @@ import org.openremote.web.console.util.PollingHelper;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.ScreenIndicator;
 import org.openremote.web.console.widget.TabBarComponent;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.Request;
@@ -83,13 +81,10 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -441,14 +436,14 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			currentControllerCredentials = controllerCreds;
 			
 			final Controller controller = new Controller(controllerCreds);
-			
+
 			controller.initialise(new AsyncControllerCallback<Boolean>(){
 				@Override
 				public void onSuccess(Boolean result) {
 					// Controller is fully initialised let's see what state it's in
 					if (!controller.isValid()) {
 						// Alert the user
-						BrowserUtils.showAlert("Controller Error!<br /><br />Controller '" + controller.getUrl() + "' either can't be reached or is secure and in a different domain. Make sure controller is running and either disable security or host the web console on the same domain as the controller.");
+						BrowserUtils.showAlert("Controller Error!<br /><br />Controller '" + controller.getUrl() + "' can't be reached. Make sure controller is running and if it is secured check your browser supports HTML5 CORS.");
 						loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 						return;
 					}
@@ -496,6 +491,17 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					onError(EnumConsoleErrorCode.PANEL_LIST_ERROR);
 				}									
 			}
+			
+			@Override
+			public void onFailure(EnumControllerResponseCode code) {
+				if (code == EnumControllerResponseCode.NOT_AUTHORIZED) {
+					// Take them to the login screen
+					loadSettings(EnumSystemScreen.LOGIN, null);
+				} else {
+					onError(code);
+				}
+			}
+			
 			@Override
 			public void onFailure(Throwable error) {
 				onError(EnumConsoleErrorCode.PANEL_LIST_ERROR);
@@ -510,7 +516,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				BrowserUtils.hideLoadingMsg();
-				if (response == EnumControllerResponseCode.FORBIDDEN) {
+				if (response == EnumControllerResponseCode.NOT_AUTHORIZED) {
 					// Take them to the login screen
 					loadSettings(EnumSystemScreen.LOGIN, null);
 				} else {
@@ -542,6 +548,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			
 			// Set new panel and prefetch image resources
 			panelService.setCurrentPanel(result);
+			
+			BrowserUtils.showLoadingMsg("Retrieving Resources..");
 			
 			try {
 				List<String> imageUrls = panelService.getImageResourceUrls();
@@ -816,7 +824,16 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	public void addImageToCache(String url) {
-		imageCache.put(url, new ImageContainer(url));
+		if (imageCache.containsKey(url)) return;
+		
+		String imageUrl = url;
+		Controller controller = controllerService.getController();
+		if (controller != null && controller.isSecure()) {
+			ControllerCredentials creds = controller.getCredentials();
+			imageUrl = BrowserUtils.getImageProxyURL(creds.getUsername(), creds.getPassword(), url);
+		}
+		
+		imageCache.put(url, new ImageContainer(imageUrl));
 	}
 	
 	public ImageContainer getImageFromCache(String url) {
@@ -898,7 +915,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		String systemPanelStr = dataService.getObjectString(EnumDataMap.SYSTEM_PANEL.getDataName());
 		if (systemPanelStr == null) {
 			// Load from Server
-			BrowserUtils.showLoadingMsg("RETRIEVING SYSTEM PANEL");
+			BrowserUtils.showLoadingMsg("Retreiving System Panel Definition");
 
 			try {
 				new RequestBuilder(RequestBuilder.GET, "resources/systempanel.json").sendRequest("", new RequestCallback() {
@@ -1132,6 +1149,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				String password = passElem.getValue().trim();
 				controller.setPassword(password);
 
+				//TODO: Test login credentials and notify on failure
+				
 				loadPanelSelection();
 				break;
 			case -6: // Logout

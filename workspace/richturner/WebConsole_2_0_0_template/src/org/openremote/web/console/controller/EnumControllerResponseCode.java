@@ -26,6 +26,7 @@ package org.openremote.web.console.controller;
 public enum EnumControllerResponseCode {
 	OK (200,"OK"),
 	BAD_COMMAND (400, "Invalid Command Request"),
+	NOT_AUTHORIZED (401, "Please login"),
 	FORBIDDEN (403, "Access Denied"),
 	NOT_FOUND (404, "Controller Not Found"),
 	COMMAND_ERROR (418, "Command Build Failed"),

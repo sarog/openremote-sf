@@ -36,8 +36,10 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 /**
@@ -102,7 +104,7 @@ public class JSONControllerConnector implements ControllerConnector {
 	@Override
 	public void isSecure(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
-		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), username, password, new JSONControllerCallback(command, callback));
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), null, null, new JSONControllerCallback(command, callback));
 	}
 
 	@Override
@@ -154,15 +156,35 @@ public class JSONControllerConnector implements ControllerConnector {
 
 		@Override
 		public void onResponseReceived(Request request, Response response) {
+			int statusCode = response.getStatusCode();
+			
+			// No response timeouts seem to end up here
+			if (statusCode == 0) {
+				if (command == EnumControllerCommand.DO_SENSOR_POLLING) {
+					((AsyncControllerCallback<Map<Integer, String>>)callback).onSuccess(null);
+					return;
+				}
+				
+				// Timeout occurred
+				((AsyncControllerCallback<Boolean>)callback).onFailure(EnumControllerResponseCode.NO_RESPONSE);
+			}
+			
+			// If logout then ignore response
+			if (command == EnumControllerCommand.LOGOUT) {
+				AsyncControllerCallback<Boolean> logoutCallback = (AsyncControllerCallback<Boolean>)callback;
+				logoutCallback.onSuccess(true);
+				return;
+			}
+			
 			// Check secure request
 			if (command == EnumControllerCommand.IS_SECURE) {
 				AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-				if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+				
+				
+				if (statusCode == 401) {
 					isSecureCallback.onSuccess(true);
-				} else {
-					isSecureCallback.onSuccess(false);
+					return;
 				}
-				return;
 			}
 			
 			JSONObject jsonObj = null;
@@ -179,11 +201,29 @@ public class JSONControllerConnector implements ControllerConnector {
 				return;
 			}
 			
-			// Check for JSONP Error Response and if set throw appropriate exception
+			// Check for JSON Error Response and if set throw appropriate exception
+			// Added support for string error codes to work with Controller Proxy
 			int errorCode = 0;
 			
 			if (jsonObj.containsKey("error")) {
-				errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
+				JSONObject jsonObj2 = jsonObj.get("error").isObject();
+				if (jsonObj2 == null) {
+					callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
+					return;
+				}
+				JSONNumber number = jsonObj2.get("code").isNumber();
+				if (number == null) {
+					JSONString str = jsonObj2.get("code").isString();
+					if (str != null && !str.equals("")) {
+						errorCode = Integer.parseInt(str.stringValue());
+					} else {
+						callback.onFailure(EnumControllerResponseCode.UNKNOWN_ERROR);
+						return;
+					}
+				} else {
+					errorCode = (int)number.doubleValue();
+				}
+				
 				if (!((command == EnumControllerCommand.IS_SECURE) || (command == EnumControllerCommand.DO_SENSOR_POLLING && errorCode == 504) || errorCode == 200)) {
 					callback.onFailure(EnumControllerResponseCode.getResponseCode(errorCode));
 					return;
@@ -209,7 +249,7 @@ public class JSONControllerConnector implements ControllerConnector {
 						break;
 					case IS_SECURE:
 						AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-						if (errorCode == 403 || errorCode == 401) {
+						if (errorCode == 401) {
 							isSecureCallback.onSuccess(true);
 						} else {
 							isSecureCallback.onSuccess(false);
