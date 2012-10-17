@@ -65,6 +65,8 @@ public class MpdSession implements TrackPositionChangeListener, PlaylistBasicCha
                int min =  elapsedTime / 60;
                int sec = elapsedTime % 60;
                sensors.get("GET_ELAPSED_TIME").update(min+":"+String.format("%02d", sec));
+            } else {
+               sensors.get("GET_ELAPSED_TIME").update("");
             }
          }
       } catch (Exception e) {
@@ -81,21 +83,21 @@ public class MpdSession implements TrackPositionChangeListener, PlaylistBasicCha
                if (song.getName() != null) {
                   sensors.get("GET_SONG_NAME").update(song.getName());
                } else {
-                  sensors.get("GET_SONG_NAME").update("unknown");
+                  sensors.get("GET_SONG_NAME").update("");
                }
             }
             if (sensors.get("GET_ALBUM_NAME") != null) {
                if ((song.getAlbum() != null) && (song.getAlbum().getName() != null)){
                   sensors.get("GET_ALBUM_NAME").update(song.getAlbum().getName());
                } else {
-                  sensors.get("GET_ALBUM_NAME").update("unknown");
+                  sensors.get("GET_ALBUM_NAME").update("");
                }
             }
             if (sensors.get("GET_ARTIST_NAME") != null) {
                if ((song.getArtist() != null) && (song.getArtist().getName() != null)){
                   sensors.get("GET_ARTIST_NAME").update(song.getArtist().getName());
                } else {
-                  sensors.get("GET_ARTIST_NAME").update("unknown");
+                  sensors.get("GET_ARTIST_NAME").update("");
                }
             }
             if (sensors.get("GET_SONG_LENGTH") != null) {
