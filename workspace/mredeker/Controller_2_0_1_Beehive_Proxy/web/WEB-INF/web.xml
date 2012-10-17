@@ -350,6 +350,19 @@
     <servlet-class>org.openremote.controller.rest.FindPanelByID</servlet-class>
   </servlet>
 
+  <!--
+   | Servlet for 'rest/logout' implementation.
+   +-->
+  <servlet>
+    <description>
+      Logs out user by invalidating their session and returns XML or JSON 401 un-authorized
+      document.
+    </description>
+
+    <display-name>Logout -- /rest/logout</display-name>
+    <servlet-name>LogoutRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.LogoutServlet</servlet-class>
+  </servlet>
 
 
   <servlet>
@@ -404,7 +417,22 @@
   </servlet-mapping>
 
 
+  <!--
+   | Map Controller REST API servlet which logs out the current session
+   | 'rest/logout' URIs.
+   +-->
+  <servlet-mapping>
+    <servlet-name>LogoutRESTServlet</servlet-name>
+    <url-pattern>/rest/logout</url-pattern>
+  </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>LogoutRESTServlet</servlet-name>
+    <url-pattern>/rest/logout/</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- THIS SERVLET IS DEPRECATED AND HAS BEEN REPLACED WITH LogoutRESTServlet -->
   <servlet-mapping>
     <servlet-name>LogoutServlet</servlet-name>
     <url-pattern>/logout</url-pattern>

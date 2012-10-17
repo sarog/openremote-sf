@@ -74,7 +74,38 @@ public abstract class RESTAPI extends HttpServlet
   }
 
   // Servlet Implementation -----------------------------------------------------------------------
-
+  @Override protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException
+  {
+     /*
+      *  This is the HTTP Method that CORS uses for it's pre-flight check just need to
+      *  return headers and no content.
+      */
+     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+     
+     // Add HTML5 CORS headers
+     response.addHeader("Access-Control-Allow-Origin", "*");
+     response.addHeader("Access-Control-Allow-Methods", "GET, POST");
+     response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept");
+     response.addHeader("Access-Control-Max-Age", "99999");
+     
+     if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
+     {
+       response.setContentType(Constants.MIME_APPLICATION_JSON);
+     }
+     else if (Constants.MIME_TEXT_JAVASCRIPT.equalsIgnoreCase(acceptHeader))
+     {
+        response.setContentType(Constants.MIME_TEXT_JAVASCRIPT);
+     }
+     else
+     {
+       response.setContentType(Constants.MIME_APPLICATION_XML);
+     }
+     
+     response.setStatus(200);
+     response.getWriter().flush();
+  }
+  
   @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException
   {
@@ -93,6 +124,9 @@ public abstract class RESTAPI extends HttpServlet
 
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
 
+    // Add HTML5 CORS header
+    response.addHeader("Access-Control-Allow-Origin", "*");
+    
     // Set the response content type to either 'application/xml' or 'application/json'
     // according to client's 'accept' header...
 
@@ -154,7 +188,7 @@ public abstract class RESTAPI extends HttpServlet
       switch (responseType)
       {
         case APPLICATION_JSON:
-          response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
+          response.getWriter().print(JSONTranslator.translateXMLToJSON(request, response, xml));
           break;
         case TEXT_JAVASCRIPT:
            // Additional JSON Formatter implemented to ensure JSONArray output where required
