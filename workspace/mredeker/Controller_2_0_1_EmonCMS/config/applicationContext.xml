@@ -439,12 +439,23 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     	<list>
     		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
     		<ref bean="rrd4jLogger"/>
-     		
+     		<ref bean="emonCMSLogger"/>
     	</list>
     </property>
   </bean>
 
   <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
+  
+  <bean id = "emonCMSLogger" class = "org.openremote.controller.statuscache.emoncms.EmonDataLogger" >
+    <property name="emonURL" value="http://emoncms.org/api/post?apikey=47d18060923b1f84dcad19f0adc90645&amp;json=" />
+    <property name="sensors">
+      <list>
+      	<value>tempSensor</value>
+      	<value>sensor2</value>
+      	<value>sensor3</value>
+      </list>
+    </property>
+  </bean>
 
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
