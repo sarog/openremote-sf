@@ -108,6 +108,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final int BOSS_WIDTH = 2;
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
+	public static final String WELCOME_MESSAGE_STRING = "Welcome to the latest Web Console!\n\nClick <a href=\"http://openremote.org/display/docs/Web+Console\" target=\"_blank\">here</a> for release notes and help on using the Web Console.";
 	protected ConsoleDisplay consoleDisplay;
 	private Boolean isFullscreen = true;
 	protected int width;
@@ -425,9 +426,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		// Unload current panel
 		unloadPanel();
 		
-		// Clear last controller credentials
-		dataService.setLastControllerCredentials(null);
-		
 		BrowserUtils.showLoadingMsg("Loading Controller");
 		
 		if (controllerCreds == null) {
@@ -509,7 +507,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		});
 	}
 	
-	private void loadPanel(String panelName) {
+	private void loadPanel(final String panelName) {
 		unloadPanel();
 		BrowserUtils.showLoadingMsg("Loading Panel");
 		controllerService.getPanel(panelName, new AsyncControllerCallback<Panel>() {
@@ -529,6 +527,10 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				BrowserUtils.hideLoadingMsg();
 				if (result != null) {
 					try {
+						// Update current controller credentials
+						currentControllerCredentials.setDefaultPanel(panelName);
+						dataService.setLastControllerCredentials(currentControllerCredentials);
+						
 						setPanel(result);
 						initialisePanel();
 					} catch (Exception e) {
@@ -612,6 +614,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void unloadController() {
+		// Clear last controller credentials
+		dataService.setLastControllerCredentials(null);
+		
 		// Logout of controller
 		controllerService.logout(new AsyncControllerCallback<Boolean>() {
 			@Override
@@ -844,8 +849,45 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void initialiseConsole() {
+		// Check welcome message has been shown for this version
+		String versionStr = BrowserUtils.getBuildVersionString();
+		int version = 0;
+		
+		try {
+			version = Integer.parseInt(versionStr);
+		} catch (Exception e) {}
+		
+  	String welcomeObj = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
+		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
+		Integer welcomeVersion = -1;
+		WelcomeFlag welcomeFlag = null;
+		
+		if (bean != null) {
+			welcomeFlag = (WelcomeFlag)bean.as();
+			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
+		}
+		
+		if (welcomeVersion < version) {
+			// Show welcome message
+			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
+			
+			welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
+			welcomeFlag.setWelcomeVersion(version);
+			
+			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
+		}
+		
+		// Check for Last Controller and Panel in Cache
 		ControllerCredentials controllerCreds;
 		String panelName = "";
+		
+		controllerCreds = dataService.getLastControllerCredentials();
+		if (controllerCreds != null && controllerCreds.getUrl() != null) {
+			loadController(controllerCreds);
+		} else {
+			// No controller to load so go to settings
+			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
+		}
 		
 //		// TODO: Check for default Controller in Settings
 //		controllerCreds = dataService.getDefaultControllerCredentials();
@@ -861,29 +903,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //		if (panelName != null && !panelName.equals("")) {
 //			loadControllerAndPanel(controllerCreds, panelName);
 //		} else {		
-		// Display Welcome message
-		String welcomeString = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
-		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeString);
-		WelcomeFlag flag = (WelcomeFlag)bean.as();
-		if (!flag.getWelcomeDone()) {
-			Window.alert("Welcome to the latest Web Console!\n\nUnfortunately it's still not 100% complete!\n\nMost things should work but please check the forums " +
-							"regularly for information about updates, to request features and report bugs.\n\n" +
-							"Some Pointers: - \n\n" +
-							"- Use the Search button or manually add Controllers (at present you have to manually specify the name of the Panel to load).\n" +
-							"- Hold down on the background at any time to go back to the Controller List screen.\n" +
-							"- Unfortunately security is not supported in this version");
-			flag.setWelcomeDone(true);
-			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(flag));
-		}
-		
-			// Check for Last Controller and Panel in Cache
-			controllerCreds = dataService.getLastControllerCredentials();
-			if (controllerCreds != null && controllerCreds.getUrl() != null) {
-				loadController(controllerCreds);
-			} else {
-				// No controller to load so go to settings
-				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
-			}
+
+
 //		}
 	}
 	

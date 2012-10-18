@@ -5,7 +5,7 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 
-   <display-name>WebConsole</display-name>
+  <display-name>WebConsole</display-name>
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
@@ -30,4 +30,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>imageProxyService</servlet-name>
     <url-pattern>/webconsole/imageproxy</url-pattern>
   </servlet-mapping>
+  
+  <!-- GWT Cache Control Filter -->
+  <filter>
+    <filter-name>gwtCacheControlFilter</filter-name>
+    <filter-class>org.openremote.web.console.server.GWTCacheControlFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>gwtCacheControlFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
 </web-app>

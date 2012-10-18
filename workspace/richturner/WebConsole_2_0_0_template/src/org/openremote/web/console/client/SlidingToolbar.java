@@ -288,6 +288,10 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 		panelSizePanel.setCellHorizontalAlignment(resizeBtn, HasHorizontalAlignment.ALIGN_CENTER);
 		mainPanel.add(rotateBtn);
 		
+		// Add Version String
+		String versionStr = "Build: " + BrowserUtils.getBuildVersionString();
+		mainPanel.add(new Label(versionStr));
+		
 		// Match UI to Panel Size Info
 		syncUI(sizeInfo);
 	}
