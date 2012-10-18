@@ -152,8 +152,10 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 	
 	public ImageContainer clone()
 	{
-		ImageContainer container = this;
-		container.setImage(new Image(this.getUrl()));
+		ImageContainer container = null;
+		Image img = new Image(this.getUrl());
+		img.setVisible(false);
+		container = new ImageContainer(img);
 		return container;
 	}
 }
