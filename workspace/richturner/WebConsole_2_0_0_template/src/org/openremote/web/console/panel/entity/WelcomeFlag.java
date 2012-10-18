@@ -26,6 +26,8 @@ package org.openremote.web.console.panel.entity;
 public interface WelcomeFlag {
 
    public void setWelcomeDone(Boolean welcomeDone);
-
+   public void setWelcomeVersion(Integer version);
+   
    public Boolean getWelcomeDone();
+   public Integer getWelcomeVersion();
 }

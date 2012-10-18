@@ -89,6 +89,8 @@ public class LocalDataServiceImpl implements LocalDataService {
 	}
 	
 	private String getData(String dataName) {
+		if (dataName == null || dataName.equals("")) return "";
+		
 		dataName = buildPathString(dataName);
 		String data;
 		if (dataStore != null) {
@@ -104,6 +106,8 @@ public class LocalDataServiceImpl implements LocalDataService {
 
 	@Override
 	public void clearData(String dataName) {
+		if (dataName == null || dataName.equals("")) return;
+		
 		dataName = buildPathString(dataName);
 		if (dataStore != null) {
 			dataStore.removeItem(dataName);

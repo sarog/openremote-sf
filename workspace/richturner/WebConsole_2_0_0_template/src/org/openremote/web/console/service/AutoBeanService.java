@@ -44,14 +44,22 @@ public class AutoBeanService {
 	}
 	
 	public String toJsonString(AutoBean<?> obj) {
-		return AutoBeanCodex.encode(obj).getPayload();
+		String result = "";
+		if (obj != null) {
+			result = AutoBeanCodex.encode(obj).getPayload();
+		}
+		return result;
 	}
 	
 	public <T, U extends T> String toJsonString(U obj) {
-		return toJsonString((Class<T>)obj.getClass(), obj);
+		String result = "";
+		if (obj != null) {
+			result = toJsonString((Class<T>)obj.getClass(), obj);
+		}
+		return result;
 	}
 	
-	public <T, U extends T> String toJsonString(Class<T> clazz,U obj) {
+	public <T, U extends T> String toJsonString(Class<T> clazz, U obj) {
 		AutoBean<?> bean = null;
 		bean = AutoBeanUtils.getAutoBean(obj);
 		if (bean == null) {
@@ -61,13 +69,19 @@ public class AutoBeanService {
 	}
 
 	public <T> AutoBean<T> fromJsonString(Class<T> clazz, String json) {
-	   AutoBean<T> bean = AutoBeanCodex.decode(factory, clazz, json);     
-	   return bean;
+		AutoBean<T> bean = null;
+		if (json != null && !json.equals("")) {
+	    bean = AutoBeanCodex.decode(factory, clazz, json);
+		}
+	  return bean;
 	}
 	
 	public <T> AutoBean<T> fromJsonString(Class<T> clazz, Splittable data) {
-	   AutoBean<T> bean = AutoBeanCodex.decode(factory, clazz, data); 
-	   return bean;
+		AutoBean<T> bean = null;
+		if (data != null) {
+	    bean = AutoBeanCodex.decode(factory, clazz, data);
+		}
+	  return bean;
 	}
 	
 	public MyFactory getFactory() {

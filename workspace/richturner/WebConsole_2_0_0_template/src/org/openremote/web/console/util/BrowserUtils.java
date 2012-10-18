@@ -401,4 +401,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 		public static native String base64Encode(String str) /*-{
 			return $wnd.btoa(str);
 		}-*/;
+		
+		public static native String getBuildVersionString() /*-{
+		return $wnd.buildVersionStr;
+	}-*/;
 }

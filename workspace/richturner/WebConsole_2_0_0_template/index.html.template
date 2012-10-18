@@ -95,6 +95,9 @@
 		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
 		
 	    <!-- GWT Bootstrap -->
+		<script language="javascript">
+			var buildVersionStr = "@VERSION@";
+		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
 
