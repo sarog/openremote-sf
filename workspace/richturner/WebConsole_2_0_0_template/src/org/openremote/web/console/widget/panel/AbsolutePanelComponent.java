@@ -30,7 +30,9 @@ import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
 import org.openremote.web.console.panel.entity.component.WebElementComponent;
+import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -150,6 +152,12 @@ public class AbsolutePanelComponent extends PanelComponent {
 		}
 		
 		if (component != null) {
+			// Add CSS4 pointer-events attribute to allow pointer events to pass through
+			// passive components; this isn't the best place to set this but not many other
+			// options given code structure
+			if (component instanceof PassiveConsoleComponent) {
+				BrowserUtils.setStyleAttributeAllBrowsers(absPanel.getElement(), "pointerEvents", "none");
+			}
 			absPanel.setComponent(component);
 		}
 		
