@@ -127,6 +127,37 @@ public final class Constants
    */
   public static final String SLIDE_SWITCH_STATUS_COMMAND = EEP_SLIDE_SWITCH_DATA_FIELD_NAME;
 
+  /**
+   * Command string for configuring a command which receives a meter reading value
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String AMR_METER_READING_STATUS_COMMAND = EEP_AMR_METER_READING_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives a measurement channel value
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String AMR_MEASUREMENT_CHANNEL_STATUS_COMMAND = EEP_AMR_CHANNEL_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives a tariff info value
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String AMR_TARIFF_STATUS_COMMAND = EEP_AMR_TARIFF_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives a 'data type (unit)' value
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String AMR_DATA_TYPE_STATUS_COMMAND = EEP_AMR_DATA_TYPE_DATA_FIELD_NAME;
+
+  /**
+   * Command string for configuring a command which receives a divisor value
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String AMR_DIVISOR_STATUS_COMMAND = EEP_AMR_DIVISOR_DATA_FIELD_NAME;
+
+
   // Constructors ---------------------------------------------------------------------------------
 
   /**

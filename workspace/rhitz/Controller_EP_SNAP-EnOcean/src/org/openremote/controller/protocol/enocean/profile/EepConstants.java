@@ -126,6 +126,37 @@ public final class EepConstants
   public static final String EEP_LEARN_BIT_DATA_FIELD_NAME = "LRNB";
 
   /**
+   * EnOcean equipment profile (EEP) meter reading data field name
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String EEP_AMR_METER_READING_DATA_FIELD_NAME = "MR";
+
+  /**
+   * EnOcean equipment profile (EEP) measurement channel data field name
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String EEP_AMR_CHANNEL_DATA_FIELD_NAME = "CH";
+
+  /**
+   * EnOcean equipment profile (EEP) tariff data field name
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String EEP_AMR_TARIFF_DATA_FIELD_NAME = "TI";
+
+  /**
+   * EnOcean equipment profile (EEP) 'data type (unit)' data field name
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String EEP_AMR_DATA_TYPE_DATA_FIELD_NAME = "DT";
+
+  /**
+   * EnOcean equipment profile (EEP) divisor data field name
+   * (automated meter reading (AMR) profiles).
+   */
+  public static final String EEP_AMR_DIVISOR_DATA_FIELD_NAME = "DIV";
+
+
+  /**
    * Bit offset of EnOcean equipment profile (EEP) learn bit data field for
    * {@link org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram.RORG#BS4 4BS}
    * radio telegrams.
