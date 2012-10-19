@@ -81,6 +81,9 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   
   /** The workload which is added to POST and PUT methods */
   private String workload;
+  
+  /** The content type which is set in the HTTP header */
+  private String contentType;
 
   /** The username which is used for basic authentication */
   private String username;
@@ -110,7 +113,7 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
-  public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression)
+  public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression, String contentType)
   {
     this.uri = uri;
     this.method = method;
@@ -119,11 +122,12 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     this.regex = regex;
     this.pollingInterval = pollingInterval;
     this.jsonpathExpression = jsonpathExpression;
+    this.contentType = contentType;
   }
 
-  public HttpGetCommand(URI uri, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression)
+  public HttpGetCommand(URI uri, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression, String contentType)
   {
-    this(uri, xpath, regex, pollingInterval, method, workload, jsonpathExpression);
+    this(uri, xpath, regex, pollingInterval, method, workload, jsonpathExpression, contentType);
     this.username = username;
     this.password = pwd;
   }
@@ -220,6 +224,9 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     String resp = "";
     ResponseHandler<String> responseHandler = new BasicResponseHandler();
     request.addHeader("User-Agent", "OpenRemoteController");
+    if (contentType != null) {
+       request.addHeader("Content-Type", contentType);
+    }
     try {
        resp = client.execute(request, responseHandler);
     } catch (ClientProtocolException e) {
