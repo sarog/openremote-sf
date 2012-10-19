@@ -19,6 +19,9 @@
         <property name="revision" value="COMMITTED"/>
 
 		<!-- find out svn.revision need svn.exe installed on local machine will en up in property ${Revision} -->
+		<exec executable="svn">
+            <arg line="update"/>
+        </exec>
         <exec executable="svn" output="svnlog.out">
             <arg line="info -r ${revision}"/>
         </exec>
