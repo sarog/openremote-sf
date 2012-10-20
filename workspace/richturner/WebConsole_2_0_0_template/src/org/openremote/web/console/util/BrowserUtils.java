@@ -320,6 +320,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		public static void isURLSameOrigin(String url, final AsyncControllerCallback<Boolean> callback) {
 			RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url + "rest/panels/");
 			builder.setHeader("Accept", "application/json");
+			builder.setTimeoutMillis(2000);
 			
 	    try {
 	      Request request = builder.sendRequest(null, new RequestCallback() {
@@ -329,7 +330,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 	        public void onResponseReceived(Request request, Response response) {
 	        	if (response.getStatusCode() == 0) {
-	        		// We get here for modern browsers that will allow CORS
 	        		callback.onSuccess(false);
 	        	} else {
 	        		callback.onSuccess(true);

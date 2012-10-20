@@ -92,7 +92,7 @@ public class JSONControllerConnector implements ControllerConnector {
 	@Override
 	public void getPanelIdentities(String controllerUrl, String username, String password, AsyncControllerCallback<PanelIdentityList> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
-		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), username, password, new JSONControllerCallback(command, callback));
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), username, password, new JSONControllerCallback(command, callback),10000);
 	}
 	
 	@Override
@@ -104,13 +104,13 @@ public class JSONControllerConnector implements ControllerConnector {
 	@Override
 	public void isSecure(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
-		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), null, null, new JSONControllerCallback(command, callback));
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, command), null, null, new JSONControllerCallback(command, callback),10000);
 	}
 
 	@Override
 	public void isAlive(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
-		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), username, password, new JSONControllerCallback(command, callback),5000);	
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), username, password, new JSONControllerCallback(command, callback),10000);	
 	}
 	
 	@Override
@@ -134,7 +134,7 @@ public class JSONControllerConnector implements ControllerConnector {
 	@Override
 	public void logout(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.LOGOUT;
-		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), null, null, new JSONControllerCallback(command, callback),20000);
+		doJsonRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), null, null, new JSONControllerCallback(command, callback));
 	}
 	
 	// ------------------------   Interface Overrides End -------------------------------------------
