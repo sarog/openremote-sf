@@ -85,7 +85,7 @@ public class JSONPControllerConnector implements ControllerConnector {
 	@Override
 	public void getPanelIdentities(String controllerUrl, String username, String password, AsyncControllerCallback<PanelIdentityList> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),10000);
 	}
 	
 	@Override
@@ -97,13 +97,13 @@ public class JSONPControllerConnector implements ControllerConnector {
 	@Override
 	public void isSecure(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback));
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),10000);
 	}
 
 	@Override
 	public void isAlive(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),5000);	
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),10000);	
 	}
 	
 	@Override
@@ -127,7 +127,7 @@ public class JSONPControllerConnector implements ControllerConnector {
 	@Override
 	public void logout(String controllerUrl, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.LOGOUT;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),20000);
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback));
 	}
 	
 	// ------------------------   Interface Overrides End -------------------------------------------
