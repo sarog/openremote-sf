@@ -531,7 +531,17 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 						currentControllerCredentials.setDefaultPanel(panelName);
 						dataService.setLastControllerCredentials(currentControllerCredentials);
 						
-						setPanel(result);
+						if (!setPanel(result)) {
+								if (result != systemPanel) {
+									// Display error and go to system screen
+									onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR);
+									return;
+								} else {
+										// Big problem if we can't load system screens so let's exit
+										Window.alert("Failed to load a system screen!\n\nThis is a big problem and we can't continue.");
+										return;
+								}
+						}
 						initialisePanel();
 					} catch (Exception e) {
 						onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR, e.getMessage());
@@ -543,7 +553,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		});
 	}
 	
-	private void setPanel(Panel result) {
+	private boolean setPanel(Panel result) {
+		boolean success = false;
+		
 		if (result != null) {
 			// Unload current panel
 			unloadPanel();
@@ -559,15 +571,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				for(String imageUrl : imageUrls ) {
 					addImageToCache(imageUrl);
 				}
+				success = true;
 			} catch (Exception e) {
-				onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR);
+				success = false;
 			}
 		}
-//			// If desktop resize console unit to match panel definition
-//			if (!isFullscreen) {
-//				PanelSize size = panelService.getPanelSize();
-//				setSize(size.getWidth(), size.getHeight());
-//			}
+		return success;
 	}
 	
 	private void initialisePanel() {
@@ -657,30 +666,42 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (panelService.getCurrentPanel() != systemPanel) {
 			unloadPanel();
 
-			setPanel(systemPanel);
+			if (!setPanel(systemPanel)) {
+				// Big problem if we can't load system screens so let's exit
+				Window.alert("Failed to load a system screen!\n\nThis is a big problem and we can't continue.");
+				return;
+			}		
 		}
 		
-		Integer groupId = systemScreen.getGroupId();
-		Screen screen = panelService.getScreenById(systemScreen.getId());
+		int groupId = systemScreen.getGroupId();
+		int screenId = systemScreen.getId();
 		
-		if (screen != null) {
-			loadDisplay(groupId, screen, data);
+		if (this.getOrientation().equalsIgnoreCase("landscape")) {
+			screenId += 1000;
+		}
+		
+		Screen screen = panelService.getScreenById(screenId);
+		
+		if (screen == null || !loadDisplay(groupId, screen, data)) {
+			// Big problem if we can't load system screens so let's exit
+			Window.alert("Failed to load a system screen!\n\nThis is a big problem and we can't continue.");
+			return;
 		}
 	}
 	
-	private void loadDisplay(Screen screen, List<DataValuePairContainer> data) {
-		loadDisplay(currentGroupId, screen, false, data);
+	private boolean loadDisplay(Screen screen, List<DataValuePairContainer> data) {
+		return loadDisplay(currentGroupId, screen, false, data);
 	}
 	
-	private void loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
-		loadDisplay(currentGroupId, screen, orientationChanged, data);
+	private boolean loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
+		return loadDisplay(currentGroupId, screen, orientationChanged, data);
 	}
 	
-	private void loadDisplay(Integer newGroupId, Screen screen, List<DataValuePairContainer> data) {
-		loadDisplay(newGroupId, screen, false, data);
+	private boolean loadDisplay(Integer newGroupId, Screen screen, List<DataValuePairContainer> data) {
+		return loadDisplay(newGroupId, screen, false, data);
 	}
 	
-	private void loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
+	private boolean loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
 		boolean tabBarChanged = false;
@@ -688,7 +709,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		if (screen == null || newGroupId == null) {
 			onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR);
-			return;
+			return false;
 		}
 		
 		int newScreenId = screen.getId();
@@ -701,7 +722,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 		
 		if (!screenChanged && !groupChanged) {
-			return;
+			return true;
 		}
 		
 		if (screenChanged) {
@@ -717,9 +738,16 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			ScreenViewImpl currentScreenView = consoleDisplay.getScreen();
 			try {
 				ScreenViewImpl screenView = screenViewService.getScreenView(screen);
+				if (screenView == null) {
+					throw new Exception("Failed to retrieve screen view for screen ID: " + screen.getId());
+				}
 				consoleDisplay.setScreenView(screenView, data);
 				currentScreenView = screenView;
 			} catch (Exception e) {
+				if (panelService.getCurrentPanel() == systemPanel) {
+					// Just return
+					return false;
+				}
 				try {
 					// Put screen back to previous one
 					consoleDisplay.setScreenView(currentScreenView, data);
@@ -727,7 +755,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				} catch (Exception ex) {
 					onError(EnumConsoleErrorCode.UNKNOWN_ERROR, ex.getMessage());
 				}
-				return;
+				return false;
 			}
 			
 			// Configure gestures
@@ -785,6 +813,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			consoleDisplay.updateTabBar();
 			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(newScreenId, newGroupId));		
 		}
+		return true;
 	}
 	
 	private void setGestureMap(List<Gesture> gestures) {
@@ -1098,7 +1127,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (event != null) {
 			switch (event.getCommandId()) {
 			
-			case -1: //Controller Discovery
+			case -1:
+			case -1001: //Controller Discovery
 				// Change tab bar search item image
 				String imageSrc = BrowserUtils.getSystemImageDir() + "controller_searching.gif";
 				consoleDisplay.getTabBar().getItems().get(0).setImageSrc(imageSrc);
@@ -1141,7 +1171,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				};
 				discoveryService.getAutoDiscoveryServers(callback);
 				break;
-			case -2: // Load Controller
+			case -2:
+			case -1002: // Load Controller
 				String loadUrl = event.getCommand();
 				ControllerCredentialsList credsList =  dataService.getControllerCredentialsList();
 				for (ControllerCredentials creds : credsList.getControllerCredentials()) {
@@ -1151,15 +1182,18 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					}
 				}
 				break;
-			case -3: // Clear Cache
+			case -3:
+			case -1003: // Clear Cache
 				dataService.clearAllData();
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				break;
-			case -4: // Load Panel
+			case -4:
+			case -1004: // Load Panel
 				String panelName = event.getCommand();
 				loadPanel(panelName);
 				break;
-			case -5: // Login
+			case -5:
+			case -1005: // Login
 				InputElement userElem = DOM.getElementById("loginuserid").cast();
 				InputElement passElem = DOM.getElementById("loginpassword").cast();
 				
@@ -1174,7 +1208,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				
 				loadPanelSelection();
 				break;
-			case -6: // Logout
+			case -6:
+			case -1006: // Logout
 				loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 				break;
 			default:
