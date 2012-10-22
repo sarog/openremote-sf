@@ -105,8 +105,6 @@ public class LagartoClient extends Thread
 
               if (jsEndp.has("value"))
                 strVal = jsEndp.getString("value");
-              if (jsEndp.has("unit"))
-                strVal += " " + jsEndp.getString("unit");
 
               Sensor sensor = entry.getValue();
               sensor.update(strVal);
