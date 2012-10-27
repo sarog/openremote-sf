@@ -117,16 +117,26 @@ WIDGETS
 	border-radius: 7px;	
 }
 
+.sliderComponentBar {
+	height: 20px;
+	border-style: solid;
+}
+
 .sliderComponentBarTrack {
 	background-color: #4FA800;
 }
 
-.sliderComponentHandle {
-   background-color: buttonFace;
-	-moz-border-radius: 16px;
-	-webkit-border-radius: 16px;
-	-o-border-radius: 16px;
-	border-radius: 16px;
+.sliderComponentHandleHidden {
+	height: 50px;
+}
+
+.sliderComponentHandleVisible {
+	height: 40px;
+    background-color: buttonFace;
+	-moz-border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-o-border-radius: 20px;
+	border-radius: 20px;
 	border-width: 2px;
 	border-style: solid;
 }

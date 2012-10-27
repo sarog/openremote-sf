@@ -253,7 +253,7 @@ CONSOLE UNIT
   	-webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
 	-ms-transform: rotate(90deg);  /* IE9 */
 	transform: rotate(90deg);
-/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
+/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6 to IE9 */ 
                      M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
 	zoom: 1;
 }
@@ -304,10 +304,9 @@ img, button {
 }
 
 .sliderComponentBar {
-	border-width: 2px;
-	border-style: solid;
+	border-width: 0px;
 }
-	
+
 .sliderComponentBarTrack {
 	border: none;
 }

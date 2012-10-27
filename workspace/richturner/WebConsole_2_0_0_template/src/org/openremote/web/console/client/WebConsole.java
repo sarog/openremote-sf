@@ -48,6 +48,8 @@ public class WebConsole implements EntryPoint {
 		
 		BrowserUtils.initWindow();
 		
+		BrowserUtils.setupHistory();
+		
 		// Initialise the Console Unit - if mobile or Setting defined to load in fullscreen mode
 		if (BrowserUtils.isMobile) {
 			consoleUnit = new ConsoleUnit(true);

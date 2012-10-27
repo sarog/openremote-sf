@@ -29,8 +29,10 @@ import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.panel.entity.component.SliderMinMax;
 import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.util.ImageContainer;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -47,16 +49,20 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	public static final String HANDLE_CLASS_NAME = "sliderComponentHandle";
 	public static final String BAR_CLASS_NAME = "sliderComponentBar";
 	public static final String TRACK_CLASS_NAME = "sliderComponentBarTrack";
-	public static final int SLIDE_BAR_HEIGHT = 14;
-	public static final int HANDLE_SIZE = 30;
-	public static final int HANDLE_CLICK_AREA_SIZE = 44;
+	public static int SLIDE_BAR_HEIGHT = 14;
+	public static int HANDLE_SIZE = 30;
+	public static int HANDLE_CLICK_AREA_SIZE = 44;
 	private Handle handle;
 	private SlideBar slideBar;
 	private int width;
 	private int height;
 	private boolean isVertical = false;
 	private int minValue = 0;
+	private ImageContainer minImage = null;
+	private ImageContainer minTrackImage = null;
 	private int maxValue = 100;
+	private ImageContainer maxImage = null;
+	private ImageContainer maxTrackImage = null;
 	private int pixelRange = 0;
 	private int lastValue = 0;
 	private int value = 0;
@@ -67,15 +73,26 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private int slideBarWidth = 0;
 	private int slideBarHeight = 0;
 	
+	static {
+		int[] size;
+		size = BrowserUtils.getSizeFromStyle(HANDLE_CLASS_NAME + "Visible");
+		HANDLE_SIZE = size[1] == 0 ? HANDLE_SIZE : size[1];
+		size = BrowserUtils.getSizeFromStyle(HANDLE_CLASS_NAME + "Hidden");
+		HANDLE_CLICK_AREA_SIZE = size[1] == 0 ? HANDLE_CLICK_AREA_SIZE : size[1] < HANDLE_SIZE ? HANDLE_SIZE : size[1];
+		size = BrowserUtils.getSizeFromStyle(BAR_CLASS_NAME);
+		SLIDE_BAR_HEIGHT = size[1] == 0 ? SLIDE_BAR_HEIGHT : size[1] < SLIDE_BAR_HEIGHT ? SLIDE_BAR_HEIGHT : size[1];
+	}
+	
 	class Handle extends SimplePanel implements Draggable {
 		public Handle() {
 			SimplePanel visibleHandle = new SimplePanel();
 			Element visibleElem = visibleHandle.getElement();
 			Element touchElem = getElement();
 			
+			visibleHandle.setStylePrimaryName(HANDLE_CLASS_NAME + "Visible");
 			visibleHandle.setWidth(HANDLE_SIZE + "px");
 			visibleHandle.setHeight(HANDLE_SIZE + "px");
-			visibleHandle.setStylePrimaryName(HANDLE_CLASS_NAME);
+			
 			BrowserUtils.setStyleAttributeAllBrowsers(visibleElem, "boxSizing", "border-box");
 			DOM.setStyleAttribute(visibleElem, "margin", handleInternalMargin + "px auto");
 			BrowserUtils.setStyleAttributeAllBrowsers(touchElem, "boxSizing", "border-box");
@@ -278,7 +295,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		if (isVertical) {
 			length = height-size;
 			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginTop", length + "px");
-			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "height", (size - 4) + "px"); // -4 KLUDGE FOR BORDER OF PARENT
+			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "height", (size) + "px");
 		} else {
 			length = width-size;
 			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginRight", length + "px");
@@ -297,8 +314,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				if (hasControlCommand) {
 					eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
 				}
-			} else {
-				
 			}
 		}
 	}

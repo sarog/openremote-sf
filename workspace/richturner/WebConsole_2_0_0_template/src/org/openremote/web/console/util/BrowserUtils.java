@@ -25,15 +25,16 @@ import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.unit.ConsoleUnit;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.RequestBuilder;
@@ -42,9 +43,14 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+
 /**
  * 
  *  
@@ -58,7 +64,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 		private static String windowOrientation = "portrait";
 		private static int windowHeight;
 		private static int windowWidth;
-//		private static AbsolutePanel consoleContainer;
+		private static SimplePanel probeElement;
 		private static String userAgent = Window.Navigator.getUserAgent();
 		static final String[] MOBILE_SPECIFIC_SUBSTRING = {
 	      "iphone","android","midp","opera mobi",
@@ -70,6 +76,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
 	      "sonyericsson","mmp","ucweb","ipod", "ipad"};
+		
 	   // Scroll Window to hide address bar
 		private static Timer addressBarScroller = new Timer() {
 			public void run() {
@@ -85,6 +92,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 			isMobile = isMobile();
 			isApple = isApple();
 			isIE = isIE();
+			SimplePanel panel = new SimplePanel();
+			Element elem = panel.getElement();
+			elem.getStyle().setVisibility(Visibility.HIDDEN);
+			probeElement = panel;
 		}
 		
 		public static int getWindowHeight() {
@@ -353,6 +364,63 @@ import com.google.gwt.user.client.ui.RootPanel;
 			}	
 			
 			return imageUrl;
+		}
+		
+		/**
+		 * History management - currently this just disables the back button
+		 * need full history support for screen history.
+		 */
+		public static void setupHistory() {
+      final String initToken = History.getToken();
+      if (initToken.length() == 0) {
+          History.newItem("main");
+      }
+
+      // Add history listener
+      HandlerRegistration historyHandlerRegistration = History.addValueChangeHandler(new ValueChangeHandler<String>() {
+          @Override
+          public void onValueChange(ValueChangeEvent<String> event) {
+              String token = event.getValue();
+              if (initToken.equals(token)) {
+                  History.newItem(initToken);
+              }
+          }
+      });
+
+      // Now that we've setup our listener, fire the initial history state.
+      History.fireCurrentHistoryState();
+
+      Window.addWindowClosingHandler(new ClosingHandler() {
+          boolean reloading = false;
+
+          @Override
+          public void onWindowClosing(ClosingEvent event) {
+              if (!reloading) {
+                  String userAgent = Window.Navigator.getUserAgent();
+                  if (userAgent.contains("MSIE")) {
+                      if (!Window.confirm("Do you really want to exit?")) {
+                          reloading = true;
+                          Window.Location.reload(); // For IE
+                      }
+                  }
+                  else {
+                      event.setMessage("Web Console"); // For other browser
+                  }
+              }
+          }
+      });
+		}
+		
+		public static int[] getSizeFromStyle(String style) {
+			if (!probeElement.isAttached()) {
+				RootPanel.get().add(probeElement);
+			}
+			
+			int[] values = new int[2];
+			probeElement.setStylePrimaryName(style);
+			values[0] = probeElement.getElement().getOffsetWidth();
+			values[1] = probeElement.getElement().getOffsetHeight();
+			return values;
 		}
 		
 // -------------------------------------------------------------
