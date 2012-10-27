@@ -1,0 +1,48 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client' xmlns:container="urn:import:com.sencha.gxt.widget.core.client.container"
+  xmlns:gxt="urn:import:com.sencha.gxt.widget.core.client" xmlns:button="urn:import:com.sencha.gxt.widget.core.client.button" xmlns:grid="urn:import:com.sencha.gxt.widget.core.client.grid">
+
+  <ui:style>
+   .imagePreviewStyle {
+      margin: 6px;
+      padding: 2px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: #999;
+    }
+  </ui:style>
+
+  <ui:with type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData" field="addImageButtonLayoutData"/>
+      
+  <ui:with type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData" field="northData" />
+  <ui:with type="com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData" field="westData" />
+  
+  <gxt:Window pixelSize="600, 300" modal="true" blinkModal="true" headingText="Image Asset Picker" focusWidget="{cancelButton}">
+    <container:BorderLayoutContainer borders="true">
+      <container:north layoutData="{northData}">
+        <container:HBoxLayoutContainer hBoxLayoutAlign="MIDDLE" pack="START">
+          <container:child layoutData="{addImageButtonLayoutData}">
+            <button:TextButton text="Add image" ui:field="addButton"/>
+          </container:child>
+        </container:HBoxLayoutContainer>
+      </container:north>
+      <container:west layoutData="{westData}">
+        <grid:Grid/>
+      </container:west>
+      <container:center>
+	      <container:VerticalLayoutContainer>
+	        <container:child>
+		        <g:Image styleName='{style.imagePreviewStyle}' ui:field="imagePreview" />
+		      </container:child>
+	      </container:VerticalLayoutContainer>
+      </container:center>
+    </container:BorderLayoutContainer>
+    <gxt:button>
+      <button:TextButton text="OK" enabled="false" ui:field="okButton"/>
+    </gxt:button>
+    <gxt:button>
+      <button:TextButton text="Cancel" ui:field="cancelButton"/>
+    </gxt:button>
+  </gxt:Window>
+ </ui:UiBinder>
