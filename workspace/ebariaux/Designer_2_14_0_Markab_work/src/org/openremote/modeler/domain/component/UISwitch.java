@@ -131,7 +131,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
       if (getSensor() != null) {
-         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getOid() + "\">");
+         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getOffsetId() + "\">");
          if (onImage != null && onImage.getSrc() != null) {
             xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
          }
