@@ -48,9 +48,9 @@ public class JSONTranslator
      return translateXMLToJSON(Constants.MIME_TEXT_JAVASCRIPT, response, xml, request);
   }
   
-  public static String translateXMLToJSON(HttpServletResponse response, String xml)
+  public static String translateXMLToJSON(HttpServletRequest request, HttpServletResponse response, String xml)
   {
-    return translateXMLToJSON(Constants.MIME_APPLICATION_JSON, response, xml);
+    return translateXMLToJSON(Constants.MIME_APPLICATION_JSON, response, xml, request);
   }
 
   public static String translateXMLToJSON(String acceptHeader, HttpServletResponse response, String xml)
