@@ -124,12 +124,16 @@
 
 - (void)populateLoginView:(NSNotification *)notification
 {
-    [self presentLoginRequestForControllerRequest:[notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]];
+    if ([notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]) {
+        [self presentLoginRequestWithContext:[notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]];
+    } else {
+        [self presentLoginRequestWithContext:[notification object]];
+    }
 }
 
-- (void)presentLoginRequestForControllerRequest:(ControllerRequest *)controllerRequest
+- (void)presentLoginRequestWithContext:(id)context
 {
-	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self context:controllerRequest];
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self context:context];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
 	[self presentModalViewController:loginNavController animated:NO];
 	[loginController release];
@@ -310,9 +314,9 @@
 {
     [self orControllerGroupMembersFetchStatusChanged:notification];
     if (self.askUserForCredentials) {
-        [self populateLoginView:nil];
+        [self populateLoginView:notification];
     }
-    self.askUserForCredentials = NO;
+//    self.askUserForCredentials = NO;
 }
 
 #pragma mark Table view methods
@@ -586,7 +590,13 @@
 
 - (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password
 {
-    ORController *orController = ((ControllerRequest *)controller.context).controller;
+    id context = controller.context;
+    ORController *orController;
+    if ([context isMemberOfClass:[ControllerRequest class]]) {
+        orController = ((ControllerRequest *)controller.context).controller;
+    } else if ([context isMemberOfClass:[ORController class]]) {
+        orController = context;
+    }
     orController.userName = username;
 	orController.password = password;
     
@@ -595,7 +605,7 @@
     
 	[self dismissModalViewControllerAnimated:YES];
     
-    if (controller.context) {
+    if ([context isMemberOfClass:[ControllerRequest class]]) {
         [(ControllerRequest *)controller.context retry];
     } else {
         // By default if we don't know where we're coming from, trigger a fetch group members
