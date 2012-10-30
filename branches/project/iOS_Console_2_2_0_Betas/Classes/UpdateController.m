@@ -124,6 +124,13 @@
             
             // At any point, if user cancel and we don't have enough information -> display message and allow him to go to settigns
             
+            
+            
+            // TODO REMOVE !!!!
+            // This does prevent console to "block" at this stage of development, but is not the full solution
+            // MUST WORK ON THIS TO HAVE CLEAN SOLUTION
+            [self.delegate didUpdate];
+            
         } else if ([settings.controllers count] == 0) {
             // Launch auto-discovery
             
@@ -131,6 +138,9 @@
             // if cancel -> Settings
         } else {
             // Nothing automatic we can do, display settings screen but notify user first
+            
+            
+            
         }
     }
 }
