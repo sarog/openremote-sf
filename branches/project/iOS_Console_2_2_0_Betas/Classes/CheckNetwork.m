@@ -82,6 +82,7 @@
 		@throw e;
 	}
 	
+    /*
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
@@ -109,6 +110,7 @@
 		@throw [CheckNetworkException exceptionWithTitle:@"OpenRemote Controller Not Found" 
 													  message:@"OpenRemote Controller not found on the configured URL. See 'Settings' to reconfigure. "];
 	}
+     */
 }
 
 + (void)checkPanelXml {
