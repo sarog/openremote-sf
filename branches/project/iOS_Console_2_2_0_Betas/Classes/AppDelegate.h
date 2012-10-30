@@ -19,14 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <UIKit/UIKit.h>
-#import "InitViewController.h"
-#import "UpdateController.h"
-#import "ViewHelper.h"
 #import "GestureWindow.h"
-#import "ScreenViewController.h"
-#import "GroupController.h"
-#import "Group.h"
-#import "Definition.h"
 #import "UpdateController.h"
 #import "DefaultViewController.h"
 
