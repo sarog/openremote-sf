@@ -303,12 +303,29 @@ img, button {
 	cursor: pointer;
 }
 
-.sliderComponentBar {
-	border-width: 0px;
+.sliderComponent button, .sliderComponent, .sliderComponent td {
+	padding: 0;
+	margin: 0;
+	border-spacing: 0;
 }
 
-.sliderComponentBarTrack {
+/* This is here to alter touch area of slider thumbs depending on display density */
+.sliderComponentThumbTouch {
+	height: 44px;
+}
+
+.sliderComponentBar {
 	border: none;
+}
+
+.sliderComponentTrack {
+	overflow: hidden;
+	background: none;
+}
+
+.sliderComponentTrackMin, .sliderComponentTrackMax {
+	box-sizing: border-box;
+	padding: 0;
 }
 
 .buttonComponent, .switchComponent {

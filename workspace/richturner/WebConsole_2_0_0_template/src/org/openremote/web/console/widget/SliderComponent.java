@@ -34,9 +34,17 @@ import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.ImageContainer;
 
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 /**
@@ -46,78 +54,85 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SliderComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "sliderComponent";
-	public static final String HANDLE_CLASS_NAME = "sliderComponentHandle";
-	public static final String BAR_CLASS_NAME = "sliderComponentBar";
-	public static final String TRACK_CLASS_NAME = "sliderComponentBarTrack";
-	public static int SLIDE_BAR_HEIGHT = 14;
-	public static int HANDLE_SIZE = 30;
-	public static int HANDLE_CLICK_AREA_SIZE = 44;
-	private Handle handle;
+	public static final String THUMB_CLASS_NAME = CLASS_NAME + "Thumb";
+	public static final String BAR_CLASS_NAME = CLASS_NAME + "Bar";
+	public static final String TRACK_CLASS_NAME = CLASS_NAME + "Track";
+	public static int TRACK_HEIGHT = 20;
+	public static int TRACK_BORDER = 4;
+	public static int THUMB_SIZE = 30;
+	public static int MIN_THUMB_CLICK_AREA_SIZE = 44;
+	public static final double MAX_MIN_IMAGE_SIZE_RATIO_LIMIT = 0.2;
+	public static final int MAX_MIN_IMAGE_TRACK_SPACING = 2;
+	private Thumb thumb;
 	private SlideBar slideBar;
+	private MinButton minButton;
+	private MaxButton maxButton;
+	private TrackMinMax minTrack;
+	private TrackMinMax maxTrack;
 	private int width;
 	private int height;
 	private boolean isVertical = false;
 	private int minValue = 0;
-	private ImageContainer minImage = null;
-	private ImageContainer minTrackImage = null;
 	private int maxValue = 100;
+	private int valueRange = 100;
+	private ImageContainer thumbImage = null;
+	private ImageContainer minImage = null;
 	private ImageContainer maxImage = null;
+	private ImageContainer minTrackImage = null;
 	private ImageContainer maxTrackImage = null;
-	private int pixelRange = 0;
+	private FlowPanel track = null;
+	private int minThumbPos = 0;
+	private int thumbRange = 0;
 	private int lastValue = 0;
 	private int value = 0;
-	private int halfHandle = 0;
-	private int handleFixedPos = 0;
-	private int handleInternalMargin = (HANDLE_CLICK_AREA_SIZE - HANDLE_SIZE) / 2;
 	private int stepSize = 1;
-	private int slideBarWidth = 0;
-	private int slideBarHeight = 0;
+	private boolean trackHidden = false;
 	
 	static {
 		int[] size;
-		size = BrowserUtils.getSizeFromStyle(HANDLE_CLASS_NAME + "Visible");
-		HANDLE_SIZE = size[1] == 0 ? HANDLE_SIZE : size[1];
-		size = BrowserUtils.getSizeFromStyle(HANDLE_CLASS_NAME + "Hidden");
-		HANDLE_CLICK_AREA_SIZE = size[1] == 0 ? HANDLE_CLICK_AREA_SIZE : size[1] < HANDLE_SIZE ? HANDLE_SIZE : size[1];
-		size = BrowserUtils.getSizeFromStyle(BAR_CLASS_NAME);
-		SLIDE_BAR_HEIGHT = size[1] == 0 ? SLIDE_BAR_HEIGHT : size[1] < SLIDE_BAR_HEIGHT ? SLIDE_BAR_HEIGHT : size[1];
+		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME);
+		THUMB_SIZE = size[1] == 0 ? THUMB_SIZE : size[1];
+		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME + "Touch");
+		MIN_THUMB_CLICK_AREA_SIZE = size[1] == 0 ? MIN_THUMB_CLICK_AREA_SIZE : size[1];
+		size = BrowserUtils.getSizeFromStyle(TRACK_CLASS_NAME);
+		TRACK_HEIGHT = size[1] == 0 ? TRACK_HEIGHT : size[1] < TRACK_HEIGHT ? TRACK_HEIGHT : size[1];
+		TRACK_BORDER = size[1] - size[3];
 	}
 	
-	class Handle extends SimplePanel implements Draggable {
-		public Handle() {
-			SimplePanel visibleHandle = new SimplePanel();
-			Element visibleElem = visibleHandle.getElement();
+	class Thumb extends SimplePanel implements Draggable {
+		Widget visibleThumb;
+		int width = 0;
+		int height = 0;
+			
+		public Thumb() {
+			visibleThumb = new SimplePanel();
+			Element visibleElem = visibleThumb.getElement();
 			Element touchElem = getElement();
 			
-			visibleHandle.setStylePrimaryName(HANDLE_CLASS_NAME + "Visible");
-			visibleHandle.setWidth(HANDLE_SIZE + "px");
-			visibleHandle.setHeight(HANDLE_SIZE + "px");
+			visibleThumb.setStylePrimaryName(THUMB_CLASS_NAME);
 			
 			BrowserUtils.setStyleAttributeAllBrowsers(visibleElem, "boxSizing", "border-box");
-			DOM.setStyleAttribute(visibleElem, "margin", handleInternalMargin + "px auto");
 			BrowserUtils.setStyleAttributeAllBrowsers(touchElem, "boxSizing", "border-box");
-			BrowserUtils.setStyleAttributeAllBrowsers(touchElem, "position", "absolute");
-			
-			this.setWidth(HANDLE_CLICK_AREA_SIZE + "px");
-			this.setHeight(HANDLE_CLICK_AREA_SIZE + "px");
-			this.setWidget(visibleHandle);
+
+			this.setWidget(visibleThumb);
 		}
 		
+		@Override
 		public void onDragStart(DragStartEvent event) {
 		}
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
 			if (appearsVertical()) {
-				doHandleDrag(event.getYPos());
+				setValueFromAbsPos(event.getYPos(), false);
 			} else {
-				doHandleDrag(event.getXPos());
+				setValueFromAbsPos(event.getXPos(), false);
 			}
 		}
 
 		@Override
 		public void onDragEnd(DragEndEvent event) {
-			doValueChange();
+			updateSensor();
 		}
 
 		/*
@@ -126,96 +141,181 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		 */
 		@Override
 		public void onDragCancel(DragCancelEvent event) {
-			doValueChange();
+			updateSensor();
+		}
+		
+		public void setSize(int visibleWidth, int visibleHeight) {
+			if (visibleWidth < MIN_THUMB_CLICK_AREA_SIZE && visibleHeight < MIN_THUMB_CLICK_AREA_SIZE) {
+				width = MIN_THUMB_CLICK_AREA_SIZE;
+				height = MIN_THUMB_CLICK_AREA_SIZE;
+				visibleThumb.setWidth(visibleWidth + "px");
+				visibleThumb.setHeight(visibleHeight + "px");
+				DOM.setStyleAttribute(visibleThumb.getElement(), "marginLeft", ((int)Math.round((double)width - visibleWidth) / 2) + "px");
+				DOM.setStyleAttribute(visibleThumb.getElement(), "marginTop", ((int)Math.round((double)height - visibleHeight) / 2) + "px");
+			} else {
+				width = visibleWidth;
+				height = visibleHeight;
+				visibleThumb.setWidth("100%");
+				visibleThumb.setHeight("100%");
+				DOM.setStyleAttribute(visibleThumb.getElement(), "marginLeft", "0");
+				DOM.setStyleAttribute(visibleThumb.getElement(), "marginTop", "0");
+			}
+			this.setWidth(width + "px");
+			this.setHeight(height + "px");
+		}
+		
+		public void setImage(ImageContainer image) {
+			if (image != null && image.getExists()) {
+				setSize(image.getNativeWidth(), image.getNativeHeight());
+				
+				Element elem = visibleThumb.getElement();
+				DOM.setStyleAttribute(elem, "border", "none");
+				DOM.setStyleAttribute(elem, "background", "none");
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + image.getUrl() + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
+				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+			}
+		}
+		
+		public int getHeight() {
+			if (isVertical) {
+				return width;// + 2;
+			} else {
+				return height;// + 2;
+			}
+		}
+		
+		public int getWidth() {
+			if (isVertical) {
+				return height;// + 2;
+			} else {
+				return width;// + 2;
+			}
 		}
 	}
 	
-	class SlideBar extends SimplePanel implements TapHandler {
-		private boolean clickable = true;
+	class SlideBar extends AbsolutePanel {
+		private boolean isClickable = true;
+		private int length = 0;
 		
 		public SlideBar() {
 			Element element = getElement();
+			this.setWidth("100%");
+			this.setHeight("100%");
 			this.setStylePrimaryName(BAR_CLASS_NAME);
 			DOM.setStyleAttribute(element, "overflow", "hidden");
 			BrowserUtils.setStyleAttributeAllBrowsers(element, "boxSizing", "border-box");
 			
-			SimplePanel track = new SimplePanel();
-			track.setStylePrimaryName(TRACK_CLASS_NAME);
-			BrowserUtils.setStyleAttributeAllBrowsers(track.getElement(), "boxSizing", "border-box");
-			if (isVertical) {
-				track.setWidth("100%");
-				track.setHeight("100%");
-			} else {
-				track.setHeight("100%");
-			}
-			this.setWidget(track);
-		}
+			track = new FlowPanel();
 
-		@Override
-		public void onTap(TapEvent event) {
-			if (!clickable) {
-				return;
-			}			
-			if (appearsVertical()) {
-				doHandleDrag(event.getYPos());
-			} else {
-				doHandleDrag(event.getXPos());
-			}
+			track.setWidth("100%");
+			track.setHeight("100%");
+			track.setStylePrimaryName(TRACK_CLASS_NAME);
+
+			BrowserUtils.setStyleAttributeAllBrowsers(track.getElement(), "boxSizing", "border-box");
+			minTrack = new TrackMinMax();
+			minTrack.setHeight("100%");
+			minTrack.setWidth("100%");
+			minTrack.setStylePrimaryName(TRACK_CLASS_NAME + "Min");
+			maxTrack = new TrackMinMax();
+			maxTrack.setHeight("100%");
+			maxTrack.setWidth("100%");
+			maxTrack.setStylePrimaryName(TRACK_CLASS_NAME + "Max");
 			
-			doValueChange();
+			track.add(minTrack);
+			track.add(maxTrack);
+			this.add(track,0,0);
+		}
+		
+		public int getLength() {
+			return length;
+//			if (isVertical) {
+//				return height;// + 2;
+//			} else {
+//				return width;// + 2;
+//			}
+		}
+		
+		public void setLength(int length) {
+			this.length = length;
+			if (isVertical) {
+				this.setHeight(length + "px");// + 2;
+			} else {
+				this.setWidth(length + "px");// + 2;
+			}
 		}
 		
 		protected Widget getTrack() {
-			return this.getWidget();
-		} 
+			return track;
+		}
+	}
+	
+	class MinButton extends Button implements TapHandler {
+		@Override
+		public void onTap(TapEvent event) {
+			setValue(value-1,true, true);
+		}		
+	}
+	
+	class MaxButton extends Button implements TapHandler {
+		@Override
+		public void onTap(TapEvent event) {
+			setValue(value+1,true, true);
+		}		
+	}
+	
+	class TrackMinMax extends Button implements TapHandler {
+		@Override
+		public void onTap(TapEvent event) {
+			if (!slideBar.isClickable) {
+				return;
+			}
+			int absPos = 0;
+			
+			if (appearsVertical()) {
+				absPos = event.getYPos();
+			} else {
+				absPos = event.getXPos();
+			}
+			
+			setValueFromAbsPos(absPos, true);
+		}
 	}
 	
 	private SliderComponent() {
 		// Define container widget
-		super(new AbsolutePanel(), CLASS_NAME);
-		DOM.setStyleAttribute(getElement(), "overflow", "visible");
+		super(new Grid(), CLASS_NAME);
+		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
 		
 		// Define child components
 		slideBar = new SlideBar();
-		((AbsolutePanel)getWidget()).add(slideBar);
-		handle = new Handle();
-		((AbsolutePanel)getWidget()).add(handle);
-		addInteractiveChild(slideBar);
-		addInteractiveChild(handle);
+		this.setWidth("100%");
+		this.setHeight("100%");
+		thumb = new Thumb();
+		((AbsolutePanel)slideBar).add(thumb,0,0);
+		minButton = new MinButton();
+		maxButton = new MaxButton();
+		
+		addInteractiveChild(thumb);
+		addInteractiveChild(minTrack);
+		addInteractiveChild(maxTrack);
+		addInteractiveChild(minButton);
+		addInteractiveChild(maxButton);	
+		
 	}
 	
-	private void doHandleDragUsingValue(int value) {
-		int limitedPos = (int)Math.round(((((double)value - minValue) / (maxValue - minValue)) * pixelRange) + halfHandle);
-		limitedPos = setHandlePosition(limitedPos);
-		setTrackLength(limitedPos);
-		setValue(value);
-	}
-	
-	private void doHandleDrag(int absPos) {
-		int relPos = calculateRelativePixelValue(absPos);
-		int limitedPos = setHandlePosition(relPos);
-		setTrackLength(limitedPos);
-		int value = (int)Math.round((((double)(limitedPos - halfHandle) / pixelRange) * (maxValue - minValue)) + minValue);
-		value = value < minValue ? minValue : value;
-		value = value > maxValue ? maxValue : value;
-		setValue(value);
-	}
-	
-	private int calculateRelativePixelValue(int absValue) {
+	private int calculateRelativePosValue(int absValue) {
 		int value = absValue;
-		//int pixelMin = 0;
 		boolean appearsVertical = appearsVertical();
-		int consoleCentreX = (int)Math.round(((double)BrowserUtils.getWindowWidth()/2));
-		int consoleCentreY = (int)Math.round(((double)BrowserUtils.getWindowHeight()/2));
 		
 		if (isVertical) {
 			if (appearsVertical) {
-				value = (slideBar.getAbsoluteTop() + getWidth()) - absValue;
+				value = (slideBar.getAbsoluteTop() + slideBar.getLength()) - absValue;
 			} else {
 				// Two orientations this can occur
 				value = absValue - slideBar.getAbsoluteLeft();
 				if (WebConsole.getConsoleUnit().getOrientation().equalsIgnoreCase("landscape")) {
-					value = (slideBar.getAbsoluteLeft() + getWidth()) - absValue;
+					value = (slideBar.getAbsoluteLeft() + slideBar.getLength()) - absValue;
 				}
 			}
 		} else {
@@ -223,32 +323,35 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				// Two orientations this can occur
 				value = absValue - slideBar.getAbsoluteTop();
 				if (WebConsole.getConsoleUnit().getOrientation().equalsIgnoreCase("landscape")) {
-					value = (slideBar.getAbsoluteTop() + getWidth()) - absValue;
+					value = (slideBar.getAbsoluteTop() + slideBar.getLength()) - absValue;
 				}
 			} else {
 				value = absValue - slideBar.getAbsoluteLeft();
 			}
 		}
-		
+
+//		int pixelMin = 0;
+//		int consoleCentreX = (int)Math.round(((double)BrowserUtils.getWindowWidth()/2));
+//		int consoleCentreY = (int)Math.round(((double)BrowserUtils.getWindowHeight()/2));
 //		if (((appearsVertical && !isVertical) || (!appearsVertical && isVertical)) && (BrowserUtils.isCssDodgy)) {
 //			if (!isVertical) {
 //				//Window.alert(absValue +"");
 //				pixelMin = consoleCentreY + (consoleCentreX - getAbsoluteLeft());
 //			} else {
-//				pixelMin = consoleCentreX + (consoleCentreY - (slideBar.getAbsoluteTop() + getWidth()));
+//				pixelMin = consoleCentreX + (consoleCentreY - (slideBar.getAbsoluteTop() + slideBar.getLength()));
 //			}
 //		} else {
 //			if (appearsVertical) {
-//				pixelMin = slideBar.getAbsoluteTop() + getWidth();
+//				pixelMin = slideBar.getAbsoluteTop() + slideBar.getLength();
 //			} else {
 //				if (isVertical) {
-//					pixelMin = getAbsoluteLeft() + getWidth();
+//					pixelMin = getAbsoluteLeft() + slideBar.getLength();
 //				} else {
 //					pixelMin = getAbsoluteLeft();
 //				}
 //			}
 //		}		
-		
+//
 //		if (appearsVertical) {
 //			value = pixelMin - value;
 //		} else {
@@ -258,7 +361,9 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 //				value = value - pixelMin;				
 //			}
 //		}
-		
+
+		value = value < minThumbPos ? minThumbPos : value > minThumbPos + thumbRange ? minThumbPos + thumbRange : value;  
+
 		return value;
 	}
 	
@@ -268,60 +373,83 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		return ((isVertical && displayUnitOrientationMatch) || (!isVertical && !displayUnitOrientationMatch));
 	}
 	
-	public void setValue(int value) {
+	public void setValue(int value, boolean updateSensor, boolean updateThumb) {
+		if (value == this.value) return;
+
 		value = value < minValue ? minValue : value;
 		value = value > maxValue ? maxValue : value;
 		value = Math.round(value/stepSize) * stepSize;
 		
 		if (value != this.value) {
+			int rel = convertValueToRelativePos(value);
+			int val = convertRelativePosToValue(rel);
+			
+			if (updateThumb) {
+				int relPos = convertValueToRelativePos(value);
+				setThumbPosition(relPos);
+			}
+		
 			this.value = value;
-		}
-	}
-	
-	// Relative Pos to centre of handle
-	private int setHandlePosition(int pos) {
-		pos = pos < (halfHandle) ? (0 + halfHandle) : pos;
-		pos = pos > (getWidth() - halfHandle) ? (getWidth() - halfHandle) : pos;
-		if (isVertical) {
-			DOM.setStyleAttribute(handle.getElement(), "top", (getWidth() - pos - halfHandle - handleInternalMargin) + "px");
-		} else {
-			DOM.setStyleAttribute(handle.getElement(), "left", (pos - halfHandle - handleInternalMargin) + "px");
-		}
-		return pos;
-	}
-	
-	private void setTrackLength(int size) {
-		int length = 0;
-		if (isVertical) {
-			length = height-size;
-			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginTop", length + "px");
-			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "height", (size) + "px");
-		} else {
-			length = width-size;
-			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginRight", length + "px");
-			//DOM.setStyleAttribute(slideBar.getTrack().getElement(), "width", (size -4) + "px"); // -4 KLUDGE FOR BORDER OF PARENT
-		}
-	}
-	
-	private void doValueChange() {
-		doValueChange(false);
-	}
-	
-	private void doValueChange(boolean changeFromSensor) {
-		if (value != lastValue) {
-			if (!changeFromSensor) {
-				lastValue = value;
-				if (hasControlCommand) {
-					eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
-				}
+			
+			if (updateSensor) {
+				updateSensor();
 			}
 		}
 	}
 	
-	public void setMinMax(int min, int max) {
-		if (!isInitialised) {
-			minValue = min;
-			maxValue = max;
+	private void updateSensor() {
+		if (hasControlCommand && lastValue != value) {
+			eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
+			lastValue = value;
+		}
+	}
+	
+	private void setValueFromAbsPos(int absPos, boolean updateSensor) {
+		int relPos = calculateRelativePosValue(absPos);
+		setValueFromRelPos(relPos, updateSensor);
+	}
+	
+	private void setValueFromRelPos(int relPos, boolean updateSensor) {
+		// Get the value corresponding to this position
+		int value = convertRelativePosToValue(relPos);
+		setThumbPosition(relPos);
+		setValue(value, updateSensor, false);
+	}
+	
+	private int convertRelativePosToValue(int relPos) {
+		double valuePerPixel = (double)valueRange / thumbRange;
+		int value = (int)Math.round(valuePerPixel * (relPos)) + minValue;
+		return value;
+	}
+	
+	private int convertValueToRelativePos(int value) {
+		double pixelPerValue = (double)thumbRange / valueRange;
+		int relPos = (int)Math.round(pixelPerValue * (value - minValue));
+		return relPos;		
+	}
+	
+	// Position in pixels of thumb along slider
+	private void setThumbPosition(int pos) {
+		pos = pos < minThumbPos ? minThumbPos : pos > minThumbPos + thumbRange ? minThumbPos + thumbRange : pos;
+		
+		if (isVertical) {
+			DOM.setStyleAttribute(thumb.getElement(), "top", (slideBar.getLength() - pos - minThumbPos) + "px");			
+		} else {
+			DOM.setStyleAttribute(thumb.getElement(), "left", (pos - minThumbPos) + "px");
+		}
+		setTrackMinMaxPosition(pos);
+	}
+	
+	// Adjusts the min/max track widgets so they line up with thumb
+	private void setTrackMinMaxPosition(int pos) {
+		int availableSpace = trackHidden ? slideBar.getLength() : slideBar.getLength() - TRACK_BORDER;
+		
+		if (isVertical) {
+			track.getWidget(0).setHeight((availableSpace - pos) + "px");
+			track.getWidget(1).setHeight((pos) + "px");
+		} else {
+			track.getWidget(0).setWidth((pos) + "px");
+			track.getWidget(1).setWidth((availableSpace - pos) + "px");
 		}
 	}
 	
@@ -333,46 +461,121 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 
 	public int getHeight() {
 		if (isVertical) {
-			return width + 2;
+			return width;
 		} else {
-			return height + 2;
+			return height;
 		}
 	}
 	
 	public int getWidth() {
 		if (isVertical) {
-			return height + 2;
+			return height;
 		} else {
-			return width + 2;
+			return width;
 		}
 	}
 	
-	public void setMin(int min) {
-		this.minValue = min;
+	
+	private void hideTrack() {
+		track.setWidth("100%");
+		track.setHeight("100%");
+		DOM.setStyleAttribute(track.getElement(),"border", "none");
+		DOM.setStyleAttribute(track.getElement(),"overflow", "visible");
+		DOM.setStyleAttribute(track.getElement(),"margin", "0");
+		track.getWidget(0).setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
+		track.getWidget(1).setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
+		DOM.setStyleAttribute(track.getWidget(0).getElement(),"background", "none");
+		DOM.setStyleAttribute(track.getWidget(0).getElement(),"border", "none");
+		DOM.setStyleAttribute(track.getWidget(1).getElement(),"background", "none");
+		DOM.setStyleAttribute(track.getWidget(1).getElement(),"border", "none");
+		trackHidden = true;
+	}
+	
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHODS BELOW
+	// ---------------------------------------------------------------------------------
+	
+	public void setThumbImage(String src) {
+		if (src != null && !src.equals("")) {
+			ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+			String url = consoleUnit.getControllerService().getController().getUrl();
+			url += src;
+			this.thumbImage = consoleUnit.getImageFromCache(url);
+		}
+	}
+	
+	public void setMin(SliderMinMax min) {
+		this.minValue = min.getValue();
+		
+		String minImage = min.getImage();
+		if (minImage != null && !minImage.equals("")) {
+			ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+			String url = consoleUnit.getControllerService().getController().getUrl();
+			url += minImage;
+			this.minImage = consoleUnit.getImageFromCache(url);
+		}
+		String minTrackImage = min.getTrackImage();
+		if (minTrackImage != null && !minTrackImage.equals("")) {
+			ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+			String url = consoleUnit.getControllerService().getController().getUrl();
+			url += minTrackImage;
+			this.minTrackImage = consoleUnit.getImageFromCache(url);
+		}
 	}
 
-	public void setMax(int max) {
-		this.maxValue = max;
+	public void setMax(SliderMinMax max) {
+		this.maxValue = max.getValue();
+		
+		String maxImage = max.getImage();
+		if (maxImage != null && !maxImage.equals("")) {
+			ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+			String url = consoleUnit.getControllerService().getController().getUrl();
+			url += maxImage;
+			this.maxImage = consoleUnit.getImageFromCache(url);
+		}
+		String maxTrackImage = max.getTrackImage();
+		if (maxTrackImage != null && !maxTrackImage.equals("")) {
+			ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+			String url = consoleUnit.getControllerService().getController().getUrl();
+			url += maxTrackImage;
+			this.maxTrackImage = consoleUnit.getImageFromCache(url);
+		}
 	}
 	
 	public void setIsVertical(boolean isVertical) {
 		this.isVertical = isVertical;
 	}
 	
-	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
-		SliderComponent component = new SliderComponent();
-		if (entity == null) {
-			return component;
+	
+	public void sizeMinMaxImage(ImageContainer imageContainer) {
+		int imageWidth = imageContainer.getNativeWidth();
+		int imageHeight = imageContainer.getNativeHeight();
+		double imageRatio = (double)imageWidth / imageHeight;
+		
+		if (isVertical) {
+			if (imageHeight > (MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * height)) {
+				imageHeight = (int) Math.round(MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * height);
+				imageWidth = (int) Math.round(imageRatio * imageHeight); 
+			}
+			if (imageWidth > width) {
+				imageWidth = width;
+				imageHeight = (int) Math.round(imageWidth / imageRatio);
+			}
+		} else {
+			if (imageWidth > (MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * width)) {
+				imageWidth = (int) Math.round(MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * width);
+				imageHeight = (int) Math.round(imageWidth / imageRatio); 
+			}
+			if (imageHeight > height) {
+				imageHeight = height;
+				imageWidth = (int) Math.round(imageHeight * imageRatio);
+			}			
 		}
-		component.setId(entity.getId());
-		component.setMax(entity.getMax().getValue());
-		component.setMin(entity.getMin().getValue());
-		component.setSensor(new Sensor(entity.getLink()));
-		component.setIsVertical(entity.getVertical());
-		component.setHasControlCommand(true);
-		return component;
+		
+		imageContainer.getImage().setWidth(imageWidth + "px");
+		imageContainer.getImage().setHeight(imageHeight + "px");
 	}
-
+	
 	// ---------------------------------------------------------------------------------
 	//			SUPER CLASS OVERRIDES BELOW
 	// ---------------------------------------------------------------------------------
@@ -380,40 +583,161 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	@Override
 	public void onRender(int width, int height) {
 		if (!isInitialised) {
-			int relSlideBarXPos = 0;
-			int relSlideBarYPos = 0;
+			int slideBarSize = 0;
+			Grid container = (Grid)getWidget();
+			CellFormatter formatter = container.getCellFormatter();
 			
 			this.width = width;
 			this.height = height;
 			
-			// Configure Slide Bar
+			// Configure the widget container
 			if (isVertical) {
-				slideBarWidth = SLIDE_BAR_HEIGHT;
-				slideBarHeight = height;
+				container.resize(3, 1);
+				formatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setAlignment(2, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setVisible(0, 0, false);
+				formatter.setVisible(2, 0, false);
+				container.setWidget(1, 0, slideBar);
 			} else {
-				slideBarWidth = width;
-				slideBarHeight = SLIDE_BAR_HEIGHT;
+				container.resize(1, 3);
+				formatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setAlignment(0, 2, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				formatter.setVisible(0, 0, false);
+				formatter.setVisible(0, 2, false);
+				container.setWidget(0, 1, slideBar);
+			}			
+			
+			// Configure value range
+			valueRange = maxValue - minValue;
+			
+			
+			// Configure Min/Max Images
+			if (minImage != null && minImage.getExists())
+			{
+				minButton.setWidth(minImage.getNativeWidth() + "px");
+				minButton.setHeight(minImage.getNativeHeight() + "px");
+				minButton.setStylePrimaryName(CLASS_NAME + "Min");
+				Element elem = minButton.getElement();
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + minImage.getUrl() + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
+				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "border", "none");
+				
+				minButton.setVisible(true);
+				DOM.setStyleAttribute(minButton.getElement(), isVertical ? "marginTop" : "marginRight", MAX_MIN_IMAGE_TRACK_SPACING + "px");
+				sizeMinMaxImage(minImage);
+				
+				// Set Margin to centralise image
+//				int margin = isVertical ? (int)(((double)width - minImg.getWidth()) / 2) : (int)(((double)height - minImg.getHeight()) / 2);
+//				DOM.setStyleAttribute(minImg.getElement(), isVertical ? "marginLeft" : "marginTop", margin + "px");
+				if (isVertical) {
+					container.setWidget(2, 0, minButton);
+					formatter.setVisible(2, 0, true);
+				} else {
+					container.setWidget(0, 0, minButton);
+					formatter.setVisible(0, 0, true);
+				}
 			}
-			relSlideBarXPos = (int)(((double)width - slideBarWidth) / 2);
-			relSlideBarYPos = (int)(((double)height - slideBarHeight) / 2);
-			((AbsolutePanel)getWidget()).setWidgetPosition(slideBar, relSlideBarXPos, relSlideBarYPos);
-			slideBar.setHeight(slideBarHeight + "px");
-			slideBar.setWidth(slideBarWidth + "px");
-			setTrackLength(0);
 			
-			// Configure Handle
-			halfHandle = (int)(Math.round((double)HANDLE_SIZE / 2));
+			if (maxImage != null && maxImage.getExists())
+			{
+				maxButton.setWidth(maxImage.getNativeWidth() + "px");
+				maxButton.setHeight(maxImage.getNativeHeight() + "px");
+				maxButton.setStylePrimaryName(CLASS_NAME + "Max");
+				Element elem = maxButton.getElement();
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + maxImage.getUrl() + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
+				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "border", "none");
+
+				maxButton.setVisible(true);
+				DOM.setStyleAttribute(maxButton.getElement(), isVertical ? "marginBottom" : "marginLeft", MAX_MIN_IMAGE_TRACK_SPACING + "px");
+				sizeMinMaxImage(maxImage);
+				
+				// Set Margin to centralise image vertically				
+//				int margin = isVertical ? (int)(((double)width - maxImg.getWidth()) / 2) : (int)(((double)height - maxImg.getHeight()) / 2);
+//				DOM.setStyleAttribute(maxImg.getElement(), isVertical ? "marginLeft" : "marginTop", margin + "px");
+				if (isVertical) {
+					container.setWidget(0, 0, maxButton);
+					formatter.setVisible(0, 0, true);
+				} else {
+					container.setWidget(0, 2, maxButton);
+					formatter.setVisible(0, 2, true);
+				}
+			}
 			
+			
+			// Configure Slide Bar			
 			if (isVertical) {
-				handleFixedPos = (int)(Math.round((double)width - HANDLE_CLICK_AREA_SIZE)/2);
+				slideBarSize = (height -
+						(minImage != null ? (minImage.getNativeHeight() + MAX_MIN_IMAGE_TRACK_SPACING) : 0) -
+						(maxImage != null ? (maxImage.getNativeHeight() + MAX_MIN_IMAGE_TRACK_SPACING) : 0));
 			} else {
-				handleFixedPos = (int)(Math.round((double)height - HANDLE_CLICK_AREA_SIZE)/2);
+				slideBarSize = (width -
+						(minImage != null ? (minImage.getNativeWidth() + MAX_MIN_IMAGE_TRACK_SPACING) : 0) -
+						(maxImage != null ? (maxImage.getNativeWidth() + MAX_MIN_IMAGE_TRACK_SPACING) : 0));
 			}
-			((AbsolutePanel)getWidget()).setWidgetPosition(handle, handleFixedPos, handleFixedPos);
-			setHandlePosition(halfHandle);
+			slideBar.setLength(slideBarSize);
 			
-			// Calculate pixel value density
-			pixelRange = (int)(getWidth() - (2 * halfHandle));
+			
+			// Configure Thumb
+			if (thumbImage != null && thumbImage.getExists()) {
+				thumb.setImage(thumbImage); // This will call setSize also
+			} else {
+				thumb.setSize(THUMB_SIZE, THUMB_SIZE);
+			}
+			int thumbWidth = thumb.getWidth();
+			minThumbPos = (int)Math.round((double)thumbWidth/2);
+			thumbRange = slideBarSize - thumbWidth;
+			
+			// Set margin on static orientation (top for horizontal slider and left for vertical slider)
+			int thumbMargin = (int)Math.round(((double)getHeight() - thumb.getHeight()) / 2);
+			DOM.setStyleAttribute(thumb.getElement(), isVertical ? "marginLeft" : "marginTop" , thumbMargin + "px");
+			
+			// Configure Track
+			int availableSpace = TRACK_HEIGHT - TRACK_BORDER;
+			if (isVertical) {
+				track.setWidth(TRACK_HEIGHT + "px");
+				// Swap min and max widgets around
+				Widget minWidget = track.getWidget(0);
+				track.remove(0);
+				track.add(minWidget);
+				//track.getWidget(0).setWidth(availableSpace + "px");
+				//track.getWidget(1).setWidth(availableSpace + "px");
+			} else {
+				 track.setHeight(TRACK_HEIGHT + "px");
+				 //track.getWidget(0).setHeight(availableSpace + "px");
+				 //track.getWidget(1).setHeight(availableSpace + "px");
+			}
+			
+			// Set margin to vertically centre align track (top for horizontal slider and left for vertical slider)
+			int trackMargin = (int)Math.round(((double)getHeight() - TRACK_HEIGHT) / 2);
+			DOM.setStyleAttribute(track.getElement(), isVertical ? "marginLeft" : "marginTop" , trackMargin + "px");
+			
+			if (minTrackImage != null && minTrackImage.getExists()) {
+				if (!trackHidden) {
+					hideTrack();
+				}
+				Element elem = track.getWidget((isVertical ? 1 : 0)).getElement();
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + minTrackImage.getUrl() + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", isVertical ? "repeat-y" : "repeat-x");
+				DOM.setStyleAttribute(elem, "backgroundPosition", isVertical ? "center bottom" : "left center");
+			}
+			
+			if (maxTrackImage != null && maxTrackImage.getExists()) {
+				if (!trackHidden) {
+					hideTrack();
+				}
+				Element elem = track.getWidget((isVertical ? 0 : 1)).getElement();
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + maxTrackImage.getUrl() + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", isVertical ? "repeat-y" : "repeat-x");
+				DOM.setStyleAttribute(elem, "backgroundPosition", isVertical ? "center top" : "right center");
+			}
+
+			// Initialise Thumb and Track
+			setThumbPosition(minThumbPos);
 		}
 	}
 	
@@ -431,8 +755,27 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			int value = Integer.parseInt(newValue);
 			value = value < minValue ? minValue : value;
 			value = value > maxValue ? maxValue : value;
-			doHandleDragUsingValue(value);
-			doValueChange(true);
+			setValue(value, false, true);
+//			doValueChange(true);
 		} catch(Exception e) {}
+	}
+
+	// ---------------------------------------------------------------------------------
+	//			BUILD METHOD BELOW HERE
+	// ---------------------------------------------------------------------------------
+	
+	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
+		SliderComponent component = new SliderComponent();
+		if (entity == null) {
+			return component;
+		}
+		component.setId(entity.getId());
+		component.setMax(entity.getMax());
+		component.setMin(entity.getMin());
+		component.setThumbImage(entity.getThumbImage());
+		component.setSensor(new Sensor(entity.getLink()));
+		component.setIsVertical(entity.getVertical());
+		component.setHasControlCommand(true);
+		return component;
 	}
 }

@@ -416,10 +416,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
 				RootPanel.get().add(probeElement);
 			}
 			
-			int[] values = new int[2];
+			int[] values = new int[4];
 			probeElement.setStylePrimaryName(style);
 			values[0] = probeElement.getElement().getOffsetWidth();
 			values[1] = probeElement.getElement().getOffsetHeight();
+			values[2] = probeElement.getElement().getClientWidth();
+			values[3] = probeElement.getElement().getClientHeight();
 			return values;
 		}
 		
