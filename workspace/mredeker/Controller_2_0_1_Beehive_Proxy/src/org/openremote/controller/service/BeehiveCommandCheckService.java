@@ -70,7 +70,15 @@ public class BeehiveCommandCheckService {
          log.info("Connected to beehive");
          needsAck = false;
          // try to connect to it, see if it's still valid
-         ControllerProxy proxy = new ControllerProxy(beehiveSocket, controllerConfig.getWebappIp(), controllerConfig.getWebappPort(), controllerConfig.getProxyTimeout());
+         String ip = controllerConfig.getWebappIp();
+         int port = controllerConfig.getWebappPort();
+         if (ip==null || ip.trim().length()==0) {
+            ip = "localhost";
+         }
+         if (port == 0) {
+            port = 8080;
+         }
+         ControllerProxy proxy = new ControllerProxy(beehiveSocket, ip, port, controllerConfig.getProxyTimeout());
          log.info("Starting proxy");
          proxy.start();
       } catch (IOException e) {
