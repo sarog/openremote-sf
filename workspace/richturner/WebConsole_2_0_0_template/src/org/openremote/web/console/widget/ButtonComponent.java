@@ -35,7 +35,6 @@ import org.openremote.web.console.panel.entity.ButtonPressed;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.ImageContainer;
 import org.openremote.web.console.util.ImageLoadedCallback;
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 /**

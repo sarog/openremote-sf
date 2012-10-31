@@ -109,6 +109,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
 	public static final String WELCOME_MESSAGE_STRING = "Welcome to the latest Web Console!\n\nClick <a href=\"http://openremote.org/display/docs/Web+Console\" target=\"_blank\">here</a> for release notes and help on using the Web Console.";
+	public static final int IMAGE_CACHE_LOAD_TIMEOUT_SECONDS = 10;
 	protected ConsoleDisplay consoleDisplay;
 	private Boolean isFullscreen = true;
 	protected int width;
@@ -542,7 +543,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 										return;
 								}
 						}
-						initialisePanel();
 					} catch (Exception e) {
 						onError(EnumConsoleErrorCode.PANEL_DEFINITION_ERROR, e.getMessage());
 					}
@@ -571,12 +571,56 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				for(String imageUrl : imageUrls ) {
 					addImageToCache(imageUrl);
 				}
+				
+				// Prefetch All Images Resources before proceeding
+				loadCache(new AsyncControllerCallback() {
+
+					@Override
+					public void onSuccess(Object result) {
+						initialisePanel();
+					}
+					
+					@Override
+					public void onFailure(Throwable e) {
+						BrowserUtils.showAlert("Failed to retrieve all image resources, your display may not look correct.");
+						initialisePanel();
+					}
+				});
+				
 				success = true;
 			} catch (Exception e) {
 				success = false;
 			}
 		}
 		return success;
+	}
+	
+	private void loadCache(final AsyncControllerCallback callback) {
+		Timer imageLoader = new Timer() {
+			private int secondCount = 0;
+			private boolean allImagesLoaded = false;
+			public void run() {
+				boolean allImagesLoaded = true;
+				for (Iterator<String> it = imageCache.keySet().iterator(); it.hasNext();) {
+					String url = it.next();
+					ImageContainer image = imageCache.get(url);
+					if (!image.getLoadAttempted()) {
+						allImagesLoaded = false;
+						break;
+					}
+				}
+				
+				if (secondCount > IMAGE_CACHE_LOAD_TIMEOUT_SECONDS) {
+					callback.onFailure(new Exception("Timeout during image loading"));
+				} else if (allImagesLoaded) {
+					callback.onSuccess(null);
+				} else {
+					secondCount++;
+					this.schedule(1000);
+				}
+			}
+		};
+		imageLoader.schedule(1000);
 	}
 	
 	private void initialisePanel() {

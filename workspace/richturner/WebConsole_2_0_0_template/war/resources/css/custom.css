@@ -108,30 +108,9 @@ TAB BAR
 WIDGETS
 *************************************************************************/
 
-.sliderComponentBar, .sliderComponentBarTrack {
-	background-color: buttonFace;
-	border-color: #000;
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	-o-border-radius: 7px;
-	border-radius: 7px;	
-}
-
-.sliderComponentBar {
-	height: 20px;
-	border-style: solid;
-}
-
-.sliderComponentBarTrack {
-	background-color: #4FA800;
-}
-
-.sliderComponentHandleHidden {
-	height: 50px;
-}
-
-.sliderComponentHandleVisible {
-	height: 40px;
+.sliderComponentThumb {
+	height: 48px;
+	box-sizing: border-box;
     background-color: buttonFace;
 	-moz-border-radius: 20px;
 	-webkit-border-radius: 20px;
@@ -139,6 +118,29 @@ WIDGETS
 	border-radius: 20px;
 	border-width: 2px;
 	border-style: solid;
+}
+
+.sliderComponentTrack {
+	height: 20px;
+	border: none;
+}
+
+.sliderComponentTrackMin {
+	border: 2px solid black;
+	background-color: #4FA800;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
+}
+
+.sliderComponentTrackMax {
+	border: 2px solid black;
+	background-color: buttonFace;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
 }
 
 .buttonComponent, .switchComponent {

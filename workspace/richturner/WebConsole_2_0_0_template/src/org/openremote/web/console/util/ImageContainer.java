@@ -62,11 +62,11 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 		this.loadedCallbacks.add(loadedCallback);
 		image.addLoadHandler(this);
 		image.addErrorHandler(this);
-		Image.prefetch(image.getUrl());
 		image.setVisible(false);
 		this.image = image;
 		
 		if (!image.getUrl().equalsIgnoreCase("")) {
+			Image.prefetch(image.getUrl());
 			// Add image to Root Panel so that loaded callback gets fired if image does exist
 			RootPanel.get().add(image);
 		}
@@ -120,8 +120,7 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 		return nativeHeight;
 	}
 
-	@Override
-	public void onLoad(LoadEvent event) {
+	private void onLoaded() {
 		if (loadAttempted) return;
 		
 		nativeWidth = image.getWidth();
@@ -130,7 +129,7 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 		loadAttempted = true;
 		if (!existCheckDone) {
 			RootPanel.get().remove(image);
-			existCheckDone = false;
+			existCheckDone = true;
 		}
 		for (ImageLoadedCallback loadedCallback : loadedCallbacks) {
 			if (loadedCallback != null) {
@@ -138,6 +137,11 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 			}
 		}
 		loadedCallbacks.clear();
+	}
+	
+	@Override
+	public void onLoad(LoadEvent event) {
+		onLoaded();
 	}
 
 	@Override
@@ -156,6 +160,21 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 		Image img = new Image(this.getUrl());
 		img.setVisible(false);
 		container = new ImageContainer(img);
+		container.existCheckDone = existCheckDone;
+		container.exists = exists;
+		container.loadAttempted = loadAttempted;
+		container.nativeWidth = nativeWidth;
+		container.nativeHeight = nativeHeight;
+		
+		if (!loadAttempted) {
+			addCallback(new ImageLoadedCallback() {
+				@Override
+				public void onImageLoaded(ImageContainer container) {
+					container.onLoaded();
+				}				
+			});
+		}
+		
 		return container;
 	}
 }

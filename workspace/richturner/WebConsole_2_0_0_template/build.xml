@@ -2,7 +2,7 @@
 <project name="WebConsole" default="build" basedir=".">
   <!-- Arguments to gwtc and devmode targets -->
   <property file="build.properties"/>
-  <property name="gwt.args" value="" />
+  <property name="gwt.args" value="-style PRETTY" />
   <property name="project.name" value="webconsole" />
   <property name="output.dir" value="output" />
 
