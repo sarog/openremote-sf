@@ -109,7 +109,7 @@ public class RangeSensor extends Sensor
   {
     try
     {
-      return new Range(getSensorID(), getName(), new Integer(value), getMinValue(), getMaxValue());
+      return new Range(getSensorID(), getName(), new Integer(value.trim()), getMinValue(), getMaxValue());
     }
 
     catch (NumberFormatException exception)
