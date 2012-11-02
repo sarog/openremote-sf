@@ -80,7 +80,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private ImageContainer maxImage = null;
 	private ImageContainer minTrackImage = null;
 	private ImageContainer maxTrackImage = null;
-	private FlowPanel track = null;
+	private Grid track = null;
 	private int minThumbPos = 0;
 	private int thumbRange = 0;
 	private int lastValue = 0;
@@ -170,10 +170,10 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				
 				Element elem = visibleThumb.getElement();
 				DOM.setStyleAttribute(elem, "border", "none");
-				DOM.setStyleAttribute(elem, "background", "none");
 				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + image.getUrl() + ")");
 				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
 				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 			}
 		}
 		
@@ -206,7 +206,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			DOM.setStyleAttribute(element, "overflow", "hidden");
 			BrowserUtils.setStyleAttributeAllBrowsers(element, "boxSizing", "border-box");
 			
-			track = new FlowPanel();
+			track = new Grid();
 
 			track.setWidth("100%");
 			track.setHeight("100%");
@@ -222,8 +222,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			maxTrack.setWidth("100%");
 			maxTrack.setStylePrimaryName(TRACK_CLASS_NAME + "Max");
 			
-			track.add(minTrack);
-			track.add(maxTrack);
 			this.add(track,0,0);
 		}
 		
@@ -250,21 +248,21 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 	}
 	
-	class MinButton extends Button implements TapHandler {
+	class MinButton extends SimplePanel implements TapHandler {
 		@Override
 		public void onTap(TapEvent event) {
 			setValue(value-1,true, true);
 		}		
 	}
 	
-	class MaxButton extends Button implements TapHandler {
+	class MaxButton extends SimplePanel implements TapHandler {
 		@Override
 		public void onTap(TapEvent event) {
 			setValue(value+1,true, true);
 		}		
 	}
 	
-	class TrackMinMax extends Button implements TapHandler {
+	class TrackMinMax extends SimplePanel implements TapHandler {
 		@Override
 		public void onTap(TapEvent event) {
 			if (!slideBar.isClickable) {
@@ -381,9 +379,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		value = Math.round(value/stepSize) * stepSize;
 		
 		if (value != this.value) {
-			int rel = convertValueToRelativePos(value);
-			int val = convertRelativePosToValue(rel);
-			
 			if (updateThumb) {
 				int relPos = convertValueToRelativePos(value);
 				setThumbPosition(relPos);
@@ -399,6 +394,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	
 	private void updateSensor() {
 		if (hasControlCommand && lastValue != value) {
+			System.out.println("SENSOR VALUE: " + value);
 			eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
 			lastValue = value;
 		}
@@ -445,11 +441,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		int availableSpace = trackHidden ? slideBar.getLength() : slideBar.getLength() - TRACK_BORDER;
 		
 		if (isVertical) {
-			track.getWidget(0).setHeight((availableSpace - pos) + "px");
-			track.getWidget(1).setHeight((pos) + "px");
+			maxTrack.setHeight((availableSpace - pos) + "px");
+			minTrack.setHeight((pos) + "px");
 		} else {
-			track.getWidget(0).setWidth((pos) + "px");
-			track.getWidget(1).setWidth((availableSpace - pos) + "px");
+			minTrack.setWidth((pos) + "px");
+			maxTrack.setWidth((availableSpace - pos) + "px");
 		}
 	}
 	
@@ -475,19 +471,35 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 	}
 	
-	
 	private void hideTrack() {
-		track.setWidth("100%");
-		track.setHeight("100%");
+		if (isVertical) {
+			track.setWidth(width + "px");
+			minTrack.setWidth(width + "px");
+			maxTrack.setWidth(width + "px");
+		} else {
+			track.setHeight(height + "px");
+			minTrack.setHeight(height + "px");
+			maxTrack.setHeight(height + "px");
+		}
+		Widget track1;
+		Widget track2;
 		DOM.setStyleAttribute(track.getElement(),"border", "none");
 		DOM.setStyleAttribute(track.getElement(),"overflow", "visible");
 		DOM.setStyleAttribute(track.getElement(),"margin", "0");
-		track.getWidget(0).setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
-		track.getWidget(1).setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
-		DOM.setStyleAttribute(track.getWidget(0).getElement(),"background", "none");
-		DOM.setStyleAttribute(track.getWidget(0).getElement(),"border", "none");
-		DOM.setStyleAttribute(track.getWidget(1).getElement(),"background", "none");
-		DOM.setStyleAttribute(track.getWidget(1).getElement(),"border", "none");
+		if (isVertical)
+		{
+			track1 = track.getWidget(0,0);
+			track2 = track.getWidget(1,0);
+		} else {
+			track1 = track.getWidget(0,0);
+			track2 = track.getWidget(0,1);			
+		}
+		track1.setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
+		track2.setStylePrimaryName(TRACK_CLASS_NAME + "Invisible");
+		DOM.setStyleAttribute(track1.getElement(),"backgroundColor", "transparent");
+		DOM.setStyleAttribute(track1.getElement(),"border", "none");
+		DOM.setStyleAttribute(track2.getElement(),"backgroundColor", "transparent");
+		DOM.setStyleAttribute(track2.getElement(),"border", "none");
 		trackHidden = true;
 	}
 	
@@ -586,11 +598,12 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			int slideBarSize = 0;
 			Grid container = (Grid)getWidget();
 			CellFormatter formatter = container.getCellFormatter();
+			CellFormatter trackFormatter = track.getCellFormatter();
 			
 			this.width = width;
 			this.height = height;
 			
-			// Configure the widget container
+			// Configure the widget container and track
 			if (isVertical) {
 				container.resize(3, 1);
 				formatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -599,6 +612,9 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				formatter.setVisible(0, 0, false);
 				formatter.setVisible(2, 0, false);
 				container.setWidget(1, 0, slideBar);
+				track.resize(2, 1);
+				trackFormatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				trackFormatter.setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 			} else {
 				container.resize(1, 3);
 				formatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -607,13 +623,16 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				formatter.setVisible(0, 0, false);
 				formatter.setVisible(0, 2, false);
 				container.setWidget(0, 1, slideBar);
-			}			
+				track.resize(1, 2);
+				trackFormatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				trackFormatter.setAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+			}
 			
 			// Configure value range
 			valueRange = maxValue - minValue;
 			
 			
-			// Configure Min/Max Images
+			// Configure Min/Max Images and Slide Bar Container
 			if (minImage != null && minImage.getExists())
 			{
 				minButton.setWidth(minImage.getNativeWidth() + "px");
@@ -623,6 +642,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + minImage.getUrl() + ")");
 				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
 				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 				DOM.setStyleAttribute(elem, "border", "none");
 				
 				minButton.setVisible(true);
@@ -650,6 +670,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + maxImage.getUrl() + ")");
 				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
 				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 				DOM.setStyleAttribute(elem, "border", "none");
 
 				maxButton.setVisible(true);
@@ -679,6 +700,13 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 						(minImage != null ? (minImage.getNativeWidth() + MAX_MIN_IMAGE_TRACK_SPACING) : 0) -
 						(maxImage != null ? (maxImage.getNativeWidth() + MAX_MIN_IMAGE_TRACK_SPACING) : 0));
 			}
+			if (isVertical) {
+				slideBar.setWidth(width + "px");
+				track.setHeight(slideBarSize + "px");
+			} else {
+				slideBar.setHeight(height + "px");
+				track.setWidth(slideBarSize + "px");
+			}
 			slideBar.setLength(slideBarSize);
 			
 			
@@ -700,14 +728,18 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			int availableSpace = TRACK_HEIGHT - TRACK_BORDER;
 			if (isVertical) {
 				track.setWidth(TRACK_HEIGHT + "px");
-				// Swap min and max widgets around
-				Widget minWidget = track.getWidget(0);
-				track.remove(0);
-				track.add(minWidget);
+				minTrack.setWidth(TRACK_HEIGHT + "px");
+				maxTrack.setWidth(TRACK_HEIGHT + "px");
+				track.setWidget(0, 0, maxTrack);
+				track.setWidget(1, 0, minTrack);
 				//track.getWidget(0).setWidth(availableSpace + "px");
 				//track.getWidget(1).setWidth(availableSpace + "px");
 			} else {
 				 track.setHeight(TRACK_HEIGHT + "px");
+				 minTrack.setHeight(TRACK_HEIGHT + "px");
+				 maxTrack.setHeight(TRACK_HEIGHT + "px");
+				 track.setWidget(0, 0, minTrack);
+				 track.setWidget(0, 1, maxTrack);
 				 //track.getWidget(0).setHeight(availableSpace + "px");
 				 //track.getWidget(1).setHeight(availableSpace + "px");
 			}
@@ -720,20 +752,22 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				if (!trackHidden) {
 					hideTrack();
 				}
-				Element elem = track.getWidget((isVertical ? 1 : 0)).getElement();
+				Element elem = minTrack.getElement();
 				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + minTrackImage.getUrl() + ")");
 				DOM.setStyleAttribute(elem, "backgroundRepeat", isVertical ? "repeat-y" : "repeat-x");
 				DOM.setStyleAttribute(elem, "backgroundPosition", isVertical ? "center bottom" : "left center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 			}
 			
 			if (maxTrackImage != null && maxTrackImage.getExists()) {
 				if (!trackHidden) {
 					hideTrack();
 				}
-				Element elem = track.getWidget((isVertical ? 0 : 1)).getElement();
+				Element elem = maxTrack.getElement();
 				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + maxTrackImage.getUrl() + ")");
 				DOM.setStyleAttribute(elem, "backgroundRepeat", isVertical ? "repeat-y" : "repeat-x");
 				DOM.setStyleAttribute(elem, "backgroundPosition", isVertical ? "center top" : "right center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 			}
 
 			// Initialise Thumb and Track

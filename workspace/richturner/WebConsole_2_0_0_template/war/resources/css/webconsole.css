@@ -303,7 +303,7 @@ img, button {
 	cursor: pointer;
 }
 
-.sliderComponent button, .sliderComponent, .sliderComponent td {
+.sliderComponent button, .sliderComponent, .sliderComponent td, .sliderComponent table {
 	padding: 0;
 	margin: 0;
 	border-spacing: 0;
