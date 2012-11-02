@@ -566,12 +566,28 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			BrowserUtils.showLoadingMsg("Retrieving Resources..");
 			
 			try {
-				List<String> imageUrls = panelService.getImageResourceUrls();
+//				List<String> imageUrls = panelService.getImageResourceUrls();
 				
-				for(String imageUrl : imageUrls ) {
-					addImageToCache(imageUrl);
-				}
+//				for(String imageUrl : imageUrls ) {
+//					addImageToCache(imageUrl);
+//					Thread.sleep(100);
+//				}
 				
+				Timer imageCacher = new Timer() {
+					int i=0;
+					List<String> imageUrls = panelService.getImageResourceUrls();
+					
+					@Override
+					public void run() {
+						if (i < imageUrls.size()) {
+							addImageToCache(imageUrls.get(i));
+							i++;
+							this.schedule(100);
+						}					
+					}};
+				
+				imageCacher.run();	
+					
 				// Prefetch All Images Resources before proceeding
 				loadCache(new AsyncControllerCallback() {
 
@@ -582,7 +598,6 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					
 					@Override
 					public void onFailure(Throwable e) {
-						BrowserUtils.showAlert("Failed to retrieve all image resources, your display may not look correct.");
 						initialisePanel();
 					}
 				});
@@ -620,7 +635,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				}
 			}
 		};
-		imageLoader.schedule(1000);
+		imageLoader.run();
 	}
 	
 	private void initialisePanel() {
