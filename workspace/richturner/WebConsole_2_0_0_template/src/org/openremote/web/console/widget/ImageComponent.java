@@ -78,8 +78,8 @@ public class ImageComponent extends PassiveConsoleComponent implements SensorCha
 		if (initialImage == null) return;
 		
 		if (initialImage.getLoadAttempted()) {
-			if (!initialImage.getExists()) {
-				return;
+			if (initialImage.getExists()) {
+				initialImage.setVisible(true);
 			}
 		} else {
 			initialImage.addCallback(new ImageLoadedCallback() {
