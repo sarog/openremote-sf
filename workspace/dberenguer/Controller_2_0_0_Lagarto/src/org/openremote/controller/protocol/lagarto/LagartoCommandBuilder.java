@@ -48,7 +48,6 @@ public class LagartoCommandBuilder implements CommandBuilder
    */
   public LagartoCommandBuilder()
   {
-    logger.error("First try to log something");
   }
 
   /**
@@ -57,7 +56,6 @@ public class LagartoCommandBuilder implements CommandBuilder
   @SuppressWarnings("unchecked")
   public Command build(Element element)
   {
-    logger.info("Second try to log something");
     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
     String networkName = null;
     String epId = null;
