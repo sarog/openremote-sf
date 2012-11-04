@@ -1,3 +1,9 @@
+Pro 1.0.5
+=========
+
+New features:
+  - contentType attribute on HTTP protocol (MODELER-416)
+
 Pro 1.0.4
 =========
 
