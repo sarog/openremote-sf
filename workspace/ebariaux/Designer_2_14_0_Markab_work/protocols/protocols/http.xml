@@ -55,6 +55,15 @@
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
+
+        <!--
+         |  Optional definition of the Content-Type Header to set.
+         +-->
+        <attr name = "contentType" label = "Content-Type" tooltipMessage="Optional Content-Type header to set">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
         
         <!--
          |  Data which is added to Post and Put methods as workload. For JSON REST API's this can be the JSON data

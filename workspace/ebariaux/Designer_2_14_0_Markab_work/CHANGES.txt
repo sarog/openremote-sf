@@ -8,6 +8,7 @@ Designer 2.14.0 (2012-08-XX Markab)
    - Round-robin database (RRD) configuration (MODELER-394)
    - Add Domintell configuration (MODELER-391)
    - LPD protocol support (MODELER-406)
+   - contentType attribute on HTTP protocol (MODELER-416)
 
  Fixes:
 
