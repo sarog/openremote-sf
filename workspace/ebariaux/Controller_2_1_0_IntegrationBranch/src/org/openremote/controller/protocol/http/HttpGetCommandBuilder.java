@@ -59,6 +59,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
   private final static String STR_ATTRIBUTE_NAME_URL = "url";
   private final static String STR_ATTRIBUTE_NAME_METHOD = "method";
   private final static String STR_ATTRIBUTE_NAME_WORKLOAD = "workload";
+  private final static String STR_ATTRIBUTE_NAME_CONTENT_TYPE = "contentType";
   private final static String STR_ATTRIBUTE_NAME_USERNAME = "username";
   private final static String STR_ATTRIBUTE_NAME_PASSWORD = "password";
   private final static String STR_ATTRIBUTE_NAME_XPATH = "xpath";
@@ -85,6 +86,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
     String urlAsString = null;
     String method = null;
     String workload = null;
+    String contentType = null;
     String username = null;
     String password = null;
     String xpath = null;
@@ -112,6 +114,10 @@ public class HttpGetCommandBuilder implements CommandBuilder
       {
         workload = CommandUtil.parseStringWithParam(element, elementValue);
         logger.debug("HttpGetCommand: workload = " + workload);
+      } else if (STR_ATTRIBUTE_NAME_CONTENT_TYPE.equals(elementName))
+      {
+         contentType = CommandUtil.parseStringWithParam(element, elementValue);
+        logger.debug("HttpGetCommand: contentTyoe = " + contentType);
       } else if (STR_ATTRIBUTE_NAME_USERNAME.equals(elementName))
       {
         username = elementValue;
@@ -182,10 +188,10 @@ public class HttpGetCommandBuilder implements CommandBuilder
 
     if (null != username && null != password)
     {
-      return new HttpGetCommand(uri, username, password.getBytes(), xpath, regex, intervalInMillis, method, workload, jsonpath);
+      return new HttpGetCommand(uri, username, password.getBytes(), xpath, regex, intervalInMillis, method, workload, jsonpath, contentType);
     } else
     {
-      return new HttpGetCommand(uri, xpath, regex, intervalInMillis, method, workload, jsonpath);
+      return new HttpGetCommand(uri, xpath, regex, intervalInMillis, method, workload, jsonpath, contentType);
     }
   }
 
