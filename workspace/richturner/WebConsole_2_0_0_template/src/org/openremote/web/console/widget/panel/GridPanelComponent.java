@@ -60,8 +60,9 @@ public class GridPanelComponent extends PanelComponent {
 	private Set<ConsoleComponent> components = new HashSet<ConsoleComponent>();
 	
 	private class CellData {
-		private int rowSpan;
-		private int colSpan;
+		private int rowSpan = 1;
+		private int colSpan = 1;
+		private boolean ignore = false;
 	}
 	
 	public GridPanelComponent() {
@@ -106,19 +107,26 @@ public class GridPanelComponent extends PanelComponent {
 			for (int j=0; j<cols; j++) {
 				CellData cellData = cellDataArr[i][j];
 				if (cellData != null) {
-					CellFormatter formatter = grid.getCellFormatter();
-					int cellWidth = cellData.colSpan * colWidth;
-					int cellHeight = cellData.rowSpan * rowHeight;
-					formatter.setHeight(i, j, cellHeight + "px");
-					formatter.setWidth(i, j, cellWidth + "px");
-					formatter.setHorizontalAlignment(i, j, HasHorizontalAlignment.ALIGN_CENTER);
-					formatter.setVerticalAlignment(i, j, HasVerticalAlignment.ALIGN_MIDDLE);
-					
-					Widget widget = grid.getWidget(i, j);
-					if (widget != null) {
-						ConsoleComponent component = (ConsoleComponent)widget;
-						if (component != null) {
-							component.onAdd(cellWidth, cellHeight);
+					if (!cellData.ignore) {
+						FlexCellFormatter formatter = grid.getFlexCellFormatter();
+						int cellWidth = cellData.colSpan * colWidth;
+						int cellHeight = cellData.rowSpan * rowHeight;
+						formatter.setRowSpan(i, j, cellData.rowSpan);
+						formatter.setColSpan(i, j, cellData.colSpan);
+						formatter.setHeight(i, j, cellHeight + "px");
+						formatter.setWidth(i, j, cellWidth + "px");
+						formatter.setHorizontalAlignment(i, j, HasHorizontalAlignment.ALIGN_CENTER);
+						formatter.setVerticalAlignment(i, j, HasVerticalAlignment.ALIGN_MIDDLE);
+						
+						Widget widget = grid.getWidget(i, j);
+						if (widget != null) {
+							ConsoleComponent component = (ConsoleComponent)widget;
+							if (component != null) {
+								component.onAdd(cellWidth, cellHeight);
+							}
+						} else {
+							// Just add an empty cell
+							this.setComponent(i, j, null);
 						}
 					}
 				}
@@ -177,20 +185,29 @@ public class GridPanelComponent extends PanelComponent {
 		panel.setHeight(layout.getHeight());
 		panel.setWidth(layout.getWidth());
 		panel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
-		panel.setColCount(layout.getCols());
-		panel.setRowCount(layout.getRows());
+		int cols = layout.getCols();
+		int rows = layout.getRows();
+		panel.setColCount(cols);
+		panel.setRowCount(rows);
 
-		// Check for column definitions
-		List<Column> cols = layout.getCol();
-		if (cols != null) {
-			for (int i=0; i<cols.size(); i++) {
-				((FlexTable)panel.getWidget()).getColumnFormatter().setWidth(i, cols.get(i).getWidth());
+		// Initialise the table
+		panel.cellDataArr = new CellData[panel.rows][panel.cols];
+		for (int i=0; i<rows; i++) {
+			for (int j=0; j<cols; j++) {
+				panel.cellDataArr[i][j] = panel.new CellData();
 			}
 		}
 		
-		// Create cells
+		// Check for column definitions
+		List<Column> colList = layout.getCol();
+		if (colList != null) {
+			for (int i=0; i<colList.size(); i++) {
+				grid.getColumnFormatter().setWidth(i, colList.get(i).getWidth());
+			}
+		}
+		
+		// Update explicit cell definitions
 		List<Cell> cells = layout.getCell();
-		panel.cellDataArr = new CellData[panel.rows][panel.cols];
 		
 		if (cells != null) {
 			for (Cell cell : cells) {
@@ -198,10 +215,19 @@ public class GridPanelComponent extends PanelComponent {
 				int col = cell.getX();
 				int rowSpan = cell.getRowspan();
 				int colSpan = cell.getColspan();
-				CellData cellData = panel.new CellData();
+				CellData cellData = panel.cellDataArr[row][col];
 				cellData.rowSpan = rowSpan;
 				cellData.colSpan = colSpan;
-				panel.cellDataArr[row][col] = cellData;
+				
+				// Set ignore flag of spanned cells
+				for (int j=1; j<colSpan; j++) {
+						CellData cData = panel.cellDataArr[row][col+j];
+						cData.ignore = true;
+				}
+				for (int i=1; i<rowSpan; i++) {
+					CellData cData = panel.cellDataArr[row+i][col];
+					cData.ignore = true;
+				}
 				
 				// Create component
 				LabelComponent labelComponent = cell.getLabel();
@@ -241,12 +267,6 @@ public class GridPanelComponent extends PanelComponent {
 					}
 				}
 				panel.setComponent(row, col, component);
-				if (rowSpan != 1) {
-					grid.getFlexCellFormatter().setRowSpan(row, col, rowSpan);
-				}
-				if (colSpan != 1) {
-					grid.getFlexCellFormatter().setColSpan(row, col, colSpan);
-				}
 			}
 		}
 
