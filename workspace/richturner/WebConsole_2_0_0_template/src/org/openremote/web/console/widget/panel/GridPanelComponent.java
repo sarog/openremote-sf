@@ -40,7 +40,9 @@ import org.openremote.web.console.widget.PassiveConsoleComponent;
 import org.openremote.web.console.widget.Sensor;
 
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
@@ -70,21 +72,16 @@ public class GridPanelComponent extends PanelComponent {
 	}
 	
 	public void setComponent(int row, int col, ConsoleComponent component) {
-		((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
-		components.add(component);
+		if (component != null) {
+			((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
+			components.add(component);
+		} else {
+			((FlexTable)getWidget()).setText(row, col, "&nbsp");
+		}
 	}
 	
 	public ConsoleComponent getComponent(int row, int col) {
 		return (ConsoleComponent)(((FlexTable)getWidget()).getWidget(row, col));
-	}
-	
-	private void init() {
-		FlexTable grid = (FlexTable)getWidget();
-		for (int i=0; i<rows; i++) {
-			for (int j=0; j<cols; j++) {
-				grid.setText(i, j, "&nbsp");
-			}
-		}
 	}
 	
 	public void setRowCount(int count) {
@@ -104,19 +101,19 @@ public class GridPanelComponent extends PanelComponent {
 		FlexTable grid = (FlexTable)getWidget();
 		int colWidth = (int)Math.round((double)width / cols);
 		int rowHeight = (int)Math.round((double)height / rows);
-		
+
 		for (int i=0; i<rows; i++) {
 			for (int j=0; j<cols; j++) {
 				CellData cellData = cellDataArr[i][j];
 				if (cellData != null) {
-					HTMLTable.CellFormatter formatter = grid.getCellFormatter();
-					formatter.setHeight(i, j, rowHeight + "px");
-					formatter.setWidth(i, j, colWidth + "px");
+					CellFormatter formatter = grid.getCellFormatter();
+					int cellWidth = cellData.colSpan * colWidth;
+					int cellHeight = cellData.rowSpan * rowHeight;
+					formatter.setHeight(i, j, cellHeight + "px");
+					formatter.setWidth(i, j, cellWidth + "px");
 					formatter.setHorizontalAlignment(i, j, HasHorizontalAlignment.ALIGN_CENTER);
 					formatter.setVerticalAlignment(i, j, HasVerticalAlignment.ALIGN_MIDDLE);
 					
-					int cellWidth = cellData.colSpan * colWidth;
-					int cellHeight = cellData.rowSpan * rowHeight;
 					Widget widget = grid.getWidget(i, j);
 					if (widget != null) {
 						ConsoleComponent component = (ConsoleComponent)widget;
@@ -172,6 +169,8 @@ public class GridPanelComponent extends PanelComponent {
 	
 	public static GridPanelComponent build(GridLayout layout) throws Exception {
 		GridPanelComponent panel = new GridPanelComponent();
+		FlexTable grid = (FlexTable)panel.getWidget();
+		
 		if (layout == null) {
 			return panel;
 		}
@@ -180,10 +179,7 @@ public class GridPanelComponent extends PanelComponent {
 		panel.setPosition(layout.getLeft(),layout.getTop(), layout.getRight(), layout.getBottom());
 		panel.setColCount(layout.getCols());
 		panel.setRowCount(layout.getRows());
-		
-		// Initialise the table
-		panel.init();
-		
+
 		// Check for column definitions
 		List<Column> cols = layout.getCol();
 		if (cols != null) {
@@ -243,17 +239,17 @@ public class GridPanelComponent extends PanelComponent {
 					if (component instanceof PassiveConsoleComponent) {
 						BrowserUtils.setStyleAttributeAllBrowsers(panel.getElement(), "pointerEvents", "none");
 					}
-					panel.setComponent(row, col, component);
 				}
+				panel.setComponent(row, col, component);
 				if (rowSpan != 1) {
-					((FlexTable)panel.getWidget()).getFlexCellFormatter().setRowSpan(row, col, rowSpan);
+					grid.getFlexCellFormatter().setRowSpan(row, col, rowSpan);
 				}
 				if (colSpan != 1) {
-					((FlexTable)panel.getWidget()).getFlexCellFormatter().setColSpan(row, col, colSpan);
+					grid.getFlexCellFormatter().setColSpan(row, col, colSpan);
 				}
-			}			
+			}
 		}
-		
+
 		return panel;
 	}
 }
