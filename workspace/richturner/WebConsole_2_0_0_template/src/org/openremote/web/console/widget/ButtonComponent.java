@@ -77,14 +77,17 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 				return;
 			}
 			
-			if (defaultImageContainer.getNativeWidth() > this.getParent().getOffsetWidth() || defaultImageContainer.getNativeHeight() > this.getParent().getOffsetHeight()) {
+			
+			if (defaultImageContainer.getNativeWidth() > width || defaultImageContainer.getNativeHeight() > height) {
 				DOM.setStyleAttribute(getElement(), "backgroundSize", "contain");
 			}
 			DOM.setStyleAttribute(getElement(), "backgroundImage", "url(" + defaultImageContainer.getUrl() + ")");
 			DOM.setStyleAttribute(getElement(), "backgroundRepeat", "no-repeat");
 			getElement().addClassName("hasImage");
+			getElement().removeClassName("noImage");
 		} else {
 			DOM.setStyleAttribute(getElement(), "backgroundImage", "");
+			getElement().addClassName("noImage");
 			getElement().removeClassName("hasImage");
 		}
 	}
@@ -127,6 +130,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 			DOM.setStyleAttribute(getElement(), "backgroundImage", "url(" + pressedImageContainer.getUrl() + ")");
 			DOM.setStyleAttribute(getElement(), "backgroundRepeat", "no-repeat");
 			getElement().addClassName("hasImage");
+			getElement().removeClassName("noImage");
 		}
 //		else {
 //			DOM.setStyleAttribute(getElement(), "backgroundImage", "none");

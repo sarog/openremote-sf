@@ -330,7 +330,6 @@ img, button {
 
 .buttonComponent, .switchComponent {
 	margin: 0px;
-	background-repeat: no-repeat;
 }
 
 .buttonComponent.hasImage, .switchComponent.hasImage {
