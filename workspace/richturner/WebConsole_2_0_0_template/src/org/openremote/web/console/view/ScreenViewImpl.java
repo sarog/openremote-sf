@@ -119,9 +119,6 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	}
 	
 	private void processBackgroundImage() {
-		int top = 0;
-		int left = 0;
-	
 		if (background == null) return;
 		
 		if (background.getLoadAttempted()) {
@@ -138,39 +135,27 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 			return;
 		}
 			
+		//background.setVisible(true);
+		DOM.setStyleAttribute(getElement(), "backgroundImage", "url(" + background.getUrl() + ")");
+		DOM.setStyleAttribute(getElement(), "backgroundRepeat", "no-repeat");
+		
 		if (backgroundEntity.getFillScreen() != null && backgroundEntity.getFillScreen()) {
-			background.getImage().setWidth("100%");
-			background.getImage().setHeight("100%");
+			DOM.setStyleAttribute(getElement(), "backgroundSize", "cover");
 		} else if (backgroundEntity.getRelative() != null) {
-			int rectLeft = 0;
-			int rectTop = 0;
-			String position = backgroundEntity.getRelative();
-			if (position.contains("RIGHT")) {
-				rectLeft = background.getNativeWidth() - width;
-			} else if (position.contains("CENTER")) {
-				rectLeft = (int) Math.round(((double)background.getNativeWidth() - width)/2);
-				rectTop = (int) Math.round(((double)background.getNativeHeight() - height)/2);
+			String position = backgroundEntity.getRelative().toLowerCase();
+			String[] posArr = position.split("_");
+			if (posArr.length == 2) {
+				position = posArr[1] + " " + posArr[0];
+			} else {
+				position = posArr[0];
 			}
-			if (position.contains("BOTTOM")) {
-				rectTop = background.getNativeHeight() - height;
-			}
-			if (position.equals("BOTTOM")) {
-				rectLeft = (int) Math.round(((double)background.getNativeWidth() - width)/2);
-			}
-			background.getImage().setVisibleRect(rectLeft, rectTop, width, height);
+			DOM.setStyleAttribute(getElement(), "backgroundPosition", position);
 		} else if (backgroundEntity.getAbsolute() != null) {
 			AbsolutePosition absPos = backgroundEntity.getAbsolute();
-			top = absPos.getTop();
-			left = absPos.getLeft();
-		} else {
-			((AbsolutePanel)getWidget()).remove(background.getImage());
-			background = null;
-			return;
+			int top = absPos.getTop();
+			int left = absPos.getLeft();
+			DOM.setStyleAttribute(getElement(), "backgroundPosition", left + " " + top);
 		}
-		
-		((AbsolutePanel)getWidget()).add(background.getImage(), left, top);		
-		
-		background.setVisible(true);
 	}
 	
 	@Override
