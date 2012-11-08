@@ -144,30 +144,33 @@ WIDGETS
 }
 
 .buttonComponent, .switchComponent {
-	background-color: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
-	background-color: -ms-linear-gradient(-90deg, #dddee1, #b4b7be);
-	background-color: -o-linear-gradient(-90deg, #dddee1, #b4b7be);
-	background-color: -webkit-gradient(linear, left top, left bottom, from(#dddee1), to(#b4b7be));
-	background-color: linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -ms-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -o-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#dddee1), to(#b4b7be));
+	background-image: linear-gradient(-90deg, #dddee1, #b4b7be);
 	border: 0px;
 	-moz-border-radius: 4px;
 	-ms-border-radius: 4px;
 	-o-border-radius: 4px;
 	-webkit-border-radius: 4px;
+	color: #525c69;
+	padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+}
+
+.buttonComponent.noImage, .switchComponent.noImage {
 	border-radius: 4px;
 	-moz-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-ms-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-o-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-webkit-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	box-shadow: 0px 2px 2px rgba(0,0,0, .7);
-	color: #525c69;
 	font: bold 16px/18px "Helvetica Neue", "Arial", "sans-serif";
-	padding: 0;
-	text-shadow: 0 1px #fff;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-    appearance: none;
+	text-shadow: 0 1px #fff;		
 }
 
 .buttonComponent.pressed, .switchComponent.pressed {
