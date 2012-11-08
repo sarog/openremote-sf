@@ -77,7 +77,7 @@ public class GridPanelComponent extends PanelComponent {
 			((FlexTable)getWidget()).setWidget(row, col, (Widget)component);
 			components.add(component);
 		} else {
-			((FlexTable)getWidget()).setText(row, col, "&nbsp");
+			((FlexTable)getWidget()).setText(row, col, "");
 		}
 	}
 	
