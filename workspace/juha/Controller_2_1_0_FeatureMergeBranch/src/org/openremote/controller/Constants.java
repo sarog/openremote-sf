@@ -83,6 +83,10 @@ public class Constants
    */
   public final static String REST_COMPONENT_ACTION_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".component";
 
+  /**
+   * Specific logging subcategory for /rest/logout.
+   */
+  public final static String REST_LOGOUT_CATEGORY = HTTP_REST_LOG_CATEGORY + ".logout";
 
   // System Runtime Logs --------------------------------------------------------------------------
 
