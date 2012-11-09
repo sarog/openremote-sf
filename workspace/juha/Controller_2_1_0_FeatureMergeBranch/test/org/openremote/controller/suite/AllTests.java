@@ -73,7 +73,8 @@ import org.jdom.input.DOMBuilder;
    EventTests.class,
    StatusCacheTests.class,
    ProtocolTests.class,
-   BusTests.class
+   BusTests.class,
+   DSCIT100Tests.class
 })
 
 

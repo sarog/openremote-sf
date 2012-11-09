@@ -265,8 +265,10 @@
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
+        <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
       </map>
     </constructor-arg>
+
 <!--
 		<property name = "commandBuilders">
 		    <props>
@@ -388,6 +390,9 @@
     <constructor-arg index="1" value="${hsc40.interface.port}" type="int" />
   </bean>
 
+  <!-- DSC IT Security System -->
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
+  
 
 
   <!-- TODO -->
