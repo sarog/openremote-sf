@@ -299,8 +299,16 @@ img, button {
 }
 
 .consoleWidget * {
+	-webkit-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
 	box-sizing: border-box;
 	cursor: pointer;
+}
+
+.sliderComponent * {
+	
 }
 
 .sliderComponent button, .sliderComponent, .sliderComponent td, .sliderComponent table {

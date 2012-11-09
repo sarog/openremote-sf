@@ -95,6 +95,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			SimplePanel panel = new SimplePanel();
 			Element elem = panel.getElement();
 			elem.getStyle().setVisibility(Visibility.HIDDEN);
+			BrowserUtils.setStyleAttributeAllBrowsers(panel.getElement(), "boxSizing", "border-box");
 			probeElement = panel;
 		}
 		
@@ -417,11 +418,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			}
 			
 			int[] values = new int[4];
-			probeElement.setStylePrimaryName(style);
+			probeElement.getElement().addClassName(style);
 			values[0] = probeElement.getElement().getOffsetWidth();
 			values[1] = probeElement.getElement().getOffsetHeight();
 			values[2] = probeElement.getElement().getClientWidth();
 			values[3] = probeElement.getElement().getClientHeight();
+			probeElement.getElement().removeClassName(style);
 			return values;
 		}
 		
