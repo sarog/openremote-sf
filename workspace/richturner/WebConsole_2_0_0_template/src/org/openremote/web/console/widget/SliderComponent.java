@@ -92,11 +92,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		int[] size;
 		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME);
 		THUMB_SIZE = size[1] == 0 ? THUMB_SIZE : size[1];
-		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME + "Touch");
-		MIN_THUMB_CLICK_AREA_SIZE = size[1] == 0 ? MIN_THUMB_CLICK_AREA_SIZE : size[1];
-		size = BrowserUtils.getSizeFromStyle(TRACK_CLASS_NAME);
-		TRACK_HEIGHT = size[1] == 0 ? TRACK_HEIGHT : size[1] < TRACK_HEIGHT ? TRACK_HEIGHT : size[1];
-		TRACK_BORDER = size[1] - size[3];
+//		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME + "Touch");
+//		MIN_THUMB_CLICK_AREA_SIZE = size[1] == 0 ? MIN_THUMB_CLICK_AREA_SIZE : size[1];
+//		size = BrowserUtils.getSizeFromStyle(TRACK_CLASS_NAME);
+//		TRACK_HEIGHT = size[1] == 0 ? TRACK_HEIGHT : size[1] < TRACK_HEIGHT ? TRACK_HEIGHT : size[1];
+//		TRACK_BORDER = size[1] - size[3];
 	}
 	
 	class Thumb extends SimplePanel implements Draggable {
@@ -217,10 +217,12 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			minTrack.setHeight("100%");
 			minTrack.setWidth("100%");
 			minTrack.setStylePrimaryName(TRACK_CLASS_NAME + "Min");
+			BrowserUtils.setStyleAttributeAllBrowsers(minTrack.getElement(), "boxSizing", "border-box");
 			maxTrack = new TrackMinMax();
 			maxTrack.setHeight("100%");
 			maxTrack.setWidth("100%");
 			maxTrack.setStylePrimaryName(TRACK_CLASS_NAME + "Max");
+			BrowserUtils.setStyleAttributeAllBrowsers(maxTrack.getElement(), "boxSizing", "border-box");
 			
 			this.add(track,0,0);
 		}
@@ -292,7 +294,9 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		thumb = new Thumb();
 		((AbsolutePanel)slideBar).add(thumb,0,0);
 		minButton = new MinButton();
+		BrowserUtils.setStyleAttributeAllBrowsers(minButton.getElement(), "boxSizing", "border-box");
 		maxButton = new MaxButton();
+		BrowserUtils.setStyleAttributeAllBrowsers(maxButton.getElement(), "boxSizing", "border-box");
 		
 		addInteractiveChild(thumb);
 		addInteractiveChild(minTrack);
@@ -615,6 +619,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				track.resize(2, 1);
 				trackFormatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 				trackFormatter.setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				trackFormatter.setWidth(1, 0, "100%");
 			} else {
 				container.resize(1, 3);
 				formatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -626,6 +631,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				track.resize(1, 2);
 				trackFormatter.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 				trackFormatter.setAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+				trackFormatter.setWidth(0, 1, "100%");
 			}
 			
 			// Configure value range
