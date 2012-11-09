@@ -2,5 +2,13 @@
 Controller 2.1.0
 ================
 
-- Added DSC-IT 100 Security System integration (IP to serial)
+New Features:
 
+  - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
+
+
+Bug Fixes:
+
+  - Performance fix to sensor state cache queries (Marcus Redeker)
+  - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
+  

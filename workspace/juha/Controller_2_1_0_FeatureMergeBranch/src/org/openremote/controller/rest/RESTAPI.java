@@ -154,7 +154,7 @@ public abstract class RESTAPI extends HttpServlet
       switch (responseType)
       {
         case APPLICATION_JSON:
-          response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
+          response.getWriter().print(JSONTranslator.translateXMLToJSON(request, response, xml));
           break;
         case TEXT_JAVASCRIPT:
            // Additional JSON Formatter implemented to ensure JSONArray output where required
