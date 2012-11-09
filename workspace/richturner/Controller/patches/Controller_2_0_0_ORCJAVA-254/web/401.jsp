@@ -6,9 +6,9 @@ if ((callback == null || callback.equals("")) && !acceptHeader.equalsIgnoreCase(
 <%
 } else if(acceptHeader.equalsIgnoreCase("application/json")) {
    response.setStatus(HttpServletResponse.SC_OK);
-   out.println("{\"error\":{\"message\":\"Not authorised\",\"code\":403}}");
+   out.println("{\"error\":{\"message\":\"Not authorised\",\"code\":401}}");
 } else {
    response.setStatus(HttpServletResponse.SC_OK);
-   out.println(callback + " && " + callback + "({\"error\":{\"message\":\"Not authorised\",\"code\":403}})");
+   out.println(callback + " && " + callback + "({\"error\":{\"message\":\"Not authorised\",\"code\":401}})");
 }
 %>
