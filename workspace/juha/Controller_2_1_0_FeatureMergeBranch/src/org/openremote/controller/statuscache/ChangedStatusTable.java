@@ -20,9 +20,9 @@
  */
 package org.openremote.controller.statuscache;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -53,11 +53,11 @@ import java.util.List;
 public class ChangedStatusTable
 {
    
-  private List<ChangedStatusRecord> recordList;
+  private Map<String, ChangedStatusRecord> recordList;
 
   public ChangedStatusTable()
   {
-    recordList = new ArrayList<ChangedStatusRecord>();
+    recordList = new HashMap<String, ChangedStatusRecord>();
   }
 
   /**
@@ -65,57 +65,29 @@ public class ChangedStatusTable
    */
   public synchronized void insert(ChangedStatusRecord record)
   {
-    if (this.query(record.getDeviceID(), record.getPollingSensorIDs()) == null)
-    {
-       recordList.add(record);
-    }
+       recordList.put(record.getRecordKey(), record);
   }
    
   /**
    * Query changed status record by deviceID and pollingSensorIDs(pollingSensorIDs is order-insensitive).
    */
-  public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingSensorIDs)
+  public synchronized ChangedStatusRecord query(String key)
   {
-    if (recordList.size() == 0 || pollingSensorIDs == null || pollingSensorIDs.size() == 0)
-    {
-       return null;
-    }
-
-    ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingSensorIDs);
-
-    // TODO : use contains() instead of equals loop   [JPL]
-
-    for (ChangedStatusRecord tempRecord : recordList)
-    {
-       if (tempRecord.equals(record))
-       {
-          return tempRecord;
-       }
-    }
-    return null;
+    return recordList.get(key);
   }
 
 
 
   public void updateStatusChangedIDs(Integer statusChangedSensorID)
   {
-    // TODO : this looks like an inefficient way of doing the update   [JPL]
-
-    for(ChangedStatusRecord record : recordList)
+    for(ChangedStatusRecord record : recordList.values())
     {
       synchronized (record)
       {
-        if (!record.getPollingSensorIDs().isEmpty())
+        if (record.getPollingSensorIDs().contains(statusChangedSensorID))
         {
-          for (Integer tmpSensorId : record.getPollingSensorIDs())
-          {
-            if (statusChangedSensorID.equals(tmpSensorId))
-            {
-              record.getStatusChangedSensorIDs().add(statusChangedSensorID);
-              record.notifyAll();
-              break;
-            }
-          }
+           record.getStatusChangedSensorIDs().add(statusChangedSensorID);
+           record.notifyAll();
         }
       }
     }
@@ -124,9 +96,9 @@ public class ChangedStatusTable
   /**
    * Reset changed status of panel in {@link ChangedStatusTable}.
    */
-  @Deprecated public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingSensorIDs)
+  @Deprecated public synchronized void resetChangedStatusIDs(String key)
   {
-    ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingSensorIDs);
+    ChangedStatusRecord skippedStatusRecord = this.query(key);
 
     if (skippedStatusRecord != null)
     {

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
@@ -74,7 +75,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
       String skipState = "";
       String[] sensorIDs = (unParsedSensorIDs == null || "".equals(unParsedSensorIDs)) ? new String[]{} : unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
       
-      List<Integer> pollingSensorIDs = new ArrayList<Integer>();
+      Set<Integer> pollingSensorIDs = new TreeSet<Integer>();
       for (String pollingSensorID : sensorIDs) {
          try {
             pollingSensorIDs.add(Integer.parseInt(pollingSensorID));
@@ -82,13 +83,15 @@ public class StatusPollingServiceImpl implements StatusPollingService {
             throw new NoSuchComponentException("The sensor id '" + pollingSensorID + "' should be digit", e);
          }
       }
+      String orderedSensorIDs = pollingSensorIDs.toString();
+      String changedStatusRecordKey = deviceID+"-"+orderedSensorIDs;
 
-      ChangedStatusRecord changedStateRecord = changedStatusTable.query(deviceID, pollingSensorIDs);
-      String tempInfo = "Found: [device => " + deviceID + ", sensorIDs => " + unParsedSensorIDs + "] in ChangedStatus table.";
+      ChangedStatusRecord changedStateRecord = changedStatusTable.query(changedStatusRecordKey);
+      String tempInfo = "Found: [device => " + deviceID + ", sensorIDs => " + orderedSensorIDs + "] in ChangedStatus table.";
       logger.info(changedStateRecord == null ? "Not " + tempInfo : tempInfo);
       
       if (changedStateRecord == null) {
-         changedStateRecord = new ChangedStatusRecord(deviceID, pollingSensorIDs);
+         changedStateRecord = new ChangedStatusRecord(changedStatusRecordKey, pollingSensorIDs);
          changedStatusTable.insert(changedStateRecord);
       }
       if (changedStateRecord.getStatusChangedSensorIDs() != null && changedStateRecord.getStatusChangedSensorIDs().size() > 0) {
@@ -120,7 +123,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
             logger.info("Had waited the skipped sensor ids of statuses in " + changedStateRecord);
          }
          skipState = queryChangedStatusesFromCachedStatusTable(changedStateRecord.getStatusChangedSensorIDs());
-         changedStatusTable.resetChangedStatusIDs(deviceID, pollingSensorIDs);
+         changedStatusTable.resetChangedStatusIDs(changedStatusRecordKey);
       }
       
       return skipState;
