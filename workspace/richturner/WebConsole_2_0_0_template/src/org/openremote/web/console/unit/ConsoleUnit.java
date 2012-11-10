@@ -873,25 +873,28 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				try {
 					TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
 					tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
-					tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId));
+					tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId)); // Problem with event bus means tab bar doesn't receive event notification when first added
 				} catch (Exception e) {
 					onError(EnumConsoleErrorCode.TABBAR_ERROR);
 				}
 			}
+			currentGroupId = newGroupId;
+		}
+		if (groupChanged || (screenChanged && orientationChanged)) {
 			// Get Screen ID List and create screenIndicator
 			List<Integer> screenIds = panelService.getGroupScreenIdsWithSameOrientation(newScreenId, newGroupId);
 			if (screenIds != null && screenIds.size() > 1) {
 				ScreenIndicator screenIndicator = new ScreenIndicator(screenIds);
 				consoleDisplay.setScreenIndicator(screenIndicator);
-				screenIndicator.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId));
+				screenIndicator.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId)); // Problem with event bus means indicator doesn't receive event notification when first added
 			} else {
 				consoleDisplay.removeScreenIndicator();
 			}
-			currentGroupId = newGroupId;
+			consoleDisplay.updateScreenIndicator();
+			consoleDisplay.updateTabBar();
 		}
 		
 		if (screenChanged) {
-			consoleDisplay.updateTabBar();
 			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new ScreenViewChangeEvent(newScreenId, newGroupId));		
 		}
 		return true;

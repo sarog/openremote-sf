@@ -415,7 +415,7 @@ public class PanelServiceImpl implements PanelService {
 				Screen scrn = getScreenById(id);
 				
 				if (scrn != null) {
-					if (scrn.getLandscape() != null && scrn.getLandscape()) isCompareScreenLandscape = true;
+					isCompareScreenLandscape = (scrn.getLandscape() != null && scrn.getLandscape()) ? true : false;
 					if (isCompareScreenLandscape == isScreenLandscape) {
 						filteredScreenIds.add(id);
 					}

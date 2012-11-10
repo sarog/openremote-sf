@@ -42,7 +42,7 @@
 									"src": "controller_edit.png"
 								}
 							},
-							"name": ">",
+							"name": "",
 							"navigate": {
 								"to": "editcontroller",
 								"data": [{
@@ -105,7 +105,7 @@
 						}
 					},
 					"hasControlCommand": true,
-					"name": ">"
+					"name": ""
 				},
 				"width": "30",
 				"right": "5",
@@ -421,7 +421,7 @@
 									"src": "controller_edit.png"
 								}
 							},
-							"name": ">",
+							"name": "",
 							"navigate": {
 								"to": "editcontroller",
 								"data": [{
@@ -484,7 +484,7 @@
 						}
 					},
 					"hasControlCommand": true,
-					"name": ">"
+					"name": ""
 				},
 				"width": "30",
 				"right": "5",

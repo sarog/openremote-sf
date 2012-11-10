@@ -251,7 +251,8 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 				removeComponent(currentScreenIndicator);
 				currentScreenIndicator = null;
 			}
-			addComponent(screenIndicator, (int)Math.round((((double)getWidth() - screenIndicator.getWidth())/2)), getHeight() - 55);
+			int heightOffset = currentTabBar != null ? currentTabBar.getHeight() + 10 : 10 ;
+			addComponent(screenIndicator, (int)Math.round((((double)getWidth() - screenIndicator.getWidth())/2)), getHeight() - heightOffset);
 			currentScreenIndicator = screenIndicator;
 		}
 	}
@@ -287,7 +288,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		}
 	}
 	
-	private void updateScreenIndicator() {
+	protected void updateScreenIndicator() {
 		if (currentScreenIndicator != null) {
 			display.setWidgetPosition(currentScreenIndicator, (int)Math.round((((double)getWidth() - currentScreenIndicator.getWidth())/2)), getHeight() - 55);
 		}
