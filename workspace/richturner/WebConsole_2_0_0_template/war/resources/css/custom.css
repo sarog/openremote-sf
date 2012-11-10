@@ -109,13 +109,12 @@ WIDGETS
 *************************************************************************/
 
 .sliderComponentThumb {
-	height: 48px;
-	box-sizing: border-box;
+	height: 44px;
     background-color: buttonFace;
-	-moz-border-radius: 20px;
-	-webkit-border-radius: 20px;
-	-o-border-radius: 20px;
-	border-radius: 20px;
+	-moz-border-radius: 22px;
+	-webkit-border-radius: 22px;
+	-o-border-radius: 22px;
+	border-radius: 22px;
 	border-width: 2px;
 	border-style: solid;
 }
@@ -160,6 +159,8 @@ WIDGETS
     -moz-appearance: none;
     -o-appearance: none;
     appearance: none;
+   	font: bold 16px/18px "Helvetica Neue", "Arial", "sans-serif";
+	text-shadow: 0 1px #fff;
 }
 
 .buttonComponent.noImage, .switchComponent.noImage {
@@ -168,9 +169,7 @@ WIDGETS
 	-ms-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-o-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-webkit-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
-	box-shadow: 0px 2px 2px rgba(0,0,0, .7);
-	font: bold 16px/18px "Helvetica Neue", "Arial", "sans-serif";
-	text-shadow: 0 1px #fff;		
+	box-shadow: 0px 2px 2px rgba(0,0,0, .7);	
 }
 
 .buttonComponent.pressed, .switchComponent.pressed {
@@ -178,3 +177,7 @@ WIDGETS
 	color: #DDD;
 }
 
+.webElementComponent {
+	border: none;
+	overflow: hidden;
+}

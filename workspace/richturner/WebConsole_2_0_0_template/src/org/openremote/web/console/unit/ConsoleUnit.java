@@ -281,12 +281,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				height = width;
 				width = tempWidth;
 			}
-			
-			maxDim = width > height ? width : height; 
-		
-			width = width < MIN_WIDTH ? MIN_WIDTH : width;
-			height = height < MIN_HEIGHT ? MIN_HEIGHT : height;	
-			
+
 //			if (maxDim >= winWidth || maxDim >= winHeight) {
 //				 setFullscreen = true;
 //			}
@@ -302,14 +297,34 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			}
 		}
 		
+		
+		maxDim = width > height ? width : height; 
+	
+		width = width < MIN_WIDTH ? MIN_WIDTH : width;
+		height = height < MIN_HEIGHT ? MIN_HEIGHT : height;	
+		
+		
 		toggleFrame(!setFullscreen);
 		
 		this.width = width;
 		this.height = height;
 		isFullscreen = setFullscreen;
-		
+
 		if (setFullscreen || maxDim >= winWidth || maxDim >= winHeight) {
-			setOrientation(BrowserUtils.getWindowOrientation());
+			
+			if (!winOrientation.equals(getOrientation())) {
+				setOrientation(winOrientation);
+				
+				// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
+				if (panelService.isInitialized()) {
+					if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation()) || (!BrowserUtils.isMobile && isFullscreen)) {
+						Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
+						if (inverseScreen != null) {
+							loadDisplay(inverseScreen, true, null);
+						}
+					}
+				}
+			}
 		}
 		
 		consoleDisplay.setSize(width, height);
@@ -648,7 +663,18 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			Screen defaultScreen = panelService.getDefaultScreen(defaultGroupId);
 			
 			if (defaultScreen != null) {
-				// Load default Screen for default group
+				String screenOrientation = (defaultScreen.getLandscape() != null && defaultScreen.getLandscape()) ? "landscape" : "portrait";
+				
+				// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
+				if (panelService.isInitialized()) {
+					if (!screenOrientation.equalsIgnoreCase(consoleDisplay.getOrientation())) {
+						Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
+						if (inverseScreen != null) {
+							defaultScreen = inverseScreen;
+						}
+					}
+				}
+				
 				loadDisplay(defaultGroupId, defaultScreen, null);
 			} else {
 				loadSettings(EnumSystemScreen.PANEL_SELECTION, null);
@@ -725,17 +751,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (panelService.getCurrentPanel() != systemPanel) {
 			unloadPanel();
 
-			if (!setPanel(systemPanel)) {
-				// Big problem if we can't load system screens so let's exit
-				Window.alert("Failed to load a system screen!\n\nThis is a big problem and we can't continue.");
-				return;
-			}		
+			panelService.setCurrentPanel(systemPanel);
 		}
 		
 		int groupId = systemScreen.getGroupId();
 		int screenId = systemScreen.getId();
 		
-		if (this.getOrientation().equalsIgnoreCase("landscape")) {
+		if (this.getOrientation().equalsIgnoreCase("landscape") && screenId < 1000) {
 			screenId += 1000;
 		}
 		
@@ -1021,8 +1043,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		show();
 		
 		// Initialise the system panel
-		String systemPanelStr = dataService.getObjectString(EnumDataMap.SYSTEM_PANEL.getDataName());
-		if (systemPanelStr == null) {
+//		String systemPanelStr = dataService.getObjectString(EnumDataMap.SYSTEM_PANEL.getDataName());
+//		if (systemPanelStr == null) {
 			// Load from Server
 			BrowserUtils.showLoadingMsg("Retreiving System Panel Definition");
 
@@ -1032,8 +1054,53 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					public void onResponseReceived(Request request, Response response) {
 						String systemPanelStr = response.getText();
 						systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
-						//dataService.setObject(EnumDataMap.SYSTEM_PANEL.getDataName(), AutoBeanService.getInstance().toJsonString(systemPanelStr));
-						initialiseConsole();
+						
+						// Initialise the system panel
+						panelService.setCurrentPanel(systemPanel);
+						
+						BrowserUtils.showLoadingMsg("Retrieving Resources..");
+						
+						try {
+//							List<String> imageUrls = panelService.getImageResourceUrls();
+							
+//							for(String imageUrl : imageUrls ) {
+//								addImageToCache(imageUrl);
+//								Thread.sleep(100);
+//							}
+							
+							Timer imageCacher = new Timer() {
+								int i=0;
+								List<String> imageUrls = panelService.getImageResourceUrls();
+								
+								@Override
+								public void run() {
+									if (i < imageUrls.size()) {
+										addImageToCache(imageUrls.get(i));
+										i++;
+										this.schedule(100);
+									}					
+								}};
+							
+							imageCacher.run();	
+								
+							// Prefetch All Images Resources before proceeding
+							loadCache(new AsyncControllerCallback() {
+
+								@Override
+								public void onSuccess(Object result) {
+									initialiseConsole();
+								}
+								
+								@Override
+								public void onFailure(Throwable e) {
+									BrowserUtils.hideLoadingMsg();
+									BrowserUtils.showAlert("FATAL Error: Failed to retrieve System Panel Definition.");
+								}
+							});							
+						} catch (Exception e) {
+							BrowserUtils.hideLoadingMsg();
+							BrowserUtils.showAlert("FATAL Error: Failed to retrieve System Panel Definition.");
+						}
 					}
 
 					@Override
@@ -1046,10 +1113,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				BrowserUtils.hideLoadingMsg();
 				BrowserUtils.showAlert("FATAL Error: Failed to retrieve System Panel Definition.");
 			}
-		} else {
-			systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
-			initialiseConsole();
-		}
+//		}
+//		else {
+//			systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
+//			initialiseConsole();
+//		}
 		
 	}
 	
@@ -1061,7 +1129,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		if (BrowserUtils.isMobile || (!BrowserUtils.isMobile && !isFullscreen)) {
 			setOrientation(orientation);
 		}
-		
+
 		// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
 		if (panelService.isInitialized()) {
 			if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation()) || (!BrowserUtils.isMobile && isFullscreen)) {

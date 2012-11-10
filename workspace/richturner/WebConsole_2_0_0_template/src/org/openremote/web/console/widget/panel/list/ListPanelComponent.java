@@ -172,7 +172,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 					}
 				} catch (Exception e) {
 					// TODO: Problem binding to data source do something
-					Window.alert("Failed to bind data source!");
+					//Window.alert("Failed to bind data source!");
 				}
 			}
 		}
