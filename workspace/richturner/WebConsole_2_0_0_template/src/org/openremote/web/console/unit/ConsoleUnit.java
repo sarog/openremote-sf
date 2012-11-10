@@ -771,21 +771,18 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private boolean loadDisplay(Screen screen, List<DataValuePairContainer> data) {
-		return loadDisplay(currentGroupId, screen, false, data);
+		return loadDisplay(currentGroupId, screen, data);
 	}
 	
 	private boolean loadDisplay(Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
-		return loadDisplay(currentGroupId, screen, orientationChanged, data);
+		return loadDisplay(currentGroupId, screen, data);
 	}
 	
 	private boolean loadDisplay(Integer newGroupId, Screen screen, List<DataValuePairContainer> data) {
-		return loadDisplay(newGroupId, screen, false, data);
-	}
-	
-	private boolean loadDisplay(Integer newGroupId, Screen screen, boolean orientationChanged, List<DataValuePairContainer> data) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
-		boolean tabBarChanged = false;
+		boolean screenOrientationChanged = false;
+		ScreenViewImpl currentScreenView = consoleDisplay.getScreen();
 		Integer oldScreenId = currentScreenId;
 		
 		if (screen == null || newGroupId == null) {
@@ -797,6 +794,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		if (currentScreenId != newScreenId) {
 			screenChanged = true;
+			screenOrientationChanged = (currentScreenView == null || ((currentScreenView.isLandscape() != null && currentScreenView.isLandscape()) != (screen.getLandscape() != null && screen.getLandscape()))) ? true : false;
 		}
 		if (currentGroupId != newGroupId) {
 			groupChanged = true;
@@ -807,16 +805,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		}
 		
 		if (screenChanged) {
-//			// If old screen is system screen and this is desktop resize console unit to match panel definition
-//			if (!BrowserUtils.isMobile) {
-//				if (oldScreenId < 0) {
-//					PanelSize size = panelService.getPanelSize();
-//					resize(size.getWidth(), size.getHeight());
-//				}
-//			}
-			
-			// Setting screen should return true at this point
-			ScreenViewImpl currentScreenView = consoleDisplay.getScreen();
+			// Try setting new screen fall back to previous screen on failure only if this isn't the systemPanel
 			try {
 				ScreenViewImpl screenView = screenViewService.getScreenView(screen);
 				if (screenView == null) {
@@ -872,7 +861,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			if (tabBar != null && tabBar.getItem() != null) {
 				try {
 					TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
-					tabBarChanged = consoleDisplay.setTabBar(tabBarComponent);
+					consoleDisplay.setTabBar(tabBarComponent);
 					tabBarComponent.onScreenViewChange(new ScreenViewChangeEvent(newScreenId, newGroupId)); // Problem with event bus means tab bar doesn't receive event notification when first added
 				} catch (Exception e) {
 					onError(EnumConsoleErrorCode.TABBAR_ERROR);
@@ -880,7 +869,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			}
 			currentGroupId = newGroupId;
 		}
-		if (groupChanged || (screenChanged && orientationChanged)) {
+		if (groupChanged || (screenChanged && screenOrientationChanged)) {
 			// Get Screen ID List and create screenIndicator
 			List<Integer> screenIds = panelService.getGroupScreenIdsWithSameOrientation(newScreenId, newGroupId);
 			if (screenIds != null && screenIds.size() > 1) {
