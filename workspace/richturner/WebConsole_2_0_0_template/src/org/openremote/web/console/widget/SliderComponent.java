@@ -418,13 +418,13 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	
 	private int convertRelativePosToValue(int relPos) {
 		double valuePerPixel = (double)valueRange / thumbRange;
-		int value = (int)Math.round(valuePerPixel * (relPos)) + minValue;
+		int value = (int)Math.round(valuePerPixel * (relPos-minThumbPos)) + minValue;
 		return value;
 	}
 	
 	private int convertValueToRelativePos(int value) {
 		double pixelPerValue = (double)thumbRange / valueRange;
-		int relPos = (int)Math.round(pixelPerValue * (value - minValue));
+		int relPos = (int)Math.round(pixelPerValue * (value - minValue)) + minThumbPos;
 		return relPos;		
 	}
 	
