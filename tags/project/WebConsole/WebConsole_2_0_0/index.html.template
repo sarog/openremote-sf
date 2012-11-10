@@ -1,0 +1,125 @@
+<!doctype html>
+	<head>
+		<title>OpenRemote Web Console - 2.0</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		
+		<!-- Enable IE9 Standards mode -->
+		<meta http-equiv="X-UA-Compatible" content="IE=9" >
+		
+		<!-- For mobile devices -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+		<meta name="HandheldFriendly" content="true"/>
+
+		<!-- Apple settings -->
+		<!-- hide the browser chrome -->
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 
+		<!-- set the phone status bar style; can be grey, black, or black translucent -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<!-- set home screen icon for iOS -->
+		<link rel="apple-touch-icon" href="resources/images/icon.png"/>
+		<link rel="apple-touch-icon-precomposed" href="resources/images/icon.png"/>
+		<!-- set startup image when web app launched from home screen on iOS -->
+		<link rel="apple-touch-startup-image" href="resources/images/startup.png">
+		
+		       <!-- iPhone ICON -->
+        <link href="resources/images/icon-57x57.png" sizes="57x57" rel="apple-touch-icon">
+        <!-- iPad ICON-->
+        <link href="resources/images/icon-72x72.png" sizes="72x72" rel="apple-touch-icon">
+        <!-- iPhone (Retina) ICON-->
+        <link href="resources/images/icon-114x114.png" sizes="114x114" rel="apple-touch-icon">
+        <!-- iPad (Retina) ICON-->
+        <link href="resources/images/icon-144x144.png" sizes="144x144" rel="apple-touch-icon">
+
+        <!-- iPhone SPLASHSCREEN-->
+        <link href="resources/images/startup-320x460.png" media="(max-device-width: 480px)" rel="apple-touch-startup-image">
+        <!-- iPhone (Retina) SPLASHSCREEN-->
+        <link href="resources/images/startup-640x920.png" media="(max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+        <!-- iPad (portrait) SPLASHSCREEN-->
+        <link href="resources/images/startup-768x1004.png" media="(min-device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+        <!-- iPad (landscape) SPLASHSCREEN-->
+        <link href="resources/images/startup-748x1024.png" media="(min-device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+        <!-- iPad (Retina, portrait) SPLASHSCREEN-->
+        <link href="resources/images/startup-1536x2008.png" media="(min-device-width: 768px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+        <!-- iPad (Retina, landscape) SPLASHSCREEN-->
+        <link href="resources/images/startup-1496x2048.png" media="(min-device-width: 768px)  and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+		
+		
+		<!-- General settings -->
+	 	<link rel="shortcut icon" href="resources/images/icon.png">
+    	<link type="image/png" rel="icon" href="resources/images/icon.png">
+
+	    <style type="text/css">
+	    	.fullscreen {
+	    		background-color: #000;
+	    	}
+	    	
+			.loading_image_outer {
+				-webkit-animation: forward 1s linear infinite;
+				-moz-animation: forward 1s linear infinite;
+				-o-animation: forward 1s linear infinite;
+			}
+			
+			.loading_image_inner {
+				-webkit-animation: backward 1s linear infinite;
+				-moz-animation: backward 1s linear infinite;
+				-o-animation: backward 1s linear infinite;			
+			}
+			
+			@-webkit-keyframes forward {
+				from { -webkit-transform: rotate(0deg); }
+				to { -webkit-transform: rotate(360deg); }
+			}
+			@-moz-keyframes forward {
+				from { -moz-transform: rotate(0deg); }
+				to { -moz-transform: rotate(360deg); }
+			}
+			@-o-keyframes forward {
+				from { -o-transform: rotate(0deg); }
+				to { -o-transform: rotate(360deg); }
+			}
+			
+			@-webkit-keyframes backward {
+				from { -webkit-transform: rotate(0deg); }
+				to { -webkit-transform: rotate(-720deg); }
+			}
+			@-moz-keyframes backward {
+				from { -moz-transform: rotate(0deg); }
+				to { -moz-transform: rotate(-720deg); }
+			}
+			@-o-keyframes backward {
+				from { -o-transform: rotate(0deg); }
+				to { -o-transform: rotate(-720deg); }
+			}
+	    </style>
+	    <link type="text/css" rel="stylesheet" href="resources/css/custom.css">
+		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
+		
+	    <!-- GWT Bootstrap -->
+		<script language="javascript">
+			var buildVersionStr = "@VERSION@";
+		</script>
+	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
+	</head>
+
+	<body class="fullscreen">
+		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+		<div style="width: 3000px; height: 3000px;"></div>
+		<div id="loading_image" class="loading_image_outer" style="position: absolute; top: 50%; left: 50%; margin-left: -50px; margin-top: -50px; width: 100px; height: 100px; background-image: url(resources/images/loading_logo_outer.png); background-size: 100% 100%; opacity: 0.3;">
+			<div class="loading_image_inner" style="width: 100%; height: 100%; background-image: url(resources/images/loading_logo_centre.png); background-size: 100% 100%;"></div>
+		</div>
+		<div id="loading_msg" style="position: absolute; top: 50%; left: 50%; margin-left: -100px; margin-top: 55px; width: 200px; height: 25px; line-height: 25px; color: #2b6229; font-size: 18px; font-weight: bold; text-align: center; opacity: 0.5;">
+			<span>LOADING...</span>
+		</div>
+		<div id="alert_popup" class="alert_popup" style="visibility: hidden;">
+			<div id="alert_popup_header">Web Console</div>
+			<div id="alert_popup_msg">This is what an alert will look like!</div>
+			<button onClick="window.hideAlert()" style="width: 80px; height: 40px;">OK</button>
+		</div>
+	    <noscript>
+	      <div id="noScriptError">
+	        Your web browser must have JavaScript enabled
+	        in order for this application to display correctly.
+	      </div>
+	    </noscript>
+	</body>
+</html>

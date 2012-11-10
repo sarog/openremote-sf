@@ -1,0 +1,455 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/************************************************************************
+MAIN CSS FILE FOR WEBCONSOLE DO NOT CHANGE THIS
+
+For CSS customisations see custom.css
+************************************************************************/
+
+body {
+	font-family: verdana, arial, sans-serif;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+	-o-user-drag: none;
+	-ms-user-drag: none;
+	-moz-user-drag: none;
+	user-drag: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	-o-tap-highlight-color:rgba(0,0,0,0);
+	-ms-tap-highlight-color:rgba(0,0,0,0);
+	-moz-tap-highlight-color:rgba(0,0,0,0);
+	tap-highlight-color:rgba(0,0,0,0);
+	-webkit-touch-callout: none;
+	-ms-touch-callout: none;
+	-moz-touch-callout: none;
+	-o-touch-callout: none;
+	-touch-callout: none;
+}
+
+#noScriptError {
+	width: 22em;
+	position: absolute;
+	left: 50%;
+	margin-left: -11em;
+	color: red;
+	background-color: white;
+	border: 1px solid red;
+	padding: 4px;	
+}
+
+/************************************************************************
+	TOOLBAR 
+*************************************************************************/
+
+.toolbar {
+	color: #FFF;
+	z-index: 1000;
+}
+
+.toolbar .panelSizePanel {
+	border-radius: 5px;
+	background-color: #6FA02B;
+	padding: 10px 10px;
+}
+
+.toolbar input.panelSize {
+	width: 4em;
+	text-align: center;
+}
+
+.toolbar .panelSizePanel h3 {
+	margin: 0;	
+}
+
+#resizeBtn {
+	margin: 20px;
+}
+
+.toolbar .sizeInputBoxes {
+	margin: 10px 0 0 20px;
+}
+
+.toolbar .panelSizePanel .gwt-Label {
+	width: 3em;
+	text-align: center;
+}
+
+.toolbar .mainToolbarPanel {
+	background-color: #245E36;
+	border-radius: 20px;
+}
+
+.toolbar .tabToolbarPanel {
+	background-color: #245E36;
+	border-radius: 0 5px 5px 0;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.toolbar .title {
+	color: #FFF;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.toolbar input.invalid {
+	color: #F00	
+}
+
+#alert_popup {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding: 10px;
+	background-color: #444;
+	border: 1px solid #FFF;
+	color: #FFF;
+	font-size: 16px;
+	border-radius: 10px;
+	-o-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-ms-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	text-align: center;
+}
+
+#alert_popup.portrait {
+	width: 280px;
+	margin-left: -150px;
+}
+
+#alert_popup.landscape {
+	width: 340px;
+	margin-left: -180px;	
+}
+
+#alert_popup_header {
+	width: 100%;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #FFF;
+	text-align: center;
+}
+
+#alert_popup_msg {
+	margin: 10px 0;
+	width: 100%;
+}
+
+/************************************************************************
+CONSOLE UNIT
+*************************************************************************/
+
+#consoleUnit {
+/*	display: -moz-inline-stack;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+*/
+	cursor: pointer;
+}
+
+#consoleUnit.portrait {
+
+}
+
+#consoleUnit {
+/* 	-moz-transform-origin: 50% 50%; */
+/* 	-o-transform-origin: 50% 50%; */
+/* 	-webkit-transform-origin: 50% 50%; */
+/* 	-ms-transform-origin: 50% 50%; */
+/*    	transform-origin: 50% 50%; */
+
+	-moz-transform-origin: 0% 0%;
+	-o-transform-origin: 0% 0%;
+	-webkit-transform-origin: 0% 0%;
+	-ms-transform-origin: 0% 0%;
+   	transform-origin: 0% 0%;
+
+	-moz-transition: all 0s linear;
+	-webkit-transition: all 0s linear;
+	-o-transition: all 0s linear;
+	-ms-transition: all 0s linear;
+	transition: all 0s linear;
+}
+
+#consoleUnit.landscape {
+/* 	-moz-transform: rotate(-90deg) translate(-100%,0);   */
+/*     -o-transform: rotate(-90deg);   */
+/*   	-webkit-transform: rotate(-90deg);   */
+/*     -ms-transform: rotate(-90deg); */
+/*     transform: rotate(-90deg); */
+    
+/*     transform: translate(50%,0); */
+/* 	-ms-transform: translate(50%,0); IE 9 */
+/* 	-webkit-transform: translate(50%,0); Safari and Chrome */
+/* 	-o-transform: translate(50%,0); Opera */
+/* 	-moz-transform: translate(50%,0); */
+/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
+/*                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
+}
+
+#consoleUnit.framed #consoleFrameLogo {
+ 	display: block;
+}
+ 
+#consoleUnit.fullscreen #consoleFrameLogo {
+ 	display: none;
+}
+
+#consoleFrameLogo {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	background: url(../../resources/images/logo.png);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+#consoleDisplay {
+	cursor: pointer;
+	border: none;
+}
+
+.framed #consoleDisplayWrapper {
+	border-width: 2px;
+	border-style: solid;
+}
+
+.fullscreen #consoleDisplayWrapper {
+	border: none;
+}
+
+#consoleDisplay.landscape {
+	-moz-transform-origin: 0% 0%;
+	-o-transform-origin: 0% 0%;
+	-webkit-transform-origin: 0% 0%;
+	-ms-transform-origin: 0% 0%;
+   	transform-origin: 0% 0%;
+	-moz-transform: rotate(90deg);  /* FF3.5+ */
+	-o-transform: rotate(90deg);  /* Opera 10.5 */
+  	-webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
+	-ms-transform: rotate(90deg);  /* IE9 */
+	transform: rotate(90deg);
+/*             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6 to IE9 */ 
+                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand'); */
+	zoom: 1;
+}
+
+/* .tabBarComponent * { */
+/* 	margin: 0; */
+/* 	padding: 0; */
+/* 	border: none; */
+/* } */
+
+
+
+/************************************************************************
+WIDGETS
+*************************************************************************/
+
+/* Prevents dotted line around links, buttons etc. on focus */
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+
+input[type=text] {
+  -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+}
+
+img {
+	pointer-events: none;
+	-webkit-pointer-events: none;
+	-moz-pointer-events: none;
+	-ms-pointer-events: none;
+}
+
+img, button {
+	-webkit-user-select: none;
+	-o-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+.consoleWidget * {
+	-webkit-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.sliderComponent * {
+	
+}
+
+.sliderComponent button, .sliderComponent, .sliderComponent td, .sliderComponent table {
+	padding: 0;
+	margin: 0;
+	border-spacing: 0;
+}
+
+/* This is here to alter touch area of slider thumbs depending on display density */
+.sliderComponentThumbTouch {
+	height: 44px;
+}
+
+.sliderComponentBar {
+	border: none;
+}
+
+.sliderComponentTrack {
+	overflow: hidden;
+	background: none;
+}
+
+.sliderComponentTrackMin, .sliderComponentTrackMax {
+	box-sizing: border-box;
+	padding: 0;
+}
+
+.buttonComponent, .switchComponent {
+	margin: 0px;
+}
+
+.buttonComponent.hasImage, .switchComponent.hasImage {
+	background-color: inherit;
+}
+
+.buttonComponent.hasImage span {
+	visibility: hidden;
+}
+
+/*
+GENERIC SPINNER CSS BELOW HERE
+Code adapted from:
+http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webkit
+*/
+
+.spinner {
+	
+}
+	
+.spinner div {
+	width: 12%;
+	height: 26%;
+	background: #245E36;
+	position: absolute;
+	left: 44.5%;
+	top: 37%;
+	-webkit-animation: fade 1s linear infinite;
+	-moz-animation: fade 1s linear infinite;
+	animation: fade 1s linear infinite;
+	-moz-border-radius: 50px;
+	-o-border-radius: 3px;
+	border-radius: 50px;
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.spinner div.bar1 {-webkit-transform:rotate(0deg) translate(0, -142%); -webkit-animation-delay: 0s; -moz-transform:rotate(0deg) translate(0, -142%); -moz-animation-delay: 0s;}    
+.spinner div.bar2 {-webkit-transform:rotate(30deg) translate(0, -142%); -webkit-animation-delay: -0.9167s; -moz-transform:rotate(30deg) translate(0, -142%); -moz-animation-delay: -0.9167s;}
+.spinner div.bar3 {-webkit-transform:rotate(60deg) translate(0, -142%); -webkit-animation-delay: -0.833s; -moz-transform:rotate(60deg) translate(0, -142%); -moz-animation-delay: -0.833s;}
+.spinner div.bar4 {-webkit-transform:rotate(90deg) translate(0, -142%); -webkit-animation-delay: -0.75s; -moz-transform:rotate(90deg) translate(0, -142%); -moz-animation-delay: -0.75s;}
+.spinner div.bar5 {-webkit-transform:rotate(120deg) translate(0, -142%); -webkit-animation-delay: -0.667s; -moz-transform:rotate(120deg) translate(0, -142%); -moz-animation-delay: -0.667s;}
+.spinner div.bar6 {-webkit-transform:rotate(150deg) translate(0, -142%); -webkit-animation-delay: -0.5833s; -moz-transform:rotate(150deg) translate(0, -142%); -moz-animation-delay: -0.5833s;}
+.spinner div.bar7 {-webkit-transform:rotate(180deg) translate(0, -142%); -webkit-animation-delay: -0.5s; -moz-transform:rotate(180deg) translate(0, -142%); -moz-animation-delay: -0.5s;}
+.spinner div.bar8 {-webkit-transform:rotate(210deg) translate(0, -142%); -webkit-animation-delay: -0.41667s; -moz-transform:rotate(210deg) translate(0, -142%); -moz-animation-delay: -0.41667s;} 
+.spinner div.bar9 {-webkit-transform:rotate(240deg) translate(0, -142%); -webkit-animation-delay: -0.333s; -moz-transform:rotate(240deg) translate(0, -142%); -moz-animation-delay: -0.333s;}
+.spinner div.bar10 {-webkit-transform:rotate(270deg) translate(0, -142%); -webkit-animation-delay: -0.25s; -moz-transform:rotate(270deg) translate(0, -142%); -moz-animation-delay: -0.25s;}
+.spinner div.bar11 {-webkit-transform:rotate(300deg) translate(0, -142%); -webkit-animation-delay: -0.1667s; -moz-transform:rotate(300deg) translate(0, -142%); -moz-animation-delay: -0.1667s;}
+.spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -142%); -webkit-animation-delay: -0.0833s; -moz-transform:rotate(330deg) translate(0, -142%); -moz-animation-delay: -0.0833s;}
+ 
+@-webkit-keyframes fade {
+	from {opacity: 1;}
+	to {opacity: 0.25;}
+}
+
+@-moz-keyframes fade {
+	from {opacity: 1;}
+	to {opacity: 0.25;}
+}
+
+.formPanelComponent {
+	background: #7A899E;
+	border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border: none;
+}
+
+.formFieldComponent {
+	
+}
+
+.formFieldLabelComponent {
+	color: #333;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 20px;
+}
+
+.formFieldLabelComponent.invalid {
+	color: #FF0000;
+}
+
+.formFieldInputComponent {
+	border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+.formTextBoxComponent {
+	-webkit-appearance: textfield;
+	font-size: 16px;
+}
+
+.formPasswordComponent {
+	font-size: 16px;
+}
+
+.formButtonComponent {
+	background: #5A697E;
+    border: 1px solid black;
+    color: #FFF;
+    font-weight: bold;
+    font-family: arial;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.listItemComponent {
+	border-bottom: 1px solid #444;
+}
+
