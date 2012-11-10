@@ -1,0 +1,902 @@
+{
+	"screens": {
+		"screen": [{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 108,
+					"text": "Controller List",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 50,
+			"name": "controllerlist",
+			"inverseScreenId": 1050,
+			"list": [{
+				"dataSource": "controllerCredentialsList",
+				"height": "",
+				"itemTemplate": {
+					"absolute": [{
+						"height": "50",
+						"width": "90%",
+						"label": {
+							"id": 110,
+							"text": "${url}",
+							"color": "#FFFFFF",
+							"fontSize": 13
+						},
+						"left": "0",
+						"top": "0"
+					},
+					{
+						"height": "30",
+						"button": {
+							"id": 130,
+							"default": {
+								"image": {
+									"systemImage": true,
+									"src": "controller_edit.png"
+								}
+							},
+							"name": ">",
+							"navigate": {
+								"to": "editcontroller",
+								"data": [{
+									"dataValuePair": {
+										"name": "bindingItem",
+										"value": "url=${url}"
+									}
+								}]
+							}
+						},
+						"width": "30",
+						"right": "5",
+						"top": "10"
+					}],
+					"id": -2,
+					"onTap": "command",
+					"commandString": "${url}",
+					"itemHeight": 50
+				},
+				"width": "100%",
+				"bottom": "0",
+				"itemBindingObject": "controllerCredentials",
+				"left": "0",
+				"top": "50"
+			}]
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 108,
+					"text": "Settings",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			},
+			{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 108,
+					"text": "Clear Cache",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "60"
+			},
+			{
+				"height": "30",
+				"button": {
+					"id": -3,
+					"default": {
+						"image": {
+							"systemImage": true,
+							"src": "controller_edit.png"
+						}
+					},
+					"hasControlCommand": true,
+					"name": ">"
+				},
+				"width": "30",
+				"right": "5",
+				"top": "70"
+			}],
+			"id": 51,
+			"inverseScreenId": 1051,
+			"name": "settings"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 115,
+					"text": "Login",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"form": [{
+				"field": [{
+					"name": "username",
+					"id": "loginuserid",
+					"inputType": "textbox",
+					"optional": false,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"id": "loginpassword",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^.+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "200",
+				"button": [{
+					"id": -5,
+					"name": "LOGIN",
+					"action": "none",
+					"type": "generic",
+					"hasControlCommand": true
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"id": 52,
+			"inverseScreenId": 1052,
+			"name": "login"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 119,
+					"text": "Logout",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			},
+			{
+				"height": "10%",
+				"width": "40%",
+				"button": {
+					"id": -6,
+					"hasControlCommand": true,
+					"name": "LOGOUT"
+				},
+				"left": "30%",
+				"top": "45%"
+			}],
+			"id": 53,
+			"inverseScreenId": 1053,
+			"name": "logout"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 100,
+					"text": "Edit Controller",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 54,
+			"inverseScreenId": 1054,
+			"form": [{
+				"field": [{
+					"name": "url",
+					"inputType": "textbox",
+					"optional": false,
+					"validationString": "^(http|https|HTTP|HTTPS)\\://.+/.+$",
+					"label": "Controller URL:"
+				},
+				{
+					"name": "defaultPanel",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Default Panel Name:"
+				},
+				{
+					"name": "username",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^(\\w|\\d)+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "300",
+				"button": [{
+					"name": "SAVE",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "update",
+					"type": "submit"
+				},
+				{
+					"name": "DELETE",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "delete",
+					"type": "submit"
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"itemBindingObject": "controllerCredentials",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"name": "editcontroller"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 120,
+					"text": "Select Panel",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 55,
+			"inverseScreenId": 1055,
+			"name": "selectpanel",
+			"list": [{
+				"id": 121,
+				"dataSource": "panelIdentityList",
+				"height": "",
+				"itemTemplate": {
+					"absolute": [{
+						"height": "50",
+						"width": "100%",
+						"label": {
+							"id": 123,
+							"text": "${name}",
+							"color": "#FFFFFF",
+							"fontSize": 13
+						},
+						"left": "0",
+						"top": "0"
+					}],
+					"id": -4,
+					"onTap": "command",
+					"commandString": "${name}",
+					"itemHeight": "50"
+				},
+				"width": "100%",
+				"bottom": "0",
+				"itemBindingObject": "panel",
+				"left": "0",
+				"top": "50"
+			}]
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 100,
+					"text": "Add Controller",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 56,
+			"inverseScreenId": 1056,
+			"form": [{
+				"field": [{
+					"name": "url",
+					"inputType": "textbox",
+					"optional": false,
+					"validationString": "^(http|https|HTTP|HTTPS)\\://.+/.+$",
+					"label": "Controller URL:"
+				},
+				{
+					"name": "defaultPanel",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Default Panel Name:"
+				},
+				{
+					"name": "username",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^(\\w|\\d)+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "300",
+				"button": [{
+					"name": "ADD",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "add",
+					"type": "submit"
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"itemBindingObject": "controllerCredentials",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"name": "addcontroller"
+		},
+					{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 1108,
+					"text": "Controller List",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 1050,
+			"name": "controllerlist",
+			"inverseScreenId": 50,
+			"landscape": true,
+			"list": [{
+				"dataSource": "controllerCredentialsList",
+				"height": "",
+				"itemTemplate": {
+					"absolute": [{
+						"height": "50",
+						"width": "90%",
+						"label": {
+							"id": 1110,
+							"text": "${url}",
+							"color": "#FFFFFF",
+							"fontSize": 13
+						},
+						"left": "0",
+						"top": "0"
+					},
+					{
+						"height": "30",
+						"button": {
+							"id": 1130,
+							"default": {
+								"image": {
+									"systemImage": true,
+									"src": "controller_edit.png"
+								}
+							},
+							"name": ">",
+							"navigate": {
+								"to": "editcontroller",
+								"data": [{
+									"dataValuePair": {
+										"name": "bindingItem",
+										"value": "url=${url}"
+									}
+								}]
+							}
+						},
+						"width": "30",
+						"right": "5",
+						"top": "10"
+					}],
+					"id": -1002,
+					"onTap": "command",
+					"commandString": "${url}",
+					"itemHeight": 50
+				},
+				"width": "100%",
+				"bottom": "0",
+				"itemBindingObject": "controllerCredentials",
+				"left": "0",
+				"top": "50"
+			}]
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 1108,
+					"text": "Settings",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			},
+			{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 108,
+					"text": "Clear Cache",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "60"
+			},
+			{
+				"height": "30",
+				"button": {
+					"id": -1003,
+					"default": {
+						"image": {
+							"systemImage": true,
+							"src": "controller_edit.png"
+						}
+					},
+					"hasControlCommand": true,
+					"name": ">"
+				},
+				"width": "30",
+				"right": "5",
+				"top": "70"
+			}],
+			"id": 1051,
+			"inverseScreenId": 51,
+			"landscape": true,
+			"name": "settings"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 115,
+					"text": "Login",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"form": [{
+				"field": [{
+					"name": "username",
+					"id": "loginuserid",
+					"inputType": "textbox",
+					"optional": false,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"id": "loginpassword",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^.+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "200",
+				"button": [{
+					"id": -1005,
+					"name": "LOGIN",
+					"action": "none",
+					"type": "generic",
+					"hasControlCommand": true
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"id": 1052,
+			"inverseScreenId": 52,
+			"landscape": true,
+			"name": "login"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 119,
+					"text": "Logout",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			},
+			{
+				"height": "10%",
+				"width": "40%",
+				"button": {
+					"id": -1006,
+					"hasControlCommand": true,
+					"name": "LOGOUT"
+				},
+				"left": "30%",
+				"top": "45%"
+			}],
+			"id": 1053,
+			"inverseScreenId": 53,
+			"landscape": true,
+			"name": "logout"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 100,
+					"text": "Edit Controller",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 1054,
+			"inverseScreenId": 54,
+			"landscape": true,
+			"form": [{
+				"field": [{
+					"name": "url",
+					"inputType": "textbox",
+					"optional": false,
+					"validationString": "^(http|https|HTTP|HTTPS)\\://.+/.+$",
+					"label": "Controller URL:"
+				},
+				{
+					"name": "defaultPanel",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Default Panel Name:"
+				},
+				{
+					"name": "username",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^(\\w|\\d)+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "300",
+				"button": [{
+					"name": "SAVE",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "update",
+					"type": "submit"
+				},
+				{
+					"name": "DELETE",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "delete",
+					"type": "submit"
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"itemBindingObject": "controllerCredentials",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"name": "editcontroller"
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 120,
+					"text": "Select Panel",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 1055,
+			"inverseScreenId": 55,
+			"landscape": true,
+			"name": "selectpanel",
+			"list": [{
+				"id": 121,
+				"dataSource": "panelIdentityList",
+				"height": "",
+				"itemTemplate": {
+					"absolute": [{
+						"height": "50",
+						"width": "100%",
+						"label": {
+							"id": 123,
+							"text": "${name}",
+							"color": "#FFFFFF",
+							"fontSize": 13
+						},
+						"left": "0",
+						"top": "0"
+					}],
+					"id": -1004,
+					"onTap": "command",
+					"commandString": "${name}",
+					"itemHeight": "50"
+				},
+				"width": "100%",
+				"bottom": "0",
+				"itemBindingObject": "panel",
+				"left": "0",
+				"top": "50"
+			}]
+		},
+		{
+			"absolute": [{
+				"height": "50",
+				"width": "100%",
+				"label": {
+					"id": 100,
+					"text": "Add Controller",
+					"color": "#FFFFFF",
+					"fontSize": 20
+				},
+				"left": "0",
+				"top": "0"
+			}],
+			"id": 1056,
+			"inverseScreenId": 56,
+			"landscape": true,
+			"form": [{
+				"field": [{
+					"name": "url",
+					"inputType": "textbox",
+					"optional": false,
+					"validationString": "^(http|https|HTTP|HTTPS)\\://.+/.+$",
+					"label": "Controller URL:"
+				},
+				{
+					"name": "defaultPanel",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Default Panel Name:"
+				},
+				{
+					"name": "username",
+					"inputType": "textbox",
+					"optional": true,
+					"label": "Username:"
+				},
+				{
+					"name": "password",
+					"inputType": "password",
+					"optional": true,
+					"validationString": "^(\\w|\\d)+$",
+					"label": "Password:"
+				}],
+				"dataSource": "controllerCredentialsList",
+				"height": "300",
+				"button": [{
+					"name": "ADD",
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"action": "add",
+					"type": "submit"
+				},
+				{
+					"navigate": {
+						"to": "controllerlist"
+					},
+					"type": "cancel"
+				}],
+				"width": "95%",
+				"itemBindingObject": "controllerCredentials",
+				"left": "2.5%",
+				"top": "55"
+			}],
+			"name": "addcontroller"
+		}]
+	},
+	"groups": {
+		"group": [{
+			"id": 2,
+			"tabbar": {
+				"item": [{
+					"id": -1,
+					"hasControlCommand": true,
+					"name": "SEARCH",
+					"image": {
+						"systemImage": true,
+						"src": "controller_search.png"
+					}
+				},
+				{
+					"name": "ADD",
+					"navigate": {
+						"to": "addcontroller"
+					},
+					"image": {
+						"systemImage": true,
+						"src": "controller_add.png"
+					}
+				},
+				{
+					"name": "SETTINGS",
+					"navigate": {
+						"to": "settings"
+					},
+					"image": {
+						"systemImage": true,
+						"src": "settings.png"
+					}
+				}]
+			},
+			"name": "Default",
+			"include": [{
+				"ref": 50,
+				"type": "screen"
+			},
+			{
+				"ref": 1050,
+				"type": "screen"
+			}]
+		},
+		{
+			"id": 3,
+			"tabbar": {
+				"item": [{
+					"name": "CONTROLLER LIST",
+					"navigate": {
+						"to": "controllerlist"
+					}
+				}]
+			},
+			"name": "Edit Settings",
+			"include": [{
+				"ref": 51,
+				"type": "screen"
+			},
+			{
+				"ref": 1051,
+				"type": "screen"
+			}]
+		},
+		{
+			"id": 4,
+			"name": "Login Logout",
+			"include": [{
+				"ref": 52,
+				"type": "screen"
+			},
+			{
+				"ref": 53,
+				"type": "screen"
+			},
+			{
+				"ref": 1052,
+				"type": "screen"
+			},
+			{
+				"ref": 1053,
+				"type": "screen"
+			}]
+		},
+		{
+			"id": 5,
+			"name": "Edit Controller",
+			"include": [{
+				"ref": 54,
+				"type": "screen"
+			},
+			{
+				"ref": 1054,
+				"type": "screen"
+			}]
+		},
+		{
+			"id": 6,
+			"tabbar": {
+				"item": [{
+					"name": "CONTROLLER LIST",
+					"navigate": {
+						"to": "controllerlist"
+					}
+				},
+				{
+					"name": "SETTINGS",
+					"navigate": {
+						"to": "settings"
+					}
+				}]
+			},
+			"name": "Panel List",
+			"include": [{
+				"ref": 55,
+				"type": "screen"
+			},
+			{
+				"ref": 1055,
+				"type": "screen"
+			}]
+		},
+		{
+			"id": 7,
+			"name": "Add Controller",
+			"include": [{
+				"ref": 56,
+				"type": "screen"
+			},
+			{
+				"ref": 1056,
+				"type": "screen"
+			}]
+		}]
+	}
+}
