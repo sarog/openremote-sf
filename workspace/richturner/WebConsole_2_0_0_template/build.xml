@@ -16,12 +16,12 @@
   </path>
 
   <target name="find_revision" description="Sets property 'revision.number' to the head svn revision">
-        <property name="revision" value="COMMITTED"/>
+        <property name="revision" value="BASE"/>
 
 		<!-- find out svn.revision need svn.exe installed on local machine will en up in property ${Revision} -->
-		<exec executable="svn">
+<!--		<exec executable="svn">
             <arg line="update"/>
-        </exec>
+        </exec> -->
         <exec executable="svn" output="svnlog.out">
             <arg line="info -r ${revision}"/>
         </exec>
