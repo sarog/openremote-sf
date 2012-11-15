@@ -21,7 +21,7 @@
 				"height": "",
 				"itemTemplate": {
 					"absolute": [{
-						"height": "50",
+						"height": "100%",
 						"width": "90%",
 						"label": {
 							"id": 110,
@@ -33,7 +33,7 @@
 						"top": "0"
 					},
 					{
-						"height": "30",
+						"height": "50%",
 						"button": {
 							"id": 130,
 							"default": {
@@ -53,9 +53,9 @@
 								}]
 							}
 						},
-						"width": "30",
-						"right": "5",
-						"top": "10"
+						"width": "7%",
+						"right": "2%",
+						"top": "25%"
 					}],
 					"id": -2,
 					"onTap": "command",
@@ -378,7 +378,7 @@
 			}],
 			"name": "addcontroller"
 		},
-					{
+		{
 			"absolute": [{
 				"height": "50",
 				"width": "100%",
@@ -400,7 +400,7 @@
 				"height": "",
 				"itemTemplate": {
 					"absolute": [{
-						"height": "50",
+						"height": "100%",
 						"width": "90%",
 						"label": {
 							"id": 1110,
@@ -412,7 +412,7 @@
 						"top": "0"
 					},
 					{
-						"height": "30",
+						"height": "50%",
 						"button": {
 							"id": 1130,
 							"default": {
@@ -432,9 +432,9 @@
 								}]
 							}
 						},
-						"width": "30",
-						"right": "5",
-						"top": "10"
+						"width": "7%",
+						"right": "2%",
+						"top": "25%"
 					}],
 					"id": -1002,
 					"onTap": "command",
