@@ -22,7 +22,6 @@ package org.openremote.web.console.widget.panel.list;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
@@ -41,7 +40,6 @@ import org.openremote.web.console.widget.Sensor;
 import org.openremote.web.console.widget.panel.AbsolutePanelComponent;
 import org.openremote.web.console.widget.panel.GridPanelComponent;
 import org.openremote.web.console.widget.panel.PanelComponent;
-
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
@@ -62,7 +60,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ListItem extends PanelComponent implements Interactive, TapHandler, TouchMoveHandler, MouseMoveHandler {
 	public static final String CLASS_NAME = "listItemComponent";
-	private static final int DEFAULT_ITEM_HEIGHT = 50;
+	private static int DEFAULT_ITEM_HEIGHT = 50;
 	PressStartEvent startEvent = null;
 	private String commandString = "";
 	private String onTap = "";
@@ -70,6 +68,12 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 	ListPanelComponent parentList = null;
 	AbsolutePanel component = null;
+	
+	static {
+		int[] size;
+		size = BrowserUtils.getSizeFromStyle(CLASS_NAME);
+		DEFAULT_ITEM_HEIGHT = size[1] == 0 ? DEFAULT_ITEM_HEIGHT : size[1];
+	}
 	
 	public ListItem() {
 		component = new AbsolutePanel();
@@ -248,10 +252,10 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 			ListItem item = new ListItem();
 			
 			// Check for height parameter
-			String itemHeight = listLayout.getItemHeight();
-			if (itemHeight != null) {
-				item.setHeight(itemHeight);
-			}
+//			String itemHeight = listLayout.getItemHeight();
+//			if (itemHeight != null) {
+//				item.setHeight(itemHeight);
+//			}
 			
 			// Check for id
 			Integer id = listLayout.getId();

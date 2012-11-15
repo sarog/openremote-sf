@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.openremote.web.console.panel.entity.DataValuePair;
 import org.openremote.web.console.panel.entity.DataValuePairContainer;
 import org.openremote.web.console.panel.entity.Field;
@@ -37,7 +36,6 @@ import org.openremote.web.console.widget.panel.PanelComponent;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonAction;
 import org.openremote.web.console.widget.panel.form.FormButtonComponent.EnumFormButtonType;
 import org.openremote.web.console.widget.panel.form.FormField.EnumFormInputType;
-
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;

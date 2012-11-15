@@ -217,24 +217,26 @@ FORM AND LIST WIDGETS
 }
 
 .formButtonComponent {
+    margin: 10px;
+    line-height: 35px;
+    width: 80px;
+    height: 35px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    font-size: 14px;
 	background: #5A697E;
     border: 1px solid black;
     color: #FFF;
     font-weight: bold;
     font-family: arial;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     -webkit-appearance: none;
-    margin: 10px;
-    line-height: 35px;
-    width: 80px;
-    height: 35px;
 }
 
 
 
 .listItemComponent {
+	height: 75px;
 	border-bottom: 1px solid #444;
 }
 
@@ -272,11 +274,13 @@ FORM AND LIST WIDGETS
 	    line-height: 50px;
 	    width: 120px;
 	    height: 50px;
+	    font-size: 21px;
 	}
 	
 	
 	
 	.listItemComponent {
+		height: 75px;
 		border-bottom: 2px solid #444;
 	}
 }
@@ -311,11 +315,13 @@ FORM AND LIST WIDGETS
 	    line-height: 75px;
 	    width: 150px;
 	    height: 75px;
+	    font-size: 28px;
 	}
 	
 	
 	
 	.listItemComponent {
+		height: 100px;
 		border-bottom: 3px solid #444;
 	}
 }
