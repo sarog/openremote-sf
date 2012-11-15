@@ -21,7 +21,6 @@ package org.openremote.web.console.widget;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.tap.TapEvent;
@@ -37,7 +36,6 @@ import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.unit.ConsoleDisplay;
 import org.openremote.web.console.util.BrowserUtils;
-
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -45,10 +43,11 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 /**
@@ -61,11 +60,11 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 	public static final String TAB_ITEM_CLASS_NAME = "tabBarItem";
 	public static final String TAB_IMAGE_CLASS_NAME = "tabBarItemImage";
 	public static final String TAB_TEXT_CLASS_NAME = "tabBarItemText";
-	public static final int TAB_BAR_HEIGHT = 46;
-	public static final int TAB_TEXT_HEIGHT = 12;
-	public static final int PADDING_TOP = 2;
-	public static final int PADDING_BOTTOM = 1;
-	public static final int PADDING_BETWEEN_IMAGE_AND_TEXT = 4;
+	public static int TAB_BAR_HEIGHT = 46;
+	public static int TAB_TEXT_HEIGHT = 12;
+	public static final int IMAGE_PADDING_TOP = 2;
+//	public static final int PADDING_BOTTOM = 1;
+//	public static final int PADDING_BETWEEN_IMAGE_AND_TEXT = 4;
 	private static final int TAB_ITEM_MIN_WIDTH = 60;
 	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
 	private int pageCount = 0;
@@ -79,12 +78,20 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		NEXT;
 	}
 	
+	static {
+		int[] size;
+		size = BrowserUtils.getSizeFromStyle(CLASS_NAME);
+		TAB_BAR_HEIGHT = size[1] == 0 ? TAB_BAR_HEIGHT : size[1];
+		size = BrowserUtils.getSizeFromStyle(TAB_TEXT_CLASS_NAME, true);
+		TAB_TEXT_HEIGHT = size[1] == 0 ? TAB_TEXT_HEIGHT : size[1];
+	}
+	
 	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
 		private TabBarItem item;
 		private EnumSystemTabItemType systemTabType;
 		boolean hasImage = false;
 		boolean hasText = false;
-		Image imageComponent = null;
+		SimplePanel imageComponent = null;
 		Label nameComponent = null;
 		
 		public TabBarItemComponent(TabBarItem item) {
@@ -98,57 +105,54 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			TabImage tabImage = item.getImage();
 			setHeight("100%");
 			setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			boolean hasText = false;
+			
+			// Check if we have text
+			if (item.getName() != null && !item.getName().equals("")) {
+				hasText = true;
+			}
 			
 			// Add Image
 			if (tabImage != null) {
 				boolean isSystemImage = false;
 				if (tabImage.getSystemImage() != null && tabImage.getSystemImage()) isSystemImage = true;
-				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM);
-				imageComponent = new Image();
+				int tabImageSize = hasText ? (TAB_BAR_HEIGHT - IMAGE_PADDING_TOP - TAB_TEXT_HEIGHT) : (TAB_BAR_HEIGHT - IMAGE_PADDING_TOP);
+				imageComponent = new SimplePanel();
 				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
+				imageComponent.setWidth("100%");
+				imageComponent.setHeight(tabImageSize + "px");
+				String marginStr = hasText ? IMAGE_PADDING_TOP + "px 0 0 0" : IMAGE_PADDING_TOP + "px 0";
+				DOM.setStyleAttribute(imageComponent.getElement(), "margin", marginStr);
+				Element elem = imageComponent.getElement();
+				
 				String imagePath = "";
 				if (isSystemImage) {
 					imagePath = BrowserUtils.getSystemImageDir() + tabImage.getSrc();
 				} else {
 					imagePath = WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + tabImage.getSrc();
 				}
-				imageComponent.setUrl(imagePath);
-				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
-				imageComponent.setStylePrimaryName("tabBarItemImage");
-				DOM.setStyleAttribute(imageComponent.getElement(), "padding", "0px");
-				DOM.setStyleAttribute(imageComponent.getElement(), "marginTop", PADDING_TOP + "px");
-				DOM.setStyleAttribute(imageComponent.getElement(), "marginBottom", PADDING_BOTTOM + "px");
+				
+				DOM.setStyleAttribute(elem, "backgroundImage", "url(" + imagePath + ")");
+				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
+				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
+				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
+				DOM.setStyleAttribute(elem, "backgroundSize", "contain");
+				DOM.setStyleAttribute(elem, "border", "none");
 				this.add(imageComponent);
 				hasImage = true;
 			}
 			
 			// Add Text
 			if (item.getName() != null && !item.getName().equals("")) {
-				int lineHeight = TAB_TEXT_HEIGHT;
-				if (!hasImage) {
-					lineHeight = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM); 
-				}
+				int lineHeight = hasImage ? TAB_TEXT_HEIGHT : TAB_BAR_HEIGHT;
+
 				nameComponent = new Label();
 				nameComponent.setText(item.getName());
 				nameComponent.setWidth("100%");
 				nameComponent.setStylePrimaryName(TAB_TEXT_CLASS_NAME);
 				DOM.setStyleAttribute(nameComponent.getElement(), "lineHeight", lineHeight + "px");
-				DOM.setStyleAttribute(nameComponent.getElement(), "fontSize", TAB_TEXT_HEIGHT + "px");
-				DOM.setStyleAttribute(nameComponent.getElement(), "padding", "0px");
-				DOM.setStyleAttribute(nameComponent.getElement(), "marginBottom", PADDING_BOTTOM + "px");
-				DOM.setStyleAttribute(nameComponent.getElement(), "marginTop", PADDING_TOP + "px");
 				this.add(nameComponent);
 				hasText = true;
-			}
-			
-			// If image and text add padding between them and adjust image size
-			if (hasImage && hasText) {
-				int tabImageSize = TAB_BAR_HEIGHT - (PADDING_TOP + PADDING_BOTTOM + TAB_TEXT_HEIGHT + PADDING_BETWEEN_IMAGE_AND_TEXT);
-				imageComponent.getElement().getStyle().clearMargin();
-				DOM.setStyleAttribute(imageComponent.getElement(), "position", "relative");
-				DOM.setStyleAttribute(imageComponent.getElement(), "top", PADDING_TOP + "px");
-				DOM.setStyleAttribute(nameComponent.getElement(), "marginTop", PADDING_BETWEEN_IMAGE_AND_TEXT/2 + "px");
-				imageComponent.setSize(tabImageSize + "px", tabImageSize + "px");
 			}
 		}
 
@@ -182,8 +186,14 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		
 		public void setImageSrc(String src) {
 			if (hasImage && imageComponent != null) {
-				imageComponent.setUrl(src);
+				DOM.setStyleAttribute(imageComponent.getElement(), "backgroundImage", "url(" + src + ")");
 			}
+		}
+		
+		public void setWidth(int width) {
+			this.setWidth(width + "px");
+			if (nameComponent != null) nameComponent.setWidth(width + "px");
+			if (imageComponent != null) imageComponent.setWidth(width + "px");
 		}
 	}
 	
@@ -206,8 +216,6 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		return TAB_BAR_HEIGHT;
 	}
 	
-
-	
 	private void loadPage(int pageNo) {
 		int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
 		
@@ -229,7 +237,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 				break;
 			}
 			TabBarItemComponent item = items.get(i);
-			item.setWidth(widthPerItem + "px");
+			item.setWidth(widthPerItem);
 			((HorizontalPanel)getWidget()).add(item);
 		}
 	}

@@ -163,13 +163,14 @@ public class FormPanelComponent extends PanelComponent {
 				grid.setWidget(i, 0, field);
 			}
 		
-			// Force button size to be 80 x 35
+			// Display buttons
 			HorizontalPanel buttonPanel = new HorizontalPanel();
 			buttonPanel.setWidth("100%");
 			buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			for (FormButtonComponent button : buttons) {
 				buttonPanel.add((Widget)button);
-				button.onAdd(80, 35);
+				button.setVisible(true);
+				button.initHandlers();
 			}
 			grid.setWidget(rows, 0, buttonPanel);
 		}

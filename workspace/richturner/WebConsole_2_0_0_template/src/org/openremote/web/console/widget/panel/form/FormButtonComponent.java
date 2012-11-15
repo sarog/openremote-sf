@@ -20,6 +20,7 @@
 package org.openremote.web.console.widget.panel.form;
 
 import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.widget.ButtonComponent;
 
 import com.google.gwt.user.client.DOM;
@@ -97,7 +98,6 @@ public class FormButtonComponent extends ButtonComponent {
 		super();
 		this.parentForm = parent;
 		setStylePrimaryName(CLASS_NAME);
-		DOM.setStyleAttribute(getElement(), "lineHeight", "35px");
 		this.buttonType = type;
 		
 		switch(buttonType) {
@@ -133,7 +133,7 @@ public class FormButtonComponent extends ButtonComponent {
 					super.onTap(event);
 				} else {
 					//TODO: Handle invalid submit
-					Window.alert("FORM IS NOT VALID!");
+					BrowserUtils.showAlert("FORM IS NOT VALID!");
 				}
 				break;
 			default:

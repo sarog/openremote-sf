@@ -69,11 +69,12 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	Set<PanelComponent> itemComponents = new HashSet<PanelComponent>();
 	HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 	ListPanelComponent parentList = null;
+	AbsolutePanel component = null;
 	
 	public ListItem() {
-		AbsolutePanel panel = new AbsolutePanel();
-		DOM.setStyleAttribute(panel.getElement(), "overflow", "hidden");
-		setPanelWidget(panel);
+		component = new AbsolutePanel();
+		DOM.setStyleAttribute(component.getElement(), "overflow", "hidden");
+		setPanelWidget(component);
 		setHeight(DEFAULT_ITEM_HEIGHT);
 	}
 	
@@ -150,6 +151,10 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	@Override
 	public void onUpdate(int width, int height) {
 		setWidth("100%");
+		component.setWidth(width + "px");
+		for (PanelComponent component : itemComponents) {
+			component.onRefresh(width, height);
+		}
 	}
 
 	@Override

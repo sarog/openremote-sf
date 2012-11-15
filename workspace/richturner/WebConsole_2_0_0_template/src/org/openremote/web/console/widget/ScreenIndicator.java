@@ -25,11 +25,13 @@ import java.util.List;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
 import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
+import org.openremote.web.console.util.BrowserUtils;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 /**
  * 
@@ -39,10 +41,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScreenIndicator extends PassiveConsoleComponent implements ScreenViewChangeHandler {
 	private static final String CLASS_NAME = "screenIndicatorComponent";
 	private static final String ITEM_CLASS_NAME = "screenIndicatorItem";
-	private static final int INDICATOR_SIZE = 6;
-	private static final int INDICATOR_SPACING = 8;
+	private static final String SPACER_CLASS_NAME = "screenIndicatorSpacer";
+	private static int INDICATOR_SIZE = 6;
 	private List<Integer> screenIds;
 	private List<Widget> screenIndicators;
+	
+	static {
+		int[] size;
+		size = BrowserUtils.getSizeFromStyle(ITEM_CLASS_NAME);
+		INDICATOR_SIZE = size[1] == 0 ? INDICATOR_SIZE : size[1];
+	}
 	
 	public ScreenIndicator(List<Integer> screenIds) {
 		super(new HorizontalPanel(), CLASS_NAME);
@@ -54,15 +62,42 @@ public class ScreenIndicator extends PassiveConsoleComponent implements ScreenVi
 		screenIndicators = new ArrayList<Widget>();
 		
 		if (screenIds != null) {
-			width = INDICATOR_SIZE * screenIds.size() + (INDICATOR_SPACING * (screenIds.size()-1));
+			width = INDICATOR_SIZE * ((screenIds.size()*2) - 1);
 			setWidth(width + "px");
 			setHeight(INDICATOR_SIZE + "px");
 			height = INDICATOR_SIZE;
+			
+			// Add a simple div for each screen
+			for (int i=0; i<screenIds.size(); i++) {
+				int cellWidth = INDICATOR_SIZE;
+				//cellWidth = i != screenIds.size()-1 ? cellWidth + INDICATOR_SPACING : cellWidth;
+				Widget screenIndicator = new SimplePanel();
+				screenIndicator.setWidth(INDICATOR_SIZE + "px");
+				screenIndicator.setHeight(INDICATOR_SIZE + "px");
+				screenIndicator.setStylePrimaryName(ITEM_CLASS_NAME);
+				screenIndicators.add(screenIndicator);
+				container.add(screenIndicator);
+				container.setCellWidth(screenIndicator, cellWidth + "px");
+				
+				if (i<screenIds.size()-1) {
+					// Add a spacer
+					Widget spacer = new SimplePanel();
+					spacer.setWidth(INDICATOR_SIZE + "px");
+					spacer.setHeight(INDICATOR_SIZE + "px");
+					spacer.setStylePrimaryName(SPACER_CLASS_NAME);
+					container.add(spacer);
+					container.setCellWidth(spacer, cellWidth + "px");
+				}
+			}
 		}
 	}
 	
 	public int getWidth() {
 		return width;
+	}
+	
+	public int getHeight() {
+		return INDICATOR_SIZE;
 	}
 	
 	// ---------------------------------------------------------------------------------
@@ -78,22 +113,11 @@ public class ScreenIndicator extends PassiveConsoleComponent implements ScreenVi
 
 	@Override
 	public void onRender(int width, int height) {
-		// Add a simple div for each screen
-		HorizontalPanel container = (HorizontalPanel)getWidget();
-		for (int i=0; i<screenIds.size(); i++) {
-			int cellWidth = INDICATOR_SIZE;
-			cellWidth = i != screenIds.size()-1 ? cellWidth + INDICATOR_SPACING : cellWidth;
-			Widget screenIndicator = new HTML();
-			screenIndicator.setWidth(INDICATOR_SIZE-1 + "px");
-			screenIndicator.setHeight(INDICATOR_SIZE-1 + "px");
-			screenIndicator.setStylePrimaryName(ITEM_CLASS_NAME);
-			screenIndicators.add(screenIndicator);
-			container.add(screenIndicator);
-			container.setCellWidth(screenIndicator, cellWidth + "px");
+		if (!isInitialised)
+		{
+			// Register screen change handler
+			registerHandler(ConsoleUnitEventManager.getInstance().getEventBus().addHandler(ScreenViewChangeEvent.getType(),this));
 		}
-		
-		// Register screen change handler
-		registerHandler(ConsoleUnitEventManager.getInstance().getEventBus().addHandler(ScreenViewChangeEvent.getType(),this));
 	}
 	
 	@Override

@@ -78,7 +78,7 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		return id;
 	}
 	
-	protected void initHandlers() {
+	public void initHandlers() {
 		// Check that handlers have been registered if interactive if not register them on the top level widget
 		if (this instanceof InteractiveConsoleComponent) {
 			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;

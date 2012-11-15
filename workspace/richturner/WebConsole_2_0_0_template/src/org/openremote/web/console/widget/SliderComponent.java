@@ -92,11 +92,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		int[] size;
 		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME);
 		THUMB_SIZE = size[1] == 0 ? THUMB_SIZE : size[1];
-//		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME + "Touch");
-//		MIN_THUMB_CLICK_AREA_SIZE = size[1] == 0 ? MIN_THUMB_CLICK_AREA_SIZE : size[1];
-//		size = BrowserUtils.getSizeFromStyle(TRACK_CLASS_NAME);
-//		TRACK_HEIGHT = size[1] == 0 ? TRACK_HEIGHT : size[1] < TRACK_HEIGHT ? TRACK_HEIGHT : size[1];
-//		TRACK_BORDER = size[1] - size[3];
+		size = BrowserUtils.getSizeFromStyle(THUMB_CLASS_NAME + "Touch");
+		MIN_THUMB_CLICK_AREA_SIZE = size[1] == 0 ? MIN_THUMB_CLICK_AREA_SIZE : size[1];
+		size = BrowserUtils.getSizeFromStyle(TRACK_CLASS_NAME);
+		TRACK_HEIGHT = size[1] == 0 ? TRACK_HEIGHT : size[1] < TRACK_HEIGHT ? TRACK_HEIGHT : size[1];
+		TRACK_BORDER = size[1] - size[3];
 	}
 	
 	class Thumb extends SimplePanel implements Draggable {
@@ -203,7 +203,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			this.setWidth("100%");
 			this.setHeight("100%");
 			this.setStylePrimaryName(BAR_CLASS_NAME);
-			DOM.setStyleAttribute(element, "overflow", "hidden");
+			DOM.setStyleAttribute(element, "overflow", "visible");
 			BrowserUtils.setStyleAttributeAllBrowsers(element, "boxSizing", "border-box");
 			
 			track = new Grid();
@@ -285,7 +285,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private SliderComponent() {
 		// Define container widget
 		super(new Grid(), CLASS_NAME);
-		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
 		
 		// Define child components
 		slideBar = new SlideBar();

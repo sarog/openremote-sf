@@ -312,9 +312,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 
 		if (setFullscreen || maxDim >= winWidth || maxDim >= winHeight) {
 			
+			setOrientation(winOrientation);
+			
 			if (!winOrientation.equals(getOrientation())) {
-				setOrientation(winOrientation);
-				
 				// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
 				if (panelService.isInitialized()) {
 					if (!orientation.equalsIgnoreCase(consoleDisplay.getOrientation()) || (!BrowserUtils.isMobile && isFullscreen)) {
