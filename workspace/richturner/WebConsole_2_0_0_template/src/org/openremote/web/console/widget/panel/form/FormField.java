@@ -90,7 +90,6 @@ public class FormField extends InteractiveConsoleComponent implements KeyUpHandl
 		container.setSpacing(0);
 		
 		lbl = new Label();
-		lbl.setHeight("20px");
 		lbl.setWidth("100%");
 		lbl.setStylePrimaryName(LABEL_CLASS_NAME);
 	}

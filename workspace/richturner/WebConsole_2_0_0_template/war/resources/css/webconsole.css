@@ -258,11 +258,9 @@ CONSOLE UNIT
 	zoom: 1;
 }
 
-/* .tabBarComponent * { */
-/* 	margin: 0; */
-/* 	padding: 0; */
-/* 	border: none; */
-/* } */
+.screenIndicatorSpacer {
+	background-color: none;
+}
 
 
 
@@ -308,12 +306,9 @@ img, button {
 }
 
 .sliderComponent * {
-	
-}
-
-.sliderComponent button, .sliderComponent, .sliderComponent td, .sliderComponent table {
 	padding: 0;
 	margin: 0;
+	border-spacing: 0;
 	border-spacing: 0;
 }
 
@@ -340,63 +335,18 @@ img, button {
 	margin: 0px;
 }
 
+.buttonComponent span {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .buttonComponent.hasImage, .switchComponent.hasImage {
 	background-color: inherit;
 }
 
-.formPanelComponent {
-	background: #7A899E;
-	border-radius: 8px;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border: none;
+.tabBarItemText {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
-
-.formFieldComponent {
-	
-}
-
-.formFieldLabelComponent {
-	color: #333;
-	font-weight: bold;
-	font-size: 16px;
-	line-height: 20px;
-}
-
-.formFieldLabelComponent.invalid {
-	color: #FF0000;
-}
-
-.formFieldInputComponent {
-	border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-}
-
-.formTextBoxComponent {
-	-webkit-appearance: textfield;
-	font-size: 16px;
-}
-
-.formPasswordComponent {
-	font-size: 16px;
-}
-
-.formButtonComponent {
-	background: #5A697E;
-    border: 1px solid black;
-    color: #FFF;
-    font-weight: bold;
-    font-family: arial;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -webkit-appearance: none;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-.listItemComponent {
-	border-bottom: 1px solid #444;
-}
-

@@ -48,6 +48,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -64,7 +66,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		private static String windowOrientation = "portrait";
 		private static int windowHeight;
 		private static int windowWidth;
-		private static SimplePanel probeElement;
+		private static HTML probeElement;
 		private static String userAgent = Window.Navigator.getUserAgent();
 		static final String[] MOBILE_SPECIFIC_SUBSTRING = {
 	      "iphone","android","midp","opera mobi",
@@ -92,7 +94,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			isMobile = isMobile();
 			isApple = isApple();
 			isIE = isIE();
-			SimplePanel panel = new SimplePanel();
+			HTML panel = new HTML();
 			Element elem = panel.getElement();
 			elem.getStyle().setVisibility(Visibility.HIDDEN);
 			BrowserUtils.setStyleAttributeAllBrowsers(panel.getElement(), "boxSizing", "border-box");
@@ -155,16 +157,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			updateWindowInfo();
 			
 			if ((oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowWidth || oldHeight != windowHeight)) || (!oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowHeight || oldHeight != windowWidth))) {
-//				Window.scrollTo(0, 1);
-//				int height = windowHeight;
-//				int width = windowWidth;
-//				if (isMobile) {
-//					if (windowOrientation.equalsIgnoreCase("landscape")) {
-//						int tempHeight = height;
-//						height = width;
-//						width = tempHeight;
-//					}
-//				}
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new WindowResizeEvent(getWindowWidth(), getWindowHeight()));
 			}
 			
@@ -210,6 +202,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		public static void updateWindowInfo() {
 			int winHeight = getWindowHeight();
 			int winWidth = getWindowWidth();
+			
+			if (isMobile() && windowWidth == winWidth && windowHeight > winHeight) {
+				// Ignore this as it just means the soft keyboard has been shown
+				return;
+			}
+			
 			String winOrientation = "portrait";
 			
 			if (winHeight < winWidth) {
@@ -413,8 +411,18 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		}
 		
 		public static int[] getSizeFromStyle(String style) {
+			return getSizeFromStyle(style, false);
+		}
+		
+		public static int[] getSizeFromStyle(String style, boolean useText) {
 			if (!probeElement.isAttached()) {
 				RootPanel.get().add(probeElement);
+			}
+			
+			if (useText) {
+				probeElement.setHTML("M");
+			} else {
+				probeElement.setHTML("");
 			}
 			
 			int[] values = new int[4];

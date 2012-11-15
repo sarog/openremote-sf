@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  */
 public class ConsoleDisplay extends InteractiveConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
 	public static final String CLASS_NAME = "consoleDisplay";
+	private static final int INDICATOR_TAB_BAR_SPACING = 5;
 	private AbsolutePanel display;
 	private String currentOrientation = "portrait";
 	private TabBarComponent currentTabBar;
@@ -251,9 +252,9 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 				removeComponent(currentScreenIndicator);
 				currentScreenIndicator = null;
 			}
-			int heightOffset = currentTabBar != null ? currentTabBar.getHeight() + 10 : 10 ;
-			addComponent(screenIndicator, (int)Math.round((((double)getWidth() - screenIndicator.getWidth())/2)), getHeight() - heightOffset);
+			addComponent(screenIndicator, (int)Math.round((((double)getWidth() - screenIndicator.getWidth())/2)), getHeight());
 			currentScreenIndicator = screenIndicator;
+			updateScreenIndicator();
 		}
 	}
 	
@@ -290,7 +291,9 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	
 	protected void updateScreenIndicator() {
 		if (currentScreenIndicator != null) {
-			display.setWidgetPosition(currentScreenIndicator, (int)Math.round((((double)getWidth() - currentScreenIndicator.getWidth())/2)), getHeight() - 55);
+			int heightOffset = currentTabBar != null ? currentTabBar.getHeight() + INDICATOR_TAB_BAR_SPACING : INDICATOR_TAB_BAR_SPACING ;
+			heightOffset += currentScreenIndicator.getHeight();
+			display.setWidgetPosition(currentScreenIndicator, (int)Math.round((((double)getWidth() - currentScreenIndicator.getWidth())/2)), getHeight() - heightOffset);
 		}
 	}
 	
