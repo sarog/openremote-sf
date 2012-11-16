@@ -1041,7 +1041,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			BrowserUtils.showLoadingMsg("Retreiving System Panel Definition");
 
 			try {
-				new RequestBuilder(RequestBuilder.GET, "resources/systempanel.json").sendRequest("", new RequestCallback() {
+				int displayDensity = BrowserUtils.getDisplayDensityValue();
+				new RequestBuilder(RequestBuilder.GET, "resources/systempanel" + displayDensity + ".json").sendRequest("", new RequestCallback() {
 					@Override
 					public void onResponseReceived(Request request, Response response) {
 						String systemPanelStr = response.getText();

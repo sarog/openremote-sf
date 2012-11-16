@@ -67,6 +67,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		private static int windowHeight;
 		private static int windowWidth;
 		private static HTML probeElement;
+		private static final String LOADING_IMAGE_ID = "console_loading_image";
+		private static final String LOADING_MSG_ID = "console_loading_msg";
 		private static String userAgent = Window.Navigator.getUserAgent();
 		static final String[] MOBILE_SPECIFIC_SUBSTRING = {
 	      "iphone","android","midp","opera mobi",
@@ -265,8 +267,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		}
 		
 		public static void hideLoadingMsg() {
-			RootPanel.get("loading_image").setVisible(false);
-			RootPanel.get("loading_msg").setVisible(false);
+			RootPanel.get(LOADING_IMAGE_ID).setVisible(false);
+			RootPanel.get(LOADING_MSG_ID).setVisible(false);
 		}
 		
 		public static void showLoadingMsg() {
@@ -274,9 +276,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		}
 		
 		public static void showLoadingMsg(String msg) {
-			RootPanel.get("loading_msg").getElement().setInnerHTML("<span>" + msg  + "</span>");
-			RootPanel.get("loading_image").setVisible(true);
-			RootPanel.get("loading_msg").setVisible(true);
+			RootPanel.get(LOADING_MSG_ID).getElement().setInnerHTML("<span>" + msg  + "</span>");
+			RootPanel.get(LOADING_IMAGE_ID).setVisible(true);
+			RootPanel.get(LOADING_MSG_ID).setVisible(true);
 		}
 		
 		public static void hideAlert() {
@@ -296,8 +298,10 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			DOM.getElementById("alert_popup_msg").setInnerHTML(msg);
 			
 			int halfHeight = (int) Math.round((double)elem.getClientHeight()/2);
+			int halfWidth = (int) Math.round((double)elem.getClientWidth()/2);
 			
 			elem.getStyle().setMarginTop(-halfHeight, Unit.PX);
+			elem.getStyle().setMarginLeft(-halfWidth, Unit.PX);
 			
 			//console.getConsoleDisplay().setVisible(false);
 			DOM.getElementById("alert_popup").getStyle().setVisibility(Visibility.VISIBLE);
@@ -438,6 +442,15 @@ import com.google.gwt.user.client.ui.SimplePanel;
 // -------------------------------------------------------------
 //			NATIVE METHODS BELOW HERE
 // -------------------------------------------------------------		
+		
+		// Gets display density as an integer (1.0 = 10)
+		public native static int getDisplayDensityValue() /*-{
+			var displayDensity = 10;
+			if (typeof $wnd.devicePixelRatio != 'undefined') {
+				displayDensity = $wnd.devicePixelRatio * 10;
+			}
+			return (displayDensity < 13 ? 10 : displayDensity < 18 ? 15 : 20);
+		}-*/;
 		
 		// Seem to have issue with getting height using GWT on ipod so resort to native JS
 		public native static int getNativeWindowDim(String dim) /*-{

@@ -53,6 +53,72 @@
 	    		background-color: #000;
 	    	}
 	    	
+	    	#console_loading_image {
+	    		margin-left: -70px;
+	    		margin-top: -70px;
+	    		width: 140px;
+	    		height: 140px;
+	    		position: absolute;
+	    		top: 50%;
+	    		left: 50%;
+	    		background-image: url(resources/images/loading_logo_outer.png);
+	    		background-size: 100% 100%;
+	    		opacity: 0.3;
+	    	}
+	    	
+	    	#console_loading_msg {
+	    		margin-left: -150px;
+	    		margin-top: 75px;
+	    		width: 300px;
+	    		height: 25px;
+	    		line-height: 25px;
+	    		font-size: 18px;
+	    		position: absolute;
+	    		top: 50%;
+	    		left: 50%;
+	    		color: #2b6229;
+	    		font-weight: bold;
+	    		text-align: center;
+	    		opacity: 0.5;
+	    	}
+	    	
+			/* Pixel ratio of 1.5 */
+			@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1), only screen and (min-device-pixel-ratio: 1) {
+				#console_loading_image {
+					margin-left: -105px;
+		    		margin-top: -105px;
+		    		width: 210px;
+		    		height: 210px;
+				}
+				
+				#console_loading_msg {
+		    		margin-left: -200px;
+		    		margin-top: 110px;
+		    		width: 400px;
+		    		height: 40px;
+		    		line-height: 40px;
+		    		font-size: 27px;
+	    		}
+			}
+			/* Pixel ratio of 2 */
+			@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+				#console_loading_image {
+					margin-left: -140px;
+		    		margin-top: -140px;
+		    		width: 280px;
+		    		height: 280px;
+				}
+				
+				#console_loading_msg {
+		    		margin-left: -200px;
+		    		margin-top: 145px;
+		    		width: 400px;
+		    		height: 50px;
+		    		line-height: 50px;
+		    		font-size: 36px;
+	    		}
+			}
+	    	
 			.loading_image_outer {
 				-webkit-animation: forward 1s linear infinite;
 				-moz-animation: forward 1s linear infinite;
@@ -104,15 +170,15 @@
 	<body class="fullscreen">
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		<div style="width: 3000px; height: 3000px;"></div>
-		<div id="loading_image" class="loading_image_outer" style="position: absolute; top: 50%; left: 50%; margin-left: -50px; margin-top: -50px; width: 100px; height: 100px; background-image: url(resources/images/loading_logo_outer.png); background-size: 100% 100%; opacity: 0.3;">
+		<div id="console_loading_image" class="loading_image_outer">
 			<div class="loading_image_inner" style="width: 100%; height: 100%; background-image: url(resources/images/loading_logo_centre.png); background-size: 100% 100%;"></div>
 		</div>
-		<div id="loading_msg" style="position: absolute; top: 50%; left: 50%; margin-left: -100px; margin-top: 55px; width: 200px; height: 25px; line-height: 25px; color: #2b6229; font-size: 18px; font-weight: bold; text-align: center; opacity: 0.5;">
+		<div id="console_loading_msg">
 			<span>LOADING...</span>
 		</div>
 		<div id="alert_popup" class="alert_popup" style="visibility: hidden;">
 			<div id="alert_popup_header">Web Console</div>
-			<div id="alert_popup_msg">This is what an alert will look like!</div>
+			<div id="alert_popup_msg"></div>
 			<button onClick="window.hideAlert()" style="width: 80px; height: 40px;">OK</button>
 		</div>
 	    <noscript>
