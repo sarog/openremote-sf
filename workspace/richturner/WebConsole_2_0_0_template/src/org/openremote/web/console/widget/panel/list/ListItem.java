@@ -72,7 +72,7 @@ public class ListItem extends PanelComponent implements Interactive, TapHandler,
 	static {
 		int[] size;
 		size = BrowserUtils.getSizeFromStyle(CLASS_NAME);
-		DEFAULT_ITEM_HEIGHT = size[1] == 0 ? DEFAULT_ITEM_HEIGHT : size[1];
+		DEFAULT_ITEM_HEIGHT = size[1] < DEFAULT_ITEM_HEIGHT ? DEFAULT_ITEM_HEIGHT : size[1];
 	}
 	
 	public ListItem() {

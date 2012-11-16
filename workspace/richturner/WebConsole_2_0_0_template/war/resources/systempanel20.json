@@ -2,13 +2,13 @@
 	"screens": {
 		"screen": [{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 108,
 					"text": "Controller List",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -27,13 +27,13 @@
 							"id": 110,
 							"text": "${url}",
 							"color": "#FFFFFF",
-							"fontSize": 13
+							"fontSize": 28
 						},
 						"left": "0",
 						"top": "0"
 					},
 					{
-						"height": "50%",
+						"height": "60",
 						"button": {
 							"id": 130,
 							"default": {
@@ -55,7 +55,7 @@
 						},
 						"width": "7%",
 						"right": "2%",
-						"top": "25%"
+						"top": "20"
 					}],
 					"id": -2,
 					"onTap": "command",
@@ -66,18 +66,18 @@
 				"bottom": "0",
 				"itemBindingObject": "controllerCredentials",
 				"left": "0",
-				"top": "50"
+				"top": "105"
 			}]
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 108,
 					"text": "Settings",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -89,13 +89,13 @@
 					"id": 108,
 					"text": "Clear Cache",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 28
 				},
 				"left": "0",
-				"top": "60"
+				"top": "110"
 			},
 			{
-				"height": "30",
+				"height": "60",
 				"button": {
 					"id": -3,
 					"default": {
@@ -107,9 +107,9 @@
 					"hasControlCommand": true,
 					"name": ""
 				},
-				"width": "30",
-				"right": "5",
-				"top": "70"
+				"width": "7%",
+				"right": "2%",
+				"top": "120"
 			}],
 			"id": 51,
 			"inverseScreenId": 1051,
@@ -117,13 +117,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 115,
 					"text": "Login",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -161,7 +161,7 @@
 				}],
 				"width": "95%",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"id": 52,
 			"inverseScreenId": 1052,
@@ -169,13 +169,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 119,
 					"text": "Logout",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -197,13 +197,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 100,
 					"text": "Edit Controller",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -264,19 +264,19 @@
 				"width": "95%",
 				"itemBindingObject": "controllerCredentials",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"name": "editcontroller"
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 120,
 					"text": "Select Panel",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -290,13 +290,13 @@
 				"height": "",
 				"itemTemplate": {
 					"absolute": [{
-						"height": "50",
+						"height": "100%",
 						"width": "100%",
 						"label": {
 							"id": 123,
 							"text": "${name}",
 							"color": "#FFFFFF",
-							"fontSize": 13
+							"fontSize": 28
 						},
 						"left": "0",
 						"top": "0"
@@ -310,18 +310,18 @@
 				"bottom": "0",
 				"itemBindingObject": "panel",
 				"left": "0",
-				"top": "50"
+				"top": "105"
 			}]
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 100,
 					"text": "Add Controller",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -374,19 +374,19 @@
 				"width": "95%",
 				"itemBindingObject": "controllerCredentials",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"name": "addcontroller"
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 1108,
 					"text": "Controller List",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -406,13 +406,13 @@
 							"id": 1110,
 							"text": "${url}",
 							"color": "#FFFFFF",
-							"fontSize": 13
+							"fontSize": 28
 						},
 						"left": "0",
 						"top": "0"
 					},
 					{
-						"height": "50%",
+						"height": "60",
 						"button": {
 							"id": 1130,
 							"default": {
@@ -434,7 +434,7 @@
 						},
 						"width": "7%",
 						"right": "2%",
-						"top": "25%"
+						"top": "20"
 					}],
 					"id": -1002,
 					"onTap": "command",
@@ -445,18 +445,18 @@
 				"bottom": "0",
 				"itemBindingObject": "controllerCredentials",
 				"left": "0",
-				"top": "50"
+				"top": "105"
 			}]
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 1108,
 					"text": "Settings",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -468,13 +468,13 @@
 					"id": 108,
 					"text": "Clear Cache",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 28
 				},
 				"left": "0",
-				"top": "60"
+				"top": "110"
 			},
 			{
-				"height": "30",
+				"height": "60",
 				"button": {
 					"id": -1003,
 					"default": {
@@ -486,9 +486,9 @@
 					"hasControlCommand": true,
 					"name": ""
 				},
-				"width": "30",
-				"right": "5",
-				"top": "70"
+				"width": "7%",
+				"right": "2%",
+				"top": "120"
 			}],
 			"id": 1051,
 			"inverseScreenId": 51,
@@ -497,13 +497,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 115,
 					"text": "Login",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -541,7 +541,7 @@
 				}],
 				"width": "95%",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"id": 1052,
 			"inverseScreenId": 52,
@@ -550,13 +550,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 119,
 					"text": "Logout",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -579,13 +579,13 @@
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 100,
 					"text": "Edit Controller",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -647,19 +647,19 @@
 				"width": "95%",
 				"itemBindingObject": "controllerCredentials",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"name": "editcontroller"
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 120,
 					"text": "Select Panel",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -674,13 +674,13 @@
 				"height": "",
 				"itemTemplate": {
 					"absolute": [{
-						"height": "50",
+						"height": "100%",
 						"width": "100%",
 						"label": {
 							"id": 123,
 							"text": "${name}",
 							"color": "#FFFFFF",
-							"fontSize": 13
+							"fontSize": 28
 						},
 						"left": "0",
 						"top": "0"
@@ -694,18 +694,18 @@
 				"bottom": "0",
 				"itemBindingObject": "panel",
 				"left": "0",
-				"top": "50"
+				"top": "105"
 			}]
 		},
 		{
 			"absolute": [{
-				"height": "50",
+				"height": "100",
 				"width": "100%",
 				"label": {
 					"id": 100,
 					"text": "Add Controller",
 					"color": "#FFFFFF",
-					"fontSize": 20
+					"fontSize": 40
 				},
 				"left": "0",
 				"top": "0"
@@ -759,7 +759,7 @@
 				"width": "95%",
 				"itemBindingObject": "controllerCredentials",
 				"left": "2.5%",
-				"top": "55"
+				"top": "105"
 			}],
 			"name": "addcontroller"
 		}]
