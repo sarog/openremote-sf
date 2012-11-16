@@ -259,14 +259,15 @@ public class GridPanelComponent extends PanelComponent {
 				}
 				
 				if (component != null) {
+					// REMOVED THIS BECAUSE GRID PANEL ONLY SUPPORTS ONE WIDGET PER CELL SO NOT NEEDED
 					// Add CSS4 pointer-events attribute to allow pointer events to pass through
 					// passive components; this isn't the best place to set this but not many other
 					// options given code structure
-					if (component instanceof PassiveConsoleComponent) {
-						BrowserUtils.setStyleAttributeAllBrowsers(panel.getElement(), "pointerEvents", "none");
-					}
+//					if (component instanceof PassiveConsoleComponent) {
+//						BrowserUtils.setStyleAttributeAllBrowsers(grid.getCellFormatter().getElement(row, col), "pointerEvents", "none");
+//					}					
+					panel.setComponent(row, col, component);
 				}
-				panel.setComponent(row, col, component);
 			}
 		}
 
