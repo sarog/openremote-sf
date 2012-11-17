@@ -76,6 +76,7 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
+    <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
   </bean>
 
   <!-- round-robin variables -->
@@ -266,6 +267,7 @@
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
+        <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -282,7 +284,8 @@
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lagarto">lagartoCommandBuilder</prop>
 		    </props>
 		</property>
 -->
@@ -393,10 +396,13 @@
   <!-- DSC IT Security System -->
   <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
   
-
+  <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
+  <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
+    <property name="configuration" ref="configuration"/>
+  </bean>
 
   <!-- TODO -->
-	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
+  <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
     <property name = "componentBuilders">
       <map>
         <entry key = "button" value-ref = "buttonBuilder"/>
@@ -407,7 +413,7 @@
         <entry key = "image"  value-ref = "imageBuilder"/>
       </map>
     </property>
-	</bean>
+  </bean>
 
 
   <!-- EVENT PROCESSING CHAIN =====================================================================

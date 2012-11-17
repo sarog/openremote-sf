@@ -81,6 +81,7 @@ public class ControllerConfiguration extends Configuration
   public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
   public static final String LIRCD_CONF_PATH = "lircd.conf.path";
   public static final String WEBAPP_IP = "webapp.ip";
+  public static final String LAGARTO_BROADCAST_ADDRESS = "lagarto_network.broadcast";
 
 
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
@@ -137,6 +138,7 @@ public class ControllerConfiguration extends Configuration
   private String webappName;
   private String irsendPath;
   private String lircdconfPath;
+  private String lagartoBroadcastAddr;
 
   /** Whether copy lircd.conf for user. */
   private boolean copyLircdconf;
@@ -483,5 +485,29 @@ public class ControllerConfiguration extends Configuration
       this.webappName = webappName;
    }
 
+  /**
+   * Returns the broadcast address used to publish network events (ZeroMQ)
+   * from Lagarto servers
+   *
+   * @see #setLagartoBroadcastAddr(String)
+   *
+   * @return IP broadcast address as a string
+   */
+  public String getLagartoBroadcastAddr()
+  {
+    return preferAttrCustomValue(LAGARTO_BROADCAST_ADDRESS, lagartoBroadcastAddr);
+  }
 
+  /**
+   * Sets the broadcast address used to receive network events (ZeroMQ) from
+   * Lagarto servers
+   *
+   * @see #getLagartoBroadcastAddr()
+   *
+   * @param IP broadcast address as a string
+   */
+  public void setLagartoBroadcastAddr(String broadcastAddress)
+  {
+    this.lagartoBroadcastAddr = broadcastAddress.trim();
+  }
 }

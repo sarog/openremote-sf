@@ -14,6 +14,7 @@ Jaroslav Misura
 Richard Turner
 Yann Philippe
 Greg Rapp
+Daniel Berenguer
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
