@@ -180,7 +180,7 @@ public class DeviceCommandWindow extends FormWindow {
          }
 
       });
-      createFields(Protocols.getInstance().values());
+      createFields(Protocols.getInstance());
       add(form);
    }
    
