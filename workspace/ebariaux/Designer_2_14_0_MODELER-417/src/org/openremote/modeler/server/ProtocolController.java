@@ -43,7 +43,7 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
          ProtocolParser parser = new ProtocolParser();
          ProtocolContainer.getInstance().setProtocols(parser.parseXmls());
       }
-      return new ArrayList<ProtocolDefinition>(ProtocolContainer.getInstance().getProtocols().values());
+      return ProtocolContainer.getInstance().getProtocolsSortedByDisplayName();
    }
 
 }
