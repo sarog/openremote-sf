@@ -86,20 +86,6 @@ public class ProtocolContainer implements Serializable {
    }
 
    /**
-    * Gets the.
-    * 
-    * @param name the name
-    * 
-    * @return the protocol definition
-    */
-   public ProtocolDefinition get(String name) {
-      if (protocols.containsKey(name)) {
-         return protocols.get(name);
-      }
-      return null;
-   }
-   
-   /**
     * Find tag name.
     * 
     * @param protocolDisplayName the protocol display name
