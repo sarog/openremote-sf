@@ -100,7 +100,8 @@
   	<fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
 
   </path>
 
@@ -185,6 +186,7 @@
     <mkdir dir = "${build.dir}/testcontainer/logs/knx"/>
     <mkdir dir = "${build.dir}/testcontainer/logs/onewire"/>
     <mkdir dir = "${build.dir}/testcontainer/logs/isy99"/>
+    <mkdir dir = "${build.dir}/testcontainer/logs/lagarto"/>
 
     <mkdir dir = "${output.dir}"/>
 
@@ -213,6 +215,9 @@
       <fileset dir = "${lib.dir}/drools-5.1.1">
         <include name = "*.jar"/>
       </fileset>
+      <fileset dir = "${lib.dir}/jzmq">
+        <include name = "**/*.jar"/>
+      </fileset>
     </copy>
 
 
@@ -222,7 +227,14 @@
         <include name = "**/*.so"/>
         <include name = "**/*.jnilib"/>
       </fileset>
-    </copy>    
+    </copy>
+
+    <copy todir = "${build.dir}/lib/native" flatten = "true">
+      <fileset dir = "${lib.dir}/jzmq">
+        <include name = "**/*.so"/>
+      </fileset>
+    </copy>
+
   </target>
 
 

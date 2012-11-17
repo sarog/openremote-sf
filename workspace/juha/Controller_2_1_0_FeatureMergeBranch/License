@@ -695,6 +695,8 @@ OpenRemote Sub-components:
   Version 2.1 or any later version. For the purpose of this distribution, RXTX
   library is re-licensed under GNU Lesser General Public License (LGPL) Version
   3.0.
+* ZeroMQ library is licensed under GNU Lesser General Public License (LGPL)
+  Version 3.0 or any later version.
 * JDOM library is licensed under the terms included below.
 * Jaxen library is licensed under the terms included below.
 * Log4j 1.2.12 library is licensed under Apache License Version 2.0, see 
