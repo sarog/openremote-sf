@@ -19,7 +19,8 @@
 */
 package org.openremote.modeler.client.utils;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
 import org.openremote.modeler.client.rpc.ProtocolRPCServiceAsync;
@@ -36,7 +37,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class Protocols {
    
    /** The m_instance. */
-   private static Map<String, ProtocolDefinition> instanceMap;
+   private static List<ProtocolDefinition> instanceMap;
    
    /** The Constant protocolService. */
    private static final ProtocolRPCServiceAsync protocolService = (ProtocolRPCServiceAsync) GWT.create(ProtocolRPCService.class);
@@ -52,13 +53,13 @@ public class Protocols {
     * 
     * @return single instance of Protocols
     */
-   public static synchronized Map<String, ProtocolDefinition> getInstance() {
+   public static synchronized List<ProtocolDefinition> getInstance() {
       if (instanceMap == null) {
-         protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
+         protocolService.getProtocols(new AsyncCallback<ArrayList<ProtocolDefinition>>() {
             public void onFailure(Throwable caught) {
                MessageBox.info("Error", "Can't get protocols from xml file!", null);
             }
-            public void onSuccess(Map<String, ProtocolDefinition> protocols) {
+            public void onSuccess(ArrayList<ProtocolDefinition> protocols) {
                instanceMap = protocols;
             }
          });

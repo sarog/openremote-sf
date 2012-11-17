@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.openremote.modeler.protocol.ProtocolDefinition;
 
@@ -39,5 +39,5 @@ public interface ProtocolRPCServiceAsync {
     * @param callback the callback
     * 
     */
-   void getProtocols(AsyncCallback<Map<String, ProtocolDefinition>> callback);
+   void getProtocols(AsyncCallback<ArrayList<ProtocolDefinition>> callback);
 }
