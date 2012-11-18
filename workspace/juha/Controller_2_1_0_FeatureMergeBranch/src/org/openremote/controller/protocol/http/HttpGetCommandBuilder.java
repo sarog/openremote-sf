@@ -17,6 +17,8 @@
 package org.openremote.controller.protocol.http;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -143,21 +145,24 @@ public class HttpGetCommandBuilder implements CommandBuilder
     }
 
     URL url;
-
+    URI uri;
     try
     {
       url = new URL(urlAsString);
+      uri = new URI(url.getProtocol(), null, url.getHost(), url.getPort(), url.getPath(), url.getQuery(), null);
     } catch (MalformedURLException e)
     {
       throw new NoSuchCommandException("Invalid URL: " + e.getMessage(), e);
+    } catch (URISyntaxException e) {
+       throw new NoSuchCommandException("Invalid URI: " + e.getMessage(), e);
     }
 
     if (null != username && null != password)
     {
-      return new HttpGetCommand(url, username, password.getBytes(), xpath, regex, intervalInMillis);
+      return new HttpGetCommand(uri, username, password.getBytes(), xpath, regex, intervalInMillis);
     } else
     {
-      return new HttpGetCommand(url, xpath, regex, intervalInMillis);
+      return new HttpGetCommand(uri, xpath, regex, intervalInMillis);
     }
   }
 
