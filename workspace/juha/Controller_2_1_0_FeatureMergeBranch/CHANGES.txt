@@ -1,6 +1,6 @@
 
-Controller 2.1.0
-================
+Controller 2.1.0 (2012-XX-XX Twin Galaxies)
+===========================================
 
 New Features:
 
@@ -12,6 +12,8 @@ New Features:
 Bug Fixes:
 
   - Performance fix to sensor state cache queries (Marcus Redeker)
+  - Runtime performance optimization to avoid unnecessary XML 
+    parsing/XPath use (ORCJAVA-190)
   - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
   
