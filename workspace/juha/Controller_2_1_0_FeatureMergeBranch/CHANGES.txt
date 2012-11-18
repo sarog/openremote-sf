@@ -5,7 +5,7 @@ Controller 2.1.0
 New Features:
 
   - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
-
+  - Lagarto server (panStamps) integration, Daniel Berenguer
 
 Bug Fixes:
 
