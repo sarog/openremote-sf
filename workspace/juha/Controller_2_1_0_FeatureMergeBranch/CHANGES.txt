@@ -16,5 +16,6 @@ Bug Fixes:
     parsing/XPath use (ORCJAVA-190)
   - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
-  
+  - Internal API : concurrency and call control on Deployer start 
+    controller calls (ORCJAVA-179)  
   
