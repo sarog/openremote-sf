@@ -6,11 +6,13 @@ New Features:
 
   - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
   - Lagarto server (panStamps) integration, Daniel Berenguer
+  - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
+
 
 Bug Fixes:
 
   - Performance fix to sensor state cache queries (Marcus Redeker)
   - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
-
+  
   
