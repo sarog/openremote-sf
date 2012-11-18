@@ -83,7 +83,7 @@
 	    	}
 	    	
 			/* Pixel ratio of 1.5 */
-			@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1), only screen and (min-device-pixel-ratio: 1) {
+			@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
 				#console_loading_image {
 					margin-left: -105px;
 		    		margin-top: -105px;
@@ -179,7 +179,7 @@
 		<div id="alert_popup" class="alert_popup" style="visibility: hidden;">
 			<div id="alert_popup_header">Web Console</div>
 			<div id="alert_popup_msg"></div>
-			<button onClick="window.hideAlert()" style="width: 80px; height: 40px;">OK</button>
+			<button class="buttonComponent" onClick="window.hideAlert()" style="width: 80px; height: 40px;"><span>OK</span></button>
 		</div>
 	    <noscript>
 	      <div id="noScriptError">

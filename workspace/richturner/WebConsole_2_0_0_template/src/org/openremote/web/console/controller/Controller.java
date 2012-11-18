@@ -150,6 +150,13 @@ public class Controller implements ControllerCredentials {
 		this.isAlive = isAlive;
 	}
 	
+	public boolean isProxied() {
+		if (url.toLowerCase().indexOf("openremote.com") > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean isSecure() {
 		return isSecure;
 	}

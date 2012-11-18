@@ -935,7 +935,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		String imageUrl = url;
 		Controller controller = controllerService.getController();
-		if (controller != null && controller.isSecure()) {
+		if (controller != null && controller.isProxied()) {
 			ControllerCredentials creds = controller.getCredentials();
 			imageUrl = BrowserUtils.getImageProxyURL(creds.getUsername(), creds.getPassword(), url);
 		}
@@ -968,7 +968,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			welcomeFlag = (WelcomeFlag)bean.as();
 			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
 		}
-		
+
 		if (welcomeVersion < version) {
 			// Show welcome message
 			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
@@ -1190,7 +1190,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					gestureHandled = true;
 					eventBus.fireEvent(new NavigateEvent(navigate));
 				}
-			} else if (hasControlCommand) {
+			} else if (hasControlCommand != null && hasControlCommand) {
 				gestureHandled = true;
 				eventBus.fireEvent(new CommandSendEvent(commandId, "swipe", null));
 			}

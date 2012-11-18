@@ -43,27 +43,14 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 	private List<ImageLoadedCallback> loadedCallbacks = new ArrayList<ImageLoadedCallback>();
 	
 	public ImageContainer(String imageUrl) {
-		this(new Image(imageUrl), true);
+		this(imageUrl, false);
 	}
-	
-	public ImageContainer(Image image) {
-		this(image, true);
-	}
-	
-	public ImageContainer(Image image, boolean checkExists) {
-		this(image, null, checkExists);
-	}
-	
-	public ImageContainer(Image image, ImageLoadedCallback loadedCallback) {
-		this(image, loadedCallback, true);
-	}
-	
-	public ImageContainer(Image image, ImageLoadedCallback loadedCallback, boolean checkExists) {
-		this.loadedCallbacks.add(loadedCallback);
+	public ImageContainer(String imageUrl, boolean isSecure) {
+		image = new Image(imageUrl);
+		//this.loadedCallbacks.add(loadedCallback);
 		image.addLoadHandler(this);
 		image.addErrorHandler(this);
 		image.setVisible(false);
-		this.image = image;
 		
 		if (!image.getUrl().equalsIgnoreCase("")) {
 			Image.prefetch(image.getUrl());
@@ -157,9 +144,7 @@ public class ImageContainer implements LoadHandler, ErrorHandler {
 	public ImageContainer clone()
 	{
 		ImageContainer container = null;
-		Image img = new Image(this.getUrl());
-		img.setVisible(false);
-		container = new ImageContainer(img);
+		container = new ImageContainer(this.getUrl());
 		container.existCheckDone = existCheckDone;
 		container.exists = exists;
 		container.loadAttempted = loadAttempted;

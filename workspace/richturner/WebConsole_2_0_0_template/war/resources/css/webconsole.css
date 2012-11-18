@@ -120,42 +120,79 @@ body {
 }
 
 #alert_popup {
-	position: absolute;
-	top: 50%;
-	left: 50%;
 	padding: 10px;
-	background-color: #444;
-	border: 1px solid #FFF;
-	color: #FFF;
 	font-size: 16px;
 	border-radius: 10px;
 	-o-border-radius: 10px;
 	-moz-border-radius: 10px;
 	-ms-border-radius: 10px;
 	-webkit-border-radius: 10px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background-color: #444;
+	border: 1px solid #FFF;
+	color: #FFF;
 	text-align: center;
-}
-
-#alert_popup.portrait {
-	width: 280px;
-	margin-left: -150px;
-}
-
-#alert_popup.landscape {
-	width: 340px;
-	margin-left: -180px;	
+	width: 90%;
+	max-width: 600px;
+	word-wrap: break-word;
 }
 
 #alert_popup_header {
-	width: 100%;
 	padding-bottom: 5px;
 	border-bottom: 1px solid #FFF;
+	width: 100%;
 	text-align: center;
 }
 
 #alert_popup_msg {
 	margin: 10px 0;
 	width: 100%;
+}
+
+/* Pixel ratio of 1.5 */
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	#alert_popup {
+		padding: 15px;
+		font-size: 24px;
+		border-radius: 15px;
+		-o-border-radius: 15px;
+		-moz-border-radius: 15px;
+		-ms-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
+	
+	#alert_popup_header {
+		padding-bottom: 7px;
+		border-width-bottom: 2px;
+	}
+	
+	#alert_popup_msg {
+		margin: 15px 0;
+	}
+}
+
+/* Pixel ratio of 2 */
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+	#alert_popup {
+		padding: 20px;
+		font-size: 32px;
+		border-radius: 20px;
+		-o-border-radius: 20px;
+		-moz-border-radius: 20px;
+		-ms-border-radius: 20px;
+		-webkit-border-radius: 20px;
+	}
+	
+	#alert_popup_header {
+		padding-bottom: 10px;
+		border-width-bottom: 3px;
+	}
+	
+	#alert_popup_msg {
+		margin: 20px 0;
+	}
 }
 
 /************************************************************************
