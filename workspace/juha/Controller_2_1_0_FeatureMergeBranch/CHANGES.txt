@@ -7,6 +7,10 @@ New Features:
   - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
   - Lagarto server (panStamps) integration, Daniel Berenguer
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
+  - HTTP protocol implementation has been converted to internally use
+    URI instead of URL classes. This resolves an issue with lack of
+    encoding of HTTP parameters which contain which contain white spaces
+    or other special characters (Marcus Redeker)
 
 
 Bug Fixes:
