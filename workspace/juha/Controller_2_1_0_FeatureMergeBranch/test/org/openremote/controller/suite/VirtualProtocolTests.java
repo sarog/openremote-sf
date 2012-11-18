@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
 import org.openremote.controller.protocol.virtual.SwitchStatusTest;
 import org.openremote.controller.protocol.virtual.LevelStatusTest;
 import org.openremote.controller.protocol.virtual.RangeStatusTest;
+import org.openremote.controller.protocol.virtual.CustomStatusTest;
 
 /**
  * All OpenRemote Virtual protocol tests aggregated here.
@@ -36,7 +37,8 @@ import org.openremote.controller.protocol.virtual.RangeStatusTest;
    {
        SwitchStatusTest.class,
        LevelStatusTest.class,
-       RangeStatusTest.class
+       RangeStatusTest.class,
+       CustomStatusTest.class
    }
 )
 public class VirtualProtocolTests

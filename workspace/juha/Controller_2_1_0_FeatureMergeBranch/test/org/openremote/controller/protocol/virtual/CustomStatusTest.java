@@ -26,21 +26,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.jdom.Element;
 
 /**
- * Test 'range' sensor state reads and writes on OpenRemote virtual room/device protocol.
+ * Test 'custom' sensor state reads and writes on OpenRemote virtual room/device protocol.
  *
  * @see org.openremote.controller.protocol.virtual.VirtualCommand
  *
+ *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class RangeStatusTest
+public class CustomStatusTest
 {
+
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -63,65 +65,68 @@ public class RangeStatusTest
   // Tests ----------------------------------------------------------------------------------------
 
   /**
-   * Tests protocol read command behavior for 'range' sensor type when no explict command to
-   * set state has been sent yet. Expecting a 'range' sensor to return '0' in such a case.
+   * Tests protocol read command behavior for 'custom' sensor type when no explict command to
+   * set state has been sent yet. Expecting a 'custom' sensor to return an empty string in such
+   * case.
    */
   @Test public void testStatusDefaultValue()
   {
     StatusCommand cmd = getReadCommand("test range default value");
 
-    String value = cmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+    String value = cmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("0"));
+    Assert.assertTrue(value.equals(""));
   }
 
 
 
   /**
-   * Tests 'range' sensor read/write behavior.
+   * Tests 'custom' sensor read/write behavior. Note that we are testing directly on the
+   * 'raw' protocol implementation, therefore custom state mapping such as provided by
+   * the sensor implementation does not apply. More or less we're just testing that arbitrary
+   * values are returned correctly.
    */
-  @Test public void testRangeState()
+  @Test public void testCustomState()
   {
-    final String ADDRESS = "range read/write tests";
+    final String ADDRESS = "custom read/write tests";
 
-    // Read command in uninitialized state, should return '0'...
+    // Read command in uninitialized state, should return an empty string...
 
     StatusCommand readCmd = getReadCommand(ADDRESS);
 
-    String value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+    String value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equalsIgnoreCase("0"));
+    Assert.assertTrue(value.equalsIgnoreCase(""));
 
 
-    // Send write command '1' to the same address...
+    // Send write command 'foo' to the same address...
 
-    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "any command", 1);
+    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "foo");
 
     writeLevel1.send();
 
 
-    // Read state, should return '1'...
+    // Read state, should return 'foo'...
 
-    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("1"));
+    Assert.assertTrue(value.equals("foo"));
 
 
-    // Send write command '10001' to the same address...
+    // Send write command 'STATUS' to the same address...
 
-    ExecutableCommand writeLevel10001 = getWriteCommand(ADDRESS, "any command", 10001);
+    ExecutableCommand writeLevel10001 = getWriteCommand(ADDRESS, "STATUS");
 
     writeLevel10001.send();
 
 
 
-    // Read state, should return '10001'...
+    // Read state, should return 'STATUS'...
 
-    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
 
-    Assert.assertTrue("Was expecting '10001', got '" + value + "'.", value.equals("10001"));
+    Assert.assertTrue("Was expecting 'STATUS', got '" + value + "'.", value.equals("STATUS"));
   }
-
 
 
 
@@ -176,17 +181,15 @@ public class RangeStatusTest
    *
    * @param address   arbitrary address string
    * @param cmd       arbitrary command name
-   * @param value     command value
    *
    * @return  write command instance with given parameters
    */
-  private ExecutableCommand getWriteCommand(String address, String cmd, int value)
+  private ExecutableCommand getWriteCommand(String address, String cmd)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
 
     ele.setAttribute(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME, "virtual");
-    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, Integer.toString(value));
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "address");
@@ -216,7 +219,7 @@ public class RangeStatusTest
       return (ExecutableCommand)command;
     }
   }
-
+  
 
 }
 
