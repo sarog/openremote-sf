@@ -777,13 +777,25 @@ public class DeployerTest
   }
 
 
-  // TODO : check test API usage of startController() vs softRestart()
 
-
-  @Test public void testStartController()
+  /**
+   * TODO :
+   *   at the moment there are no assertions that can be made to test
+   *   the startController behavior
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testStartControllerConsequtiveCalls() throws Exception
   {
-    Assert.fail("Not Yet Implemented. See ORCJAVA-160");
+    Deployer d = createDeployer("Test start controller");
+
+    d.startController();
+
+    // TODO : second call should return immediately, log an error or throw an exception
+    
+    d.startController();
   }
+  
 
   @Test public void testIsPaused()
   {
