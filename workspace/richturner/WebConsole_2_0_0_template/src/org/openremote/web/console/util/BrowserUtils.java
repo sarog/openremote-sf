@@ -289,21 +289,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		public static void showAlert(String msg) {
 			ConsoleUnit console = WebConsole.getConsoleUnit();
 			Element elem = DOM.getElementById("alert_popup");
-			
-			// Size based on console orientation
-			elem.removeClassName("portrait");
-			elem.removeClassName("landscape");
-			elem.addClassName(console.getOrientation());
-
 			DOM.getElementById("alert_popup_msg").setInnerHTML(msg);
-			
 			int halfHeight = (int) Math.round((double)elem.getClientHeight()/2);
 			int halfWidth = (int) Math.round((double)elem.getClientWidth()/2);
-			
 			elem.getStyle().setMarginTop(-halfHeight, Unit.PX);
 			elem.getStyle().setMarginLeft(-halfWidth, Unit.PX);
-			
-			//console.getConsoleDisplay().setVisible(false);
 			DOM.getElementById("alert_popup").getStyle().setVisibility(Visibility.VISIBLE);
 		}
 		
