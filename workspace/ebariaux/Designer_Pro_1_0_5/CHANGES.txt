@@ -1,8 +1,11 @@
 Pro 1.0.5
 =========
 
+Fixes:
+ - MODELER-409: NPE on autosave from UI design
+
 New features:
-  - contentType attribute on HTTP protocol (MODELER-416)
+ - contentType attribute on HTTP protocol (MODELER-416)
 
 Pro 1.0.4
 =========
