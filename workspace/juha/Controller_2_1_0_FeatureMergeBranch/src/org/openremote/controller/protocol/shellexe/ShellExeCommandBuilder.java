@@ -24,6 +24,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Builds a ShellExeCommand which can be used to execute shell scripts.
@@ -38,6 +39,8 @@ public class ShellExeCommandBuilder implements CommandBuilder {
 
    private final static String STR_ATTRIBUTE_NAME_COMMAND_PATH = "commandPath";
    private final static String STR_ATTRIBUTE_NAME_COMMAND_PARAMS = "commandParams";
+   private final static String STR_ATTRIBUTE_NAME_REGEX = "regex";
+   private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -48,12 +51,15 @@ public class ShellExeCommandBuilder implements CommandBuilder {
     */
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
-      logger.debug("Building WOL command");
+      logger.debug("Building ShellExe command");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
 
       String commandPath = null;
       String commandParams = null;
-
+      String regex = null;
+      String interval = null;
+      Integer intervalInMillis = null;
+      
       // read values from config xml
 
       for (Element ele : propertyEles) {
@@ -66,16 +72,33 @@ public class ShellExeCommandBuilder implements CommandBuilder {
          } else if (STR_ATTRIBUTE_NAME_COMMAND_PARAMS.equals(elementName)) {
             commandParams = elementValue;
             logger.debug("ShellExe Command: commandParams = " + commandParams);
-         }
+         } else if (STR_ATTRIBUTE_NAME_POLLINGINTERVAL.equals(elementName))
+         {
+           interval = elementValue;
+           logger.debug("ShellExe Command: pollingInterval = " + interval);
+         } else if (STR_ATTRIBUTE_NAME_REGEX.equals(elementName))
+         {
+           regex = elementValue;
+           logger.debug("ShellExe Command: regex = " + regex);
+         } 
       }
 
       if (null == commandPath || commandPath.trim().length() == 0) {
          throw new NoSuchCommandException("ShellExe command must have a commandPath property.");
       }
 
+      try
+      {
+        if (null != interval) {
+          intervalInMillis = Integer.valueOf(Strings.convertPollingIntervalString(interval));
+        }
+      } catch (Exception e1)
+      {
+        throw new NoSuchCommandException("Unable to create ShellExe command, pollingInterval could not be converted into milliseconds");
+      }
       logger.debug("ShellExe Command created successfully");
 
-      return new ShellExeCommand(commandPath, commandParams);
+      return new ShellExeCommand(commandPath, commandParams, regex, intervalInMillis);
    }
 
 }

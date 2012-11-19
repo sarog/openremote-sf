@@ -15,6 +15,8 @@ New Features:
     (Marcus Redeker)
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales.
+  - Shell Command Execution: polling interval and regular expression
+    filtering on return values supported
 
 
 Bug Fixes:

@@ -146,7 +146,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
       {
         jsonpath = elementValue;
         parserCount++;
-        logger.debug("HttpGetCommand: jsonpath = " + xpath);
+        logger.debug("HttpGetCommand: jsonpath = " + jsonpath);
       }
     }
 
