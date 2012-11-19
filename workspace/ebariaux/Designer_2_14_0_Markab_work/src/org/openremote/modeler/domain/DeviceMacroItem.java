@@ -29,8 +29,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.extjs.gxt.ui.client.data.BeanModel;
-
 import flexjson.JSON;
 
 
@@ -70,46 +68,6 @@ public class DeviceMacroItem extends UICommand {
     */
    public void setParentDeviceMacro(DeviceMacro parentDeviceMacro) {
       this.parentDeviceMacro = parentDeviceMacro;
-   }
-   
-   /**
-    * Gets the label.
-    * 
-    * @return the label
-    */
-   @Transient
-   @JSON(include = false)
-   public String getTreeNodeLabel() {
-      if (this instanceof DeviceMacroRef) {
-         DeviceMacroRef deviceMacroRef = (DeviceMacroRef) this;
-         return deviceMacroRef.getTargetDeviceMacro().getName();
-      } else if (this instanceof DeviceCommandRef) {
-         DeviceCommandRef commandRef = (DeviceCommandRef) this;
-         return commandRef.getDeviceCommand().getName();
-      } else if (this instanceof CommandDelay) {
-         CommandDelay commandDelay = (CommandDelay) this;
-         return "Delay(" + commandDelay.getDelaySecond() + "s)";
-      } else {
-         return "";
-      }
-   }
-   
-   /**
-    * Gets the target bean model.
-    * 
-    * @return the target bean model
-    */
-   @Transient
-   @JSON(include = false)
-   public BeanModel getTargetBeanModel() {
-      if (this instanceof DeviceMacroRef) {
-         return ((DeviceMacroRef) this).getTargetDeviceMacro().getBeanModel();
-      } else if (this instanceof DeviceCommandRef) {
-         return ((DeviceCommandRef) this).getDeviceCommand().getBeanModel();
-      } else if (this instanceof CommandDelay) {
-         return this.getBeanModel();
-      }
-      return null;
    }
    
    public boolean equalsWithoutCompareOid(DeviceMacroItem macroItemB) {
