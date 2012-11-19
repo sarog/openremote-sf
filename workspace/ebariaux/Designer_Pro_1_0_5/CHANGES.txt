@@ -6,6 +6,7 @@ Fixes:
 
 New features:
  - contentType attribute on HTTP protocol (MODELER-416)
+ - Have protocol names ordered alphabetically for commands (MODELER-417)
 
 Pro 1.0.4
 =========
