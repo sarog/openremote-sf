@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -209,7 +210,7 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param protocols the protocols
     */
-   private void createFields(Map<String, ProtocolDefinition> protocols) {
+   private void createFields(Collection<ProtocolDefinition> protocols) {
       TextField<String> nameField = new TextField<String>();
       nameField.setName(DEVICE_COMMAND_NAME);
       nameField.setFieldLabel("Name");
@@ -222,9 +223,20 @@ public class DeviceCommandWindow extends FormWindow {
       protocol.setAllowBlank(false);
       protocol.ensureDebugId(DebugId.DEVICE_COMMAND_PROTOCOL_FIELD);
       
-      for (String key : protocols.keySet()) {
-         if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
-            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
+      ComboBoxDataModel<ProtocolDefinition> selectedProtocol = null;
+      for (ProtocolDefinition proto : protocols) {
+         if (!proto.getDisplayName().equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(proto.getDisplayName(), proto);
+            
+            if (deviceCommand.getOid() != null) {
+              String protocolName = deviceCommand.getProtocolType();
+              if (protocolName != null) {
+                if (protocolName.equals(proto.getDisplayName())) {
+                  selectedProtocol = data;
+                }
+              }
+            }
+            
             protocol.getStore().add(data);
          }
       }
@@ -250,14 +262,10 @@ public class DeviceCommandWindow extends FormWindow {
       });
 
       if (deviceCommand.getOid() != null) {
-         String protocolName = deviceCommand.getProtocolType();
          nameField.setValue(deviceCommand.getName());
-         if (protocols.containsKey(protocolName)) {
-            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
-                  .get(protocolName));
-            protocol.setValue(data);
-         }
-//         protocol.disable();
+      }
+      if (selectedProtocol != null) {
+        protocol.setValue(selectedProtocol);
       }
       form.layout();
    }

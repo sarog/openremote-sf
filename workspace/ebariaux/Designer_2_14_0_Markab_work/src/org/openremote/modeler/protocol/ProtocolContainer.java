@@ -21,6 +21,9 @@
 package org.openremote.modeler.protocol;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +41,23 @@ public class ProtocolContainer implements Serializable {
    
    /** The protocols. */
    private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
+   
+   /** The protocols as a list sorted by displayName. */
+   private static ArrayList<ProtocolDefinition> protocolsList;
 
+   public synchronized ArrayList<ProtocolDefinition> getProtocolsSortedByDisplayName() {
+     if (ProtocolContainer.protocolsList == null) {       
+       ProtocolContainer.protocolsList =  new ArrayList<ProtocolDefinition>(ProtocolContainer.getInstance().getProtocols().values());
+       Collections.sort(ProtocolContainer.protocolsList, new Comparator<ProtocolDefinition>() {
+         @Override
+         public int compare(ProtocolDefinition protocol1, ProtocolDefinition protocol2) {
+           return protocol1.getDisplayName().compareToIgnoreCase(protocol2.getDisplayName());
+         }
+       });
+     }
+     return ProtocolContainer.protocolsList;
+   }
+   
    /**
     * Gets the protocols.
     * 
@@ -55,6 +74,7 @@ public class ProtocolContainer implements Serializable {
     */
    public  void setProtocols(Map<String, ProtocolDefinition> protocols) {
       ProtocolContainer.protocols = protocols;
+      ProtocolContainer.protocolsList = null;
    }
 
 
@@ -85,20 +105,6 @@ public class ProtocolContainer implements Serializable {
       
    }
 
-   /**
-    * Gets the.
-    * 
-    * @param name the name
-    * 
-    * @return the protocol definition
-    */
-   public ProtocolDefinition get(String name) {
-      if (protocols.containsKey(name)) {
-         return protocols.get(name);
-      }
-      return null;
-   }
-   
    /**
     * Find tag name.
     * 
