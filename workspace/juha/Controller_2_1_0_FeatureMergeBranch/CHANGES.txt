@@ -13,6 +13,8 @@ New Features:
     of URLs which resolves an issue with lack of encoding of HTTP parameters 
     which contain which contain white spaces or other special characters 
     (Marcus Redeker)
+  - One Wire: Added possibility to specify temperature values in
+    either Celsius (default), Kelvin, Fahrenheit or Rankine scales.
 
 
 Bug Fixes:
