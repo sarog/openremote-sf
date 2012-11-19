@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.http;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +37,12 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -45,6 +51,8 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
 import org.w3c.dom.Document;
+
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * TODO
@@ -65,6 +73,12 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   // Instance Fields ------------------------------------------------------------
   /** The uri to perform the http get request on */
   private URI uri;
+  
+  /** The http method (GET,POST,DELETE,PUT) to perform */
+  private String method;
+  
+  /** The workload which is added to POST and PUT methods */
+  private String workload;
 
   /** The username which is used for basic authentication */
   private String username;
@@ -75,6 +89,9 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   /** The xpath which is used to extract sensor data from received result */
   private String xpathExpression;
 
+  /** The jsonpath which is used to extract sensor data from received json data*/
+  private String jsonpathExpression;
+  
   /** The regex which is used to extract sensor data from received result */
   private String regex;
 
@@ -91,17 +108,20 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
-  public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval)
+  public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression)
   {
     this.uri = uri;
+    this.method = method;
+    this.workload = workload;
     this.xpathExpression = xpathExpression;
     this.regex = regex;
     this.pollingInterval = pollingInterval;
+    this.jsonpathExpression = jsonpathExpression;
   }
 
-  public HttpGetCommand(URI uri, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval)
+  public HttpGetCommand(URI uri, String username, byte[] pwd, String xpath, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression)
   {
-    this(uri, xpath, regex, pollingInterval);
+    this(uri, xpath, regex, pollingInterval, method, workload, jsonpathExpression);
     this.username = username;
     this.password = pwd;
   }
@@ -167,18 +187,44 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
       cred.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials(getUsername(), new String(password)));
       client.setCredentialsProvider(cred);
     }
-
-    HttpGet httpget = new HttpGet(uri);
+    HttpUriRequest request = null;
+    if (method.equalsIgnoreCase("GET")) {
+      request = new HttpGet(uri);
+    } else if (method.equalsIgnoreCase("POST")) {
+      request = new HttpPost(uri);
+      if ((workload != null) && (workload.trim().length() != 0)) {
+        StringEntity data;
+        try {
+          data = new StringEntity(workload, "UTF-8");
+          ((HttpPost)request).setEntity(data);
+        } catch (UnsupportedEncodingException e) {
+          logger.error("Could not set HTTP Post method workload", e);
+        }
+      }
+    } else if (method.equalsIgnoreCase("PUT")) {
+       request = new HttpPut(uri);
+       if ((workload != null) && (workload.trim().length() != 0)) {
+         StringEntity data;
+         try {
+           data = new StringEntity(workload, "UTF-8");
+           ((HttpPut)request).setEntity(data);
+         } catch (UnsupportedEncodingException e) {
+           logger.error("Could not set HTTP Put method workload", e);
+         }
+       }
+    } else if (method.equalsIgnoreCase("DELETE")) {
+       request = new HttpDelete(uri);
+    }
     String resp = "";
     try
     {
       ResponseHandler<String> responseHandler = new BasicResponseHandler();
-      resp = client.execute(httpget, responseHandler);
+      resp = client.execute(request, responseHandler);
       logger.info("received message: " + resp);
     }
     catch (Exception e)
     {
-      logger.error("HttpGetCommand could not execute", e);
+      logger.error("HttpCommand could not execute", e);
     }
     return resp;
   }
@@ -219,6 +265,15 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
           {
             logger.error("Could not perform xpath evaluation", e);
             sensor.update("N/A");
+          }
+        } else if (jsonpathExpression !=null) {
+          try {
+            Object result = JsonPath.read(readValue, jsonpathExpression);
+            sensor.update(result.toString());
+          } catch (Exception e) 
+          {
+            sensor.update("N/A");
+            logger.error("Could not perform jsonpath evaluation", e);    
           }
         } else {
           sensor.update(readValue);

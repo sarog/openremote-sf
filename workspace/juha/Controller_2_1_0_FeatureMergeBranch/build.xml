@@ -102,6 +102,7 @@
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
 
   </path>
 
@@ -202,6 +203,9 @@
       </fileset>
       <fileset dir = "${lib.dir}/json">
     	  <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/json-path">
+       <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/onewire">
         <include name = "*.jar"/>
