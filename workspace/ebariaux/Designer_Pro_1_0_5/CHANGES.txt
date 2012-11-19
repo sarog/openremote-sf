@@ -3,6 +3,7 @@ Pro 1.0.5
 
 Fixes:
  - MODELER-409: NPE on autosave from UI design
+ - MODELER-418: Hibernate 'lazy initialization' exception on save (2)
 
 New features:
  - contentType attribute on HTTP protocol (MODELER-416)
