@@ -54,6 +54,7 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.cache.ResourceCache;
 import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.logging.LogFacade;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * TODO
@@ -212,7 +213,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("unchecked") @Transactional
    public AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
