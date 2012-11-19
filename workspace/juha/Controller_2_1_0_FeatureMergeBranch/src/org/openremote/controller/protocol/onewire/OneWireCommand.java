@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -46,6 +46,7 @@ import org.owfs.jowfsclient.OwfsException;
  *                 these two calls will use cached value. In fact, it is cache timeout value.
  *
  * @author <a href="mailto:jmisura@gmail.com">Jaroslav Misura</a>
+ * @author Marcus
  */
 public class OneWireCommand implements ExecutableCommand, EventListener, Runnable
 {
@@ -62,6 +63,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   private String deviceAddress;
   private String filename;
   private int pollingInterval;
+  private TemperatureScale tempScale;
 
   /** The thread that is used to peridically update the sensor */
   private Thread pollingThread;
@@ -74,13 +76,14 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, int pollingInterval)
+  public OneWireCommand(String hostname, int port, String deviceAddress, String filename, int pollingInterval, TemperatureScale tempScale)
   {
     this.hostname = hostname;
     this.port = port;
     this.deviceAddress = deviceAddress;
     this.filename = filename;
     this.pollingInterval = pollingInterval;
+    this.tempScale = tempScale;
 
     logger.debug("OneWireCommand created with values hostname=" + hostname +
                "; port=" + port + "; deviceAddress=" + deviceAddress + "; filename=" +filename +
@@ -121,7 +124,21 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
     client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
     client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
     client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
-    client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);
+    switch (tempScale) {
+      case Celsius:
+        client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);  
+        break;
+      case Fahrenheit:
+         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_FAHRENHEIT);  
+         break;
+      case Kelvin:
+         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_KELVIN);  
+         break;
+      case Rankine:
+         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_RANKINE);  
+         break;
+   }
+    
     String value = null;
 
     logger.debug("Client created, before call");
