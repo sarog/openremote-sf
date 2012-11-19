@@ -19,7 +19,7 @@
 */
 package org.openremote.modeler.client.rpc;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.openremote.modeler.protocol.ProtocolDefinition;
 
@@ -38,5 +38,5 @@ public interface ProtocolRPCService extends RemoteService {
     * 
     * @return the protocols
     */
-   Map<String, ProtocolDefinition> getProtocols();
+   ArrayList<ProtocolDefinition> getProtocols();
 }
