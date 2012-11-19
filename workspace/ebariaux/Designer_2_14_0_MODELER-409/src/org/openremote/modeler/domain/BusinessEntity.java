@@ -101,8 +101,15 @@ public abstract class BusinessEntity implements Serializable {
    @Transient
    @JSON(include = false)
    public BeanModel getBeanModel() {
-      BeanModelFactory beanModelFactory = BeanModelLookup.get().getFactory(getClass());
-      return beanModelFactory.createModel(this);
+     BeanModelLookup bml = BeanModelLookup.get();
+     if (bml == null) {
+       return null;
+     }
+     BeanModelFactory beanModelFactory = bml.getFactory(getClass());
+     if (beanModelFactory == null) {
+       return null;
+     }
+     return beanModelFactory.createModel(this);
    }
 
    /**
@@ -115,11 +122,12 @@ public abstract class BusinessEntity implements Serializable {
    public static List<BeanModel> createModels(Collection<? extends BusinessEntity> list) {
       List<BeanModel> models = new ArrayList<BeanModel>();
       for (BusinessEntity b : list) {
-         models.add(b.getBeanModel());
+        BeanModel bm = b.getBeanModel();
+        if (bm != null) {
+          models.add(bm);
+        }
       }
       return models;
-
-
    }
    
    /**
