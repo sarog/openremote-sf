@@ -78,13 +78,13 @@ public class SamsungTVSession {
       try {
          result = this.initialize();
       } catch (Exception e) {
-         throw new RuntimeException("Could not create Samsung TV session", e);
+         throw new RuntimeException("Could not create Samsung TV session : " + ipAddress+":"+port, e);
       }
 
       if (result.equals(DENIED)) {
-         throw new RuntimeException("Samsung TV denied the connection");
+         throw new RuntimeException("Samsung TV denied the connection : " + ipAddress+":"+port);
       } else if (result.equals(TIMEOUT)) {
-         throw new RuntimeException("Samsung TV did not reply on init request on time");
+         throw new RuntimeException("Samsung TV did not reply on init request on time : " + ipAddress+":"+port);
       }
    }
 
