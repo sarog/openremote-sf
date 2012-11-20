@@ -86,6 +86,8 @@ public abstract class AbstractEsp3RequestPacket extends Esp3Packet implements Es
     if(responsePacket != null)
     {
       response = createResponseFromPacket(responsePacket);
+
+      checkIfSendWasSuccessful(response);
     }
 
     return response;
@@ -139,8 +141,38 @@ public abstract class AbstractEsp3RequestPacket extends Esp3Packet implements Es
       throw new IllegalArgumentException("ESP3 packet is not a response packet.");
     }
 
-    retResponse = new Esp3ResponsePacket(response);
+    retResponse = new Esp3ResponsePacket(packet.getData(), packet.getOptionalData());
 
     return retResponse;
+  }
+
+
+  // Private Instance Methods -------------------------------------------------------------
+
+  private void checkIfSendWasSuccessful(Esp3ResponsePacket response) throws EspException
+  {
+    if(response == null)
+    {
+      throw new IllegalArgumentException("null response");
+    }
+
+    if(response.getReturnCode() != Esp3ResponsePacket.ReturnCode.RET_OK)
+    {
+      EspException.ErrorCode errorCode;
+
+      try
+      {
+        errorCode = EspException.ErrorCode.resolve(
+            response.getReturnCode().getValue()
+        );
+      }
+
+      catch (EspException.UnknownErrorCodeException e)
+      {
+        errorCode = EspException.ErrorCode.RESP_ERROR;
+      }
+
+      throw new EspException(errorCode, "Failed to send request.");
+    }
   }
 }
