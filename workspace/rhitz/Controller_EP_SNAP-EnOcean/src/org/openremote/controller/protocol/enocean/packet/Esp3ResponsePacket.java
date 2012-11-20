@@ -182,19 +182,6 @@ public class Esp3ResponsePacket extends Esp3Packet
     }
   }
 
-  /**
-   * Constructs a new response packet instance from a given generic packet.
-   *
-   * @param  response  generic ESP3 packet
-   *
-   * @throws EspException
-   *           if response packet is an unknown or invalid response
-   */
-  public Esp3ResponsePacket(Esp3Packet response) throws EspException
-  {
-    this(response.getData(), response.getOptionalData());
-  }
-
 
   // Public Instance Methods ----------------------------------------------------------------------
 
