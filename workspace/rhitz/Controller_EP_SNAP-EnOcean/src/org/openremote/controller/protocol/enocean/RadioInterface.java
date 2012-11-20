@@ -41,7 +41,7 @@ public interface RadioInterface
    * @param  statusByte  radio telegram status byte value
    *
    * @throws ConfigurationException
-   *           if radio telegram cannot be sent because of a connection configuration error
+   *           if radio telegram cannot be sent because of a configuration error
    *
    * @throws ConnectionException
    *           if a connection error occurred while sending the radio telegram
