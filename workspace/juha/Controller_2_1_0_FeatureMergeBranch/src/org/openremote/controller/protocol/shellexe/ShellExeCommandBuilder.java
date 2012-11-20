@@ -16,6 +16,7 @@
  */
 package org.openremote.controller.protocol.shellexe;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import org.jdom.Element;
@@ -46,11 +47,21 @@ public class ShellExeCommandBuilder implements CommandBuilder {
 
    private final static Logger logger = Logger.getLogger(SHELLEXE_PROTOCOL_LOG_CATEGORY);
 
+
+   // Instance Fields ------------------------------------------------------------------------------
+   
+   private Hashtable<String, Command> cachedCommands = new Hashtable<String, Command>();
+   
    /**
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
+      String commandId = element.getAttribute("id").getValue();
+      if (cachedCommands.get(commandId) != null) {
+         logger.debug("Found cached ShellExe command with id: " + commandId);
+         return cachedCommands.get(commandId);
+      }
       logger.debug("Building ShellExe command");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
 
@@ -98,7 +109,9 @@ public class ShellExeCommandBuilder implements CommandBuilder {
       }
       logger.debug("ShellExe Command created successfully");
 
-      return new ShellExeCommand(commandPath, commandParams, regex, intervalInMillis);
+      ShellExeCommand cmd = new ShellExeCommand(commandPath, commandParams, regex, intervalInMillis);
+      cachedCommands.put(commandId, cmd);
+      return cmd;
    }
 
 }

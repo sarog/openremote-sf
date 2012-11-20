@@ -19,10 +19,13 @@ package org.openremote.controller.protocol.shellexe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.exec.CommandLine;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -47,8 +50,8 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    /** The thread that is used to peridically update the sensor */
    private Thread pollingThread;
    
-   /** The sensor which is updated */
-   private Sensor sensor;
+   /** The list of sensors which all use the same command */
+   private List<Sensor> sensors;
    
    /** Boolean to indicate if polling thread should run */
    boolean doPoll = false;
@@ -64,6 +67,7 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
       this.commandParams = commandParams;
       this.regex = regex;
       this.pollingInterval = pollingInterval;
+      sensors = new ArrayList<Sensor>();
    }
 
    /**
@@ -81,32 +85,40 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
      if (pollingInterval == null) {
        throw new RuntimeException("Could not set sensor because no polling interval was given");
      }
-     this.sensor = sensor;
-     this.doPoll = true;
-     pollingThread = new Thread(this);
-     pollingThread.setName("Polling thread for sensor: " + sensor.getName());
-     pollingThread.start();
+     this.sensors.add(sensor);
+     if (sensors.size() == 1) {
+        this.doPoll = true;
+        pollingThread = new Thread(this);
+        pollingThread.setName("Polling thread for sensor: " + sensor.getName()+ " " +sensor.getSensorID());
+        pollingThread.start();
+     }
    }
 
    @Override
    public void stop(Sensor sensor)
    {
-     this.doPoll = false;
+      this.sensors.remove(sensor);
+      if (sensors.size() == 0) {
+         this.doPoll = false;
+      }
    }
    
    private String executeCommand() {
       logger.debug("Will start shell command: " + commandPath + " and use params: " + commandParams);
       String result = "";
       try {
-         Process proc = null;
-         if (commandParams == null) {
-            proc = Runtime.getRuntime().exec(new String[] { commandPath });
-         } else {
-            proc = Runtime.getRuntime().exec(new String[] { commandPath, commandParams });
+         // Use the commons-exec to parse correctly the arguments, respecting quotes and spaces to separate parameters
+         final CommandLine cmdLine = new CommandLine(commandPath);
+         if (commandParams != null) {
+            cmdLine.addArguments(commandParams);
          }
-         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-         StringBuffer resultBuffer = new StringBuffer();
+         final Process proc = Runtime.getRuntime().exec(cmdLine.toStrings());
+         final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+         final StringBuffer resultBuffer = new StringBuffer();
+         boolean first = true;
          for (String tmp = reader.readLine(); tmp != null; tmp = reader.readLine()) {
+            if (!first) resultBuffer.append("\n");
+            first = false;
             resultBuffer.append(tmp);
          }
          result = resultBuffer.toString();
@@ -119,22 +131,26 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    
    @Override
    public void run() {
-      logger.debug("Sensor thread started for sensor: " + sensor);
+      logger.debug("Thread started: " + pollingThread.getName());
       while (doPoll) {
          String readValue = this.executeCommand();
          if (regex != null) {
            Pattern regexPattern = Pattern.compile(regex);
            Matcher matcher = regexPattern.matcher(readValue);
            if (matcher.find()) {
-             String result = matcher.group();
-             logger.info("result of regex evaluation: " + result);
-             sensor.update(result);
+              for (int i = 0; i < sensors.size(); i++) {
+                 sensors.get(i).update(matcher.group(i+1));
+              }
            } else {
              logger.info("regex evaluation did not find a match");
-             sensor.update("N/A");
+             for (Sensor sensor : sensors) {
+               sensor.update("N/A");
+            }
            }
          } else {
-           sensor.update(readValue);
+            for (Sensor sensor : sensors) {
+               sensor.update(readValue);
+            }
          }
          try {
             Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
@@ -143,6 +159,6 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
             pollingThread.interrupt();
          }
       }
-      logger.debug("*** Out of run method: " + sensor);
+      logger.debug("*** Out of run method: " + pollingThread.getName());
    }
 }
