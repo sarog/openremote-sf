@@ -33,7 +33,7 @@ import org.openremote.controller.utils.Logger;
  *
  * @author Rainer Hitz
  */
-public class Esp2Connection implements EnOceanConnection, Esp3ProcessorListener
+public class Esp2Connection implements EnOceanConnection, Esp2ProcessorListener
 {
 
   // Enums ----------------------------------------------------------------------------------------
