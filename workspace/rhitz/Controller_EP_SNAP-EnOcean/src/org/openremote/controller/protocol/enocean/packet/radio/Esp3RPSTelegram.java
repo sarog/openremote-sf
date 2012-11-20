@@ -21,7 +21,6 @@
 package org.openremote.controller.protocol.enocean.packet.radio;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
-import org.openremote.controller.protocol.enocean.packet.Esp3PacketHeader;
 
 /**
  * Represents a repeated switch communication (RPS) radio telegram. <p>
