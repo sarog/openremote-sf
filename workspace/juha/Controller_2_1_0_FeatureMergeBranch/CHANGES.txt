@@ -17,6 +17,7 @@ New Features:
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales.
   - Shell Command Execution: polling interval and regular expression
     filtering on return values supported
+  - Telnet: polling interval property added
 
 
 Bug Fixes:
