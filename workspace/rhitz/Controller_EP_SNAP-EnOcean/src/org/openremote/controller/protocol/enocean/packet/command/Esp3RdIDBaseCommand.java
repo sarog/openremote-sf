@@ -22,7 +22,6 @@ package org.openremote.controller.protocol.enocean.packet.command;
 
 import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EspException;
-import org.openremote.controller.protocol.enocean.InvalidDeviceIDException;
 import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
 import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 
@@ -77,7 +76,14 @@ public class Esp3RdIDBaseCommand extends AbstractEsp3Command
 
     Esp3RdIDBaseResponse retResponse = null;
 
-    retResponse = new Esp3RdIDBaseResponse(response.getData());
+    if(isError(response))
+    {
+      retResponse = createResponseWithError(response);
+    }
+    else
+    {
+      retResponse = new Esp3RdIDBaseResponse(response.getData());
+    }
 
     return retResponse;
   }
@@ -106,5 +112,23 @@ public class Esp3RdIDBaseCommand extends AbstractEsp3Command
     }
 
     return ((Esp3RdIDBaseResponse)response).getBaseID();
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private boolean isError(Esp3Packet response)
+  {
+    return response.getData().length == Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_LENGTH;
+  }
+
+  private Esp3RdIDBaseResponse createResponseWithError(Esp3Packet response) throws EspException
+  {
+    byte[] dataBytes = new byte[Esp3RdIDBaseResponse.ESP3_RESPONSE_RD_IDBASE_DATA_LENGTH];
+
+    dataBytes[Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX]
+        = response.getData()[Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX];
+
+    return new Esp3RdIDBaseResponse(dataBytes);
   }
 }

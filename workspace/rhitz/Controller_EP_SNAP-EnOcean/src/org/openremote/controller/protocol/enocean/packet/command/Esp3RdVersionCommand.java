@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.enocean.packet.command;
 import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
+import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 
 /**
  * Represents the CO_RD_VERSION command to read EnOcean module information (SW version,
@@ -73,7 +74,14 @@ public class Esp3RdVersionCommand extends AbstractEsp3Command
 
     Esp3RdVersionResponse retResponse = null;
 
-    retResponse = new Esp3RdVersionResponse(response.getData());
+    if(isError(response))
+    {
+      retResponse = createResponseWithError(response);
+    }
+    else
+    {
+      retResponse = new Esp3RdVersionResponse(response.getData());
+    }
 
     return retResponse;
   }
@@ -147,5 +155,24 @@ public class Esp3RdVersionCommand extends AbstractEsp3Command
     }
 
     return ((Esp3RdVersionResponse)response).getAppDescription();
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private boolean isError(Esp3Packet response)
+  {
+    return response.getData().length == Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_LENGTH;
+  }
+
+  private Esp3RdVersionResponse createResponseWithError(Esp3Packet response) throws EspException
+  {
+    byte[] dataBytes = new byte[Esp3RdVersionResponse.ESP3_RESPONSE_RD_VERSION_DATA_LENGTH];
+
+    // Set error code
+    dataBytes[Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX]
+        = response.getData()[Esp3ResponsePacket.ESP3_RESPONSE_RETURN_CODE_INDEX];
+
+    return new Esp3RdVersionResponse(dataBytes);
   }
 }

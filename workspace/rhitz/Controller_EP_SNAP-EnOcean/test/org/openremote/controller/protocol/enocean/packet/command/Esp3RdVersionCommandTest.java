@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.openremote.controller.protocol.enocean.ConfigurationException;
 import org.openremote.controller.protocol.enocean.ConnectionException;
 import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.protocol.enocean.EspException;
 import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
-import org.openremote.controller.protocol.enocean.packet.Esp3PacketHeader;
 import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 
@@ -154,7 +154,7 @@ public class Esp3RdVersionCommandTest
     Assert.assertEquals(chipID, command.getChipID());
   }
 
-  @Test public void testReturnCode() throws Exception
+  @Test public void testReturnCode1() throws Exception
   {
     Esp3RdVersionCommand command = new Esp3RdVersionCommand();
 
@@ -172,6 +172,52 @@ public class Esp3RdVersionCommandTest
     Assert.assertEquals(returnCode, command.getReturnCode());
   }
 
+  @Test public void testReturnCode2() throws Exception
+  {
+    Esp3ResponsePacket.ReturnCode[] returnCodes = new Esp3ResponsePacket.ReturnCode[]
+    {
+        Esp3ResponsePacket.ReturnCode.RET_ERROR,
+        Esp3ResponsePacket.ReturnCode.RET_NOT_SUPPORTED,
+        Esp3ResponsePacket.ReturnCode.RET_WRONG_PARAM,
+        Esp3ResponsePacket.ReturnCode.RET_OPERATION_DENIED
+    };
+
+    EspException.ErrorCode[] errorCodes = new EspException.ErrorCode[]
+    {
+        EspException.ErrorCode.RESP_ERROR,
+        EspException.ErrorCode.RESP_NOT_SUPPORTED,
+        EspException.ErrorCode.RESP_WRONG_PARAM,
+        EspException.ErrorCode.RESP_OPERATION_DENIED
+    };
+
+    Esp3RdVersionCommand command = new Esp3RdVersionCommand();
+
+    for(int index = 0; index < returnCodes.length; index++)
+    {
+      Esp3ResponsePacket response = new Esp3ResponsePacket(
+          new byte[] {returnCodes[index].getValue()}, null
+      );
+
+      TestProcessor processor = new TestProcessor(response);
+
+      try
+      {
+        command.send(processor);
+
+        Assert.fail();
+      }
+      catch (EspException e)
+      {
+        Assert.assertEquals(errorCodes[index], e.getErrorCode());
+        Assert.assertEquals(returnCodes[index], command.getReturnCode());
+      }
+      catch (Throwable e)
+      {
+        Assert.fail();
+      }
+    }
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testSendNullArg() throws Exception
   {
@@ -179,6 +225,7 @@ public class Esp3RdVersionCommandTest
 
     command.send(null);
   }
+
 
 // Helpers --------------------------------------------------------------------------------------
 
