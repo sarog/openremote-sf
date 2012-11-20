@@ -23,7 +23,6 @@ package org.openremote.controller.protocol.enocean.packet.radio;
 import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.packet.AbstractEsp3RequestPacket;
 import org.openremote.controller.protocol.enocean.packet.Esp3PacketHeader;
-import org.openremote.controller.utils.Strings;
 
 /**
  * A common superclass for ESP3 radio telegrams which represents a generic radio telegram. <p>

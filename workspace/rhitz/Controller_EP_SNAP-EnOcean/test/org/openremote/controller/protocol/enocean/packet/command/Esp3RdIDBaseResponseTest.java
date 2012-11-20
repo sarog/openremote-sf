@@ -20,12 +20,10 @@
  */
 package org.openremote.controller.protocol.enocean.packet.command;
 
-import junit.framework.Assert;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.DeviceID;
 import org.openremote.controller.protocol.enocean.EspException;
-import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
 import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 
 /**
