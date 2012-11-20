@@ -21,14 +21,12 @@
 package org.openremote.controller.protocol.enocean.profile;
 
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.enocean.*;
 import org.openremote.controller.protocol.enocean.datatype.*;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -175,9 +173,19 @@ public class EepF60201 implements EepTransceive
     ON_ROCKER_A("ON_ROCKER_A", T21 | N_MESSAGE, RELEASE_ROCKER_AI, ENERGY_BOW_PRESS_VALUE, ROCKER_AI_VALUE),
 
     /**
+     * Press and release bottom left button.
+     */
+    ON("ON", T21 | N_MESSAGE, RELEASE_ROCKER_AI, ENERGY_BOW_PRESS_VALUE, ROCKER_AI_VALUE),
+
+    /**
      * Press and release upper left button.
      */
     OFF_ROCKER_A("OFF_ROCKER_A",  T21 | N_MESSAGE, RELEASE_ROCKER_AO, ENERGY_BOW_PRESS_VALUE, ROCKER_AO_VALUE),
+
+    /**
+     * Press and release upper left button.
+     */
+    OFF("OFF",  T21 | N_MESSAGE, RELEASE_ROCKER_AO, ENERGY_BOW_PRESS_VALUE, ROCKER_AO_VALUE),
 
     /**
      * Read ON/OFF status of left rocker.
@@ -237,7 +245,7 @@ public class EepF60201 implements EepTransceive
       }
 
       throw new ConfigurationException(
-          "Command '" + commandString + "' is an unknown EEP F6-02-01 command."
+          "Command ''{0}'' is an invalid EEP ''F6-02-01'' command.", commandString
       );
     }
 
@@ -333,6 +341,44 @@ public class EepF60201 implements EepTransceive
     this.eepType = eepType;
     this.deviceID = deviceID;
     this.command = CommandType.resolve(command);
+  }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public String toString()
+  {
+    String status;
+
+    if(command == CommandType.STATUS_ROCKER_A)
+    {
+      return "EEP (Type = '" + eepType + "', Rocker A = '" + (statusRockerA ? "On" : "Off") + "')";
+    }
+
+    else if(command == CommandType.STATUS_ROCKER_B)
+    {
+      return "EEP (Type = '" + eepType + "', Rocker B = '" + (statusRockerB ? "On" : "Off") + "')";
+    }
+
+    else
+    {
+      return "EEP (Type = '" + eepType + "', Command = '" + command + "')";
+    }
+  }
+
+
+  // Implements Eep -------------------------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  public EepType getType()
+  {
+    return eepType;
   }
 
 
