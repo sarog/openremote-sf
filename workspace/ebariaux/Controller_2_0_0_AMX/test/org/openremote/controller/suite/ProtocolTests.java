@@ -23,6 +23,9 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.EventListenerTest;
+import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilderTest;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksAddressTest;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTest;
 
 /**
  * Test protocol support classes.
@@ -32,7 +35,10 @@ import org.openremote.controller.protocol.EventListenerTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       EventListenerTest.class
+       EventListenerTest.class,
+       LutronHomeWorksAddressTest.class,
+       LutronHomeWorksCommandBuilderTest.class,
+       AMXNICommandBuilderTest.class
    }
 )
 public class ProtocolTests
