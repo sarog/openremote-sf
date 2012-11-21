@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -81,7 +81,7 @@
     <property name = "comPort" value = "${com.port}"/>
     <property name = "proxyTimeout" value = "${proxy.timeout}"/>
     <property name = "beehiveCommandServiceCheckInterval" value = "${beehiveCommandService.check.interval}"/>
-    
+    <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
   </bean>
 
   <!-- round-robin variables -->
@@ -119,16 +119,6 @@
   </bean>
 
     
-    <!-- controller.xml parser -->
-<!--
-    <bean id = "remoteActionXMLParser"
-          class = "org.openremote.controller.command.RemoteActionXMLParser">
-    </bean>
-
-	<bean id = "fileService"
-	      class = "org.openremote.controller.service.impl.FileServiceImpl">
-	</bean>
--->
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -178,11 +168,6 @@
   </bean>
 
 
-	<!-- status cache service
-  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    <property name="cache" ref="statusCache"></property>
-  </bean>
-  -->
 
   <!--
    | TODO
@@ -240,21 +225,6 @@
     
   </bean>
 
-	<!-- controller.xml change service
-  <bean id = "controllerXMLChangeService"
-        class = "org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl">
-    <property name = "cache" ref = "statusCache"/>
-    <property name = "deployer" ref = "deployer"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
-    <property name = "controllerXMLListenSharingData" ref = "controllerXMLListenSharingData"/>
-    <property name = "changedStatusTable" ref = "changedStatusTable"/>
-    <property name = "sensorBuilder" ref = "sensorBuilder"/>
-  </bean>
-	-->
-
-  <!--
-	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
-   -->
 
 <!-- 
 Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
@@ -290,8 +260,11 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "rrdGraphUrl"         value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
+        <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
       </map>
     </constructor-arg>
+
 <!--
 		<property name = "commandBuilders">
 		    <props>
@@ -305,7 +278,8 @@ The needed classes have to be provided as a jar file and copied to lib folder.
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lagarto">lagartoCommandBuilder</prop>
 		    </props>
 		</property>
 -->
@@ -419,10 +393,16 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <constructor-arg index="1" value="${hsc40.interface.port}" type="int" />
   </bean>
 
-
+  <!-- DSC IT Security System -->
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
+  
+  <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
+  <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
+    <property name="configuration" ref="configuration"/>
+  </bean>
 
   <!-- TODO -->
-	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
+  <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
     <property name = "componentBuilders">
       <map>
         <entry key = "button" value-ref = "buttonBuilder"/>
@@ -433,7 +413,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "image"  value-ref = "imageBuilder"/>
       </map>
     </property>
-	</bean>
+  </bean>
 
 
   <!-- EVENT PROCESSING CHAIN =====================================================================

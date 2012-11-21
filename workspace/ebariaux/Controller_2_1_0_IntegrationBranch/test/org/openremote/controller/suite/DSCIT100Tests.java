@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,27 +22,29 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.openremote.controller.protocol.virtual.SwitchStatusTest;
-import org.openremote.controller.protocol.virtual.LevelStatusTest;
-import org.openremote.controller.protocol.virtual.RangeStatusTest;
-import org.openremote.controller.protocol.virtual.CustomStatusTest;
+import org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilderTest;
+import org.openremote.controller.protocol.dscit100.DSCIT100CommandTest;
+import org.openremote.controller.protocol.dscit100.PacketTest;
+import org.openremote.controller.protocol.dscit100.PanelStateTest;
+import org.openremote.controller.protocol.dscit100.StateDefinitionTest;
 
 /**
- * All OpenRemote Virtual protocol tests aggregated here.
+ * All OpenRemote DSCIT100 tests aggregated here.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:gdrapp@gmail.com">Greg Rapp</a>
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       SwitchStatusTest.class,
-       LevelStatusTest.class,
-       RangeStatusTest.class,
-       CustomStatusTest.class
+     PacketTest.class,
+     DSCIT100CommandTest.class,
+     DSCIT100CommandBuilderTest.class,
+     StateDefinitionTest.class,
+     PanelStateTest.class
    }
 )
-public class VirtualProtocolTests
+
+public class DSCIT100Tests
 {
 
 }
-

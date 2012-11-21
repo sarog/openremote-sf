@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -18,31 +18,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.suite;
+package org.openremote.controller.protocol.dscit100;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.openremote.controller.protocol.virtual.SwitchStatusTest;
-import org.openremote.controller.protocol.virtual.LevelStatusTest;
-import org.openremote.controller.protocol.virtual.RangeStatusTest;
-import org.openremote.controller.protocol.virtual.CustomStatusTest;
-
-/**
- * All OpenRemote Virtual protocol tests aggregated here.
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
- */
-@RunWith(Suite.class)
-@Suite.SuiteClasses(
-   {
-       SwitchStatusTest.class,
-       LevelStatusTest.class,
-       RangeStatusTest.class,
-       CustomStatusTest.class
-   }
-)
-public class VirtualProtocolTests
+public interface DSCIT100Connection
 {
 
-}
+  public void send(ExecuteCommand command);
 
+  public void send(Packet packet);
+
+  public boolean isConnected();
+
+  public void close();
+
+  public PanelState.State getState(StateDefinition stateDefinition);
+
+  public String getAddress();
+}

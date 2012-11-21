@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -18,31 +18,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.suite;
+package org.openremote.controller.protocol.dscit100;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.openremote.controller.protocol.virtual.SwitchStatusTest;
-import org.openremote.controller.protocol.virtual.LevelStatusTest;
-import org.openremote.controller.protocol.virtual.RangeStatusTest;
-import org.openremote.controller.protocol.virtual.CustomStatusTest;
+import static org.junit.Assert.*;
 
-/**
- * All OpenRemote Virtual protocol tests aggregated here.
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
- */
-@RunWith(Suite.class)
-@Suite.SuiteClasses(
-   {
-       SwitchStatusTest.class,
-       LevelStatusTest.class,
-       RangeStatusTest.class,
-       CustomStatusTest.class
-   }
-)
-public class VirtualProtocolTests
+import org.junit.Before;
+import org.junit.Test;
+import org.openremote.controller.protocol.dscit100.PanelState.StateType;
+
+public class StateDefinitionTest
 {
 
-}
+  @Before
+  public void setUp() throws Exception
+  {
+  }
 
+  @Test
+  public void testDSCIT100StateDefinition()
+  {
+    StateDefinition sd = new StateDefinition(StateType.PARTITION, "1");
+
+    assertTrue(sd instanceof StateDefinition);
+    assertEquals(StateType.PARTITION, sd.getType());
+    assertEquals("1", sd.getTarget());
+  }
+}
