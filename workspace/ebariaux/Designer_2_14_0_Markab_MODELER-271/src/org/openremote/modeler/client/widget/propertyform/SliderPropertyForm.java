@@ -49,8 +49,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
-   public SliderPropertyForm(ScreenSlider screenSlider, WidgetSelectionUtil widgetSelectionUtil) {
+   
+   private UISlider uiSlider;
+   
+   public SliderPropertyForm(ScreenSlider screenSlider, UISlider uiSlider, WidgetSelectionUtil widgetSelectionUtil) {
       super(widgetSelectionUtil);
+      this.uiSlider = uiSlider;
       this.screenSlider = screenSlider;
       setLabelWidth(100);
       addFields();
@@ -68,8 +72,8 @@ public class SliderPropertyForm extends PropertyForm {
          public void handleEvent(FieldEvent be) {
             final boolean isVertical = vertical.getValue();
             
-            if(isVertical != screenSlider.getUiSlider().isVertical()) {
-               UtilsProxy.roteImages(screenSlider.getUiSlider(), new AsyncCallback<UISlider>(){
+            if(isVertical != uiSlider.isVertical()) {
+               UtilsProxy.roteImages(uiSlider, new AsyncCallback<UISlider>(){
 
                   @Override
                   public void onFailure(Throwable caught) {
@@ -116,19 +120,19 @@ public class SliderPropertyForm extends PropertyForm {
 
       final ImageSelectAdapterField minImageField = new ImageSelectAdapterField("MinImage");
       if (screenSlider.isMinImageUploaded()) {
-         minImageField.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
+         minImageField.setText(uiSlider.getMinImage().getImageFileName());
       }
       minImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMinImage().getSrc());
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(uiSlider.getMinImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
               screenSlider.setMinImage(imageURL);
-              minImageField.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
+              minImageField.setText(uiSlider.getMinImage().getImageFileName());
               screenSlider.layout();
             }             
            });
@@ -146,19 +150,19 @@ public class SliderPropertyForm extends PropertyForm {
 
       final ImageSelectAdapterField minTrackImageField = new ImageSelectAdapterField("TrackImage(min)");
       if (screenSlider.isMinTrackImageUploaded()) {
-         minTrackImageField.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
+         minTrackImageField.setText(uiSlider.getMinTrackImage().getImageFileName());
       }
       minTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMinTrackImage().getSrc());
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(uiSlider.getMinTrackImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
               screenSlider.setMinTrackImage(imageURL);
-              minTrackImageField.setText(screenSlider.getUiSlider().getMinTrackImage().getImageFileName());
+              minTrackImageField.setText(uiSlider.getMinTrackImage().getImageFileName());
               screenSlider.layout();
             }             
            });
@@ -176,19 +180,19 @@ public class SliderPropertyForm extends PropertyForm {
 
       final ImageSelectAdapterField thumbImageField = new ImageSelectAdapterField("ThumbImage");
       if (screenSlider.isThumbUploaded()) {
-         thumbImageField.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
+         thumbImageField.setText(uiSlider.getThumbImage().getImageFileName());
       }
       thumbImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getThumbImage().getSrc());
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(uiSlider.getThumbImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
               screenSlider.setThumbImage(imageURL);
-              thumbImageField.setText(screenSlider.getUiSlider().getThumbImage().getImageFileName());
+              thumbImageField.setText(uiSlider.getThumbImage().getImageFileName());
               screenSlider.layout();
             }             
            });
@@ -206,19 +210,19 @@ public class SliderPropertyForm extends PropertyForm {
 
       final ImageSelectAdapterField maxImageField = new ImageSelectAdapterField("MaxImage");
       if (screenSlider.isMaxImageUploaded()) {
-         maxImageField.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
+         maxImageField.setText(uiSlider.getMaxImage().getImageFileName());
       }
       maxImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMaxImage().getSrc());
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(uiSlider.getMaxImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
               screenSlider.setMaxImage(imageURL);
-              maxImageField.setText(screenSlider.getUiSlider().getMaxImage().getImageFileName());
+              maxImageField.setText(uiSlider.getMaxImage().getImageFileName());
               screenSlider.layout();
             }             
            });
@@ -236,19 +240,19 @@ public class SliderPropertyForm extends PropertyForm {
 
       final ImageSelectAdapterField maxTrackImageField = new ImageSelectAdapterField("TrackImage(max)");
       if (screenSlider.isMaxTrackImageUploaded()) {
-         maxTrackImageField.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
+         maxTrackImageField.setText(uiSlider.getMaxTrackImage().getImageFileName());
       }
       maxTrackImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(screenSlider.getUiSlider().getMaxTrackImage().getSrc());
+           ImageAssetPicker imageAssetPicker = new ImageAssetPicker(uiSlider.getMaxTrackImage().getSrc());
            imageAssetPicker.show();
            imageAssetPicker.center();
            imageAssetPicker.setListener(new ImageAssetPickerListener() {
             @Override
             public void imagePicked(String imageURL) {
               screenSlider.setMaxTrackImage(imageURL);
-              maxTrackImageField.setText(screenSlider.getUiSlider().getMaxTrackImage().getImageFileName());
+              maxTrackImageField.setText(uiSlider.getMaxTrackImage().getImageFileName());
               screenSlider.layout();
             }             
            });

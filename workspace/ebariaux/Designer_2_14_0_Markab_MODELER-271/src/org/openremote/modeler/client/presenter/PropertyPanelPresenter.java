@@ -149,7 +149,7 @@ public class PropertyPanelPresenter implements Presenter {
     }
     if (o instanceof ScreenSlider) {
       ScreenSlider screenSlider = (ScreenSlider)o;
-      return new SliderPropertyForm(screenSlider, widgetSelectionUtil);
+      return new SliderPropertyForm(screenSlider, screenSlider.getUiSlider(), widgetSelectionUtil);
     }
     if (o instanceof ScreenSwitch) {
       ScreenSwitch screenSwitch = (ScreenSwitch)o;
