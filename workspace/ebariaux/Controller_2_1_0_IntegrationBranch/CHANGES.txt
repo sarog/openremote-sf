@@ -2,6 +2,8 @@
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
 
+New Features:
+
   - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
   - Lagarto server (panStamps) integration, Daniel Berenguer
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
@@ -23,6 +25,8 @@ Bug Fixes:
   - Performance fix to sensor state cache queries (Marcus Redeker)
   - Runtime performance optimization to avoid unnecessary XML 
     parsing/XPath use (ORCJAVA-190)
+  - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
+  - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
   - Internal API : concurrency and call control on Deployer start 
     controller calls (ORCJAVA-179)  
   
