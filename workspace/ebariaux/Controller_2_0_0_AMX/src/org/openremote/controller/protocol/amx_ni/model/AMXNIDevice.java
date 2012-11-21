@@ -26,6 +26,12 @@ import java.util.List;
 import org.openremote.controller.protocol.amx_ni.AMXNICommand;
 import org.openremote.controller.protocol.amx_ni.AMXNIGateway;
 
+/**
+ * Abstract parent class of all "devices".
+ * An AMXNIDevice is a proxy to an device on the AMX side, for one specific aspect supported: channel, level, string or command.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public abstract class AMXNIDevice {
 
    // Instance Fields

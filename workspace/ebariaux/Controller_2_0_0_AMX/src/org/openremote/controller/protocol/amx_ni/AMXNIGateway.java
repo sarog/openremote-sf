@@ -46,9 +46,51 @@ import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Gateway talking to the AMX NI Controller over socket protocol.
+ * 
+ * Protocol exchanges command and replies as text.
+ * Each line to AMX processor is terminated by <CR><LF><CR><LF>
+ * Format of 1 line is <command>,<device index>,<params>
+ * 
+ * SEND_COMMAND,<device index>,<command> sends a command to AMX device registered at device index (SEND_COMMAND AMX instruction)
+ * e.g. SEND_COMMAND,1,LUTRONKEYPADPRESS-1,14
+ * 
+ * SEND_STRING,<device index>,<string> sends a string to AMX device registered at device index (SEND_STRING AMX instruction)
+ * e.g. SEND_STRING,1,POWER=0
+ * 
+ * OFF,<device index>,<channel> turns the given channel off on the AMX device registered at device index
+ * e.g. OFF,1,1
+ * ON,<device index>,<channel> turns the given channel on on the AMX device registered at device index
+ * ON,1,1
+ * PULSE,<device index>,<channel> pulses the given channel on the AMX device registered at device index
+ * Pulse time is default as per AMX specifications
+ * PULSE,1,1
+ * CHANNEL_STATUS,<device index>,<channel> requests the on/off status of the given channel
+ * on the AMX device registered at device index
+ * e.g. CHANNEL_STATUS,1,1
+ * 
+ * SEND_LEVEL,<device index>,<level>,<value> sets the given level to the given value
+ * on the AMX device registered at device index
+ * e.g. SEND_LEVEL,1,2,89
+ * LEVEL_STATUS,<device index>,<level> requests the value of the given channel on the AMX device registered at device index
+ * e.g. LEVEL_STATUS,1,1
+ *
+ *
+ * AMX processors sends back following information
+ * COMMAND_READ,<device index>,<command> relaying COMMAND events received on AMX device registered at device index
+ * 
+ * STRING_READ,<device index>,<string> relaying STRING events received on AMX device registered at device index
+ * 
+ * CHANNEL_STATUS,<device index>,<channel>,<status> either replying to a CHANNEL_STATUS command from OR
+ * or when a CHANNEL event is received on AMX device registered at device index
+ * <status> is on or off
+ * 
+ * LEVEL_STATUS,<device index>,<level>,<value> relaying a LEVEL event received on AMX device registered at device index
+ * 
+ * Known limitation: at this stage, there is no way for the AMX module to provide a reply to a LEVEL_STATUS with the initial value
+ * of a level if it never changed. The LEVEL_STATUS reply will only be sent on the first LEVEL event.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class AMXNIGateway {
 

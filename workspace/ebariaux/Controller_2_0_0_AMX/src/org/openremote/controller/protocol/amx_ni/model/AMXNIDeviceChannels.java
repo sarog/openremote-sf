@@ -27,6 +27,11 @@ import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder;
 import org.openremote.controller.protocol.amx_ni.AMXNIGateway;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Proxy to all channels on a given AMX device.
+ *  
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class AMXNIDeviceChannels extends AMXNIDevice {
 
    /**

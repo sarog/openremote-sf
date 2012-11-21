@@ -30,6 +30,12 @@ import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceLevels;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Command to be sent to a level to actuate or query status.
+ * This includes : SEND_LEVEL, LEVEL_READ
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class LevelCommand extends AMXNICommand implements ExecutableCommand, EventListener {
 
    /**
