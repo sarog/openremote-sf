@@ -49,7 +49,7 @@ public abstract class AMXNICommand implements Command {
     */
    private final static Logger log = Logger.getLogger(AMXNICommandBuilder.AMX_NI_LOG_CATEGORY);
 
-   // Keep a list of all the command strings we receive from OR Console and the associated command class to handle that command
+   // Keep a list of all the command strings known to OR AMX protocol and the associated command class to handle that command
    private static HashMap<String, Class<? extends AMXNICommand>> commandClasses = new HashMap<String, Class<? extends AMXNICommand>>();
 
    static {
@@ -90,25 +90,20 @@ public abstract class AMXNICommand implements Command {
          cmd = (AMXNICommand) method.invoke(null, name, gateway, deviceIndex, channel, level, value, statusFilter, statusFilterGroup);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
-         // TODO: should this be logged, check other source code
-         throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+         throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
       } catch (NoSuchMethodException e) {
-         // TODO: should this be logged, check other source code
-         throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+         throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
       } catch (IllegalArgumentException e) {
-         // TODO: should this be logged, check other source code
-         throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+         throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
       } catch (IllegalAccessException e) {
-         // TODO: should this be logged, check other source code
-         throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+         throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
       } catch (InvocationTargetException e) {
         if (e.getCause() instanceof NoSuchCommandException) {       
-        // This means method threw an exception, re-throw it as is
-        throw (NoSuchCommandException)e.getCause();
+          // This means method threw an exception, re-throw it as is
+          throw (NoSuchCommandException)e.getCause();
         } else {
-          throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+          throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
         }
-      // TODO: should this be logged, check other source code
       }
       return cmd;
    }

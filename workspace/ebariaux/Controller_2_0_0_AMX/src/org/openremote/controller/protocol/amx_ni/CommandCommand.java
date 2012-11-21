@@ -32,6 +32,12 @@ import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceCommand;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Command to be sent to an AMX device to send a command : SEND_COMMAND
+ * Also bundles the logic to understand COMMAND_READ replies and update sensors accordingly.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class CommandCommand extends AMXNICommand implements ExecutableCommand, EventListener {
 
    /**

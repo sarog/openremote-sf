@@ -30,9 +30,9 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Builder for AMXNICommand, based on XML snippet.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class AMXNICommandBuilder implements CommandBuilder {
 
@@ -234,8 +234,6 @@ public class AMXNICommandBuilder implements CommandBuilder {
       log.info("Created AMX NI Command " + cmd);
 
       return cmd;
-
-      // TODO: what about validation of value when command is SEND_LEVEL, must be numeric
    }
 
    // Getters / Setters ----------------------------------------------------------------------------
