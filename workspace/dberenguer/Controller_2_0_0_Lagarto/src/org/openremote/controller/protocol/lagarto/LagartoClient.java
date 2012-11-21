@@ -58,12 +58,6 @@ public class LagartoClient extends Thread
   public LagartoClient()
   {
     broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
-
-    System.out.println("**************************************************************");
-    System.out.println("");
-    System.out.println("ZEROMQ BROADCAST ADDRESS = " + broadcastAddr);
-    System.out.println("");
-    System.out.println("**************************************************************");
   }
 
   /**
@@ -96,7 +90,7 @@ public class LagartoClient extends Thread
 
           // Iterate sensors in current map
           for (Entry<String, Sensor> entry : network.sensorMap.entrySet())
-          {
+          {            
             // Locate endpoint id
             if (entry.getKey().equals(epId))
             {
@@ -130,11 +124,10 @@ public class LagartoClient extends Thread
       ZMQ.Context context = ZMQ.context(1);
 
       // Subscribe to broadcast address
-      ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
+      ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
       subscriber.connect(this.broadcastAddr);
-      subscriber.subscribe("".getBytes());
 
-      logger.info("Lagarto client subscribed to " + this.broadcastAddr);
+      logger.info("ZMQ PULL socket conected to " + this.broadcastAddr);
 
       // Endless loop
       while(true)
