@@ -1,0 +1,10 @@
+
+Controller 2.0.1 (2012-11-21)
+=============================
+
+ - Update Web Console implementation to 2.0.0 FINAL
+ - Change Tomcat runtime default logging to file size
+   bound (10MB per file) instead of unlimited file
+   size logging
+
+
