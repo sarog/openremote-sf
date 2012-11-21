@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -83,7 +83,7 @@ import flexjson.JSONSerializer;
  * the controller, and where access to such objects or services needs to be shared across
  * multiple threads (rather than created per thread or invocation). Deployer manages the lifecycle
  * of such stateful objects and services to ensure proper state transitions when new controller
- * definitions (from the XML model) are loaded, for instance. <p>
+ * definitions (from the XML model) are loaded. <p>
  *
  * Main parts of this implementation relate to managing the XML to Java object mapping --
  * transferring the information from the XML document instance that describe controller
@@ -151,12 +151,23 @@ public class Deployer
 
 
   /**
-   * TODO
+   * Configured model builder implementations for this deployer, per schema version.
    */
   private Map<ModelBuilder.SchemaVersion, ModelBuilder> builders;
 
   private Map<Integer, Element> controllerXMLElementCache = new HashMap<Integer, Element>();
   
+  /**
+   * Cache parsed XML elements to avoid triggering XML parser/XPath multiple times during
+   * runtime execution.
+   *
+   * This is a temporary performance fix to an issue described in ORCJAVA-190 -- once the
+   * relevant overhaul of the rest of the object model is complete (see the referenced
+   * issues in ORCJAVA-190) this fix is also redundant.
+   */
+  private Map<Integer, Element> xmlElementCache = new HashMap<Integer, Element>();
+
+
   /**
    * Model builders are sequences of actions to construct the controller's object model (a.k.a
    * strategy pattern). Different model builders may therefore act on differently
@@ -196,6 +207,15 @@ public class Deployer
    * caller.
    */
   private boolean isPaused = false;
+
+  /**
+   * Flag to indicate if the controller has been started (is ready to deploy controller
+   * definitions).  <p>
+   *
+   * This is used internally to enforce API call requirements of {@link #startController}
+   * (should only be called once).
+   */
+  private boolean started = false;
 
 
   /**
@@ -247,6 +267,11 @@ public class Deployer
    * @param serviceName         human-readable name for this deployer service
    * @param deviceStateCache    device cache instance for this deployer
    * @param controllerConfig    user configuration of this deployer's controller
+   * @param builders            model builder implementations (controller schema versions)
+   *                            available for this deployer
+   *
+   * @throws InitializationException      if an unrecognized model builder schema version has
+   *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
                   ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
@@ -262,6 +287,7 @@ public class Deployer
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
+
     if (name != null)
     {
       this.name = serviceName;
@@ -273,24 +299,6 @@ public class Deployer
   }
 
 
-  private Map<ModelBuilder.SchemaVersion, ModelBuilder> createTypeSafeBuilderMap(
-      Map<String, ModelBuilder> builders) throws InitializationException
-  {
-    Map<ModelBuilder.SchemaVersion, ModelBuilder> map =
-        new HashMap<ModelBuilder.SchemaVersion, ModelBuilder>();
-
-    for (String key : builders.keySet())
-    {
-      ModelBuilder.SchemaVersion schema = ModelBuilder.SchemaVersion.toSchemaVersion(key);
-      ModelBuilder builder = builders.get(key);
-      
-      builder.setDeployer(this);  //We inject the deployer manually, since Spring has a problem with circular dependencies
-      
-      map.put(schema, builder);
-    }
-
-    return map;
-  }
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -306,20 +314,30 @@ public class Deployer
    *
    * @see #softRestart()
    */
-  public void startController()
+  public synchronized void startController()
   {
-    // TODO : ORCJAVA-179 -- make sure this can only be called once, see related ORCJAVA-180
-
-    if (controllerConfig.getBeehiveSyncing()) {
-       //Start controller announcement thread
-       controllerAnnouncement = new ControllerAnnouncement();
-       controllerAnnouncement.start();
-   
-       //Start discovered devices announcement thread
-       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
-       discoveredDevicesAnnouncement.start();
+    if (started)
+    {
+      log.error(
+          "Method startController() should only be called once per VM process. Use softRestart() " +
+          "for hot-deploying new controller state."
+      );
+      return;
     }
-    
+
+    if (controllerConfig.getBeehiveSyncing())
+    {
+      // Start controller announcement thread
+
+      controllerAnnouncement = new ControllerAnnouncement();
+      controllerAnnouncement.start();
+   
+      // Start discovered devices announcement thread
+
+      discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
+      discoveredDevicesAnnouncement.start();
+    }
+
     try
     {
       startup();
@@ -351,6 +369,8 @@ public class Deployer
 
     controllerDefinitionWatch.start();
 
+    started = true;
+    
     // TODO : ORCJAVA-180, register shutdown hook
   }
 
@@ -387,7 +407,7 @@ public class Deployer
    * in the controller. The controller itself stays at an init level where a new object model can
    * be loaded into the system. The JVM process will not exit. <p>
    *
-   * Startup phase loads back a runtime object model and start dependent services of the controller.
+   * Startup phase loads back a runtime object model and starts dependent services of the controller.
    * The object model is loaded from the controller definition file, path of which is indicated by
    * the {@link org.openremote.controller.ControllerConfiguration#getResourcePath()} method. <p>
    *
@@ -400,7 +420,7 @@ public class Deployer
    * instance's lifecycle, and perform first deployment of controller definition, if the
    * required artifacts are present in the controller. </p>
    *
-   * Subsequent soft restarts of this controller/deployer should use this method instead.
+   * Subsequent soft restarts of this controller/deployer should use this method.
    *
    * @see #startController()
    * @see org.openremote.controller.ControllerConfiguration#getResourcePath
@@ -566,11 +586,8 @@ public class Deployer
    *   services like this method.
    *
    *   See ORCJAVA-143, ORCJAVA-144, ORCJAVA-151, ORCJAVA-152, ORCJAVA-153, ORCJAVA-155,
-   *       ORCJAVA-158, ORCJAVA-182, ORCJAVA-186, ORCJAVA-190
+   *       ORCJAVA-158, ORCJAVA-182, ORCJAVA-186
    *
-   * @param id
-   * @return
-   * @throws InitializationException
    */
   public Element queryElementById(int id) throws InitializationException
   {
@@ -581,20 +598,20 @@ public class Deployer
     }
 
 
-    // TODO :
-    //   This method is a potential performance bottleneck. The performance issue can be
-    //   resolved by completing the reactoring tasks above. However, for a quick temporary
-    //   fix it is possible to implement the solution described in ORCJAVA-190
+    // Quick fix to cache parsed XML elements. See ORCJAVA-190
     
-    //Quick fix to cache parsed XML elements. See ORCJAVA-190
-    Element tmp = controllerXMLElementCache.get(id); 
-    if ( tmp == null) {
-       tmp = ((Version20ModelBuilder)modelBuilder).queryElementById(id);
-       controllerXMLElementCache.put(id, tmp);
+    Element tmp = xmlElementCache.get(id);
+
+    if (tmp == null)
+    {
+      tmp = ((Version20ModelBuilder)modelBuilder).queryElementById(id);
+
+      xmlElementCache.put(id, tmp);
     }
 
     return tmp;
   }
+
 
   /**
    * TODO
@@ -780,6 +797,8 @@ public class Deployer
 
     deviceStateCache.shutdown();
     controllerXMLElementCache.clear();
+    
+    xmlElementCache.clear();
     
     modelBuilder = null;                // null here indicates to other services that this deployer
                                         // installer currently has no object model deployed
@@ -1122,6 +1141,45 @@ public class Deployer
       log.error("Can't copy lircd.conf to " + config.getLircdconfPath(), e);
     }
   }
+
+
+
+  /**
+   * This is a helper method that translates the string based version keys from the DI
+   * configuration to typesafe enums.
+   *
+   * @param builders    the model builder implementations (one per schema) configured for
+   *                    this deploer
+   *
+   * @return            builder map with a schema as key and a model builder Java object
+   *                    instance as value
+   *
+   *
+   * @see ModelBuilder.SchemaVersion#toSchemaVersion(String)
+   *
+   * @throws InitializationException    if an unrecognized model builder schema version has been
+   *                                    configured for this deployer
+   */
+  private Map<ModelBuilder.SchemaVersion, ModelBuilder> createTypeSafeBuilderMap(
+      Map<String, ModelBuilder> builders) throws InitializationException
+  {
+    Map<ModelBuilder.SchemaVersion, ModelBuilder> map =
+        new HashMap<ModelBuilder.SchemaVersion, ModelBuilder>();
+
+    for (String key : builders.keySet())
+    {
+      ModelBuilder.SchemaVersion schema = ModelBuilder.SchemaVersion.toSchemaVersion(key);
+      ModelBuilder builder = builders.get(key);
+
+      builder.setDeployer(this);  //We inject the deployer manually, since Spring has a problem with circular dependencies
+
+      map.put(schema, builder);
+    }
+
+    return map;
+
+  }
+  
 
 
 
