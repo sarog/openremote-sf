@@ -21,6 +21,7 @@
 package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.EnOceanConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.statuscache.StatusCache;
@@ -72,6 +73,8 @@ public abstract class ServiceContext
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),
 
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
+
+    ENOCEAN_CONFIGURATION("enoceanConfig"),
 
     DEVICE_POLLING("pollingMachinesService"),
 
@@ -150,6 +153,26 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static EnOceanConfiguration getEnOceanConfiguration()
+  {
+    try
+    {
+      return (EnOceanConfiguration)getInstance().getService(ServiceName.ENOCEAN_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "EnOcean Configuration service has had an incompatible change.", e
       );
     }
   }

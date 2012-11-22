@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.enocean;
 
 import org.jdom.Element;
 import org.openremote.controller.Constants;
+import org.openremote.controller.EnOceanConfiguration;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.CommandParameter;
@@ -140,23 +141,24 @@ public class EnOceanCommandBuilder implements CommandBuilder
    */
   private EnOceanGateway gateway = null;
 
-  /**
-   * EnOcean serial protocol (ESP) port configuration.
-   */
-  private EspPortConfiguration configuration;
-
 
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs an EnOcean command builder instance with given COM port configuration.
-   *
-   * @param comPort  COM port to be used for serial communication with EnOcean module
+   * Constructs an EnOcean command builder instance.
    */
-  public EnOceanCommandBuilder(String comPort)
+  public EnOceanCommandBuilder()
   {
-    configuration = new EspPortConfiguration();
-    configuration.setComPort(comPort);
+  }
+
+  /**
+   * Constructs an EnOcean command builder instance with given EnOcean gateway.
+   *
+   * @param gateway  EnOcean gateway
+   */
+  public EnOceanCommandBuilder(EnOceanGateway gateway)
+  {
+    this.gateway = gateway;
   }
 
   /**
@@ -315,7 +317,9 @@ public class EnOceanCommandBuilder implements CommandBuilder
   {
     if(this.gateway == null)
     {
-      this.gateway = new EnOceanGateway(new EnOceanConnectionManager(), configuration);
+      this.gateway = new EnOceanGateway(
+          new EnOceanConnectionManager(), createEspPortConfiguration()
+      );
 
       try
       {
@@ -332,5 +336,46 @@ public class EnOceanCommandBuilder implements CommandBuilder
         log.error("Failed to connect to EnOcean module: {0}", e.getMessage());
       }
     }
+  }
+
+  /**
+   * Creates an EnOcean serial port configuration with configuration settings from
+   * the EnOcean configuration.
+   *
+   * @return  new EnOcean serial port configuration instance
+   */
+  private EspPortConfiguration createEspPortConfiguration()
+  {
+    EnOceanConfiguration enoceanConfig = EnOceanConfiguration.readXML();
+
+    EspPortConfiguration portConfig = new EspPortConfiguration();
+
+    portConfig.setComPort(enoceanConfig.getComPort());
+
+    try
+    {
+      portConfig.setCommLayer(
+          EspPortConfiguration.CommLayer.valueOf(enoceanConfig.getCommLayer())
+      );
+    }
+
+    catch(RuntimeException exc)
+    {
+      log.error("Invalid communication layer configuration.");
+    }
+
+    try
+    {
+      portConfig.setSerialProtocol(
+          EspPortConfiguration.SerialProtocol.valueOf(enoceanConfig.getSerialProtocol())
+      );
+    }
+
+    catch(RuntimeException exc)
+    {
+      log.error("Invalid EnOcean serial protocol configuration.");
+    }
+
+    return portConfig;
   }
 }
