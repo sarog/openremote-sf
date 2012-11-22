@@ -32,6 +32,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 
 /**
@@ -238,9 +239,10 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
    public void run() {
       logger.debug("Sensor thread started for sensor: " + sensor);
       while (doPoll) {
+         logger.debug("Executing status command for sensor: " + sensor);
    	   String filteredResponse = "";
    	   send(true);
-   	   
+   	   logger.debug("Telnet status command received value: " + response);
    	   try {
       	   if ("".equals(responseFilter) || responseFilter == null) {
          	   filteredResponse = response;
@@ -251,24 +253,38 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
                if (b) {
                   String matchedGroup = m.group(responseFilterGroup);
                   if (matchedGroup != null) {
-                     filteredResponse = matchedGroup;  
+                     filteredResponse = matchedGroup;
                   }
                } else {
                   filteredResponse = statusDefault;
+                  logger.warn("Telnet Read Status: No Match using Regex: '" + responseFilter + "' on response from command '" + command + "'");
                } 
-               logger.error("Telnet Read Status: No Match using Regex: '" + responseFilter + "' on response from command '" + command + "'");
             }            
          }
          catch (PatternSyntaxException e) {
             logger.error("Telnet Read Status: Invalid filter expression", e);
          }
          
+         logger.debug("Telnet status command value after regex: " + filteredResponse);
          if (!"".equals(filteredResponse)) {
-            sensor.update(filteredResponse);
+            if (sensor instanceof SwitchSensor) {
+               filteredResponse = filteredResponse.toLowerCase().replaceAll("1|on", "true");
+               Boolean bool = Boolean.parseBoolean(filteredResponse);
+               if (bool) {
+                  logger.debug("Telnet status command updating switch sensor with value 'on'");
+                  sensor.update("on");
+               } else {
+                  logger.debug("Telnet status command updating switch sensor with value 'off'");
+                  sensor.update("off");  
+               }
+            } else {
+               logger.debug("Telnet status command updating switch sensor with value '" + filteredResponse + "'");
+               sensor.update(filteredResponse);
+            }
          } else {
+            logger.debug("Telnet status command updating switch sensor with value 'N/A'");
             sensor.update("N/A");
          }
-         
          try {
             Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
          } catch (InterruptedException e) {

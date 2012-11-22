@@ -247,7 +247,9 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
           }
         } else if (xpathExpression != null) {
           DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-          factory.setNamespaceAware(true); // never forget this!
+          //The following line had "true" but I changed this to "false" since it did not work with
+          //documents that actually had a namespace defined. (MR)
+          factory.setNamespaceAware(false);
           String result;
           try
           {
