@@ -193,6 +193,8 @@ public class AMXNICommandBuilder implements CommandBuilder {
             throw new NoSuchCommandException(e.getMessage(), e);
          }
       }
+      
+      System.err.println("levelAsString >" + levelAsString + "<");
 
       // If a level was provided, attempt to convert to integer
       if (levelAsString != null && !"".equals(levelAsString)) {
@@ -214,17 +216,10 @@ public class AMXNICommandBuilder implements CommandBuilder {
          }
       }
 
-      if (level == null) {
-         // No specific level provided, check for parameter (passed in from Slider)
-         String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-         if (paramValue != null && !paramValue.equals("")) {
-            try {
-               level = Integer.parseInt(paramValue);
-            } catch (NumberFormatException e) {
-              log.error("Invalid param value", e);
-              throw new NoSuchCommandException(e.getMessage(), e);
-            }
-         }
+      if (valueAsString == null) {
+         // No specific level provided, use parameter (passed in from Slider)
+         // We don't do any type checking here, it'll be handled by the command class
+         valueAsString = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
       }
       
       // Translate the command string to a type safe AMX NI Command types...

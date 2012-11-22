@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.amx_ni;
 import org.jdom.Element;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 
@@ -68,7 +69,21 @@ public class AMXNICommandBuilderTest {
        Assert.assertTrue(cb.build(getCommandElement("SEND_LEVEL", "1", null, "1", "50", null, null)) instanceof LevelCommand);
        Assert.assertTrue(cb.build(getCommandElement("LEVEL_STATUS", "1", null, "1", null, null, null)) instanceof LevelCommand);
      }
+    
+    @Test public void testLevelCommandDynamicElement() {
+       CommandBuilder cb = new AMXNICommandBuilder();
+       Element ele = getCommandElement("SEND_LEVEL", "1", null, "1", null, null, null);
+       ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "50");
+       Assert.assertTrue(cb.build(ele) instanceof LevelCommand);
+     }
 
+    @Test(expected = NoSuchCommandException.class)
+    public void testLevelCommandInvalidDynamicElement() {
+       Element ele = getCommandElement("SEND_LEVEL", "1", null, "1", null, null, null);
+       ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "a");
+       new AMXNICommandBuilder().build(ele);
+    }
+    
     @Test(expected = NoSuchCommandException.class)
     public void testLevelCommandInvalidDeviceIndex() {
       new AMXNICommandBuilder().build(getCommandElement("SEND_LEVEL", "a", null, "1", "50", null, null));
