@@ -193,8 +193,6 @@ public class AMXNICommandBuilder implements CommandBuilder {
             throw new NoSuchCommandException(e.getMessage(), e);
          }
       }
-      
-      System.err.println("levelAsString >" + levelAsString + "<");
 
       // If a level was provided, attempt to convert to integer
       if (levelAsString != null && !"".equals(levelAsString)) {
