@@ -257,7 +257,13 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
       	// Create packet
       	InetAddress address = InetAddress.getByName(getIp());
          int port = Integer.parseInt(getPort());
-      	byte[] bytes = getCommand().getBytes();
+      	byte[] bytes;
+      	if (getCommand().toLowerCase().startsWith("0x")) {
+      	   String tmp = getCommand().substring(2);
+      	   bytes = hexStringToByteArray(tmp.replaceAll(" ", "").toLowerCase());
+      	} else {
+      	   bytes = getCommand().getBytes();
+      	}
       	DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
       	
       	// Send the packet
@@ -347,6 +353,15 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
       }
 
       return readResponse;
+   }
+   
+   private byte[] hexStringToByteArray(String s) {
+      int len = s.length();
+      byte[] data = new byte[len / 2];
+      for (int i = 0; i < len; i += 2) {
+          data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+      }
+      return data;
    }
 
 }
