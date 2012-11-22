@@ -282,7 +282,7 @@
 			</fileset>
  		</copy>
     
-    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}">
+    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}" encoding="utf-8">
       <src path = "${src.dir}"/>
     </javac>
   </target>
