@@ -43,7 +43,8 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
-          </list>
+            <value>classpath:enocean.properties</value>
+        </list>
       </property>
   </bean>
 
@@ -89,6 +90,12 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
+    <property name="comPort" value="${enocean.comPort}" />
+    <property name="commLayer" value="${enocean.commLayer}" />
+    <property name="serialProtocol" value="${enocean.serialProtocol}" />
+  </bean>
 
     <!-- service for control command from panel -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
@@ -217,9 +224,7 @@
 	</bean>
 
     <!-- EnOcean Command Builder -->
-    <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder">
-        <constructor-arg index="0" value="${enocean.com.port}" />
-    </bean>
+    <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder"/>
 
     <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">

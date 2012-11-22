@@ -20,9 +20,12 @@
  */
 package org.openremote.controller.protocol.enocean;
 
+import org.openremote.controller.protocol.enocean.packet.Esp2Processor;
 import org.openremote.controller.protocol.enocean.packet.Esp3Processor;
+import org.openremote.controller.protocol.enocean.port.Esp2ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
+import org.openremote.controller.protocol.enocean.port.RXTXPort;
 import org.openremote.controller.utils.Logger;
 
 import java.security.AccessController;
@@ -102,7 +105,26 @@ public class EnOceanConnectionManager
       return connections.get(configuration.getComPort());
     }
 
-    EnOceanConnection connection = createEsp3Connection(configuration, listener);
+
+    EnOceanConnection connection = null;
+
+    if(configuration.getSerialProtocol() == EspPortConfiguration.SerialProtocol.ESP2)
+    {
+      connection = createEsp2Connection(configuration, listener);
+    }
+
+    else if(configuration.getSerialProtocol() == EspPortConfiguration.SerialProtocol.ESP3)
+    {
+      connection = createEsp3Connection(configuration, listener);
+    }
+
+    else
+    {
+      throw new ConfigurationException(
+          "Invalid EnOcean serial protocol configuration " +
+          "(see enocean.serialProtocol config property)."
+      );
+    }
 
     connections.put(configuration.getComPort(), connection);
 
@@ -131,9 +153,76 @@ public class EnOceanConnectionManager
   protected EnOceanConnection createEsp3Connection(EspPortConfiguration configuration, RadioTelegramListener listener)
       throws ConfigurationException, ConnectionException
   {
-    Esp3ComPortAdapter port = new Esp3ComPortAdapter(configuration);
+    Esp3ComPortAdapter port = null;
+
+    if(configuration.getCommLayer() == EspPortConfiguration.CommLayer.PAD)
+    {
+      port = new Esp3ComPortAdapter(configuration);
+    }
+
+    else if(configuration.getCommLayer() == EspPortConfiguration.CommLayer.RXTX)
+    {
+     port = new Esp3ComPortAdapter(new RXTXPort(), configuration);
+    }
+
+    else
+    {
+      throw new ConfigurationException(
+          "Invalid communication layer configuration " +
+          "(see enocean.commLayer config property)."
+      );
+    }
+
     Esp3Processor processor = new Esp3Processor(port);
     Esp3Connection connection = new Esp3Connection(processor, listener);
+    processor.setProcessorListener(connection);
+
+    connection.connect();
+
+    return connection;
+  }
+
+  /**
+   * Returns a new ESP2 connection instance.
+   *
+   * @param   configuration  EnOcean serial protocol (ESP) port configuration
+   *
+   * @param   listener       listener which will be notified from the returned connection
+   *                         if a radio telegram has been received
+   *
+   * @return  new ESP2 connection instance
+   *
+   * @throws ConfigurationException
+   *           if connection cannot be established because of an configuration error
+   *
+   * @throws ConnectionException
+   *           if connection cannot be established because of an connection error
+   */
+  protected EnOceanConnection createEsp2Connection(EspPortConfiguration configuration, RadioTelegramListener listener)
+      throws ConfigurationException, ConnectionException
+  {
+    Esp2ComPortAdapter port = null;
+
+    if(configuration.getCommLayer() == EspPortConfiguration.CommLayer.PAD)
+    {
+      port = new Esp2ComPortAdapter(configuration);
+    }
+
+    else if(configuration.getCommLayer() == EspPortConfiguration.CommLayer.RXTX)
+    {
+      port = new Esp2ComPortAdapter(new RXTXPort(), configuration);
+    }
+
+    else
+    {
+      throw new ConfigurationException(
+          "Invalid communication layer configuration " +
+          "(see enocean.commLayer config property)."
+      );
+    }
+
+    Esp2Processor processor = new Esp2Processor(port);
+    Esp2Connection connection = new Esp2Connection(processor, listener);
     processor.setProcessorListener(connection);
 
     connection.connect();
@@ -177,7 +266,7 @@ public class EnOceanConnectionManager
     {
       log.warn(
           "Cannot register shutdown hook. Most likely due to lack of security permissions " +
-          "in the JVM security manager. DSC IT100 connection manager service will operate normally " +
+          "in the JVM security manager. EnOcean connection manager service will operate normally " +
           "but may be unable to clean up all the connection resources in case of an unexpected " +
           "shutdown (security exception: " + exception.getMessage() + ")", exception
       );

@@ -30,12 +30,49 @@ import org.openremote.controller.Configuration;
 public class EspPortConfiguration extends Configuration
 {
 
+  // Enums ----------------------------------------------------------------------------------------
+
+  /**
+   * Communication layer.
+   */
+  public enum CommLayer
+  {
+    RXTX,
+    PAD
+  }
+
+  /**
+   * EnOcean serial protocol version.
+   */
+  public enum SerialProtocol
+  {
+    /**
+     * EnOcean serial protocol version 2.
+     */
+    ESP2,
+
+    /**
+     * EnOcean serial protocol version 3.
+     */
+    ESP3
+  }
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
    * COM port identifier
    */
   private String comPort = null;
+
+  /**
+   * Communication layer.
+   */
+  private CommLayer commLayer = null;
+
+  /**
+   * EnOcean serial protocol version.
+   */
+  private SerialProtocol serialProtocol = null;
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -60,4 +97,41 @@ public class EspPortConfiguration extends Configuration
     return comPort;
   }
 
+  /**
+   * Sets communication layer.
+   */
+  public void setCommLayer(CommLayer commLayer)
+  {
+    this.commLayer = commLayer;
+  }
+
+  /**
+   * Returns communication layer
+   *
+   * @return  the communication layer
+   */
+  public CommLayer getCommLayer()
+  {
+    return commLayer;
+  }
+
+  /**
+   * Sets EnOcean serial protocol version.
+   *
+   * @param protocol  EnOcean serial protocol version.
+   */
+  public void setSerialProtocol(SerialProtocol protocol)
+  {
+    this.serialProtocol = protocol;
+  }
+
+  /**
+   * Returns EnOcean serial protocol version.
+   *
+   * @return  EnOcean serial protocol version.
+   */
+  public SerialProtocol getSerialProtocol()
+  {
+    return serialProtocol;
+  }
 }

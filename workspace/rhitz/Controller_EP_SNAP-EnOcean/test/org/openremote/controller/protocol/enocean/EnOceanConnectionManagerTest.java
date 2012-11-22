@@ -41,6 +41,8 @@ public class EnOceanConnectionManagerTest
 
     EspPortConfiguration config = new EspPortConfiguration();
     config.setComPort("COM1");
+    config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
 
     RadioTelegramListener listener = new TestListener();
 
@@ -49,14 +51,18 @@ public class EnOceanConnectionManagerTest
 
     Assert.assertNotNull(conn1);
     Assert.assertNotNull(conn2);
+    Assert.assertTrue(conn1 instanceof TestEsp3Connection);
     Assert.assertEquals(conn1, conn2);
 
     config = new EspPortConfiguration();
     config.setComPort("COM2");
+    config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP2);
 
     EnOceanConnection conn3 = mgr.getConnection(config, listener);
 
     Assert.assertNotNull(conn3);
+    Assert.assertTrue(conn3 instanceof TestEsp2Connection);
     Assert.assertNotSame(conn1, conn3);
     Assert.assertNotSame(conn2, conn3);
   }
@@ -91,11 +97,37 @@ public class EnOceanConnectionManagerTest
     @Override protected EnOceanConnection createEsp3Connection(EspPortConfiguration configuration, RadioTelegramListener listener)
         throws ConfigurationException, ConnectionException
     {
-      return new TestConnection();
+      return new TestEsp3Connection();
+    }
+
+    @Override protected EnOceanConnection createEsp2Connection(EspPortConfiguration configuration, RadioTelegramListener listener)
+        throws ConfigurationException, ConnectionException
+    {
+      return new TestEsp2Connection();
     }
   }
 
-  private static class TestConnection implements EnOceanConnection
+  private static class TestEsp3Connection implements EnOceanConnection
+  {
+
+    @Override public void connect() throws ConnectionException, ConfigurationException
+    {
+
+    }
+
+    @Override public void disconnect() throws ConnectionException
+    {
+
+    }
+
+    @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
+        throws ConnectionException, ConfigurationException
+    {
+
+    }
+  }
+
+  private static class TestEsp2Connection implements EnOceanConnection
   {
 
     @Override public void connect() throws ConnectionException, ConfigurationException

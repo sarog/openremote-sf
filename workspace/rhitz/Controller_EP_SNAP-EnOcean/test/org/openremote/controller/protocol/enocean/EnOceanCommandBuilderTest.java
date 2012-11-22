@@ -28,6 +28,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 
 /**
  * Unit tests for {@link EnOceanCommandBuilder} class.
@@ -43,7 +44,14 @@ public class EnOceanCommandBuilderTest
 
   @Before public void setUp()
   {
-    builder = new EnOceanCommandBuilder("/dev/cu.usbserial-FTUOKF2Q");
+    EspPortConfiguration portConfig = new EspPortConfiguration();
+    portConfig.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    portConfig.setComPort("/dev/ttyUSB0");
+    portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+
+    EnOceanGateway gateway = new EnOceanGateway(new EnOceanConnectionManager(), portConfig);
+
+    builder = new EnOceanCommandBuilder(gateway);
   }
 
   // Tests ----------------------------------------------------------------------------------------
