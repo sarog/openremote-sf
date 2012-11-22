@@ -24,6 +24,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -42,6 +43,7 @@ public class ShellExeCommandBuilder implements CommandBuilder {
    private final static String STR_ATTRIBUTE_NAME_COMMAND_PARAMS = "commandParams";
    private final static String STR_ATTRIBUTE_NAME_REGEX = "regex";
    private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
+   private final static String STR_ATTRIBUTE_NAME_SENSORS_NAME_LIST = "sensorNamesList";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -58,7 +60,9 @@ public class ShellExeCommandBuilder implements CommandBuilder {
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
       String commandId = element.getAttribute("id").getValue();
-      if (cachedCommands.get(commandId) != null) {
+      
+      String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+      if ((cachedCommands.get(commandId) != null) && (commandParam == null)) {  //only use cached command if we don't have dynamic values
          logger.debug("Found cached ShellExe command with id: " + commandId);
          return cachedCommands.get(commandId);
       }
@@ -69,6 +73,7 @@ public class ShellExeCommandBuilder implements CommandBuilder {
       String commandParams = null;
       String regex = null;
       String interval = null;
+      String sensorNamesList = null;
       Integer intervalInMillis = null;
       
       // read values from config xml
@@ -81,13 +86,17 @@ public class ShellExeCommandBuilder implements CommandBuilder {
             commandPath = elementValue;
             logger.debug("ShellExe Command: commandPath= " + commandPath);
          } else if (STR_ATTRIBUTE_NAME_COMMAND_PARAMS.equals(elementName)) {
-            commandParams = elementValue;
+            commandParams = CommandUtil.parseStringWithParam(element, elementValue);
             logger.debug("ShellExe Command: commandParams = " + commandParams);
          } else if (STR_ATTRIBUTE_NAME_POLLINGINTERVAL.equals(elementName))
          {
            interval = elementValue;
            logger.debug("ShellExe Command: pollingInterval = " + interval);
-         } else if (STR_ATTRIBUTE_NAME_REGEX.equals(elementName))
+         } else if (STR_ATTRIBUTE_NAME_SENSORS_NAME_LIST.equals(elementName))
+         {
+            sensorNamesList = elementValue;
+            logger.debug("ShellExe Command: sensorNamesList = " + sensorNamesList);
+          }  else if (STR_ATTRIBUTE_NAME_REGEX.equals(elementName))
          {
            regex = elementValue;
            logger.debug("ShellExe Command: regex = " + regex);
@@ -109,7 +118,7 @@ public class ShellExeCommandBuilder implements CommandBuilder {
       }
       logger.debug("ShellExe Command created successfully");
 
-      ShellExeCommand cmd = new ShellExeCommand(commandPath, commandParams, regex, intervalInMillis);
+      ShellExeCommand cmd = new ShellExeCommand(commandPath, commandParams, regex, sensorNamesList, intervalInMillis);
       cachedCommands.put(commandId, cmd);
       return cmd;
    }

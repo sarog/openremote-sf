@@ -14,10 +14,14 @@ New Features:
     which contain which contain white spaces or other special characters 
     (Marcus Redeker)
   - One Wire: Added possibility to specify temperature values in
-    either Celsius (default), Kelvin, Fahrenheit or Rankine scales.
+    either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
+    property added for sending values to switches
   - Shell Command Execution: polling interval and regular expression
-    filtering on return values supported
+    filtering on return values supported, including regexp groups to 
+    read in multiple sensor values at once. Support for using shell
+    commands with sliders added.
   - Telnet: polling interval property added
+  - Date/Time : values updated once per minute instead of once per second
 
 
 Bug Fixes:
