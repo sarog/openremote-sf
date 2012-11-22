@@ -410,7 +410,7 @@ public class AMXNIGateway {
          if (!(other instanceof AMXCommand)) {
             return false;
          }
-         AMXCommand otherCommand = (AMXCommand) other;
+         // AMXCommand otherCommand = (AMXCommand) other;
 
          return false;
 
