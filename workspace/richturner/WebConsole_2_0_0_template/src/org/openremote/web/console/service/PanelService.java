@@ -20,6 +20,7 @@
 package org.openremote.web.console.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelSize;
@@ -61,5 +62,5 @@ public interface PanelService {
 	
 	List<Integer> getGroupScreenIdsWithSameOrientation(Integer screenId, Integer groupId);
 
-	List<String> getImageResourceUrls();
+	String[] getPanelImageUrls();
 }

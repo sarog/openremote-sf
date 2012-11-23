@@ -530,7 +530,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			@Override
 			public void onFailure(EnumControllerResponseCode response) {
 				BrowserUtils.hideLoadingMsg();
-				if (response == EnumControllerResponseCode.NOT_AUTHORIZED) {
+				if (response == EnumControllerResponseCode.NOT_AUTHORIZED || response == EnumControllerResponseCode.FORBIDDEN) {
 					// Take them to the login screen
 					loadSettings(EnumSystemScreen.LOGIN, null);
 				} else {
@@ -590,39 +590,37 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				
 				Timer imageCacher = new Timer() {
 					int i=0;
-					List<String> imageUrls = panelService.getImageResourceUrls();
+					String[] imageUrls = panelService.getPanelImageUrls();
 					
 					@Override
 					public void run() {
-						if (i < imageUrls.size()) {
-							addImageToCache(imageUrls.get(i));
+						if (i < imageUrls.length) {
+							addImageToCache(imageUrls[i]);
 							i++;
 							this.schedule(100);
-						}					
+						}	else {
+							// Prefetch All Images Resources before proceeding
+							loadCache(new AsyncControllerCallback() {
+
+								@Override
+								public void onSuccess(Object result) {
+									initialisePanel();
+								}
+								
+								@Override
+								public void onFailure(Throwable e) {
+									initialisePanel();
+								}
+							});
+						}
 					}};
 				
 				imageCacher.run();	
-					
-				// Prefetch All Images Resources before proceeding
-				loadCache(new AsyncControllerCallback() {
-
-					@Override
-					public void onSuccess(Object result) {
-						initialisePanel();
-					}
-					
-					@Override
-					public void onFailure(Throwable e) {
-						initialisePanel();
-					}
-				});
-				
-				success = true;
 			} catch (Exception e) {
-				success = false;
+				return false;
 			}
 		}
-		return success;
+		return true;
 	}
 	
 	private void loadCache(final AsyncControllerCallback callback) {
@@ -946,7 +944,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public ImageContainer getImageFromCache(String url) {
 		ImageContainer container = null;
 		container = imageCache.get(url);
-		if (container != null) container = container.clone();
+		if (container != null) {
+			container = container.clone();
+		} else {
+			container = new ImageContainer("");
+		}
 		return container;
 	}
 	
@@ -1063,12 +1065,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 							
 							Timer imageCacher = new Timer() {
 								int i=0;
-								List<String> imageUrls = panelService.getImageResourceUrls();
+								String[] imageUrls = panelService.getPanelImageUrls();
 								
 								@Override
 								public void run() {
-									if (i < imageUrls.size()) {
-										addImageToCache(imageUrls.get(i));
+									if (i < imageUrls.length) {
+										addImageToCache(imageUrls[i]);
 										i++;
 										this.schedule(100);
 									}					
