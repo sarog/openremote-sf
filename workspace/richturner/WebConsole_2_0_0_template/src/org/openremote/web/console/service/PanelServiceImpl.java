@@ -20,10 +20,13 @@
 package org.openremote.web.console.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.Panel;
@@ -64,6 +67,7 @@ public class PanelServiceImpl implements PanelService {
 	private TabBar currentPanelTabBar = null;
 	private boolean isInitialised = false;
 	private PanelSize panelSize = null;
+	private Map<Panel, String[]> panelImageUrlMap = new LinkedHashMap<Panel, String[]>();
 	
 	private PanelServiceImpl() {}
 	
@@ -218,7 +222,6 @@ public class PanelServiceImpl implements PanelService {
 			// Set Group and Screen Map and Panel Tab Bar
 			currentGroupMap = new LinkedHashMap<Integer, Group>();
 			currentScreenMap = new LinkedHashMap<Integer, Screen>();
-			currentPanelTabBar = currentPanel.getTabbar();
 			
 			List<Group> groups = currentPanel.getGroups().getGroup();
 			if (groups != null) {
@@ -232,6 +235,12 @@ public class PanelServiceImpl implements PanelService {
 				for (Screen screenElem : screens) {
 					currentScreenMap.put(screenElem.getId(), screenElem);
 				}
+			}
+			
+			// Get image Urls
+			if (!panelImageUrlMap.containsKey(currentPanel))
+			{
+				panelImageUrlMap.put(currentPanel, getPanelImageUrls());
 			}
 			
 			isInitialised = true;
@@ -427,8 +436,13 @@ public class PanelServiceImpl implements PanelService {
 	}
 
 	@Override
-	public List<String> getImageResourceUrls() {
-		List<String> imageUrls = new ArrayList<String>();
+	public String[] getPanelImageUrls() {
+		if (panelImageUrlMap.containsKey(currentPanel)) {
+			return panelImageUrlMap.get(currentPanel);
+		}
+		
+		Set<String> imageUrls = new HashSet<String>();
+		
 		// Cycle through panel looking for images that may be required
 		if (currentScreenMap != null) {
 			for (int screenId : currentScreenMap.keySet()) {
@@ -436,31 +450,39 @@ public class PanelServiceImpl implements PanelService {
 				
 				// Check background
 				if (screenElem.getBackground() != null && screenElem.getBackground().getImage() != null) {
-					imageUrls.addAll(processImageElement(screenElem.getBackground().getImage()));
+					processImageElement(screenElem.getBackground().getImage(), imageUrls);
 				}
 				
 				// Process Absolute and grid layouts
-				imageUrls.addAll(processAbsoluteAndGridLayouts(screenElem.getAbsolute(), screenElem.getGrid()));
+				processAbsoluteAndGridLayouts(screenElem.getAbsolute(), screenElem.getGrid(), imageUrls);
 				
 				// Cycle through list panel elements
 				if (screenElem.getList() != null) {
 					for (ListLayout layout : screenElem.getList()) {
 						ListItemLayout itemLayout = layout.getItemTemplate();
 						if (itemLayout != null) {
-							imageUrls.addAll(processAbsoluteAndGridLayouts(itemLayout.getAbsolute(), itemLayout.getGrid()));
+							processAbsoluteAndGridLayouts(itemLayout.getAbsolute(), itemLayout.getGrid(), imageUrls);
 						}
 					}
 				}
 			}
-			// Cycle through tab bar looking for images also
-			if (currentPanel.getTabbar() != null) {
-				for (TabBarItem item : currentPanel.getTabbar().getItem()) {
-					if (item != null) {
-						if (item.getImage() != null) {
-							if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
-								imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
-							} else {
-								imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
+			
+			// Cycle through groups looking for tab bar images
+			// Cycle through panel looking for images that may be required
+			if (currentGroupMap != null) {
+				for (int groupId : currentGroupMap.keySet()) {
+					Group group = currentGroupMap.get(groupId);
+					if (group != null && group.getTabbar() != null && group.getTabbar().getItem() != null)
+					{
+						for (TabBarItem item : group.getTabbar().getItem()) {
+							if (item != null) {
+								if (item.getImage() != null) {
+									if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
+										imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
+									} else {
+										imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
+									}
+								}
 							}
 						}
 					}
@@ -468,17 +490,15 @@ public class PanelServiceImpl implements PanelService {
 			}
 		}
 		
-		return imageUrls;
+		return imageUrls.toArray(new String[] {});
 	}
 	
-	private List<String> processAbsoluteAndGridLayouts(List<AbsoluteLayout> absLayouts, List<GridLayout> gridLayouts) {
-		List<String> imageUrls = new ArrayList<String>();
-		
+	private void processAbsoluteAndGridLayouts(List<AbsoluteLayout> absLayouts, List<GridLayout> gridLayouts, Set<String> imageUrls) {
 		// Cycle through absolute elements
 		if (absLayouts != null) {
 			for (AbsoluteLayout abs : absLayouts) {
 				if (abs != null) {
-					imageUrls.addAll(processComponentContainer(abs));
+					processComponentContainer(abs, imageUrls);
 				}
 			}
 		}
@@ -491,116 +511,96 @@ public class PanelServiceImpl implements PanelService {
 				if (cells != null) {
 					for (Cell cell : cells) {
 						if (cell != null) {
-							imageUrls.addAll(processComponentContainer(cell));
+							processComponentContainer(cell, imageUrls);
 						}
 					}
 				}
 			}
 		}
-		
-		return imageUrls;
 	}
 	
-	private List<String> processComponentContainer(ComponentContainer compContainer) {
-		List<String> imageUrls = new ArrayList<String>();
-		
+	private void processComponentContainer(ComponentContainer compContainer, Set<String> imageUrls) {
 		if (compContainer != null) {
 			// Check Button
-			if (compContainer.getButton() != null) imageUrls.addAll(processButtonElement(compContainer.getButton()));
+			if (compContainer.getButton() != null) processButtonElement(compContainer.getButton(), imageUrls);
 			// Check Image
-			if (compContainer.getImage() != null) imageUrls.addAll(processImageComponentElement(compContainer.getImage()));
+			if (compContainer.getImage() != null) processImageComponentElement(compContainer.getImage(), imageUrls);
 			// Check Slider
-			if (compContainer.getSlider() != null) imageUrls.addAll(processSliderElement(compContainer.getSlider()));
+			if (compContainer.getSlider() != null) processSliderElement(compContainer.getSlider(), imageUrls);
 			// Check Switch
-			if (compContainer.getSwitch() != null) imageUrls.addAll(processSwitchElement(compContainer.getSwitch()));
-		}
-		
-		return imageUrls;		
+			if (compContainer.getSwitch() != null) processSwitchElement(compContainer.getSwitch(), imageUrls);
+		}		
 	}
 	
-	private List<String> processImageComponentElement(ImageComponent img) {
-		List<String> imgUrls = new ArrayList<String>();
-		
+	private void processImageComponentElement(ImageComponent img, Set<String> imageUrls) {
 		if (img != null) {
 			// Check src and check link
-			if (img.getSrc() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
+			if (img.getSrc() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
 			if (img.getLink() != null) {
 				List<StateMap> stateMap = img.getLink().getState();
 				if (stateMap != null) {
 					for (StateMap state : stateMap) {
-						imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + state.getValue());
+						imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + state.getValue());
 					}
 				}
 			}
 		}
-		
-		return imgUrls;
 	}
 	
-	private List<String> processButtonElement(ButtonComponent btn) {
-		List<String> imgUrls = new ArrayList<String>();
+	private void processButtonElement(ButtonComponent btn, Set<String> imageUrls) {
 		if (btn != null) {
 			if (btn.getDefault() != null && btn.getDefault().getImage() != null) {
 				if (btn.getDefault().getImage().getSystemImage() != null && btn.getDefault().getImage().getSystemImage()) {
-					imgUrls.add(BrowserUtils.getSystemImageDir() + btn.getDefault().getImage().getSrc());
+					imageUrls.add(BrowserUtils.getSystemImageDir() + btn.getDefault().getImage().getSrc());
 				} else {
-					imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getDefault().getImage().getSrc());
+					imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getDefault().getImage().getSrc());
 				}
 			}
 			if (btn.getPressed() != null && btn.getPressed().getImage() != null) {
 				if (btn.getPressed().getImage().getSystemImage() != null && btn.getPressed().getImage().getSystemImage()) {
-					imgUrls.add(BrowserUtils.getSystemImageDir() + btn.getPressed().getImage().getSrc());
+					imageUrls.add(BrowserUtils.getSystemImageDir() + btn.getPressed().getImage().getSrc());
 				} else {
-					imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getPressed().getImage().getSrc());
+					imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + btn.getPressed().getImage().getSrc());
 				}
 			}
 		}
-		return imgUrls;
 	}
 	
-	private List<String> processSwitchElement(SwitchComponent swtch) {
-		List<String> imgUrls = new ArrayList<String>();
+	private void processSwitchElement(SwitchComponent swtch, Set<String> imageUrls) {
 		if (swtch != null) {
 			if (swtch.getLink() != null) {
-				for(StateMap map : swtch.getLink().getState()) {
-					if (map != null) {
-						imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + map.getValue());
+				if (swtch.getLink().getState() != null) {
+					for(StateMap map : swtch.getLink().getState()) {
+							imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + map.getValue());
 					}
 				}
 			}
 		}
-		return imgUrls;
 	}
 	
-	private List<String> processSliderElement(SliderComponent slider) {
-		List<String> imgUrls = new ArrayList<String>();
+	private void processSliderElement(SliderComponent slider, Set<String> imageUrls) {
 		if (slider != null) {
-			if (slider.getThumbImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + slider.getThumbImage());
+			if (slider.getThumbImage() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + slider.getThumbImage());
 			SliderMinMax max = slider.getMax();
 			SliderMinMax min = slider.getMin();
 			if (max != null) {
-				if (max.getImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getImage());
-				if (max.getTrackImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getTrackImage());
+				if (max.getImage() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getImage());
+				if (max.getTrackImage() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + max.getTrackImage());
 			}
 			if (min != null) {
-				if (min.getImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getImage());
-				if (min.getTrackImage() != null) imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getTrackImage());
+				if (min.getImage() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getImage());
+				if (min.getTrackImage() != null) imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + min.getTrackImage());
 			}
 		}
-		return imgUrls;
 	}
 	
-	private List<String> processImageElement(Image img) {
-		List<String> imgUrls = new ArrayList<String>();
-		
+	private void processImageElement(Image img, Set<String> imageUrls) {
 		if (img != null) {
 			if (img.getSystemImage() != null && img.getSystemImage()) {
-				imgUrls.add(BrowserUtils.getSystemImageDir() + img.getSrc());
+				imageUrls.add(BrowserUtils.getSystemImageDir() + img.getSrc());
 			} else {
-				imgUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
+				imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + img.getSrc());
 			}
 		}
-		
-		return imgUrls;
 	}
 }
