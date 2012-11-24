@@ -22,7 +22,9 @@ New Features:
     commands with sliders added.
   - Telnet: polling interval property added
   - Date/Time : values updated once per minute instead of once per second
-  - TCP & UDP : send hex values by prefixing command data with '0x' string
+  - UDP : send hex values by prefixing command data with '0x' string.
+    Receiving of UDP packets added.
+  - TCP : send hex values by prefixing command data with '0x' string
 
 
 Bug Fixes:
