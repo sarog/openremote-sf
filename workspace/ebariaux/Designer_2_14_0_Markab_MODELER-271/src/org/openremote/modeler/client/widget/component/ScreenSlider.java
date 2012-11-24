@@ -45,13 +45,9 @@ public class ScreenSlider extends ScreenComponent {
    protected LayoutContainer maxTrackImage = new LayoutContainer();
    protected LayoutContainer maxImage = new LayoutContainer();
 
-   public ScreenSlider(ScreenCanvas screenCanvas, WidgetSelectionUtil widgetSelectionUtil) {
+   public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider, WidgetSelectionUtil widgetSelectionUtil) {
       super(screenCanvas, widgetSelectionUtil);
       setLayout(new FlowLayout());
-   }
-
-   public ScreenSlider(ScreenCanvas screenCanvas, UISlider uiSlider, WidgetSelectionUtil widgetSelectionUtil) {
-      this(screenCanvas, widgetSelectionUtil);
       this.uiSlider = uiSlider;
       
       if(uiSlider.isVertical()) {
