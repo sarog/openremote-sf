@@ -52,7 +52,7 @@ public class LevelSensor extends RangeSensor
   {
     try
     {
-      return new Level(getSensorID(), getName(), new Integer(value));
+      return new Level(getSensorID(), getName(), new Integer(value.trim()));
     }
 
     catch (NumberFormatException e)
