@@ -7,6 +7,9 @@ New Features:
   - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
   - Lagarto server (panStamps) integration, Daniel Berenguer
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
+  - KNX: added distinct levels for 'DIM' and 'SCALE' commands that allow
+    set values to be configured for buttons, e.g. 'DIM 50' to dim directly
+    to 50% (Eric Bariaux, ORCJAVA-71).
   - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
     For HTTP/JSON return documents, a JSON Path expression is supported.
     Internally, the implementation has been converted to use URIs instead 
@@ -15,16 +18,20 @@ New Features:
     (Marcus Redeker)
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
-    property added for sending values to switches
+    property added for sending values to switches (Marcus Redeker)
   - Shell Command Execution: polling interval and regular expression
     filtering on return values supported, including regexp groups to 
     read in multiple sensor values at once. Support for using shell
-    commands with sliders added.
-  - Telnet: polling interval property added
+    commands with sliders added (Marcus Redeker, Ivan Martinez)
+  - Telnet: polling interval property added (Marcus Redeker)
   - Date/Time : values updated once per minute instead of once per second
+    (Marcus Redeker)
   - UDP : send hex values by prefixing command data with '0x' string.
-    Receiving of UDP packets added.
+    Receiving of UDP packets added (Marcus Redeker)
   - TCP : send hex values by prefixing command data with '0x' string
+    (Marcus Redeker)
+  - Samsung SmartTV : support control of multiple Samsung devices in single
+    installation (Ivan Martinez)
 
 
 Bug Fixes:
@@ -36,7 +43,9 @@ Bug Fixes:
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
   - Internal API : concurrency and call control on Deployer start 
     controller calls (ORCJAVA-179)  
-  
+  - Range and Level sensors trim the incoming values from protocol implementation
+    before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
+
 
 Controller 2.0.1 (2012-11-21)
 =============================
