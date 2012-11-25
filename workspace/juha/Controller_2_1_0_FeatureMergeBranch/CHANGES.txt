@@ -12,6 +12,9 @@ New Features:
     to 50% (Eric Bariaux, ORCJAVA-71).
   - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
     For HTTP/JSON return documents, a JSON Path expression is supported.
+    For outgoing HTTP request, a user agent header is included which
+    contains 'OpenRemoteController' as agent value which HTTP applications
+    can use to identify requests originating from the controller.
     Internally, the implementation has been converted to use URIs instead 
     of URLs which resolves an issue with lack of encoding of HTTP parameters 
     which contain which contain white spaces or other special characters 

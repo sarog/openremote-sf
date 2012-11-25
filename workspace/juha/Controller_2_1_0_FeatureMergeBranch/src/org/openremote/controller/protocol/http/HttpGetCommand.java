@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.http;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.regex.Matcher;
@@ -35,6 +36,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
@@ -216,16 +218,16 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
        request = new HttpDelete(uri);
     }
     String resp = "";
-    try
-    {
-      ResponseHandler<String> responseHandler = new BasicResponseHandler();
-      resp = client.execute(request, responseHandler);
-      logger.info("received message: " + resp);
+    ResponseHandler<String> responseHandler = new BasicResponseHandler();
+    request.addHeader("User-Agent", "OpenRemoteController");
+    try {
+       resp = client.execute(request, responseHandler);
+    } catch (ClientProtocolException e) {
+       logger.error("ClientProtocolException when executing HTTP method", e);
+    } catch (IOException e) {
+       logger.error("IOException when executing HTTP method", e);
     }
-    catch (Exception e)
-    {
-      logger.error("HttpCommand could not execute", e);
-    }
+    logger.info("received message: " + resp);
     return resp;
   }
   
