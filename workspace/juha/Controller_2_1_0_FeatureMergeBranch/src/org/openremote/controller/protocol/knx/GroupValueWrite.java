@@ -45,6 +45,8 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
   final static int DIMCONTROL_INCREASE_VALUE = 7;
   final static int DIMCONTROL_DECREASE_VALUE = 7;
+  final static Pattern SCALE_VALUE = Pattern.compile("SCALE\\s*(\\d+)");
+  final static Pattern DIM_VALUE = Pattern.compile("DIM\\s*(\\d+)");
   final static Pattern SCENE_NUMBER = Pattern.compile("SCENE (\\d+)");
   final static Pattern SCENE_CONTROL = Pattern.compile("LEARN_SCENE (\\d+)");
   
@@ -178,12 +180,20 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         );
       }
 
-      else if (name.equals("SCALE") ||
-               name.equals("DIM"))
+      else if (name.startsWith("SCALE") ||
+               name.startsWith("DIM"))
       {
         if (parameter == null)
         {
-          throw new NoSuchCommandException("Missing value parameter for SCALE command.");
+           Matcher m = name.startsWith("SCALE")?SCALE_VALUE.matcher(name):DIM_VALUE.matcher(name);
+           if (!m.matches()) {
+              throw new NoSuchCommandException("Missing value parameter for SCALE command.");
+           }
+           try {
+             parameter = new CommandParameter(m.group(1));
+           } catch (ConversionException e) {
+             throw new NoSuchCommandException(e.getMessage(), e);
+           }
         }
 
         try
