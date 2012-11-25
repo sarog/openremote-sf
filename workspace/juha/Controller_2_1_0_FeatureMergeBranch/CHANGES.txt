@@ -45,7 +45,9 @@ Bug Fixes:
     controller calls (ORCJAVA-179)  
   - Range and Level sensors trim the incoming values from protocol implementation
     before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
-
+  - Fix null pointer exception at controller shutdown in logging system
+    (Eric Bariaux, ORCJAVA-222)
+ 
 
 Controller 2.0.1 (2012-11-21)
 =============================
