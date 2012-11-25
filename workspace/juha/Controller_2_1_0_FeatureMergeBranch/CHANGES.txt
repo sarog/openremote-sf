@@ -32,6 +32,8 @@ New Features:
     (Marcus Redeker)
   - Samsung SmartTV : support control of multiple Samsung devices in single
     installation (Ivan Martinez)
+  - Touch panel gestures can now be bound to macros in addition to individual
+    commands (Eric Bariaux, ORCJAVA-231)
 
 
 Bug Fixes:
