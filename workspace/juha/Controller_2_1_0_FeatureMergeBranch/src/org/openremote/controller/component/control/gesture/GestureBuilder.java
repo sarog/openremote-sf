@@ -23,6 +23,7 @@ package org.openremote.controller.component.control.gesture;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
@@ -64,6 +65,12 @@ public class GestureBuilder extends ComponentBuilder
 
     for (Element commandRefElement : commandRefElements)
     {
+       if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName()))
+       {
+          gesture.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
+         continue;
+       }
+
       String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
       Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
       ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
