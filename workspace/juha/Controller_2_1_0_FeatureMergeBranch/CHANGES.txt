@@ -34,6 +34,8 @@ New Features:
     installation (Ivan Martinez)
   - Touch panel gestures can now be bound to macros in addition to individual
     commands (Eric Bariaux, ORCJAVA-231)
+  - Color selection widget is now supported by the controller (Eric Bariaux,
+    ORCJAVA-235)
 
 
 Bug Fixes:
