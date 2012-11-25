@@ -372,6 +372,179 @@ public class ScalingTest
   
   }
 
+  /**
+   * Test scale with parameter value as part of the command name.
+   */
+  @Test public void testScaleEmbeddedParameter()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("SCALE 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("SCALE 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+
+  /**
+   * Test command name with different cases for scale command with parameter value as part of the command name.
+   */
+  @Test public void testScaleEmbeddedMixedCaseParameter()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("Scale 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("scAle 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+  
+  /**
+   * Test scale with parameter value as part of the command name, varying the number of space character between the SCALE command and the parameter value.
+   */
+  @Test public void testScaleEmbeddedParameterSpacesVariation()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("SCALE0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("SCALE    100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+  
+  /**
+   * Test dim with parameter value as part of the command name.
+   */
+  @Test public void testDimEmbeddedParameter()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("DIM 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("DIM 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+
+  /**
+   * Test command name with different cases for dim command with parameter value as part of the command name.
+   */
+  @Test public void testDimEmbeddedMixedCaseParameter()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("Dim 0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("dIm 100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
+  
+  /**
+   * Test dim with parameter value as part of the command name, varying the number of space character between the DIM command and the parameter value.
+   */
+  @Test public void testDimEmbeddedParameterSpacesVariation()
+  {
+     String addr = "12/2/2";
+
+     Command cmd1 = getCommandNoArg("DIM0", addr);
+
+     assertTrue(cmd1 instanceof GroupValueWrite);
+
+     KNXCommand knx1 = (KNXCommand)cmd1;
+
+     Byte[] cemi1 = knx1.getCEMIFrame();
+
+     assertTrue(cemi1[KNXCommand.CEMI_DATA1_OFFSET] == 0x00);
+
+
+     Command cmd2 = getCommandNoArg("DIM    100", addr);
+
+     assertTrue(cmd2 instanceof GroupValueWrite);
+
+     KNXCommand knx2 = (KNXCommand)cmd2;
+
+     Byte[] cemi2 = knx2.getCEMIFrame();
+
+     assertTrue("Expected 0xFF but got " + Integer.toString(cemi2[KNXCommand.CEMI_DATA1_OFFSET], 16), cemi2[KNXCommand.CEMI_DATA1_OFFSET] == (byte)0xFF);
+  }
 
   /**
    * Test missing command value argument with 'DIM'
