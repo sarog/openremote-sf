@@ -229,8 +229,6 @@ public class AMXNIGateway {
                }
             } catch (InterruptedException e) {
                log.warn("Interrupted during our sleep", e);
-            } catch (Exception e) {
-               log.warn("Exception that was not specifically handled in code has been thrown, continuing reading thread", e);
             }
          }
          // For now do not support discovery, use information defined in config
@@ -346,9 +344,14 @@ public class AMXNIGateway {
                } else {
                   log.info("Received unknown information from AMX NI >" + line + "<");
                }
+            } catch (Exception e) {
+               log.warn("Exception not specifically handled by code has been thrown, continuing reading thread", e);
+            }
+            try {
                line = br.readLine();
             } catch (IOException e) {
-               log.warn("Could not read from AMX NI", e);
+               log.error("Could not read from AMX NI", e);
+               line = null; // This will kill the reader thread and re-start the connection
             }
          } while (line != null && !isInterrupted());
          log.info("Out of reader thread");
