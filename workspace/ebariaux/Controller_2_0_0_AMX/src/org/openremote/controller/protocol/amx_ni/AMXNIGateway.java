@@ -85,10 +85,8 @@ import org.openremote.controller.utils.Logger;
  * or when a CHANNEL event is received on AMX device registered at device index
  * <status> is on or off
  * 
- * LEVEL_STATUS,<device index>,<level>,<value> relaying a LEVEL event received on AMX device registered at device index
- * 
- * Known limitation: at this stage, there is no way for the AMX module to provide a reply to a LEVEL_STATUS with the initial value
- * of a level if it never changed. The LEVEL_STATUS reply will only be sent on the first LEVEL event.
+ * LEVEL_STATUS,<device index>,<level>,<value> either replying to a LEVEL_STATUS command from OR 
+ * or when a LEVEL event is received on AMX device registered at device index
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
@@ -340,6 +338,8 @@ public class AMXNIGateway {
                      } catch (AMXNIDeviceException e) {
                         log.error("Impossible to get device", e);
                      }
+                  } else if ("ERROR".equals(response.command)) {
+                     log.error("Received error from AMX module : " + response.parameter1);
                   }
                } else {
                   log.info("Received unknown information from AMX NI >" + line + "<");
@@ -360,13 +360,13 @@ public class AMXNIGateway {
 
       AMXResponse response = null;
       String[] parts = responseText.split(", ");
-      // All the responses we currently understand have at least 3 components, all except STRING_READ and COMMAND_READ
+      // All the responses we currently understand have at least 3 components, all except STRING_READ, COMMAND_READ and ERROR
       // have 4
       if (parts.length > 2) {
          response = new AMXResponse();
          response.command = parts[0].trim();
          response.deviceIndex = Integer.parseInt(parts[1].trim());
-         if ("STRING_READ".equals(response.command) || "COMMAND_READ".equals(response.command)) {
+         if ("STRING_READ".equals(response.command) || "COMMAND_READ".equals(response.command) || "ERROR".equals(response.command)) {
             StringBuffer temp = new StringBuffer(parts[2]);
             for (int i = 3; i < parts.length; i++) {
                temp.append(", ");

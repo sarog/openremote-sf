@@ -58,6 +58,8 @@ public class AMXNICommandBuilder implements CommandBuilder {
 
    public final static String AMX_NI_XMLPROPERTY_VALUE = "value";
    
+   public final static String AMX_NI_XMLPROPERTY_PULSE_TIME = "pulseTime";
+   
    public final static String AMX_NI_XMLPROPERTY_STATUS_FILTER = "statusFilter";
 
    public final static String AMX_NI_XMLPROPERTY_STATUS_FILTER_GROUP = "statusFilterGroup";
@@ -114,12 +116,14 @@ public class AMXNICommandBuilder implements CommandBuilder {
       String channelAsString = null;
       String levelAsString = null;
       String valueAsString = null;
+      String pulseTimeAsString = null;
       String statusFilterAsString = null;
       String statusFilterGroupAsString = null;
 
       Integer deviceIndex = null;
       Integer channel = null;
       Integer level = null;
+      Integer pulseTime = null;
       Integer statusFilterGroup = null;
 
       // Get the list of properties from XML...
@@ -151,6 +155,10 @@ public class AMXNICommandBuilder implements CommandBuilder {
             valueAsString = propertyValue;
          }
 
+         else if (AMX_NI_XMLPROPERTY_PULSE_TIME.equalsIgnoreCase(propertyName)) {
+            pulseTimeAsString = propertyValue;
+         }
+         
          else if (AMX_NI_XMLPROPERTY_STATUS_FILTER.equalsIgnoreCase(propertyName)) {
             statusFilterAsString = propertyValue;
          }
@@ -204,6 +212,16 @@ public class AMXNICommandBuilder implements CommandBuilder {
          }
       }
 
+      // If a pulseTime was provided, attempt to convert to integer
+      if (pulseTimeAsString != null && !"".equals(pulseTimeAsString)) {
+         try {
+            pulseTime = Integer.parseInt(pulseTimeAsString);
+         } catch (NumberFormatException e) {
+           log.error("Invalid pulse time", e);
+            throw new NoSuchCommandException(e.getMessage(), e);
+         }
+      }
+
       // If a statusFilterGroup was provided, attempt to convert to integer
       if (statusFilterGroupAsString != null && !"".equals(statusFilterGroupAsString)) {
          try {
@@ -221,8 +239,7 @@ public class AMXNICommandBuilder implements CommandBuilder {
       }
       
       // Translate the command string to a type safe AMX NI Command types...
-
-      Command cmd = AMXNICommand.createCommand(commandAsString, gateway, deviceIndex, channel, level, valueAsString, statusFilterAsString, statusFilterGroup);
+      Command cmd = AMXNICommand.createCommand(commandAsString, gateway, deviceIndex, channel, level, valueAsString, pulseTime, statusFilterAsString, statusFilterGroup);
 
       log.info("Created AMX NI Command " + cmd);
 

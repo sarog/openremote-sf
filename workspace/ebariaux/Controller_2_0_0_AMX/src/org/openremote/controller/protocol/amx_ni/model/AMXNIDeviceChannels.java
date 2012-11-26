@@ -62,8 +62,12 @@ public class AMXNIDeviceChannels extends AMXNIDevice {
       this.gateway.sendCommand("OFF", deviceIndex, Integer.toString(channel));
    }
 
-   public void pulse(Integer channel) {
-      this.gateway.sendCommand("PULSE", deviceIndex, Integer.toString(channel));
+   public void pulse(Integer channel, Integer pulseTime) {
+      if (pulseTime != null) {
+         this.gateway.sendCommand("PULSE", deviceIndex, Integer.toString(channel) + "," + Integer.toString(pulseTime));
+      } else {
+         this.gateway.sendCommand("PULSE", deviceIndex, Integer.toString(channel));
+      }
    }
 
    public void queryChannelStatus(Integer channel) {

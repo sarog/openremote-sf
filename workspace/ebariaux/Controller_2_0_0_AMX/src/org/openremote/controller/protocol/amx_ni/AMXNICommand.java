@@ -71,7 +71,7 @@ public abstract class AMXNICommand implements Command {
     * 
     * @return new AMX NI command instance
     */
-   static AMXNICommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, String statusFilter, Integer statusFilterGroup) {
+   static AMXNICommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
     log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
@@ -84,10 +84,10 @@ public abstract class AMXNICommand implements Command {
       }
       AMXNICommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", String.class, AMXNIGateway.class, Integer.class, Integer.class, Integer.class, String.class, String.class, Integer.class);
+         Method method = commandClass.getMethod("createCommand", String.class, AMXNIGateway.class, Integer.class, Integer.class, Integer.class, String.class, Integer.class, String.class, Integer.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (AMXNICommand) method.invoke(null, name, gateway, deviceIndex, channel, level, value, statusFilter, statusFilterGroup);
+         cmd = (AMXNICommand) method.invoke(null, name, gateway, deviceIndex, channel, level, value, pulseTime, statusFilter, statusFilterGroup);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          throw new NoSuchCommandException("Impossible to create command '" + name + "'.", e);
