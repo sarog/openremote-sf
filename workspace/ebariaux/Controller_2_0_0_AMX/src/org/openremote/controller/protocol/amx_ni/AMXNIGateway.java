@@ -229,6 +229,8 @@ public class AMXNIGateway {
                }
             } catch (InterruptedException e) {
                log.warn("Interrupted during our sleep", e);
+            } catch (Exception e) {
+               log.warn("Exception that was not specifically handled in code has been thrown, continuing reading thread", e);
             }
          }
          // For now do not support discovery, use information defined in config
