@@ -33,18 +33,13 @@ import org.openremote.web.console.panel.entity.component.SliderMinMax;
 import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.util.ImageContainer;
-
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 /**
@@ -145,21 +140,23 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 		
 		public void setSize(int visibleWidth, int visibleHeight) {
-			if (visibleWidth < MIN_THUMB_CLICK_AREA_SIZE && visibleHeight < MIN_THUMB_CLICK_AREA_SIZE) {
-				width = MIN_THUMB_CLICK_AREA_SIZE;
-				height = MIN_THUMB_CLICK_AREA_SIZE;
-				visibleThumb.setWidth(visibleWidth + "px");
-				visibleThumb.setHeight(visibleHeight + "px");
-				DOM.setStyleAttribute(visibleThumb.getElement(), "marginLeft", ((int)Math.round((double)width - visibleWidth) / 2) + "px");
-				DOM.setStyleAttribute(visibleThumb.getElement(), "marginTop", ((int)Math.round((double)height - visibleHeight) / 2) + "px");
-			} else {
+			
+			
+//			if (visibleWidth < MIN_THUMB_CLICK_AREA_SIZE && visibleHeight < MIN_THUMB_CLICK_AREA_SIZE) {
+//				width = MIN_THUMB_CLICK_AREA_SIZE;
+//				height = MIN_THUMB_CLICK_AREA_SIZE;
+//				visibleThumb.setWidth(visibleWidth + "px");
+//				visibleThumb.setHeight(visibleHeight + "px");
+//				//DOM.setStyleAttribute(visibleThumb.getElement(), "marginLeft", ((int)Math.round((double)width - visibleWidth) / 2) + "px");
+//				//DOM.setStyleAttribute(visibleThumb.getElement(), "marginTop", ((int)Math.round((double)height - visibleHeight) / 2) + "px");
+//			} else {
 				width = visibleWidth;
 				height = visibleHeight;
 				visibleThumb.setWidth("100%");
 				visibleThumb.setHeight("100%");
 				DOM.setStyleAttribute(visibleThumb.getElement(), "marginLeft", "0");
 				DOM.setStyleAttribute(visibleThumb.getElement(), "marginTop", "0");
-			}
+//			}
 			this.setWidth(width + "px");
 			this.setHeight(height + "px");
 		}
@@ -282,9 +279,14 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 	}
 	
-	private SliderComponent() {
+	private SliderComponent(Boolean isVertical) {
 		// Define container widget
 		super(new Grid(), CLASS_NAME);
+		
+		if (isVertical != null && isVertical) {
+			this.isVertical = isVertical;
+			this.addStyleName("vertical");
+		}
 		
 		// Define child components
 		slideBar = new SlideBar();
@@ -557,11 +559,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 	}
 	
-	public void setIsVertical(boolean isVertical) {
-		this.isVertical = isVertical;
-	}
-	
-	
 	public void sizeMinMaxImage(ImageContainer imageContainer) {
 		int imageWidth = imageContainer.getNativeWidth();
 		int imageHeight = imageContainer.getNativeHeight();
@@ -804,7 +801,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
-		SliderComponent component = new SliderComponent();
+		SliderComponent component = new SliderComponent(entity.getVertical());
 		if (entity == null) {
 			return component;
 		}
@@ -813,7 +810,6 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		component.setMin(entity.getMin());
 		component.setThumbImage(entity.getThumbImage());
 		component.setSensor(new Sensor(entity.getLink()));
-		component.setIsVertical(entity.getVertical());
 		component.setHasControlCommand(true);
 		return component;
 	}
