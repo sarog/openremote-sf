@@ -367,7 +367,11 @@ public class AMXNIGateway {
       if (parts.length > 2) {
          response = new AMXResponse();
          response.command = parts[0].trim();
-         response.deviceIndex = Integer.parseInt(parts[1].trim());
+         try {
+            response.deviceIndex = Integer.parseInt(parts[1].trim());
+         } catch (NumberFormatException e) {
+            log.warn("Invalid device index received from AMX", e);
+         }
          if ("STRING_READ".equals(response.command) || "COMMAND_READ".equals(response.command) || "ERROR".equals(response.command)) {
             StringBuffer temp = new StringBuffer(parts[2]);
             for (int i = 3; i < parts.length; i++) {
