@@ -237,6 +237,10 @@ public class PanelServiceImpl implements PanelService {
 				}
 			}
 			
+			if (currentPanel.getTabbar() != null) {
+				currentPanelTabBar = currentPanel.getTabbar(); 
+			}
+			
 			// Get image Urls
 			if (!panelImageUrlMap.containsKey(currentPanel))
 			{
@@ -466,24 +470,40 @@ public class PanelServiceImpl implements PanelService {
 					}
 				}
 			}
+		}
 			
-			// Cycle through groups looking for tab bar images
-			// Cycle through panel looking for images that may be required
-			if (currentGroupMap != null) {
-				for (int groupId : currentGroupMap.keySet()) {
-					Group group = currentGroupMap.get(groupId);
-					if (group != null && group.getTabbar() != null && group.getTabbar().getItem() != null)
-					{
-						for (TabBarItem item : group.getTabbar().getItem()) {
-							if (item != null) {
-								if (item.getImage() != null) {
-									if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
-										imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
-									} else {
-										imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
-									}
+		// Cycle through groups looking for tab bar images
+		// Cycle through panel looking for images that may be required
+		if (currentGroupMap != null) {
+			for (int groupId : currentGroupMap.keySet()) {
+				Group group = currentGroupMap.get(groupId);
+				if (group != null && group.getTabbar() != null && group.getTabbar().getItem() != null)
+				{
+					for (TabBarItem item : group.getTabbar().getItem()) {
+						if (item != null) {
+							if (item.getImage() != null) {
+								if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
+									imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
+								} else {
+									imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
 								}
 							}
+						}
+					}
+				}
+			}
+		}
+			
+		// Cycle through panel tab bar
+		if (currentPanel.getTabbar() != null && currentPanel.getTabbar().getItem() != null)
+		{
+			for (TabBarItem item : currentPanel.getTabbar().getItem()) {
+				if (item != null) {
+					if (item.getImage() != null) {
+						if (item.getImage().getSystemImage() != null && item.getImage().getSystemImage()) {
+							imageUrls.add(BrowserUtils.getSystemImageDir() + item.getImage().getSrc());
+						} else {
+							imageUrls.add(WebConsole.getConsoleUnit().getControllerService().getController().getUrl() + item.getImage().getSrc());
 						}
 					}
 				}
