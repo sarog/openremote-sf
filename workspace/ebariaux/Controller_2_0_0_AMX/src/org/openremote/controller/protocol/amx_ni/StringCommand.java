@@ -46,7 +46,7 @@ public class StringCommand extends AMXNICommand implements ExecutableCommand, Ev
     */
    private final static Logger log = Logger.getLogger(AMXNICommandBuilder.AMX_NI_LOG_CATEGORY);
 
-   public static StringCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, String statusFilter, Integer statusFilterGroup) {
+   public static StringCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
       // Check for mandatory attributes
       if (deviceIndex == null) {
         throw new NoSuchCommandException("DeviceIndex is required for any AMX command");
