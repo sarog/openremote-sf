@@ -61,6 +61,13 @@
 				<allowBlank>true</allowBlank>
 			</validations>
 		</attr>
+		<attr name="pulseTime" label="Pulse time" tooltipMessage="Pulse time to use for PULSE command, in 1/10th of seconds. If not provided, current pusle time in AMX program is used">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<maxLength>6</maxLength>
+				<regex message="Numbers only">\d+</regex>
+			</validations>
+		</attr>
                 <attr name = "statusFilter" label = "Read Regex Filter">
                     <validations>
                         <allowBlank>true</allowBlank>
