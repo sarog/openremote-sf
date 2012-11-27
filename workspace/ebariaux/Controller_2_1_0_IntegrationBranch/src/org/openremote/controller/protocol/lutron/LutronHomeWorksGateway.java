@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -33,13 +33,13 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 import org.apache.commons.net.telnet.TelnetClient;
-import org.apache.log4j.Logger;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
 import org.openremote.controller.protocol.lutron.model.GrafikEye;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
 import org.openremote.controller.protocol.lutron.model.Keypad;
+import org.openremote.controller.utils.Logger;
 
 /**
  * 
@@ -262,7 +262,12 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
             }
           }
         }
-        LutronCommand cmd = queue.blockingPoll();
+        LutronCommand cmd = null;
+        try {
+          cmd = queue.blockingPoll();
+        } catch (InterruptedException e) {
+          break;
+        }
         if (cmd != null) {
           log.info("Sending >" + cmd.toString() + "< on print writer " + pr);
           pr.println(cmd.toString() + "\n");
