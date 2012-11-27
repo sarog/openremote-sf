@@ -62,9 +62,9 @@ import org.openremote.controller.utils.Logger;
  * e.g. OFF,1,1
  * ON,<device index>,<channel> turns the given channel on on the AMX device registered at device index
  * ON,1,1
- * PULSE,<device index>,<channel> pulses the given channel on the AMX device registered at device index
- * Pulse time is default as per AMX specifications
- * PULSE,1,1
+ * PULSE,<device index>,<channel>,[<pulse time>] pulses the given channel on the AMX device registered at device index
+ * <pulse time> parameter is optional. If not specified, default as per AMX program is used when command is received
+ * PULSE,1,1 or PULSE,1,1,10
  * CHANNEL_STATUS,<device index>,<channel> requests the on/off status of the given channel
  * on the AMX device registered at device index
  * e.g. CHANNEL_STATUS,1,1
