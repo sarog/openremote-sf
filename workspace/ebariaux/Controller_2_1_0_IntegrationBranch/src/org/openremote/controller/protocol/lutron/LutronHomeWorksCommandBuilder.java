@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,11 +22,12 @@ package org.openremote.controller.protocol.lutron;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Logger;
 
 /**
  * 
@@ -41,7 +42,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 	 * A common log category name intended to be used across all classes related
 	 * to Lutron implementation.
 	 */
-	public final static String LUTRON_LOG_CATEGORY = "Lutron";
+	public final static String LUTRON_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "Lutron";
 
 	/**
 	 * String constant for parsing Lutron Homeworks protocol XML entries from

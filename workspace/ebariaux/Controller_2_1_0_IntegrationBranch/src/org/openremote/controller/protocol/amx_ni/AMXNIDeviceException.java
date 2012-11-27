@@ -18,28 +18,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.lutron;
+package org.openremote.controller.protocol.amx_ni;
 
-import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 
-@SuppressWarnings("serial")
-public class LutronHomeWorksDeviceException extends Exception {
+public class AMXNIDeviceException extends Exception {
 
-  private LutronHomeWorksAddress address;
-  private Class<? extends HomeWorksDevice> deviceClass;
-  
-  public LutronHomeWorksDeviceException(String message, LutronHomeWorksAddress address, Class<? extends HomeWorksDevice> deviceClass, Throwable cause) {
-    super(message, cause);
-    this.address = address;
-    this.deviceClass = deviceClass;
-  }
+   private static final long serialVersionUID = 1L;
+   
+   private Integer deviceIndex;
+   private Class<? extends AMXNIDevice> deviceClass;
 
-  public LutronHomeWorksAddress getAddress() {
-    return address;
-  }
+   public AMXNIDeviceException(String message, Integer deviceIndex, Class<? extends AMXNIDevice> deviceClass,
+         Throwable cause) {
+      super(message, cause);
+      this.deviceIndex = deviceIndex;
+      this.deviceClass = deviceClass;
+   }
 
-  public Class<? extends HomeWorksDevice> getDeviceClass() {
-    return deviceClass;
-  }
-  
+   public Integer getDeviceIndex() {
+      return deviceIndex;
+   }
+
+   public Class<? extends AMXNIDevice> getDeviceClass() {
+      return deviceClass;
+   }
+
 }
