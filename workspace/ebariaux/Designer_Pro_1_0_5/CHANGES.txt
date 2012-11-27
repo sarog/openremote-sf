@@ -8,6 +8,7 @@ Fixes:
 New features:
  - contentType attribute on HTTP protocol (MODELER-416)
  - Have protocol names ordered alphabetically for commands (MODELER-417)
+ - Add pulseTime parameter to AMX protocol (MODELER-434)
 
 Pro 1.0.4
 =========
