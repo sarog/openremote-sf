@@ -50,12 +50,12 @@ public class ScreenSlider extends ScreenComponent {
       setLayout(new FlowLayout());
       this.uiSlider = uiSlider;
       
-      if(uiSlider.isVertical()) {
+      if (uiSlider.isVertical()) {
          this.addVerticalStyle();
          updateVerticalImages();
       } else {
         this.addHorizontalStyle();
-        updateHorizontaoImages();
+        updateHorizontalImages();
       }
       add(minImage);
       add(minTrackImage);
@@ -123,7 +123,7 @@ public class ScreenSlider extends ScreenComponent {
          updateVerticalImages();
       } else {
         toHorizontal(true);
-        updateHorizontaoImages();
+        updateHorizontalImages();
       }
       this.getScreenCanvas().setSizeToDefault(uiSlider);
       this.layout();
@@ -208,7 +208,7 @@ public class ScreenSlider extends ScreenComponent {
       }
    }
    
-   private void updateHorizontaoImages() {
+   private void updateHorizontalImages() {
       if(!isMinImageUploaded()) {
          setMinImage(UISlider.DEFAULT_HORIZONTAL_MIN_IMAGE);
       } else {
