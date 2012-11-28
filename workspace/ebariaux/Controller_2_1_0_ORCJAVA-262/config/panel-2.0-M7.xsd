@@ -114,7 +114,7 @@
 				<xsd:element ref="tabbar" minOccurs="0" maxOccurs="1" />
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:string" use="required" />
+			<xsd:attribute name="id" type="idType" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 		</xsd:complexType>
 	</xsd:element>
@@ -429,7 +429,7 @@
 				<xsd:element ref="link" minOccurs="0" maxOccurs="1" />
 				<xsd:element ref="include" minOccurs="0" maxOccurs="1" />
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:int"/>
+			<xsd:attribute name="id" type="idType"/>
 			<xsd:attribute name="src" type="xsd:string" use="required"/>
 			<xsd:attribute name="style" type="xsd:string"/>
 		</xsd:complexType>
