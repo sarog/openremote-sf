@@ -35,14 +35,14 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 import org.openremote.controller.AMXNIConfig;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL.Coalescable;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceChannels;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceCommand;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceLevels;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceString;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
 import org.openremote.controller.utils.Logger;
 
 /**
