@@ -53,6 +53,7 @@ public class EnOceanConnectionManagerTest
     Assert.assertNotNull(conn2);
     Assert.assertTrue(conn1 instanceof TestEsp3Connection);
     Assert.assertEquals(conn1, conn2);
+    Assert.assertEquals(1, ((TestEsp3Connection) conn1).connectCount);
 
 
     mgr = new TestConnectionManager();
@@ -66,8 +67,26 @@ public class EnOceanConnectionManagerTest
 
     Assert.assertNotNull(conn3);
     Assert.assertTrue(conn3 instanceof TestEsp2Connection);
+    Assert.assertEquals(1, ((TestEsp2Connection) conn3).connectCount);
   }
 
+  @Test public void testDisconnect() throws Exception
+  {
+    TestConnectionManager mgr = new TestConnectionManager();
+
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setComPort("COM1");
+    config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+
+    RadioTelegramListener listener = new TestListener();
+
+    EnOceanConnection conn1 = mgr.getConnection(config, listener);
+
+    mgr.disconnect();
+
+    Assert.assertEquals(1, ((TestEsp3Connection) conn1).disconnectCount);
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testNullConfiguration() throws Exception
@@ -108,17 +127,19 @@ public class EnOceanConnectionManagerTest
     }
   }
 
-  private static class TestEsp3Connection implements EnOceanConnection
+  static class TestEsp3Connection implements EnOceanConnection
   {
+    int connectCount;
+    int disconnectCount;
 
     @Override public void connect() throws ConnectionException, ConfigurationException
     {
-
+      connectCount++;
     }
 
     @Override public void disconnect() throws ConnectionException
     {
-
+      disconnectCount++;
     }
 
     @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
@@ -130,15 +151,17 @@ public class EnOceanConnectionManagerTest
 
   private static class TestEsp2Connection implements EnOceanConnection
   {
+    int connectCount;
+    int disconnectCount;
 
     @Override public void connect() throws ConnectionException, ConfigurationException
     {
-
+      connectCount++;
     }
 
     @Override public void disconnect() throws ConnectionException
     {
-
+      disconnectCount++;
     }
 
     @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
