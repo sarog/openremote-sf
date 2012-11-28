@@ -51,9 +51,9 @@ public class EnOceanConnectionManager
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
-   * Map contains all established connections using the COM port as the key.
+   * EnOcean connection.
    */
-  HashMap<String, EnOceanConnection> connections = new HashMap<String, EnOceanConnection>();
+  EnOceanConnection connection;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -95,18 +95,10 @@ public class EnOceanConnectionManager
       throw new IllegalArgumentException("null configuration");
     }
 
-    if(configuration.getComPort() == null)
+    if(connection != null)
     {
-      throw new ConfigurationException("Missing COM port configuration.");
+      return connection;
     }
-
-    if(connections.containsKey(configuration.getComPort()))
-    {
-      return connections.get(configuration.getComPort());
-    }
-
-
-    EnOceanConnection connection = null;
 
     if(configuration.getSerialProtocol() == EspPortConfiguration.SerialProtocol.ESP2)
     {
@@ -126,9 +118,20 @@ public class EnOceanConnectionManager
       );
     }
 
-    connections.put(configuration.getComPort(), connection);
-
     return connection;
+  }
+
+  /**
+   * Disconnects from EnOcean interface.
+   */
+  public synchronized void disconnect() throws ConnectionException
+  {
+    EnOceanConnection connection = null;
+
+    if(connection != null)
+    {
+      connection.disconnect();
+    }
   }
 
 
@@ -288,22 +291,18 @@ public class EnOceanConnectionManager
   {
     public void run()
     {
-      for (String key : connections.keySet())
+      try
       {
-        try
-        {
-          log.debug("Executing JVM shutdown hook to close EnOcean connections...");
+        log.debug("Executing JVM shutdown hook to close EnOcean connections...");
 
-          EnOceanConnection connection = connections.get(key);
-          if (connection != null)
-          {
-            connection.disconnect();
-          }
-        }
-        catch (Throwable t)
+        if (connection != null)
         {
-          log.error("Closing connection failed: " + t.getMessage(), t);
+          connection.disconnect();
         }
+      }
+      catch (Throwable t)
+      {
+        log.error("Closing connection failed: " + t.getMessage(), t);
       }
     }
   }

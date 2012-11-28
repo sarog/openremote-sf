@@ -137,6 +137,11 @@ public class EnOceanCommandBuilder implements CommandBuilder
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
+   * EnOcean configuration manager.
+   */
+  private ConfigurationManager configManager = null;
+
+  /**
    * EnOcean gateway for sending and receiving radio telegrams.
    */
   private EnOceanGateway gateway = null;
@@ -149,16 +154,17 @@ public class EnOceanCommandBuilder implements CommandBuilder
    */
   public EnOceanCommandBuilder()
   {
+    configManager = new EnOceanConfigurationManager();
   }
 
   /**
-   * Constructs an EnOcean command builder instance with given EnOcean gateway.
+   * Constructs an EnOcean command builder instance with given configuration manager.
    *
-   * @param gateway  EnOcean gateway
+   * @param configManager  configuration manager
    */
-  public EnOceanCommandBuilder(EnOceanGateway gateway)
+  public EnOceanCommandBuilder(ConfigurationManager configManager)
   {
-    this.gateway = gateway;
+    this.configManager = configManager;
   }
 
   /**
@@ -310,15 +316,31 @@ public class EnOceanCommandBuilder implements CommandBuilder
   // Private Instance Methods ---------------------------------------------------------------------
 
   /**
-   * Creates EnOcean gateway instance if not already done and establishes a connection
-   * to the EnOcean module.
+   * Creates an EnOcean gateway instance and establishes a connection to the EnOcean module
+   * or reconnects to the EnOcean module if the EnOcean serial port configuration has been
+   * changed.
    */
   private synchronized void initEnOceanGateway()
   {
-    if(this.gateway == null)
+    if(this.gateway == null || configManager.hasPortConfigChanged())
     {
+      if(this.gateway != null)
+      {
+        try
+        {
+          this.gateway.disconnect();
+        }
+
+        catch (ConnectionException e)
+        {
+          log.error("Failed to disconnect from EnOcean module: {0}", e.getMessage());
+        }
+
+        this.gateway = null;
+      }
+
       this.gateway = new EnOceanGateway(
-          new EnOceanConnectionManager(), createEspPortConfiguration()
+          new EnOceanConnectionManager(), configManager.getPortConfig()
       );
 
       try
@@ -336,46 +358,5 @@ public class EnOceanCommandBuilder implements CommandBuilder
         log.error("Failed to connect to EnOcean module: {0}", e.getMessage());
       }
     }
-  }
-
-  /**
-   * Creates an EnOcean serial port configuration with configuration settings from
-   * the EnOcean configuration.
-   *
-   * @return  new EnOcean serial port configuration instance
-   */
-  private EspPortConfiguration createEspPortConfiguration()
-  {
-    EnOceanConfiguration enoceanConfig = EnOceanConfiguration.readXML();
-
-    EspPortConfiguration portConfig = new EspPortConfiguration();
-
-    portConfig.setComPort(enoceanConfig.getComPort());
-
-    try
-    {
-      portConfig.setCommLayer(
-          EspPortConfiguration.CommLayer.valueOf(enoceanConfig.getCommLayer())
-      );
-    }
-
-    catch(RuntimeException exc)
-    {
-      log.error("Invalid communication layer configuration.");
-    }
-
-    try
-    {
-      portConfig.setSerialProtocol(
-          EspPortConfiguration.SerialProtocol.valueOf(enoceanConfig.getSerialProtocol())
-      );
-    }
-
-    catch(RuntimeException exc)
-    {
-      log.error("Invalid EnOcean serial protocol configuration.");
-    }
-
-    return portConfig;
   }
 }

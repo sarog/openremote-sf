@@ -54,6 +54,9 @@ public class EnOceanConnectionManagerTest
     Assert.assertTrue(conn1 instanceof TestEsp3Connection);
     Assert.assertEquals(conn1, conn2);
 
+
+    mgr = new TestConnectionManager();
+
     config = new EspPortConfiguration();
     config.setComPort("COM2");
     config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
@@ -63,8 +66,6 @@ public class EnOceanConnectionManagerTest
 
     Assert.assertNotNull(conn3);
     Assert.assertTrue(conn3 instanceof TestEsp2Connection);
-    Assert.assertNotSame(conn1, conn3);
-    Assert.assertNotSame(conn2, conn3);
   }
 
 

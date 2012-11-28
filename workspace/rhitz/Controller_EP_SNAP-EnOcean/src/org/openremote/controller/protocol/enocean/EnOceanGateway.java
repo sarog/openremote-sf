@@ -160,6 +160,13 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
     internalConnect();
   }
 
+  /**
+   * Disconnects from EnOcean interface.
+   */
+  public void disconnect() throws ConnectionException
+  {
+    connectionManager.disconnect();
+  }
 
   // Private Instance Methods ---------------------------------------------------------------------
 

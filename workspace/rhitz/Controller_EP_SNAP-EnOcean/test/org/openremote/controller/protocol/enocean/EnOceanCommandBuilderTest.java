@@ -44,14 +44,9 @@ public class EnOceanCommandBuilderTest
 
   @Before public void setUp()
   {
-    EspPortConfiguration portConfig = new EspPortConfiguration();
-    portConfig.setCommLayer(EspPortConfiguration.CommLayer.PAD);
-    portConfig.setComPort("/dev/ttyUSB0");
-    portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+    TestConfigurationManager configManager = new TestConfigurationManager();
 
-    EnOceanGateway gateway = new EnOceanGateway(new EnOceanConnectionManager(), portConfig);
-
-    builder = new EnOceanCommandBuilder(gateway);
+    builder = new EnOceanCommandBuilder(configManager);
   }
 
   // Tests ----------------------------------------------------------------------------------------
@@ -342,5 +337,36 @@ public class EnOceanCommandBuilderTest
 
 
     return builder.build(ele);
+  }
+
+  private class TestConfigurationManager implements ConfigurationManager
+  {
+
+    EspPortConfiguration portConfiguration;
+
+    @Override public EspPortConfiguration getPortConfig()
+    {
+      if(portConfiguration == null)
+      {
+        portConfiguration = createPortConfig();
+      }
+
+      return portConfiguration;
+    }
+
+    @Override public boolean hasPortConfigChanged()
+    {
+      return portConfiguration == null;
+    }
+
+    private EspPortConfiguration createPortConfig()
+    {
+      EspPortConfiguration portConfig = new EspPortConfiguration();
+      portConfig.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+      portConfig.setComPort("/dev/ttyUSB0");
+      portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+
+      return portConfig;
+    }
   }
 }
