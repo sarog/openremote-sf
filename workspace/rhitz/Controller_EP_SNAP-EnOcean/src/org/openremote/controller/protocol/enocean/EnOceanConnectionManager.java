@@ -118,6 +118,11 @@ public class EnOceanConnectionManager
       );
     }
 
+    if(connection != null)
+    {
+      connection.connect();
+    }
+
     return connection;
   }
 
@@ -126,8 +131,6 @@ public class EnOceanConnectionManager
    */
   public synchronized void disconnect() throws ConnectionException
   {
-    EnOceanConnection connection = null;
-
     if(connection != null)
     {
       connection.disconnect();
@@ -177,12 +180,10 @@ public class EnOceanConnectionManager
     }
 
     Esp3Processor processor = new Esp3Processor(port);
-    Esp3Connection connection = new Esp3Connection(processor, listener);
-    processor.setProcessorListener(connection);
+    Esp3Connection newConnection = new Esp3Connection(processor, listener);
+    processor.setProcessorListener(newConnection);
 
-    connection.connect();
-
-    return connection;
+    return newConnection;
   }
 
   /**
@@ -225,12 +226,10 @@ public class EnOceanConnectionManager
     }
 
     Esp2Processor processor = new Esp2Processor(port);
-    Esp2Connection connection = new Esp2Connection(processor, listener);
-    processor.setProcessorListener(connection);
+    Esp2Connection newConnection = new Esp2Connection(processor, listener);
+    processor.setProcessorListener(newConnection);
 
-    connection.connect();
-
-    return connection;
+    return newConnection;
   }
 
   // Private Instance Methods ---------------------------------------------------------------------
