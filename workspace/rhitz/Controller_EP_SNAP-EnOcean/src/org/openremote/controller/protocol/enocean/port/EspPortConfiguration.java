@@ -75,6 +75,45 @@ public class EspPortConfiguration extends Configuration
   private SerialProtocol serialProtocol = null;
 
 
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * Tests device ID object equality based on device ID value.
+   *
+   * @param   o   device ID object to compare to
+   *
+   * @return  true if equals, false otherwise
+   */
+  @Override public boolean equals(Object o)
+  {
+    if(o == null)
+      return false;
+
+    if(!o.getClass().equals(this.getClass()))
+      return false;
+
+    EspPortConfiguration config = (EspPortConfiguration)o;
+
+    return (comPort == null ? config.getComPort() == null : comPort.equals(config.getComPort())) &&
+           (commLayer == config.getCommLayer()) &&
+           (serialProtocol == config.getSerialProtocol());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public int hashCode()
+  {
+    int result = 17;
+
+    result = 31 * result + (comPort == null ? 0 : comPort.hashCode());
+    result = 31 * result + (commLayer == null ? 0 : commLayer.hashCode());
+    result = 31 * result + (serialProtocol == null ? 0 : serialProtocol.hashCode());
+
+    return result;
+  }
+
+
   // Public Instance Methods ----------------------------------------------------------------------
 
   /**
