@@ -30,9 +30,9 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Builder for AMXNICommand, based on XML snippet.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class AMXNICommandBuilder implements CommandBuilder {
 
@@ -57,6 +57,8 @@ public class AMXNICommandBuilder implements CommandBuilder {
    public final static String AMX_NI_XMLPROPERTY_LEVEL = "level";
 
    public final static String AMX_NI_XMLPROPERTY_VALUE = "value";
+   
+   public final static String AMX_NI_XMLPROPERTY_PULSE_TIME = "pulseTime";
    
    public final static String AMX_NI_XMLPROPERTY_STATUS_FILTER = "statusFilter";
 
@@ -114,12 +116,14 @@ public class AMXNICommandBuilder implements CommandBuilder {
       String channelAsString = null;
       String levelAsString = null;
       String valueAsString = null;
+      String pulseTimeAsString = null;
       String statusFilterAsString = null;
       String statusFilterGroupAsString = null;
 
       Integer deviceIndex = null;
       Integer channel = null;
       Integer level = null;
+      Integer pulseTime = null;
       Integer statusFilterGroup = null;
 
       // Get the list of properties from XML...
@@ -151,6 +155,10 @@ public class AMXNICommandBuilder implements CommandBuilder {
             valueAsString = propertyValue;
          }
 
+         else if (AMX_NI_XMLPROPERTY_PULSE_TIME.equalsIgnoreCase(propertyName)) {
+            pulseTimeAsString = propertyValue;
+         }
+         
          else if (AMX_NI_XMLPROPERTY_STATUS_FILTER.equalsIgnoreCase(propertyName)) {
             statusFilterAsString = propertyValue;
          }
@@ -204,6 +212,16 @@ public class AMXNICommandBuilder implements CommandBuilder {
          }
       }
 
+      // If a pulseTime was provided, attempt to convert to integer
+      if (pulseTimeAsString != null && !"".equals(pulseTimeAsString)) {
+         try {
+            pulseTime = Integer.parseInt(pulseTimeAsString);
+         } catch (NumberFormatException e) {
+           log.error("Invalid pulse time", e);
+            throw new NoSuchCommandException(e.getMessage(), e);
+         }
+      }
+
       // If a statusFilterGroup was provided, attempt to convert to integer
       if (statusFilterGroupAsString != null && !"".equals(statusFilterGroupAsString)) {
          try {
@@ -214,28 +232,18 @@ public class AMXNICommandBuilder implements CommandBuilder {
          }
       }
 
-      if (level == null) {
-         // No specific level provided, check for parameter (passed in from Slider)
-         String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-         if (paramValue != null && !paramValue.equals("")) {
-            try {
-               level = Integer.parseInt(paramValue);
-            } catch (NumberFormatException e) {
-              log.error("Invalid param value", e);
-              throw new NoSuchCommandException(e.getMessage(), e);
-            }
-         }
+      if (valueAsString == null) {
+         // No specific level provided, use parameter (passed in from Slider)
+         // We don't do any type checking here, it'll be handled by the command class
+         valueAsString = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
       }
       
       // Translate the command string to a type safe AMX NI Command types...
-
-      Command cmd = AMXNICommand.createCommand(commandAsString, gateway, deviceIndex, channel, level, valueAsString, statusFilterAsString, statusFilterGroup);
+      Command cmd = AMXNICommand.createCommand(commandAsString, gateway, deviceIndex, channel, level, valueAsString, pulseTime, statusFilterAsString, statusFilterGroup);
 
       log.info("Created AMX NI Command " + cmd);
 
       return cmd;
-
-      // TODO: what about validation of value when command is SEND_LEVEL, must be numeric
    }
 
    // Getters / Setters ----------------------------------------------------------------------------

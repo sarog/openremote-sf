@@ -46,9 +46,49 @@ import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Gateway talking to the AMX NI Controller over socket protocol.
+ * 
+ * Protocol exchanges command and replies as text.
+ * Each line to AMX processor is terminated by <CR><LF><CR><LF>
+ * Format of 1 line is <command>,<device index>,<params>
+ * 
+ * SEND_COMMAND,<device index>,<command> sends a command to AMX device registered at device index (SEND_COMMAND AMX instruction)
+ * e.g. SEND_COMMAND,1,LUTRONKEYPADPRESS-1,14
+ * 
+ * SEND_STRING,<device index>,<string> sends a string to AMX device registered at device index (SEND_STRING AMX instruction)
+ * e.g. SEND_STRING,1,POWER=0
+ * 
+ * OFF,<device index>,<channel> turns the given channel off on the AMX device registered at device index
+ * e.g. OFF,1,1
+ * ON,<device index>,<channel> turns the given channel on on the AMX device registered at device index
+ * ON,1,1
+ * PULSE,<device index>,<channel>,[<pulse time>] pulses the given channel on the AMX device registered at device index
+ * <pulse time> parameter is optional. If not specified, default as per AMX program is used when command is received
+ * PULSE,1,1 or PULSE,1,1,10
+ * CHANNEL_STATUS,<device index>,<channel> requests the on/off status of the given channel
+ * on the AMX device registered at device index
+ * e.g. CHANNEL_STATUS,1,1
+ * 
+ * SEND_LEVEL,<device index>,<level>,<value> sets the given level to the given value
+ * on the AMX device registered at device index
+ * e.g. SEND_LEVEL,1,2,89
+ * LEVEL_STATUS,<device index>,<level> requests the value of the given channel on the AMX device registered at device index
+ * e.g. LEVEL_STATUS,1,1
+ *
+ *
+ * AMX processors sends back following information
+ * COMMAND_READ,<device index>,<command> relaying COMMAND events received on AMX device registered at device index
+ * 
+ * STRING_READ,<device index>,<string> relaying STRING events received on AMX device registered at device index
+ * 
+ * CHANNEL_STATUS,<device index>,<channel>,<status> either replying to a CHANNEL_STATUS command from OR
+ * or when a CHANNEL event is received on AMX device registered at device index
+ * <status> is on or off
+ * 
+ * LEVEL_STATUS,<device index>,<level>,<value> either replying to a LEVEL_STATUS command from OR 
+ * or when a LEVEL event is received on AMX device registered at device index
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class AMXNIGateway {
 
@@ -298,13 +338,20 @@ public class AMXNIGateway {
                      } catch (AMXNIDeviceException e) {
                         log.error("Impossible to get device", e);
                      }
+                  } else if ("ERROR".equals(response.command)) {
+                     log.error("Received error from AMX module : " + response.parameter1);
                   }
                } else {
                   log.info("Received unknown information from AMX NI >" + line + "<");
                }
+            } catch (Exception e) {
+               log.warn("Exception not specifically handled by code has been thrown, continuing reading thread", e);
+            }
+            try {
                line = br.readLine();
             } catch (IOException e) {
-               log.warn("Could not read from AMX NI", e);
+               log.error("Could not read from AMX NI", e);
+               line = null; // This will kill the reader thread and re-start the connection
             }
          } while (line != null && !isInterrupted());
          log.info("Out of reader thread");
@@ -318,13 +365,17 @@ public class AMXNIGateway {
 
       AMXResponse response = null;
       String[] parts = responseText.split(", ");
-      // All the responses we currently understand have at least 3 components, all except STRING_READ and COMMAND_READ
+      // All the responses we currently understand have at least 3 components, all except STRING_READ, COMMAND_READ and ERROR
       // have 4
       if (parts.length > 2) {
          response = new AMXResponse();
          response.command = parts[0].trim();
-         response.deviceIndex = Integer.parseInt(parts[1].trim());
-         if ("STRING_READ".equals(response.command) || "COMMAND_READ".equals(response.command)) {
+         try {
+            response.deviceIndex = Integer.parseInt(parts[1].trim());
+         } catch (NumberFormatException e) {
+            log.warn("Invalid device index received from AMX", e);
+         }
+         if ("STRING_READ".equals(response.command) || "COMMAND_READ".equals(response.command) || "ERROR".equals(response.command)) {
             StringBuffer temp = new StringBuffer(parts[2]);
             for (int i = 3; i < parts.length; i++) {
                temp.append(", ");
@@ -368,7 +419,7 @@ public class AMXNIGateway {
          if (!(other instanceof AMXCommand)) {
             return false;
          }
-         AMXCommand otherCommand = (AMXCommand) other;
+         // AMXCommand otherCommand = (AMXCommand) other;
 
          return false;
 
