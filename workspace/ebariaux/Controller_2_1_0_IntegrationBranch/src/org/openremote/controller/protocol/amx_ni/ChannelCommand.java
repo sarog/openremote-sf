@@ -42,7 +42,7 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
     */
    private final static Logger log = Logger.getLogger(AMXNICommandBuilder.AMX_NI_LOG_CATEGORY);
 
-   public static ChannelCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, String statusFilter, Integer statusFilterGroup) {
+   public static ChannelCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
       // Check for mandatory attributes
       if (deviceIndex == null) {
         throw new NoSuchCommandException("DeviceIndex is required for any AMX command");
@@ -51,7 +51,7 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
          throw new NoSuchCommandException("Channel is required for any AMX command working with channels");
       }
 
-      return new ChannelCommand(name, gateway, deviceIndex, channel);
+      return new ChannelCommand(name, gateway, deviceIndex, channel, pulseTime);
     }
 
     // Private Instance Fields ----------------------------------------------------------------------
@@ -61,11 +61,17 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
      */
     private Integer channel;
 
+    /**
+     * Pulse time used if command is PULSE, optional.
+     */
+    private Integer pulseTime;
+    
     // Constructors ---------------------------------------------------------------------------------
 
-    public ChannelCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel) {
+    public ChannelCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer pulseTime) {
       super(name, gateway, deviceIndex);
       this.channel = channel;
+      this.pulseTime = pulseTime;
     }
 
     // Implements ExecutableCommand -----------------------------------------------------------------
@@ -81,7 +87,7 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
         } else if ("OFF".equals(name)) {
            channelDevice.off(channel);
         } else if ("PULSE".equals(name)) {
-           channelDevice.pulse(channel);
+           channelDevice.pulse(channel, pulseTime);
         }
       } catch (AMXNIDeviceException e) {
         log.error("Impossible to get device", e);

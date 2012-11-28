@@ -32,6 +32,12 @@ import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceCommand;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Command to be sent to an AMX device to send a command : SEND_COMMAND
+ * Also bundles the logic to understand COMMAND_READ replies and update sensors accordingly.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class CommandCommand extends AMXNICommand implements ExecutableCommand, EventListener {
 
    /**
@@ -39,7 +45,7 @@ public class CommandCommand extends AMXNICommand implements ExecutableCommand, E
     */
    private final static Logger log = Logger.getLogger(AMXNICommandBuilder.AMX_NI_LOG_CATEGORY);
 
-   public static CommandCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, String statusFilter, Integer statusFilterGroup) {
+   public static CommandCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
       // Check for mandatory attributes
       if (deviceIndex == null) {
         throw new NoSuchCommandException("DeviceIndex is required for any AMX command");

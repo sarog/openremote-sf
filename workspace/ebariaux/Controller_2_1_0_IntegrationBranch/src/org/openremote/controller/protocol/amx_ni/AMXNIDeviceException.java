@@ -22,6 +22,11 @@ package org.openremote.controller.protocol.amx_ni;
 
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 
+/**
+ * For issues working with AMXNIDevice. 
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class AMXNIDeviceException extends Exception {
 
    private static final long serialVersionUID = 1L;

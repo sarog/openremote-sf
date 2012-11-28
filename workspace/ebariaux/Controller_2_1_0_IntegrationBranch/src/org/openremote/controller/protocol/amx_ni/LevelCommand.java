@@ -30,6 +30,12 @@ import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceLevels;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Command to be sent to a level to actuate or query status.
+ * This includes : SEND_LEVEL, LEVEL_READ
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class LevelCommand extends AMXNICommand implements ExecutableCommand, EventListener {
 
    /**
@@ -37,7 +43,7 @@ public class LevelCommand extends AMXNICommand implements ExecutableCommand, Eve
     */
    private final static Logger log = Logger.getLogger(AMXNICommandBuilder.AMX_NI_LOG_CATEGORY);
 
-   public static LevelCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, String statusFilter, Integer statusFilterGroup) {
+   public static LevelCommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
       Integer lValue = null;
       
       // Check for mandatory attributes
