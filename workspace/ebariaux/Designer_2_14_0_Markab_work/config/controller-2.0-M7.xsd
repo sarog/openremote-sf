@@ -89,6 +89,18 @@
         <xsd:element ref = "config" />
       </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:unique name="uniqueIdsAccrossWholeDocument">
+      <xsd:annotation>
+        <xsd:documentation><![CDATA[
+          Ensures that id field has unique value throught the whole document.
+          All such fields should be of type idType.
+        ]]></xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:selector xpath=".//*"/>
+      <xsd:field xpath="@id"/>
+    </xsd:unique>
   </xsd:element>
 
 
@@ -321,8 +333,6 @@
       <xsd:minInclusive value = "1"/>
     </xsd:restriction>
   </xsd:simpleType>
-
-
 
   <!--
   =================================================================================================
