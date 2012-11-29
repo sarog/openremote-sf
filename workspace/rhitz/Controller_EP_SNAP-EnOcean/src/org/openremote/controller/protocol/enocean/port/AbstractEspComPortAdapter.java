@@ -27,9 +27,11 @@ import org.openremote.controller.protocol.enocean.EspVersion;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;
+import org.openremote.controller.protocol.port.pad.AbstractPort;
 import org.openremote.controller.utils.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -54,6 +56,45 @@ public abstract class AbstractEspComPortAdapter implements EspPort
    * EnOcean logger. Uses a common category for all EnOcean related logging.
    */
   private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
+
+  /**
+   * Map contains all already used PAD communication layer ports using the
+   * serial port name as the key.
+   */
+  private final static HashMap<String, AbstractPort> padPorts = new HashMap<String, AbstractPort>(1);
+
+  /**
+   * Creates and returns a PAD communication layer port or returns an
+   * already used port for the given serial port name.
+   *
+   * @return  PAD communication layer port
+   */
+  protected static AbstractPort getPADPort(EspPortConfiguration config)
+  {
+    AbstractPort port = null;
+    String comPort = config.getComPort();
+
+    if(comPort != null)
+    {
+      if(padPorts.containsKey(comPort))
+      {
+        port = padPorts.get(comPort);
+      }
+
+      else
+      {
+        port = new AbstractPort();
+        padPorts.put(comPort, port);
+      }
+    }
+
+    else
+    {
+      port = new AbstractPort();
+    }
+
+    return port;
+  }
 
 
   // Private Instance Fields ----------------------------------------------------------------------

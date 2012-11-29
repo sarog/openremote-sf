@@ -52,11 +52,13 @@ public class Esp3ComPortAdapter extends AbstractEspComPortAdapter
    * Constructs a new EnOcean Serial Protocol version 3 (ESP3) COM port adapter with a given
    * port configuration which is used to configure the internally created serial port instance.
    *
+   * Note that the PAD communication layer is used.
+   *
    * @param configuration  EnOcean Serial Protocol (ESP) port configuration
    */
   public Esp3ComPortAdapter(EspPortConfiguration configuration)
   {
-    this(new AbstractPort(), configuration);
+    this(getPADPort(configuration), configuration);
   }
 
   /**

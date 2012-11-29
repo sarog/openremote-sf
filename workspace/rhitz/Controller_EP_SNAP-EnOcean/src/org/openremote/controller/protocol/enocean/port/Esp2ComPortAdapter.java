@@ -52,11 +52,13 @@ public class Esp2ComPortAdapter extends AbstractEspComPortAdapter
    * Constructs a new EnOcean Serial Protocol version 2 (ESP2) COM port adapter with a given
    * port configuration which is used to configure the internally created serial port instance.
    *
+   * Note that the PAD communication layer is used.
+   *
    * @param configuration  EnOcean Serial Protocol (ESP) port configuration
    */
   public Esp2ComPortAdapter(EspPortConfiguration configuration)
   {
-    this(new AbstractPort(), configuration);
+    this(getPADPort(configuration), configuration);
   }
 
   /**
