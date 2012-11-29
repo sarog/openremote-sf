@@ -20,10 +20,13 @@
  */
 package org.openremote.controller.protocol.enocean;
 
-import org.openremote.controller.protocol.enocean.packet.*;
+import org.openremote.controller.protocol.enocean.packet.Esp2Packet;
+import org.openremote.controller.protocol.enocean.packet.Esp2ProcessorListener;
+import org.openremote.controller.protocol.enocean.packet.Esp2Request;
+import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 import org.openremote.controller.protocol.enocean.packet.command.Esp2RdIDBaseCommand;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp24BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp21BSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp24BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp2RPSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
@@ -33,17 +36,8 @@ import org.openremote.controller.utils.Logger;
  *
  * @author Rainer Hitz
  */
-public class Esp2Connection implements EnOceanConnection, Esp2ProcessorListener
+public class Esp2Connection extends AbstractConnection<Esp2Packet, Esp2Request> implements Esp2ProcessorListener
 {
-
-  // Enums ----------------------------------------------------------------------------------------
-
-  public enum ConnectionState
-  {
-    CONNECTED,
-    DISCONNECTED
-  }
-
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -52,30 +46,6 @@ public class Esp2Connection implements EnOceanConnection, Esp2ProcessorListener
    */
   private final Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
-
-  // Private Instance Fields ----------------------------------------------------------------------
-
-  /**
-   * Connection state.
-   */
-  private ConnectionState state = ConnectionState.DISCONNECTED;
-
-  /**
-   * Object for handling the EnOcean serial protocol 2 (ESP2).
-   */
-  private EspProcessor<Esp2Packet> processor;
-
-  /**
-   * Listener which will be notified of received radio telegrams.
-   */
-  private RadioTelegramListener radioListener;
-
-  /**
-   * EnOcean module base device ID.
-   *
-   * @see DeviceID
-   */
-  private DeviceID baseID;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -89,83 +59,28 @@ public class Esp2Connection implements EnOceanConnection, Esp2ProcessorListener
    */
   public Esp2Connection(EspProcessor<Esp2Packet> processor, RadioTelegramListener listener)
   {
-    if(processor == null)
-    {
-      throw new IllegalArgumentException("null processor");
-    }
-
-    this.processor = processor;
-    this.radioListener = listener;
+    super(processor, listener);
   }
 
 
-  // Implements EnOceanConnection -----------------------------------------------------------------
+  // Implements AbstractConnection ----------------------------------------------------------------
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized void connect() throws ConnectionException, ConfigurationException
+  protected DeviceID readBaseID(EspProcessor<Esp2Packet> processor) throws InterruptedException, ConnectionException
   {
-    if(state == ConnectionState.CONNECTED)
-    {
-      return;
-    }
-
-    processor.start();
-
     Esp2RdIDBaseCommand readBaseIDCmd = new Esp2RdIDBaseCommand();
+    readBaseIDCmd.send(processor);
 
-    try
-    {
-      readBaseIDCmd.send(processor);
-    }
-    catch (InterruptedException e)
-    {
-      Thread.currentThread().interrupt();
-
-      return;
-    }
-
-    this.baseID = readBaseIDCmd.getBaseID();
-
-    state = ConnectionState.CONNECTED;
+    return readBaseIDCmd.getBaseID();
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized void disconnect() throws ConnectionException
+  protected Esp2Request createRadioTelegram(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
   {
-    if(state == ConnectionState.DISCONNECTED)
-    {
-      return;
-    }
-
-    processor.stop();
-
-    state = ConnectionState.DISCONNECTED;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public synchronized void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
-      throws ConnectionException, ConfigurationException
-  {
-    if(state == ConnectionState.DISCONNECTED)
-    {
-      throw new ConnectionException("Missing EnOcean interface connection.");
-    }
-
-    try
-    {
-      deviceID = deviceID.resolve(baseID);
-    }
-    catch (InvalidDeviceIDException e)
-    {
-      throw new ConfigurationException(e.getMessage(), e);
-    }
-
     Esp2Request radioTelegram = null;
 
     if(rorg == EspRadioTelegram.RORG.RPS ||
@@ -191,20 +106,18 @@ public class Esp2Connection implements EnOceanConnection, Esp2ProcessorListener
       throw new RuntimeException("Unhandled radio telegram type '" + rorg + "'.");
     }
 
-
-    if(radioTelegram != null)
-    {
-      try
-      {
-        radioTelegram.send(processor);
-      }
-
-      catch (InterruptedException e)
-      {
-        Thread.currentThread().interrupt();
-      }
-    }
+    return radioTelegram;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  protected void sendRadioTelegram(Esp2Request radioTelegram, EspProcessor<Esp2Packet> processor)
+      throws InterruptedException, ConnectionException
+  {
+    radioTelegram.send(processor);
+  }
+
 
   // Implements Esp2ProcessorListener -------------------------------------------------------------
 

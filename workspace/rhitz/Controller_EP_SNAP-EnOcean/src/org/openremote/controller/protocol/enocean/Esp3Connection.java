@@ -20,10 +20,13 @@
  */
 package org.openremote.controller.protocol.enocean;
 
-import org.openremote.controller.protocol.enocean.packet.*;
+import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
+import org.openremote.controller.protocol.enocean.packet.Esp3ProcessorListener;
+import org.openremote.controller.protocol.enocean.packet.Esp3Request;
+import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseCommand;
-import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
+import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp3RPSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
@@ -33,17 +36,8 @@ import org.openremote.controller.utils.Logger;
  *
  * @author Rainer Hitz
  */
-public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
+public class Esp3Connection extends AbstractConnection<Esp3Packet, Esp3Request> implements Esp3ProcessorListener
 {
-
-  // Enums ----------------------------------------------------------------------------------------
-
-  public enum ConnectionState
-  {
-    CONNECTED,
-    DISCONNECTED
-  }
-
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -52,30 +46,6 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
    */
   private final Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
 
-
-  // Private Instance Fields ----------------------------------------------------------------------
-
-  /**
-   * Connection state.
-   */
-  private ConnectionState state = ConnectionState.DISCONNECTED;
-
-  /**
-   * Object for handling the EnOcean serial protocol 3 (ESP3).
-   */
-  private EspProcessor<Esp3Packet> processor;
-
-  /**
-   * Listener which will be notified of received radio telegrams.
-   */
-  private RadioTelegramListener radioListener;
-
-  /**
-   * EnOcean module base device ID.
-   *
-   * @see DeviceID
-   */
-  private DeviceID baseID;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -89,83 +59,28 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
    */
   public Esp3Connection(EspProcessor<Esp3Packet> processor, RadioTelegramListener listener)
   {
-    if(processor == null)
-    {
-      throw new IllegalArgumentException("null processor");
-    }
-
-    this.processor = processor;
-    this.radioListener = listener;
+    super(processor, listener);
   }
 
 
-  // Implements EnOceanConnection -----------------------------------------------------------------
+  // Implements AbstractConnection ----------------------------------------------------------------
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized void connect() throws ConnectionException, ConfigurationException
+  protected DeviceID readBaseID(EspProcessor<Esp3Packet> processor) throws InterruptedException, ConnectionException
   {
-    if(state == ConnectionState.CONNECTED)
-    {
-      return;
-    }
-
-    processor.start();
-
     Esp3RdIDBaseCommand readBaseIDCmd = new Esp3RdIDBaseCommand();
+    readBaseIDCmd.send(processor);
 
-    try
-    {
-      readBaseIDCmd.send(processor);
-    }
-    catch (InterruptedException e)
-    {
-      Thread.currentThread().interrupt();
-
-      return;
-    }
-
-    this.baseID = readBaseIDCmd.getBaseID();
-
-    state = ConnectionState.CONNECTED;
+    return readBaseIDCmd.getBaseID();
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized void disconnect() throws ConnectionException
+  protected Esp3Request createRadioTelegram(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
   {
-    if(state == ConnectionState.DISCONNECTED)
-    {
-      return;
-    }
-
-    processor.stop();
-
-    state = ConnectionState.DISCONNECTED;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override public synchronized void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte)
-      throws ConnectionException, ConfigurationException
-  {
-    if(state == ConnectionState.DISCONNECTED)
-    {
-      throw new ConnectionException("Missing EnOcean interface connection.");
-    }
-
-    try
-    {
-      deviceID = deviceID.resolve(baseID);
-    }
-    catch (InvalidDeviceIDException e)
-    {
-      throw new ConfigurationException(e.getMessage(), e);
-    }
-
     Esp3Request radioTelegram = null;
 
     if(rorg == EspRadioTelegram.RORG.RPS ||
@@ -191,20 +106,18 @@ public class Esp3Connection implements EnOceanConnection, Esp3ProcessorListener
       throw new RuntimeException("Unhandled radio telegram type '" + rorg +"'.");
     }
 
-
-    if(radioTelegram != null)
-    {
-      try
-      {
-        radioTelegram.send(processor);
-      }
-
-      catch (InterruptedException e)
-      {
-        Thread.currentThread().interrupt();
-      }
-    }
+    return radioTelegram;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  protected void sendRadioTelegram(Esp3Request radioTelegram, EspProcessor<Esp3Packet> processor)
+      throws InterruptedException, ConnectionException
+  {
+    radioTelegram.send(processor);
+  }
+
 
   // Implements Esp3ProcessorListener -------------------------------------------------------------
 
