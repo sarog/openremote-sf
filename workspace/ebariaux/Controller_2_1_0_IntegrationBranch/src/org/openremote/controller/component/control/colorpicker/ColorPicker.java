@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,18 +22,15 @@ package org.openremote.controller.component.control.colorpicker;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
 
 
 public class ColorPicker extends Control {
    
-   public ColorPicker() {
-      super();
-      setSensor(new Sensor(new NoStatusCommand()));
-   }
-   
+   /**
+    * Valid action is either in the list of known actions as returned by getAvailableActions or
+    * is a color value expressed in 6 characters hexadecimal format.
+    */
    @Override
    public boolean isValidActionWith(String actionParam) {
       for (String action : availableActions) {
