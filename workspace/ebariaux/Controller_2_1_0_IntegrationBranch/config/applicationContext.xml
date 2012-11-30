@@ -423,6 +423,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "slider" value-ref = "sliderBuilder"/>
         <entry key = "gesture" value-ref = "gestureBuilder"/>
         <entry key = "image"  value-ref = "imageBuilder"/>
+        <entry key = "colorpicker" value-ref = "colorpickerBuilder"/>
       </map>
     </property>
   </bean>
@@ -490,6 +491,14 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 
   <!-- TODO -->
 	<bean id = "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+
+  <!-- TODO -->
+  <bean id = "colorpickerBuilder" class="org.openremote.controller.component.control.colorpicker.ColorPickerBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
 
     <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
