@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2012, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,26 +26,45 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.control.Control;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.service.Deployer;
 
 
 public class ColorPickerBuilder extends ComponentBuilder {
    
+   // Instance Fields ------------------------------------------------------------------------------
    
+   private Deployer deployer;
+
+   // Implements ComponentBuilder ------------------------------------------------------------------
+
    @SuppressWarnings("unchecked")
    @Override
-   public Component build(Element componentElement, String commandParam) {
+   public Component build(Element componentElement, String commandParam) throws InitializationException {
       ColorPicker cp = new ColorPicker();
       if (cp.isValidActionWith(commandParam)) {
          List<Element> commandRefElements = componentElement.getChildren();
          for (Element commandRefElement : commandRefElements) {
              String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-             Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
+             Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
              commandElement.setAttribute("value", commandParam);
              ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
              cp.addExecutableCommand(command);
          }
       }
       return cp;
+   }
+
+   // Service Dependencies -------------------------------------------------------------------------
+
+   /**
+    * TODO : this dependency can/will be satisfied by ObjectBuilder implementation (see ORCJAVA-155)
+    *
+    * @param deployer
+    */
+   public void setDeployer(Deployer deployer)
+   {
+     this.deployer = deployer;
    }
 
 }
