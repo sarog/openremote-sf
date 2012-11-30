@@ -1577,12 +1577,14 @@ public class Deployer
     public void run() {
        //As long as we are not linked to an account we periodically try to receive account info 
        while (true) {
+          ClientResource cr = null;
           try {
-             ClientResource cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
+             log.trace("Controller will announce " + NetworkUtil.getMACAddresses() + " as MAC address to beehive");
+             cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
              Representation r = cr.post(null);
-             cr.release();
              String str;
              str = r.getText();
+             log.trace("Controller announcement received response >" + str + "<");
              GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
              controllerDTO = (ControllerDTO)res.getResult();
              if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
@@ -1590,6 +1592,10 @@ public class Deployer
              }
           } catch (Exception e) {
              log.error("!!! Unable to announce controller MAC address to Beehive", e);
+          } finally {
+             if (cr != null) {
+                cr.release();
+             }
           }
           try { Thread.sleep(1000 * 30); } catch (InterruptedException e) {} //Let's wait 30 seconds
        }
