@@ -10,6 +10,7 @@ New features:
  - Have protocol names ordered alphabetically for commands (MODELER-417)
  - Add pulseTime parameter to AMX protocol (MODELER-434)
  - Enfore unicity of element id in schemas (MODELER-412)
+ - Add 'data' attribute to protocol xml for 1-wire (MODELER-435)
 
 Pro 1.0.4
 =========
