@@ -20,12 +20,14 @@
  */
 package org.openremote.controller.protocol.enocean.port;
 
+import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;
 import org.openremote.controller.protocol.port.pad.AbstractPort;
 
 import gnu.io.*;
+import org.openremote.controller.utils.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,52 +38,81 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * TODO
+ * Serial port implementation based on the native library RXTX
+ * (see http://rxtx.qbang.org/).
  *
  * @author Rainer Hitz
  */
 public class RXTXPort implements Port
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Amount of time in milliseconds to wait until the RXTX serial port has been opened: {@value}
+   */
+  public static final int RXTX_PORT_OPEN_TIMEOUT = 2000;
+
+  /**
+   * Number of bytes allocated for the receive buffer: {@value}
+   */
+  public static final int RXTX_PORT_RECEIVE_BUFFER_SIZE = 4096;
+
+  /**
+   * Number of bytes allocated for the transmit buffer: {@value}
+   */
+  public static final int RXTX_PORT_TRANSMIT_BUFFER_SIZE = 1024;
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * EnOcean logger. Uses a common category for all EnOcean related logging.
+   */
+  private final static Logger log = Logger.getLogger(EnOceanCommandBuilder.ENOCEAN_LOG_CATEGORY);
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
-   * TODO
+   * RXTX com port identifier.
    */
   private CommPortIdentifier portIdentifier;
 
   /**
-   * TODO
+   * RXTX serial port.
    */
   private SerialPort serialPort;
 
   /**
-   * TODO
+   * Input stream for receiving data from the serial port.
    */
   private InputStream inputStream;
 
   /**
-   * TODO
+   * Output stream for sending data to the serial port.
    */
   private OutputStream outputStream;
 
   /**
-   * TODO
+   * Queue used as inter-thread communication mechanism for receiving
+   * data from the serial port event listener.
    */
   private BlockingQueue<Byte> inputQueue;
 
   /**
-   * TODO
+   * Queue used as inter-thread communication mechanism for sending data
+   * to the serial port writer thread.
    */
   private BlockingQueue<Byte> outputQueue;
 
   /**
-   * TODO
+   * Thread for sending data to the serial port.
    */
   private Thread writerThread;
 
   /**
-   * TODO
+   * Serial port configuration.
    */
   private Map<String, Object> configuration;
 
@@ -110,8 +141,7 @@ public class RXTXPort implements Port
     }
     catch (NoSuchPortException e)
     {
-      // TODO : log
-      System.out.println("Exception while configuring TXRX port: " + e.getMessage());
+      log.error("Error while configuring serial port : {0}", e, e.getMessage());
 
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
@@ -120,13 +150,11 @@ public class RXTXPort implements Port
 
     try
     {
-      // TODO : timeout constant
-      commPort = portIdentifier.open(this.getClass().getName(), 2000);
+      commPort = portIdentifier.open(this.getClass().getName(), RXTX_PORT_OPEN_TIMEOUT);
     }
     catch (PortInUseException e)
     {
-      // TODO : log
-      System.out.println("Exception while configuring TXRX port: " + e.getMessage());
+      log.error("Error while configuring serial port : {0}", e, e.getMessage());
 
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
@@ -137,7 +165,10 @@ public class RXTXPort implements Port
     }
     else
     {
-      // TODO : log
+      log.error(
+          "Error while configuring port ''{0}'' because it''s not a serial port type.", portName
+      );
+
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
 
@@ -150,19 +181,17 @@ public class RXTXPort implements Port
     }
     catch (UnsupportedCommOperationException e)
     {
-      // TODO : log
-      System.out.println("Exception while configuring TXRX port: " + e.getMessage());
+      log.error("Error while configuring serial port : {0}", e, e.getMessage());
 
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
 
-    // TODO : CONSTANTS
-    inputQueue = new LinkedBlockingQueue<Byte>(1024);
-    outputQueue = new LinkedBlockingQueue<Byte>(1024);
+
+    inputQueue = new LinkedBlockingQueue<Byte>(RXTX_PORT_RECEIVE_BUFFER_SIZE);
+    outputQueue = new LinkedBlockingQueue<Byte>(RXTX_PORT_TRANSMIT_BUFFER_SIZE);
 
     inputStream = serialPort.getInputStream();
     outputStream = serialPort.getOutputStream();
-
 
     try
     {
@@ -171,14 +200,12 @@ public class RXTXPort implements Port
     }
     catch (TooManyListenersException e)
     {
-      // TODO : log
-      System.out.println("Exception while starting TXRX port: " + e.getMessage());
+      log.error("Error while configuring serial port : {0}", e, e.getMessage());
 
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
 
     writerThread = new Thread(new SerialWriter(outputStream, outputQueue));
-    //writerThread.setDaemon(true);
     writerThread.start();
   }
 
@@ -257,9 +284,26 @@ public class RXTXPort implements Port
 
       else
       {
-        data = new byte[1];
+        byte dataByte = inputQueue.take();
 
-        data[0] = inputQueue.take();
+        size = inputQueue.size();
+
+        if(size > 0)
+        {
+          data = new byte[size + 1];
+          data[0] = dataByte;
+
+          for(int i = 0; i < size; i++)
+          {
+            data[i + 1] = inputQueue.take();
+          }
+        }
+
+        else
+        {
+          data = new byte[1];
+          data[0] = dataByte;
+        }
       }
     }
 
@@ -277,26 +321,33 @@ public class RXTXPort implements Port
 
 
   /**
-   * TODO
+   * Thread implementation for sending data to the serial port.
    */
   private static class SerialWriter implements Runnable
   {
+
+    // Private Instance Fields --------------------------------------------------------------------
+
     /**
-     * TODO
+     * Output stream for sending data to serial port.
      */
     private OutputStream outputStream;
 
     /**
-     * TODO
+     * Queue used as inter-thread communication mechanism for transferring
+     * data bytes to the writer thread.
      */
     private BlockingQueue<Byte> outputQueue;
 
 
+    // Constructors -------------------------------------------------------------------------------
+
     /**
-     * TODO
+     * Constructs a new serial writer instance with given output stream and data queue.
      *
-     * @param stream
-     * @param queue
+     * @param stream  output stream for sending data to the serial port
+     *
+     * @param queue   queue for transferring data to the serial writer thread
      */
     public SerialWriter(OutputStream stream, BlockingQueue<Byte> queue)
     {
@@ -304,7 +355,9 @@ public class RXTXPort implements Port
       this.outputQueue = queue;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override public void run()
     {
       byte dataByte;
@@ -328,8 +381,7 @@ public class RXTXPort implements Port
         }
         catch (IOException e)
         {
-          // TODO : log
-          System.out.println("IOException in TXT SerialWriter:" + e.getMessage());
+          log.error("Error while writing to serial port : {0}", e, e.getMessage());
 
           break;
         }
@@ -338,25 +390,35 @@ public class RXTXPort implements Port
   }
 
   /**
-   * TODO
+   * Serial port event listener implementation for reading data from
+   * the serial port.
    */
   private static class SerialReader implements SerialPortEventListener
   {
+
+    // Private Instance Fields --------------------------------------------------------------------
+
     /**
-     * TODO
+     * Input stream for reading data fom the serial port.
      */
     private InputStream inputStream;
 
     /**
-     * TODO
+     * Queue for transferring serial port data from the serial port reader thread
+     * to a different worker thread.
      */
     private BlockingQueue<Byte> inputQueue;
 
+
+    // Constructors -------------------------------------------------------------------------------
+
     /**
-     * TODO
+     * Constructs a serial port reader instance with given input stream and queue.
      *
-     * @param stream
-     * @param queue
+     * @param stream  input stream for reading data from the serial port
+     *
+     * @param queue   queue for transferring data from the serial port reader thread
+     *                to a different worker thread.
      */
     public SerialReader(InputStream stream, BlockingQueue<Byte> queue)
     {
@@ -365,6 +427,11 @@ public class RXTXPort implements Port
     }
 
 
+    // Implements SerialPortEventListener ---------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public void serialEvent(SerialPortEvent serialPortEvent)
     {
       int data;
@@ -390,8 +457,7 @@ public class RXTXPort implements Port
 
         catch (IOException e)
         {
-          // TODO : log
-          System.out.println("IOException in TXT SerialReader:" + e.getMessage());
+          log.error("Error while reading from serial port : {0}", e, e.getMessage());
         }
       }
     }
