@@ -170,14 +170,14 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     catch(PortException e)
     {
       throw new ConnectionException(
-          "Starting serial port failed : {0}", e, e.getMessage()
+          "Starting {0} failed : {1}", e, this, e.getMessage()
       );
     }
 
     catch(IOException e)
     {
       throw new ConnectionException(
-          "Starting serial port failed : {0}", e, e.getMessage()
+          "Starting {0} failed : {1}", e, this, e.getMessage()
       );
     }
 
@@ -200,14 +200,14 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     catch(PortException e)
     {
       throw new ConnectionException(
-          "Stopping serial port failed : {0}", e, e.getMessage()
+          "Stopping {0} failed : {1}", e, this, e.getMessage()
       );
     }
 
     catch(IOException e)
     {
       throw new ConnectionException(
-          "Stopping serial port failed : {0}", e, e.getMessage()
+          "Stopping {0} failed : {1}", e, this, e.getMessage()
       );
     }
 
@@ -231,7 +231,7 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     if(!started)
     {
       throw new ConnectionException(
-          "Failed to send data because serial port has not been started."
+          "Failed to send data because {0} has not been started.", this
       );
     }
 
@@ -245,14 +245,14 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     catch(PortException e)
     {
       throw new ConnectionException(
-          "Failed to send data : {0}", e, e.getMessage()
+          "Failed to send data to {0} : {1}", e, e.getMessage()
       );
     }
 
     catch(IOException e)
     {
       throw new ConnectionException(
-          "Failed to send data : {0}", e, e.getMessage()
+          "Failed to send data to {0} : {1}", e, this, e.getMessage()
       );
     }
   }
@@ -265,7 +265,7 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     if(!started)
     {
       throw new ConnectionException(
-          "Failed to receive data because serial port has not been started."
+          "Failed to receive data from {0} because port has not been started.", this
       );
     }
 
@@ -279,7 +279,7 @@ public abstract class AbstractEspComPortAdapter implements EspPort
     catch(IOException e)
     {
       throw new ConnectionException(
-          "Failed to receive data : {0}", e, e.getMessage()
+          "Failed to receive data from {0} : {1}", e, this, e.getMessage()
       );
     }
 
@@ -306,11 +306,16 @@ public abstract class AbstractEspComPortAdapter implements EspPort
       comPort = "--";
     }
 
+    EspPortConfiguration.CommLayer commLayerType = configuration.getCommLayer();
+    String commLayer = commLayerType == null ? "--" : commLayerType.toString();
+
     builder
         .append("[COM port: ")
         .append(comPort)
         .append(", Protocol: ")
         .append(getEspVersion())
+        .append(", Communication Layer: ")
+        .append(commLayer)
         .append("]");
 
     return builder.toString();
@@ -377,19 +382,19 @@ public abstract class AbstractEspComPortAdapter implements EspPort
       if(e.getCode() == PortException.INVALID_CONFIGURATION)
       {
         throw new ConfigurationException(
-            "Configuring serial port failed : {0}",e , e.getMessage()
+            "Configuring {0} failed : {1}",e , this, e.getMessage()
         );
       }
 
       throw new ConnectionException(
-          "Configuring serial port failed : {0}", e, e.getMessage()
+          "Configuring {0} failed : {1}", e, this, e.getMessage()
       );
     }
 
     catch(IOException e)
     {
       throw new ConnectionException(
-          "Configuring serial port failed : {0}", e, e.getMessage()
+          "Configuring {0} failed : {1}", e, this, e.getMessage()
       );
     }
 

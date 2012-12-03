@@ -55,6 +55,8 @@ public class Esp2ComPortAdapterTest
   {
     portConfig = new EspPortConfiguration();
     portConfig.setComPort(COM_PORT);
+    portConfig.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP2);
 
     mockPort = new MockPort();
   }

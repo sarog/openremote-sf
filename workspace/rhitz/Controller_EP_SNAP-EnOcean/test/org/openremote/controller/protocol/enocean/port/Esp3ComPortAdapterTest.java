@@ -55,6 +55,8 @@ public class Esp3ComPortAdapterTest
   {
     portConfig = new EspPortConfiguration();
     portConfig.setComPort(COM_PORT);
+    portConfig.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
 
     mockPort = new MockPort();
   }
