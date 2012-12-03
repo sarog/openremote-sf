@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -38,9 +39,12 @@ import android.util.Log;
 /**
  * Polling status result XML parser.
  * 
+ * Fix added for ANDROID-102 see JIRA
+ * 
  * @author Tomsky Wang
  * @author Dan Cong
- *
+ * @author Rich Turner
+ * 
  */
 public class PollingStatusParser {
    public static final HashMap<String, String> statusMap = new HashMap<String, String>();
@@ -61,7 +65,10 @@ public class PollingStatusParser {
          int nodeNums = nodeList.getLength();
          for (int i = 0; i < nodeNums; i++) {
             String lastId = nodeList.item(i).getAttributes().getNamedItem("id").getNodeValue();
-            String newStatus = nodeList.item(i).getFirstChild().getNodeValue();
+            String newStatus = "";
+            Node newStatusNode = nodeList.item(i).getFirstChild();
+            if (newStatusNode != null)
+            	newStatus = newStatusNode.getNodeValue();
             statusMap.put(lastId, newStatus);
             Log.i("OpenRemote/POLLING", "set " + lastId + " to new status: " + newStatus);
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + lastId, null);
