@@ -29,7 +29,7 @@ Bug Fixes:
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
   - Internal API : concurrency and call control on Deployer start 
     controller calls (ORCJAVA-179)  
-  
+  - 1-Wire does not recover when owserver is not available (ORCJAVA-267)  
 
 Controller 2.0.1 (2012-11-21)
 =============================
