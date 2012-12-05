@@ -298,19 +298,7 @@ public class StatusCache
 
     for (Integer sensorId : sensorIDs) 
     {
-      if (!sensorMap.hasExistingState(sensorId))
-       //if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId)))
-       {
-         // TODO : do not throw an exception, instead return 'unknown value'
-         
-         throw new NoSuchComponentException("No such component in status cache : " + sensorId);
-       }
-
-       else
-       {
-         statuses.put(sensorId, sensorMap.getCurrentState(sensorId).serialize());
-          //statuses.put(sensorId, this.sensorStatus.get(sensorId));
-       }
+       statuses.put(sensorId, queryStatus(sensorId));
     }
 
     log.trace("Returning sensor status map (ID, Value) : {0}", statuses);

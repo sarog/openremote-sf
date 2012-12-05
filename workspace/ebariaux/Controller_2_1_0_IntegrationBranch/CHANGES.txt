@@ -30,6 +30,8 @@ Bug Fixes:
   - Internal API : concurrency and call control on Deployer start 
     controller calls (ORCJAVA-179)  
   - 1-Wire does not recover when owserver is not available (ORCJAVA-267)  
+  - Issue with status cache if a command linked to a sensor
+    has issue (ORCJAVA-268)
 
 Controller 2.0.1 (2012-11-21)
 =============================
