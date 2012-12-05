@@ -138,14 +138,9 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
     {
       value = client.read(deviceAddress+"/"+filename);
     }
-    catch (OwfsException e)
+    catch (Exception e)
     {
-      logger.error("OneWire error, unable to read from OWSERVER.", e);
-      value = null;
-    }
-    catch (IOException e)
-    {
-      logger.error("OneWire IO error, unable to read from OWSERVER.", e);
+      logger.error("Unable to read from OWSERVER.", e);
       value = null;
     }
     logger.debug("After client call, value = '"+value+"'");
