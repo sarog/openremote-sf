@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:tag="@string/settings"
+    android:background="#000000">
+
+
+		<LinearLayout android:id="@+id/appSettingsView"
+		              android:layout_width="fill_parent"
+		             android:layout_height="wrap_content"
+	            
+	            android:fillViewport="true"
+		              android:orientation="vertical">
+			
+			<include layout="@layout/choose_controller_bar" />
+			
+				
+				<!-- do we really want height to wrap content here? -->
+				<!-- customView -->
+				<LinearLayout android:id="@+id/custom_servers_layout"
+				              android:orientation="vertical"
+				              android:paddingLeft="20dp"
+				              android:paddingTop="5dp"
+				              android:paddingRight="5dp"
+				              android:paddingBottom="0dp"
+				              android:layout_width="fill_parent"
+				              android:layout_height="wrap_content"
+				              android:visibility="invisible">
+					
+					<ListView android:id="@+id/custom_server_list_view"
+					          android:layout_width="fill_parent"
+					          android:layout_height="200dp"
+					          android:cacheColorHint="#000000"
+					          android:choiceMode="singleChoice" 			          
+		          	          />
+					         
+					          				
+					<RelativeLayout android:layout_width="fill_parent"
+					                android:layout_height="80dp">
+						<Button android:id="@+id/add_server_button"
+						        android:layout_width="wrap_content"
+						        android:layout_height="wrap_content"
+						        android:layout_centerHorizontal="true"
+						        android:text="Add" />
+						
+						<Button android:id="@+id/delete_server_button"
+						        android:layout_width="wrap_content"
+						        android:layout_height="wrap_content"
+						        android:layout_alignParentRight="true"
+						        android:text="Delete" />
+					</RelativeLayout>
+				</LinearLayout>
+			
+			
+			<TextView android:text="Choose Panel Identity:"
+					  android:background="@color/dark_gray"
+					  android:paddingLeft="10dp"
+					  android:paddingTop="5dp"
+					  android:paddingRight="0dp"
+					  android:paddingBottom="5dp"
+					  android:layout_width="fill_parent"
+					  android:layout_height="wrap_content" />
+			
+			<org.openremote.android.console.view.PanelSelectSpinnerView
+			    android:id="@+id/panel_select_spinner_view"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content" />
+			
+			<TextView android:text="Image Cache:"
+			          android:paddingLeft="10dp"
+			          android:paddingTop="5dp"
+			          android:paddingRight="0dp"
+			          android:paddingBottom="5dp"
+			          android:background="@color/dark_gray"
+			          android:layout_width="fill_parent"
+			          android:layout_height="wrap_content" />
+			
+			<RelativeLayout android:layout_width="fill_parent"
+			                android:layout_height="wrap_content">
+				<Button android:id="@+id/clear_image_cache_button"
+				        android:text="Clear Image Cache"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_alignParentRight="true" />
+			</RelativeLayout>
+			
+			<include layout="@layout/ssl_field_view" />
+		</LinearLayout>
+	
+
+	<include layout="@layout/bottom_button_bar" />
+</LinearLayout>
