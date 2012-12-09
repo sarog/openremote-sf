@@ -105,8 +105,8 @@ public class ORConnection
     this.context = context;
 
     HttpParams params = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
-    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+    HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
+    HttpConnectionParams.setSoTimeout(params, 10 * 1000);
 
     httpClient = new DefaultHttpClient(params);
 
@@ -286,8 +286,8 @@ public class ORConnection
 
     // TODO : seems like timeouts ought to be externalized...
 
-    HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+    HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
+    HttpConnectionParams.setSoTimeout(params, 10 * 1000);
 
     HttpClient client = new DefaultHttpClient(params);
 
