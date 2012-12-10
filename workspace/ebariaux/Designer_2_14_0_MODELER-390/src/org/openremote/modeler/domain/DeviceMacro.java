@@ -46,6 +46,8 @@ import flexjson.JSON;
 @Table(name = "device_macro")
 public class DeviceMacro extends BusinessEntity {
    
+  private static final long serialVersionUID = 718309862039722950L;
+
    /** The device macro items. */
    private List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
    

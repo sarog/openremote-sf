@@ -23,7 +23,9 @@ package org.openremote.modeler.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,10 +55,17 @@ public abstract class BusinessEntity implements Serializable {
    private long oid;
 
    /**
+    * A map to store "free format" transient information.
+    */
+   @Transient
+   private transient Map<String, Object> transientStorage;
+   
+   /**
     * Instantiates a new business entity.
     */
    public BusinessEntity() {
       super();
+      transientStorage = new HashMap<String, Object>();
    }
 
    /**
@@ -130,5 +139,36 @@ public abstract class BusinessEntity implements Serializable {
    @Transient
    public String getDisplayName() {
       return "unKnown";
+   }
+   
+   /**
+    * Stores an object in transient storage.
+    * 
+    * @param key - key with which the specified object is to be associated
+    * @param value - object to be stored under specified key
+    */
+   public void storeTransient(String key, Object value) {
+     transientStorage.put(key, value);
+   }
+   
+   /**
+    * Retrieves an object from transient storage.
+    * 
+    * @param key - the key whose associated value is to be returned
+    * @return
+    */
+   @Transient
+   @JSON(include = false)
+   public Object retrieveTransient(String key) {
+     return transientStorage.get(key);
+   }
+   
+   /**
+    * Removes an object from transient storage.
+    * 
+    * @param key -key for the object to be removed
+    */
+   public void removeTransient(String key) {
+     transientStorage.remove(key);
    }
 }
