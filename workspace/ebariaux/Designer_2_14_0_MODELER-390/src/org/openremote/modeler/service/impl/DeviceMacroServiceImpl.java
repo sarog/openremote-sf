@@ -28,15 +28,18 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.BaseAbstractService;
+import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
@@ -51,6 +54,8 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
    
+   private DeviceCommandService deviceCommandService;
+   
    /** The user service. */
    private UserService userService;
 
@@ -64,9 +69,11 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       this.deviceMacroItemService = deviceMacroItemService;
    }
    
-   
+  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
+    this.deviceCommandService = deviceCommandService;
+  }
 
-   /**
+  /**
     * For spring IOC.
     * 
     * @param userService the new user service
@@ -193,8 +200,51 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       }
       return new MacroDetailsDTO(macroBean.getOid(), macroBean.getName(), items);
    }
-
     
+   @Override
+   public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
+     DeviceMacro macroBean = new DeviceMacro();
+     macroBean.setName(macro.getName());
+     macroBean.setAccount(userService.getAccount());
+     
+     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
+     
+     macroBean.setDeviceMacroItems(macroItemBeans);
+     return saveDeviceMacro(macroBean).getMacroDTO();
+   }
+   
+   @Override
+   public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
+     DeviceMacro macroBean = loadById(macro.getOid());
+     macroBean.setName(macro.getName());
 
+     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
+     return updateDeviceMacro(macroBean, macroItemBeans).getMacroDTO();
+   }
+
+   private List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
+     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
+      for (MacroItemDetailsDTO item : macro.getItems()) {
+        DeviceMacroItem itemBean = null;
+        switch(item.getType()) {
+          case Command:
+            DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
+            itemBean = new DeviceCommandRef(dc);
+            break;
+          case Macro:
+            DeviceMacro dm = loadById(item.getDto().getId());
+            itemBean = new DeviceMacroRef(dm);
+            break;
+          case Delay:
+            itemBean = new CommandDelay(Integer.toString(item.getDelay()));
+            break;
+        }
+        if (itemBean != null) {
+          macroItemBeans.add(itemBean);
+          itemBean.setParentDeviceMacro(macroBean);
+        }
+      }
+     return macroItemBeans;
+   }
    
 }
