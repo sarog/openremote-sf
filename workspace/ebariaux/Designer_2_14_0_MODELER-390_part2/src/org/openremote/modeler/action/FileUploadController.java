@@ -37,6 +37,7 @@ import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
 import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
 import org.openremote.modeler.utils.MultipartFileUtil;
@@ -80,10 +81,19 @@ public class FileUploadController extends MultiActionController implements BeanF
      */
     @SuppressWarnings("finally")
     public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
+
         try {
-            String importJson = resourceService.getDotImportFileForRender(request.getSession().getId(),
+            List<DeviceDTO> importedDeviceDTOs = resourceService.getDotImportFileForRender(request.getSession().getId(),
                     MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
-            response.getWriter().write(importJson);
+            
+            
+            JSONSerializer serializer = new JSONSerializer();
+            System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importedDeviceDTOs) + "<");
+            response.setHeader("content-type", "text/html");
+            response.setCharacterEncoding("UTF-8");
+
+            
+            response.getWriter().write(serializer.exclude("*.class").deepSerialize(importedDeviceDTOs));
         } catch (Exception e) {
             LOGGER.error("Import file error.", e);
             response.getWriter().write("");
