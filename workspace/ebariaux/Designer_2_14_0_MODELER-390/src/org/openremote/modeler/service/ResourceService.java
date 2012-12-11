@@ -29,6 +29,7 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 /**
  * TODO : this interface is on the way out
@@ -49,7 +50,7 @@ public interface ResourceService
   /**
    * @deprecated unused
    */
-  @Deprecated String getDotImportFileForRender(String sessionId, InputStream inputStream);
+  @Deprecated List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream);
 
   /**
    * @deprecated seems unused
