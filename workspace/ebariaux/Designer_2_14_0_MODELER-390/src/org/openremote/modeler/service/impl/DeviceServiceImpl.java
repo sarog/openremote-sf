@@ -253,81 +253,95 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * {@inheritDoc}
     */
    @Override
-  public DeviceDTO saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
+  public Device saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
     Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
     deviceBean.setAccount(account);
+    deviceBean.storeTransient(ORIGINAL_OID_KEY, device.getOid());
 
     Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
-    for (DeviceCommandDetailsDTO command : commands) {
-      DeviceCommand dc = new DeviceCommand();
-      dc.setDevice(deviceBean);
-
-      dc.setName(command.getName());
-      Protocol protocol = new Protocol();
-      protocol.setDeviceCommand(dc);
-      dc.setProtocol(protocol);
-      protocol.setType(command.getProtocolType());
-      for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
-        protocol.addProtocolAttribute(e.getKey(), e.getValue());
+    if (commands != null) {
+      for (DeviceCommandDetailsDTO command : commands) {
+        DeviceCommand dc = new DeviceCommand();
+        dc.setDevice(deviceBean);
+  
+        dc.setName(command.getName());
+        Protocol protocol = new Protocol();
+        protocol.setDeviceCommand(dc);
+        dc.setProtocol(protocol);
+        protocol.setType(command.getProtocolType());
+        dc.storeTransient(ORIGINAL_OID_KEY, command.getOid());
+        for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
+          protocol.addProtocolAttribute(e.getKey(), e.getValue());
+        }
+        commandBeans.put(command, dc);
       }
-      commandBeans.put(command, dc);
     }
     deviceBean.setDeviceCommands(new ArrayList<DeviceCommand>(commandBeans.values()));
 
     Map<SensorDetailsDTO, Sensor> sensorBeans = new HashMap<SensorDetailsDTO, Sensor>();
-    for (SensorDetailsDTO sensorDTO : sensors) {
-      Sensor sensor = null;
-      if (sensorDTO.getType() == SensorType.RANGE) {
-        sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
-      } else if (sensorDTO.getType() == SensorType.CUSTOM) {
-        CustomSensor customSensor = new CustomSensor();
-        for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
-          customSensor.addState(new State(e.getKey(), e.getValue()));
+    if (sensors != null) {
+      for (SensorDetailsDTO sensorDTO : sensors) {
+        Sensor sensor = null;
+        if (sensorDTO.getType() == SensorType.RANGE) {
+          sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+        } else if (sensorDTO.getType() == SensorType.CUSTOM) {
+          CustomSensor customSensor = new CustomSensor();
+          for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
+            customSensor.addState(new State(e.getKey(), e.getValue()));
+          }
+          sensor = customSensor;
+        } else {
+          sensor = new Sensor(sensorDTO.getType());
         }
-        sensor = customSensor;
-      } else {
-        sensor = new Sensor(sensorDTO.getType());
+  
+        sensor.setDevice(deviceBean);
+        sensor.setName(sensorDTO.getName());
+        sensor.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, sensorDTO.getOid());
+  
+        DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
+        SensorCommandRef commandRef = new SensorCommandRef();
+        commandRef.setSensor(sensor);
+        commandRef.setDeviceCommand(deviceCommand);
+        sensor.setSensorCommandRef(commandRef);
+        sensorBeans.put(sensorDTO, sensor);
       }
-
-      sensor.setDevice(deviceBean);
-      sensor.setName(sensorDTO.getName());
-      sensor.setAccount(account);
-
-      DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
-      SensorCommandRef commandRef = new SensorCommandRef();
-      commandRef.setSensor(sensor);
-      commandRef.setDeviceCommand(deviceCommand);
-      sensor.setSensorCommandRef(commandRef);
-      sensorBeans.put(sensorDTO, sensor);
     }
     deviceBean.setSensors(new ArrayList<Sensor>(sensorBeans.values()));
 
     List<Switch> switchBeans = new ArrayList<Switch>();
-    for (SwitchDetailsDTO switchDTO : switches) {
-      Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
-      DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
-      DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
-
-      Switch sw = new Switch(onCommand, offCommand, sensor);
-      sw.setName(switchDTO.getName());
-      sw.setAccount(account);
-      switchBeans.add(sw);
+    if (switches != null) {
+      for (SwitchDetailsDTO switchDTO : switches) {
+        Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
+        DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
+        DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
+  
+        Switch sw = new Switch(onCommand, offCommand, sensor);
+        sw.setName(switchDTO.getName());
+        sw.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, switchDTO.getOid());
+        switchBeans.add(sw);
+      }
     }
     deviceBean.setSwitchs(switchBeans);
 
     List<Slider> sliderBeans = new ArrayList<Slider>();
-    for (SliderDetailsDTO sliderDTO : sliders) {
-      Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
-      DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
-
-      Slider slider = new Slider(sliderDTO.getName(), command, sensor);
-      slider.setAccount(account);
-      sliderBeans.add(slider);
+    if (sliders != null) {
+      for (SliderDetailsDTO sliderDTO : sliders) {
+        Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
+        DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
+  
+        Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+        slider.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, sliderDTO.getOid());
+        sliderBeans.add(slider);
+      }
     }
     deviceBean.setSliders(sliderBeans);
 
     saveDevice(deviceBean);
-    return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
+    
+    return deviceBean;
   }   
 
 }
