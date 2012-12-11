@@ -38,6 +38,8 @@ import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
  */
 public interface DeviceService {
    
+  public static String ORIGINAL_OID_KEY = "OriginalOid";
+  
    /**
     * Save device.
     * 
@@ -115,6 +117,6 @@ public interface DeviceService {
     */
    ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account);
 
-   DeviceDTO saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
+   Device saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
 
 }
