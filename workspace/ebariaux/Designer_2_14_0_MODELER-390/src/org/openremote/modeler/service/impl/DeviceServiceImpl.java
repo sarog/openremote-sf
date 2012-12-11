@@ -139,9 +139,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public List<Device> loadAll(Account account) {
-      List<Device> devices = account.getDevices();
-      return devices;
+   @SuppressWarnings("unchecked")
+  @Transactional public List<Device> loadAll(Account account) {
+     DetachedCriteria criteria = DetachedCriteria.forClass(Device.class);
+     criteria.add(Restrictions.eq("account", account));
+      return genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
    }
 
    /**
