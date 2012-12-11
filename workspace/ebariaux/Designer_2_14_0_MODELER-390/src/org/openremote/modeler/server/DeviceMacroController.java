@@ -113,47 +113,11 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    }
 
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
-     DeviceMacro macroBean = new DeviceMacro();
-     macroBean.setName(macro.getName());
-     macroBean.setAccount(userService.getAccount());
-     
-     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
-     
-     macroBean.setDeviceMacroItems(macroItemBeans);
-     return createMacroDTO(deviceMacroService.saveDeviceMacro(macroBean));
+     return deviceMacroService.saveNewMacro(macro);
    }
 
    public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
-     DeviceMacro macroBean = deviceMacroService.loadById(macro.getOid());
-     macroBean.setName(macro.getName());
-
-     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
-     return createMacroDTO(deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans));
-   }
-
-   protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
-     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
-      for (MacroItemDetailsDTO item : macro.getItems()) {
-        DeviceMacroItem itemBean = null;
-        switch(item.getType()) {
-          case Command:
-            DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
-            itemBean = new DeviceCommandRef(dc);
-            break;
-          case Macro:
-            DeviceMacro dm = deviceMacroService.loadById(item.getDto().getId());
-            itemBean = new DeviceMacroRef(dm);
-            break;
-          case Delay:
-            itemBean = new CommandDelay(Integer.toString(item.getDelay()));
-            break;
-        }
-        if (itemBean != null) {
-          macroItemBeans.add(itemBean);
-          itemBean.setParentDeviceMacro(macroBean);
-        }
-      }
-     return macroItemBeans;
+     return deviceMacroService.updateMacroWithDTO(macro);
    }
 
 }
