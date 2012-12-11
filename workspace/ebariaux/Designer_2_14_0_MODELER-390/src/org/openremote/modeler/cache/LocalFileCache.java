@@ -482,7 +482,10 @@ public class LocalFileCache implements ResourceCache<File>
    *   <li>panel.xml</li>
    *   <li>controller.xml</li>
    *   <li>panels.obj</li>
+   *   <li>ui_state.xml</li>
+   *   <li>building_modeler.xml</li>
    *   <li>lircd.conf</li>
+   *   <li>rules</li>
    *   <li>image resources</li>
    * </ul>
    *
@@ -499,25 +502,24 @@ public class LocalFileCache implements ResourceCache<File>
   public File createExportArchive() throws CacheOperationException, ConfigurationException
   {
 
-    // File paths to add to export/upload archive...
-    //   - panel.xml
-    //   - controller.xml
-    //   - panels.obj
-    //   - lircd.conf
-    //   - image resources
-    //   - rules
-
     File panelXMLFile = new File("panel.xml");
     File controllerXMLFile = new File("controller.xml");
     File panelsObjFile = new File("panels.obj");
     File lircdFile = new File("lircd.conf");
     File rulesFile = new File("rules", "modeler_rules.drl");
 
+    File uiXMLFile = new File("ui_state.xml");
+    File buildingXMLFile = new File("building_modeler.xml");
 
     // Collect all the files going into the archive...
 
     Set<File> exportFiles = new HashSet<File>();
     exportFiles.addAll(this.imageFiles);
+    
+    exportFiles.add(uiXMLFile);
+    exportFiles.add(buildingXMLFile);
+    
+    
     exportFiles.add(panelXMLFile);
     exportFiles.add(controllerXMLFile);
 
