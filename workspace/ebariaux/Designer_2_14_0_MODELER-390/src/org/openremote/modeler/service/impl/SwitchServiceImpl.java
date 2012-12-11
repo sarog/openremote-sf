@@ -26,6 +26,7 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SwitchService;
@@ -48,8 +49,11 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    }
 
    @Override
-   public List<Switch> loadAll() {
-      List<Switch> result = userService.getAccount().getSwitches();
+   public List<Switch> loadAll() {     
+     DetachedCriteria criteria = DetachedCriteria.forClass(Switch.class);
+     criteria.add(Restrictions.eq("account", userService.getAccount()));
+     @SuppressWarnings("unchecked")
+    List<Switch> result = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
       if (result == null || result.size() == 0) {
          return new ArrayList<Switch> ();
       }

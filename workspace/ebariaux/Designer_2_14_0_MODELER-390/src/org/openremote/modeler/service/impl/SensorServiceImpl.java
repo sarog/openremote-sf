@@ -63,8 +63,11 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return true;
    }
 
-   public List<Sensor> loadAll(Account account) {
-      List<Sensor> sensors = account.getSensors();
+   @Transactional public List<Sensor> loadAll(Account account) {
+     DetachedCriteria criteria = DetachedCriteria.forClass(Sensor.class);
+     criteria.add(Restrictions.eq("account", account));
+      @SuppressWarnings("unchecked")
+      List<Sensor> sensors = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
       for (Sensor sensor : sensors) {
          if (sensor.getType() == SensorType.CUSTOM) {
             Hibernate.initialize(((CustomSensor) sensor).getStates());

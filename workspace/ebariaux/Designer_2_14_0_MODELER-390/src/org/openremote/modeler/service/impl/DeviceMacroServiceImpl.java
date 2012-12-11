@@ -28,6 +28,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -96,7 +97,10 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * @see org.openremote.modeler.service.DeviceMacroService#loadAll(org.openremote.modeler.domain.Account)
     */
    public List<DeviceMacro> loadAll(Account account) {
-      List<DeviceMacro> list = account.getDeviceMacros();
+     DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacro.class);
+     criteria.add(Restrictions.eq("account", account));
+     @SuppressWarnings("unchecked")
+      List<DeviceMacro> list = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
       for (DeviceMacro deviceMacro : list) {
          Hibernate.initialize(deviceMacro.getDeviceMacroItems());
       }
