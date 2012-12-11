@@ -23,6 +23,7 @@ package org.openremote.modeler.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -65,6 +68,7 @@ import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
@@ -110,20 +114,27 @@ import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.protocol.ProtocolContainer;
-import org.openremote.modeler.server.SensorController;
-import org.openremote.modeler.server.SliderController;
-import org.openremote.modeler.server.SwitchController;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
@@ -132,6 +143,9 @@ import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -155,7 +169,8 @@ public class ResourceServiceImpl implements ResourceService
   private DeviceCommandService deviceCommandService;
 
   private DeviceMacroService deviceMacroService;
-
+  private DeviceService deviceService;
+  
   private SensorService sensorService;
   private SliderService sliderService;
   private SwitchService switchService;
@@ -237,61 +252,131 @@ public class ResourceServiceImpl implements ResourceService
     return lircUrl;
   }
 
-   @Deprecated @Override public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
-//      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-//      if (tmpDir.exists() && tmpDir.isDirectory()) {
-//         try {
-//            FileUtils.deleteDirectory(tmpDir);
-//         } catch (IOException e) {
-//            throw new FileOperationException("Error in deleting temp dir", e);
-//         }
-//      }
-//      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
-//      String dotImportFileContent = "";
-//      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-//      ZipEntry zipEntry;
-//      FileOutputStream fileOutputStream = null;
-//      try {
-//         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-//            if (!zipEntry.isDirectory()) {
-//               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-//                  dotImportFileContent = IOUtils.toString(zipInputStream);
-//               }
-//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-//                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
-//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-//                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
-//               }
-//
-//               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-//                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-//                  FileUtils.touch(file);
-//
-//                  fileOutputStream = new FileOutputStream(file);
-//                  int b;
-//                  while ((b = zipInputStream.read()) != -1) {
-//                     fileOutputStream.write(b);
-//                  }
-//                  fileOutputStream.close();
-//               }
-//            }
-//
-//         }
-//      } catch (IOException e) {
-//         throw new FileOperationException("Error in reading import file from zip", e);
-//      } finally {
-//         try {
-//            zipInputStream.closeEntry();
-//            if (fileOutputStream != null) {
-//               fileOutputStream.close();
-//            }
-//         } catch (IOException e) {
-//            LOGGER.warn("Failed to close import file resources", e);
-//         }
-//
-//      }
-//      return dotImportFileContent;
-     return "";
+   @Deprecated @Override public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+     
+     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
+     
+      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
+      if (tmpDir.exists() && tmpDir.isDirectory()) {
+         try {
+            FileUtils.deleteDirectory(tmpDir);
+         } catch (IOException e) {
+            throw new FileOperationException("Error in deleting temp dir", e);
+         }
+      }
+      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
+      String dotImportFileContent = "";
+      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+      ZipEntry zipEntry;
+      FileOutputStream fileOutputStream = null;
+      try {
+         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            if (!zipEntry.isDirectory()) {
+              if ("building_modeler.xml".equalsIgnoreCase(zipEntry.getName())) {
+                
+                // TODO: try get rid of hibernate extension on save also -> seems to work
+                
+                
+                XStream xstream = new XStream(new StaxDriver());
+                Map<String, Object> map = (Map<String, Object>) xstream.fromXML(zipInputStream);
+                Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
+                
+                List<Device> importedDevices = new ArrayList<Device>();
+                
+                // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
+                for (DeviceDetailsWithChildrenDTO dev : devices) {
+
+                  // The archived graph has DTOReferences with id, as it originally came from objects in DB.
+                  // Must iterate all DTOReferences, replacing ids with dto.
+                  dev.replaceIdWithDTOInReferences();
+
+                  importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+                }
+                
+                Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+                Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+                Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+                Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+                Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+                
+                // Domain objects have been created and saved with a new id
+                // During this process, old id has been saved as transient info
+                // Create lookup map from originalId to new one
+                for (Device dev : importedDevices) {
+                  devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
+                  
+                  for (DeviceCommand dc : dev.getDeviceCommands()) {
+                    commandsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+                  }
+                  for (Sensor s : dev.getSensors()) {
+                    sensorsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+                  }
+                  for (Switch s : dev.getSwitchs()) {
+                    switchesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+                  }
+                  for (Slider s : dev.getSliders()) {
+                    slidersOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+                  }
+                  
+                  importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+                }
+                
+                
+                
+                // TODO: what about macro order ???
+                // If one macro depends on another, the second should be imported first !
+                
+                Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
+                for (MacroDetailsDTO m : macros) {
+                  
+                  // Replace old with new command ids
+                  for (MacroItemDetailsDTO item : m.getItems()) {
+                    item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+                  }
+                  
+                  deviceMacroService.saveNewMacro(m);
+                }
+              }
+
+              /*
+               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
+                  dotImportFileContent = IOUtils.toString(zipInputStream);
+               }
+               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
+                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
+               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
+                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
+               }
+
+               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
+                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
+                  FileUtils.touch(file);
+
+                  fileOutputStream = new FileOutputStream(file);
+                  int b;
+                  while ((b = zipInputStream.read()) != -1) {
+                     fileOutputStream.write(b);
+                  }
+                  fileOutputStream.close();
+               }
+               */
+            }
+
+         }
+      } catch (IOException e) {
+         throw new FileOperationException("Error in reading import file from zip", e);
+      } finally {
+         try {
+            zipInputStream.closeEntry();
+            if (fileOutputStream != null) {
+               fileOutputStream.close();
+            }
+         } catch (IOException e) {
+            serviceLog.warn("Failed to close import file resources", e);
+         }
+
+      }
+     return importedDeviceDTOs;
    }
 
 
@@ -589,7 +674,11 @@ public class ResourceServiceImpl implements ResourceService
     this.deviceMacroService = deviceMacroService;
   }
 
-   public void setSensorService(SensorService sensorService) {
+   public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
+
+  public void setSensorService(SensorService sensorService) {
     this.sensorService = sensorService;
    }
 
@@ -1069,7 +1158,7 @@ public class ResourceServiceImpl implements ResourceService
 
         if (sensor != null)
         {
-          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+          owner.setSensorDTO(sensor.getSensorWithInfoDTO());
         }
 
         owner.setSensor(null);
@@ -1086,7 +1175,7 @@ public class ResourceServiceImpl implements ResourceService
         // We must load slider because referenced sensor / command are not serialized, this reloads from DB
         Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
         if (slider != null) { // Just in case we have a dangling pointer
-          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+          uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
         }
         uiSlider.setSlider(null);
       }
@@ -1096,7 +1185,7 @@ public class ResourceServiceImpl implements ResourceService
       if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
         Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
         if (switchBean != null) { // Just in case we have a dangling pointer
-          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+          uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
         }
         uiSwitch.setSwitchCommand(null);
       }
@@ -1320,7 +1409,7 @@ public class ResourceServiceImpl implements ResourceService
 
       File rulesDir = new File(pathConfig.userFolder(userService.getAccount()), "rules");
       File rulesFile = new File(rulesDir, "modeler_rules.drl");
-     
+
       /*
        * validate and output panel.xml.
        */
@@ -1332,6 +1421,39 @@ public class ResourceServiceImpl implements ResourceService
        * validate and output controller.xml
        */
       try {
+        
+        
+        
+        Map<String, Object> map = new HashMap<String, Object>();
+        Account account = userService.getAccount();
+        map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
+        map.put("macros", deviceMacroService.loadAllMacroDetailsDTOs(account));
+        
+        
+        // TODO
+//        map.put("configuration", controllerConfigService.listAllConfigs());
+        
+        
+        // TODO: add configuration
+        XStream xstream = new XStream(new StaxDriver());
+        /*
+        XStream xstream = new XStream(new StaxDriver() {
+          protected MapperWrapper wrapMapper(final MapperWrapper next) {
+            return new HibernateMapper(next);
+          }
+        });
+        xstream.registerConverter(new HibernateProxyConverter());
+        xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+        xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
+        xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
+        xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
+        */
+        FileWriter fw = new FileWriter(new File(pathConfig.buildingModelerXmlFilePath(userService.getAccount())));
+        xstream.toXML(map, fw);
+        fw.close();
+
+        
+        
          FileUtilsExt.deleteQuietly(panelXMLFile);
          FileUtilsExt.deleteQuietly(controllerXMLFile);
          FileUtilsExt.deleteQuietly(lircdFile);

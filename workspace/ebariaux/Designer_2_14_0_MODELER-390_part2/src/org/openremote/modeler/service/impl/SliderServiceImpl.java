@@ -26,6 +26,7 @@ import java.util.List;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -57,7 +58,10 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
 
    @Override
    public List<Slider> loadAll() {
-      List<Slider> result = userService.getAccount().getSliders();
+     DetachedCriteria criteria = DetachedCriteria.forClass(Slider.class);
+     criteria.add(Restrictions.eq("account", userService.getAccount()));
+     @SuppressWarnings("unchecked")
+    List<Slider> result = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
       if (result == null || result.size() == 0) {
          return new ArrayList<Slider> ();
       }

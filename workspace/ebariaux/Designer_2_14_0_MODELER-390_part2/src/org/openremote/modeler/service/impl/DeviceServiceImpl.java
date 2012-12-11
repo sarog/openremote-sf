@@ -20,8 +20,11 @@
  */
 package org.openremote.modeler.service.impl;
 
-import java.util.List;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
@@ -31,14 +34,29 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.State;
+import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.exception.PersistenceException;
+import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
-import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.logging.AdministratorAlert;
-import org.openremote.modeler.exception.PersistenceException;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.utils.dtoconverter.DeviceDTOConverter;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -121,9 +139,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public List<Device> loadAll(Account account) {
-      List<Device> devices = account.getDevices();
-      return devices;
+   @SuppressWarnings("unchecked")
+  @Transactional public List<Device> loadAll(Account account) {
+     DetachedCriteria criteria = DetachedCriteria.forClass(Device.class);
+     criteria.add(Restrictions.eq("account", account));
+      return genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
    }
 
    /**
@@ -187,7 +207,143 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override   
+   public ArrayList<DeviceDetailsDTO> loadAllDeviceDetailsDTOs(Account account) {
+     List<Device> devices = loadAll(account);
+     ArrayList<DeviceDetailsDTO> dtos = new ArrayList<DeviceDetailsDTO>();
+     for (Device device : devices) {
+       dtos.add(device.getDeviceDetailsDTO());
+     }
+     return dtos;
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   @Override   
+   public ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account) {
+     List<Device> devices = loadAll(account);
+     ArrayList<DeviceDetailsWithChildrenDTO> dtos = new ArrayList<DeviceDetailsWithChildrenDTO>();
+     for (Device d : devices) {
+       dtos.add(DeviceDTOConverter.createDeviceDetailsWithChildrenDTO(d));
+     }
+     return dtos;
+   }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
+     Device device = loadById(oid);
+     return (device != null)?device.getDeviceWithChildrenDTO():null;
+   }
 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
+     Device device = loadById(oid);
+     return (device != null)?device.getDeviceWithCommandChildrenDTO():null;
+   }
+ 
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+  public Device saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
+    Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
+    deviceBean.setAccount(account);
+    deviceBean.storeTransient(ORIGINAL_OID_KEY, device.getOid());
+
+    Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
+    if (commands != null) {
+      for (DeviceCommandDetailsDTO command : commands) {
+        DeviceCommand dc = new DeviceCommand();
+        dc.setDevice(deviceBean);
+  
+        dc.setName(command.getName());
+        Protocol protocol = new Protocol();
+        protocol.setDeviceCommand(dc);
+        dc.setProtocol(protocol);
+        protocol.setType(command.getProtocolType());
+        dc.storeTransient(ORIGINAL_OID_KEY, command.getOid());
+        for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
+          protocol.addProtocolAttribute(e.getKey(), e.getValue());
+        }
+        commandBeans.put(command, dc);
+      }
+    }
+    deviceBean.setDeviceCommands(new ArrayList<DeviceCommand>(commandBeans.values()));
+
+    Map<SensorDetailsDTO, Sensor> sensorBeans = new HashMap<SensorDetailsDTO, Sensor>();
+    if (sensors != null) {
+      for (SensorDetailsDTO sensorDTO : sensors) {
+        Sensor sensor = null;
+        if (sensorDTO.getType() == SensorType.RANGE) {
+          sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+        } else if (sensorDTO.getType() == SensorType.CUSTOM) {
+          CustomSensor customSensor = new CustomSensor();
+          for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
+            customSensor.addState(new State(e.getKey(), e.getValue()));
+          }
+          sensor = customSensor;
+        } else {
+          sensor = new Sensor(sensorDTO.getType());
+        }
+  
+        sensor.setDevice(deviceBean);
+        sensor.setName(sensorDTO.getName());
+        sensor.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, sensorDTO.getOid());
+  
+        DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
+        SensorCommandRef commandRef = new SensorCommandRef();
+        commandRef.setSensor(sensor);
+        commandRef.setDeviceCommand(deviceCommand);
+        sensor.setSensorCommandRef(commandRef);
+        sensorBeans.put(sensorDTO, sensor);
+      }
+    }
+    deviceBean.setSensors(new ArrayList<Sensor>(sensorBeans.values()));
+
+    List<Switch> switchBeans = new ArrayList<Switch>();
+    if (switches != null) {
+      for (SwitchDetailsDTO switchDTO : switches) {
+        Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
+        DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
+        DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
+  
+        Switch sw = new Switch(onCommand, offCommand, sensor);
+        sw.setName(switchDTO.getName());
+        sw.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, switchDTO.getOid());
+        switchBeans.add(sw);
+      }
+    }
+    deviceBean.setSwitchs(switchBeans);
+
+    List<Slider> sliderBeans = new ArrayList<Slider>();
+    if (sliders != null) {
+      for (SliderDetailsDTO sliderDTO : sliders) {
+        Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
+        DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
+  
+        Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+        slider.setAccount(account);
+        sensor.storeTransient(ORIGINAL_OID_KEY, sliderDTO.getOid());
+        sliderBeans.add(slider);
+      }
+    }
+    deviceBean.setSliders(sliderBeans);
+
+    saveDevice(deviceBean);
+    
+    return deviceBean;
+  }   
 
 }

@@ -20,11 +20,14 @@
 package org.openremote.modeler.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
 /**
  * Provides functions to operate {@link DeviceMacro}.
@@ -92,4 +95,25 @@ public interface DeviceMacroService {
     List<DeviceMacroItem> loadByDeviceMacro(long id);
     
     List<DeviceMacro> loadSameMacro(DeviceMacro macro);
+
+    /**
+     * Loads all macros for a given account and creates DTOs with all information on the macros and their items.
+     * 
+     * @param account the account owning the devices to load
+     * @return a list of DTOs with information about the macros and their items
+     */
+    ArrayList<MacroDetailsDTO> loadAllMacroDetailsDTOs(Account account);
+
+    /**
+     * Loads a macro by id and created a DTO will all information on the macro and its items.
+     * 
+     * @param id id of the macro to load
+     * @return a DTO with information about the macro and its items
+     */
+    MacroDetailsDTO loadMacroDetails(long id);    
+
+    MacroDTO saveNewMacro(MacroDetailsDTO macro);
+
+    MacroDTO updateMacroWithDTO(MacroDetailsDTO macro);
+
 }

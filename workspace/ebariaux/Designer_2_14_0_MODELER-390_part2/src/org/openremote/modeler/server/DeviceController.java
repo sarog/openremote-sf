@@ -100,43 +100,17 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      return dtos;
   }
 
+   @Override
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
-     Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
-     for (Sensor sensor : device.getSensors()) {
-       sensorDTOs.add(SensorController.createSensorDTO(sensor));
-     }
-     deviceDTO.setSensors(sensorDTOs);
-     ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
-     for (Switch s : device.getSwitchs()) {
-       switchDTOs.add(SwitchController.createSwitchDTO(s));
-     }
-     deviceDTO.setSwitches(switchDTOs);
-     ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
-     for (Slider s : device.getSliders()) {
-       sliderDTOs.add(SliderController.createSliderDTO(s));
-     }
-     deviceDTO.setSliders(sliderDTOs);
-     return deviceDTO;
+     return deviceService.loadDeviceWithChildrenDTOById(oid);
    }
-
-   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
-     Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     return deviceDTO;
-   }
-
-  protected ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
-    ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
-     for (DeviceCommand dc : deviceCommands) {
-       dcDTOs.add(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-     }
-    return dcDTOs;
-  }
    
+   @Override
+   public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
+     return deviceService.loadDeviceWithChildrenDTOById(oid);
+   }
+
+   @Override
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
@@ -153,81 +127,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    @Override
    public DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors,
                                          ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
-     Account account = userService.getAccount();
-     
-     Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
-     deviceBean.setAccount(account);
-
-     Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
-     for (DeviceCommandDetailsDTO command : commands) {
-       DeviceCommand dc = new DeviceCommand();
-       dc.setDevice(deviceBean);
-       
-       dc.setName(command.getName());
-       Protocol protocol = new Protocol();
-       protocol.setDeviceCommand(dc);
-       dc.setProtocol(protocol);
-       protocol.setType(command.getProtocolType());
-       for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
-         protocol.addProtocolAttribute(e.getKey(), e.getValue());
-       }
-       commandBeans.put(command, dc);
-     }
-     deviceBean.setDeviceCommands(new ArrayList<DeviceCommand>(commandBeans.values()));
-
-     Map<SensorDetailsDTO, Sensor> sensorBeans = new HashMap<SensorDetailsDTO, Sensor>();
-     for (SensorDetailsDTO sensorDTO : sensors) {
-       Sensor sensor = null;
-       if (sensorDTO.getType() == SensorType.RANGE) {
-         sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
-       } else if (sensorDTO.getType() == SensorType.CUSTOM) {
-         CustomSensor customSensor = new CustomSensor();
-         for (Map.Entry<String,String> e : sensorDTO.getStates().entrySet()) {
-           customSensor.addState(new State(e.getKey(), e.getValue()));
-         }
-         sensor = customSensor;
-       } else {
-         sensor = new Sensor(sensorDTO.getType());
-       }
-       
-       sensor.setDevice(deviceBean);
-       sensor.setName(sensorDTO.getName());
-       sensor.setAccount(account);
-       
-       DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
-       SensorCommandRef commandRef = new SensorCommandRef();
-       commandRef.setSensor(sensor);
-       commandRef.setDeviceCommand(deviceCommand);
-       sensor.setSensorCommandRef(commandRef);
-       sensorBeans.put(sensorDTO, sensor);
-     }
-     deviceBean.setSensors(new ArrayList<Sensor>(sensorBeans.values()));
-     
-     List<Switch> switchBeans = new ArrayList<Switch>();
-     for (SwitchDetailsDTO switchDTO : switches) {
-       Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
-       DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
-       DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
-       
-       Switch sw = new Switch(onCommand, offCommand, sensor);
-       sw.setName(switchDTO.getName());
-       sw.setAccount(account);
-       switchBeans.add(sw);
-     }
-     deviceBean.setSwitchs(switchBeans);
-     
-     List<Slider> sliderBeans = new ArrayList<Slider>();
-     for (SliderDetailsDTO sliderDTO : sliders) {
-       Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
-       DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
-
-       Slider slider = new Slider(sliderDTO.getName(), command, sensor);
-       slider.setAccount(account);
-       sliderBeans.add(slider);
-     }
-     deviceBean.setSliders(sliderBeans);
-     
-     deviceService.saveDevice(deviceBean);
+     Device deviceBean = deviceService.saveNewDeviceWithChildren(userService.getAccount(), device, commands, sensors, switches, sliders);
      return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
    }
 

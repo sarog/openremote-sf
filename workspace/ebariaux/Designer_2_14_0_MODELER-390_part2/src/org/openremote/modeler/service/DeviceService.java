@@ -19,16 +19,27 @@
 */
 package org.openremote.modeler.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The Interface DeviceService.
  */
 public interface DeviceService {
    
+  public static String ORIGINAL_OID_KEY = "OriginalOid";
+  
    /**
     * Save device.
     * 
@@ -79,4 +90,33 @@ public interface DeviceService {
    List<Device> loadAll(Account account);
    
    List<Device> loadSameDevices(Device device);
+   
+   ArrayList<DeviceDetailsDTO> loadAllDeviceDetailsDTOs(Account account);
+
+   /**
+    * Loads a device by id and creates a DTO with all information on the device and its related objects (commands, sensors, switches and sliders).
+    * 
+    * @param oid id of the device to load
+    * @return a DTO with information about the device and its related objects
+    */
+   DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid);
+
+   /**
+    * Loads a device by id and creates a DTO with all information on the device and its associated commands.
+    * 
+    * @param oid id of the device to load
+    * @return a DTO with information about the device and its commands
+    */
+   DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid);
+
+   /**
+    * Loads all devices for a given account and creates DTOs with all information on the devices and their related objects (commands, sensors, switches and sliders).
+    * 
+    * @param account the account owning the devices to load
+    * @return a list of DTOs with information about the devices and their commands
+    */
+   ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account);
+
+   Device saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders);
+
 }

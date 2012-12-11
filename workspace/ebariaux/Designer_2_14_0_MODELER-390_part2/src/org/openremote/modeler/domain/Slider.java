@@ -26,6 +26,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+
 import flexjson.JSON;
 
 /**
@@ -175,4 +181,33 @@ public class Slider extends BusinessEntity {
       } else if(other.sliderSensorRef != null) return false;
       return true;
    }
+   
+   @Transient
+   public SliderWithInfoDTO getSliderWithInfoDTO() {
+     return new SliderWithInfoDTO(getOid(), getDisplayName(), (getSetValueCmd() != null) ? getSetValueCmd().getDisplayName() : null, (getSliderSensorRef() != null) ? getSliderSensorRef().getDisplayName() : null,
+             getDevice().getDisplayName());
+   }
+
+   @Transient
+   public SliderDTO getSliderDTO() {
+     SliderDTO sliderDTO = new SliderDTO(getOid(), getDisplayName());
+     if (getSetValueCmd() != null) {
+       DeviceCommand dc = getSetValueCmd().getDeviceCommand();
+       sliderDTO.setCommand(dc.getDeviceCommandDTO());
+     }
+     return sliderDTO;
+   }
+   
+   @Transient
+   public SliderDetailsDTO getSliderDetailsDTO() {
+     SliderDetailsDTO sliderDetailsDTO = null;
+     if (getSetValueCmd() != null) {
+       DeviceCommand command = getSetValueCmd().getDeviceCommand();
+       sliderDetailsDTO = new SliderDetailsDTO(getOid(), getName(), new DTOReference(getSliderSensorRef().getSensor().getOid()), new DTOReference(command.getOid()), command.getDisplayName());
+     } else {
+       sliderDetailsDTO = new SliderDetailsDTO(getOid(), getName(), new DTOReference(getSliderSensorRef().getSensor().getOid()), null, null);
+     }
+     return sliderDetailsDTO;
+   }
+
 }
