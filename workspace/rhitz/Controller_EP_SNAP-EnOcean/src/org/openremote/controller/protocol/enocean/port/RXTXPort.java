@@ -205,7 +205,22 @@ public class RXTXPort implements Port
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
 
-    writerThread = new Thread(new SerialWriter(outputStream, outputQueue));
+    // TODO : OpenRemoteRuntime.createThread
+
+    writerThread = new Thread(new SerialWriter(outputStream, outputQueue), "RXTX port writer");
+    writerThread.setUncaughtExceptionHandler(
+        new Thread.UncaughtExceptionHandler()
+        {
+          @Override public void uncaughtException(Thread t, Throwable e)
+          {
+            log.error(
+                "Thread ''{0}'' terminated with exception : {1}",
+                e, t.getName(), e.getMessage()
+            );
+          }
+        }
+    );
+
     writerThread.start();
   }
 
@@ -320,6 +335,8 @@ public class RXTXPort implements Port
   }
 
 
+  // Nested Classes -------------------------------------------------------------------------------
+
   /**
    * Thread implementation for sending data to the serial port.
    */
@@ -381,7 +398,9 @@ public class RXTXPort implements Port
         }
         catch (IOException e)
         {
-          log.error("Error while writing to serial port : {0}", e, e.getMessage());
+          log.error(
+              "Thread ''{0}'' terminated with exception : {1}",
+              e, Thread.currentThread().getName(), e.getMessage());
 
           break;
         }
@@ -457,7 +476,7 @@ public class RXTXPort implements Port
 
         catch (IOException e)
         {
-          log.error("Error while reading from serial port : {0}", e, e.getMessage());
+          log.error("Error while reading from serial RXTX port : {0}", e, e.getMessage());
         }
       }
     }

@@ -288,8 +288,11 @@ public abstract class AbstractEspComPortAdapter implements EspPort
       return new byte[] {};
     }
 
+    logReceivedData(msg.getContent());
+
     return msg.getContent();
   }
+
 
   // Object Overrides -----------------------------------------------------------------------------
 
@@ -349,6 +352,23 @@ public abstract class AbstractEspComPortAdapter implements EspPort
 
 
   // Private Instance Methods ---------------------------------------------------------------------
+
+  private void logReceivedData(byte[] dataBytes)
+  {
+    if(dataBytes == null)
+    {
+      return;
+    }
+
+    String dataAsString = "";
+
+    for(byte dataByte : dataBytes)
+    {
+      dataAsString = dataAsString + String.format("0x%02X ", dataByte);
+    }
+
+    log.trace("Received serial data from {0} : {1}", this, dataAsString);
+  }
 
   /**
    * Configures the wrapped {@link #port} after translating the configuration in the
