@@ -15,6 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# ============================================================================
+#
+# Modifications added for specific OpenRemote use scenarios. 
+# Copyright 2008-2012 OpenRemote, Inc.
+#
+# ============================================================================
+
+
 # -----------------------------------------------------------------------------
 # Start/Stop Script for the CATALINA Server
 #
@@ -155,13 +163,23 @@ if [ -r "$CATALINA_BASE"/conf/logging.properties ]; then
   LOGGING_CONFIG="-Djava.util.logging.config.file=$CATALINA_BASE/conf/logging.properties"
 fi
 
-# ----- Setup Default OpenRemote Boss Environment -----------------------------
+# ===== OPENREMOTE SETUP ==============================================================
 
 OR_BOSS_NATIVE_LIBRARY_PATH=$CATALINA_BASE/webapps/controller/WEB-INF/lib/native
 JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$OR_BOSS_NATIVE_LIBRARY_PATH"
 
 # For Linux
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$OR_BOSS_NATIVE_LIBRARY_PATH"
+
+# Tomcat console logging
+if [ "$1" = "run" ]; then
+  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=INFO"
+elif [ "$1" = "start" ]; then
+  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=OFF"
+fi
+
+# ======================================================================================
+
 
 
 # ----- Execute The Requested Command -----------------------------------------
