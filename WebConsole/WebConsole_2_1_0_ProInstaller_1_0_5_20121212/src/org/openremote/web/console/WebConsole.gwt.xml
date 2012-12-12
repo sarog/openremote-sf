@@ -1,0 +1,25 @@
+<module rename-to='webconsole'>	
+	<inherits name="com.google.gwt.user.User"/>
+	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
+	<inherits name="com.google.gwt.json.JSON"/>
+	<inherits name="com.google.web.bindery.autobean.AutoBean"/>
+	
+  	<!-- Other module inherits                                      -->
+  	<source path="client"/>
+  	<source path="controller"/>
+  	<source path="entity"/>
+  	<source path="event"/>
+  	<source path="panel"/>
+	<source path="rpc"/>
+  	<source path="screen"/>
+  	<source path="service"/>
+  	<source path="type"/>
+  	<source path="unit"/>
+  	<source path="util"/>
+  	<source path="view"/>
+  	<source path="widget"/>
+  	
+	<entry-point class="org.openremote.web.console.client.WebConsole"/>
+	<!-- <set-property name="user.agent" value="safari" /> -->
+</module>
+
