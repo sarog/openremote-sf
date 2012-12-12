@@ -275,7 +275,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
       // TODO : OpenRemoteRuntime.createThread
 
       readerThread = new Thread(
-          this, "EnOcean ESP port reader"
+          this, "EnOcean serial port reader"
       );
 
       readerThread.setUncaughtExceptionHandler(
@@ -284,8 +284,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
             @Override public void uncaughtException(Thread t, Throwable e)
             {
               log.error(
-                  "Implementation error in ESP port reader : {0}",
-                  e, e.getMessage()
+                  "Thread ''{0}'' terminated with exception : {1}",
+                  e, t.getName(), e.getMessage()
               );
             }
           }
@@ -462,7 +462,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     {
       // TODO : OpenRemoteRuntime.createThread
 
-      Thread t = new Thread(r);
+      Thread t = new Thread(r, "ESP processor listener executor");
 
       t.setUncaughtExceptionHandler(
           new Thread.UncaughtExceptionHandler()
@@ -470,8 +470,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
             @Override public void uncaughtException(Thread t, Throwable e)
             {
               log.error(
-                  "Implementation error in ESP processor listener : {0}",
-                  e, e.getMessage()
+                  "Thread ''{0}'' terminated with exception : {1}",
+                  e, t.getName(), e.getMessage()
               );
             }
           }

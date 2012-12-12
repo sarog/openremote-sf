@@ -114,6 +114,8 @@ public abstract class AbstractConnection<P extends EspPacket, R> implements EnOc
     try
     {
       this.baseID = readBaseID(processor);
+
+      log.info("Received EnOcean gateway base ID : {0}", this.baseID);
     }
 
     catch (InterruptedException e)
