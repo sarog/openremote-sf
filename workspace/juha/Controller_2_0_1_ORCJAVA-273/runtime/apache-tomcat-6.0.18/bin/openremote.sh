@@ -14,15 +14,50 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#
 # ============================================================================
 #
 # Modifications added for specific OpenRemote use scenarios. 
 # Copyright 2008-2012 OpenRemote, Inc.
 #
+# Authors:
+#   Juha Lindfors (juha@openremote.org)
+#
+#
+# Following environment variables are supported to configure logging:
+#
+#   CONTROLLER_CONSOLE_THRESHOLD
+#     
+#     Limits the messages targeted for standard output stream based on log
+#     message level. Valid level values in descending order of importance
+#     are:
+#
+#       1) OFF
+#       2) ERROR
+#       3) WARN or WARNING
+#       4) INFO
+#       5) DEBUG
+#       6) TRACE
+#       7) ALL
+#
+#     Default value for standard output stream is to print messages with
+#     level INFO or above. To set a different level, use for example:
+#
+#       > export CONTROLLER_CONSOLE_THRESHOLD=ERROR
+#
+#     before executing this script.
+#
+#
+#  CONTROLLER_STARTUP_LOG_LEVEL
+#
+#    Sets the level of log messages recorded by controller bootstrap
+#    services. See valid level values in CONTROLLER_CONSOLE_THRESHOLD
+#    above. Notice that individual log targets may use their threshold
+#    settings to override recording these log messages.
+#
 # ============================================================================
-
-
+#
+#
 # -----------------------------------------------------------------------------
 # Start/Stop Script for the CATALINA Server
 #
@@ -163,7 +198,12 @@ if [ -r "$CATALINA_BASE"/conf/logging.properties ]; then
   LOGGING_CONFIG="-Djava.util.logging.config.file=$CATALINA_BASE/conf/logging.properties"
 fi
 
+
+
 # ===== OPENREMOTE SETUP ==============================================================
+
+
+# Set up the directory that contains native libraries for the OpenRemote Controller
 
 OR_BOSS_NATIVE_LIBRARY_PATH=$CATALINA_BASE/webapps/controller/WEB-INF/lib/native
 JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$OR_BOSS_NATIVE_LIBRARY_PATH"
@@ -171,11 +211,112 @@ JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$OR_BOSS_NATIVE_LIBRARY_PATH"
 # For Linux
 LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$OR_BOSS_NATIVE_LIBRARY_PATH"
 
-# Tomcat console logging
+
+# Set Tomcat's console logging to match controller's console output threshold.
+# Note that TC uses JUL log level names where as the controller uses Log4j
+# threshold names so we need to do some mapping of values below...
+
+setTomcatConsoleLevel()
+{
+
+  TOMCAT_SERVER_CONSOLE_LOG_LEVEL="$CONTROLLER_CONSOLE_THRESHOLD";
+
+  case "$CONTROLLER_CONSOLE_THRESHOLD" in
+
+    # Map ERROR to JUL SEVERE (log4j uses ERROR directly)
+
+    ERROR)
+      TOMCAT_SERVER_CONSOLE_LOG_LEVEL=SEVERE ;;
+
+    # Map WARN or WARNING to JUL WARNING and log4j WARN levels...
+
+    WARN | WARNING)
+      TOMCAT_SERVER_CONSOLE_LOG_LEVEL=WARNING
+      CONTROLLER_CONSOLE_THRESHOLD=WARN
+      ;;
+
+    # Map DEBUG to JUL FINE (log4j uses DEBUG directly)...
+
+    DEBUG)
+      TOMCAT_SERVER_CONSOLE_LOG_LEVEL=FINE ;;
+
+    # Map TRACE to JUL FINER (log4j uses TRACE directly)...
+
+    TRACE)
+      TOMCAT_SERVER_CONSOLE_LOG_LEVEL=FINER ;;
+
+  esac
+
+}
+
+
+
+# Passes the log level and threshold options to Java runtime...
+
+setJVMLogOptions()
+{
+
+  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=$TOMCAT_SERVER_CONSOLE_LOG_LEVEL"
+  JAVA_OPTS="$JAVA_OPTS -Dopenremote.controller.startup.log.level=$CONTROLLER_STARTUP_LOG_LEVEL"
+  JAVA_OPTS="$JAVA_OPTS -Dopenremote.controller.console.threshold=$CONTROLLER_CONSOLE_THRESHOLD"
+
+}
+
+# Configure logging when 'blocking' run target is executed (assumes development
+# or troubleshoot environment)...
+
 if [ "$1" = "run" ]; then
-  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=INFO"
+
+  # Default startup log to DEBUG level unless explicitly set with env variable...
+
+  if [ -z "${CONTROLLER_STARTUP_LOG_LEVEL}" ] ; then
+    CONTROLLER_STARTUP_LOG_LEVEL=DEBUG
+  fi  
+
+  # Default standard out (console) output to INFO level unless explicitly set
+  # with env variable...
+
+  if [ -z "${CONTROLLER_CONSOLE_THRESHOLD}" ] ; then
+    CONTROLLER_CONSOLE_THRESHOLD=INFO
+  fi
+
+  setTomcatConsoleLevel
+  setJVMLogOptions
+
+
+  # Let the user know how the logging has been configured...
+
+  echo ""
+  echo "---- Logging ----------------------------------------------------------"
+  echo ""
+  echo " Console (stdout) threshold [CONTROLLER_CONSOLE_THRESHOLD]: $CONTROLLER_CONSOLE_THRESHOLD"
+  echo ""
+  echo " System logs:"
+  echo "" 
+  echo "   - Controller startup log [CONTROLLER_STARTUP_LOG_LEVEL]: $CONTROLLER_STARTUP_LOG_LEVEL"
+  echo ""
+  echo "-----------------------------------------------------------------------"
+
+
 elif [ "$1" = "start" ]; then
-  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=OFF"
+
+  # Default startup log to INFO level unless explicitly set with env variable...
+
+  if [ -z "${CONTROLLER_STARTUP_LOG_LEVEL}" ] ; then
+    CONTROLLER_STARTUP_LOG_LEVEL=INFO
+  fi
+
+  # Default standard out (console) output to OFF unless explicitly set
+  # with env variable...
+
+  if [ -z "${CONTROLLER_CONSOLE_THRESHOLD}" ] ; then
+    CONTROLLER_CONSOLE_THRESHOLD=OFF
+  fi
+
+
+  setTomcatConsoleLevel
+  setJVMLogOptions
+
 fi
 
 # ======================================================================================
@@ -342,3 +483,5 @@ else
   exit 1
 
 fi
+
+
