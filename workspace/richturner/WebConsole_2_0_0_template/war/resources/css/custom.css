@@ -371,7 +371,7 @@ WIDGETS
 	border-radius: 4px;
 }
 
-.sliderComponentTrackMin {
+.sliderComponentTrackMax {
 	border-color: #939393;
 	background: #bcbcbc; /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
@@ -385,7 +385,7 @@ WIDGETS
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcbcbc', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-8 */
 }
 
-.sliderComponentTrackMax {
+.sliderComponentTrackMin {
 	border-color: #0B3C8D;
 	background: #2a5db2; /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
