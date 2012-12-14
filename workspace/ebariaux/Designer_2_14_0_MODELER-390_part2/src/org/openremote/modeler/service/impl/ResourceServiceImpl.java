@@ -252,10 +252,32 @@ public class ResourceServiceImpl implements ResourceService
     return lircUrl;
   }
 
-   @Deprecated @Override public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+     // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
+     // TODO: delete of UI is not working at all
+     // -> client side must be instructed to reload
+     
+     // First part of import is getting rid of what's currently in the account
+
+     // UI
+     initResources(new ArrayList<Panel>(), 0);
+     saveResourcesToBeehive(new ArrayList<Panel>());
+     
+     // Clean images
+     // TODO
+
+     // Remove all building modeler information (except for configuration)
+     Account account = userService.getAccount();
+     List<Device> allDevices = deviceService.loadAll(account);
+     for (Device d : allDevices) {
+       deviceService.deleteDevice(d.getOid());
+     }
+     // TODO: macro
+
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
+     /*
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
@@ -359,7 +381,7 @@ public class ResourceServiceImpl implements ResourceService
                   }
                   fileOutputStream.close();
                }
-               */
+               *//*
             }
 
          }
@@ -376,6 +398,7 @@ public class ResourceServiceImpl implements ResourceService
          }
 
       }
+      */
      return importedDeviceDTOs;
    }
 
