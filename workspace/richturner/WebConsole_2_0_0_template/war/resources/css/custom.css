@@ -337,38 +337,66 @@ WIDGETS
 *************************************************************************/
 
 .sliderComponentThumb {
-	height: 44px;
-	-moz-border-radius: 22px;
-	-webkit-border-radius: 22px;
-	-o-border-radius: 22px;
-	border-radius: 22px;
+	height: 23px;
+	-moz-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	-o-border-radius: 11px;
+	border-radius: 11px;
 	border-width: 2px;
-    background-color: buttonFace;
    	border-style: solid;
-   	border-color: black;
+   	border-color: #f3f3f3;
+	background: #d0d0d0; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2QwZDBkMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmOWY5ZjkiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #d0d0d0 0%, #f9f9f9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d0d0d0), color-stop(100%,#f9f9f9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #d0d0d0 0%,#f9f9f9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #d0d0d0 0%,#f9f9f9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #d0d0d0 0%,#f9f9f9 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #d0d0d0 0%,#f9f9f9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d0d0d0', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-8 */
 }
 
 .sliderComponentTrack {
-	height: 20px;
+	height: 9px;
 	border: none;
 }
 
 .sliderComponentTrackMin, .sliderComponentTrackMax {
-	border-color: black;
 	border-style: solid;
-	border-width: 2px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	-o-border-radius: 10px;
-	border-radius: 10px;
+	border-width: 1px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
 }
 
 .sliderComponentTrackMin {
-	background-color: #4FA800;
+	border-color: #939393;
+	background: #bcbcbc; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JjYmNiYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmOWY5ZjkiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #bcbcbc 0%, #f9f9f9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bcbcbc), color-stop(100%,#f9f9f9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #bcbcbc 0%,#f9f9f9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #bcbcbc 0%,#f9f9f9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #bcbcbc 0%,#f9f9f9 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #bcbcbc 0%,#f9f9f9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcbcbc', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-8 */
 }
 
 .sliderComponentTrackMax {
-	background-color: buttonFace;
+	border-color: #0B3C8D;
+	background: #2a5db2; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJhNWRiMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2ZGE5ZjciIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #2a5db2 0%, #6da9f7 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#2a5db2), color-stop(100%,#6da9f7)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #2a5db2 0%,#6da9f7 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #2a5db2 0%,#6da9f7 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #2a5db2 0%,#6da9f7 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #2a5db2 0%,#6da9f7 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2a5db2', endColorstr='#6da9f7',GradientType=0 ); /* IE6-8 */
 }
 
 
@@ -379,6 +407,7 @@ WIDGETS
 	-o-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	font-size: 16px;
+	background: #dddee1;
 	background-image: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
 	background-image: -ms-linear-gradient(-90deg, #dddee1, #b4b7be);
 	background-image: -o-linear-gradient(-90deg, #dddee1, #b4b7be);
@@ -419,24 +448,24 @@ WIDGETS
 /* Pixel ratio of 1.5 */
 @media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
 	.sliderComponentThumb {
-		height: 66px;
-		-moz-border-radius: 33px;
-		-webkit-border-radius: 33px;
-		-o-border-radius: 33px;
-		border-radius: 33px;
+		height: 35px;
+		-moz-border-radius: 17px;
+		-webkit-border-radius: 17px;
+		-o-border-radius: 17px;
+		border-radius: 17px;
 		border-width: 3px;
 	}
 	
 	.sliderComponentTrack {
-		height: 30px;
+		height: 15px;
 	}
 	
 	.sliderComponentTrackMin, .sliderComponentTrackMax {
-		border-width: 3px;
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
-		-o-border-radius: 15px;
-		border-radius: 15px;
+		border-width: 2px;
+		-moz-border-radius: 7px;
+		-webkit-border-radius: 7px;
+		-o-border-radius: 7px;
+		border-radius: 7px;
 	}
 	
 	.buttonComponent, .switchComponent {
@@ -451,24 +480,24 @@ WIDGETS
 /* Pixel ratio of 2 */
 @media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
 	.sliderComponentThumb {
-		height: 88px;
-		-moz-border-radius: 44px;
-		-webkit-border-radius: 44px;
-		-o-border-radius: 44px;
-		border-radius: 44px;
+		height: 47px;
+		-moz-border-radius: 23px;
+		-webkit-border-radius: 23px;
+		-o-border-radius: 23px;
+		border-radius: 23px;
 		border-width: 4px;
 	}
 	
 	.sliderComponentTrack {
-		height: 40px;
+		height: 19px;
 	}
 	
 	.sliderComponentTrackMin, .sliderComponentTrackMax {
-		border-width: 4px;
-		-moz-border-radius: 20px;
-		-webkit-border-radius: 20px;
-		-o-border-radius: 20px;
-		border-radius: 20px;
+		border-width: 2px;
+		-moz-border-radius: 9px;
+		-webkit-border-radius: 9px;
+		-o-border-radius: 9px;
+		border-radius: 9px;
 	}
 	
 	.buttonComponent, .switchComponent {

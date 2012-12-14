@@ -52,10 +52,10 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	public static final String THUMB_CLASS_NAME = CLASS_NAME + "Thumb";
 	public static final String BAR_CLASS_NAME = CLASS_NAME + "Bar";
 	public static final String TRACK_CLASS_NAME = CLASS_NAME + "Track";
-	public static int TRACK_HEIGHT = 20;
-	public static int TRACK_BORDER = 4;
-	public static int THUMB_SIZE = 30;
-	public static int MIN_THUMB_CLICK_AREA_SIZE = 44;
+	public static int TRACK_HEIGHT = 9;
+	public static int TRACK_BORDER = 0;
+	public static int THUMB_SIZE = 23;
+	public static int MIN_THUMB_CLICK_AREA_SIZE = 43;
 	public static final double MAX_MIN_IMAGE_SIZE_RATIO_LIMIT = 0.2;
 	public static final int MAX_MIN_IMAGE_TRACK_SPACING = 2;
 	private Thumb thumb;
@@ -200,7 +200,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			this.setWidth("100%");
 			this.setHeight("100%");
 			this.setStylePrimaryName(BAR_CLASS_NAME);
-			DOM.setStyleAttribute(element, "overflow", "visible");
+			DOM.setStyleAttribute(element, "overflow", "hidden");
 			BrowserUtils.setStyleAttributeAllBrowsers(element, "boxSizing", "border-box");
 			
 			track = new Grid();
