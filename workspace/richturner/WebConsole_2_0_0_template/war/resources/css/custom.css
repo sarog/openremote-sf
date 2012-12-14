@@ -344,6 +344,7 @@ WIDGETS
 	border-radius: 11px;
 	border-width: 2px;
    	border-style: solid;
+   	box-shadow: 0 0 3px #000;
    	border-color: #f3f3f3;
 	background: #d0d0d0; /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
