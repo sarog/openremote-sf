@@ -333,7 +333,7 @@ img, button {
 	-webkit-user-drag: none;
 }
 
-.consoleWidget * {
+.consoleWidget, .consoleWidget * {
 	-webkit-box-sizing: border-box;
 	-o-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -342,10 +342,9 @@ img, button {
 	cursor: pointer;
 }
 
-.sliderComponent * {
+.sliderComponent, .sliderComponent * {
 	padding: 0;
 	margin: 0;
-	border-spacing: 0;
 	border-spacing: 0;
 }
 
