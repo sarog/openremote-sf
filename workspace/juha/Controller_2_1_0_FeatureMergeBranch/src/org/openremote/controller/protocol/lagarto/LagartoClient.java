@@ -124,10 +124,11 @@ public class LagartoClient extends Thread
       ZMQ.Context context = ZMQ.context(1);
 
       // Subscribe to broadcast address
-      ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
+      ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
       subscriber.connect(this.broadcastAddr);
+      subscriber.subscribe("".getBytes());
 
-      logger.info("ZMQ PULL socket conected to " + this.broadcastAddr);
+      logger.info("ZMQ SUB socket conected to " + this.broadcastAddr);
 
       // Endless loop
       while(true)
