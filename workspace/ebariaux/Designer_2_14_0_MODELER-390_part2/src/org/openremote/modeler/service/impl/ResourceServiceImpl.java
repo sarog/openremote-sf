@@ -1523,7 +1523,8 @@ public class ResourceServiceImpl implements ResourceService
       ObjectOutputStream oos = null;
       try {
          FileUtilsExt.deleteQuietly(panelsObjFile);
-         if (panels == null || panels.size() < 1) {
+         // EBR - MODELER-390 : why must there be at least 1 panel ????
+         if (panels == null /*|| panels.size() < 1*/) {
             return;
          }
          oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
