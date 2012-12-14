@@ -284,7 +284,6 @@ public class ResourceServiceImpl implements ResourceService
 
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
-     /*
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
@@ -388,7 +387,7 @@ public class ResourceServiceImpl implements ResourceService
                   }
                   fileOutputStream.close();
                }
-               *//*
+               */
             }
 
          }
@@ -405,7 +404,6 @@ public class ResourceServiceImpl implements ResourceService
          }
 
       }
-      */
      return importedDeviceDTOs;
    }
 
@@ -1451,9 +1449,6 @@ public class ResourceServiceImpl implements ResourceService
        * validate and output controller.xml
        */
       try {
-        
-        
-        
         Map<String, Object> map = new HashMap<String, Object>();
         Account account = userService.getAccount();
         map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
@@ -1481,6 +1476,8 @@ public class ResourceServiceImpl implements ResourceService
         FileWriter fw = new FileWriter(new File(pathConfig.buildingModelerXmlFilePath(userService.getAccount())));
         xstream.toXML(map, fw);
         fw.close();
+        
+        
 
         
         
