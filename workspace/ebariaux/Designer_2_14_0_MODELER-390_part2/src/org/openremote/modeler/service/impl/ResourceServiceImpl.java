@@ -145,7 +145,14 @@ import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSetConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -1535,6 +1542,40 @@ public class ResourceServiceImpl implements ResourceService
             serviceLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
          }
       }
+      
+      
+      
+      // MODELER-390 also write UI XML as newer format is read in priority to serialized format
+      // Note this is a copy of code from DesignerState.generateXMLUiState method
+      // TO BE CLEANED
+      
+      XStream xstream = new XStream(new StaxDriver() {
+        protected MapperWrapper wrapMapper(final MapperWrapper next) {
+          return new HibernateMapper(next);
+        }
+      });
+      xstream.registerConverter(new HibernateProxyConverter());
+      xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+      xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
+      xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
+      xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
+      
+      xstream.alias("panel", Panel.class);
+      xstream.alias("group", GroupRef.class);
+      xstream.alias("screenPair", ScreenPairRef.class);
+      xstream.alias("absolute", Absolute.class);
+      FileWriter fw;
+      try {
+        fw = new FileWriter(new File(pathConfig.getXMLUIFile(userService.getAccount())));
+        xstream.toXML(new PanelsAndMaxOid(panels, maxOid), fw);
+        fw.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      
+      
    }
 
 
