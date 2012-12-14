@@ -144,68 +144,73 @@ public class ApplicationView implements View {
             if (authority != null) {
                that.authority = authority;
                
-               UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
-                 @Override
-                 public void onSuccess(Collection<Panel> panels) {                   
-                    if (panels.size() > 0) {
-                       initModelDataBase(panels);
-                       eventBus.fireEvent(new ScreenTableLoadedEvent());
-                    }
-                    UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
-                       @Override
-                       public void onSuccess(Long maxID) {
-                          if (maxID > 0) {              // set the layout component's max id after refresh page.
-                             IDUtil.setCurrentID(maxID.longValue());
-                          }
-                          createNorth();
-                          createCenter(authority);
-                          show();
-                          uiDesignerView.getProfilePanel().setInitialized(true);
-                       }                       
-                    });
-                 }
-                 
-                 @Override
-                 public void onFailure(Throwable caught) {
-                    if (caught instanceof UIRestoreException) {
-                      uiDesignerView.getProfilePanel().setInitialized(true);
-                    }
-                    super.onFailure(caught);
-                    super.checkTimeout(caught);
-                 }
-
-                 private void initModelDataBase(Collection<Panel> panels) {
-                    BeanModelDataBase.panelTable.clear();
-                    BeanModelDataBase.groupTable.clear();
-                    BeanModelDataBase.screenTable.clear();
-                    Set<Group> groups = new LinkedHashSet<Group>();
-                    Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
-                    for (Panel panel : panels) {
-                       List<GroupRef> groupRefs = panel.getGroupRefs();
-                       for (GroupRef groupRef : groupRefs) {
-                          groups.add(groupRef.getGroup());
-                       }
-                       BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-                    }
-                    
-                    for (Group group : groups) {
-                       List<ScreenPairRef> screenRefs = group.getScreenRefs();
-                       for (ScreenPairRef screenRef : screenRefs) {
-                          screens.add(screenRef.getScreen());
-                          BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
-                       }
-                       BeanModelDataBase.groupTable.insert(group.getBeanModel());
-                    }
-                 }
-              });
+               loadPanelsFromSession(authority, true);
             } else {
                Window.open("login.jsp", "_self", null);
             }
          }
-
       });
    }
 
+    protected void loadPanelsFromSession(final Authority authority, final boolean createUI) {
+      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
+         @Override
+         public void onSuccess(Collection<Panel> panels) {                   
+            if (panels.size() > 0) {
+               initModelDataBase(panels);
+               eventBus.fireEvent(new ScreenTableLoadedEvent());
+            }
+            UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+               @Override
+               public void onSuccess(Long maxID) {
+                  if (maxID > 0) {              // set the layout component's max id after refresh page.
+                     IDUtil.setCurrentID(maxID.longValue());
+                  }
+                  if (createUI) {
+                    createNorth();
+                    createCenter(authority);
+                    show();
+                    uiDesignerView.getProfilePanel().setInitialized(true);
+                  }
+               }                       
+            });
+         }
+         
+         @Override
+         public void onFailure(Throwable caught) {
+            if (caught instanceof UIRestoreException) {
+              uiDesignerView.getProfilePanel().setInitialized(true);
+            }
+            super.onFailure(caught);
+            super.checkTimeout(caught);
+         }
+
+         private void initModelDataBase(Collection<Panel> panels) {
+            BeanModelDataBase.panelTable.clear();
+            BeanModelDataBase.groupTable.clear();
+            BeanModelDataBase.screenTable.clear();
+            Set<Group> groups = new LinkedHashSet<Group>();
+            Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
+            for (Panel panel : panels) {
+               List<GroupRef> groupRefs = panel.getGroupRefs();
+               for (GroupRef groupRef : groupRefs) {
+                  groups.add(groupRef.getGroup());
+               }
+               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
+            }
+            
+            for (Group group : groups) {
+               List<ScreenPairRef> screenRefs = group.getScreenRefs();
+               for (ScreenPairRef screenRef : screenRefs) {
+                  screens.add(screenRef.getScreen());
+                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
+               }
+               BeanModelDataBase.groupTable.insert(group.getBeanModel());
+            }
+         }
+      });
+    }
+    
    /**
     * Add the viewport into rootPanel and show it.
     */
@@ -440,6 +445,8 @@ public class ApplicationView implements View {
                deviceDTOs.add(deviceDTO);
              }
              eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
+
+             loadPanelsFromSession(authority, false);
 
              importWindow.hide();
            }
