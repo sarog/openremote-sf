@@ -249,6 +249,23 @@ setTomcatConsoleLevel()
 
 }
 
+printTomcatEnvVariables()
+{
+  # only output this if we have a TTY
+  if [ $have_tty -eq 1 ]; then
+
+    echo "Using CATALINA_BASE:   $CATALINA_BASE"
+    echo "Using CATALINA_HOME:   $CATALINA_HOME"
+    echo "Using CATALINA_TMPDIR: $CATALINA_TMPDIR"
+
+    if [ "$1" = "debug" -o "$1" = "javac" ] ; then
+      echo "Using JAVA_HOME:       $JAVA_HOME"
+    else
+      echo "Using JRE_HOME:       $JRE_HOME"
+    fi
+  fi
+}
+
 
 
 # Passes the log level and threshold options to Java runtime...
@@ -262,10 +279,23 @@ setJVMLogOptions()
 
 }
 
-# Configure logging when 'blocking' run target is executed (assumes development
-# or troubleshoot environment)...
+
+
+# Compile all tomcat related command line parameters...
+
+TOMCAT_EXEC_PARAMS="$LOGGING_CONFIG $CATALINA_OPTS \
+                    -classpath $CLASSPATH \
+                    -Dcatalina.base=$CATALINA_BASE \
+                    -Dcatalina.home=$CATALINA_HOME \
+                    -Djava.io.tmpdir=$CATALINA_TMPDIR"
+
+
+# Execute OpenRemote 'run' target...
 
 if [ "$1" = "run" ]; then
+
+  # Configure logging when 'blocking' run target is executed (assumes development
+  # or troubleshoot environment)...
 
   # Default startup log to DEBUG level unless explicitly set with env variable...
 
@@ -280,9 +310,12 @@ if [ "$1" = "run" ]; then
     CONTROLLER_CONSOLE_THRESHOLD=INFO
   fi
 
+  # set Tomcat's console logging level to match controller console logging level,
+  # pass log options to JVM and print the env variable values...
+
   setTomcatConsoleLevel
   setJVMLogOptions
-
+  printTomcatEnvVariables
 
   # Let the user know how the logging has been configured...
 
@@ -292,11 +325,25 @@ if [ "$1" = "run" ]; then
   echo " Console (stdout) threshold [CONTROLLER_CONSOLE_THRESHOLD]: $CONTROLLER_CONSOLE_THRESHOLD"
   echo ""
   echo " System logs:"
-  echo "" 
+  echo ""
   echo "   - Controller startup log [CONTROLLER_STARTUP_LOG_LEVEL]: $CONTROLLER_STARTUP_LOG_LEVEL"
+  echo "     "
   echo ""
   echo "-----------------------------------------------------------------------"
 
+  # shift out the first param -- the Tomcat bootstrap class only uses 'start' -- other params
+  # after 'run' are added as arguments to Bootstrap
+
+  shift
+
+  # compile the command line to execute...
+
+  EXEC="$_RUNJAVA $JAVA_OPTS $TOMCAT_EXEC_PARAMS org.apache.catalina.startup.Bootstrap $@ start"
+
+  exec $EXEC
+
+
+# Execute OpenRemote 'start' target...
 
 elif [ "$1" = "start" ]; then
 
@@ -314,126 +361,30 @@ elif [ "$1" = "start" ]; then
   fi
 
 
+  # set Tomcat's console logging level to match controller console logging level,
+  # pass log options to JVM and print the env variable values...
+
   setTomcatConsoleLevel
   setJVMLogOptions
-
-fi
-
-# ======================================================================================
+  printTomcatEnvVariables
 
 
-
-# ----- Execute The Requested Command -----------------------------------------
-
-# Bugzilla 37848: only output this if we have a TTY
-if [ $have_tty -eq 1 ]; then
-  echo "Using CATALINA_BASE:   $CATALINA_BASE"
-  echo "Using CATALINA_HOME:   $CATALINA_HOME"
-  echo "Using CATALINA_TMPDIR: $CATALINA_TMPDIR"
-  if [ "$1" = "debug" -o "$1" = "javac" ] ; then
-    echo "Using JAVA_HOME:       $JAVA_HOME"
-  else
-    echo "Using JRE_HOME:       $JRE_HOME"
-  fi
-fi
-
-if [ "$1" = "jpda" ] ; then
-  if [ -z "$JPDA_TRANSPORT" ]; then
-    JPDA_TRANSPORT="dt_socket"
-  fi
-  if [ -z "$JPDA_ADDRESS" ]; then
-    JPDA_ADDRESS="8000"
-  fi
-  if [ -z "$JPDA_SUSPEND" ]; then
-    JPDA_SUSPEND="n"
-  fi
-  if [ -z "$JPDA_OPTS" ]; then
-    JPDA_OPTS="-agentlib:jdwp=transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=$JPDA_SUSPEND"
-  fi
-  CATALINA_OPTS="$CATALINA_OPTS $JPDA_OPTS"
-  shift
-fi
-
-if [ "$1" = "debug" ] ; then
-  shift
-  if [ "$1" = "-security" ] ; then
-    echo "Using Security Manager"
-    shift
-    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -sourcepath "$CATALINA_HOME"/../../java \
-      -Djava.security.manager \
-      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
-  else
-    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -sourcepath "$CATALINA_HOME"/../../java \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
-  fi
-
-elif [ "$1" = "run" ]; then
+  # shift out the first param -- the Tomcat bootstrap class only uses 'start' -- other params
+  # after 'run' are added as arguments to Bootstrap
 
   shift
-  if [ "$1" = "-security" ] ; then
-    echo "Using Security Manager"
-    shift
-    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -Djava.security.manager \
-      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
-  else
-    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
-  fi
 
-elif [ "$1" = "start" ] ; then
+  # compile the command line to execute...
 
-  shift
-  touch "$CATALINA_BASE"/logs/catalina.out
-  if [ "$1" = "-security" ] ; then
-    echo "Using Security Manager"
-    shift
-    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -Djava.security.manager \
-      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start \
-      >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+  EXEC="$_RUNJAVA $JAVA_OPTS $TOMCAT_EXEC_PARAMS org.apache.catalina.startup.Bootstrap $@ start"
 
-      if [ ! -z "$CATALINA_PID" ]; then
-        echo $! > $CATALINA_PID
-      fi
-  else
-    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start \
-      >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+  # Send standard error stream to standard out, direct standard out to a file, limit std out
+  # file to first 50000 characters. Note that the redirect will automatically switch to a
+  # buffered mode so stdout will appear in chunks, size of which is defined by the operating
+  # system. For more detailed handling of std output, tools such as logrotate can be used.
 
-      if [ ! -z "$CATALINA_PID" ]; then
-        echo $! > $CATALINA_PID
-      fi
-  fi
+  exec $EXEC | head -c 50000 >> $CATALINA_BASE/logs/container/stderrout.log 2>&1 &
+
 
 elif [ "$1" = "stop" ] ; then
 
@@ -460,28 +411,188 @@ elif [ "$1" = "stop" ] ; then
     fi
   fi
 
-elif [ "$1" = "version" ] ; then
-
-    "$_RUNJAVA"   \
-      -classpath "$CATALINA_HOME/lib/catalina.jar" \
-      org.apache.catalina.util.ServerInfo
-
 else
 
   echo "Usage: openremote.sh ( commands ... )"
   echo "commands:"
-#  echo "  debug             Start Catalina in a debugger"
-#  echo "  debug -security   Debug Catalina with a security manager"
-#  echo "  jpda start        Start Catalina under JPDA debugger"
-  echo "  run               Start OpenRemote Controller in the current window"
-#  echo "  run -security     Start in the current window with security manager"
-  echo "  start             Start OpenRemote Controller as a background process"
-#  echo "  start -security   Start in a separate window with security manager"
-  echo "  stop              Stop OpenRemote Controller"
-  echo "  stop -force       Stop OpenRemote Controller (followed by kill -KILL)"
-  echo "  version           Runtime server information"
+  echo "  run"
+  echo "       Start OpenRemote Controller in development mode in the current window"
+  echo ""
+  echo "  start"
+  echo "       Start OpenRemote Controller as a background process"
+  echo ""
+  echo "  stop"
+  echo "       Stop OpenRemote Controller"
+  echo ""
+  echo "  stop -force"
+  echo "       Stop OpenRemote Controller (followed by kill -KILL)"
   exit 1
 
 fi
+
+# ======================================================================================
+
+
+
+# ----- Execute The Requested Command -----------------------------------------
+#
+# Bugzilla 37848: only output this if we have a TTY
+#if [ $have_tty -eq 1 ]; then
+#  echo "Using CATALINA_BASE:   $CATALINA_BASE"
+#  echo "Using CATALINA_HOME:   $CATALINA_HOME"
+#  echo "Using CATALINA_TMPDIR: $CATALINA_TMPDIR"
+#  if [ "$1" = "debug" -o "$1" = "javac" ] ; then
+#    echo "Using JAVA_HOME:       $JAVA_HOME"
+#  else
+#    echo "Using JRE_HOME:       $JRE_HOME"
+#  fi
+#fi
+#
+#if [ "$1" = "jpda" ] ; then
+#  if [ -z "$JPDA_TRANSPORT" ]; then
+#    JPDA_TRANSPORT="dt_socket"
+#  fi
+#  if [ -z "$JPDA_ADDRESS" ]; then
+#    JPDA_ADDRESS="8000"
+#  fi
+#  if [ -z "$JPDA_SUSPEND" ]; then
+#    JPDA_SUSPEND="n"
+#  fi
+#  if [ -z "$JPDA_OPTS" ]; then
+#    JPDA_OPTS="-agentlib:jdwp=transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=$JPDA_SUSPEND"
+#  fi
+#  CATALINA_OPTS="$CATALINA_OPTS $JPDA_OPTS"
+#  shift
+#fi
+#
+#if [ "$1" = "debug" ] ; then
+#  shift
+#  if [ "$1" = "-security" ] ; then
+#    echo "Using Security Manager"
+#    shift
+#    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -sourcepath "$CATALINA_HOME"/../../java \
+#      -Djava.security.manager \
+#      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start
+#  else
+#    exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -sourcepath "$CATALINA_HOME"/../../java \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start
+#  fi
+#
+#elif [ "$1" = "run" ]; then
+#
+#  shift
+#  if [ "$1" = "-security" ] ; then
+#    echo "Using Security Manager"
+#    shift
+#    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -Djava.security.manager \
+#      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start
+#  else
+#    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start
+#  fi
+#
+#elif [ "$1" = "start" ] ; then
+#
+#  shift
+#  touch "$CATALINA_BASE"/logs/catalina.out
+#  if [ "$1" = "-security" ] ; then
+#    echo "Using Security Manager"
+#    shift
+#    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -Djava.security.manager \
+#      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start \
+#      |head -c 500 >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+#
+#      if [ ! -z "$CATALINA_PID" ]; then
+#        echo $! > $CATALINA_PID
+#      fi
+#  else
+#    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
+#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#      -Dcatalina.base="$CATALINA_BASE" \
+#      -Dcatalina.home="$CATALINA_HOME" \
+#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#      org.apache.catalina.startup.Bootstrap "$@" start \
+#      |head -c 500 >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+#
+#      if [ ! -z "$CATALINA_PID" ]; then
+#        echo $! > $CATALINA_PID
+#      fi
+#  fi
+#
+#if [ "$1" = "stop" ] ; then
+#
+#  shift
+#  FORCE=0
+#  if [ "$1" = "-force" ]; then
+#    shift
+#    FORCE=1
+#  fi
+#
+#  "$_RUNJAVA" $JAVA_OPTS \
+#    -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+#    -Dcatalina.base="$CATALINA_BASE" \
+#    -Dcatalina.home="$CATALINA_HOME" \
+#    -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+#    org.apache.catalina.startup.Bootstrap "$@" stop
+#
+#  if [ $FORCE -eq 1 ]; then
+#    if [ ! -z "$CATALINA_PID" ]; then
+#       echo "Killing: `cat $CATALINA_PID`"
+#       kill -9 `cat $CATALINA_PID`
+#    else
+#       echo "Kill failed: \$CATALINA_PID not set"
+#    fi
+#  fi
+#
+#elif [ "$1" = "version" ] ; then
+#
+#    "$_RUNJAVA"   \
+#      -classpath "$CATALINA_HOME/lib/catalina.jar" \
+#      org.apache.catalina.util.ServerInfo
+#
+#else
+#
+#  echo "Usage: openremote.sh ( commands ... )"
+#  echo "commands:"
+#  echo "  debug             Start Catalina in a debugger"
+#  echo "  debug -security   Debug Catalina with a security manager"
+#  echo "  jpda start        Start Catalina under JPDA debugger"
+#  echo "  run               Start OpenRemote Controller in the current window"
+#  echo "  run -security     Start in the current window with security manager"
+#  echo "  start             Start OpenRemote Controller as a background process"
+#  echo "  start -security   Start in a separate window with security manager"
+#  echo "  stop              Stop OpenRemote Controller"
+#  echo "  stop -force       Stop OpenRemote Controller (followed by kill -KILL)"
+#  echo "  version           Runtime server information"
+#  exit 1
+#
+#fi
 
 
