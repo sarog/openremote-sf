@@ -398,7 +398,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the relative layout
    */
   private void createClearImageCacheButton() {
-    Button clearImageCacheButton = (Button) findViewById(R.id.clear_image_cache_button);
+    Button clearImageCacheButton = (Button) findViewById(R.id.button_clear_image_cache);
     
     clearImageCacheButton.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
@@ -692,8 +692,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         	}
           
           Log.i(TAG,"result.get(i): "+result.get(i) );
-          Toast toast=Toast.makeText(getApplicationContext(), "check your list view "+result.get(i), 1);
-        		  toast.show();
         }
         if (length > 0) {
         	//customAndAutoListView.setItemChecked(0, true);

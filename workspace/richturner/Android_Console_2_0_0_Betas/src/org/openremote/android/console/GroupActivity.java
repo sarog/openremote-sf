@@ -109,7 +109,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-
   
       // Only hide the title bar if we are not on Android 3.0, as all of the current
       // Android 3.0 devices are tablets without menu buttons and the action bar

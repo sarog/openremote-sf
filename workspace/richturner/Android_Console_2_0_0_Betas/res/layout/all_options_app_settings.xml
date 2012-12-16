@@ -23,9 +23,9 @@
 				<!-- customView -->
 				<LinearLayout android:id="@+id/custom_servers_layout"
 				              android:orientation="vertical"
-				              android:paddingLeft="20dp"
+				              android:paddingLeft="5dp"
 				              android:paddingTop="5dp"
-				              android:paddingRight="5dp"
+				              android:paddingRight="10dp"
 				              android:paddingBottom="0dp"
 				              android:layout_width="fill_parent"
 				              android:layout_height="wrap_content"
@@ -45,18 +45,18 @@
 						        android:layout_width="wrap_content"
 						        android:layout_height="wrap_content"
 						        android:layout_centerHorizontal="true"
-						        android:text="Add" />
+						        android:text="@string/button_add_controller" />
 						
 						<Button android:id="@+id/delete_server_button"
 						        android:layout_width="wrap_content"
 						        android:layout_height="wrap_content"
 						        android:layout_alignParentRight="true"
-						        android:text="Delete" />
+						        android:text="@string/button_delete_controller" />
 					</RelativeLayout>
 				</LinearLayout>
 			
 			
-			<TextView android:text="Choose Panel Identity:"
+			<TextView android:text="@string/label_choose_panel_identity"
 					  android:background="@color/dark_gray"
 					  android:paddingLeft="10dp"
 					  android:paddingTop="5dp"
@@ -70,7 +70,7 @@
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content" />
 			
-			<TextView android:text="Image Cache:"
+			<TextView android:text="@string/label_image_cache"
 			          android:paddingLeft="10dp"
 			          android:paddingTop="5dp"
 			          android:paddingRight="0dp"
@@ -81,14 +81,12 @@
 			
 			<RelativeLayout android:layout_width="fill_parent"
 			                android:layout_height="wrap_content">
-				<Button android:id="@+id/clear_image_cache_button"
-				        android:text="Clear Image Cache"
+				<Button android:id="@+id/button_clear_image_cache"
+				        android:text="@string/button_clear_image_cache"
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:layout_alignParentRight="true" />
 			</RelativeLayout>
-			
-			<include layout="@layout/ssl_field_view" />
 		</LinearLayout>
 	
 
