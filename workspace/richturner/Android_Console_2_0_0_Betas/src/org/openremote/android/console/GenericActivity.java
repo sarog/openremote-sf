@@ -21,6 +21,7 @@ package org.openremote.android.console;
 
 import roboguice.activity.RoboActivity;
 import android.os.Bundle;
+import android.view.Window;
 
 /**
  * The Class GenericActivity is the super activity in the application.
