@@ -61,5 +61,7 @@
 	<classpathentry kind="lib" path="lib/core/openremote/or-commons.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt3/gxt-3.0.0b.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache-commons/lang-2.4/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/xstream/xstream-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/xstream/xstream-hibernate-1.4.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
