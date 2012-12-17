@@ -259,7 +259,35 @@ public class ResourceServiceImpl implements ResourceService
     return lircUrl;
   }
 
+  private File storeAsLocalTemporaryFile(InputStream inputStream) {
+    File temporaryFile = null;
+    FileOutputStream fileOutputStream = null;
+	try {
+	  temporaryFile = File.createTempFile("import", "zip", new File(PathConfig.getInstance(configuration).tempFolder()));
+      fileOutputStream = new FileOutputStream(temporaryFile);
+	  IOUtils.copy(inputStream, fileOutputStream);
+    } catch (IOException e) {
+    	throw new FileOperationException("Error in storing zip import file", e);
+	} finally {
+	  if (fileOutputStream != null) {
+        try {
+		  fileOutputStream.close();
+		} catch (IOException e) {
+          serviceLog.warn("Failed to close import file resources", e);
+		}
+	  }
+	}
+	
+	return temporaryFile;
+  }
+  
    @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+	 // Store the upload zip file locally before processing
+	 File importFile = storeAsLocalTemporaryFile(inputStream);
+
+	  System.out.println("local import file is " + importFile.getAbsolutePath());
+
+	 
      // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
      // TODO: delete of UI is not working at all
