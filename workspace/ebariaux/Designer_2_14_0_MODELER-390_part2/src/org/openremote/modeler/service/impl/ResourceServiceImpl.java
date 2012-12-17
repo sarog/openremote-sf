@@ -287,119 +287,115 @@ public class ResourceServiceImpl implements ResourceService
 	 // Store the upload zip file locally before processing
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
 
-	  System.out.println("local import file is " + importFile.getAbsolutePath());
+	System.out.println("local import file is " + importFile.getAbsolutePath());
 
 	 
-     // TODO: try to revert changes on all loadAll methods now that this method is transactional
+    // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
-     // TODO: delete of UI is not working at all
-     // -> client side must be instructed to reload
+    // TODO: delete of UI is not working at all
+    // -> client side must be instructed to reload
+
+    // First part of import is getting rid of what's currently in the account
+
+    // UI
+    initResources(new ArrayList<Panel>(), 0);
+    saveResourcesToBeehive(new ArrayList<Panel>());
      
-     // First part of import is getting rid of what's currently in the account
+    // Clean images
+    // TODO
 
-     // UI
-     initResources(new ArrayList<Panel>(), 0);
-     saveResourcesToBeehive(new ArrayList<Panel>());
-     
-     // Clean images
-     // TODO
+    // Remove all building modeler information (except for configuration)
+    Account account = userService.getAccount();
+    List<Device> allDevices = deviceService.loadAll(account);
+    for (Device d : allDevices) {
+      deviceService.deleteDevice(d.getOid());
+    }
+    // TODO: macro
 
-     // Remove all building modeler information (except for configuration)
-     Account account = userService.getAccount();
-     List<Device> allDevices = deviceService.loadAll(account);
-     for (Device d : allDevices) {
-       deviceService.deleteDevice(d.getOid());
-     }
-     // TODO: macro
+    LocalFileCache lfc = new LocalFileCache(configuration, userService.getCurrentUser());
+    lfc.replace(importFile);
 
-     LocalFileCache lfc = new LocalFileCache(configuration, userService.getCurrentUser());
-     lfc.replace(importFile);
-
-     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
+    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
 
-                // TODO: try get rid of hibernate extension on save also -> seems to work
-                
-                
-                XStream xstream = new XStream(new StaxDriver());
-                Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
-                Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
-                
-                List<Device> importedDevices = new ArrayList<Device>();
-                
-                // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
-                for (DeviceDetailsWithChildrenDTO dev : devices) {
+    // TODO: try get rid of hibernate extension on save also -> seems to work
+        
+        
+    XStream xstream = new XStream(new StaxDriver());
+    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
+    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
+    
+    List<Device> importedDevices = new ArrayList<Device>();
+    
+    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
+    for (DeviceDetailsWithChildrenDTO dev : devices) {
 
-                  // The archived graph has DTOReferences with id, as it originally came from objects in DB.
-                  // Must iterate all DTOReferences, replacing ids with dto.
-                  dev.replaceIdWithDTOInReferences();
+      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
+      // Must iterate all DTOReferences, replacing ids with dto.
+      dev.replaceIdWithDTOInReferences();
 
-                  importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-                }
-                
-                Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
-                
-                // Domain objects have been created and saved with a new id
-                // During this process, old id has been saved as transient info
-                // Create lookup map from originalId to new one
-                for (Device dev : importedDevices) {
-                  devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
-                  
-                  for (DeviceCommand dc : dev.getDeviceCommands()) {
-                    commandsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
-                  }
-                  for (Sensor s : dev.getSensors()) {
-                    sensorsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  for (Switch s : dev.getSwitchs()) {
-                    switchesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  for (Slider s : dev.getSliders()) {
-                    slidersOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  
-                  importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
-                }
-                
-                
-                
-                // TODO: what about macro order ???
-                // If one macro depends on another, the second should be imported first !
-                
-                Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
-                for (MacroDetailsDTO m : macros) {
-                  
-                  // Replace old with new command ids
-                  for (MacroItemDetailsDTO item : m.getItems()) {
-                    item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-                  }
-                  
-                  deviceMacroService.saveNewMacro(m);
-                }
-                
-                
-                
-       DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
-       state.restore(false);
-
-       // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
-       // For now, this code will crash if panels are restored that reference any building modeler objects.
+      importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+    }
+    
+    Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+    Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+    Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+    Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+    Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+    
+    // Domain objects have been created and saved with a new id
+    // During this process, old id has been saved as transient info
+    // Create lookup map from originalId to new one
+    for (Device dev : importedDevices) {
+      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
       
-       PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+      for (DeviceCommand dc : dev.getDeviceCommands()) {
+        commandsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+      }
+      for (Sensor s : dev.getSensors()) {
+        sensorsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Switch s : dev.getSwitchs()) {
+        switchesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Slider s : dev.getSliders()) {
+        slidersOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
       
-       initResources(panels.getPanels(), panels.getMaxOid());
-       saveResourcesToBeehive(panels.getPanels());
-
-
-
-
+      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+    
+    
+    
+    // TODO: what about macro order ???
+    // If one macro depends on another, the second should be imported first !
+    
+    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
+    for (MacroDetailsDTO m : macros) {
+      
+      // Replace old with new command ids
+      for (MacroItemDetailsDTO item : m.getItems()) {
+        item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+      }
+      
+      deviceMacroService.saveNewMacro(m);
+    }
                 
-     return importedDeviceDTOs;
-   }
+                
+                
+    DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+    state.restore(false);
+
+    // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
+    // For now, this code will crash if panels are restored that reference any building modeler objects.
+
+    PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+      
+    initResources(panels.getPanels(), panels.getMaxOid());
+    saveResourcesToBeehive(panels.getPanels());
+
+    return importedDeviceDTOs;
+  }
 
 
   /**
