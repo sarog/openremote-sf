@@ -17,9 +17,24 @@
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
 		6001B9A8140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
+		6010C367167A072C00BCD98B /* UISliderBlue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C361167A072C00BCD98B /* UISliderBlue@2x.png */; };
+		6010C368167A072C00BCD98B /* UISliderBlue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C361167A072C00BCD98B /* UISliderBlue@2x.png */; };
+		6010C369167A072C00BCD98B /* UISliderHandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C362167A072C00BCD98B /* UISliderHandle@2x.png */; };
+		6010C36A167A072C00BCD98B /* UISliderHandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C362167A072C00BCD98B /* UISliderHandle@2x.png */; };
+		6010C36B167A072C00BCD98B /* UISliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C363167A072C00BCD98B /* UISliderWhite@2x.png */; };
+		6010C36C167A072C00BCD98B /* UISliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C363167A072C00BCD98B /* UISliderWhite@2x.png */; };
+		6010C36D167A072C00BCD98B /* UISliderBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C364167A072C00BCD98B /* UISliderBlue.png */; };
+		6010C36E167A072C00BCD98B /* UISliderBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C364167A072C00BCD98B /* UISliderBlue.png */; };
+		6010C36F167A072C00BCD98B /* UISliderHandle.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C365167A072C00BCD98B /* UISliderHandle.png */; };
+		6010C370167A072C00BCD98B /* UISliderHandle.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C365167A072C00BCD98B /* UISliderHandle.png */; };
+		6010C371167A072C00BCD98B /* UISliderWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C366167A072C00BCD98B /* UISliderWhite.png */; };
+		6010C372167A072C00BCD98B /* UISliderWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 6010C366167A072C00BCD98B /* UISliderWhite.png */; };
 		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
 		6010DE8E13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
+		601F710816417A4B009644DC /* ORSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 601F710716417A4B009644DC /* ORSlider.m */; };
+		601F710916417A4B009644DC /* ORSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 601F710716417A4B009644DC /* ORSlider.m */; };
+		601F710A16417A4B009644DC /* ORSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 601F710716417A4B009644DC /* ORSlider.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -586,12 +601,20 @@
 		6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParserAPI_v2.m; sourceTree = "<group>"; };
 		6001B9A6140B6F7900B18E84 /* ButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParser.h; sourceTree = "<group>"; };
 		6001B9A7140B6F7900B18E84 /* ButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParser.m; sourceTree = "<group>"; };
+		6010C361167A072C00BCD98B /* UISliderBlue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderBlue@2x.png"; sourceTree = "<group>"; };
+		6010C362167A072C00BCD98B /* UISliderHandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderHandle@2x.png"; sourceTree = "<group>"; };
+		6010C363167A072C00BCD98B /* UISliderWhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderWhite@2x.png"; sourceTree = "<group>"; };
+		6010C364167A072C00BCD98B /* UISliderBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderBlue.png; sourceTree = "<group>"; };
+		6010C365167A072C00BCD98B /* UISliderHandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderHandle.png; sourceTree = "<group>"; };
+		6010C366167A072C00BCD98B /* UISliderWhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderWhite.png; sourceTree = "<group>"; };
 		6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyleValue1TextEntryCell.h; sourceTree = "<group>"; };
 		6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyleValue1TextEntryCell.m; sourceTree = "<group>"; };
 		6010DE7813FEB389001E6AA9 /* DefinitionParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionParser.h; sourceTree = "<group>"; };
 		6010DE7913FEB389001E6AA9 /* DefinitionParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionParser.m; sourceTree = "<group>"; };
 		6010DE8C13FEB8D3001E6AA9 /* ScreenParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenParser.h; sourceTree = "<group>"; };
 		6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenParser.m; sourceTree = "<group>"; };
+		601F710616417A4B009644DC /* ORSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSlider.h; sourceTree = "<group>"; };
+		601F710716417A4B009644DC /* ORSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSlider.m; sourceTree = "<group>"; };
 		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
@@ -1332,6 +1355,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6010C361167A072C00BCD98B /* UISliderBlue@2x.png */,
+				6010C362167A072C00BCD98B /* UISliderHandle@2x.png */,
+				6010C363167A072C00BCD98B /* UISliderWhite@2x.png */,
+				6010C364167A072C00BCD98B /* UISliderBlue.png */,
+				6010C365167A072C00BCD98B /* UISliderHandle.png */,
+				6010C366167A072C00BCD98B /* UISliderWhite.png */,
 				6055688413CF184E0035CC1A /* ControllerOK.png */,
 				6055688513CF184E0035CC1A /* ControllerOK@2x.png */,
 				6055688613CF184E0035CC1A /* ControllerNOK.png */,
@@ -2129,6 +2158,8 @@
 				6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */,
 				6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */,
 				6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */,
+				601F710616417A4B009644DC /* ORSlider.h */,
+				601F710716417A4B009644DC /* ORSlider.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -2312,6 +2343,12 @@
 				6055688E13CF184E0035CC1A /* ControllerNOK@2x.png in Resources */,
 				6055689213CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */,
 				6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */,
+				6010C367167A072C00BCD98B /* UISliderBlue@2x.png in Resources */,
+				6010C369167A072C00BCD98B /* UISliderHandle@2x.png in Resources */,
+				6010C36B167A072C00BCD98B /* UISliderWhite@2x.png in Resources */,
+				6010C36D167A072C00BCD98B /* UISliderBlue.png in Resources */,
+				6010C36F167A072C00BCD98B /* UISliderHandle.png in Resources */,
+				6010C371167A072C00BCD98B /* UISliderWhite.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2354,6 +2391,12 @@
 				60366B8C144DCB9C004FED3B /* ControllerNOK@2x.png in Resources */,
 				60366B8D144DCB9C004FED3B /* ControllerRequiresAuthentication.png in Resources */,
 				60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */,
+				6010C368167A072C00BCD98B /* UISliderBlue@2x.png in Resources */,
+				6010C36A167A072C00BCD98B /* UISliderHandle@2x.png in Resources */,
+				6010C36C167A072C00BCD98B /* UISliderWhite@2x.png in Resources */,
+				6010C36E167A072C00BCD98B /* UISliderBlue.png in Resources */,
+				6010C370167A072C00BCD98B /* UISliderHandle.png in Resources */,
+				6010C372167A072C00BCD98B /* UISliderWhite.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2568,6 +2611,7 @@
 				60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */,
 				60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */,
 				606281121446F5F6001123BD /* RuntimeUtils.m in Sources */,
+				601F710816417A4B009644DC /* ORSlider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2721,6 +2765,7 @@
 				60366C1F144DCB9C004FED3B /* UIImage+ORAdditions.m in Sources */,
 				60366C20144DCB9C004FED3B /* UIScreen+ORAdditions.m in Sources */,
 				60366C21144DCB9C004FED3B /* RuntimeUtils.m in Sources */,
+				601F710A16417A4B009644DC /* ORSlider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2826,6 +2871,7 @@
 				609C57DE137430F60093C03A /* PanelXMLParsingTests.m in Sources */,
 				609C57DF137430F60093C03A /* ScreenTest.m in Sources */,
 				6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */,
+				601F710916417A4B009644DC /* ORSlider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
