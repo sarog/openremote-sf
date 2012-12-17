@@ -373,7 +373,90 @@ public class LocalFileCache implements ResourceCache<File>
         getCachedArchive().getAbsolutePath(), cacheFolder.getAbsolutePath()
     );
   }
+  
+  /**
+   * Replaces the local cached Beehive archive with the provided file. If there are
+   * existing previous cached copies of the Beehive archive on the local system, those are backed
+   * up first. After the Beehive archive has been downloaded, it is extracted in the given
+   * account's cache folder.
+   * 
+   * @param configurationArchive File the configuration file to use as the local cached copy of Beehive archive
+   *
+   * @throws NetworkException
+   *            If any errors occur with the network connection to Beehive server -- the basic
+   *            assumption here is that network exceptions are recoverable (within a certain
+   *            time period) and the method call can optionally be re-attempted at later time.
+   *            Do note that the exception class provides a severity level which can be used
+   *            to indicate the likelyhood that the network error can be recovered from.
+   *
+   * @throws ConfigurationException
+   *            If any of the cache operations cannot be performed due to security restrictions
+   *            on the local file system.
+   *
+   * @throws CacheOperationException
+   *            If any runtime I/O errors occur during the sync.
+   */
+  public void replace(File configurationArchive) throws NetworkException, ConfigurationException, CacheOperationException
+  {
 
+	  // TODO - EBR: should do some basic validation on provided file: zip file, contains OR file, ...
+	  
+	  
+    // Backup existing cached archives.
+    //
+    // TODO: MODELER-285
+    //
+    //   - We are over-cautious with cached copies here (which should be throw-away copies under
+    //     normal circumstances) because of the issues with state synchronization between
+    //     Designer and Beehive that currently exists -- these issues are commented on the
+    //     DesignerState class in more detail. Once the implementations have been reviewed on
+    //     both sides, the backup functionality can be made less aggressive (sparser) or disabled
+    //     altogeher.
+
+    try
+    {
+      backup();
+    }
+
+    // Handle errors from local cache operations (File I/O) explicitly here, and do not propagate
+    // them higher up in the call stack. Errors in backups do not prevent normal operation but
+    // does mean we've lost the usual recovery mechanisms so admins should be notified and act
+    // to correct the problem as soon as possible.
+
+    catch (CacheOperationException e)
+    {
+      haltAccountBackups.add(account.getOid());
+
+      admin.alert("Local cache operation error : {0}", e, e.getMessage());
+    }
+
+
+    cacheLog.info("Replacing account cache for {0}.", printUserAccountLog(currentUser));
+
+
+    // Make sure cache folder is present, if not then create it...
+
+    if (!hasCacheFolder())
+    {
+      createCacheFolder();      
+    }
+
+
+    // Replace cache archive with provided file
+    if (getCachedArchive().exists()) {
+    	getCachedArchive().delete();
+    }
+    configurationArchive.renameTo(getCachedArchive());
+
+    // If we made through all the error checking, we're ready to go. Unzip the archive and finish.
+
+    extract(getCachedArchive(), cacheFolder);
+
+    cacheLog.info(
+        "Extracted ''{0}'' to ''{1}''.",
+        getCachedArchive().getAbsolutePath(), cacheFolder.getAbsolutePath()
+    );
+  }
 
   /**
    * Indicates if we've found any resource artifacts in the cache that would imply an existing,
