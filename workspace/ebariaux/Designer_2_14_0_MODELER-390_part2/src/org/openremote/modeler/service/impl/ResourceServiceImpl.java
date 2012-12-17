@@ -309,18 +309,9 @@ public class ResourceServiceImpl implements ResourceService
        deviceService.deleteDevice(d.getOid());
      }
      // TODO: macro
-
+     
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
-      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-      if (tmpDir.exists() && tmpDir.isDirectory()) {
-         try {
-            FileUtils.deleteDirectory(tmpDir);
-         } catch (IOException e) {
-            throw new FileOperationException("Error in deleting temp dir", e);
-         }
-      }
-      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
       String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
