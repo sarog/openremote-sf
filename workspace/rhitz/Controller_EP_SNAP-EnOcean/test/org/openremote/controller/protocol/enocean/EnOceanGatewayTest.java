@@ -21,7 +21,6 @@
 package org.openremote.controller.protocol.enocean;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp3RPSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
@@ -86,6 +85,57 @@ public class EnOceanGatewayTest
 
     Assert.assertEquals(id, listener.receivedTelegram.getSenderID());
     Assert.assertEquals(1, listener.receiveCount);
+  }
+
+  @Test public void testRemoveRadioListener() throws Exception
+  {
+    DeviceID id = DeviceID.fromString("0xFF800001");
+
+    TestRadioListener listener1 = new TestRadioListener();
+    TestRadioListener listener2 = new TestRadioListener();
+
+    Esp3RPSTelegram telegram = new Esp3RPSTelegram(id, (byte)0x00, (byte)0x00);
+
+    EnOceanGateway gateway = new EnOceanGateway(new EnOceanConnectionManager(), new EspPortConfiguration());
+
+
+    gateway.addRadioListener(id, listener1);
+    gateway.addRadioListener(id, listener2);
+    gateway.removeRadioListener(id, listener1);
+    gateway.radioTelegramReceived(telegram);
+
+    Assert.assertNull(listener1.receivedTelegram);
+    Assert.assertEquals(id, listener2.receivedTelegram.getSenderID());
+    Assert.assertEquals(1, listener2.receiveCount);
+
+
+    gateway.addRadioListener(id, listener1);
+    gateway.radioTelegramReceived(telegram);
+
+    Assert.assertEquals(id, listener1.receivedTelegram.getSenderID());
+    Assert.assertEquals(1, listener1.receiveCount);
+    Assert.assertEquals(id, listener2.receivedTelegram.getSenderID());
+    Assert.assertEquals(2, listener2.receiveCount);
+
+
+    gateway.removeRadioListener(id, listener1);
+    gateway.removeRadioListener(id, listener2);
+    gateway.radioTelegramReceived(telegram);
+
+    Assert.assertEquals(id, listener1.receivedTelegram.getSenderID());
+    Assert.assertEquals(1, listener1.receiveCount);
+    Assert.assertEquals(id, listener2.receivedTelegram.getSenderID());
+    Assert.assertEquals(2, listener2.receiveCount);
+
+
+    gateway.addRadioListener(id, listener1);
+    gateway.addRadioListener(id, listener2);
+    gateway.radioTelegramReceived(telegram);
+
+    Assert.assertEquals(id, listener1.receivedTelegram.getSenderID());
+    Assert.assertEquals(2, listener1.receiveCount);
+    Assert.assertEquals(id, listener2.receivedTelegram.getSenderID());
+    Assert.assertEquals(3, listener2.receiveCount);
   }
 
   @Test (expected = IllegalArgumentException.class)
@@ -170,6 +220,57 @@ public class EnOceanGatewayTest
     @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte) throws ConnectionException, ConfigurationException
     {
       ++sendCallCount;
+    }
+  }
+
+  @Test (expected = ConfigurationException.class)
+  public void testMissingComPort() throws ConfigurationException
+  {
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+    config.setCommLayer(EspPortConfiguration.CommLayer.RXTX);
+
+    EnOceanGateway gateway1 = new EnOceanGateway(new EnOceanConnectionManager(), config);
+
+    try {
+      gateway1.connect();
+    }
+    catch (ConnectionException e)
+    {
+    }
+  }
+
+  @Test (expected = ConfigurationException.class)
+  public void testMissingSerialProtocol() throws ConfigurationException
+  {
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setComPort("/dev/cu.usbserial-FTUOKF2Q");
+    config.setCommLayer(EspPortConfiguration.CommLayer.RXTX);
+
+    EnOceanGateway gateway1 = new EnOceanGateway(new EnOceanConnectionManager(), config);
+
+    try {
+      gateway1.connect();
+    }
+    catch (ConnectionException e)
+    {
+    }
+  }
+
+  @Test (expected = ConfigurationException.class)
+  public void testMissingCommLayerProtocol() throws ConfigurationException
+  {
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setComPort("/dev/cu.usbserial-FTUOKF2Q");
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+
+    EnOceanGateway gateway1 = new EnOceanGateway(new EnOceanConnectionManager(), config);
+
+    try {
+      gateway1.connect();
+    }
+    catch (ConnectionException e)
+    {
     }
   }
 }

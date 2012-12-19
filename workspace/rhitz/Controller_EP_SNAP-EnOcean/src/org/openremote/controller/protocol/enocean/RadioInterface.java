@@ -58,4 +58,13 @@ public interface RadioInterface
    * @param listener  radio telegram listener
    */
   void addRadioListener(DeviceID deviceID, RadioTelegramListener listener);
+
+  /**
+   * Removes radio telegram listener for given sender device ID.
+   *
+   * @param deviceID  sender device ID
+   *
+   * @param listener  radio telegram listener
+   */
+  void removeRadioListener(DeviceID deviceID, RadioTelegramListener listener);
 }

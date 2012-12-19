@@ -24,9 +24,9 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.utils.Logger;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * EnOcean gateway for sending and receiving radio telegrams.
@@ -60,8 +60,8 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
    * Map containing all radio telegram listeners using the EnOcean device ID
    * as the key.
    */
-  private ConcurrentHashMap<DeviceID, CopyOnWriteArrayList<RadioTelegramListener>> radioListeners =
-      new ConcurrentHashMap<DeviceID, CopyOnWriteArrayList<RadioTelegramListener>>();
+  private ConcurrentHashMap<DeviceID, CopyOnWriteArraySet<RadioTelegramListener>> radioListeners =
+      new ConcurrentHashMap<DeviceID, CopyOnWriteArraySet<RadioTelegramListener>>();
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -112,17 +112,35 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
    */
   public void addRadioListener(DeviceID deviceID, RadioTelegramListener listener)
   {
-    CopyOnWriteArrayList<RadioTelegramListener> listenerList = null;
+    CopyOnWriteArraySet<RadioTelegramListener> listenerList = null;
 
     listenerList = radioListeners.get(deviceID);
 
     if(listenerList == null)
     {
-      radioListeners.putIfAbsent(deviceID, new CopyOnWriteArrayList<RadioTelegramListener>());
+      radioListeners.putIfAbsent(deviceID, new CopyOnWriteArraySet<RadioTelegramListener>());
       listenerList = radioListeners.get(deviceID);
     }
 
-    listenerList.addIfAbsent(listener);
+    if(listenerList != null)
+    {
+      listenerList.add(listener);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void removeRadioListener(DeviceID deviceID, RadioTelegramListener listener)
+  {
+    CopyOnWriteArraySet<RadioTelegramListener> listenerList = null;
+
+    listenerList = radioListeners.get(deviceID);
+
+    if(listenerList != null)
+    {
+      listenerList.remove(listener);
+    }
   }
 
 
@@ -133,7 +151,7 @@ public class EnOceanGateway implements RadioInterface, RadioTelegramListener
    */
   @Override public void radioTelegramReceived(EspRadioTelegram telegram)
   {
-    List<RadioTelegramListener> listeners = radioListeners.get(telegram.getSenderID());
+    Set<RadioTelegramListener> listeners = radioListeners.get(telegram.getSenderID());
 
     if(listeners != null)
     {
