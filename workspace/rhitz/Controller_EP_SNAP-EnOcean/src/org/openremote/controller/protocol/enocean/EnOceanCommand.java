@@ -23,11 +23,14 @@ package org.openremote.controller.protocol.enocean;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
-import org.openremote.controller.protocol.enocean.profile.*;
+import org.openremote.controller.protocol.enocean.profile.Eep;
+import org.openremote.controller.protocol.enocean.profile.EepReceive;
+import org.openremote.controller.protocol.enocean.profile.EepTransceive;
+import org.openremote.controller.protocol.enocean.profile.EepTransmit;
 import org.openremote.controller.utils.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class is an abstract superclass for EnOcean transmit/receive commands.
@@ -79,7 +82,7 @@ abstract public class EnOceanCommand implements Command
     return cmd;
   }
 
-  // Protected Instance Fields --------------------------------------------------------------------
+  // Private Instance Fields ----------------------------------------------------------------------
 
   /**
    * Interface for sending and receiving EnOcean radio telegrams.
@@ -94,10 +97,10 @@ abstract public class EnOceanCommand implements Command
   /**
    * All sensors linked to this command.
    */
-  private List<Sensor> sensors = new ArrayList<Sensor>();
+  private Set<Sensor> sensors = new HashSet<Sensor>();
 
 
-  // Construcotors --------------------------------------------------------------------------------
+  // Constructors ---------------------------------------------------------------------------------
 
   /**
    * Constructs an EnOcean command with given radio interface and EnOcean device ID.
@@ -159,10 +162,24 @@ abstract public class EnOceanCommand implements Command
    *
    * @param listener   EnOcean radio telegram listener
    */
-  protected void registerSensor(Sensor sensor, RadioTelegramListener listener)
+  protected synchronized void registerSensor(Sensor sensor, RadioTelegramListener listener)
   {
     sensors.add(sensor);
     radioInterface.addRadioListener(deviceID, listener);
+  }
+
+  /**
+   * Removes sensor from the sensor list and unregisters EnOcean radio
+   * telegram listener.
+   *
+   * @param sensor     the sensor
+   *
+   * @param listener   EnOcean radio telegram listener
+   */
+  protected synchronized void unregisterSensor(Sensor sensor, RadioTelegramListener listener)
+  {
+    sensors.remove(sensor);
+    radioInterface.removeRadioListener(deviceID, listener);
   }
 
   /**
@@ -173,7 +190,7 @@ abstract public class EnOceanCommand implements Command
    *
    * @param radioTelegram  the received EnOcean radio telegram
    */
-  protected void update(EepReceive eep, EspRadioTelegram radioTelegram)
+  protected synchronized void update(EepReceive eep, EspRadioTelegram radioTelegram)
   {
     eep.update(radioTelegram);
 

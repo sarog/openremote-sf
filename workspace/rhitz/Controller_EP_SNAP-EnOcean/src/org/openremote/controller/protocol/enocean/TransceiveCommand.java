@@ -109,6 +109,14 @@ public class TransceiveCommand extends EnOceanCommand implements ExecutableComma
     registerSensor(sensor, this);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  /*@Override*/ public void stop(Sensor sensor)
+  {
+    unregisterSensor(sensor, this);
+  }
+
 
   // Implements RadioTelegramListener -------------------------------------------------------------
 

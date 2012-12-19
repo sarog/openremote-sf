@@ -86,6 +86,14 @@ public class ReceiveCommand extends EnOceanCommand implements EventListener, Rad
     registerSensor(sensor, this);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  /*@Override*/ public void stop(Sensor sensor)
+  {
+    unregisterSensor(sensor, this);
+  }
+
 
   // Implements RadioTelegramListener -------------------------------------------------------------
 
