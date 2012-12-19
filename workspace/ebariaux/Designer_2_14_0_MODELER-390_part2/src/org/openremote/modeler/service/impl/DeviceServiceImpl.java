@@ -258,6 +258,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
   public Device saveNewDeviceWithChildren(Account account, DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors, ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
     Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
     deviceBean.setAccount(account);
+    account.getDevices().add(deviceBean);
     deviceBean.storeTransient(ORIGINAL_OID_KEY, device.getOid());
 
     Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
@@ -299,6 +300,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
         sensor.setDevice(deviceBean);
         sensor.setName(sensorDTO.getName());
         sensor.setAccount(account);
+        account.getSensors().add(sensor);
         sensor.storeTransient(ORIGINAL_OID_KEY, sensorDTO.getOid());
   
         DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
@@ -321,6 +323,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
         Switch sw = new Switch(onCommand, offCommand, sensor);
         sw.setName(switchDTO.getName());
         sw.setAccount(account);
+        account.getSwitches().add(sw);
         sensor.storeTransient(ORIGINAL_OID_KEY, switchDTO.getOid());
         switchBeans.add(sw);
       }
@@ -335,6 +338,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
   
         Slider slider = new Slider(sliderDTO.getName(), command, sensor);
         slider.setAccount(account);
+        account.getSliders().add(slider);
         sensor.storeTransient(ORIGINAL_OID_KEY, sliderDTO.getOid());
         sliderBeans.add(slider);
       }
