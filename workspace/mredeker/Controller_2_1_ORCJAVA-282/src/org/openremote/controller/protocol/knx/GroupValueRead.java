@@ -202,6 +202,13 @@ class GroupValueRead extends KNXCommand implements StatusCommand
         return Integer.toString((int)(valueDPT.resolve() / 2.55));
       }
 
+      else if (dpt == DataPointType.Unsigned8BitValue.SCENE_NUMBER)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString((int)(valueDPT.resolve()));
+      }
+      
       else
       {
         throw new Error("Unrecognized datatype for LEVEL sensor: " + dpt);
