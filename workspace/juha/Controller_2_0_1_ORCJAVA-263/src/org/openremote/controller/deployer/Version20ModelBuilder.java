@@ -588,14 +588,12 @@ public class Version20ModelBuilder extends AbstractModelBuilder
         //  - A string that points to the URI of the schema
         //  - An InputStream with the contents of the schema
         //  - A SAX InputSource
-        //  - A File (NOTE: this seems to have issues with spaces used in paths where some
-        //                  implementations encode the schema path which leads to '%20' used
-        //                  instead of space which in turn can cause file not found errors)
+        //  - A File 
         //  - An array of Objects, each of which is one of the types defined here (e.g. an
         //    array of strings when multiple schema locations are required).
         //
         //  Above as per the JAXP specification: Properties for Enabling Schema Validation
-        
+
         builder.setProperty(JAXP_SCHEMA_SOURCE, xsdPath);
 
         builder.setValidation(true);
