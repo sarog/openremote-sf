@@ -357,16 +357,16 @@ public class ResourceServiceImpl implements ResourceService
       devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
       
       for (DeviceCommand dc : dev.getDeviceCommands()) {
-        commandsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
       }
       for (Sensor s : dev.getSensors()) {
-        sensorsOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
       }
       for (Switch s : dev.getSwitchs()) {
-        switchesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
       }
       for (Slider s : dev.getSliders()) {
-        slidersOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
       }
       
       importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
