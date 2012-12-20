@@ -1135,49 +1135,49 @@ public class ResourceServiceImpl implements ResourceService
 							((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
 						}
 			    }
-			    if (component instanceof UISlider) {
-			      UISlider uiSlider = (UISlider)component;
-			      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
-			        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
-			        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
-			        if (slider != null) { // Just in case we have a dangling pointer
-			          uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
-			        }
-			        uiSlider.setSlider(null);
-			      }
-			    }
-			    if (component instanceof UISwitch) {
-			      UISwitch uiSwitch = (UISwitch)component;
-			      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
-			        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
-			        if (switchBean != null) { // Just in case we have a dangling pointer
-			          uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
-			        }
-			        uiSwitch.setSwitchCommand(null);
-			      }
-			    }
-			    if (component instanceof UIButton) {
-			      UIButton uiButton = (UIButton)component;
-			      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
-			        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
-			        uiButton.setUiCommand(null);
-			      }
-			    }
-			    if (component instanceof ColorPicker) {
-			      ColorPicker colorPicker = (ColorPicker)component;
-			      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
-			        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
-			        colorPicker.setUiCommand(null);
-			      }
-			    }
-			    if (component instanceof Gesture) {
-			    	Gesture gesture = (Gesture)component;
-			      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
-			        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
-			        gesture.setUiCommand(null);
-			      }
-			    }
-			  }
+		    }
+		    if (component instanceof UISlider) {
+		      UISlider uiSlider = (UISlider)component;
+		      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
+		        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+		        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
+		        if (slider != null) { // Just in case we have a dangling pointer
+		          uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
+		        }
+		        uiSlider.setSlider(null);
+		      }
+		    }
+		    if (component instanceof UISwitch) {
+		      UISwitch uiSwitch = (UISwitch)component;
+		      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+		        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+		        if (switchBean != null) { // Just in case we have a dangling pointer
+		          uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
+		        }
+		        uiSwitch.setSwitchCommand(null);
+		      }
+		    }
+		    if (component instanceof UIButton) {
+		      UIButton uiButton = (UIButton)component;
+		      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
+		        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
+		        uiButton.setUiCommand(null);
+		      }
+		    }
+		    if (component instanceof ColorPicker) {
+		      ColorPicker colorPicker = (ColorPicker)component;
+		      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
+		        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
+		        colorPicker.setUiCommand(null);
+		      }
+		    }
+		    if (component instanceof Gesture) {
+		    	Gesture gesture = (Gesture)component;
+		      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
+		        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
+		        gesture.setUiCommand(null);
+		      }
+		    }
   		}
 
 		  private UICommandDTO createUiCommandDTO(UICommand uiCommand)
