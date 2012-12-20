@@ -67,7 +67,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
      DetachedCriteria criteria = DetachedCriteria.forClass(Sensor.class);
      criteria.add(Restrictions.eq("account", account));
       @SuppressWarnings("unchecked")
-      List<Sensor> sensors = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
+      List<Sensor> sensors = genericDAO.getHibernateTemplate().findByCriteria(criteria);
       for (Sensor sensor : sensors) {
          if (sensor.getType() == SensorType.CUSTOM) {
             Hibernate.initialize(((CustomSensor) sensor).getStates());

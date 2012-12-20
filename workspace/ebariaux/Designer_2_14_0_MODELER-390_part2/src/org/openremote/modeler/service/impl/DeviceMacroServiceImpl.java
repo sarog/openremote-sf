@@ -100,7 +100,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
      DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacro.class);
      criteria.add(Restrictions.eq("account", account));
      @SuppressWarnings("unchecked")
-      List<DeviceMacro> list = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
+      List<DeviceMacro> list = genericDAO.getHibernateTemplate().findByCriteria(criteria);
       for (DeviceMacro deviceMacro : list) {
          Hibernate.initialize(deviceMacro.getDeviceMacroItems());
       }
