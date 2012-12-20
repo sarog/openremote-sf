@@ -67,6 +67,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
@@ -135,9 +136,9 @@ import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
-import org.openremote.modeler.shared.dto.SensorDetailsDTO;
-import org.openremote.modeler.shared.dto.SliderDetailsDTO;
-import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
@@ -344,11 +345,11 @@ public class ResourceServiceImpl implements ResourceService
       importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
     }
     
-    Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
-    Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-    Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-    Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-    Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
     
     // Domain objects have been created and saved with a new id
     // During this process, old id has been saved as transient info
@@ -392,12 +393,63 @@ public class ResourceServiceImpl implements ResourceService
                 
     DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
     state.restore(false);
-
-    // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
-    // For now, this code will crash if panels are restored that reference any building modeler objects.
-
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
-      
+    
+    // All DTOs in the just imported object graph have ids of building elements from the original DB.
+    // Walk the graph and change ids to the newly saved domain objects.
+    Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
+			@Override
+      public void execute(UIComponent component) {
+		    if (component instanceof SensorLinkOwner) {
+					SensorLinkOwner owner = ((SensorLinkOwner) component);
+					if (owner.getSensorLink() != null) {
+						SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+						if (sensorDTO.getOid() != null) {
+							sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+						}
+					}
+		    }
+		    if (component instanceof UISlider) {
+		      UISlider uiSlider = (UISlider)component;
+		      if (uiSlider.getSliderDTO() != null) {
+		      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+		      	if (sliderDTO.getOid() != null) {
+		      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+		      	}
+		      }
+		    }
+		    if (component instanceof UISwitch) {
+		      UISwitch uiSwitch = (UISwitch)component;
+		      if (uiSwitch.getSwitchDTO() != null) {
+		      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+		      	if (switchDTO.getOid() != null) {
+		      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+		      	}
+		      }
+		    }
+		    if (component instanceof UIButton) {
+		    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+		    }
+		    if (component instanceof ColorPicker) {
+		    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+		    }
+		    if (component instanceof Gesture) {
+		    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+			  }
+      }
+			
+			private void replaceOldOidWithNew(UICommandDTO commandDTO)
+			{
+				if (commandDTO == null) {
+					return;
+				}
+      	if (commandDTO.getOid() != null) {
+      		commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+      	}			      	
+			}
+    	
+    });
+    
     initResources(panels.getPanels(), panels.getMaxOid());
     saveResourcesToBeehive(panels.getPanels());
 
