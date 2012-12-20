@@ -41,8 +41,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -67,7 +65,6 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
-import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
@@ -128,9 +125,7 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
-import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
@@ -173,8 +168,7 @@ public class ResourceServiceImpl implements ResourceService
 
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
-
-
+  
   private Configuration configuration;
 
   private DeviceCommandService deviceCommandService;
@@ -285,20 +279,17 @@ public class ResourceServiceImpl implements ResourceService
 	return temporaryFile;
   }
   
-   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
-	 // Store the upload zip file locally before processing
-	 File importFile = storeAsLocalTemporaryFile(inputStream);
-
-	System.out.println("local import file is " + importFile.getAbsolutePath());
-
+  @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	  // Store the upload zip file locally before processing
+    File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
     // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
-    // TODO: delete of UI is not working at all
-    // -> client side must be instructed to reload
 
     // First part of import is getting rid of what's currently in the account
 
+		// TODO: is UI cleanup really required as local cache will later be overwritten with imported file 
+	
     // UI
     initResources(new ArrayList<Panel>(), 0);
     saveResourcesToBeehive(new ArrayList<Panel>());
@@ -341,7 +332,6 @@ public class ResourceServiceImpl implements ResourceService
       // The archived graph has DTOReferences with id, as it originally came from objects in DB.
       // Must iterate all DTOReferences, replacing ids with dto.
       dev.replaceIdWithDTOInReferences();
-
       importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
     }
     
@@ -377,6 +367,7 @@ public class ResourceServiceImpl implements ResourceService
     
     // TODO: what about macro order ???
     // If one macro depends on another, the second should be imported first !
+    // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
     
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
     for (MacroDetailsDTO m : macros) {
@@ -388,9 +379,7 @@ public class ResourceServiceImpl implements ResourceService
       
       deviceMacroService.saveNewMacro(m);
     }
-                
-                
-                
+    
     DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
     state.restore(false);
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
@@ -455,7 +444,6 @@ public class ResourceServiceImpl implements ResourceService
 
     return importedDeviceDTOs;
   }
-
 
   /**
    * TODO
