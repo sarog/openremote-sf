@@ -143,7 +143,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
   @Transactional public List<Device> loadAll(Account account) {
      DetachedCriteria criteria = DetachedCriteria.forClass(Device.class);
      criteria.add(Restrictions.eq("account", account));
-      return genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
+      return genericDAO.getHibernateTemplate().findByCriteria(criteria);
    }
 
    /**

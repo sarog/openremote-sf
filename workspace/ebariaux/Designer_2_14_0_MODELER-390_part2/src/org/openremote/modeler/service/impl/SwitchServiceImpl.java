@@ -53,7 +53,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
      DetachedCriteria criteria = DetachedCriteria.forClass(Switch.class);
      criteria.add(Restrictions.eq("account", userService.getAccount()));
      @SuppressWarnings("unchecked")
-    List<Switch> result = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
+    List<Switch> result = genericDAO.getHibernateTemplate().findByCriteria(criteria);
       if (result == null || result.size() == 0) {
          return new ArrayList<Switch> ();
       }

@@ -61,7 +61,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
      DetachedCriteria criteria = DetachedCriteria.forClass(Slider.class);
      criteria.add(Restrictions.eq("account", userService.getAccount()));
      @SuppressWarnings("unchecked")
-    List<Slider> result = genericDAO.getHibernateTemplate().findByCriteria(criteria, 0, 1);
+    List<Slider> result = genericDAO.getHibernateTemplate().findByCriteria(criteria);
       if (result == null || result.size() == 0) {
          return new ArrayList<Slider> ();
       }
