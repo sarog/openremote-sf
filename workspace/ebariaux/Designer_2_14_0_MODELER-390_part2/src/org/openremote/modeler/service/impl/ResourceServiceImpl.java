@@ -311,7 +311,13 @@ public class ResourceServiceImpl implements ResourceService
     for (Device d : allDevices) {
       deviceService.deleteDevice(d.getOid());
     }
+    account.getDevices().clear();
+    account.getSensors().clear();
+    account.getSwitches().clear();
+    account.getSliders().clear();
+    
     // TODO: macro
+    account.getDeviceMacros().clear();
 
     LocalFileCache lfc = new LocalFileCache(configuration, userService.getCurrentUser());
     lfc.replace(importFile);
