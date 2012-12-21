@@ -48,6 +48,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    }
 
    @Override
+   @Transactional
    public List<Switch> loadAll() {
       List<Switch> result = userService.getAccount().getSwitches();
       if (result == null || result.size() == 0) {
