@@ -255,23 +255,25 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    */
   public static File getControllerDefinitionFile(ControllerConfiguration config)
   {
-
-    // TODO :
-    //   should review -- most likely we always want an absolute path, the URI resolution
-    //   still looks problematic
-    //                                                                              [JPL]
-
     try
     {
       URI uri = new URI(config.getResourcePath());
 
+      log.trace(
+          "Converted controller definition file location from URI ''{0}''",
+          uri.resolve(CONTROLLER_XML)
+      );
+
       return new File(uri.resolve(CONTROLLER_XML));
     }
+
     catch (Throwable t)
     {
       // legacy...
 
       String xmlPath = PathUtil.addSlashSuffix(config.getResourcePath()) + CONTROLLER_XML;
+
+      log.trace("Applied legacy resource path conversion to non-compatible URI ''{0}''" + xmlPath);
 
       return new File(xmlPath);
     }
@@ -543,12 +545,22 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    * located with JAXP API (via JDOM library). By default the document instance is validated
    * with XML schema.
    *
-   * @return a built document for controller.xml
+   * @throws ControllerDefinitionNotFoundException
+   *            if {@link #CONTROLLER_XML} cannot be found in the location specified by
+   *            {@link ControllerConfiguration#setResourcePath(String)}.
+   *
+   * @throws XMLParsingException
+   *            if the {@link #CONTROLLER_XML} cannot be parsed for any reason
+   *
+   * @throws InitializationException
+   *            if {@link #CONTROLLER_XML} cannot be accessed for any reason or any other
+   *            initialization error occurs
+   *
+   * @return a built JDOM document model for controller.xml
    */
   @Override protected Document readControllerXMLDocument() throws InitializationException
   {
     SAXBuilder builder = new SAXBuilder();
-    String xsdPath = CONTROLLER_XSD_PATH;
 
     File controllerXMLFile = getControllerDefinitionFile(config);
 
@@ -568,13 +580,15 @@ public class Version20ModelBuilder extends AbstractModelBuilder
     }
 
 
+    String xsdPath = CONTROLLER_XSD_PATH;
+
     try
     {
-      URL xsdResource = Version20ModelBuilder.class.getResource(xsdPath);
+      URL xsdResource = Version20ModelBuilder.class.getResource(CONTROLLER_XSD_PATH);
 
       if (xsdResource == null)
       {
-        log.error("Cannot find XSD schema ''{0}''. Disabling validation...", xsdPath);
+        log.error("Cannot find XSD schema ''{0}''. Disabling validation...", CONTROLLER_XSD_PATH);
       }
 
       else
