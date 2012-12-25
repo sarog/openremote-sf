@@ -272,7 +272,7 @@ printTomcatEnvVariables()
 #  4th arg -- if contains 'service' runs tomcat as background process with redirected std streams
 #
 ##
-function executeTomcat()
+executeTomcat()
 {
 
   if [ "$4" = "service" ]; then
