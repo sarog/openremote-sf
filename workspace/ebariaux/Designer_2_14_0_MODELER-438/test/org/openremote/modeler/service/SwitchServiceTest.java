@@ -24,6 +24,9 @@ public class SwitchServiceTest {
 
    private SensorService sensorService = null;
    private UserService userService = null;
+   
+   private long createdSwitchId;
+   
    @BeforeClass
    public void setUp() {
       userService = (UserService)SpringTestContext.getInstance().getBean("userService");
@@ -74,78 +77,79 @@ public class SwitchServiceTest {
       swh.setSwitchCommandOnRef(swhOnCmdRef);
       swh.setSwitchCommandOffRef(swhOffCmdRef);
       swh.setAccount(userService.getAccount());
-
-      // swh.setOffDeviceCommandRef(cmdRef);
-
-      Switch swh2 = new Switch();
-      swh2.setSwitchSensorRef(sensorRef);
-
-      swh2.setName("testName2");
-      
-      swh2.setSwitchCommandOnRef(swhOnCmdRef);
-      swh2.setSwitchCommandOffRef(swhOffCmdRef);
-      swh2.setAccount(userService.getAccount());
       
       service.save(swh);
-      service.save(swh2);
+      Assert.assertTrue(swh.getOid() != 0);
+      createdSwitchId = swh.getOid();
+      
+      Switch switchFromTable = null;
+      for (Switch s : service.loadAll()) {
+      	if (s.getOid() == swh.getOid()) {
+      		switchFromTable = s;
+      	}
+      }
 
-      Switch switchFromTable = service.loadAll().get(0);
-      Assert.assertEquals(swh.getOid(), 1);
-      Assert.assertEquals(swh2.getOid(), 2);
-      Assert.assertTrue(swh.getSwitchCommandOffRef().getOid()>=1);
-      Assert.assertTrue(swh.getSwitchCommandOnRef().getOid()>=1);
-      Assert.assertTrue(swh.getSwitchSensorRef().getOid()>=1);
+      Assert.assertEquals(switchFromTable.getName(), "testName");
+      Assert.assertEquals(switchFromTable.getSwitchSensorRef().getSensor().getName(), "Test");
       Assert.assertEquals(switchFromTable.getSwitchCommandOnRef().getDeviceCommand().getName(), "testLirc");
       Assert.assertEquals(switchFromTable.getSwitchCommandOffRef().getDeviceCommand().getName(), "testLirc");
    }
 
    @Test(dependsOnMethods = "testSaveSwitch")
    public void testUpdate() {
-      Switch swh = new Switch();
+      Switch swh = service.loadById(createdSwitchId);
       Protocol protocol = new Protocol();
       protocol.setType(Constants.INFRARED_TYPE);
       
       DeviceCommand cmd = new DeviceCommand();
       cmd.setProtocol(protocol);
       cmd.setName("testLirc2");
+      cmd.setDevice(swh.getDevice()); // EBR new
       deviceCommandService.save(cmd);
       
       Sensor sensor = new Sensor();
-      sensor.setName("SensorAfterBeUpdated");
+      sensor.setName("SensorAfterUpdate");
       SensorCommandRef sensorCmdRef = new SensorCommandRef();
       sensorCmdRef.setDeviceCommand(cmd);
       sensor.setSensorCommandRef(sensorCmdRef);
-      
       sensorCmdRef.setSensor(sensor);
       sensorService.saveSensor(sensor);
+
+      // Note: if device command / sensor not saved before -> hibernate exception : object references an unsaved transient instance
+      
       SwitchSensorRef sensorRef = new SwitchSensorRef();
       sensorRef.setSensor(sensor);
-      sensorRef.setSwitchToggle(swh);
-      
+      sensorRef.setSwitchToggle(swh);      
       swh.setSwitchSensorRef(sensorRef);
       
       SwitchCommandOnRef swhOnCmdRef = new SwitchCommandOnRef();
       swhOnCmdRef.setDeviceCommand(cmd);
       swhOnCmdRef.setOnSwitch(swh);
+      swh.setSwitchCommandOnRef(swhOnCmdRef);
       
       SwitchCommandOffRef swhOffCmdRef = new SwitchCommandOffRef();
       swhOffCmdRef.setDeviceCommand(cmd);
-      swhOffCmdRef.setOffSwitch(swh);
-      
-      swh.setSwitchCommandOnRef(swhOnCmdRef);
+      swhOffCmdRef.setOffSwitch(swh);      
       swh.setSwitchCommandOffRef(swhOffCmdRef);
-      swh.setOid(1);
-      swh.setName("testUpdate");
-      service.update(swh);
 
+      swh.setName("testUpdate");
       Collection<Switch> switchs = service.loadAll();
-      Assert.assertEquals(switchs.size(), 2);
+      long originalNumberOfSwitches = switchs.size();
+      
+      service.update(swh);
+      
+      switchs = service.loadAll();
+      
+      System.out.println("switches before update " + originalNumberOfSwitches);
+      System.out.println("switches after update " + switchs.size());
+     
+      Assert.assertEquals(switchs.size(), originalNumberOfSwitches);
       for (Switch s : switchs) {
-         if (s.getOid() == 1) {
+         if (s.getOid() == createdSwitchId) {
             Assert.assertEquals(s.getName(), "testUpdate");
             Assert.assertTrue(s.getSwitchCommandOffRef().getDeviceCommand().getName().equals("testLirc2"));
             Assert.assertTrue(s.getSwitchCommandOnRef().getDeviceCommand().getName().equals("testLirc2"));
-            Assert.assertTrue(s.getSwitchSensorRef().getSensor().getName().equals("SensorAfterBeUpdated"));
+            Assert.assertTrue(s.getSwitchSensorRef().getSensor().getName().equals("SensorAfterUpdate"));
             break;
          }
       }
