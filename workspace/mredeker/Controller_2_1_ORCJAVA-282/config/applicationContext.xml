@@ -424,6 +424,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "slider" value-ref = "sliderBuilder"/>
         <entry key = "gesture" value-ref = "gestureBuilder"/>
         <entry key = "image"  value-ref = "imageBuilder"/>
+        <entry key = "colorpicker" value-ref = "colorpickerBuilder"/>
       </map>
     </property>
 	</bean>
@@ -454,6 +455,15 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	 | See the org.openremote.controller.component.ComponentBuilder interface for details if you seek to
 	 | extend the implementation with additional UI component types.
 	 +-->
+	 
+	
+	<!-- colorpickerBuilder -->
+	<bean id="colorpickerBuilder" class="org.openremote.controller.component.control.colorpicker.ColorPickerBuilder" >
+    	<property name = "commandFactory" ref = "commandFactory"/>
+    	<!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-147) -->
+    	<property name = "deployer" ref = "deployer"/>
+    </bean>
+
 	 
   <!-- TODO -->
 	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder">
