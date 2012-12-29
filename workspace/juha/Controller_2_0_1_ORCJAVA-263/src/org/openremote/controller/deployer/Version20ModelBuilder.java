@@ -273,7 +273,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
       String xmlPath = PathUtil.addSlashSuffix(config.getResourcePath()) + CONTROLLER_XML;
 
-      log.trace("Applied legacy resource path conversion to non-compatible URI ''{0}''" + xmlPath);
+      log.trace("Applied legacy resource path conversion to non-compatible URI ''{0}''", xmlPath);
 
       return new File(xmlPath);
     }
