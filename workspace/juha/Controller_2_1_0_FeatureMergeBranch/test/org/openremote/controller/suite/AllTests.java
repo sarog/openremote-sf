@@ -36,6 +36,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.openremote.controller.deployer.Version20ModelBuilderTest;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.utils.PathUtil;
@@ -74,7 +75,8 @@ import org.jdom.input.DOMBuilder;
    StatusCacheTests.class,
    ProtocolTests.class,
    BusTests.class,
-   DSCIT100Tests.class
+   DSCIT100Tests.class,
+   Version20ModelBuilderTest.class
 })
 
 
