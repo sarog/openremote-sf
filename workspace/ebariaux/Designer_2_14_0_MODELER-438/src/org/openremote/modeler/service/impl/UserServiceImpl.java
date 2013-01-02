@@ -46,7 +46,6 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.context.SecurityContextHolder;
@@ -290,7 +289,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return genericDAO.getByNonIdField(User.class, "username", username) == null;
    }
 
-   public void setMailSender(JavaMailSenderImpl mailSender) {
+   public void setMailSender(JavaMailSender mailSender) {
       this.mailSender = mailSender;
    }
 
