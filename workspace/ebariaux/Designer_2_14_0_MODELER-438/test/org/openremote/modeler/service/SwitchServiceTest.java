@@ -151,12 +151,6 @@ public class SwitchServiceTest {
       }
    }
 
-   @Test(dependsOnMethods = "testSaveSwitch")
-   public void testLoadAll() {
-      Collection<Switch> switchs = service.loadAll();
-      Assert.assertEquals(switchs.size(), 2);
-   }
-
    @Test(dependsOnMethods = "testUpdate")
    public void testDelete() {
      Collection<Switch> switchs = service.loadAll();
