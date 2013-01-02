@@ -72,11 +72,14 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    @Override
    @Transactional
    public Switch update(Switch switchToggle) {
-     genericDAO.saveOrUpdate(switchToggle);
-     return switchToggle;
-     /*
       Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
       old.setName(switchToggle.getName());
+
+      /*
+       * Relationship to commands and sensor must be explicitly managed.
+       * It is mandatory to manually delete old reference entities before linking to new one
+       * or a combinatory explosion occurs when fetching back the switch.
+       */
       if (switchToggle.getSwitchCommandOffRef() != null
             && old.getSwitchCommandOffRef().getOid() != switchToggle.getSwitchCommandOffRef().getOid()) {
          genericDAO.delete(old.getSwitchCommandOffRef());
@@ -96,7 +99,6 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          switchToggle.getSwitchSensorRef().setSwitchToggle(old);
       }
       return old;
-      */
    }
    
    public UserService getUserService() {
