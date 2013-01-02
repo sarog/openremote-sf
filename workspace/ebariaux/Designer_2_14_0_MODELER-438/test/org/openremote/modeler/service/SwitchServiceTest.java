@@ -158,11 +158,15 @@ public class SwitchServiceTest {
    }
 
    @Test(dependsOnMethods = "testUpdate")
-   public void testDelte() {
+   public void testDelete() {
+     Collection<Switch> switchs = service.loadAll();
+     long originalNumberOfSwitches = switchs.size();
+
       Switch swh = new Switch();
-      swh.setOid(1);
+      swh.setOid(createdSwitchId);
       service.delete(1);
-      Collection<Switch> switchs = service.loadAll();
-      Assert.assertEquals(switchs.size(), 1);
+      
+      switchs = service.loadAll();
+      Assert.assertEquals(switchs.size(), originalNumberOfSwitches - 1);
    }
 }
