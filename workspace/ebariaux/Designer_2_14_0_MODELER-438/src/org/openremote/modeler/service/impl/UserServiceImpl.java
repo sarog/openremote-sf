@@ -45,6 +45,7 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -66,10 +67,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   public final static String ACTIVATION_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Activate";
   public final static String SHARED_ACCOUNT_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Share.Account";
 
-
+  private String emailFromAddress;
+  
    private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
-   private JavaMailSenderImpl mailSender;
+   private JavaMailSender mailSender;
    
    private VelocityEngine velocityEngine;
    
@@ -201,7 +203,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
 
         message.setSubject("OpenRemote Designer Account Registration");
         message.setTo(user.getEmail());
-        message.setFrom(mailSender.getUsername());
+        message.setFrom(emailFromAddress);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("user", user);
@@ -347,7 +349,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         message.setSubject("Invitation to Share an OpenRemote Designer Account");
         message.setTo(invitee.getEmail());
-        message.setFrom(mailSender.getUsername());
+        message.setFrom(emailFromAddress);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("uid", invitee.getOid());
@@ -500,7 +502,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setSubject("OpenRemote Password Assistance");
             message.setTo(user.getEmail());
-            message.setFrom(mailSender.getUsername());
+            message.setFrom(emailFromAddress);
             Map model = new HashMap();
             model.put("webapp", configuration.getWebappServerRoot());
             model.put("username", user.getUsername());
@@ -541,5 +543,9 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
       return false;
    }
-   
+
+	public void setEmailFromAddress(String emailFromAddress) {
+		this.emailFromAddress = emailFromAddress;
+	}
+
 }
