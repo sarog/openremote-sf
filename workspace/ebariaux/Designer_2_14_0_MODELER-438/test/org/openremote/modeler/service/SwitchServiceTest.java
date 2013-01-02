@@ -104,18 +104,18 @@ public class SwitchServiceTest {
       DeviceCommand cmd = new DeviceCommand();
       cmd.setProtocol(protocol);
       cmd.setName("testLirc2");
-      cmd.setDevice(swh.getDevice()); // EBR new
+      cmd.setDevice(swh.getDevice());
       deviceCommandService.save(cmd);
       
       Sensor sensor = new Sensor();
-      sensor.setName("SensorAfterUpdate");
+      sensor.setName("SensorAfterUpdate");      
+      sensor.setDevice(swh.getDevice());
+      sensor.setAccount(swh.getAccount());      
       SensorCommandRef sensorCmdRef = new SensorCommandRef();
       sensorCmdRef.setDeviceCommand(cmd);
       sensor.setSensorCommandRef(sensorCmdRef);
       sensorCmdRef.setSensor(sensor);
       sensorService.saveSensor(sensor);
-
-      // Note: if device command / sensor not saved before -> hibernate exception : object references an unsaved transient instance
       
       SwitchSensorRef sensorRef = new SwitchSensorRef();
       sensorRef.setSensor(sensor);
@@ -139,10 +139,6 @@ public class SwitchServiceTest {
       service.update(swh);
       
       switchs = service.loadAll();
-      
-      System.out.println("switches before update " + originalNumberOfSwitches);
-      System.out.println("switches after update " + switchs.size());
-     
       Assert.assertEquals(switchs.size(), originalNumberOfSwitches);
       for (Switch s : switchs) {
          if (s.getOid() == createdSwitchId) {
