@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -26,7 +26,9 @@ import java.util.logging.Level;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.experimental.categories.Category;
 import org.openremote.controller.Constants;
+import org.openremote.controller.suite.AllTests;
 
 /**
  * Basic tests to check nothing gets messed up in the logging facade.
@@ -109,6 +111,7 @@ public class LoggerTest
   /**
    * TODO : trace not yet implemented
    */
+  @Category(AllTests.NotYetImplemented.class)
   @Test public void testTraceMethod()
   {
     throw new Error("Not Yet Implemented");
