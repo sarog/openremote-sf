@@ -11,3 +11,13 @@ Update files prepare.sh and CMakeLists.txt with APR directory name.
 Type:
 # ./prepare
 # ./make
+
+
+2- Prepare and build PAD on Windows
+-----------------------------------
+
+Start the Visual Studio command prompt and type the following commands:
+
+> prepare.bat
+> cd build
+> nmake -f Makefile pad 

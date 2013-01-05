@@ -3,7 +3,7 @@ project (pad-all)
 
 # Directories
 if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-  set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.5/win32-x86")
+  set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.6/win")
   set (APR_LIB "apr-1")
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL Linux)
   set (APR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/apr-1.4.6")

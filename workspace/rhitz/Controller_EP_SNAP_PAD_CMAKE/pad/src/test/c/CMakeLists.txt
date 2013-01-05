@@ -7,7 +7,11 @@ include_directories(${APR_PATH}/include)
 include_directories("../../main/c")
  
 # external libraries
-link_directories("${APR_PATH}/.libs")
+if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+  link_directories("${APR_PATH}/lib")
+else (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+  link_directories("${APR_PATH}/.libs")
+endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 
 # add the executable
 add_executable(padTest main.c test.c)
