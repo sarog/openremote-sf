@@ -77,7 +77,7 @@ public class SavedServersNetworkCheckTestAsyncTask extends AsyncTask<String, Str
     	    	boolean coUp;
     	    	
                 try{
-                    response = ORConnection.checkURLWithHTTPProtocol(ctx, ORHttpMethod.GET,new URL(co.getControllerName()),false);
+                    response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(co.getControllerName()),false);
                    
                     Log.i(TAG,co.getControllerName()+ "response: "+response.getStatusLine());
                     coUp=true;

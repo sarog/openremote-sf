@@ -116,19 +116,19 @@ public class ORControllerServerSwitcher
 
 
   
-  public boolean saveGroupMembersToDB(List<URL> groupMembers, String failoverFor)
-  {
-	  dh=new DataHelper(this.context);
-	    for (int i = 0; i < groupMembers.size(); i++)
-	    {
-	    	  dh.insert(groupMembers.get(i).toString(), "grp1", 1,1,0,failoverFor);
-	    }
-
-	    //return editor.commit();
-	    dh.closeConnection();
-       
-	  return false;
-  }
+//  public boolean saveGroupMembersToDB(List<URL> groupMembers, String failoverFor)
+//  {
+//	  dh=new DataHelper(this.context);
+//	    for (int i = 0; i < groupMembers.size(); i++)
+//	    {
+//	    	  dh.insert(groupMembers.get(i).toString(), "grp1", 1,1,0,failoverFor);
+//	    }
+//
+//	    //return editor.commit();
+//	    dh.closeConnection();
+//       
+//	  return false;
+//  }
 
   
 
@@ -189,7 +189,7 @@ public class ORControllerServerSwitcher
     	boolean coUp;
     	
         try{
-            response = ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET,new URL(co.getControllerName()),false);
+            response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(co.getControllerName()),false);
            
             Log.i(LOG_CATEGORY,co.getControllerName()+ "response: "+response.getStatusLine());
             coUp=true; //if you found one, break

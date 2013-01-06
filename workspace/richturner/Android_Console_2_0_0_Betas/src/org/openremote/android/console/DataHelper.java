@@ -48,15 +48,21 @@ public long insert(String name, String info) {
 	   s[0]=name;
 	   
 	   Cursor c=db.rawQuery(FIND, s);
-	   if(c.getColumnCount() > 0) return 0;
+	   int colCount = c.getColumnCount();
 	   c.close();
-	   
+	   if(colCount > 0) return 0;	   
 	   
       this.insertStmt.bindString(1, name);
       this.insertStmt.bindString(2, info);
       return this.insertStmt.executeInsert();
    }
    
+	public boolean controllerExists(String name) {
+		String s[] = new String[] {name};
+		Cursor c = db.rawQuery(FIND, s);
+		return c.getCount() > 0;
+	}
+
    public long find(String name){
 	      String s[] = new String[1];
 	   s[0]=name;
@@ -93,16 +99,14 @@ public long insert(String name, String info) {
 	   openHelper.close();
    }
    
-   public long insert(String name, String info, int auto, int up, int selected, String failoverFor) {
-	
-      this.insertStmt.bindString(1, name);
-      this.insertStmt.bindString(2, info);
-      this.insertStmt.bindLong(3, auto);
-      this.insertStmt.bindLong(4, up);
-      this.insertStmt.bindLong(5, selected);
-      this.insertStmt.bindString(6, failoverFor);
-    
-      return this.insertStmt.executeInsert();
+   public void addController(ControllerObject controller) {
+      this.insertStmt.bindString(1, controller.getControllerName());
+      this.insertStmt.bindString(2, ""); // Not sure what this property is
+      this.insertStmt.bindLong(3, controller.isAuto() ? 1 : 0); // This property is not useful and will be removed
+      this.insertStmt.bindLong(4, controller.isControllerUp() ? 1 : 0); // ?
+      this.insertStmt.bindLong(5, controller.isIs_Selected() ? 1 : 0); // Why is state information stored here?
+      this.insertStmt.bindString(6, controller.getFailoverFor()); // This should be checked on startup not stored
+      this.insertStmt.executeInsert();
    }
    
    public void delete(String name) {

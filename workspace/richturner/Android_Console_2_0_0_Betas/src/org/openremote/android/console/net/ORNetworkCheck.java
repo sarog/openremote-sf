@@ -115,7 +115,7 @@ public class ORNetworkCheck
 
     Log.i(LOG_CATEGORY, "Getting panel URL " + restfulPanelURL);
 
-    return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
+    return ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, restfulPanelURL, true);
   }
 
 //Public Class Methods -------------------------------------------------------------------------
@@ -172,7 +172,7 @@ return null;
 
     URL controllerURL = AppSettingsModel.getSecuredServer(context);
 
-    return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
+    return ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, controllerURL, false);
   }
 
 
