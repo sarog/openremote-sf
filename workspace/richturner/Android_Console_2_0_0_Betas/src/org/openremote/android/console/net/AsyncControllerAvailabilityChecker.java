@@ -1,0 +1,98 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2011, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.openremote.android.console.net;
+
+import java.net.URL;
+import org.apache.http.HttpResponse;
+import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
+import org.openremote.android.console.R;
+import android.os.AsyncTask;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.view.ControllerListItemLayout;
+/**
+ * Controller availability checker checks that the controller is alive and the status of it.
+ *
+ * @author Rich Turner
+ *
+ */
+		
+public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String, Boolean> {
+	public static final String TAG = Constants.LOG_CATEGORY + "ControllerAvailabilityChecker";
+	
+  public AsyncControllerAvailabilityChecker() { }
+   
+  @Override
+  protected Boolean doInBackground(String... params) {
+	  HttpResponse response = null;
+    Log.i(TAG, "Starting...");
+	  boolean isAvailable = false;
+	  String controllerUrl = "";
+	  
+	  // Get Controller URL parameter
+	  if (params != null && params.length > 0) {
+	  	controllerUrl = params[0];
+	  }
+	  
+	  if (TextUtils.isEmpty(controllerUrl)) {
+	  	return false;
+	  }
+	  
+	  // Check controller /rest/servers if response received then Controller is available
+    try{
+      response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl), false);
+     
+      if (response != null) {
+	      Log.i(TAG, controllerUrl + " Response: "+ response.getStatusLine());
+	      isAvailable=true;
+      }
+    }
+    catch(Exception e){
+  	  e.printStackTrace();
+    }
+    
+    return isAvailable;
+  }
+
+  /*    @Override
+      protected void onPostExecute(String result) {
+
+                     
+                      Log.i("LOGGER", "Done...");
+                      pDialog.dismiss();
+                      if(result=="success"){
+                              Toast.makeText(ctx, "complete", Toast.LENGTH_LONG).show();
+                             // Intent i=new Intent(ctx,SillyActivity.class);
+                              //startActivity(i);
+                      }else{
+                              Toast.makeText(ctx, "fail", Toast.LENGTH_LONG).show();
+                      }
+
+              super.onPostExecute(result); 
+      }*/
+
+   
+
+}
