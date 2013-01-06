@@ -3,4 +3,5 @@
     <style name="BlackBackgroundTheme" parent="android:Theme">
          <item name="android:windowBackground">@color/black</item>  
     </style>
+
 </resources> 

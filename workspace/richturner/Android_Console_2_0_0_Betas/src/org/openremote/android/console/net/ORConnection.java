@@ -99,7 +99,7 @@ public class ORConnection
    * @param url                   the URL to connect to
    * @param delegateParam         callback delegate to deal with return values, data and exceptions
    */
-  public ORConnection (final Context context, ORHttpMethod httpMethod, boolean useHTTPAuth,
+  public ORConnection (ORHttpMethod httpMethod, boolean useHTTPAuth,
                        String url, ORConnectionDelegate delegateParam)
   {
     initHandler(context);
@@ -259,7 +259,7 @@ public class ORConnection
    *                      there was an error in the HTTP protocol (ClientProtocolException),
    *                      or any other IO error occured (generic IOException)
    */
-  public static HttpResponse checkURLWithHTTPProtocol(Context context, ORHttpMethod httpMethod,
+  public static HttpResponse checkURLWithHTTPProtocol(ORHttpMethod httpMethod,
                                                       URL targetURL, boolean useHTTPAuth)
       throws IOException
   {
@@ -318,7 +318,7 @@ public class ORConnection
 
     if (useHTTPAuth)
     {
-       SecurityUtil.addCredentialToHttpRequest(context, request);
+       //SecurityUtil.addCredentialToHttpRequest(context, request);
     }
 
 

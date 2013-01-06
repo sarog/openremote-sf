@@ -21,21 +21,20 @@ package org.openremote.android.console.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.R;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
-import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
@@ -43,7 +42,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -57,112 +55,149 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 /**
- * The PanelSelectSpinnerView is request panel identity from controller and display as a combobox.
+ * The PanelSelectSpinnerView is used to select the Panel to load for the current Controller
  */
 public class PanelSelectSpinnerView extends Spinner implements ORConnectionDelegate {
-
-   private ArrayAdapter<String> arrayAdapter;
-   public static final String  CHOOSE_PANEL = "choose panel";
-   private int sendCount;
-   private int touchCount;
+	public static final String TAG = Constants.LOG_CATEGORY + "PanelSelectSpinnerView";
+	 private ArrayAdapter<String> arrayAdapter;
+	 public static final String  NO_CONTROLLER = "Select Controller";
+	 public static final String  SELECT_PANEL = "Select Panel";
+	 public static final String  NO_PANEL = "No Panel";
+	 private ControllerObject selectedController;
    
    public PanelSelectSpinnerView(Context context) {
       super(context);
       setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT));
-      
-      constructorCommonCode(context);
+      LinearLayout.LayoutParams.WRAP_CONTENT));
+      initView(context);
    }
    
    /** Constructor used when inflating from XML */
    public PanelSelectSpinnerView(Context context, AttributeSet attrs) {
      super(context, attrs);
      
-     constructorCommonCode(context);
+     initView(context);
    }
    
-   /** Code common to all constructors, put here to putting the same code in multiple places. */
-   private void constructorCommonCode(Context context) {
-      arrayAdapter = new ArrayAdapter<String>(context, R.layout.simple_spinner_item_center);
-      arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-      setAdapter(arrayAdapter);
-      String currentPanel = AppSettingsModel.getCurrentPanelIdentity(context);
-      if (!TextUtils.isEmpty(currentPanel)) {
-         arrayAdapter.add(currentPanel);
-      } else {
-         arrayAdapter.add(CHOOSE_PANEL);
+   private void initView(final Context context) {
+     arrayAdapter = new ArrayAdapter<String>(context, R.layout.simple_spinner_item_center);
+     arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+     setAdapter(arrayAdapter);
+     
+     setController(null);
+     
+     setOnTouchListener(new OnTouchListener() {
+    	 
+       public boolean onTouch(View v, MotionEvent event) {
+
+      	 if (selectedController != null && selectedController.isControllerUp())
+      		 new ORConnection(ORHttpMethod.GET, true, selectedController.getControllerName() + "/rest/panels", PanelSelectSpinnerView.this);
+      	 
+         return true;
+       }
+       
+    });
+   }
+   
+   public void setController(ControllerObject controller) {
+  	 selectedController = controller;
+  	 
+  	 if (arrayAdapter == null)
+  		 return;
+  	 
+  	 setEnabled(false);  	 
+  	 arrayAdapter.clear();
+  	 
+  	 if (controller == null || !controller.isControllerUp()) {
+  		 arrayAdapter.add(NO_CONTROLLER);
+  	 } else {
+  		 arrayAdapter.add(SELECT_PANEL);
+  		 setEnabled(true);
+  	 }
+  	 
+  	 arrayAdapter.notifyDataSetChanged();
+   }
+   
+	@Override
+	public void urlConnectionDidReceiveData(InputStream data) {
+    ArrayList<String> panelList = new ArrayList<String>();
+    
+    try
+    {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document dom = builder.parse(data);
+
+      Element root = dom.getDocumentElement();
+
+      NodeList nodeList = root.getElementsByTagName("panel");
+
+      int nodeNums = nodeList.getLength();
+      for (int i = 0; i < nodeNums; i++)
+      {
+        panelList.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
       }
-      
-      setOntouchListener(context, this);
-   }
-   
-   /**
-    * Sets the touch listener when touch the panel item.
-    * 
-    * @param orConnectionDelegate the delegate to handle the connection
-    */
-   private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
-      setOnTouchListener(new OnTouchListener() {
-         public boolean onTouch(View v, MotionEvent event) {
-            touchCount++;
-            if (touchCount%2== 1 && "".equals(AppSettingsActivity.currentServer)) {
-               ViewHelper.showAlertViewWithTitle(context, "Warning",
-                     "No controller. Please configure Controller URL manually.");
-               return true;
-            }
-            requestPanelList(context, orConnectionDelegate);
-            return false;
-         }
-      });
-   }
+    }
+
+    catch (IOException e)
+    {
+      Log.e(TAG, "IOException while requesting panel list", e);
+    }
+
+    catch (ParserConfigurationException e) {
+      Log.e(TAG, "XML parser configuration error while requesting panel list", e);
+    }
+
+    catch (SAXException e) {
+      Log.e(TAG, "parse error on panel list from controller", e);
+    }
+
+    Log.i(TAG, "received the following panel names from the controller: " + panelList.toString());
+
+    // Add these panels to the list
+    arrayAdapter.clear();
+    
+    if (panelList.size() == 0) {
+      arrayAdapter.add(NO_PANEL);
+    }
+    
+    for (int i = 0; i < panelList.size(); i++) {   
+       arrayAdapter.add(panelList.get(i));
+    }
+    
+    arrayAdapter.notifyDataSetChanged();
+    PanelSelectSpinnerView.this.setSelection(0);
+    
+//    String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
+//    int panelCount = arrayAdapter.getCount();
+//    if (!TextUtils.isEmpty(panel)) {
+//       if (panelCount == 0) {
+//          arrayAdapter.add(panel);
+//       } else {
+//          for (int i = 0; i < panelCount; i++) {
+//             if (panel.equals(arrayAdapter.getItem(i))) {
+//                PanelSelectSpinnerView.this.setSelection(i, true);
+//                break;
+//             }
+//          }
+//       }
+//    }
+	}
    
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
-       AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-       alertDialog.setTitle("Invalid URL selected");
-       alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
-       alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-        	  setDefaultAdapterContent();  //dont want to set this as this can be from a previous controller
-        	 
-             return;
-            
-             
-          }
-       });
-       alertDialog.show();
-       
+	   AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+	   alertDialog.setTitle("Panel List Error");
+	   alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
+	   alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+	      public void onClick(DialogInterface dialog, int which) {
+	      	dialog.dismiss();
+	      }
+	   });
+	   alertDialog.show();
       
-      Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
+	   Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
    }
-
-   public void urlConnectionDidReceiveData(InputStream data) {
-	      AsyncPanelListReader asyncReader =  new AsyncPanelListReader() {
-	         protected void onPostExecute(List<String> panelList) {
-	            arrayAdapter.clear();
-	            for (int i = 0; i < panelList.size(); i++) {   
-	               arrayAdapter.add(panelList.get(i));
-	            }
-	            String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
-	            int panelCount = arrayAdapter.getCount();
-	            if (!TextUtils.isEmpty(panel)) {
-	               if (panelCount == 0) {
-	                  arrayAdapter.add(panel);
-	               } else {
-	                  for (int i = 0; i < panelCount; i++) {
-	                     if (panel.equals(arrayAdapter.getItem(i))) {
-	                        PanelSelectSpinnerView.this.setSelection(i, true);
-	                        break;
-	                     }
-	                  }
-	               }
-	            } else if (panelCount == 0) {
-	               arrayAdapter.add(CHOOSE_PANEL);
-	            }
-	         }
-	      };
-	      asyncReader.execute(data);
-	   }
 
    @Override
    //This method is for setting the error dialog in the spinner
@@ -176,58 +211,13 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
                @Override
                public void onClick(View v) {
                   super.onClick(v);
-                  requestPanelList(getContext(), PanelSelectSpinnerView.this);
+                  new ORConnection(ORHttpMethod.GET, true, selectedController.getControllerName() + "/rest/panels", PanelSelectSpinnerView.this);
                }
                
             });
          } else {
-            // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
-            AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-            alertDialog.setTitle("Panel List Not Found");
-            alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
-            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int which) {
-                  return;
-               }
-            });
-            alertDialog.show();
-            setDefaultAdapterContent();
+        	 urlConnectionDidFailWithException(new Exception("HTTP Error: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase()));
          }
       }
    }
-
-   /**
-    * Sets panel identity list into the view's adapter.
-    */
-   public void setDefaultAdapterContent() {
-      if (arrayAdapter != null) {
-         arrayAdapter.clear();
-         String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
-         if (!TextUtils.isEmpty(panel)) {
-            arrayAdapter.add(panel);
-         } else {
-            arrayAdapter.add(CHOOSE_PANEL);
-         }
-      }
-   }
-
-   /**
-    * Request panel identity list from controller.
-    * 
-    * @param ORConnectionDelegate the delegate to handle the connection
-    */
-   private void requestPanelList(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
-      sendCount++;
-      if (sendCount%2 == 1 && !TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
-         new ORConnection(context ,ORHttpMethod.GET, true, AppSettingsActivity.currentServer + "/rest/panels", ORConnectionDelegate);
-      }
-   }
-
-   public void setOnlyPanel(String panelName) {
-      if (arrayAdapter != null) {
-         arrayAdapter.clear();
-         arrayAdapter.add(panelName);
-      }
-   }
-   
 }
