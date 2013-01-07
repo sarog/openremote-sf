@@ -98,12 +98,12 @@ public class BeehiveCommandCheckService {
 
    private void ackCommand(Long id)  {
       log.info("Acking command "+id);
+      ClientResource cr = null;
       try {
-         ClientResource cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "command/" + id);
+         cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "command/" + id);
          UserDTO user = controllerDTO.getAccount().getUsers().get(0);
          cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
          Representation r = cr.delete();
-         cr.release();
          String str;
          str = r.getText();
          GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str);
@@ -112,6 +112,10 @@ public class BeehiveCommandCheckService {
          }
       } catch (Exception e) {
          log.error("!!! Unable to ACK controller command with id: " + id, e);
+      } finally {
+         if (cr != null) {
+            cr.release();
+         }
       }
    }
    
@@ -149,12 +153,12 @@ public class BeehiveCommandCheckService {
          //As long as we are not linked to an account we periodically try to receive account info
          int sleepTime = controllerConfig.getBeehiveCommandServiceCheckInterval();
          while (isRunning()) {
+            ClientResource cr = null;
             try {
-               ClientResource cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "commands/" + controllerDTO.getOid());
+               cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "commands/" + controllerDTO.getOid());
                UserDTO user = controllerDTO.getAccount().getUsers().get(0);
                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
                Representation r = cr.get();
-               cr.release();
                String str;
                str = r.getText();
                GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", ControllerCommandDTO.class).deserialize(str);
@@ -167,6 +171,10 @@ public class BeehiveCommandCheckService {
                }
             } catch (Exception e) {
                log.error("!!! Unable to check for new controller command from Beehive", e);
+            } finally {
+               if (cr != null) {
+                  cr.release();
+               }
             }
             try { Thread.sleep(sleepTime); } catch (InterruptedException e) {} //Let's wait 30 seconds
          }
