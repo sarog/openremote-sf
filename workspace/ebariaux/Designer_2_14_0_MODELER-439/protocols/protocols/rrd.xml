@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ OpenRemote, the Home of the Digital Home.
+ Copyright 2008-2012, OpenRemote Inc.
+
+ See the contributors.txt file in the distribution for a
+ full listing of individual contributors.
+
+ This is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 3.0 of
+ the License, or (at your option) any later version.
+
+ This software is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public
+ License along with this software; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+
+<!--
+| RrdGraphUrl protocol configuration for OpenRemote Designer.
+|
+| Author: Marcus Redeker
++-->
+<openremote xmlns = "http://www.openremote.org"
+            xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation = "http://www.openremote.org protocol.xsd">
+
+  <protocol displayName = "RRD4J Graph URL" tagName = "rrdGraphUrl">
+
+    <attr name = "graphname" label = "Graph name">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message = "Name of graph from rrd4j-config.xml">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name = "width" label = "Width">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message = "Width of the generated image">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name = "height" label = "Height">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message = "Height of the generated image">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name = "start" label = "Start time">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message = "Start time in form: yyyyMMdd-HH-mm">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name = "end" label = "End time">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message = "End tine in form: yyyyMMdd-HH-mm">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name = "command" label = "Command">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message = "Command to use">.*</regex>
+      </validations>
+    </attr>
+
+  </protocol>
+</openremote>
