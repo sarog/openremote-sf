@@ -1,3 +1,9 @@
+Controller Pro 1.0.6
+====================
+
+Bug Fixes:
+
+  - KNX does not return scene numbers sent by a physical push button, SCENE and LEARN_SCENE seem to vica versa (ORCJAVA-282)
 
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
