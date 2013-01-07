@@ -325,16 +325,17 @@ class ApplicationProtocolDataUnit
   {
     int value = parameter.getValue().intValue();
 
-    if (value < 0 || value > 63)
+    if (value < 1 || value > 64)
     {
-      throw new ConversionException("Expected value is in range [0-63] , received " + value);
+      throw new ConversionException("Expected value is in range [1-64] , received " + value);
     }
-
+    value = value - 1;
+    
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new Unsigned8Bit(
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
-          learn ? value : 0x80 | value)
+          learn ? 0x80 | value : value)
     );
   }
 
