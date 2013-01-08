@@ -4,14 +4,10 @@ import java.util.ArrayList;
 
 import org.openremote.android.console.net.AsyncControllerAvailabilityChecker;
 import org.openremote.android.console.view.ControllerListItemLayout;
-
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,58 +25,54 @@ public class ControllerListAdapter extends ArrayAdapter<ControllerObject> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final View v;
-		final ControllerObject o;
+		ControllerListItemLayout v;
+		ControllerObject controller = items.get(position);
 		TextView tt = null;
 		
 		if (convertView == null) {
-			v = View.inflate(ctx, R.layout.controller_list_item, null);
+			v = (ControllerListItemLayout)View.inflate(ctx, R.layout.controller_list_item, null);
 		} else {
-			v = convertView;
+			v = (ControllerListItemLayout)convertView;
 		}
 
-		o = items.get(position);
-		
-		if (o != null) {
-			tt = (TextView)v.findViewById(R.id.controllerURL);
-
-			if (tt != null) {
-				tt.setText(o.getControllerName());
-			}
-		}
-		
-		// Check Controller Availability
-		final ControllerListItemLayout itemLayout = (ControllerListItemLayout)v;
-		
-		AsyncControllerAvailabilityChecker checker = new AsyncControllerAvailabilityChecker() {
-			@Override
-			public void onPostExecute(Boolean result) {
-				o.setIsControllerUp(result);
-				
-			  // Set availability indicator on controller item and make item checkable if available
-			  ProgressBar pb = (ProgressBar)v.findViewById(R.id.controller_status_searching);
-			  pb.setVisibility(View.GONE);
-			  
-			  if (result) {
-			  	ImageView ok = (ImageView)v.findViewById(R.id.controller_status_ok);
-			  	ok.setVisibility(View.VISIBLE);
-			  	itemLayout.setCheckable(true);
-			  } else {
-				  ImageView nok = (ImageView)v.findViewById(R.id.controller_status_nok);
-				  nok.setVisibility(View.VISIBLE);
-			  }
-			}
-		};
-		
-	  // Set progress indicator on controller item
 	  ProgressBar pb = (ProgressBar)v.findViewById(R.id.controller_status_searching);
 	  ImageView ok = (ImageView)v.findViewById(R.id.controller_status_ok);
 	  ImageView nok = (ImageView)v.findViewById(R.id.controller_status_nok);
-	  ok.setVisibility(View.GONE);
-	  nok.setVisibility(View.GONE);
-	  pb.setVisibility(View.VISIBLE);
-	  
-		checker.execute(o.getControllerName());
+		tt = (TextView)v.findViewById(R.id.controllerURL);
+		
+		if (controller == null) {
+			return null;
+		}
+		
+		tt.setText(controller.getControllerName());
+		
+		v.setChecked(controller.isIs_Selected());
+		
+		if (controller.isAvailabilityCheckDone()) {
+		  pb.setVisibility(View.GONE);
+		  boolean result = controller.isControllerUp();
+		  
+		  if (result) {
+		  	ok.setVisibility(View.VISIBLE);
+		  	nok.setVisibility(View.GONE);
+		  	v.setCheckable(true);
+		  } else {
+			  nok.setVisibility(View.VISIBLE);
+		  	ok.setVisibility(View.GONE);
+		  	v.setCheckable(false);
+		  }
+		} else {
+			// Check Controller Availability
+			AsyncControllerAvailabilityChecker checker = new AsyncControllerAvailabilityChecker((ControllerListItemLayout)v, controller);
+			v.setCheckerTask(checker);
+			
+		  // Set progress indicator on controller item
+		  ok.setVisibility(View.GONE);
+		  nok.setVisibility(View.GONE);
+		  pb.setVisibility(View.VISIBLE);
+		  controller.setAvailabilityCheckDone();
+			checker.execute(controller.getControllerName());
+		}
 		
 //		if(o.isAuto()){
 //			icon.setImageResource(R.drawable.auto_discovered);

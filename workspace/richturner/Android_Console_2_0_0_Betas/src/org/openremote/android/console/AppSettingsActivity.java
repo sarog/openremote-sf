@@ -163,7 +163,7 @@ public class AppSettingsActivity extends GenericActivity {
         
       	// Only proceed if list item is checked (means controller is available)
       	if (!listItem.isChecked())
-      		return;
+      		newlySelectedController = null;
       	
       	if (selectedController != null && selectedController == newlySelectedController)
       		return;
@@ -172,11 +172,12 @@ public class AppSettingsActivity extends GenericActivity {
       		selectedController.setIs_Selected(false);
       	
       	selectedController = newlySelectedController;
-      	
-      	selectedController.setIs_Selected(true);
+
+      	if (newlySelectedController != null) {
+      		selectedController.setIs_Selected(true);
+      	}
       	
       	panelSelectSpinnerView.setController(newlySelectedController);  
-         
         serverListAdapter.notifyDataSetChanged();
       }
    });
