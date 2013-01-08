@@ -26,6 +26,7 @@ import junit.framework.Assert;
 import org.jdom.Document;
 import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.model.xml.Version20SensorBuilder;
@@ -148,11 +149,14 @@ public class Version20ModelBuilderTest
     ControllerConfiguration config = new ControllerConfiguration();
     config.setResourcePath(resourcePath);
 
+    CommandFactory commandFactory = DeployerTest.createCommandFactory();
+
     Version20ModelBuilder builder = new Version20ModelBuilder(
         new StatusCache(),
         config,
         new Version20SensorBuilder(),
-        new Version20CommandBuilder(DeployerTest.createCommandFactory())
+        new Version20CommandBuilder(commandFactory),
+        commandFactory
     );
 
     Document doc = builder.readControllerXMLDocument();
@@ -181,11 +185,14 @@ public class Version20ModelBuilderTest
     ControllerConfiguration config = new ControllerConfiguration();
     config.setResourcePath(resourcePath);
 
+    CommandFactory commandFactory = DeployerTest.createCommandFactory();
+
     Version20ModelBuilder builder = new Version20ModelBuilder(
         new StatusCache(),
         config,
         new Version20SensorBuilder(),
-        new Version20CommandBuilder(DeployerTest.createCommandFactory())
+        new Version20CommandBuilder(commandFactory),
+        commandFactory
     );
 
     try
@@ -215,11 +222,14 @@ public class Version20ModelBuilderTest
     ControllerConfiguration config = new ControllerConfiguration();
     config.setResourcePath(resourcePath);
 
+    CommandFactory commandFactory = DeployerTest.createCommandFactory();
+
     Version20ModelBuilder builder = new Version20ModelBuilder(
         new StatusCache(),
         config,
         new Version20SensorBuilder(),
-        new Version20CommandBuilder(DeployerTest.createCommandFactory())
+        new Version20CommandBuilder(commandFactory),
+        commandFactory
     );
 
       Document doc = builder.readControllerXMLDocument();
@@ -252,11 +262,14 @@ public class Version20ModelBuilderTest
     ControllerConfiguration config = new ControllerConfiguration();
     config.setResourcePath(resourcePath.toString());
 
+    CommandFactory commandFactory = DeployerTest.createCommandFactory();
+
     Version20ModelBuilder builder = new Version20ModelBuilder(
         new StatusCache(),
         config,
         new Version20SensorBuilder(),
-        new Version20CommandBuilder(DeployerTest.createCommandFactory())
+        new Version20CommandBuilder(commandFactory),
+        commandFactory
     );
 
     Document doc = builder.readControllerXMLDocument();
@@ -288,11 +301,14 @@ public class Version20ModelBuilderTest
     ControllerConfiguration config = new ControllerConfiguration();
     config.setResourcePath(resourcePath.toString());
 
+    CommandFactory commandFactory = DeployerTest.createCommandFactory();
+
     Version20ModelBuilder builder = new Version20ModelBuilder(
         new StatusCache(),
         config,
         new Version20SensorBuilder(),
-        new Version20CommandBuilder(DeployerTest.createCommandFactory())
+        new Version20CommandBuilder(commandFactory),
+        commandFactory
     );
 
     try
