@@ -204,18 +204,14 @@ fi
 
 
 # Set up the directory that contains native libraries for the OpenRemote Controller
-
-OR_BOSS_NATIVE_LIBRARY_PATH=$CATALINA_BASE/webapps/controller/WEB-INF/lib/native
-JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$OR_BOSS_NATIVE_LIBRARY_PATH"
-
-# For Linux
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$OR_BOSS_NATIVE_LIBRARY_PATH"
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CATALINA_BASE/webapps/controller/WEB-INF/lib/native"
 
 
+##
 # Set Tomcat's console logging to match controller's console output threshold.
 # Note that TC uses JUL log level names where as the controller uses Log4j
 # threshold names so we need to do some mapping of values below...
-
+##
 setTomcatConsoleLevel()
 {
 
@@ -267,28 +263,38 @@ printTomcatEnvVariables()
 }
 
 
-
-# Passes the log level and threshold options to Java runtime...
-
-setJVMLogOptions()
+##
+#  Executes the Tomcat runtime.
+#
+#  1st arg -- path to java executable
+#  2nd arg -- JAVA_OPTS
+#  3rd arg -- classpath
+#  4th arg -- if contains 'service' runs tomcat as background process with redirected std streams
+#
+##
+function executeTomcat()
 {
 
-  JAVA_OPTS="$JAVA_OPTS -Dtomcat.server.console.log.level=$TOMCAT_SERVER_CONSOLE_LOG_LEVEL"
-  JAVA_OPTS="$JAVA_OPTS -Dopenremote.controller.startup.log.level=$CONTROLLER_STARTUP_LOG_LEVEL"
-  JAVA_OPTS="$JAVA_OPTS -Dopenremote.controller.console.threshold=$CONTROLLER_CONSOLE_THRESHOLD"
+  if [ "$4" = "service" ]; then
 
+    # Send standard error stream to standard out, direct standard out to a file, limit std out
+    # file to first 50000 characters. Note that the redirect will automatically switch to a
+    # buffered mode so stdout will appear in chunks, size of which is defined by the operating
+    # system. For more detailed handling of std output, tools such as logrotate can be used.
+
+    local REDIRECT="| head -c 50000 >> \"$CATALINA_BASE/logs/container/stderrout.log\" 2>&1 &"
+  fi
+
+  eval "$1" \
+            -Dcatalina.home=\"$CATALINA_HOME\" \
+            -Dcatalina.base=\"$CATALINA_BASE\" \
+            -Djava.io.tmpdir=\"$CATALINA_TMPDIR\" \
+            -Dtomcat.server.console.log.level="$TOMCAT_SERVER_CONSOLE_LOG_LEVEL" \
+            -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
+            -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
+            -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
+            \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $REDIRECT
 }
-
-
-
-# Compile all tomcat related command line parameters...
-
-TOMCAT_EXEC_PARAMS="$LOGGING_CONFIG $CATALINA_OPTS \
-                    -classpath $CLASSPATH \
-                    -Dcatalina.base=$CATALINA_BASE \
-                    -Dcatalina.home=$CATALINA_HOME \
-                    -Djava.io.tmpdir=$CATALINA_TMPDIR"
-
 
 # Execute OpenRemote 'run' target...
 
@@ -314,7 +320,6 @@ if [ "$1" = "run" ]; then
   # pass log options to JVM and print the env variable values...
 
   setTomcatConsoleLevel
-  setJVMLogOptions
   printTomcatEnvVariables
 
   # Let the user know how the logging has been configured...
@@ -331,16 +336,10 @@ if [ "$1" = "run" ]; then
   echo ""
   echo "-----------------------------------------------------------------------"
 
-  # shift out the first param -- the Tomcat bootstrap class only uses 'start' -- other params
-  # after 'run' are added as arguments to Bootstrap
+  # run tomcat...
 
-  shift
+  executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH"
 
-  # compile the command line to execute...
-
-  EXEC="$_RUNJAVA $JAVA_OPTS $TOMCAT_EXEC_PARAMS org.apache.catalina.startup.Bootstrap $@ start"
-
-  exec $EXEC
 
 
 # Execute OpenRemote 'start' target...
@@ -365,25 +364,11 @@ elif [ "$1" = "start" ]; then
   # pass log options to JVM and print the env variable values...
 
   setTomcatConsoleLevel
-  setJVMLogOptions
   printTomcatEnvVariables
 
+  # run Tomcat as service...
 
-  # shift out the first param -- the Tomcat bootstrap class only uses 'start' -- other params
-  # after 'run' are added as arguments to Bootstrap
-
-  shift
-
-  # compile the command line to execute...
-
-  EXEC="$_RUNJAVA $JAVA_OPTS $TOMCAT_EXEC_PARAMS org.apache.catalina.startup.Bootstrap $@ start"
-
-  # Send standard error stream to standard out, direct standard out to a file, limit std out
-  # file to first 50000 characters. Note that the redirect will automatically switch to a
-  # buffered mode so stdout will appear in chunks, size of which is defined by the operating
-  # system. For more detailed handling of std output, tools such as logrotate can be used.
-
-  exec $EXEC | head -c 50000 >> $CATALINA_BASE/logs/container/stderrout.log 2>&1 &
+  executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
 
 
 elif [ "$1" = "stop" ] ; then
