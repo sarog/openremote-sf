@@ -272,7 +272,7 @@ printTomcatEnvVariables()
 #  4th arg -- if contains 'service' runs tomcat as background process with redirected std streams
 #
 ##
-function executeTomcat()
+executeTomcat()
 {
 
   if [ "$4" = "service" ]; then
@@ -285,7 +285,7 @@ function executeTomcat()
     local REDIRECT="| head -c 50000 >> \"$CATALINA_BASE/logs/container/stderrout.log\" 2>&1 &"
   fi
 
-  eval "$1" \
+  eval "\"$1\"" \
             -Dcatalina.home=\"$CATALINA_HOME\" \
             -Dcatalina.base=\"$CATALINA_BASE\" \
             -Djava.io.tmpdir=\"$CATALINA_TMPDIR\" \

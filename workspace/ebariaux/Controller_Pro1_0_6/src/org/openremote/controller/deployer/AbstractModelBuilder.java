@@ -156,7 +156,7 @@ public abstract class AbstractModelBuilder implements ModelBuilder
 
     catch (InitializationException e)
     {
-      log.error("Reading controller's definition failed : {0}", e, e.getMessage());
+      log.error("Reading controller''s definition failed : {0}", e, e.getMessage());
     }
   }
 
