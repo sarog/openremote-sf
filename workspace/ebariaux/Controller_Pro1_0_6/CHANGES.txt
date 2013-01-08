@@ -4,6 +4,7 @@ Controller Pro 1.0.6
 New Features:
 
   - Introduce unit tests for Version20ModelBuilder class and regression tests for issue ORCJAVA-263 (ORCJAVA-286)
+
 Bug Fixes:
 
   - KNX does not return scene numbers sent by a physical push button, SCENE and LEARN_SCENE seem to vica versa (ORCJAVA-282)
@@ -11,6 +12,7 @@ Bug Fixes:
   - openremote.sh start creates an unbound catalina.out file (ORCJAVA-273)
   - Fix openremote.sh to work with paths that contain spaces (ORCJAVA-280)
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
+  - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
 
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
