@@ -19,6 +19,7 @@
 */
 package org.openremote.android.console.net;
 
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
@@ -41,8 +42,13 @@ import org.openremote.android.console.view.ControllerListItemLayout;
 		
 public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String, Boolean> {
 	public static final String TAG = Constants.LOG_CATEGORY + "ControllerAvailabilityChecker";
+	private final WeakReference<ControllerListItemLayout> viewLayoutRef;
+	private final WeakReference<ControllerObject> controllerRef;
 	
-  public AsyncControllerAvailabilityChecker() { }
+  public AsyncControllerAvailabilityChecker(ControllerListItemLayout viewLayout, ControllerObject controller) {
+  	viewLayoutRef = new WeakReference<ControllerListItemLayout>(viewLayout);
+  	controllerRef = new WeakReference<ControllerObject>(controller);
+  }
    
   @Override
   protected Boolean doInBackground(String... params) {
@@ -76,6 +82,43 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
     return isAvailable;
   }
 
+	@Override
+	public void onPostExecute(Boolean result) {
+		// Update the Controller Object with the result
+		if (controllerRef != null) {
+			ControllerObject controller = controllerRef.get();
+			if (controller != null) {
+				controller.setIsControllerUp(result);
+				controller.setAvailabilityCheckDone();
+			}
+		}
+		
+		// If view Layout is still linked to this task then update it as well
+		if (viewLayoutRef != null) {
+			ControllerListItemLayout itemLayout = viewLayoutRef.get();
+			AsyncControllerAvailabilityChecker checkerTask = itemLayout.getCheckerTask();
+			if (this == checkerTask) {
+			  // Set availability indicator on controller item and make item checkable if available
+			  ProgressBar pb = (ProgressBar)itemLayout.findViewById(R.id.controller_status_searching);
+			  pb.setVisibility(View.GONE);
+			  
+			  if (result) {
+			  	ImageView ok = (ImageView)itemLayout.findViewById(R.id.controller_status_ok);
+			  	ImageView nok = (ImageView)itemLayout.findViewById(R.id.controller_status_nok);
+			  	ok.setVisibility(View.VISIBLE);
+			  	nok.setVisibility(View.GONE);
+			  	itemLayout.setCheckable(true);
+			  } else {
+			  	ImageView ok = (ImageView)itemLayout.findViewById(R.id.controller_status_ok);
+				  ImageView nok = (ImageView)itemLayout.findViewById(R.id.controller_status_nok);
+				  nok.setVisibility(View.VISIBLE);
+			  	ok.setVisibility(View.GONE);
+			  	itemLayout.setCheckable(false);
+			  }
+			}
+		}
+	}
+  
   /*    @Override
       protected void onPostExecute(String result) {
 

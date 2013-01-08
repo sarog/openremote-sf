@@ -10,7 +10,7 @@ public class ControllerObject {
     private boolean auto;
     private boolean isControllerUp;
     private boolean isSelected;
-    
+    private boolean availabilityCheckDone;
     
     public ControllerObject(String controllerName){
     	this.controllerName	=controllerName;    
@@ -67,6 +67,14 @@ public class ControllerObject {
     }
     public void setIsControllerUp(boolean isControllerUp) {
         this.isControllerUp = isControllerUp;
+    }
+    
+    public void setAvailabilityCheckDone() {
+    	availabilityCheckDone = true;
+    }
+    
+    public boolean isAvailabilityCheckDone() {
+    	return availabilityCheckDone;
     }
     
     //the controller needs to keep this for immediatr fetch

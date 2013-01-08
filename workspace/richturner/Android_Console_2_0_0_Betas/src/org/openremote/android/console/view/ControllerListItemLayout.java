@@ -19,6 +19,10 @@
 */
 package org.openremote.android.console.view;
 
+import java.lang.ref.WeakReference;
+
+import org.openremote.android.console.net.AsyncControllerAvailabilityChecker;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -36,7 +40,8 @@ import android.widget.RelativeLayout;
 public class ControllerListItemLayout extends RelativeLayout implements Checkable {
   private Checkable mCheckable;
   private boolean isCheckable = false;
-
+  private WeakReference<AsyncControllerAvailabilityChecker> checkerTaskReference;
+  
   public ControllerListItemLayout(Context context) {
       this(context, null);
   }
@@ -74,7 +79,7 @@ public class ControllerListItemLayout extends RelativeLayout implements Checkabl
 
   @Override
   public void setChecked(boolean checked) {
-      if(mCheckable != null && (isCheckable || !checked)) {
+      if(mCheckable != null && isCheckable) {
         mCheckable.setChecked(checked);
       }
   }
@@ -91,5 +96,13 @@ public class ControllerListItemLayout extends RelativeLayout implements Checkabl
   public void toggle() {
       if(mCheckable != null)
           mCheckable.toggle();
+  }
+  
+  public AsyncControllerAvailabilityChecker getCheckerTask() {
+  	return checkerTaskReference.get();
+  }
+  
+  public void setCheckerTask(AsyncControllerAvailabilityChecker checkerTask) {
+    checkerTaskReference = new WeakReference<AsyncControllerAvailabilityChecker>(checkerTask);
   }
 }
