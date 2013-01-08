@@ -1,6 +1,9 @@
 Controller Pro 1.0.6
 ====================
 
+New Features:
+
+  - Introduce unit tests for Version20ModelBuilder class and regression tests for issue ORCJAVA-263 (ORCJAVA-286)
 Bug Fixes:
 
   - KNX does not return scene numbers sent by a physical push button, SCENE and LEARN_SCENE seem to vica versa (ORCJAVA-282)
