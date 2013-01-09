@@ -99,7 +99,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
        if (dmi instanceof DeviceMacroRef) {
          itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
        } else if (dmi instanceof DeviceCommandRef) {
-         itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
+         itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getFullyQualifiedName(), MacroItemType.Command));
        } else if (dmi instanceof CommandDelay) {
          itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
        }
@@ -118,7 +118,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
          items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
        } else if (dmi instanceof DeviceCommandRef) {
          DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
-         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
+         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getFullyQualifiedName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
        } else if (dmi instanceof CommandDelay) {
          items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
        }
