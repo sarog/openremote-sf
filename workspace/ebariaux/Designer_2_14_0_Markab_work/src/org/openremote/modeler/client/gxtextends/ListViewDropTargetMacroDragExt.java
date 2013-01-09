@@ -158,7 +158,7 @@ public class ListViewDropTargetMacroDragExt extends DropTarget {
                BeanModel beanModel = modelData.get("model");
                if (beanModel.getBean() instanceof DeviceCommandDTO) {
                  DeviceCommandDTO dto = (DeviceCommandDTO) beanModel.getBean();
-                 beanModel = DTOHelper.getBeanModel(new MacroItemDetailsDTO(null, MacroItemType.Command, dto.getDisplayName(), new DTOReference(dto.getOid())));
+                 beanModel = DTOHelper.getBeanModel(new MacroItemDetailsDTO(null, MacroItemType.Command, dto.getFullyQualifiedName(), new DTOReference(dto.getOid())));
                } else if (beanModel.getBean() instanceof MacroDTO) {
                  MacroDTO dto = (MacroDTO) beanModel.getBean();
                  beanModel = DTOHelper.getBeanModel(new MacroItemDetailsDTO(null, MacroItemType.Macro, dto.getDisplayName(), new DTOReference(dto.getOid())));

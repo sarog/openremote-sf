@@ -124,6 +124,10 @@ public class DeviceCommand extends BusinessEntity {
       return getName();
    }
 
+   @Transient
+   public String getFullyQualifiedName() {
+	   return getName() + " (" + getDevice().getName() + ")";
+   }
 
    /**
     * Sets the section id.
