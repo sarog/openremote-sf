@@ -25,6 +25,7 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
   private static final long serialVersionUID = 1L;
   
   private String displayName;
+  private String fullyQualifiedName;
   private String protocolType;
   private Long oid;
 
@@ -32,10 +33,11 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
     super();
   }
   
-  public DeviceCommandDTO(Long oid, String displayName, String protocolType) {
+  public DeviceCommandDTO(Long oid, String displayName, String fullyQualifiedName, String protocolType) {
     super();
     this.oid = oid;
     this.displayName = displayName;
+    this.fullyQualifiedName = fullyQualifiedName;
     this.protocolType = protocolType;
   }
 
@@ -61,6 +63,19 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
 
   public void setProtocolType(String protocolType) {
     this.protocolType = protocolType;
+  }
+
+  /**
+   * Full name of command, including the device it belongs to.
+   * 
+   * @return
+   */
+  public String getFullyQualifiedName() {
+	return fullyQualifiedName;
+  }
+
+  public void setFullyQualifiedName(String fullyQualifiedName) {
+	this.fullyQualifiedName = fullyQualifiedName;
   }
 
 }
