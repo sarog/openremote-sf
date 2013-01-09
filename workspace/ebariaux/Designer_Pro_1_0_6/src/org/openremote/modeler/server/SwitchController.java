@@ -175,9 +175,9 @@ public class SwitchController extends BaseGWTSpringController implements SwitchR
   public static SwitchDTO createSwitchDTO(Switch aSwitch) {
     SwitchDTO switchDTO = new SwitchDTO(aSwitch.getOid(), aSwitch.getDisplayName());
     DeviceCommand dc = aSwitch.getSwitchCommandOnRef().getDeviceCommand();
-    switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+    switchDTO.setOnCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()));
     dc = aSwitch.getSwitchCommandOffRef().getDeviceCommand();
-    switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
+    switchDTO.setOffCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()));
     return switchDTO;
   }
 

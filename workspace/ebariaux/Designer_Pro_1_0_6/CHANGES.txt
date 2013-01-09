@@ -1,3 +1,9 @@
+Pro 1.0.6
+=========
+
+New features:
+ - In edit/new macro window, command tree must include device name (MODELER-361)
+
 Pro 1.0.5
 =========
 
