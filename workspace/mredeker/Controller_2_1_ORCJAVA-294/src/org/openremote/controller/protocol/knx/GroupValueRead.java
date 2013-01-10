@@ -159,6 +159,7 @@ class GroupValueRead extends KNXCommand implements EventListener
              result = "off";
           }
       }
+      
       else if (dpt == DataPointType.Unsigned8BitValue.SCALING)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
@@ -189,16 +190,11 @@ class GroupValueRead extends KNXCommand implements EventListener
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
         result = Integer.toString((int)(valueDPT.resolve()));
       }
+      
       else if (dpt instanceof DataPointType.Unsigned8BitValue)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
         result = Integer.toString(valueDPT.resolve());
-      }
-
-      else if (dpt instanceof DataPointType.TwoOctetFloat)
-      {
-        TwoOctetFloat valueDPT = (TwoOctetFloat)responseAPDU.getDataType();
-        result = Integer.toString(valueDPT.resolve().intValue());
       }
 
       else if (dpt instanceof DataPointType.Float2ByteValue)
@@ -207,6 +203,7 @@ class GroupValueRead extends KNXCommand implements EventListener
         int resolution = (int)valueDPT.resolve();
         result = Integer.toString(resolution);
       }
+      
       else if (dpt instanceof DataPointType.TwoOctetFloat)
       {
         TwoOctetFloat valueDPT = (TwoOctetFloat)responseAPDU.getDataType();
