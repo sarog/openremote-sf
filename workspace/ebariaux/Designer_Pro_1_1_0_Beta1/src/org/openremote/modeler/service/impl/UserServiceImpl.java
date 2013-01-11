@@ -69,7 +69,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   public final static String ACTIVATION_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Activate";
   public final static String SHARED_ACCOUNT_MAIL_LOG_CATEGORY = MAILER_LOG_CATEGORY + ".Share.Account";
 
-
+  private String emailFromAddress;
+  
    private static Logger log = Logger.getLogger(UserServiceImpl.class);
    
    private Configuration configuration;
@@ -261,7 +262,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      UserDTO inviteeDTO = (UserDTO)res.getResult();
      return inviteeDTO; 
    }
-   
+
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
       long uid = 0;
       long hid = 0;
@@ -392,7 +393,6 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return accessUsers;
    }
 
-
    @Override
    public UserDTO forgotPassword(String username)
    {
@@ -452,5 +452,4 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     }
   }
 
-   
 }

@@ -34,7 +34,7 @@ public class SpringTestContext {
    private static SpringTestContext instance;
 
    /** The context files. */
-   private static String[] contextFiles = new String[] {"applicationContext.xml", "spring-service-hibernate-impl.xml",
+   private static String[] contextFiles = new String[] {"applicationContext-test.xml", "spring-service-hibernate-impl.xml",
          "datasource-test.xml", "annomvc-servlet.xml" };
 
    /** The ctx. */
