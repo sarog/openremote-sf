@@ -187,16 +187,18 @@
 	if (!currentGroupController.group) {
         return;
     }
-	
+
+	// Create the history before navigating so it references the original screen and not the destination
+    Navigate *historyNavigate = [[Navigate alloc] init];
+    historyNavigate.fromGroup = currentGroupController.group.groupId;
+    historyNavigate.fromScreen = [currentGroupController currentScreenId];
+
 	if ([self navigateTo:navi]) {
-        Navigate *historyNavigate = [[Navigate alloc] init];
-		historyNavigate.fromGroup = currentGroupController.group.groupId;
-		historyNavigate.fromScreen = [currentGroupController currentScreenId];
 		[self saveLastGroupIdAndScreenId];
 		NSLog(@"navigate from group %d, screen %d", historyNavigate.fromGroup, historyNavigate.fromScreen);
 		[navigationHistory addObject:historyNavigate];
-		[historyNavigate release];
 	}
+    [historyNavigate release];
 	
 	NSLog(@"navi history count = %d", navigationHistory.count);
 }
