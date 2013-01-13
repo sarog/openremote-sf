@@ -28,11 +28,13 @@ import org.openremote.android.console.util.ImageUtil;
 import roboguice.inject.InjectView;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -67,6 +69,14 @@ public class Main extends GenericActivity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+        /*
+         * Temporary fix for ANDROID-90 Bug relating to NetworkOnMainThreadException
+         */
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+          StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+          StrictMode.setThreadPolicy(policy);
+        }
         
         loadingToast = Toast.makeText(this, "Refreshing from Controller...", Integer.MAX_VALUE);
         if (!isRefreshingController) {
@@ -155,10 +165,7 @@ public class Main extends GenericActivity {
      * Forward to settings view.
      */
     public void doSettings() {
-        Intent i = new Intent();
-        i.setClassName(this.getClass().getPackage().getName(),
-              AppSettingsActivity.class.getName());
-      
+        Intent i = new Intent(this, AppSettingsActivity.class);
         startActivity(i);
         finish();
     }
