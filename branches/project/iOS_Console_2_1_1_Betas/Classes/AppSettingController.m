@@ -56,8 +56,6 @@
 - (void)fetchGroupMembersForAllControllers;
 - (void)cancelFetchGroupMembers;
 
-- (void)presentLoginRequestForControllerRequest:(ControllerRequest *)controllerRequest;
-
 @end
 
 // The section of table cell where autoDiscoverySwitch is in.
@@ -570,7 +568,7 @@
 
 - (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
-    [self presentLoginRequestForControllerRequest:controllerRequest];
+    [self presentLoginRequestWithContext:controllerRequest];
 }
 
 - (void)fetchPanelsRequiresAuthentication
