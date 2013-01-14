@@ -28,6 +28,8 @@
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
 
+#define STARTUP_UPDATE_TIMEOUT 10
+
 #ifdef INCLUDE_SIP_SUPPORT
     #import "SipController.h"
 #endif
@@ -91,7 +93,7 @@
 }
 
 - (void)checkConfigAndUpdate {
-	[updateController checkConfigAndUpdate];
+	[updateController checkConfigAndUpdateUsingTimeout:STARTUP_UPDATE_TIMEOUT];
 }
 
 // this method will be called after UpdateController give a callback.

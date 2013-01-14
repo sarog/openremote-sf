@@ -46,11 +46,12 @@
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
-#define TIMEOUT_INTERVAL 5
+
+#define DEFAULT_TIMEOUT_DURATION 60
 
 @interface UpdateController ()
 
-- (void)checkNetworkAndUpdate;
+- (void)checkNetworkAndUpdateUsingTimeout:(NSTimeInterval)timeoutInterval;
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
 - (void)didUseLocalCache:(NSString *)errorMessage;
@@ -79,12 +80,16 @@
 	return self;
 }
 
+- (void)checkConfigAndUpdate
+{
+    [self checkConfigAndUpdateUsingTimeout:DEFAULT_TIMEOUT_DURATION];
+}
 
 // Read Application settings from appSettings.plist.
 // If there have an defined server url. It will call checkNetworkAndUpdate method
 // else if auto discovery is enable it will try to find another server url using auto discovery,
 // else it will check local cache or call didUpdateFail method.
-- (void)checkConfigAndUpdate {
+- (void)checkConfigAndUpdateUsingTimeout:(NSTimeInterval)timeoutInterval {
 
     
     /*
@@ -114,7 +119,7 @@
 
     // If there is a selected controller (auto-discovered or configured), try to use it
 	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController) {
-		[self checkNetworkAndUpdate];
+		[self checkNetworkAndUpdateUsingTimeout:timeoutInterval];
 	} else {
 		NSLog(@"No selected controller found in configuration");
 		if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
@@ -146,11 +151,11 @@
 }
 
 // Check if network is available. If network is available, then update client.
-- (void)checkNetworkAndUpdate {
+- (void)checkNetworkAndUpdateUsingTimeout:(NSTimeInterval)timeoutInterval {
 	NSLog(@"checkNetworkAndUpdate");
 	@try {
 		// this method will throw CheckNetworkException if the check failed.
-		[CheckNetwork checkAll];
+		[CheckNetwork checkAllUsingTimeout:timeoutInterval];
 
 		// TODO: check what we really want to do 
 //		[self getRoundRobinGroupMembers];
@@ -166,7 +171,7 @@
 		if (retryTimes <= MAX_RETRY_TIMES) {
 			NSLog(@"retry time %d <= %d", retryTimes, MAX_RETRY_TIMES);
 			retryTimes++;			
-			[self checkNetworkAndUpdate];
+			[self checkNetworkAndUpdateUsingTimeout:timeoutInterval];
 		} else {
 			[self updateFailOrUseLocalCache:e.message];
 		}
@@ -213,7 +218,7 @@
 #pragma mark delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(ORController *)aController {
 	NSLog(@"onFindServer %@", aController.primaryURL);
-	[self checkNetworkAndUpdate];
+	[self checkNetworkAndUpdateUsingTimeout:DEFAULT_TIMEOUT_DURATION];
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {

@@ -58,5 +58,6 @@
 - (id)initWithDelegate:(NSObject <UpdateControllerDelegate> *)aDelegate;
 
 - (void)checkConfigAndUpdate;
+- (void)checkConfigAndUpdateUsingTimeout:(NSTimeInterval)timeoutInterval;
 
 @end

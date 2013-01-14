@@ -43,12 +43,8 @@
 + (void)checkControllerAvailable;
 
 /**
- * Check if the url of panel RESTful request if available. If it isn't, this method will throw CheckNetworkException.
- */
-+ (void)checkPanelXml;
-
-/**
  * Call previous checking method.
  */
-+ (void)checkAll;
++ (void)checkAllUsingTimeout:(NSTimeInterval)timeoutInterval;
+
 @end
