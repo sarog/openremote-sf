@@ -76,7 +76,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 @property (nonatomic, assign) int currentValue;
 @property (nonatomic, retain) UIImageView *sliderTip;
 
-- (int)sliderValue:(UISlider *)sender;
+- (int)sliderValue:(ORSlider *)sender;
 - (void)sliderValueChanged:(UISlider *)sender;
 - (void)releaseSlider:(UISlider *)sender;
 - (void)touchDownSlider:(UISlider *)sender;
@@ -207,7 +207,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     
     NSLog(@"Slider - setPollingStatus %d to %f", sensorId, newStatus);
     
-    UISlider *uiSlider = ((UISlider *)self.view);
+    ORSlider *uiSlider = ((ORSlider *)self.view);
 	uiSlider.value = newStatus;
 	self.currentValue = [self sliderValue:uiSlider];
 }
