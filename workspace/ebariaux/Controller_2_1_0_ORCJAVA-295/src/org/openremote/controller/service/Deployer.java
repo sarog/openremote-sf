@@ -1626,7 +1626,6 @@ public class Deployer
                    try {   
                       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
                       Representation result = cr.post(rep);
-                      cr.release();
                       GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
                       if (res.getErrorMessage() != null) {
                          throw new RuntimeException(res.getErrorMessage());
@@ -1634,6 +1633,10 @@ public class Deployer
                       discoveredDevicesToAnnounce.clear();
                    } catch (Exception e) {
                      log.error("Could not announce discovered devices", e);
+                   } finally {
+                      if (cr != null) {
+                         cr.release();
+                      }
                    }
                 }
              }
