@@ -1,6 +1,9 @@
 Pro 1.0.6
 =========
 
+Fixes:
+ - MODELER-446: Default webapp port for controller should be changed to 8688
+
 New features:
  - In edit/new macro window, command tree must include device name (MODELER-361)
 
