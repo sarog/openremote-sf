@@ -122,7 +122,7 @@
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
 	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
-
+    [request setHTTPMethod:@"HEAD"];
 	URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
     [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
