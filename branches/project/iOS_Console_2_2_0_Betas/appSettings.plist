@@ -4,14 +4,14 @@
 <array>
 	<dict>
 		<key>footer</key>
-		<string>Turn off auto-discovery to input controller URL manually.</string>
+		<string></string>
 		<key>header</key>
 		<string></string>
 		<key>item</key>
-        <dict>
+		<dict>
 			<key>name</key>
 			<string>Auto Discovery</string>
-        </dict>
+		</dict>
 	</dict>
 	<dict>
 		<key>footer</key>
