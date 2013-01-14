@@ -73,7 +73,7 @@ existing lircd.conf file.
             configuration about discovery
          ]]>
       </description>
-		<config name="webapp.port" value="8080">
+		<config name="webapp.port" value="8688">
 			<hint>
                <![CDATA[
                   This is the port number the controller returns on a panel discovery
