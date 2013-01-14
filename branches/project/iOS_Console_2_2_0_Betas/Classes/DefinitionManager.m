@@ -32,6 +32,9 @@
 #import "ORController.h"
 #import "Definition.h"
 
+// Maximum number of operations executed concurrently
+#define MAX_CONCURRENT_OPERATIONS   3
+
 @interface DefinitionManager ()
 
 - (void)postNotificationToMainThread:(NSString *)notificationName;
@@ -45,7 +48,6 @@
 - (void)changeLoadingMessage:(NSString *)msg;
 
 @end
-
 
 @implementation DefinitionManager
 
@@ -67,6 +69,7 @@
 		[updateOperationQueue release];
 	}
 	updateOperationQueue = [[NSOperationQueue alloc] init];
+    updateOperationQueue.maxConcurrentOperationCount = MAX_CONCURRENT_OPERATIONS;
 	if (updateOperation) {
 		[updateOperation release];
 	}
