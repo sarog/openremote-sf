@@ -27,7 +27,7 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
-#define DOWNLOAD_TIMEOUT_INTERVAL 20
+#define DOWNLOAD_TIMEOUT_INTERVAL 60
 
 @interface FileUtils (Private)
 	
