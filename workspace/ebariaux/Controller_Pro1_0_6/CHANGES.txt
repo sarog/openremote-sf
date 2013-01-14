@@ -13,6 +13,7 @@ Bug Fixes:
   - Fix openremote.sh to work with paths that contain spaces (ORCJAVA-280)
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
+  - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
 
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
