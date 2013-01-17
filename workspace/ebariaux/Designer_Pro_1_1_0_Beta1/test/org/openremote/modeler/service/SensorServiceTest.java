@@ -51,7 +51,6 @@ public class SensorServiceTest {
    private UserService userService =
       (UserService) SpringTestContext.getInstance().getBean("userService");
    
-   private Long createdSensorId;
    
    @Test
    public void save() {
@@ -90,7 +89,6 @@ public class SensorServiceTest {
       userService.saveUser(user);
       Assert.assertEquals(sensorInDB.getName(), name);
       
-      createdSensorId = sensorInDB.getOid();
    }
    
    @Test(dependsOnMethods = "delete")
@@ -187,15 +185,10 @@ public class SensorServiceTest {
    @Test(dependsOnMethods = "update")
    public void delete() {
       List<Sensor> sensors = genericDAO.loadAll(Sensor.class);
-      int originalCount = sensors.size();
-
       for (Sensor sensor : sensors) {
-      	if (sensor.getOid() == createdSensorId) {
          sensorService.deleteSensor(sensor.getOid());
-      	}
       }
       sensors = genericDAO.loadAll(Sensor.class);
-
-      Assert.assertEquals(sensors.size(), originalCount - 1);
+      Assert.assertEquals(sensors.size(), 0);
    }
 }

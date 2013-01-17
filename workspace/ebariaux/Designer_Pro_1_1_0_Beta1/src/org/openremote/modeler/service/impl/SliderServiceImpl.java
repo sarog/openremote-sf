@@ -56,7 +56,6 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    }
 
    @Override
-   @Transactional
    public List<Slider> loadAll() {
       List<Slider> result = userService.getAccount().getSliders();
       if (result == null || result.size() == 0) {
