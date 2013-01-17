@@ -23,20 +23,22 @@
     </LinearLayout>
     -->
  
-    <CheckedTextView
+    <TextView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/controllerURL"
-        android:layout_width="match_parent"
-		android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_width="fill_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/controller_list_item_info_layout"
         android:checked="false"
         android:drawableLeft="@drawable/custom_check_mark"
         android:drawablePadding="5dp"
-        android:ellipsize="marquee"
-		android:marqueeRepeatLimit="marquee_forever"
+        android:editable="false"
+        android:ellipsize="end"
         android:gravity="left|center_vertical"
         android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
         android:text="http://openremote.org:8080/controller"
         android:textColor="@color/white"
         android:textSize="16sp" />

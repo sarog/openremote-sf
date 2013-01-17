@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.HTTPUtil;
 
@@ -81,7 +82,7 @@ public class ORNetworkCheck
   public HttpResponse verifyControllerURL(URL url) throws IOException
   {
     // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
-    AppSettingsModel.setCurrentServer(context, url);
+    //AppSettingsModel.setCurrentController(context, url);
 
 
     HttpResponse response = isControllerAvailable();
@@ -201,11 +202,11 @@ return null;
 
     // Has controller URL been configured...?
 
-    URL controllerURL = AppSettingsModel.getCurrentServer(context);
+    ControllerObject controller = AppSettingsModel.getCurrentController(context);
 
-    Log.d(LOG_CATEGORY, "controllerURL: " + controllerURL);
+    Log.d(LOG_CATEGORY, "controllerURL: " + controller);
 
-    if (controllerURL == null)
+    if (controller == null)
     {
       return false;
     }

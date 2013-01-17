@@ -28,11 +28,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -43,10 +41,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerDataHelper;
 import org.openremote.android.console.ControllerObject;
-import org.openremote.android.console.DataHelper;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.LoginDialog.OnloginClickListener;
 import org.openremote.android.console.exceptions.AppInitializationException;
@@ -59,10 +56,8 @@ import org.openremote.android.console.util.SecurityUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -164,9 +159,9 @@ public class HttpXmlControllerService implements ControllerService
     // Otherwise, throw an ORConnectionException, indicating that we are giving
     // up on the current controller failover group.
     
-    DataHelper dh = new DataHelper(ctx);
+    ControllerDataHelper dh = new ControllerDataHelper(ctx);
    // switch controller maybe
-     ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentServer(ctx).toString(),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
+     ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentController(ctx),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
 	 
      dh.closeConnection();
      
@@ -180,7 +175,7 @@ public class HttpXmlControllerService implements ControllerService
      }
   
      else{
-     	ORControllerServerSwitcher.switchControllerWithURL(ctx, availableGroupMemberURL.getControllerName());
+     	ORControllerServerSwitcher.switchControllerWithURL(ctx, availableGroupMemberURL.getUrl());
 					//AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL.getControllerName()));
      	
      }

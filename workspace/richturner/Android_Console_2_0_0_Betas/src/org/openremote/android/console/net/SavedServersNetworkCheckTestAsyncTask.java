@@ -29,20 +29,18 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerDataHelper;
 import org.openremote.android.console.ControllerObject;
-import org.openremote.android.console.DataHelper;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-
 import org.openremote.android.console.net.ORHttpMethod;
+
 /**
  * Controller IP auto discovery server, this is a TCP server receiving IP from Controllers.
  *
@@ -66,8 +64,8 @@ public class SavedServersNetworkCheckTestAsyncTask extends AsyncTask<String, Str
           Log.i("LOGGER", "Starting...");
     	  ArrayList<ControllerObject> customServers = new ArrayList<ControllerObject>();
     	  
-    	  DataHelper dh = new DataHelper(ctx);
-    	    customServers = dh.getControllerData();
+    	  ControllerDataHelper dh = new ControllerDataHelper(ctx);
+    	    customServers = dh.getAllControllers();
     	    ArrayList<ControllerObject> customServersNew = new ArrayList<ControllerObject>(customServers.size());
     	    
     	    //ping test all controllers to check if they are available
@@ -77,9 +75,9 @@ public class SavedServersNetworkCheckTestAsyncTask extends AsyncTask<String, Str
     	    	boolean coUp;
     	    	
                 try{
-                    response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(co.getControllerName()),false);
+                    response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(co.getUrl()),false);
                    
-                    Log.i(TAG,co.getControllerName()+ "response: "+response.getStatusLine());
+                    Log.i(TAG,co.getUrl()+ "response: "+response.getStatusLine());
                     coUp=true;
                     }
                     catch(Exception e){

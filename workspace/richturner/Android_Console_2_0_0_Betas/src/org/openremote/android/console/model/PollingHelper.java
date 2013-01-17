@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -40,14 +39,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerDataHelper;
 import org.openremote.android.console.ControllerObject;
-import org.openremote.android.console.DataHelper;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
 import org.openremote.android.console.util.SecurityUtil;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -116,9 +114,9 @@ public class PollingHelper {
             
             if (ControllerException
                     .exceptionMessageOfCode(statusCode).equals("Current controller isn't available.")){
-            	DataHelper dh = new DataHelper(context);
+            	ControllerDataHelper dh = new ControllerDataHelper(context);
             	
-            ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentServer(context).toString(),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
+            ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentController(context),dh);
             	 
             dh.closeConnection();
             
@@ -132,7 +130,7 @@ public class PollingHelper {
             }
          
             else{
-            	ORControllerServerSwitcher.switchControllerWithURL(context, availableGroupMemberURL.getControllerName());
+            	ORControllerServerSwitcher.switchControllerWithURL(context, availableGroupMemberURL.getUrl());
 						//AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL.getControllerName()));
             }
 					
@@ -283,12 +281,7 @@ public class PollingHelper {
     */
    private static void readDeviceId(Context context) {
       if (deviceId == null) {
-         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-         if (IPAutoDiscoveryClient.isNetworkTypeWIFI) {
-            deviceId = tm.getDeviceId();
-         } else {
-            deviceId = UUID.randomUUID().toString();
-         }
+        deviceId = UUID.randomUUID().toString();
       }
    }
 

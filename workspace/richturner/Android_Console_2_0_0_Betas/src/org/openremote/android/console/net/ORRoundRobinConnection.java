@@ -32,7 +32,7 @@ public class ORRoundRobinConnection extends ORConnection {
 
    public ORRoundRobinConnection(Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url,
          ORConnectionDelegate delegateParam) {
-      super(httpMethod, isNeedHttpBasicAuth, url, delegateParam);
+      super(httpMethod, isNeedHttpBasicAuth, url, delegateParam, context);
    }
 
    /** 

@@ -21,7 +21,6 @@ package org.openremote.android.console;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,10 +32,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import org.openremote.android.console.Constants;
-
-import com.google.inject.Inject;
 
 /**
  * This is the add custom server screen. Mainly it configures the URL of 
@@ -50,7 +46,7 @@ public class AddServerActivity extends GenericActivity {
     public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "AddServerActivity";
    
     //@Inject
-   private DataHelper dh;
+   private ControllerDataHelper dh;
     // create a static DataHelper class
     // DataHelper dh=new DataHelper(this);
 
@@ -61,7 +57,7 @@ public class AddServerActivity extends GenericActivity {
         
         setContentView(R.layout.add_server);
 
-        dh=new DataHelper(this);
+        dh = new ControllerDataHelper(this);
         
         final EditText controllerUrlEditText = (EditText) findViewById(R.id.add_server_controller_url_edit_text); 
 
@@ -71,30 +67,28 @@ public class AddServerActivity extends GenericActivity {
 
             @Override
             public void onClick(View v) {
-                String noProtocolUrl = controllerUrlEditText.getText().toString();
-                if (noProtocolUrl == null) {
+                String url = controllerUrlEditText.getText().toString();
+                if (url == null) {
                    return;
                 }
                 try {
-                  String httpUrl = "http://" + noProtocolUrl;	//to check the db
+                	if (url.indexOf("http") < 0)
+                		url = "http://" + url;
                   
-                  //find if the controller already exists, if so, show toast. else go on
-                  
-                  if(dh.find(httpUrl) > 0){
-                	  Toast toast = Toast.makeText(getApplicationContext(), "Controller already exists.", 1);
+                  if(dh.controllerExists(url)) {
+                	  Toast toast = Toast.makeText(AddServerActivity.this, "Controller already exists.", 1);
                       toast.show();
                       return;
-                  }
-                  
+                  }                  
                  
-                  new URI(httpUrl);
+                  new URI(url);
                   Intent intent = getIntent();
-                  intent.setData(Uri.parse(noProtocolUrl));
+                  intent.setData(Uri.parse(url));
                   dh.closeConnection();
-                  setResult(Constants.RESULT_CONTROLLER_URL, intent);
+                  //setResult(Constants.RESULT_CONTROLLER_URL, intent);
                   finish();
                } catch (URISyntaxException e) {
-                  Toast toast = Toast.makeText(getApplicationContext(),e.getReason()+ "URL format is not correct.", 1);
+                  Toast toast = Toast.makeText(AddServerActivity.this, "Invalid Controller URL!", 1);
                   toast.show();
                }
             }
@@ -136,5 +130,4 @@ public class AddServerActivity extends GenericActivity {
         MenuItem quit = menu.add(0, Constants.MENU_ITEM_QUIT, 0, R.string.back);
         quit.setIcon(R.drawable.ic_menu_revert);
     }
-
 }

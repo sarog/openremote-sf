@@ -39,6 +39,7 @@ import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORUnBlockConnection;
+import org.xml.sax.InputSource;
 
 import roboguice.inject.InjectorProvider;
 
@@ -185,7 +186,7 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    // TODO get rid of this (use a RoboAsyncTask instead)
    @Override
-   public void urlConnectionDidReceiveData(InputStream data) {
+   public void urlConnectionDidReceiveData(InputSource data) {
       // do nothing.
    }
 
