@@ -28,20 +28,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerDataHelper;
 import org.openremote.android.console.ControllerObject;
-import org.openremote.android.console.DataHelper;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.PollingHelper;
 import org.openremote.android.console.util.StringUtil;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -65,7 +62,7 @@ public class ORControllerServerSwitcher
 
   private ORNetworkCheck orNetworkCheck;
   private static Context context;
-  private DataHelper dh;
+  private ControllerDataHelper dh;
 
   public static class ControllerCheckResult
   {
@@ -129,26 +126,6 @@ public class ORControllerServerSwitcher
 //       
 //	  return false;
 //  }
-
-  
-
-  /**
-   * Get the group members from the file group_members.xml .
-   *
-   * @return  list of controller URLs
-   */
-  @SuppressWarnings("unchecked")
-  public static List<ControllerObject> findAllGroupMembersFromDB(String name, DataHelper dh)
-  {
-    List<ControllerObject> groupMemberUrls = new ArrayList<ControllerObject>();
-
-   // dh=new DataHelper(context); //it should be initialized coming in
-    
-     groupMemberUrls=dh.findFailoverControllers(name);
-
-
-    return groupMemberUrls;
-  }
   
   /**
    * doswitch in polling helper instead of here
@@ -175,23 +152,20 @@ public class ORControllerServerSwitcher
    *
    * @return  TODO
    */
-  public static ControllerObject getOneAvailableFromGroupMemberURLs(String name, DataHelper dh)
+  public static ControllerObject getOneAvailableFromGroupMemberURLs(ControllerObject controller, ControllerDataHelper dh)
   {
 	  HttpResponse response= null;
-    List<ControllerObject> allGroupMembers = findAllGroupMembersFromDB(name, dh);
-    
-    ArrayList<ControllerObject> customServersNew = new ArrayList<ControllerObject>(allGroupMembers.size());
+	  
+    String[] allGroupMembers = controller.getFailoverControllers();
     
     //ping test all controllers to check if they are available
-    for(int i=0;i<allGroupMembers.size();i++){
-    	
-    	ControllerObject co=allGroupMembers.get(i);
+    for(int i=0; i<allGroupMembers.length; i++) {
+    	String url = allGroupMembers[i];
     	boolean coUp;
     	
         try{
-            response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(co.getControllerName()),false);
-           
-            Log.i(LOG_CATEGORY,co.getControllerName()+ "response: "+response.getStatusLine());
+            response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET,new URL(url),false);
+            Log.i(LOG_CATEGORY, url + "response: "+response.getStatusLine());
             coUp=true; //if you found one, break
             
           /*  if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
@@ -200,15 +174,12 @@ public class ORControllerServerSwitcher
               return controllerURL;
             }*/
             
-            return co;
-            }
-            catch(Exception e){
-          	  e.printStackTrace();
-          	  coUp=false;
-            }    	
-    	
-    	    co.setIsControllerUp(coUp);	    	
-    	customServersNew.add(co);
+            return new ControllerObject(url,controller.getDefaultPanel(), controller.getUsername(), controller.getUserPass());
+        }
+        catch(Exception e){
+      	  e.printStackTrace();
+      	  coUp=false;
+        }    	
     }  
 
     return null;
@@ -222,7 +193,7 @@ public class ORControllerServerSwitcher
    */
   public static void switchControllerWithURL(Context context, String availableGroupMemberURL)
   {
-    if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context)))
+    if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentController(context).getUrl()))
     {
       Log.i(
           LOG_CATEGORY,
@@ -238,7 +209,7 @@ public class ORControllerServerSwitcher
     Log.i(LOG_CATEGORY, "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
 
     try {
-		AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL));
+		AppSettingsModel.setCurrentController(context, new URL(availableGroupMemberURL));
 	} catch (MalformedURLException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

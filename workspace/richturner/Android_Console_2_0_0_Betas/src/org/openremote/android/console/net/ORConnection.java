@@ -22,6 +22,8 @@
 package org.openremote.android.console.net;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -30,6 +32,7 @@ import java.net.URL;
 
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -42,9 +45,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.util.SecurityUtil;
+import org.xml.sax.InputSource;
 
 import android.content.Context;
 import android.os.Handler;
@@ -56,6 +61,7 @@ import android.util.Log;
  *
  * This is responsible for manage the connection of android console to controller
  * 
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  * @author handy 2010-04-27
  *
  */
@@ -100,7 +106,7 @@ public class ORConnection
    * @param delegateParam         callback delegate to deal with return values, data and exceptions
    */
   public ORConnection (ORHttpMethod httpMethod, boolean useHTTPAuth,
-                       String url, ORConnectionDelegate delegateParam)
+                       String url, ORConnectionDelegate delegateParam, Context context)
   {
     initHandler(context);
 
@@ -227,7 +233,12 @@ public class ORConnection
    private void connectionDidReceiveData() {
       try {
          if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-            delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
+        	 HttpEntity entity = httpResponse.getEntity();
+        	 String content = EntityUtils.toString(entity);
+        	 //entity.getContent().close();
+        	 InputSource inStream = new InputSource();
+           inStream.setCharacterStream(new StringReader(content));
+           delegate.urlConnectionDidReceiveData(inStream);
          } else {
         	 
             Log.e(LOG_CATEGORY, "Get the entity's content of httpresponse fail.");

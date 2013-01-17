@@ -28,6 +28,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -37,7 +38,7 @@ import android.widget.RelativeLayout;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-public class ControllerListItemLayout extends RelativeLayout implements Checkable {
+public class ControllerListItemLayout extends RelativeLayout {
   private Checkable mCheckable;
   private boolean isCheckable = false;
   private WeakReference<AsyncControllerAvailabilityChecker> checkerTaskReference;
@@ -50,53 +51,53 @@ public class ControllerListItemLayout extends RelativeLayout implements Checkabl
       super(context, attrs);
   }
 
-  @Override
-  public boolean isChecked() {
-      return mCheckable == null ? false : mCheckable.isChecked();
-  }
+//  @Override
+//  public boolean isChecked() {
+//      return mCheckable == null ? false : mCheckable.isChecked();
+//  }
 
   @Override
   protected void onFinishInflate() {
       super.onFinishInflate();
-      findCheckable(this);
+      //findCheckable(this);
   }
   
-  private void findCheckable(ViewGroup vg) {
-    // Find Checkable child
-    int childCount = vg.getChildCount();
-    for (int i = 0; i < childCount; ++i) {
-        View v = vg.getChildAt(i);
-        if (v instanceof Checkable) {
-          mCheckable = (Checkable) v;
-          return;
-        } else if (v instanceof ViewGroup) {
-        	findCheckable((ViewGroup)v);
-        }
-        if (mCheckable != null)
-        	return;
-    }
-  }
+//  private void findCheckable(ViewGroup vg) {
+//    // Find Checkable child
+//    int childCount = vg.getChildCount();
+//    for (int i = 0; i < childCount; ++i) {
+//        View v = vg.getChildAt(i);
+//        if (v instanceof Checkable) {
+//          mCheckable = (Checkable) v;
+//          return;
+//        } else if (v instanceof ViewGroup) {
+//        	findCheckable((ViewGroup)v);
+//        }
+//        if (mCheckable != null)
+//        	return;
+//    }
+//  }
 
-  @Override
-  public void setChecked(boolean checked) {
-      if(mCheckable != null && isCheckable) {
-        mCheckable.setChecked(checked);
-      }
-  }
-  
-  public void setCheckable(boolean checkable) {
-  	isCheckable = checkable;
-  }
-  
-  public boolean isCheckable() {
-  	return isCheckable;
-  }
-
-  @Override
-  public void toggle() {
-      if(mCheckable != null)
-          mCheckable.toggle();
-  }
+//  @Override
+//  public void setChecked(boolean checked) {
+//      if(mCheckable != null && isCheckable) {
+//        mCheckable.setChecked(checked);
+//      }
+//  }
+//  
+//  public void setCheckable(boolean checkable) {
+//  	isCheckable = checkable;
+//  }
+//  
+//  public boolean isCheckable() {
+//  	return isCheckable;
+//  }
+//
+//  @Override
+//  public void toggle() {
+//      if(mCheckable != null)
+//          mCheckable.toggle();
+//  }
   
   public AsyncControllerAvailabilityChecker getCheckerTask() {
   	return checkerTaskReference.get();

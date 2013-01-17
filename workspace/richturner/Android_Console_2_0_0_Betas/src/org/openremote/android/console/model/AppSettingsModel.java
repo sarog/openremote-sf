@@ -25,9 +25,12 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerDataHelper;
+import org.openremote.android.console.ControllerObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 
 
@@ -35,6 +38,7 @@ import android.util.Log;
 /**
  * Utility methods to access application's settings.
  *
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Tomsky Wang
  * @author Dan Cong
@@ -112,29 +116,24 @@ public class AppSettingsModel implements Serializable
    *
    * @param   context  global Android application context
    *
-   * @return  Returns the (user) configured URL to controller, as-is, or null if nothing
-   *          has been stored or the stored URL has incorrect syntax.
+   * @return  Returns the controller currently in use
    */
-  public static URL getCurrentServer(Context context)
+  public static ControllerObject getCurrentController(Context context)
   {
-    String currentServer = context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE)
-                                .getString(CURRENT_SERVER, "");
+    String currentServer = getControllerUrlFromPrefs(context);
     if (currentServer.equals("")) {
       return null;
     }
 
-    try {
-      URL currentServerURL = new URL(currentServer);
-      return currentServerURL;
-    } catch (MalformedURLException e) {
-      Log.e(LOG_CATEGORY,
-          "invalid URL syntax retrieved from preferences file in getCurrentServer(): \"" +
-          currentServer + "\"", e);
-      return null;
-    }
+  	ControllerDataHelper dh = new ControllerDataHelper(context);
+  	return dh.getControllerByUrl(currentServer);
   }
 
 
+  private static String getControllerUrlFromPrefs(Context context) {
+  	return context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getString(CURRENT_SERVER, "");
+  }
+  
   /**
    * Returns controller URL. <p>
    *
@@ -175,16 +174,24 @@ public class AppSettingsModel implements Serializable
    */
   public static URL getSecuredServer(Context context)
   {
-    URL configuredControllerURL = getCurrentServer(context);
+    String controllerUrl = getControllerUrlFromPrefs(context);
 
-    if (configuredControllerURL == null) {
+    if (TextUtils.isEmpty(controllerUrl)) {
       return null;
     }
 
-    int port = configuredControllerURL.getPort();
-    String protocol = configuredControllerURL.getProtocol();
-    String host = configuredControllerURL.getHost();
-    String file = configuredControllerURL.getFile();
+    URL controllerURL;
+    
+		try {
+			controllerURL = new URL(controllerUrl);
+		} catch (MalformedURLException e1) {
+			return null;
+		}
+    
+    int port = controllerURL.getPort();
+    String protocol = controllerURL.getProtocol();
+    String host = controllerURL.getHost();
+    String file = controllerURL.getFile();
 
     if (isSSLEnabled(context))
     {
@@ -224,7 +231,7 @@ public class AppSettingsModel implements Serializable
    * @param context        global Android application context
    * @param controllerURL  controller URL to save in the application settings
    */
-  public static void setCurrentServer(Context context, URL controllerURL)
+  public static void setCurrentController(Context context, URL controllerURL)
   {
     SharedPreferences.Editor editor = context.getSharedPreferences(
         APP_SETTINGS,
@@ -361,7 +368,14 @@ public class AppSettingsModel implements Serializable
     if (port != -1)
       return port;
 
-    URL configuredControllerURL = getCurrentServer(context);
+    String controllerUrl = getControllerUrlFromPrefs(context);
+    
+    URL configuredControllerURL;
+		try {
+			configuredControllerURL = new URL(controllerUrl);
+		} catch (MalformedURLException e) {
+			return DEFAULT_SSL_PORT;
+		}
 
     if (configuredControllerURL != null)
     {

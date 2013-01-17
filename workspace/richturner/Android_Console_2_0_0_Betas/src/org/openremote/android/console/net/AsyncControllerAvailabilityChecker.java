@@ -58,9 +58,8 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
 	  String controllerUrl = "";
 	  
 	  // Get Controller URL parameter
-	  if (params != null && params.length > 0) {
-	  	controllerUrl = params[0];
-	  }
+	  ControllerObject controller = controllerRef.get();
+	  controllerUrl = controller.getUrl();
 	  
 	  if (TextUtils.isEmpty(controllerUrl)) {
 	  	return false;
@@ -68,7 +67,7 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
 	  
 	  // Check controller /rest/servers if response received then Controller is available
     try{
-      response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl), false);
+      response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl + "/rest/servers"), false);
      
       if (response != null) {
 	      Log.i(TAG, controllerUrl + " Response: "+ response.getStatusLine());
@@ -107,13 +106,13 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
 			  	ImageView nok = (ImageView)itemLayout.findViewById(R.id.controller_status_nok);
 			  	ok.setVisibility(View.VISIBLE);
 			  	nok.setVisibility(View.GONE);
-			  	itemLayout.setCheckable(true);
+			  	//itemLayout.setCheckable(true);
 			  } else {
 			  	ImageView ok = (ImageView)itemLayout.findViewById(R.id.controller_status_ok);
 				  ImageView nok = (ImageView)itemLayout.findViewById(R.id.controller_status_nok);
 				  nok.setVisibility(View.VISIBLE);
 			  	ok.setVisibility(View.GONE);
-			  	itemLayout.setCheckable(false);
+			  	//itemLayout.setCheckable(false);
 			  }
 			}
 		}

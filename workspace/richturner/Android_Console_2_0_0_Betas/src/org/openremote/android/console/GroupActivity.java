@@ -109,7 +109,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-  
+   	 	getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+   	 	
       // Only hide the title bar if we are not on Android 3.0, as all of the current
       // Android 3.0 devices are tablets without menu buttons and the action bar
       // doesn't appear without the title bar's being shown.
@@ -765,20 +766,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    }
 
    /**
-    * If press back key, finish the activity.
-    * 
-    * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
-    */
-   @Override
-   public boolean onKeyDown(int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-         finish();
-         return true;
-      }
-      return super.onKeyDown(keyCode, event);
-   }
-
-   /**
     * Check the current screen if can rotate.
     * 
     * @return true, if successful
@@ -843,5 +830,30 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
        return handled;
    }
    
+// /**
+// * If press back key, finish the activity.
+// * 
+// * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
+// */
+//@Override
+//public boolean onKeyDown(int keyCode, KeyEvent event) {
+//   if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+//      finish();
+//      return true;
+//   }
+//   return super.onKeyDown(keyCode, event);
+//}
    
+   @Override
+   public void onBackPressed() {
+  	 // Just go to settings for now
+  	 loadSettings();
+   }
+   
+   private void loadSettings() {
+  	 Intent i = new Intent(this, AppSettingsActivity.class);
+  	 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  	 startActivity(i);
+  	 finish();
+   }
 }

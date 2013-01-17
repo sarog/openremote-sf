@@ -23,6 +23,7 @@ package org.openremote.android.console.net;
 import java.io.InputStream;
 
 import org.apache.http.HttpResponse;
+import org.xml.sax.InputSource;
 
 /**
  * This declares all callback methods which ORConnection would notify.
@@ -39,6 +40,6 @@ public interface ORConnectionDelegate {
 	public void urlConnectionDidReceiveResponse(HttpResponse httpResponse);
 
 	/** This callback method is called while ORConnection receiving data included in http response (200). */
-	public void urlConnectionDidReceiveData(InputStream data);
+	public void urlConnectionDidReceiveData(InputSource inStream);
 
 }

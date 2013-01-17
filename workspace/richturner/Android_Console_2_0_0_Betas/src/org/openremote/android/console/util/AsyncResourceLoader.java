@@ -225,7 +225,7 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
                   
                  //doSettingsOnMain;
                   doSettingsOnMain: {
-                      AppSettingsModel.setCurrentServer(context, null);
+                      AppSettingsModel.setCurrentController(context, null);
                       AppSettingsModel.setCurrentPanelIdentity(context, null);
                      
                       Intent intent = new Intent();

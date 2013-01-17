@@ -19,86 +19,50 @@
 */
 package org.openremote.android.console;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.http.HttpResponse;
-import org.openremote.android.console.bindings.Screen;
-import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
-import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
-import org.openremote.android.console.net.ORConnection;
-import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
-import org.openremote.android.console.net.ORHttpMethod;
-import org.openremote.android.console.net.ORNetworkCheck;
 import org.openremote.android.console.net.SavedServersNetworkCheckTestAsyncTask;
 import org.openremote.android.console.util.FileUtil;
-import org.openremote.android.console.util.StringUtil;
-import org.openremote.android.console.view.ControllerListItemLayout;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import com.google.inject.Inject;
 import roboguice.util.RoboAsyncTask;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * Controller List View for displaying saved and auto-discovered controllers
  * and selecting which controller to load as well as which panel.
  * Can also clear the image cache.
  * 
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  * @author Tomsky Wang
  * @author Dan Cong
- * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 
 public class AppSettingsActivity extends GenericActivity {
   public static final String TAG = Constants.LOG_CATEGORY + "AppSettingsActivity";
   
-  private DataHelper dh;
+  private ControllerDataHelper dh;
 
   private LinearLayout appSettingsView;
   
@@ -114,6 +78,8 @@ public class AppSettingsActivity extends GenericActivity {
   private LinearLayout progressLayout;
 
   private ControllerListAdapter serverListAdapter;
+  
+  private ControllerObject editController;
   
   private LinearLayout serversLayout;
   
@@ -137,7 +103,8 @@ public class AppSettingsActivity extends GenericActivity {
     setContentView(R.layout.controller_list);
     
     loadingPanelProgress = new ProgressDialog(this);
-    dh = new DataHelper(this);
+    dh = new ControllerDataHelper(this);
+    
     controllerListView = (ListView) findViewById(R.id.controller_list_view);
     appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
     serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
@@ -153,32 +120,91 @@ public class AppSettingsActivity extends GenericActivity {
     startControllerAutoDiscovery();
   }
 
+  public void onControllerLoadRequest(ControllerObject controller) {
+  	if (controller != null && controller.isControllerUp()) {
+  		// Set the controller as the current controller
+      try {
+        URL controllerURL = new URL(controller.getUrl());
+        AppSettingsModel.setCurrentController(this.getApplicationContext(), controllerURL);
+      } catch (MalformedURLException e) {
+	    	ViewHelper.showAlertViewWithTitle(this, "Error", "Controller URL is not valid!");
+	    	return;
+      }
+  		
+  		// Load Default panel if none specified then go to panel selection screen
+  		if (!TextUtils.isEmpty(controller.getDefaultPanel())) {
+  			AppSettingsModel.setCurrentPanelIdentity(this, controller.getDefaultPanel());
+  			Intent intent = new Intent(this, Main.class);
+  			startActivity(intent);
+  			//finish();
+  		} else {
+  			Intent intent = new Intent(this, PanelSelectionActivity.class);
+  			startActivity(intent);
+  			//finish();
+  		}
+  	} else {
+	    	ViewHelper.showAlertViewWithTitle(this, "Warning", "Controller is not available!");
+	    	return;
+  	}
+  }
+  
+  public void onControllerDeleteRequest(final ControllerObject controller) {
+  	ViewHelper.showAlertViewWithTitleYesOrNo(this,
+  			"Confirm Delete", "Are you sure you want to Delete controller '" + controller.getUrl() +"'?",
+  			new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+							// Delete the controller from the list
+	          ((ArrayAdapter<ControllerObject>) controllerListView.getAdapter()).remove(controller);
+	          dh.deleteController(controller.getUrl());
+					}
+				});
+  }
+  
+  public void onControllerAddRequest() {
+    Intent intent = new Intent(AppSettingsActivity.this, AddEditControllerActivity.class);
+    intent.setAction(getPackageName() + "." + Constants.ADD_CONTROLLER_ACTION);
+    startActivityForResult(intent, Constants.ADD_CONTROLLER);
+  }
+  
+  public void onControllerEditRequest(ControllerObject controller) {
+  	editController = controller;
+    Intent intent = new Intent(AppSettingsActivity.this, AddEditControllerActivity.class);
+    intent.setAction(getPackageName() + "." + Constants.EDIT_CONTROLLER_ACTION);
+    intent.putExtra(this.getPackageName() + ".ControllerUrl", controller.getUrl());
+    startActivityForResult(intent, Constants.EDIT_CONTROLLER);    
+  }
 
   private void addListChangeListener() {
     controllerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-    	
+
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
       	ControllerObject newlySelectedController =  (ControllerObject) parent.getItemAtPosition(position);
-      	ControllerListItemLayout listItem = (ControllerListItemLayout)view;
-        
-      	// Only proceed if list item is checked (means controller is available)
-      	if (!listItem.isChecked())
-      		newlySelectedController = null;
       	
-      	if (selectedController != null && selectedController == newlySelectedController)
-      		return;
-      	
-      	if (selectedController != null)
-      		selectedController.setIs_Selected(false);
-      	
-      	selectedController = newlySelectedController;
-
-      	if (newlySelectedController != null) {
-      		selectedController.setIs_Selected(true);
+      	if (newlySelectedController instanceof DummyControllerObject)
+      	{
+      		onControllerAddRequest();
       	}
-      	
-      	panelSelectSpinnerView.setController(newlySelectedController);  
-        serverListAdapter.notifyDataSetChanged();
+//      	ControllerListItemLayout listItem = (ControllerListItemLayout)view;
+//        
+//      	// Only select controller if availability check has been completed and it is available
+//      	if (newlySelectedController == null || !newlySelectedController.isAvailabilityCheckDone() || !newlySelectedController.isControllerUp())
+//      		return;
+//      	
+//      	if (selectedController != null && selectedController == newlySelectedController)
+//      		return;
+//      	
+//      	if (selectedController != null)
+//      		selectedController.setIs_Selected(false);
+//      	
+//      	selectedController = newlySelectedController;
+//
+//      	if (newlySelectedController != null) {
+//      		selectedController.setIs_Selected(true);
+//      	}
+//      	
+//      	panelSelectSpinnerView.setController(newlySelectedController);  
+//        serverListAdapter.notifyDataSetChanged();
       }
    });
   }
@@ -187,35 +213,6 @@ public class AppSettingsActivity extends GenericActivity {
    * Adds the onclick listeners for the buttons in this view
    */
   private void addButtonOnClickListeners() {
-	  Button btnAddServer = (Button) findViewById(R.id.button_add_controller);
-    
-    btnAddServer.setOnClickListener(new OnClickListener() {
-      public void onClick(View v) {
-        Intent intent = new Intent();
-        intent.setClass(AppSettingsActivity.this, AddServerActivity.class);
-        startActivityForResult(intent, Constants.REQUEST_CODE);
-      }
-    });
-    
-//    Button btnDeleteServer = (Button) findViewById(R.id.delete_server_button);
-//    
-//    btnDeleteServer.setOnClickListener(new OnClickListener() {
-//      @SuppressWarnings("unchecked")
-//      public void onClick(View v) {
-//        int checkedPosition = controllerListView.getCheckedItemPosition();
-//        if (!(checkedPosition == ListView.INVALID_POSITION)) {
-//        	controllerListView.setItemChecked(checkedPosition, false);
-//        	
-//        	ControllerObject toDelete = (ControllerObject)controllerListView.getItemAtPosition(checkedPosition);
-//          ((ArrayAdapter<ControllerObject>) controllerListView.getAdapter()).remove(toDelete);
-//          currentServer = "";
-//          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, null);
-//          dh.delete(toDelete.getControllerName());
-//          previousSelectedItem=-1;
-//        }
-//      }
-//    });
-  	
     Button btnClearCache = (Button) findViewById(R.id.button_clear_image_cache);
     
     btnClearCache.setOnClickListener(new OnClickListener() {
@@ -229,56 +226,17 @@ public class AppSettingsActivity extends GenericActivity {
             });
       }
     });
-    
-    
-//    Button btnDone = (Button)findViewById(R.id.setting_done);
-//    
-//    btnDone.setOnClickListener(new OnClickListener() {
-//      public void onClick(View v) {
-//        if (selectedController == null) {
-//          ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
-//              "Please select a controller from the list!");
-//          return;
-//        }
-//        
-//        String selectedPanel = (String)panelSelectSpinnerView.getSelectedItem();
-//        if (!TextUtils.isEmpty(selectedPanel) && !selectedPanel.equals(PanelSelectSpinnerView.CHOOSE_PANEL)) {
-//          AppSettingsModel.setCurrentPanelIdentity(AppSettingsActivity.this, selectedPanel);
-//        } else {
-//          ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
-//              "No Panel. Please configure Panel Identity manually.");
-//          return;
-//        }
-//        
-//        //TODO need to request after controller availability is found. So move this method to be called after "Done" is selected
-//        requestFailoverGroupUrls(); //this will run aynchronously in the background. after finish() will not run because AppSettingsActivity is closed
-//        
-//        Intent intent = new Intent();
-//        intent.setClass(AppSettingsActivity.this, Main.class);
-//        startActivity(intent);
-//        finish();
-//        
-//      
-//      }
-//    });
-//
-//    Button btnCancel = (Button)findViewById(R.id.setting_cancel);
-//    btnCancel.setOnClickListener(new OnClickListener() {
-//      public void onClick(View v) {
-//    	  
-//    	  dh.closeConnection();
-//        finish();
-//      }
-//    });
   }
 
 	/**
 	 * Populate the list of Controllers from saved controller's
 	 */
   private void initControllerList() {
-    ArrayList<ControllerObject> savedControllers = dh.getControllerData();
-
+    ArrayList<ControllerObject> savedControllers = dh.getAllControllers();
+    
 	  serverListAdapter = new ControllerListAdapter(appSettingsView.getContext(), R.layout.controller_list_item, savedControllers);
+    // Add Dummy to end of list
+    serverListAdapter.add(new DummyControllerObject());
 
 	  controllerListView.setAdapter(serverListAdapter);    
     controllerListView.setItemsCanFocus(true);
@@ -368,30 +326,29 @@ public class AppSettingsActivity extends GenericActivity {
    *
    * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (data != null && resultCode == Constants.RESULT_CONTROLLER_URL) {
-      String result = data.getDataString();
-      
-      if (TextUtils.isEmpty(result))
-      	return;
-      
-      result = result.toLowerCase().indexOf("http") < 0 ? "http://" + result : result;
-
-      // Check controller doesn't already exist
-      for (int i=0; i<serverListAdapter.getCount(); i++)
-      {
-      	ControllerObject controllerObj = serverListAdapter.getItem(i);
-      	if (controllerObj.getControllerName().equalsIgnoreCase(result))
-      	{
-      		return;
-      	}
-      }
-      
-      ControllerObject newController = new ControllerObject(result, "grp1", 0, 1, 0, "");
-      
-    	addController(newController);
+  	boolean wasEdit = (requestCode == Constants.EDIT_CONTROLLER);
+  	ControllerObject newController = null;
+  	  	
+  	if (data == null)
+  		return;
+  	
+  	String controllerUrl = data.getStringExtra(this.getPackageName() + ".ControllerUrl");
+  	if (!TextUtils.isEmpty(controllerUrl)) {
+  		newController = dh.getControllerByUrl(controllerUrl);
+  	}
+  	
+  	if (newController == null) {
+  		return;
+  	}
+  	
+  	// Replace old Controller Object if edit performed
+  	if (wasEdit) {
+  		updateControllerInList(editController, newController);
+  		editController = null;
+  	} else {
+  		addControllerToList(newController);
     }
   }
   
@@ -430,8 +387,9 @@ public class AppSettingsActivity extends GenericActivity {
         for (int i = 0; i < length; i++) {
 
         	if (!dh.controllerExists(result.get(i))) {
-        		ControllerObject controller = new ControllerObject(result.get(i), "grp1", 1, 1, 0, "");
-        		addController(controller);
+        		ControllerObject controller = new ControllerObject(result.get(i), "", "", "");
+        		dh.addController(controller);
+        		addControllerToList(controller);
         	}
         }
       }
@@ -446,26 +404,25 @@ public class AppSettingsActivity extends GenericActivity {
     }
   }
    
-  private void addController(ControllerObject controller) {
-  	if (controller == null)
+  private void updateControllerInList(ControllerObject oldController, ControllerObject newController) {
+  	if (oldController == null || newController == null)
   		return;
   	
-  	String urlStr = controller.getControllerName();
-  	
-    // Check URL is valid
-    try {
-      URL url = new URL(urlStr);
-    } catch (MalformedURLException e) {
-      Log.e(TAG, "New Controller URL is invalid '" + urlStr + "'");
-      Toast toast = Toast.makeText(getApplicationContext(),
-          getString(R.string.incorrect_url_syntax) + ": " + urlStr, 1);
-      toast.show();
-      return;
-    }
- 	  serverListAdapter.add(controller);
- 	  dh.addController(controller);
+		int pos = serverListAdapter.getPosition(editController);
+		serverListAdapter.remove(editController);
+		serverListAdapter.insert(newController, pos);
     serverListAdapter.notifyDataSetChanged();
-    Log.i(TAG,"New Controller Added '" + urlStr + "'");
+    Log.i(TAG,"Controller Updated '" + newController.getUrl() + "'");
+  }
+  
+  private void addControllerToList(ControllerObject controller) {
+  	if (controller == null)
+  		return;
+
+    // Insert before last dummy record
+ 	  serverListAdapter.insert(controller, serverListAdapter.getCount() - 1);
+    serverListAdapter.notifyDataSetChanged();
+    Log.i(TAG,"New Controller Added '" + controller.getUrl() + "'");
   }
 
   public static class FetchControllerFailoverGroupUrls extends RoboAsyncTask<Void>

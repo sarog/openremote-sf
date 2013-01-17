@@ -41,6 +41,7 @@ import org.openremote.android.console.net.ORHttpMethod;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -91,7 +92,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
        public boolean onTouch(View v, MotionEvent event) {
 
       	 if (selectedController != null && selectedController.isControllerUp())
-      		 new ORConnection(ORHttpMethod.GET, true, selectedController.getControllerName() + "/rest/panels", PanelSelectSpinnerView.this);
+      		 new ORConnection(ORHttpMethod.GET, true, selectedController.getUrl() + "/rest/panels", PanelSelectSpinnerView.this, PanelSelectSpinnerView.this.getContext());
       	 
          return true;
        }
@@ -119,7 +120,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    }
    
 	@Override
-	public void urlConnectionDidReceiveData(InputStream data) {
+	public void urlConnectionDidReceiveData(InputSource data) {
     ArrayList<String> panelList = new ArrayList<String>();
     
     try
@@ -211,7 +212,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
                @Override
                public void onClick(View v) {
                   super.onClick(v);
-                  new ORConnection(ORHttpMethod.GET, true, selectedController.getControllerName() + "/rest/panels", PanelSelectSpinnerView.this);
+                  new ORConnection(ORHttpMethod.GET, true, selectedController.getUrl() + "/rest/panels", PanelSelectSpinnerView.this, PanelSelectSpinnerView.this.getContext());
                }
                
             });

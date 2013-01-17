@@ -50,6 +50,7 @@ import android.widget.Toast;
  * This class represents the main OpenRemote activity. It starts up, reads the
  * xml file via AsyncResourceLoader class. It is launched via an intent to the GroupActivity class.
  * 
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  * @author Andrew C. Oliver <acoliver at osintegrators.com> 
  *         Tomsky
  */
@@ -67,7 +68,6 @@ public class Main extends GenericActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
         /*
@@ -147,13 +147,13 @@ public class Main extends GenericActivity {
      * @return true, if successful
      */
     private boolean checkServerAndPanel () {
-       Log.i("OpenRemote-toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-       if (AppSettingsModel.getCurrentServer(this) == null ||
-             TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-          doSettings();
-          return true;
-       }
-       return false;
+    	ControllerObject controller = AppSettingsModel.getCurrentController(this);
+    	
+			if (controller == null || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+				doSettings();
+				return true;
+			}
+			return false;
     }
     
     
