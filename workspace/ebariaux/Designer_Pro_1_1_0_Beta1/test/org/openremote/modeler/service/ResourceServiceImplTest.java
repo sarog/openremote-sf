@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.service;
 
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +31,6 @@ import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
@@ -53,10 +55,8 @@ import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.Gesture;
-import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
-import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
@@ -64,40 +64,40 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.domain.component.Gesture.GestureType;
+import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
+import org.openremote.modeler.service.impl.ResourceServiceImpl;
+import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
-public class ResourceServiceTest {
+public class ResourceServiceImplTest {
    
-   private static final Logger log = Logger.getLogger(ResourceServiceTest.class);
+   private static final Logger log = Logger.getLogger(ResourceServiceImplTest.class);
    private Configuration configuration;
-   private ResourceService resourceService;
+   private ResourceServiceImpl resourceServiceImpl = null;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
    private UserService userService;
    @BeforeClass
    public void setUp() {
-      resourceService = (ResourceService)SpringTestContext.getInstance().getBean("resourceService");
+      resourceServiceImpl = (ResourceServiceImpl) SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
-      userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "ResourceServiceTest");
-      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("ResourceServiceTest", "ResourceServiceTest"));
+      userService.createUserAccount("test", "test", "test");
+      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
-      
-      PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
    }
-   
    @Test
    public void testNopanel() {
       Collection<Panel> emptyPanel = new ArrayList<Panel>();
-      resourceService.initResources(emptyPanel, IDUtil.nextID());
+     outputPanelXML(emptyPanel);
    }
-   
    @Test
    public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
@@ -131,7 +131,7 @@ public class ResourceServiceTest {
       sensorRef.setOid(IDUtil.nextID());
       sensorRef.setSensor(sensor);
       switchToggle.setSwitchSensorRef(sensorRef);
-      label.setSensorAndInitSensorLink(sensor);
+      label.setSensor(sensor);
       
       UISwitch absSwitch = new UISwitch();      //UISwitch
       absSwitch.setOid(IDUtil.nextID());
@@ -146,7 +146,7 @@ public class ResourceServiceTest {
       gridSwitch.setSwitchCommand(switchToggle); 
       
       UIImage uiImage = new UIImage(IDUtil.nextID()); //UIImage
-      uiImage.setSensorAndInitSensorLink(sensor);
+      uiImage.setSensor(sensor);
       uiImage.setLabel(label);
          
       /*---------------widget-------------------*/
@@ -226,10 +226,9 @@ public class ResourceServiceTest {
       
       panels.add(panel1);
       panels.add(panel2);
-      resourceService.initResources(panels, IDUtil.nextID());
+      outputPanelXML(panels);
    }
-
-   @Test
+@Test
    public void testPanelTabbarWithNavigateToGroupAndScreen() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -240,7 +239,6 @@ public class ResourceServiceTest {
       item.setNavigate(nav);
       item.setName("navigate name");
       Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
@@ -248,7 +246,7 @@ public class ResourceServiceTest {
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      outputPanelXML(panelWithJustOneNavigate);
    }
 @Test
 public void testScreenHasGesture() {
@@ -270,7 +268,6 @@ public void testScreenHasGesture() {
    gestures.add(gesture);
    
    Panel p = new Panel();
-   p.setOid(IDUtil.nextID());
    p.setName("panel has a navigate");
    
    final Screen screen1 = new Screen();
@@ -291,10 +288,12 @@ public void testScreenHasGesture() {
    p.setGroupRefs(groupRefs);
    
    panelWithJustOneNavigate.add(p);
-   resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
- }
+   outputPanelXML(panelWithJustOneNavigate);
    
-   @Test
+   
+}
+   
+@Test
    public void testPanelTabbarWithNavigateToLogical() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
@@ -304,7 +303,6 @@ public void testScreenHasGesture() {
       item.setNavigate(nav);
       item.setName("navigate name");
       Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
@@ -312,7 +310,7 @@ public void testScreenHasGesture() {
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      outputPanelXML(panelWithJustOneNavigate);
    }
    
 @Test
@@ -331,13 +329,12 @@ public void testScreenHasGesture() {
       item.setNavigate(nav);
       item.setName("navigate name");
       Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
       p.setTabbarItems(items);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      outputPanelXML(panelWithJustOneNavigate);
    }
    
 @Test
@@ -356,7 +353,6 @@ public void testScreenHasGesture() {
       item.setNavigate(nav);
       item.setName("navigate name");
       Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
       p.setName("panel has a navigate");
       List<UITabbarItem> items = new ArrayList<UITabbarItem>();
       items.add(item);
@@ -368,7 +364,7 @@ public void testScreenHasGesture() {
       
       p.addGroupRef(new GroupRef(group));
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      outputPanelXML(panelWithJustOneNavigate);
    }
    
  @Test
@@ -380,7 +376,6 @@ public void testScreenHasGesture() {
       screen.getBackground().setImageSource(new ImageSource("http://finalist.cn/logo.jpg"));
       
       Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
       p.setName("panel has a navigate");
       
       Group group = new Group();
@@ -394,41 +389,20 @@ public void testScreenHasGesture() {
       
       p.addGroupRef(new GroupRef(group));
       panel.add(p);
-      resourceService.initResources(panel, IDUtil.nextID());
+      outputPanelXML(panel);
    }
- 
-   @Test
-   public void testEmptyScreen() {
-    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
-    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
-    List<Panel> panels = new ArrayList<Panel>();
-
-    /*---------------group-------------------*/
-    Group group1 = new Group();
-    group1.setOid(IDUtil.nextID());
-    group1.setName("group1");
-    group1.setScreenRefs(screenRefs);    
-    groupRefs.add(new GroupRef(group1));
-
-    Panel panel1 = new Panel();
-    panel1.setOid(IDUtil.nextID());
-    panel1.setGroupRefs(groupRefs);
-    panel1.setGroupRefs(groupRefs);
-    panel1.setName("panel1");
-
+@Test
+   public void testgetControllXMWithEmptyScreen() {
+      List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
       screen.setOid(IDUtil.nextID());
       screen.setName("EmptyScreen");
       
-      ScreenPair screenPair1 = new ScreenPair();
-      screenPair1.setOid(IDUtil.nextID());
-      screenPair1.setPortraitScreen(screen);      
-      screenRefs.add(new ScreenPairRef(screenPair1));
-      
-      resourceService.initResources(panels, IDUtil.nextID());
+      screens.add(screen);
+      outputControllerXML(screens);
    }
    
-@Test(enabled=false)
+@Test
    public void testGetControllerXMLWithButtonAndSwitchButNoCmd() {
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
@@ -486,10 +460,10 @@ public void testScreenHasGesture() {
       screen.addGrid(grid2);
       
       screens.add(screen);
-//      outputControllerXML(screens);
+      outputControllerXML(screens);
    }
    
-@Test(enabled=false)
+@Test
    public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
       
       Protocol protocol = new Protocol();
@@ -556,9 +530,9 @@ public void testScreenHasGesture() {
       screen.addGrid(grid2);
       
       screens.add(screen);
-//      outputControllerXML(screens);
+      outputControllerXML(screens);
    }
-@Test(enabled=false)
+@Test
 public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    
    Protocol protocol = new Protocol();
@@ -580,9 +554,9 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    gestures.add(gesture);
    screen.setGestures(gestures);
    screens.add(screen);
-//   outputControllerXML(screens);
+   outputControllerXML(screens);
 }
-   @Test(enabled=false)
+   @Test
    public void testGetControllerXMLWithButtonAndSwitchHaveSensor() {
       
       Protocol protocol = new Protocol();
@@ -667,13 +641,13 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       screen.addGrid(grid2);
       
       screens.add(screen);
-//      outputControllerXML(screens);
+      outputControllerXML(screens);
    }
    
    /*
     * The case has some problem because of LazyInitializationException 
     */
-// @Test(enabled=false)
+// @Test
    public void testGetControllerXMLWithButtonAndSwitchHaveMacro() {
 /*      
       Account account = new Account();
@@ -793,6 +767,25 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       screen.addGrid(grid2);
       
       screens.add(screen);
-//      outputControllerXML(screens);
+      outputControllerXML(screens);
+   }
+   private void outputPanelXML(Collection<Panel> panels) {
+      try {
+         System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
+               configuration.getPanelXsdPath()).getPath()), resourceServiceImpl.getPanelXML(panels)));
+      } catch (Exception e) {
+         log.error("Can not output panel xml", e);
+         fail();
+      }
+   }
+   
+   private void outputControllerXML(Collection<Screen> screens) {
+      try {
+         System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
+               configuration.getControllerXsdPath()).getPath()), resourceServiceImpl.getControllerXML(screens,IDUtil.nextID())));
+      } catch (Exception e) {
+         log.error("Can not output controller xml", e);
+         fail();
+      }
    }
 }

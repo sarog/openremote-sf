@@ -60,7 +60,6 @@ public class SliderServiceTest {
       Assert.assertEquals(sliderFromTable.getSetValueCmd().getDeviceCommand().getName(), "testLirc");
    }
 
-   /*
    @Test(dependsOnMethods = "testSaveSlider")
    public void testUpdate() {
       List<Slider> sliders = sliderService.loadAll();
@@ -77,7 +76,6 @@ public class SliderServiceTest {
          }
       }
    }
-   */
 
    @Test(dependsOnMethods = "testSaveSlider")
    public void testLoadAll() {
