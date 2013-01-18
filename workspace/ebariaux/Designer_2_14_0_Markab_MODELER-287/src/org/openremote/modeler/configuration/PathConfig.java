@@ -264,10 +264,6 @@ public class PathConfig {
       return  WEBROOTPATH;
    }
    
-   @Deprecated public String getSerializedPanelsFile(Account account){
-      return userFolder(account)+"panels.obj";
-   }
-   
 //   public String getControllerConfigPath(){
 //      return configuration.getControllerConfigPath();
 //   }
