@@ -1632,7 +1632,7 @@ public class LocalFileCache implements ResourceCache<File>
    */
   public File getLegacyPanelObjFile() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File legacyPanelsObjFile = new File(pathConfig.getSerializedPanelsFile(account)); // TODO : should go through ResourceCache interface
+      File legacyPanelsObjFile = new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
       return legacyPanelsObjFile;
   }
   
