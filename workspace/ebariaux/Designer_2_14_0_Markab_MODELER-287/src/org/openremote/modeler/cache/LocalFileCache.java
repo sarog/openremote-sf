@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +41,7 @@ import java.util.zip.ZipInputStream;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.configuration.PathConfig;
@@ -1666,7 +1669,39 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
   
-  
+  /**
+   * Persists the given UI information in legacy binary panels.obj format.
+   * 
+   * @param panels
+   * @param maxOid
+   */
+  public void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
+     File panelsObjFile = getLegacyPanelObjFile();
+     ObjectOutputStream oos = null;
+     try {
+        FileUtilsExt.deleteQuietly(panelsObjFile);
+        if (panels == null || panels.size() < 1) {
+           return;
+        }
+        oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
+        oos.writeObject(panels);
+        oos.writeLong(maxOid);
+     } catch (FileNotFoundException e) {
+        cacheLog.error(e.getMessage(), e);
+     } catch (IOException e) {
+    	 cacheLog.error(e.getMessage(), e);
+     } finally {
+        try {
+           if (oos != null) {
+              oos.close();
+           }
+        } catch (IOException e) {
+        	cacheLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
+        }
+     }
+  }
+
+
   
   
   /**
