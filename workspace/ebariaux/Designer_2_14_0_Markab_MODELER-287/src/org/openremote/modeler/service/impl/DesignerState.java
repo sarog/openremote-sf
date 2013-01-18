@@ -375,10 +375,7 @@ class DesignerState
       LocalFileCache cache = new LocalFileCache(configuration, user);
       cache.update();
 
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File legacyPanelsObjFile = new File(pathConfig.getSerializedPanelsFile(user.getAccount())); // TODO : should go through ResourceCache interface
-
-      boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState(pathConfig, legacyPanelsObjFile);
+      boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
       boolean hasCachedState = cache.hasState();
       boolean hasXMLUIState = hasXMLUIState();
 
@@ -411,7 +408,7 @@ class DesignerState
       {
         try
         {
-          restoreLegacyDesignerUIState(legacyPanelsObjFile);
+          restoreLegacyDesignerUIState(cache.getLegacyPanelObjFile());
 
           restoreLog.info("Restored UI state : {0}", this);
 
