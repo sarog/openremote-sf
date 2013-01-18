@@ -1538,9 +1538,9 @@ public class ResourceServiceImpl implements ResourceService
   //
   // TODO :
   //
-  //   - should migrate to ResourceCache interface
+  //   - should migrate to ResourceCache interface -> see what already exists there
   //
-  @Override public boolean canRestore()
+  @Deprecated public boolean canRestore()
   {
     PathConfig pathConfig = PathConfig.getInstance(configuration);
     File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));

@@ -110,13 +110,6 @@ public interface UtilsRPCService extends RemoteService {
     */
    PanelsAndMaxOid restore() throws UIRestoreException,BeehiveNotAvailableException;
    
-   /**
-    * Check the panels if can restore from a stored zip file.
-    * 
-    * @return true, if successful
-    */
-   boolean canRestore();
-   
    Collection<Panel> loadPanelsFromSession() throws UIRestoreException,BeehiveNotAvailableException;
    
    List<Group> loadGroupsFromSession();

@@ -92,11 +92,6 @@ public interface ResourceService
   @Deprecated PanelsAndMaxOid restore();
 
   /**
-   * @deprecated Should be part of Resource Cache API
-   */
-  @Deprecated boolean canRestore();
-
-  /**
    * @deprecated Can be replaced with a direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#save(java.util.Set)}.
    */
