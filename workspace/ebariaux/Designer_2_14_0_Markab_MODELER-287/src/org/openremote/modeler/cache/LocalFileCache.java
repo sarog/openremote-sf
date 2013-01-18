@@ -1624,7 +1624,15 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
 
-
+  /**
+   * @return File for binary panels.obj designer UI state serialization file.
+   */
+  public File getLegacyPanelObjFile() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      File legacyPanelsObjFile = new File(pathConfig.getSerializedPanelsFile(account)); // TODO : should go through ResourceCache interface
+      return legacyPanelsObjFile;
+  }
+  
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
    *
@@ -1637,9 +1645,10 @@ public class LocalFileCache implements ResourceCache<File>
    * @throws ConfigurationException
    *              if read access to the file system is denied for any reason
    */
-  public boolean hasLegacyDesignerUIState(PathConfig pathConfig, File panelsObjFile)
+  public boolean hasLegacyDesignerUIState()
       throws ConfigurationException
   {
+	  File panelsObjFile = getLegacyPanelObjFile();
     try
     {
       return panelsObjFile.exists();
@@ -1647,6 +1656,7 @@ public class LocalFileCache implements ResourceCache<File>
 
     catch (SecurityException e)
     {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
       // convert the potential security exception to a checked exception...
 
       throw new ConfigurationException(
