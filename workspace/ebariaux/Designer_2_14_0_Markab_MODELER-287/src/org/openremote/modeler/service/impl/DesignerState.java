@@ -378,7 +378,7 @@ class DesignerState
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File legacyPanelsObjFile = new File(pathConfig.getSerializedPanelsFile(user.getAccount())); // TODO : should go through ResourceCache interface
 
-      boolean hasLegacyDesignerUIState = hasLegacyDesignerUIState(pathConfig, legacyPanelsObjFile);
+      boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState(pathConfig, legacyPanelsObjFile);
       boolean hasCachedState = cache.hasState();
       boolean hasXMLUIState = hasXMLUIState();
 
@@ -926,41 +926,6 @@ class DesignerState
       throw new UIRestoreException(userMessage);
     }
   }
-
-
-  /**
-   * TODO : should be part of cache implementation
-   *
-   * Detects the presence of legacy binary panels.obj designer UI state serialization file.
-   *
-   * @param pathConfig      Designer path configuration
-   * @param panelsObjFile   file path to the legacy binary panels.objs UI state serialization file
-   *
-   * @return      true if the panels.obj file is present in local beehive archive cache folder,
-   *              false otherwise
-   *
-   * @throws ConfigurationException
-   *              if read access to the file system is denied for any reason
-   */
-  private boolean hasLegacyDesignerUIState(PathConfig pathConfig, File panelsObjFile)
-      throws ConfigurationException
-  {
-    try
-    {
-      return panelsObjFile.exists();
-    }
-
-    catch (SecurityException e)
-    {
-      // convert the potential security exception to a checked exception...
-
-      throw new ConfigurationException(
-          "Security manager denied access to " + panelsObjFile.getAbsoluteFile() +
-          ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
-      );
-    }
-  }
-  
 
   /**
    * Helper for logging user information.
