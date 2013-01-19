@@ -110,8 +110,8 @@ public class HTTPUtil {
     */
    private static int downLoadFile(Context context, String serverUrl, String fileName) {
       HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 10 * 1000);
+      HttpConnectionParams.setConnectionTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
+      HttpConnectionParams.setSoTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
       HttpClient client = new DefaultHttpClient(params);
       int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
       try {
