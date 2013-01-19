@@ -1316,9 +1316,9 @@ public class ResourceServiceImpl implements ResourceService
       File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
       FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
 
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      File panelXMLFile = cache.getPanelXmlFile();
+      File controllerXMLFile = cache.getControllerXmlFile();
+      File lircdFile = cache.getLircdFile();
 
       File rulesDir = new File(pathConfig.userFolder(userService.getAccount()), "rules");
       File rulesFile = new File(rulesDir, "modeler_rules.drl");

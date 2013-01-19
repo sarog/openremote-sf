@@ -1632,9 +1632,34 @@ public class LocalFileCache implements ResourceCache<File>
    */
   public File getLegacyPanelObjFile() {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File legacyPanelsObjFile = new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
-      return legacyPanelsObjFile;
+      return new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
   }
+  
+  /**
+   * @return File for panel XML description (panel.xml)
+   */
+   public File getPanelXmlFile() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      return new File(pathConfig.userFolder(account) + "panel.xml");
+   }
+
+   
+   
+   /**
+    * @return File for controller XML description (controller.xml)
+    */
+    public File getControllerXmlFile() {
+       PathConfig pathConfig = PathConfig.getInstance(configuration);
+       return new File(pathConfig.userFolder(account) + "controller.xml");
+    }
+
+    /**
+     * @return File for LIRC daemon configuration (lircd.conf)
+     */
+     public File getLircdFile() {
+        PathConfig pathConfig = PathConfig.getInstance(configuration);
+        return new File(pathConfig.userFolder(account) + "lircd.conf");
+     }
   
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
