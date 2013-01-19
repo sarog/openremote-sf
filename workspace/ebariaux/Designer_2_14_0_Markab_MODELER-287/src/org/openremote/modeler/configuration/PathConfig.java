@@ -93,15 +93,6 @@ public class PathConfig {
 //      return userFolder(sessionId) + "panel.xml";
 //   }
 
-  /**
-   * @deprecated This should be internalized to cache implementation. No need to expose outside
-   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
-   *             into cache impl.
-   */
-   @Deprecated public String panelXmlFilePath(Account account) {
-      return userFolder(account) + "panel.xml";
-   }
-
 //   /**
 //    * Gets controller xml file path.
 //    *
@@ -112,15 +103,6 @@ public class PathConfig {
 //   @Deprecated public String controllerXmlFilePath(String sessionId) {
 //      return userFolder(sessionId) + "controller.xml";
 //   }
-
-  /**
-   * @deprecated This should be internalized to cache implementation. No need to expose outside
-   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
-   *             into cache impl.
-   */
-   @Deprecated public String controllerXmlFilePath(Account account) {
-      return userFolder(account) + "controller.xml";
-   }
 
 //   /**
 //    * Gets panel description file path.
@@ -144,15 +126,6 @@ public class PathConfig {
 //      return userFolder(sessionId) + "lircd.conf";
 //   }
 //
-
-  /**
-   * @deprecated This should be internalized to cache implementation. No need to expose outside
-   *             of cache. Will go away once ResourceServiceImpl.initResources has been factored
-   *             into cache impl.
-   */
-   @Deprecated public String lircFilePath(Account account) {
-      return userFolder(account) + "lircd.conf";
-   }
 
 //   /**
 //    * Gets compressed file path.
