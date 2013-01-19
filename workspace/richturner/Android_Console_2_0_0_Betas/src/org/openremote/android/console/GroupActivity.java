@@ -31,6 +31,7 @@ import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.TabBarItem;
 import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
+import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -238,6 +239,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          isLandscape = !isLandscape;
          screenSize = lastGroup.getScreenSizeByOrientation(isLandscape);
       }
+      
+      // Set activity orientation
+      int requestedOrientation = isLandscape ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+      this.setRequestedOrientation(requestedOrientation);
       
       currentGroupView = new GroupView(this, lastGroup);
       groupViews.put(lastGroup.getGroupId(), currentGroupView);
@@ -851,6 +856,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    }
    
    private void loadSettings() {
+     AppSettingsModel.setCurrentController(this, null);
+     AppSettingsModel.setCurrentPanelIdentity(this, null);
   	 Intent i = new Intent(this, AppSettingsActivity.class);
   	 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
   	 startActivity(i);
