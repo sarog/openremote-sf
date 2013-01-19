@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 
@@ -185,4 +186,22 @@ public class Group extends RefedEntity implements BeanModelTag {
       return landscapeScreens;
    }
    
+   @Transient
+   @JSON(include = false)
+   public List<Screen> getScreens() {
+	   List<Screen> screens = new ArrayList<Screen>();
+       for (ScreenPairRef screenRef : getScreenRefs()) {
+          ScreenPair screenPair = screenRef.getScreen();
+          if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+             screens.add(screenPair.getPortraitScreen());
+          } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+             screens.add(screenPair.getLandscapeScreen());
+          } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+             screenPair.setInverseScreenIds();
+             screens.add(screenPair.getPortraitScreen());
+             screens.add(screenPair.getLandscapeScreen());
+          }
+       }
+       return screens;
+   }
 }
