@@ -87,7 +87,7 @@ public class Main extends GenericActivity {
         isRefreshingController = false;
         
         checkNetType();
-        readDisplayMetrics();        
+        readDisplayMetrics();     
         if(!checkServerAndPanel()) {        
            AsyncResourceLoader loader = getInjector().getInstance(AsyncResourceLoader.class);
            loader.setLoadingText(loadingText);
@@ -133,8 +133,7 @@ public class Main extends GenericActivity {
      * Include screen width and height.
      */
     private void readDisplayMetrics() {
-      DisplayMetrics dm = new DisplayMetrics();
-      dm = getApplicationContext().getResources().getDisplayMetrics();
+      DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
       Screen.SCREEN_WIDTH = dm.widthPixels;
       Screen.SCREEN_HEIGHT = dm.heightPixels;
     }

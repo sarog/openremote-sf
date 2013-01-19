@@ -218,7 +218,7 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
  
           ViewHelper.showAlertViewWithTitleYesOrNo(context,
                   context.getString(R.string.error),
-                  "IOException while loading resources",
+                  "Controller is not available",
               new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   FileUtil.clearImagesInCache(context);//&&
