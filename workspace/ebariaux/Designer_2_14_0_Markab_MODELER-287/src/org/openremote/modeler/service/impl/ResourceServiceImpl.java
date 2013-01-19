@@ -1272,7 +1272,7 @@ public class ResourceServiceImpl implements ResourceService
    //
    //  - should be internalized to resource cache as part of MODELER-287
    //
-   @Override @Transactional public void initResources(Collection<Panel> panels, long maxOid) {
+   @Transactional private void initResources(Collection<Panel> panels, long maxOid) {
       // 1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as
       // device command, sensor ...)
       // the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a
@@ -1441,8 +1441,12 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * This implementation has been moved and delegates to {@link DesignerState#save}.
    */
-  @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels)
+  @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
   {
+	  
+	// Clients used to call this, moved here temporarily. Still needs to be pushed further down as MODELER-287.
+    initResources(panels, maxOid);
+
     // Create a set of panels to eliminate potential duplicate instances...
 
     HashSet<Panel> panelSet = new HashSet<Panel>();

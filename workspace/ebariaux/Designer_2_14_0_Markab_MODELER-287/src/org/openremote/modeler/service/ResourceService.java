@@ -78,12 +78,6 @@ public interface ResourceService
    * @param panels
    */
   void resolveDTOReferences(Collection<Panel> panels);  
-  
-  /**
-   * @deprecated Should be internalized as part of Resource Cache implementation,
-   *             see MODELER-287
-   */
-  @Deprecated void initResources(Collection<Panel> panels,long maxOid);
 
   /**
    * @deprecated Can be replaced with direct call to
@@ -94,8 +88,11 @@ public interface ResourceService
   /**
    * @deprecated Can be replaced with a direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#save(java.util.Set)}.
+   * 
+   * EBR : not at this stage, as it adds a call to initResources.
+   * MODELER-287 will push initResources to LocalFileCache and then above will be true
    */
-  @Deprecated void saveResourcesToBeehive(Collection<Panel> panels);
+  @Deprecated void saveResourcesToBeehive(Collection<Panel> panels, long maxOid);
 
   void saveTemplateResourcesToBeehive(Template Template);
   void downloadResourcesForTemplate(long templateOid);

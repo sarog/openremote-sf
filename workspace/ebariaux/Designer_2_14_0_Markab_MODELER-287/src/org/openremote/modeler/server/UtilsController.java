@@ -99,10 +99,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     resourceService.resolveDTOReferences(panelList);
 
-    // TODO : this call should be internalized, see MODELER-287
-    resourceService.initResources(panelList, maxId);
-
-    resourceService.saveResourcesToBeehive(panelList);
+    resourceService.saveResourcesToBeehive(panelList, maxId);
 
     // TODO : should be injected
     ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
@@ -230,8 +227,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
                autoSaveResponse.setUpdated(true);
-               resourceService.initResources(panels, maxID);
-               resourceService.saveResourcesToBeehive(panels);
+
+               resourceService.saveResourcesToBeehive(panels, maxID);
             }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
@@ -251,8 +248,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
             
             resourceService.resolveDTOReferences(panels);
             
-            resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive(panels);
+            resourceService.saveResourcesToBeehive(panels, maxID);
          }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
