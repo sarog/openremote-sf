@@ -648,7 +648,7 @@ public class ResourceServiceImpl implements ResourceService
       }
    }
 
-   public String getPanelXML(Collection<Panel> panels) {
+   private String getPanelXML(Collection<Panel> panels) {
       /*
        * init groups and screens.
        */
@@ -680,7 +680,7 @@ public class ResourceServiceImpl implements ResourceService
    }
 
    @SuppressWarnings("unchecked")
-   public String getControllerXML(Collection<Screen> screens, long maxOid)
+   private String getControllerXML(Collection<Screen> screens, long maxOid)
    {
 
      // PATCH R3181 BEGIN ---8<-----
@@ -1725,7 +1725,7 @@ public class ResourceServiceImpl implements ResourceService
    * @return
    * @throws Exception 
    */
-  public String mergeXMLTemplateIntoString(String templateLocation, Map model) throws Exception {
+  private String mergeXMLTemplateIntoString(String templateLocation, Map model) throws Exception {
     StringWriter result = new StringWriter();
     VelocityContext velocityContext = new VelocityContext(model);
     EventCartridge ec = new EventCartridge();
