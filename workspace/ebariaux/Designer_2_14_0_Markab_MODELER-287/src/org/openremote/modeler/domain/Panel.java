@@ -315,6 +315,22 @@ public class Panel extends BusinessEntity implements BeanModelTag
   }
 
 
+  /**
+   * Collects all groups and screens that are part of the given panels.
+   * 
+   * @param panels the collection of panels from which to collect groups and screens
+   * @param groups set of groups to be filled in
+   * @param screens set of screens to be filled in
+   */
+  public static void initGroupsAndScreens(Collection<Panel> panels, Set<Group> groups, Set<Screen> screens) {
+      for (Panel panel : panels) {
+    	  groups.addAll(panel.getGroups());
+      }
+
+      for (Group group : groups) {
+    	  screens.addAll(group.getScreens());
+      }
+   }
 
   // Instance Fields ------------------------------------------------------------------------------
 

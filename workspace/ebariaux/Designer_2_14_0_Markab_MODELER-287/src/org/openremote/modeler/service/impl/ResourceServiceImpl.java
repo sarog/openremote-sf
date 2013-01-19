@@ -654,7 +654,7 @@ public class ResourceServiceImpl implements ResourceService
        */
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
-      initGroupsAndScreens(panels, groups, screens);
+      Panel.initGroupsAndScreens(panels, groups, screens);
 
       Map<String, Object> context = new HashMap<String, Object>();
       context.put("panels", panels);
@@ -797,23 +797,6 @@ public class ResourceServiceImpl implements ResourceService
 
     return result;
   }
-
-
-   //
-   //  TODO :
-   //
-   //   - should be internalized as part of MODELER-287
-   //
-   private void initGroupsAndScreens(Collection<Panel> panels, Set<Group> groups, Set<Screen> screens) {
-      for (Panel panel : panels) {
-    	  groups.addAll(panel.getGroups());
-      }
-
-      for (Group group : groups) {
-    	  screens.addAll(group.getScreens());
-      }
-   }
-
 
    private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId,
                                                     List<Sensor> dbSensors)
@@ -1272,7 +1255,7 @@ public class ResourceServiceImpl implements ResourceService
       /*
        * initialize groups and screens.
        */
-      initGroupsAndScreens(panels, groups, screens);
+      Panel.initGroupsAndScreens(panels, groups, screens);
 
       String controllerXmlContent = getControllerXML(screens, maxOid);
       String panelXmlContent = getPanelXML(panels);
