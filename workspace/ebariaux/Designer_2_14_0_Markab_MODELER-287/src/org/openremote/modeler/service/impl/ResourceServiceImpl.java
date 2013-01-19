@@ -806,26 +806,11 @@ public class ResourceServiceImpl implements ResourceService
    //
    private void initGroupsAndScreens(Collection<Panel> panels, Set<Group> groups, Set<Screen> screens) {
       for (Panel panel : panels) {
-         List<GroupRef> groupRefs = panel.getGroupRefs();
-         for (GroupRef groupRef : groupRefs) {
-            groups.add(groupRef.getGroup());
-         }
+    	  groups.addAll(panel.getGroups());
       }
 
       for (Group group : groups) {
-         List<ScreenPairRef> screenRefs = group.getScreenRefs();
-         for (ScreenPairRef screenRef : screenRefs) {
-            ScreenPair screenPair = screenRef.getScreen();
-            if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
-               screens.add(screenPair.getPortraitScreen());
-            } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
-               screens.add(screenPair.getLandscapeScreen());
-            } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
-               screenPair.setInverseScreenIds();
-               screens.add(screenPair.getPortraitScreen());
-               screens.add(screenPair.getLandscapeScreen());
-            }
-         }
+    	  screens.addAll(group.getScreens());
       }
    }
 
