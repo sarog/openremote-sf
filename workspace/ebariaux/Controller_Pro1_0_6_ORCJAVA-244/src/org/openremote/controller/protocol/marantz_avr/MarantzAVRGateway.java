@@ -222,15 +222,6 @@ public class MarantzAVRGateway {
                         command.updateWithResponse(response);
                      }
                   }
-//                    try {
-                      // GrafikEye scene feedback: GSS, [01:05:01], 1
-//                      GrafikEye ge = (GrafikEye) getHomeWorksDevice(response.address, GrafikEye.class);
-//                      if (ge != null) {
-//                        ge.processUpdate(response.parameter);
-//                      }
-//                    } catch (LutronHomeWorksDeviceException e) {
-//                      log.error("Impossible to get device", e);
-//                    }
                 } else {
                    log.info("Received unknown information from Marantz >" + line + "<");
                 }
