@@ -88,6 +88,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -1336,7 +1337,10 @@ public class ResourceServiceImpl implements ResourceService
   {
     try
     {
-      DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+      User currentUser = userService.getCurrentUser();
+      LocalFileCache cache = new LocalFileCache(configuration, currentUser);
+    	
+      DesignerState state = new DesignerState(configuration, currentUser, cache);
       state.restore();
 
       PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
@@ -1411,7 +1415,8 @@ public class ResourceServiceImpl implements ResourceService
    */
   @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
   {
-	  
+	User currentUser = userService.getCurrentUser();
+	LocalFileCache cache = new LocalFileCache(configuration, currentUser);
 	// Clients used to call this, moved here temporarily. Still needs to be pushed further down as MODELER-287.
     initResources(panels, maxOid);
 
@@ -1422,7 +1427,7 @@ public class ResourceServiceImpl implements ResourceService
 
     // Delegate implementation to DesignerState...
 
-    DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+    DesignerState state = new DesignerState(configuration, currentUser, cache);
     state.save(panelSet);
   }
 
