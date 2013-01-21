@@ -43,6 +43,7 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:marantz_avr.properties</value>
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
           </list>
@@ -104,6 +105,12 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
+    <property name="address" value="${marantz_avr.address}" />
+  </bean>
+  
+  <bean id="marantzAVRGateway" class="org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway"/>
 
   <bean id="AMXNIConfig" class="org.openremote.controller.AMXNIConfig">
     <property name="address" value="${amx_ni.address}" />
@@ -257,6 +264,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
@@ -374,6 +382,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
+
+  <bean id="marantzAVRCommandBuilder" class = "org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder">
+    <property name="gateway" ref="marantzAVRGateway"/>
+  </bean>
 
   <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
     <property name="gateway" ref="AMXNIGateway"/>
