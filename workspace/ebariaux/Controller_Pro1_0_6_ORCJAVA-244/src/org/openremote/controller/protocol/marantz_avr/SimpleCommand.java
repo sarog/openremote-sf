@@ -98,8 +98,11 @@ public class SimpleCommand extends MarantzAVRCommand implements ExecutableComman
    protected void updateWithResponse(MarantzResponse response)
    {
       System.out.println("updateWithResponse >" + response.command + "<->" + response.parameter + "<");
+      CommandConfig cfg = knownCommands.get(name);
+      System.out.println("Lookup " + cfg.lookupResponseParam(response.parameter));
+      
       // TODO: have generic, this is just for testing
-      if ("OFF".equals(response.parameter)) {
+      if ("OFF".equals(cfg.lookupResponseParam(response.parameter))) {
          updateSensorsWithValue("off");
       } else {
          updateSensorsWithValue("on");
@@ -128,6 +131,23 @@ class CommandConfig {
    
    public String getParameter(String orParam) {
       return knownParameters.get(orParam);
+   }
+
+   /**
+    * Reverse look-up in the parameters table.
+    * Naive implementation at this stage, considering that the mapping for parameters used to send command
+    * is identical to one for the feedback values received.
+    * 
+    * @param param
+    * @return
+    */
+   public String lookupResponseParam(String param) {
+     for (Map.Entry<String, String> e : knownParameters.entrySet()) {
+        if (e.getValue().equals(param)) {
+           return e.getKey();
+        }
+     }
+     return null;
    }
 }
 
