@@ -304,6 +304,12 @@ class DesignerState
    */
   private Configuration configuration;
 
+  /**
+   * Local cache.
+   */
+  private LocalFileCache cache;
+  
+  // TODO EBR : should really be ResourceCache<File> but using some methods that are not public on the interface at this stage of refactoring
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -313,11 +319,13 @@ class DesignerState
    *
    * @param config    Designer configuration
    * @param user      current user associated with the incoming HTTP request thread
+   * @param cache	  LocalFileCache associated with the user
    */
-  protected DesignerState(Configuration config, User user)
+  protected DesignerState(Configuration config, User user, LocalFileCache cache)
   {
     this.configuration = config;
     this.user = user;
+    this.cache = cache;
   }
 
 
@@ -371,8 +379,6 @@ class DesignerState
 
 
       // synchronize user data from Beehive server...
-
-      LocalFileCache cache = new LocalFileCache(configuration, user);
       cache.update();
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
@@ -592,18 +598,16 @@ class DesignerState
 
 
       // Fetch the required resource files from the user's cache...
-
-      ResourceCache<File> fileCache = new LocalFileCache(configuration, user);
-
+       
       try
       {
         // Will only save images that are included in the current in-memory domain model...
 
-        fileCache.markInUseImages(imageFiles);
+        cache.markInUseImages(imageFiles);
 
         // Upload ZIP to Beehive server...
 
-        beehive.uploadResources(fileCache.openReadStream(), user);
+        beehive.uploadResources(cache.openReadStream(), user);
 
         saveLog.info("Saved resources for {0}", printUserAccountLog(user));
       }
