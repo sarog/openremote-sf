@@ -103,6 +103,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     // TODO : should be injected
     ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+    // EBR above created cache does not have all the required services injected
+    // This is not an issue for the code being called here but is not good design
 
     try
     {
