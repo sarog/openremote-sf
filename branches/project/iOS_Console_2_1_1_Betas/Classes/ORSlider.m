@@ -11,7 +11,7 @@
 // For better visual results, displayed track is smaller than track thumb can move over
 // This means that when the thumb is at 0, the track will start at THUMB_SIDE_SPACING
 // The value indicates the number of points on each side of the track
-#define THUMB_SIDE_SPACING  1.5
+#define THUMB_SIDE_SPACING  0 // 1.5
 
 @interface ORSlider ()
 
@@ -66,9 +66,9 @@ void printBounds(NSString *comment, UIView *v)
         [self addSubview:self.thumbView];
         
         // Use default images used by iOS
-        self.minimumTrackImage = [[UIImage imageNamed:@"UISliderBlue"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
-        self.maximumTrackImage = [[UIImage imageNamed:@"UISliderWhite"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
-        self.thumbImage = [UIImage imageNamed:@"UISliderHandle"];
+        self.minimumTrackImage = [[UIImage imageNamed:@"ORSliderGreen"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
+        self.maximumTrackImage = [[UIImage imageNamed:@"ORSliderWhite"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
+        self.thumbImage = [UIImage imageNamed:@"ORSliderThumb"];
         
         self.continuous = YES;
     }
@@ -169,8 +169,8 @@ void printBounds(NSString *comment, UIView *v)
     //    printFrame(@"minTrackView", self.minTrackView);
     //    printFrame(@"minTrackImageView", self.minTrackImageView);
     
-    self.maxTrackImageView.frame = CGRectMake(-thumbCenterPosition + THUMB_SIDE_SPACING, (int)((self.bounds.size.height - self.maximumTrackImage.size.height) / 2.0), trackWidth, self.maximumTrackImage.size.height);
-    self.maxTrackView.frame = CGRectMake(self.minValueSpacing + thumbCenterPosition, 0.0, trackWidth - thumbCenterPosition + THUMB_SIDE_SPACING, self.bounds.size.height);
+    self.maxTrackImageView.frame = CGRectMake(-thumbCenterPosition - 1.0 + THUMB_SIDE_SPACING, (int)((self.bounds.size.height - self.maximumTrackImage.size.height) / 2.0), trackWidth, self.maximumTrackImage.size.height);
+    self.maxTrackView.frame = CGRectMake(self.minValueSpacing + thumbCenterPosition, 0.0, trackWidth - 1.0 - thumbCenterPosition + THUMB_SIDE_SPACING, self.bounds.size.height);
     
     //    printFrame(@"maxTrackView", self.maxTrackView);
     //    printFrame(@"maxTrackImageView", self.maxTrackImageView);
@@ -182,7 +182,7 @@ void printBounds(NSString *comment, UIView *v)
     self.thumbImageView.frame = CGRectMake(0.0, (int)((self.bounds.size.height - self.thumbImage.size.height) / 2.0), self.thumbImage.size.width, self.thumbImage.size.height);
     self.thumbView.frame = CGRectMake(self.minValueSpacing + thumbLeftBorderPosition, 0.0, self.thumbImage.size.width, self.bounds.size.height);
     
-    printFrame(@"thumb", self.thumbView);
+    //    printFrame(@"thumb", self.thumbView);
 }
 
 - (void)setValue:(float)value
