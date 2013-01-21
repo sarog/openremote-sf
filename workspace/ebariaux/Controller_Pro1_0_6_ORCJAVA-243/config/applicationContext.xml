@@ -43,6 +43,7 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:onkyo_eISCP.properties</value>
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
           </list>
@@ -104,6 +105,13 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="onkyoeISCPConfig" class="org.openremote.controller.OnkyoeISCPConfig">
+    <property name="address" value="${onkyo_eISCP.address}" />
+    <property name="port" value="${onkyo_eISCP.port}" />
+  </bean>
+  
+  <bean id="onkyoeISCPGateway" class="org.openremote.controller.protocol.onkyoeiscp.OnkyoeISCPGateway"/>
 
   <bean id="AMXNIConfig" class="org.openremote.controller.AMXNIConfig">
     <property name="address" value="${amx_ni.address}" />
@@ -257,6 +265,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "onkyo_eISCP"      value-ref = "onkyoeISCPCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
@@ -374,6 +383,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
+
+  <bean id="onkyoeISCPCommandBuilder" class = "org.openremote.controller.protocol.onkyoeiscp.OnkyoeISCPCommandBuilder">
+    <property name="gateway" ref="onkyoeISCPGateway"/>
+  </bean>
 
   <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
     <property name="gateway" ref="AMXNIGateway"/>
