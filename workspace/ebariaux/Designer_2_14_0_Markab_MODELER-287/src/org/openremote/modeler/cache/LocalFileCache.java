@@ -207,10 +207,7 @@ public class LocalFileCache implements ResourceCache<File>
   private File cacheFolder;
 
 
-  
-  // EBR : to do setters + inject
-  // -> check where cache is used / when and how to inject
-  
+  // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
   private ControllerConfigService controllerConfigService;
@@ -1693,35 +1690,33 @@ public class LocalFileCache implements ResourceCache<File>
    * @return File for binary panels.obj designer UI state serialization file.
    */
   public File getLegacyPanelObjFile() {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      return new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
   }
   
   /**
    * @return File for panel XML description (panel.xml)
    */
-   public File getPanelXmlFile() {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      return new File(pathConfig.userFolder(account) + "panel.xml");
-   }
+  public File getPanelXmlFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "panel.xml");
+  }
 
-   
-   
-   /**
-    * @return File for controller XML description (controller.xml)
-    */
-    public File getControllerXmlFile() {
-       PathConfig pathConfig = PathConfig.getInstance(configuration);
-       return new File(pathConfig.userFolder(account) + "controller.xml");
-    }
+  /**
+   * @return File for controller XML description (controller.xml)
+   */
+  public File getControllerXmlFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "controller.xml");
+  }
 
-    /**
-     * @return File for LIRC daemon configuration (lircd.conf)
-     */
-     public File getLircdFile() {
-        PathConfig pathConfig = PathConfig.getInstance(configuration);
-        return new File(pathConfig.userFolder(account) + "lircd.conf");
-     }
+  /**
+   * @return File for LIRC daemon configuration (lircd.conf)
+   */
+  public File getLircdFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "lircd.conf");
+  }
   
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
@@ -1787,103 +1782,100 @@ public class LocalFileCache implements ResourceCache<File>
         }
      }
   }
-
-
-  
-  
   
   //
   // TODO :
   //
-  //  - should be private to resource cache as part of MODELER-287
+  // - should be private to resource cache as part of MODELER-287
   //
-  @Transactional public void initResources(Collection<Panel> panels, long maxOid) {
-     // 1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as
-     // device command, sensor ...)
-     // the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a
-     // component with same sensor (like we did last time), the two
-     // sensors will have different oid, if so, when we export controller.xml we my find that there are two (or more
-     // sensors) with all the same property except oid.
-     serializePanelsAndMaxOid(panels, maxOid);
-     
-     Set<Group> groups = new LinkedHashSet<Group>();
-     Set<Screen> screens = new LinkedHashSet<Screen>();
-     /*
-      * initialize groups and screens.
-      */
-     Panel.initGroupsAndScreens(panels, groups, screens);
+  @Transactional
+  public void initResources(Collection<Panel> panels, long maxOid) {
+    // 1, we must serialize panels at first, otherwise after integrating panel's
+    // ui component and commands(such as
+    // device command, sensor ...)
+    // the oid would be changed, that is not ought to happen. for example :
+    // after we restore panels, we create a
+    // component with same sensor (like we did last time), the two
+    // sensors will have different oid, if so, when we export controller.xml we
+    // my find that there are two (or more
+    // sensors) with all the same property except oid.
+    serializePanelsAndMaxOid(panels, maxOid);
 
-     String controllerXmlContent = getControllerXML(screens, maxOid);
-     String panelXmlContent = getPanelXML(panels);
-     String sectionIds = getSectionIds(screens);
-     String rulesFileContent = getRulesFileContent();
-    
-     // replaceUrl(screens, sessionId);
-     // String activitiesJson = getActivitiesJson(activities);
+    Set<Group> groups = new LinkedHashSet<Group>();
+    Set<Screen> screens = new LinkedHashSet<Screen>();
+    /*
+     * initialize groups and screens.
+     */
+    Panel.initGroupsAndScreens(panels, groups, screens);
 
-     PathConfig pathConfig = PathConfig.getInstance(configuration);
-     // File sessionFolder = new File(pathConfig.userFolder(sessionId));
-     File userFolder = new File(pathConfig.userFolder(account));
-     if (!userFolder.exists()) {
-        boolean success = userFolder.mkdirs();
+    String controllerXmlContent = getControllerXML(screens, maxOid);
+    String panelXmlContent = getPanelXML(panels);
+    String sectionIds = getSectionIds(screens);
+    String rulesFileContent = getRulesFileContent();
+
+    // replaceUrl(screens, sessionId);
+    // String activitiesJson = getActivitiesJson(activities);
+
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    // File sessionFolder = new File(pathConfig.userFolder(sessionId));
+    File userFolder = new File(pathConfig.userFolder(account));
+    if (!userFolder.exists()) {
+      boolean success = userFolder.mkdirs();
+
+      if (!success) {
+        throw new FileOperationException("Failed to create directory path to user folder '" + userFolder + "'.");
+      }
+    }
+
+    /*
+     * copy the default image and default colorpicker image.
+     */
+    File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
+    FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
+    File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
+    FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
+
+    File panelXMLFile = getPanelXmlFile();
+    File controllerXMLFile = getControllerXmlFile();
+    File lircdFile = getLircdFile();
+
+    File rulesDir = new File(pathConfig.userFolder(account), "rules");
+    File rulesFile = new File(rulesDir, "modeler_rules.drl");
+
+    /*
+     * validate and output panel.xml.
+     */
+    String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getPanelXsdPath()).getPath()), panelXmlContent, userFolder);
+    controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
+    /*
+     * validate and output controller.xml
+     */
+    try {
+      FileUtilsExt.deleteQuietly(panelXMLFile);
+      FileUtilsExt.deleteQuietly(controllerXMLFile);
+      FileUtilsExt.deleteQuietly(lircdFile);
+      FileUtilsExt.deleteQuietly(rulesFile);
+
+      FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
+      FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
+      FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
+
+      if (sectionIds != null && !sectionIds.equals("")) {
+        FileUtils.copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
+      }
+      if (lircdFile.exists() && lircdFile.length() == 0) {
+        boolean success = lircdFile.delete();
 
         if (!success) {
-           throw new FileOperationException("Failed to create directory path to user folder '" + userFolder + "'.");
-        }
-     }
-
-     /*
-      * copy the default image and default colorpicker image.
-      */
-     File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
-     FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
-     File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
-     FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
-
-     File panelXMLFile = getPanelXmlFile();
-     File controllerXMLFile = getControllerXmlFile();
-     File lircdFile = getLircdFile();
-
-     File rulesDir = new File(pathConfig.userFolder(account), "rules");
-     File rulesFile = new File(rulesDir, "modeler_rules.drl");
-    
-     /*
-      * validate and output panel.xml.
-      */
-     String newIphoneXML = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-           configuration.getPanelXsdPath()).getPath()), panelXmlContent, userFolder);
-     controllerXmlContent = XmlParser.validateAndOutputXML(new File(getClass().getResource(
-           configuration.getControllerXsdPath()).getPath()), controllerXmlContent);
-     /*
-      * validate and output controller.xml
-      */
-     try {
-        FileUtilsExt.deleteQuietly(panelXMLFile);
-        FileUtilsExt.deleteQuietly(controllerXMLFile);
-        FileUtilsExt.deleteQuietly(lircdFile);
-        FileUtilsExt.deleteQuietly(rulesFile);
-
-        FileUtilsExt.writeStringToFile(panelXMLFile, newIphoneXML);
-        FileUtilsExt.writeStringToFile(controllerXMLFile, controllerXmlContent);
-        FileUtilsExt.writeStringToFile(rulesFile, rulesFileContent);
-       
-        if (sectionIds != null && !sectionIds.equals("")) {
-           FileUtils
-                 .copyURLToFile(buildLircRESTUrl(configuration.getBeehiveLircdConfRESTUrl(), sectionIds), lircdFile);
-        }
-        if (lircdFile.exists() && lircdFile.length() == 0) {
-           boolean success = lircdFile.delete();
-
-           if (!success) {
-              cacheLog.error("Failed to delete '" + lircdFile + "'.");
-           }
-
+          cacheLog.error("Failed to delete '" + lircdFile + "'.");
         }
 
-     } catch (IOException e) {
-        throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
-     }
-  }  
+      }
+
+    } catch (IOException e) {
+      throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
+    }
+  }
 
   /**
    * TODO
@@ -1912,103 +1904,102 @@ public class LocalFileCache implements ResourceCache<File>
    * Gets the section ids.
    * 
    * @param screenList
-   *           the activity list
+   *          the activity list
    * 
    * @return the section ids
    */
   private String getSectionIds(Collection<Screen> screenList) {
-     Set<String> sectionIds = new HashSet<String>();
-     for (Screen screen : screenList) {
-        for (Absolute absolute : screen.getAbsolutes()) {
-           if (absolute.getUiComponent() instanceof UIControl) {
-              for (UICommand command : ((UIControl) absolute.getUiComponent()).getCommands()) {
-                 addSectionIds(sectionIds, command);
-              }
-           }
+    Set<String> sectionIds = new HashSet<String>();
+    for (Screen screen : screenList) {
+      for (Absolute absolute : screen.getAbsolutes()) {
+        if (absolute.getUiComponent() instanceof UIControl) {
+          for (UICommand command : ((UIControl) absolute.getUiComponent()).getCommands()) {
+            addSectionIds(sectionIds, command);
+          }
         }
-        for (UIGrid grid : screen.getGrids()) {
-           for (Cell cell : grid.getCells()) {
-              if (cell.getUiComponent() instanceof UIControl) {
-                 for (UICommand command : ((UIControl) cell.getUiComponent()).getCommands()) {
-                    addSectionIds(sectionIds, command);
-                 }
-              }
-           }
+      }
+      for (UIGrid grid : screen.getGrids()) {
+        for (Cell cell : grid.getCells()) {
+          if (cell.getUiComponent() instanceof UIControl) {
+            for (UICommand command : ((UIControl) cell.getUiComponent()).getCommands()) {
+              addSectionIds(sectionIds, command);
+            }
+          }
         }
-     }
+      }
+    }
 
-     StringBuffer sectionIdsSB = new StringBuffer();
-     int i = 0;
-     for (String sectionId : sectionIds) {
-       if (sectionId != null) {
+    StringBuffer sectionIdsSB = new StringBuffer();
+    int i = 0;
+    for (String sectionId : sectionIds) {
+      if (sectionId != null) {
         sectionIdsSB.append(sectionId);
         if (i < sectionIds.size() - 1) {
-           sectionIdsSB.append(",");
+          sectionIdsSB.append(",");
         }
-       }
-        i++;
-     }
-     return sectionIdsSB.toString();
+      }
+      i++;
+    }
+    return sectionIdsSB.toString();
   }
 
   private void addSectionIds(Set<String> sectionIds, UICommand command) {
-     if (command instanceof DeviceMacroItem) {
-        sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
-     } else if (command instanceof CommandRefItem) {
-        sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
-     }
+    if (command instanceof DeviceMacroItem) {
+      sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
+    } else if (command instanceof CommandRefItem) {
+      sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
+    }
   }
   
   /**
    * Gets the device macro item section ids.
    * 
    * @param deviceMacroItem
-   *           the device macro item
+   *          the device macro item
    * 
    * @return the device macro item section ids
    */
   private Set<String> getDeviceMacroItemSectionIds(DeviceMacroItem deviceMacroItem) {
-     Set<String> deviceMacroRefSectionIds = new HashSet<String>();
-     try {
-        if (deviceMacroItem instanceof DeviceCommandRef) {
-           deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
-        } else if (deviceMacroItem instanceof DeviceMacroRef) {
-           DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
-           if (deviceMacro != null) {
-              deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
-              for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-                 deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
-              }
-           }
+    Set<String> deviceMacroRefSectionIds = new HashSet<String>();
+    try {
+      if (deviceMacroItem instanceof DeviceCommandRef) {
+        deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
+      } else if (deviceMacroItem instanceof DeviceMacroRef) {
+        DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
+        if (deviceMacro != null) {
+          deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+          for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+            deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
+          }
         }
-     } catch (Exception e) {
-        cacheLog.warn("Some components referenced a removed DeviceMacro!");
-     }
-     return deviceMacroRefSectionIds;
-  }  
+      }
+    } catch (Exception e) {
+      cacheLog.warn("Some components referenced a removed DeviceMacro!");
+    }
+    return deviceMacroRefSectionIds;
+  }
   
   private String getPanelXML(Collection<Panel> panels) {
-      /*
-       * init groups and screens.
-       */
-      Set<Group> groups = new LinkedHashSet<Group>();
-      Set<Screen> screens = new LinkedHashSet<Screen>();
-      Panel.initGroupsAndScreens(panels, groups, screens);
+    /*
+     * init groups and screens.
+     */
+    Set<Group> groups = new LinkedHashSet<Group>();
+    Set<Screen> screens = new LinkedHashSet<Screen>();
+    Panel.initGroupsAndScreens(panels, groups, screens);
 
-      Map<String, Object> context = new HashMap<String, Object>();
-      context.put("panels", panels);
-      context.put("groups", groups);
-      context.put("screens", screens);
-      try {
-        return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
-      } catch (Exception e) {
-         throw new XmlExportException("Failed to read panel.xml", e);
-      }
-   }
+    Map<String, Object> context = new HashMap<String, Object>();
+    context.put("panels", panels);
+    context.put("groups", groups);
+    context.put("screens", screens);
+    try {
+      return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
+    } catch (Exception e) {
+      throw new XmlExportException("Failed to read panel.xml", e);
+    }
+  }
 
   @SuppressWarnings("unchecked")
-  private String getControllerXML(Collection<Screen> screens, long maxOid)
-  {
+  private String getControllerXML(Collection<Screen> screens, long maxOid) {
 
     // PATCH R3181 BEGIN ---8<-----
     /*
@@ -2018,98 +2009,93 @@ public class LocalFileCache implements ResourceCache<File>
     List<Device> allDevices = account.getDevices();
     List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
 
-    for (Device device : allDevices)
-    {
-       allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
+    for (Device device : allDevices) {
+      allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
     }
     // PATCH R3181 END ---->8-----
 
-    
-     /*
-      * store the max oid
-      */
-     MaxId maxId = new MaxId(maxOid + 1);
+    /*
+     * store the max oid
+     */
+    MaxId maxId = new MaxId(maxOid + 1);
 
-     /*
-      * initialize UI component box.
-      */
-     UIComponentBox uiComponentBox = new UIComponentBox();
-     initUIComponentBox(screens, uiComponentBox);
-     Map<String, Object> context = new HashMap<String, Object>();
-     ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
-     eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
-     addDataBaseCommands(eventContainer, maxId);
-     ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
+    /*
+     * initialize UI component box.
+     */
+    UIComponentBox uiComponentBox = new UIComponentBox();
+    initUIComponentBox(screens, uiComponentBox);
+    Map<String, Object> context = new HashMap<String, Object>();
+    ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
+    eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
+    addDataBaseCommands(eventContainer, maxId);
+    ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
 
-     Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
+    Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
 
-     Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
-     Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
-     Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
-     Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox
-           .getUIComponentsByType(UISlider.class);
-     Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
-     Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
-     Collection<UIComponent> colorPickers = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(ColorPicker.class);
-     Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
-     configs.removeAll(controllerConfigService.listAllexpiredConfigs());
-     configs.addAll(controllerConfigService.listAllMissingConfigs());
+    Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
+    Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
+    Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
+    Collection<UIComponent> uiSliders = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UISlider.class);
+    Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
+    Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
+    Collection<UIComponent> colorPickers = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(ColorPicker.class);
+    Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+    configs.removeAll(controllerConfigService.listAllexpiredConfigs());
+    configs.addAll(controllerConfigService.listAllMissingConfigs());
 
-     // TODO :  BEGIN HACK (TO BE REMOVED)
-     //
-     //   - the following removes the rules.editor configuration section from the controller.xml
-     //     <config> section. The rules should not be defined in terms of controller configuration
-     //     in the designer but as artifacts, similar to images (and multiple rule files should
-     //     be supported).
+    // TODO : BEGIN HACK (TO BE REMOVED)
+    //
+    // - the following removes the rules.editor configuration section from the
+    // controller.xml
+    // <config> section. The rules should not be defined in terms of controller
+    // configuration
+    // in the designer but as artifacts, similar to images (and multiple rule
+    // files should
+    // be supported).
 
-     for (ControllerConfig controllerConfig : configs)
-     {
-       if (controllerConfig.getName().equals("rules.editor"))
-       {
-         configs.remove(controllerConfig);
+    for (ControllerConfig controllerConfig : configs) {
+      if (controllerConfig.getName().equals("rules.editor")) {
+        configs.remove(controllerConfig);
 
-         break;      // this fixes a concurrent modification error in this hack..
-       }
-     }
+        break; // this fixes a concurrent modification error in this hack..
+      }
+    }
 
-     // TODO : END HACK -------------------
-    
+    // TODO : END HACK -------------------
 
-     context.put("switchs", switchs);
-     context.put("buttons", buttons);
-     context.put("screens", screens);
-     context.put("eventContainer", eventContainer);
-     context.put("resouceServiceImpl", this);
-     context.put("protocolContainer", protocolContainer);
-     context.put("sensors", sensors);
-     context.put("dbSensors", dbSensors);
-     context.put("gestures", gestures);
-     context.put("uiSliders", uiSliders);
-     context.put("labels", uiLabels);
-     context.put("images", uiImages);
-     context.put("colorPickers", colorPickers);
-     context.put("maxId", maxId);
-     context.put("configs", configs);
-     
-     try {
-       return mergeXMLTemplateIntoString(CONTROLLER_XML_TEMPLATE, context);
-     } catch (Exception e) {
-       throw new XmlExportException("Failed to read panel.xml", e);
-     }
+    context.put("switchs", switchs);
+    context.put("buttons", buttons);
+    context.put("screens", screens);
+    context.put("eventContainer", eventContainer);
+    context.put("resouceServiceImpl", this);
+    context.put("protocolContainer", protocolContainer);
+    context.put("sensors", sensors);
+    context.put("dbSensors", dbSensors);
+    context.put("gestures", gestures);
+    context.put("uiSliders", uiSliders);
+    context.put("labels", uiLabels);
+    context.put("images", uiImages);
+    context.put("colorPickers", colorPickers);
+    context.put("maxId", maxId);
+    context.put("configs", configs);
+
+    try {
+      return mergeXMLTemplateIntoString(CONTROLLER_XML_TEMPLATE, context);
+    } catch (Exception e) {
+      throw new XmlExportException("Failed to read panel.xml", e);
+    }
   }
   
   /**
    * Adds the data base commands into protocolEventContainer.
    */
-  public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId)
-  {
+  public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId) {
     // Part of patch R3181 -- include all components in controller.xml even if
     // not bound to UI components
 
     List<DeviceCommand> dbDeviceCommands = protocolEventContainer.getAllDBDeviceCommands();
 
-    for (DeviceCommand deviceCommand : dbDeviceCommands)
-    {
+    for (DeviceCommand deviceCommand : dbDeviceCommands) {
       String protocolType = deviceCommand.getProtocol().getType();
       List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
 
@@ -2117,8 +2103,7 @@ public class LocalFileCache implements ResourceCache<File>
       uiButtonEvent.setId(maxId.maxId());
       uiButtonEvent.setProtocolDisplayName(protocolType);
 
-      for (ProtocolAttr protocolAttr : protocolAttrs)
-      {
+      for (ProtocolAttr protocolAttr : protocolAttrs) {
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
       }
 
@@ -2127,182 +2112,156 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
   
- //
- // TODO: should be removed
- //
- //   - rules should not be defined in terms of controller configuration
- //     in the designer but as artifacts, similar to images (and multiple rule files should
- //     be supported).
- //
- private String getRulesFileContent()
- {
-   Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
+  //
+  // TODO: should be removed
+  //
+  // - rules should not be defined in terms of controller configuration
+  // in the designer but as artifacts, similar to images (and multiple rule
+  // files should
+  // be supported).
+  //
+  private String getRulesFileContent() {
+    Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
 
-   configs.removeAll(controllerConfigService.listAllexpiredConfigs());
-   configs.addAll(controllerConfigService.listAllMissingConfigs());
+    configs.removeAll(controllerConfigService.listAllexpiredConfigs());
+    configs.addAll(controllerConfigService.listAllMissingConfigs());
 
-   String result = "";
+    String result = "";
 
-   for (ControllerConfig controllerConfig : configs)
-   {
-     if (controllerConfig.getName().equals("rules.editor"))
-     {
-       result = controllerConfig.getValue();
-     }
-   }
+    for (ControllerConfig controllerConfig : configs) {
+      if (controllerConfig.getName().equals("rules.editor")) {
+        result = controllerConfig.getValue();
+      }
+    }
 
-   return result;
- }
-
- private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId,
-         List<Sensor> dbSensors)
-{
-Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
-Collection<Sensor> allSensors = new ArrayList<Sensor>();
-
-for (Screen screen : screens) {
-for (Absolute absolute : screen.getAbsolutes()) {
-UIComponent component = absolute.getUiComponent();
-initSensors(allSensors, sensorWithoutDuplicate, component);
-}
-
-for (UIGrid grid : screen.getGrids()) {
-for (Cell cell : grid.getCells()) {
-initSensors(allSensors, sensorWithoutDuplicate, cell.getUiComponent());
-}
-}
-}
-
-
-// PATCH R3181 BEGIN ---8<------
-List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
-
-try
-{
-for (Sensor dbSensor : dbSensors)
-{
-for (Sensor clientSensor : sensorWithoutDuplicate)
-{
-if (dbSensor.getOid() == clientSensor.getOid())
-{
-duplicateDBSensors.add(dbSensor);
-}
-}
-}
-}
-
-// TODO :
-//        strictly speaking this should be unnecessary if database schema has been configured
-//        to enforce correct referential integrity constraints -- this hasn't always been the
-//        case so catching the error here. Unfortunately there isn't much we can do in terms
-//        of recovery other than have the DBA step in.
-
-catch (ObjectNotFoundException e)
-{
-AdministratorAlert.getInstance(AdministratorAlert.Type.DATABASE).alert(
-"Database integrity error -- referencing an unknown entity: {0}, id: {1}, message: {2}",
-e, e.getEntityName(), e.getIdentifier(), e.getMessage()
-);
-
-//TODO: the wrong exception type, but it will get propagated back to user's browser
-
-throw new FileOperationException(
-"Save/Export failed due to database integrity error. This requires administrator intervention " +
-"to solve. Please avoid making any further changes to your account until this issue has been " +
-"resolved (the integrity offender: " + e.getEntityName() + ", id: " + e.getIdentifier() + ")."
-);
-}
-
-dbSensors.removeAll(duplicateDBSensors);
-// PATCH R3181 END --->8-------
-
-// MODELER-396
-
-// Validate there are no duplicate ids
-Set<Long> ids = new HashSet<Long>();
-
-// First in sensors from UI
-for (Sensor s : sensorWithoutDuplicate) {
-ids.add(s.getOid());
-}
-if (ids.size() != sensorWithoutDuplicate.size()) {
-AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
-}
-// Then in sensors from DB
-ids.clear();
-for (Sensor s : dbSensors) {
-ids.add(s.getOid());
-}
-if (ids.size() != dbSensors.size()) {
-AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
-}
-
-// Then combined
-for (Sensor s : sensorWithoutDuplicate) {
-ids.add(s.getOid());
-}
-if (ids.size() != sensorWithoutDuplicate.size() + dbSensors.size()) {
-AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
-}
-
-// MODELER-396 end
-
-/*
-* reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
-*/
-/* MODELER-396
-for (Sensor sensor : sensorWithoutDuplicate) {
-long currentSensorId = maxId.maxId();
-Collection<Sensor> sensorsWithSameOid = new ArrayList<Sensor>();
-sensorsWithSameOid.add(sensor);
-for (Sensor s : allSensors) {
-if (s.equals(sensor)) {
-sensorsWithSameOid.add(s);
-}
-}
-for (Sensor s : sensorsWithSameOid) {
-s.setOid(currentSensorId);
-}
-}
-*/
-return sensorWithoutDuplicate;
-}
- 
-  
- private void initSensors(Collection<Sensor> allSensors, Set<Sensor> sensorsWithoutDuplicate, UIComponent component) {
-     if (component instanceof SensorOwner) {
-        SensorOwner sensorOwner = (SensorOwner) component;
-        if (sensorOwner.getSensor() != null) {
-           allSensors.add(sensorOwner.getSensor());
-           sensorsWithoutDuplicate.add(sensorOwner.getSensor());
-        }
-     }
+    return result;
   }
 
-  
-  
-  
-  
-  
-  
- private void initUIComponentBox(Collection<Screen> screens, UIComponentBox uiComponentBox) {
-     uiComponentBox.clear();
-     for (Screen screen : screens) {
-        for (Absolute absolute : screen.getAbsolutes()) {
-           UIComponent component = absolute.getUiComponent();
-           uiComponentBox.add(component);
-        }
+  private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId, List<Sensor> dbSensors) {
+    Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
+    Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
-        for (UIGrid grid : screen.getGrids()) {
-           for (Cell cell : grid.getCells()) {
-              uiComponentBox.add(cell.getUiComponent());
-           }
-        }
+    for (Screen screen : screens) {
+      for (Absolute absolute : screen.getAbsolutes()) {
+        UIComponent component = absolute.getUiComponent();
+        initSensors(allSensors, sensorWithoutDuplicate, component);
+      }
 
-        for (Gesture gesture : screen.getGestures()) {
-           uiComponentBox.add(gesture);
+      for (UIGrid grid : screen.getGrids()) {
+        for (Cell cell : grid.getCells()) {
+          initSensors(allSensors, sensorWithoutDuplicate, cell.getUiComponent());
         }
-     }
+      }
+    }
+
+    // PATCH R3181 BEGIN ---8<------
+    List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
+
+    try {
+      for (Sensor dbSensor : dbSensors) {
+        for (Sensor clientSensor : sensorWithoutDuplicate) {
+          if (dbSensor.getOid() == clientSensor.getOid()) {
+            duplicateDBSensors.add(dbSensor);
+          }
+        }
+      }
+    }
+
+    // TODO :
+    // strictly speaking this should be unnecessary if database schema has been
+    // configured
+    // to enforce correct referential integrity constraints -- this hasn't
+    // always been the
+    // case so catching the error here. Unfortunately there isn't much we can do
+    // in terms
+    // of recovery other than have the DBA step in.
+
+    catch (ObjectNotFoundException e) {
+      AdministratorAlert.getInstance(AdministratorAlert.Type.DATABASE).alert("Database integrity error -- referencing an unknown entity: {0}, id: {1}, message: {2}", e, e.getEntityName(), e.getIdentifier(), e.getMessage());
+
+      // TODO: the wrong exception type, but it will get propagated back to
+      // user's browser
+
+      throw new FileOperationException("Save/Export failed due to database integrity error. This requires administrator intervention " + "to solve. Please avoid making any further changes to your account until this issue has been "
+          + "resolved (the integrity offender: " + e.getEntityName() + ", id: " + e.getIdentifier() + ").");
+    }
+
+    dbSensors.removeAll(duplicateDBSensors);
+    // PATCH R3181 END --->8-------
+
+    // MODELER-396
+
+    // Validate there are no duplicate ids
+    Set<Long> ids = new HashSet<Long>();
+
+    // First in sensors from UI
+    for (Sensor s : sensorWithoutDuplicate) {
+      ids.add(s.getOid());
+    }
+    if (ids.size() != sensorWithoutDuplicate.size()) {
+      AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+    }
+    // Then in sensors from DB
+    ids.clear();
+    for (Sensor s : dbSensors) {
+      ids.add(s.getOid());
+    }
+    if (ids.size() != dbSensors.size()) {
+      AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+    }
+
+    // Then combined
+    for (Sensor s : sensorWithoutDuplicate) {
+      ids.add(s.getOid());
+    }
+    if (ids.size() != sensorWithoutDuplicate.size() + dbSensors.size()) {
+      AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+    }
+
+    // MODELER-396 end
+
+    /*
+     * reset sensor oid, avoid duplicated id in export xml. make sure same
+     * sensors have same oid.
+     */
+    /*
+     * MODELER-396 for (Sensor sensor : sensorWithoutDuplicate) { long
+     * currentSensorId = maxId.maxId(); Collection<Sensor> sensorsWithSameOid =
+     * new ArrayList<Sensor>(); sensorsWithSameOid.add(sensor); for (Sensor s :
+     * allSensors) { if (s.equals(sensor)) { sensorsWithSameOid.add(s); } } for
+     * (Sensor s : sensorsWithSameOid) { s.setOid(currentSensorId); } }
+     */
+    return sensorWithoutDuplicate;
+  } 
+  
+  private void initSensors(Collection<Sensor> allSensors, Set<Sensor> sensorsWithoutDuplicate, UIComponent component) {
+    if (component instanceof SensorOwner) {
+      SensorOwner sensorOwner = (SensorOwner) component;
+      if (sensorOwner.getSensor() != null) {
+        allSensors.add(sensorOwner.getSensor());
+        sensorsWithoutDuplicate.add(sensorOwner.getSensor());
+      }
+    }
+  }
+
+  private void initUIComponentBox(Collection<Screen> screens, UIComponentBox uiComponentBox) {
+    uiComponentBox.clear();
+    for (Screen screen : screens) {
+      for (Absolute absolute : screen.getAbsolutes()) {
+        UIComponent component = absolute.getUiComponent();
+        uiComponentBox.add(component);
+      }
+
+      for (UIGrid grid : screen.getGrids()) {
+        for (Cell cell : grid.getCells()) {
+          uiComponentBox.add(cell.getUiComponent());
+        }
+      }
+
+      for (Gesture gesture : screen.getGestures()) {
+        uiComponentBox.add(gesture);
+      }
+    }
   }
 
  /**
@@ -2343,19 +2302,19 @@ return sensorWithoutDuplicate;
  }
 
   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
-	this.deviceMacroService = deviceMacroService;
+    this.deviceMacroService = deviceMacroService;
   }
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-	this.deviceCommandService = deviceCommandService;
+    this.deviceCommandService = deviceCommandService;
   }
 
   public void setControllerConfigService(ControllerConfigService controllerConfigService) {
-	this.controllerConfigService = controllerConfigService;
+    this.controllerConfigService = controllerConfigService;
   }
 
   public void setVelocity(VelocityEngine velocity) {
-	this.velocity = velocity;
+    this.velocity = velocity;
   }
 
  /**
