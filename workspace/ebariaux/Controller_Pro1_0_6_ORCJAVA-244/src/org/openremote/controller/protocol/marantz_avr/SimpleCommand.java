@@ -73,7 +73,8 @@ public class SimpleCommand extends MarantzAVRCommand implements ExecutableComman
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand(name, this);
+          CommandConfig cfg = knownCommands.get(name);
+          gateway.registerCommand(cfg.getCommand(), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -88,7 +89,8 @@ public class SimpleCommand extends MarantzAVRCommand implements ExecutableComman
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand(name, this);
+         CommandConfig cfg = knownCommands.get(name);
+         gateway.unregisterCommand(cfg.getCommand(), this);
       }
    }
    

@@ -215,15 +215,13 @@ public class MarantzAVRGateway {
 
                 MarantzResponse response = parseResponse(line);
                 if (response != null) {
-                  if ("MU".equals(response.command)) {
-                     System.out.println("Mute command feedback");
-                     List<MarantzAVRCommand> commands = registeredCommands.get("MUTE");
-                     System.out.println("registered commands " + commands);
-                     if (commands != null) { 
-                        for (MarantzAVRCommand command : commands) {
-                           command.updateWithResponse(response);
-                        }
+                  List<MarantzAVRCommand> commands = registeredCommands.get(response.command);
+                  System.out.println("registered commands " + commands);
+                  if (commands != null) { 
+                     for (MarantzAVRCommand command : commands) {
+                        command.updateWithResponse(response);
                      }
+                  }
 //                    try {
                       // GrafikEye scene feedback: GSS, [01:05:01], 1
 //                      GrafikEye ge = (GrafikEye) getHomeWorksDevice(response.address, GrafikEye.class);
@@ -233,7 +231,6 @@ public class MarantzAVRGateway {
 //                    } catch (LutronHomeWorksDeviceException e) {
 //                      log.error("Impossible to get device", e);
 //                    }
-                  }
                 } else {
                    log.info("Received unknown information from Marantz >" + line + "<");
                 }
