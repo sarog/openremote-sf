@@ -54,9 +54,9 @@ public abstract class MarantzAVRCommand implements Command {
    private static HashMap<String, Class<? extends MarantzAVRCommand>> commandClasses = new HashMap<String, Class<? extends MarantzAVRCommand>>();
 
    static {
-      commandClasses.put("POWER", SimpleCommand.class);
-      commandClasses.put("MUTE", SimpleCommand.class);
-      commandClasses.put("INPUT", SimpleCommand.class);
+      commandClasses.put("POWER", BooleanCommand.class);
+      commandClasses.put("MUTE", BooleanCommand.class);
+      commandClasses.put("INPUT", MultipleOptionsCommand.class);
    }
 
    /**

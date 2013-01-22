@@ -9,7 +9,7 @@ import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
-public class SimpleCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
+public class BooleanCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
    private final static Map<String, CommandConfig> knownCommands = new HashMap<String, CommandConfig>();
 
@@ -43,16 +43,16 @@ public class SimpleCommand extends MarantzAVRCommand implements ExecutableComman
     */
    protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-   public static SimpleCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public static BooleanCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
       // Check for mandatory attributes
 /*      if (parameter == null) {
         throw new NoSuchCommandException("DeviceIndex is required for any AMX command");
       }*/
 
-      return new SimpleCommand(name, gateway, parameter);
+      return new BooleanCommand(name, gateway, parameter);
     }
 
-   public SimpleCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public BooleanCommand(String name, MarantzAVRGateway gateway, String parameter) {
       super(name, gateway);
       this.parameter = parameter;
    }
