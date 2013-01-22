@@ -25,6 +25,17 @@ public class SimpleCommand extends MarantzAVRCommand implements ExecutableComman
 //      cfg.addParameter("TOGGLE", "TG");
       cfg.addParameter("STATUS", "?");
       knownCommands.put("MUTE", cfg);
+      cfg = new CommandConfig("SI");
+      cfg.addParameter("PHONO", "PHONO");
+      cfg.addParameter("CD", "CD");
+      cfg.addParameter("DVD", "DVD");
+      cfg.addParameter("BD", "BD");
+      cfg.addParameter("TV", "TV");
+      cfg.addParameter("SAT/CBL", "SAT/CBL");
+      cfg.addParameter("VCR", "VCR");
+      cfg.addParameter("GAME", "GAME");
+      cfg.addParameter("V.AUX", "V.AUX");
+      knownCommands.put("INPUT", cfg);
    }
    
    /**

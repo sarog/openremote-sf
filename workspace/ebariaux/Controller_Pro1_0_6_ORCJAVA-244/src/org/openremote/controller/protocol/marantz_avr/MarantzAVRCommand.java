@@ -56,6 +56,7 @@ public abstract class MarantzAVRCommand implements Command {
    static {
       commandClasses.put("POWER", SimpleCommand.class);
       commandClasses.put("MUTE", SimpleCommand.class);
+      commandClasses.put("INPUT", SimpleCommand.class);
    }
 
    /**
