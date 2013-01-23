@@ -33,6 +33,8 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
+import org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand;
+import org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand;
 import org.openremote.controller.utils.Logger;
 
 /**
