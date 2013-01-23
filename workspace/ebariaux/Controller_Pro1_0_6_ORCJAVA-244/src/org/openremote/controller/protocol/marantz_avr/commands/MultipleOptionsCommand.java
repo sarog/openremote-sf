@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
@@ -33,7 +31,29 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
       cfg.addParameter("VCR", "VCR");
       cfg.addParameter("GAME", "GAME");
       cfg.addParameter("V.AUX", "V.AUX");
+      cfg.addParameter("AUX1", "AUX1");
+      cfg.addParameter("AUX2", "AUX2");
+      cfg.addParameter("STATUS", "?");
       knownCommands.put("INPUT", cfg);
+      cfg = new CommandConfig("MS");
+      cfg.addParameter("MOVIE", "MOVIE");
+      cfg.addParameter("MUSIC", "MUSIC");
+      cfg.addParameter("GAME", "GAME");
+      cfg.addParameter("DIRECT", "DIRECT");
+      cfg.addParameter("PURE DIRECT", "PURE DIRECT");
+      cfg.addParameter("STEREO", "STEREO");
+      cfg.addParameter("AUTO", "AUTO");
+      cfg.addParameter("NEURAL", "NEURAL");
+      cfg.addParameter("STANDARD", "STANDARD");
+      cfg.addParameter("DOLBY", "DOLBY");
+      cfg.addParameter("DTS", "DTS");
+      cfg.addParameter("MCH STEREO", "MCH STEREO");
+      cfg.addParameter("MATRIX", "MATRIX");
+      cfg.addParameter("VIRTUAL", "VIRTUAL");
+      cfg.addParameter("LEFT", "LEFT");
+      cfg.addParameter("RIGHT", "RIGHT");
+      cfg.addParameter("STATUS", "?");
+      knownCommands.put("SURROUND_MODE", cfg);
    }
    
    /**
