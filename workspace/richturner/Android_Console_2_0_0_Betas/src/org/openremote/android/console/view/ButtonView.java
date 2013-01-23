@@ -17,24 +17,36 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package org.openremote.android.console.view;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.text.TextUtils.TruncateAt;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+/**
+ * 
+ * 
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ * @author ?
+ */
 public class ButtonView extends ControlView {
 
    private Button uiButton;
@@ -64,16 +76,24 @@ public class ButtonView extends ControlView {
    private void initButton(final ORButton button) {
       int width = button.getFrameWidth();
       int height = button.getFrameHeight();
+      uiButton.setEllipsize(TruncateAt.END);
+      uiButton.setLines(1);
       uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
-      uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
-      uiButton.setLayoutParams(new FrameLayout.LayoutParams(width, height));
+      uiButton.setPadding(0, 0, 0, 0);
+      uiButton.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
+      uiButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, Constants.BUTTON_FONT_SIZE_DIP);
+      uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button));
+      FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+      uiButton.setLayoutParams(params);
+
       if (button.getDefaultImage() != null) {
          defaultImage = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
          if (defaultImage != null) {
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
+      
       if (button.getPressedImage() != null) {
          pressedImage = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
       }

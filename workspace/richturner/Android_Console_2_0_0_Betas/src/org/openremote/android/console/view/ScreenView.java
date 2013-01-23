@@ -27,14 +27,17 @@ import org.openremote.android.console.bindings.LayoutContainer;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.PollingHelper;
 
+import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
-public class ScreenView extends AbsoluteLayout {
+public class ScreenView extends RelativeLayout {
 
    private Screen screen;
    private PollingHelper polling;
@@ -63,8 +66,10 @@ public class ScreenView extends AbsoluteLayout {
          LayoutContainerView la = LayoutContainerView.buildWithLayoutContainer(context, layouts.get(i));
          if (la != null) {
             LayoutContainer layout = layouts.get(i);
-            addView(la, new AbsoluteLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, layout.getLeft(), layout
-                  .getTop()));
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(layout.getWidth(), layout.getHeight());
+            params.topMargin = layout.getTop();
+            params.leftMargin = layout.getLeft();
+            addView(la, params);
          }
       }
       

@@ -79,7 +79,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
          textView.setText(text);
       }
       if (label.getFontSize() > 0) {
-         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,label.getFontSize());
+         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, label.getFontSize());
       }
       if (label.getColor() != null) {
          textView.setTextColor(Color.parseColor(label.getColor()));
