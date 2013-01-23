@@ -129,8 +129,8 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
          } else {
             sensor.update(Integer.toString(parsedValue));
          }
-      } else{
-         log.warn("Query level value for incompatible sensor type (" + sensor + ")");
+      } else {
+         log.warn("Query value for incompatible sensor type (" + sensor + ")");
       }
    }
 
