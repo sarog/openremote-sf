@@ -35,6 +35,7 @@ import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand;
 import org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand;
+import org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand;
 import org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand;
 import org.openremote.controller.utils.Logger;
 
@@ -62,6 +63,12 @@ public abstract class MarantzAVRCommand implements Command {
       commandClasses.put("INPUT", MultipleOptionsCommand.class);
       commandClasses.put("SURROUND_MODE", MultipleOptionsCommand.class);
       commandClasses.put("VOLUME", VolumeCommand.class);
+      commandClasses.put("UP", NoFeedbackCommand.class);
+      commandClasses.put("DOWN", NoFeedbackCommand.class);
+      commandClasses.put("LEFT", NoFeedbackCommand.class);
+      commandClasses.put("RIGHT", NoFeedbackCommand.class);
+      commandClasses.put("ENTER", NoFeedbackCommand.class);
+      commandClasses.put("RETURN", NoFeedbackCommand.class);
    }
 
    /**
