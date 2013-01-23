@@ -20,20 +20,18 @@
  */
 package org.openremote.controller.protocol.enocean.port;
 
+import gnu.io.*;
 import org.openremote.controller.protocol.enocean.EnOceanCommandBuilder;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;
 import org.openremote.controller.protocol.port.pad.AbstractPort;
-
-import gnu.io.*;
 import org.openremote.controller.utils.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.TooManyListenersException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -52,6 +50,11 @@ public class RXTXPort implements Port
    * Amount of time in milliseconds to wait until the RXTX serial port has been opened: {@value}
    */
   public static final int RXTX_PORT_OPEN_TIMEOUT = 2000;
+
+  /**
+   * Amount of time in milliseconds to wait until data has been received: {@value}
+   */
+  public static final int RXTX_PORT_RECEIVE_TIMEOUT = 100;
 
   /**
    * Number of bytes allocated for the receive buffer: {@value}
@@ -110,6 +113,12 @@ public class RXTXPort implements Port
    * Thread for sending data to the serial port.
    */
   private Thread writerThread;
+
+
+  /**
+   * Thread for reading data from serial port.
+   */
+  private Thread readerThread;
 
   /**
    * Serial port configuration.
@@ -186,6 +195,14 @@ public class RXTXPort implements Port
       throw new PortException(PortException.INVALID_CONFIGURATION);
     }
 
+    try
+    {
+      serialPort.enableReceiveTimeout(RXTX_PORT_RECEIVE_TIMEOUT);
+    }
+    catch (UnsupportedCommOperationException e)
+    {
+      log.warn("Error while configuring serial port : {0}", e, e.getMessage());
+    }
 
     inputQueue = new LinkedBlockingQueue<Byte>(RXTX_PORT_RECEIVE_BUFFER_SIZE);
     outputQueue = new LinkedBlockingQueue<Byte>(RXTX_PORT_TRANSMIT_BUFFER_SIZE);
@@ -193,17 +210,6 @@ public class RXTXPort implements Port
     inputStream = serialPort.getInputStream();
     outputStream = serialPort.getOutputStream();
 
-    try
-    {
-      serialPort.addEventListener(new SerialReader(inputStream, inputQueue));
-      serialPort.notifyOnDataAvailable(true);
-    }
-    catch (TooManyListenersException e)
-    {
-      log.error("Error while configuring serial port : {0}", e, e.getMessage());
-
-      throw new PortException(PortException.INVALID_CONFIGURATION);
-    }
 
     // TODO : OpenRemoteRuntime.createThread
 
@@ -222,6 +228,22 @@ public class RXTXPort implements Port
     );
 
     writerThread.start();
+
+    readerThread = new Thread(new SerialReader(inputStream, inputQueue), "RXTX port reader");
+    readerThread.setUncaughtExceptionHandler(
+        new Thread.UncaughtExceptionHandler()
+        {
+          @Override public void uncaughtException(Thread t, Throwable e)
+          {
+            log.error(
+                "Thread ''{0}'' terminated with exception : {1}",
+                e, t.getName(), e.getMessage()
+            );
+          }
+        }
+    );
+
+    readerThread.start();
   }
 
   /**
@@ -243,11 +265,34 @@ public class RXTXPort implements Port
       }
     }
 
-    outputStream.close();
-    inputStream.close();
+    if(readerThread != null)
+    {
+      readerThread.interrupt();
 
-    // Hangs on Mac OS X
-    //serialPort.close();
+      try
+      {
+        readerThread.join();
+      }
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
+      }
+    }
+
+    if(outputStream != null)
+    {
+      outputStream.close();
+    }
+
+    if(inputStream != null)
+    {
+      inputStream.close();
+    }
+
+    if(serialPort != null)
+    {
+      serialPort.close();
+    }
   }
 
   /**
@@ -409,10 +454,9 @@ public class RXTXPort implements Port
   }
 
   /**
-   * Serial port event listener implementation for reading data from
-   * the serial port.
+   * Thread implementation for sending data to the serial port.
    */
-  private static class SerialReader implements SerialPortEventListener
+  private static class SerialReader implements Runnable
   {
 
     // Private Instance Fields --------------------------------------------------------------------
@@ -423,8 +467,8 @@ public class RXTXPort implements Port
     private InputStream inputStream;
 
     /**
-     * Queue for transferring serial port data from the serial port reader thread
-     * to a different worker thread.
+     * Queue used as inter-thread communication mechanism for transferring
+     * data bytes from reader thread to a different worker thread.
      */
     private BlockingQueue<Byte> inputQueue;
 
@@ -445,39 +489,45 @@ public class RXTXPort implements Port
       this.inputQueue = queue;
     }
 
-
-    // Implements SerialPortEventListener ---------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
-    @Override public void serialEvent(SerialPortEvent serialPortEvent)
+    @Override public void run()
     {
-      int data;
+      byte[] buffer = new byte[1024];
+      int len = -1;
 
-      if(serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE)
+      try
       {
-        try
+        while ((len = inputStream.read(buffer)) > -1)
         {
-          while((data = inputStream.read()) > -1)
+          if(Thread.currentThread().isInterrupted())
           {
-            try
-            {
-              inputQueue.put((byte)data);
-            }
+            break;
+          }
 
-            catch (InterruptedException e)
+          try
+          {
+            for(int i = 0; i < len; i++)
             {
-              Thread.currentThread().interrupt();
-              break;
+              inputQueue.put(buffer[i]);
             }
           }
-        }
 
-        catch (IOException e)
-        {
-          log.error("Error while reading from serial RXTX port : {0}", e, e.getMessage());
+          catch (InterruptedException e)
+          {
+            Thread.currentThread().interrupt();
+            break;
+          }
         }
+      }
+
+      catch(IOException e)
+      {
+        log.error(
+            "Thread ''{0}'' terminated with exception : {1}",
+            e, Thread.currentThread().getName(), e.getMessage()
+        );
       }
     }
   }

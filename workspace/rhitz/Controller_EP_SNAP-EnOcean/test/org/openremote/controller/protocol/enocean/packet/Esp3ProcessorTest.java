@@ -32,6 +32,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.*;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 import org.openremote.controller.protocol.enocean.port.MockPort;
+import org.openremote.controller.protocol.enocean.port.RXTXPort;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
@@ -73,6 +74,8 @@ public class Esp3ProcessorTest
   {
     portConfig = new EspPortConfiguration();
     portConfig.setComPort(COM_PORT);
+    portConfig.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+    portConfig.setCommLayer(EspPortConfiguration.CommLayer.RXTX);
 
     mockPort = new MockPort();
 
@@ -356,18 +359,78 @@ public class Esp3ProcessorTest
     Assert.assertTrue(receivedTelegrams.get(2) instanceof Esp34BSTelegram);
   }
 
-  /*
-  @Test public void testReceiveRealRadioTelegrams() throws Exception
+  @Test public void testReceiveAfterRestart() throws Exception
   {
-    RadioListener listener = new RadioListener(2);
+    List<EspRadioTelegram> expectedTelegrams = new ArrayList<EspRadioTelegram>();
 
-    Esp3ComPortAdapter comPortPortAdapter = new Esp3ComPortAdapter(portConfig);
+    expectedTelegrams.add(new Esp3RPSTelegram(senderID, (byte)0x11, (byte)0x22));
+    expectedTelegrams.add(new Esp31BSTelegram(senderID, (byte)0x33, (byte)0x44));
+    expectedTelegrams.add(new Esp34BSTelegram(
+        senderID, new byte[] {(byte)0xFF, 0x01, 0x02, 0x03}, (byte)0x55)
+    );
+
+    for(EspRadioTelegram telegram : expectedTelegrams)
+    {
+      mockPort.addDataToReturn(((EspPacket) telegram).asByteArray());
+    }
+
+    RadioListener listener = new RadioListener(2, expectedTelegrams.size());
+
+    processor.setProcessorListener(listener);
+    processor.start();
+
+    List<EspRadioTelegram> receivedTelegrams = listener.waitForRadioTelegrams();
+
+    processor.stop();
+
+    Assert.assertNotNull(receivedTelegrams);
+    Assert.assertEquals(expectedTelegrams.size(), receivedTelegrams.size());
+
+
+
+    for(EspRadioTelegram telegram : expectedTelegrams)
+    {
+      mockPort.addDataToReturn(((EspPacket) telegram).asByteArray());
+    }
+
+    listener = new RadioListener(2, expectedTelegrams.size());
+
+    processor.setProcessorListener(listener);
+    processor.start();
+
+    receivedTelegrams = listener.waitForRadioTelegrams();
+
+    processor.stop();
+
+    Assert.assertNotNull(receivedTelegrams);
+    Assert.assertEquals(expectedTelegrams.size(), receivedTelegrams.size());
+  }
+
+  /*
+  @Test public void testSerialPort() throws Exception
+  {
+    RadioListener listener = new RadioListener(20, 2);
+
+    Esp3ComPortAdapter comPortPortAdapter = new Esp3ComPortAdapter(new RXTXPort(), portConfig);
     processor = new Esp3Processor(comPortPortAdapter);
 
     processor.setProcessorListener(listener);
     processor.start();
 
     List<EspRadioTelegram> receivedTelegrams = listener.waitForRadioTelegrams();
+
+    processor.stop();
+
+
+
+    listener = new RadioListener(20, 2);
+
+    processor.setProcessorListener(listener);
+    processor.start();
+
+    receivedTelegrams = listener.waitForRadioTelegrams();
+
+    processor.stop();
 
   }
   */
