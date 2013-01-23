@@ -200,8 +200,9 @@ public class ORAbsSeekBar extends ORProgressBar {
 
    @Override
    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-      Drawable d = getCurrentDrawable();
+      Drawable track = getCurrentDrawable();
       Drawable thumb = mThumb;
+      
       if (vertical) {
          int thumbWidth = thumb == null ? 0 : thumb.getIntrinsicWidth();
          // The max height does not incorporate padding, whereas the height
@@ -209,29 +210,14 @@ public class ORAbsSeekBar extends ORProgressBar {
          int trackWidth = Math.min(mMaxWidth, w - mPaddingRight - mPaddingLeft);
          int max = getMax();
          float scale = max > 0 ? (float) getProgress() / (float) max : 0;
-         if (thumbWidth > trackWidth) {
-            int gapForCenteringTrack = (thumbWidth - trackWidth) / 2;
-            if (thumb != null) {
-               if (thumbWidth < w) {
-                  setThumbPos(h, thumb, scale, (w - thumbWidth) / 2);
-               } else {
-                  setThumbPos(h, thumb, scale, gapForCenteringTrack * -1);
-               }
-            }
-            if (d != null) {
-               // Canvas will be translated by the padding, so 0,0 is where we start drawing
-               d.setBounds(gapForCenteringTrack, 0, w - mPaddingRight - mPaddingLeft - gapForCenteringTrack, h
-                     - mPaddingBottom - mPaddingTop);
-            }
-         } else {
-            if (d != null) {
-               // Canvas will be translated by the padding, so 0,0 is where we start drawing
-               d.setBounds(0, 0, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom - mPaddingTop);
-            }
-            int gap = (trackWidth - thumbWidth) / 2;
-            if (thumb != null) {
-               setThumbPos(h, thumb, scale, gap);
-            }
+         int thumbMargin = (int)Math.round(((double)w - thumbWidth) / 2);
+         int trackMargin = (int)Math.round(((double)w - trackWidth) / 2);
+         
+         setThumbPos(h, thumb, scale, thumbMargin);
+         
+         if (track != null) {
+           // Canvas will be translated by the padding, so 0,0 is where we start drawing
+           track.setBounds(0, 0, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom - mPaddingTop);
          }
       } else {
          int thumbHeight = thumb == null ? 0 : thumb.getIntrinsicHeight();
@@ -246,15 +232,15 @@ public class ORAbsSeekBar extends ORProgressBar {
                setThumbPos(w, thumb, scale, 0);
             }
             int gapForCenteringTrack = (thumbHeight - trackHeight) / 2;
-            if (d != null) {
+            if (track != null) {
                // Canvas will be translated by the padding, so 0,0 is where we start drawing
-               d.setBounds(0, gapForCenteringTrack, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom
+               track.setBounds(0, gapForCenteringTrack, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom
                      - gapForCenteringTrack - mPaddingTop);
             }
          } else {
-            if (d != null) {
+            if (track != null) {
                // Canvas will be translated by the padding, so 0,0 is where we start drawing
-               d.setBounds(0, 0, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom - mPaddingTop);
+               track.setBounds(0, 0, w - mPaddingRight - mPaddingLeft, h - mPaddingBottom - mPaddingTop);
             }
             int gap = (trackHeight - thumbHeight) / 2;
             if (thumb != null) {

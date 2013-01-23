@@ -38,6 +38,7 @@ public class Constants
 
   public static final long BINDING_VERSION = 1L;
   public static final long DEFAULT_FONT_SIZE = 11;
+  public static final long BUTTON_FONT_SIZE_DIP = 14;
   public static final long MODEL_VERSION = 2L;
   public static final long CACHE_VERSION = 3L;
   public static final int MENU_ITEM_SETTING = Menu.FIRST + 1;

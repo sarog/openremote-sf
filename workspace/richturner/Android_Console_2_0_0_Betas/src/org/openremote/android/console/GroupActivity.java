@@ -140,11 +140,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          navigationHistory = new ArrayList<Navigate>();
       }
 
-      recoverLastGroupScreen();
+      initGroupScreen();
       addControllerRefreshEventListener();
 
       initOrientationListener();
-
    }
 
    /**
@@ -214,44 +213,41 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    }
 
    /**
-    * Init group and screen, if it is first access, init the first group
-    * and first screen, else init the last time group and screen. If no 
-    * group or screen found, can configure settings.
+    * Init default group and screen.
     * 
     */
-   private void recoverLastGroupScreen() {
+   private void initGroupScreen() {
 
-      int lastGroupID = UserCache.getLastGroupId(this);
-      Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
-      if (lastGroup == null) {
-         lastGroup = XMLEntityDataBase.getFirstGroup();
-      }
-      if (lastGroup == null || lastGroup.getScreens().size() == 0) {
+      Group group = XMLEntityDataBase.getFirstGroup();
+
+      if (group == null || group.getScreens().size() == 0) {
          if (!useLocalCache) {
-            ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
+            ViewHelper.showAlertViewWithSetting(this, "No Group Found", "Please check your panel definition");
          }
          return;
       }
       
-      screenSize = lastGroup.getScreenSizeByOrientation(isLandscape);
+      screenSize = group.getScreenSizeByOrientation(isLandscape);
       if (screenSize == 0) {
-         ViewHelper.showAlertViewWithTitle(this, "Info", "The group " + lastGroup.getName() + " has no " + (isLandscape ? "landscape" : "portrait") + " screen.");
+         ViewHelper.showAlertViewWithTitle(this, "Info", "The group " + group.getName() + " has no " + (isLandscape ? "landscape" : "portrait") + " screen.");
          isLandscape = !isLandscape;
-         screenSize = lastGroup.getScreenSizeByOrientation(isLandscape);
+         screenSize = group.getScreenSizeByOrientation(isLandscape);
       }
       
       // Set activity orientation
       int requestedOrientation = isLandscape ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
       this.setRequestedOrientation(requestedOrientation);
       
-      currentGroupView = new GroupView(this, lastGroup);
-      groupViews.put(lastGroup.getGroupId(), currentGroupView);
+      currentGroupView = new GroupView(this, group);
+      groupViews.put(group.getGroupId(), currentGroupView);
       currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(isLandscape);
 
-      int lastScreenID = UserCache.getLastScreenId(this);
-      if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, isLandscape)) {
-         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
-      }
+//      int lastScreenID = UserCache.getLastScreenId(this);
+//      
+//      if (lastScreenID > 0 && group.canfindScreenByIdAndOrientation(lastScreenID, isLandscape)) {
+//         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
+//    }
+      
       contentLayout = new LinearLayout(this);
       contentLayout.addView(currentScreenViewFlipper);
       this.setContentView(contentLayout);

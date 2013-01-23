@@ -1,42 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/vertical_seekbar_root_layout"
-	android:layout_width="wrap_content" 
-	android:layout_height="fill_parent">
-	<TableRow
-      android:layout_height="wrap_content"
-      android:layout_width="wrap_content"
-      android:gravity = "center">
-      <ImageView
-         android:id="@+id/vertical_seekbar_maxvalue_image"
-           android:adjustViewBounds="true"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignParentTop="true"
-           android:layout_centerVertical="true"/>
-   </TableRow>
-	<TableRow
-		android:layout_height="fill_parent"
-		android:gravity = "center">
-		<org.openremote.android.console.view.seekbar.ORSeekBar
-		   xmlns:app="http://schemas.android.com/apk/res/org.openremote.android.console"
-			 android:id="@+id/vertical_seekbar"
-			 app:vertical="true"
-		    android:progressDrawable="@drawable/progress_vertical"
-		    android:thumb="@drawable/slider_thumb"
-		    android:layout_height="fill_parent" 
-		    android:layout_width="26dip"/>
-	</TableRow>
-	<TableRow
-      android:layout_height="wrap_content"
-      android:layout_width="wrap_content"
-      android:gravity = "center">
-      <ImageView
-         android:id="@+id/vertical_seekbar_minvalue_image"
-           android:adjustViewBounds="true"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignParentBottom="true"
-           android:layout_centerVertical="true"/>
-   </TableRow>	
-</TableLayout>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/slider_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+    
+	<ImageView
+	    android:id="@+id/slider_maxvalue_image"
+	    android:layout_width="0px"
+	    android:layout_height="0px" />
+	
+	<ImageView android:id="@+id/slider_mintrack"
+	    android:layout_width="0px"
+	    android:layout_height="0px" />
+	
+	<ImageView android:id="@+id/slider_maxtrack"
+	    android:layout_width="0px"
+	    android:layout_height="0px" />
+   		
+	<ImageView
+	    android:id="@+id/slider_minvalue_image"
+	    android:layout_width="0px"
+	    android:layout_height="0px" />
+
+	<ImageView
+	    android:id="@+id/slider_thumb"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" />
+</RelativeLayout>

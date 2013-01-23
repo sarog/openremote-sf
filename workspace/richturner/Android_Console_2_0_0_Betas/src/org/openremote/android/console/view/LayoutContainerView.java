@@ -24,6 +24,7 @@ import org.openremote.android.console.bindings.GridLayoutContainer;
 import org.openremote.android.console.bindings.LayoutContainer;
 
 import android.content.Context;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 public class LayoutContainerView extends FrameLayout {

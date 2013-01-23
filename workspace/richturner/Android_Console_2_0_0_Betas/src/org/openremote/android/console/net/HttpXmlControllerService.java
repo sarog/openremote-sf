@@ -169,9 +169,9 @@ public class HttpXmlControllerService implements ControllerService
      Log.i(LOG_CATEGORY, "availableGroupMemberURL." + availableGroupMemberURL);
      if(availableGroupMemberURL==null){
      	 // ViewHelper.showAlertViewWithTitle(context, "Polling Error", ControllerException.exceptionMessageOfCode(statusCode));
-     	 ViewHelper.showAlertViewWithSetting(ctx, "Switch controller", "Choose a different controller");
+     	 //ViewHelper.showAlertViewWithSetting(ctx, "Switch controller", "Choose a different controller");
      	//  this.notifyAll();
-     	 
+
      }
   
      else{
@@ -315,7 +315,9 @@ public class HttpXmlControllerService implements ControllerService
     {
       dealWithConnectionFailure(url, e);
       Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
-      getPanel(panelName);
+      //getPanel(panelName);
+      // TODO Handle these exceptions better
+      throw e;
     }
 
     int statusCode = response.getStatusLine().getStatusCode();
