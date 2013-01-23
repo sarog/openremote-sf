@@ -89,7 +89,7 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
    * Executor for calling listeners on a separate thread than the {@link #portReader} thread
    * to prevent deadlocks.
    */
-  protected ExecutorService executor = Executors.newSingleThreadExecutor(new ListenerThreadFactory());
+  protected ExecutorService executor;
 
   // Constructors -------------------------------------------------------------------------------
 
@@ -121,6 +121,8 @@ public abstract class AbstractEspProcessor<T extends EspPacket> implements EspPr
     responseQueue.clear();
 
     port.start();
+
+    executor = Executors.newSingleThreadExecutor(new ListenerThreadFactory());
 
     portReader.start();
 
