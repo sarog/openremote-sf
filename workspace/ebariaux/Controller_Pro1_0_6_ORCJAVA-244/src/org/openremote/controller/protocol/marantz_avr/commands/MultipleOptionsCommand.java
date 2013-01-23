@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.marantz_avr.CommandConfig;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommand;
@@ -38,9 +43,9 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
 
    public static MultipleOptionsCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
       // Check for mandatory attributes
-/*      if (parameter == null) {
-        throw new NoSuchCommandException("DeviceIndex is required for any AMX command");
-      }*/
+      if (parameter == null) {
+         throw new NoSuchCommandException("A parameter is always required for " + name + " command.");
+      }
 
       return new MultipleOptionsCommand(name, gateway, parameter);
     }
@@ -63,10 +68,13 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
     * {@inheritDoc}
     */
    public void send() {
-      
-      // TODO: add check for valid command / parameter
-      
-     CommandConfig cfg = knownCommands.get(name);
+      CommandConfig cfg = knownCommands.get(name);
+      if (cfg == null) {
+         throw new NoSuchCommandException("Invalid command " + name);
+      }
+      if (cfg.getParameter(parameter) == null) {
+         throw new NoSuchCommandException("Invalid parameter (" + parameter + ") for command " + name);
+      }
      gateway.sendCommand(cfg.getCommand(), cfg.getParameter(parameter));
    }
 
@@ -105,7 +113,18 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
       CommandConfig cfg = knownCommands.get(name);
       System.out.println("Lookup " + cfg.lookupResponseParam(response.parameter));
       
-      // TODO: tests for the sensor type ? or is this done in updateSensorsWithValue
       updateSensorsWithValue(cfg.lookupResponseParam(response.parameter));
    }
+   
+   @Override
+   protected void updateSensorWithValue(Sensor sensor, Object value) {
+      if (sensor instanceof SwitchSensor) {
+         log.warn("Switch sensor type is not supported by this command (sensor: " + sensor + ")");
+      } else if (sensor instanceof StateSensor) { // Note this includes SwitchSensor
+         sensor.update((String)value);
+      } else {
+         log.warn("Query value for incompatible sensor type (" + sensor + ")");
+      }
+   }
+
 }

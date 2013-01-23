@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.marantz_avr.CommandConfig;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommand;
@@ -39,9 +44,9 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
 
    public static BooleanCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
       // Check for mandatory attributes
-/*      if (parameter == null) {
-        throw new NoSuchCommandException("DeviceIndex is required for any AMX command");
-      }*/
+      if (parameter == null) {
+         throw new NoSuchCommandException("A parameter is always required for " + name + " command.");
+      }
 
       return new BooleanCommand(name, gateway, parameter);
     }
@@ -64,10 +69,13 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
     * {@inheritDoc}
     */
    public void send() {
-      
-      // TODO: add check for valid command / parameter
-      
      CommandConfig cfg = knownCommands.get(name);
+     if (cfg == null) {
+        throw new NoSuchCommandException("Invalid command " + name);
+     }
+     if (cfg.getParameter(parameter) == null) {
+        throw new NoSuchCommandException("Invalid parameter (" + parameter + ") for command " + name);
+     }
      gateway.sendCommand(cfg.getCommand(), cfg.getParameter(parameter));
    }
 
@@ -100,18 +108,22 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
    }
    
    @Override
-   protected void updateWithResponse(MarantzResponse response)
-   {
-      System.out.println("updateWithResponse >" + response.command + "<->" + response.parameter + "<");
+   protected void updateWithResponse(MarantzResponse response) {
       CommandConfig cfg = knownCommands.get(name);
-      System.out.println("Lookup " + cfg.lookupResponseParam(response.parameter));
-      
-      // TODO: have generic, this is just for testing
-      if ("OFF".equals(cfg.lookupResponseParam(response.parameter))) {
-         updateSensorsWithValue("off");
-      } else {
-         updateSensorsWithValue("on");
+      updateSensorsWithValue("ON".equals(cfg.lookupResponseParam(response.parameter)));
+   }
+   
+   @Override
+   protected void updateSensorWithValue(Sensor sensor, Object value) {
+      Boolean sensorValue = (Boolean)value;
+      if (sensor instanceof StateSensor) { // Note this includes SwitchSensor
+         sensor.update(sensorValue?"on":"off");
+      } else if (sensor instanceof RangeSensor) {
+         sensor.update(sensorValue?"1":"0");
+      } else{
+         log.warn("Query value for incompatible sensor type (" + sensor + ")");
       }
    }
+
 }
  
