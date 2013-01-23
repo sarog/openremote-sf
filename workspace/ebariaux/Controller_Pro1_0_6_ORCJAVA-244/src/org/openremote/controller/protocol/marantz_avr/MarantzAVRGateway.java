@@ -178,6 +178,12 @@ public class MarantzAVRGateway {
                
                pr.print(cmd.toString());
                pr.flush();
+               
+               try {
+                 Thread.sleep(100); // Allow 100ms between messages or device does not provide feedback on initial status requests
+               } catch (InterruptedException e) {
+                  break;
+               }
             }
          }
          log.info("Out of writer thread");
