@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.marantz_avr;
+package org.openremote.controller.protocol.marantz_avr.commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,10 @@ import java.util.Map;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.marantz_avr.CommandConfig;
+import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommand;
+import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder;
+import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
