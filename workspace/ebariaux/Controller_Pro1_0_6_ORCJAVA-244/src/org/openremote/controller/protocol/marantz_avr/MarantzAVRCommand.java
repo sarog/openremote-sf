@@ -35,6 +35,7 @@ import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand;
 import org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand;
+import org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -59,6 +60,7 @@ public abstract class MarantzAVRCommand implements Command {
       commandClasses.put("POWER", BooleanCommand.class);
       commandClasses.put("MUTE", BooleanCommand.class);
       commandClasses.put("INPUT", MultipleOptionsCommand.class);
+      commandClasses.put("VOLUME", VolumeCommand.class);
    }
 
    /**
@@ -162,7 +164,7 @@ public abstract class MarantzAVRCommand implements Command {
    /**
     * Update all registered sensors with provided value).
     */
-   public void updateSensorsWithValue(String value) {
+   public void updateSensorsWithValue(Object value) {
       for (Sensor sensor : sensors) {
          updateSensorWithValue(sensor, value);
       }     
@@ -173,12 +175,16 @@ public abstract class MarantzAVRCommand implements Command {
     * 
     * @param sensor Sensor to update
     */
-   protected void updateSensorWithValue(Sensor sensor, String value) {
+   protected void updateSensorWithValue(Sensor sensor, Object value) {
       if (sensor instanceof StateSensor) { // Note this includes SwitchSensor
-         sensor.update(value);
+         sensor.update(value.toString());
       } else if (sensor instanceof RangeSensor) {
          try {
-            Integer parsedValue = Integer.parseInt(value);
+            Integer parsedValue = null;
+            if (value instanceof Integer) {
+               parsedValue = (Integer)value;
+            }
+            parsedValue = Integer.parseInt(value.toString());
             if (sensor instanceof LevelSensor) {
                sensor.update(Integer.toString(Math.min(100, Math.max(0, parsedValue))));
             } else {
