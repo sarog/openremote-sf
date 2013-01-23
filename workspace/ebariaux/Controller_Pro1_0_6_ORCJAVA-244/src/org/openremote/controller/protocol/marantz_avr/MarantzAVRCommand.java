@@ -60,6 +60,7 @@ public abstract class MarantzAVRCommand implements Command {
       commandClasses.put("POWER", BooleanCommand.class);
       commandClasses.put("MUTE", BooleanCommand.class);
       commandClasses.put("INPUT", MultipleOptionsCommand.class);
+      commandClasses.put("SURROUND_MODE", MultipleOptionsCommand.class);
       commandClasses.put("VOLUME", VolumeCommand.class);
    }
 
