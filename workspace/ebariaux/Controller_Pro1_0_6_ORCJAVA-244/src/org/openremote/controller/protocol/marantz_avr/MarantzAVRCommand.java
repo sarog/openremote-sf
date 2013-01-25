@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -36,15 +35,10 @@ import org.jdom.input.SAXBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
-import org.openremote.controller.deployer.Version20ModelBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
-import org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand;
-import org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand;
-import org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand;
-import org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -65,61 +59,52 @@ public abstract class MarantzAVRCommand implements Command {
    private static HashMap<String, CommandConfig> commandConfigurations = new HashMap<String, CommandConfig>();
 
    static {
-      CommandConfig cfg = new CommandConfig("POWER", "PW", BooleanCommand.class);
-      cfg.addParameter("ON", "ON");
-      cfg.addParameter("OFF", "STANDBY");
-      cfg.addParameter("STATUS", "?");
-      commandConfigurations.put("POWER",  cfg);
-      cfg = new CommandConfig("MUTE", "MU", BooleanCommand.class);
-      cfg.addParameter("ON", "ON");
-      cfg.addParameter("OFF", "OFF");
-//         cfg.addParameter("TOGGLE", "TG");
-      cfg.addParameter("STATUS", "?");
-      commandConfigurations.put("MUTE",  cfg);
-      cfg = new CommandConfig("INPUT", "SI", MultipleOptionsCommand.class);
-      cfg.addParameter("PHONO", "PHONO");
-      cfg.addParameter("CD", "CD");
-      cfg.addParameter("DVD", "DVD");
-      cfg.addParameter("BD", "BD");
-      cfg.addParameter("TV", "TV");
-      cfg.addParameter("SAT/CBL", "SAT/CBL");
-      cfg.addParameter("VCR", "VCR");
-      cfg.addParameter("GAME", "GAME");
-      cfg.addParameter("V.AUX", "V.AUX");
-      cfg.addParameter("AUX1", "AUX1");
-      cfg.addParameter("AUX2", "AUX2");
-      cfg.addParameter("IRADIO", "IRADIO");
-      cfg.addParameter("STATUS", "?");
-      commandConfigurations.put("INPUT", cfg);
-      cfg = new CommandConfig("SURROUND_MODE", "MS", MultipleOptionsCommand.class);
-      cfg.addParameter("MOVIE", "MOVIE");
-      cfg.addParameter("MUSIC", "MUSIC");
-      cfg.addParameter("GAME", "GAME");
-      cfg.addParameter("DIRECT", "DIRECT");
-      cfg.addParameter("PURE DIRECT", "PURE DIRECT");
-      cfg.addParameter("STEREO", "STEREO");
-      cfg.addParameter("AUTO", "AUTO");
-      cfg.addParameter("NEURAL", "NEURAL");
-      cfg.addParameter("STANDARD", "STANDARD");
-      cfg.addParameter("DOLBY", "DOLBY");
-      cfg.addParameter("DTS", "DTS");
-      cfg.addParameter("MCH STEREO", "MCH STEREO");
-      cfg.addParameter("MATRIX", "MATRIX");
-      cfg.addParameter("VIRTUAL", "VIRTUAL");
-      cfg.addParameter("LEFT", "LEFT");
-      cfg.addParameter("RIGHT", "RIGHT");
-      cfg.addParameter("STATUS", "?");
-      commandConfigurations.put("SURROUND_MODE", cfg);
-      commandConfigurations.put("VOLUME", new CommandConfig("VOLUME", "MV", VolumeCommand.class));
-      commandConfigurations.put("UP", new CommandConfig("UP", "MNCUP", NoFeedbackCommand.class));
-      commandConfigurations.put("DOWN", new CommandConfig("DOWN", "MNCDN", NoFeedbackCommand.class));
-      commandConfigurations.put("LEFT", new CommandConfig("LEFT", "MNCLT", NoFeedbackCommand.class));
-      commandConfigurations.put("RIGHT", new CommandConfig("RIGHT", "MNCRT", NoFeedbackCommand.class));
-      commandConfigurations.put("ENTER", new CommandConfig("ENTER", "MNENT", NoFeedbackCommand.class));
-      commandConfigurations.put("RETURN", new CommandConfig("RETURN", "MNRTN", NoFeedbackCommand.class));
+      SAXBuilder builder = new SAXBuilder();
+      URL configResource = MarantzAVRCommand.class.getResource("marantz_avr_config.xml");
+      
+      log.debug("Marantz configuration file is " + configResource);
+      
+      if (configResource != null) {
+         try {
+            Document doc = builder.build(configResource);
+            @SuppressWarnings("unchecked")
+            List<Element> commandElements = doc.getRootElement().getChildren();
+            for (Element commandElement : commandElements) {
+               String commandName = commandElement.getAttributeValue("name");
+               System.out.println(commandName + "=" + commandElement.getAttributeValue("value"));
+               System.out.println(commandElement.getAttributeValue("class"));
+               @SuppressWarnings("unchecked")
+               Class<? extends MarantzAVRCommand> clazz = (Class<? extends MarantzAVRCommand>) Class.forName(commandElement.getAttributeValue("class"));
+               System.out.println("Got class " + clazz);
+
+               CommandConfig commandConfig = new CommandConfig(commandName, commandElement.getAttributeValue("value"), clazz);
+               
+               Element parametersElement = commandElement.getChild("parameters");
+               if (parametersElement != null) {
+                  @SuppressWarnings("unchecked")
+                  List<Element> parameterElements = parametersElement.getChildren();
+                  if (parameterElements != null) {
+                     for (Element parameterElement : parameterElements) {
+                        System.out.println(parameterElement.getAttributeValue("name") + "=" + parameterElement.getText());
+                        commandConfig.addParameter(parameterElement.getAttributeValue("name"), parameterElement.getText());
+                     }
+                  }
+               }
+               commandConfigurations.put(commandName, commandConfig);
+            }
+         } catch (JDOMException e) {
+            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
+         } catch (IOException e) {
+            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
+         } catch (ClassNotFoundException e) {
+            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
+         } catch (SecurityException e) {
+            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
+         }
+      }
    }
-/**
-   
+
+   /** 
     * Factory method for creating Marantz AVR command instances based on a
     * human-readable configuration strings.
     * 
