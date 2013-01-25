@@ -62,4 +62,20 @@
   <command name="RIGHT" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCRT"/>
   <command name="ENTER" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNENT"/>
   <command name="RETURN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNRTN"/>
+
+  <command name="NETWORK_CONTROL" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="NS">
+    <parameters>
+      <parameter name="CURSOR UP">90</parameter>
+      <parameter name="CURSOR DOWN">91</parameter>
+      <parameter name="CURSOR LEFT">92</parameter>
+      <parameter name="CURSOR RIGHT">93</parameter>
+      <parameter name="ENTER">94</parameter>
+      <parameter name="PLAY">9A</parameter>
+      <parameter name="PAUSE">9B</parameter>
+      <parameter name="STOP">9C</parameter>
+      <parameter name="SKIP PLUS">9D</parameter>
+      <parameter name="SKIP MINUS">9E</parameter>
+    </parameters>
+  </command>
+
 </commands>
