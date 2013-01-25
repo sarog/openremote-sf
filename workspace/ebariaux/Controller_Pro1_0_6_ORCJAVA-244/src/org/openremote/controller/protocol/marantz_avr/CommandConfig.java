@@ -3,14 +3,25 @@ package org.openremote.controller.protocol.marantz_avr;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO : base class for commandClass should parametrize this class
+
+/**
+ * 
+ * @author ebariaux
+ *
+ */
 public class CommandConfig {
    
-   private String command;
+   private String name;
+   private String value;
+   private Class<? extends MarantzAVRCommand> commandClass;
    private Map<String, String> knownParameters;
    
-   public CommandConfig(String command) {
+   public CommandConfig(String name, String value, Class<? extends MarantzAVRCommand> commandClass) {
       super();
-      this.command = command;
+      this.name = name;
+      this.value = value;
+      this.commandClass = commandClass;
       this.knownParameters = new HashMap<String, String>();
    }
    
@@ -18,10 +29,18 @@ public class CommandConfig {
       knownParameters.put(orParam, onkyoParam);
    }
 
-   public String getCommand() {
-      return command;
+   public String getName() {
+      return name;
    }
    
+   public String getValue() {
+      return value;
+   }
+
+   public Class<? extends MarantzAVRCommand> getCommandClass() {
+      return commandClass;
+   }
+
    public String getParameter(String orParam) {
       return knownParameters.get(orParam);
    }
@@ -42,4 +61,6 @@ public class CommandConfig {
      }
      return null;
    }
+   
+   // TODO : toString
 }
