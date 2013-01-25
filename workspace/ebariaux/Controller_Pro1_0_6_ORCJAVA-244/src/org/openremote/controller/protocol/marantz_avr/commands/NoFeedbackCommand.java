@@ -1,13 +1,8 @@
 package org.openremote.controller.protocol.marantz_avr.commands;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.sensor.StateSensor;
-import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.marantz_avr.CommandConfig;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommand;
