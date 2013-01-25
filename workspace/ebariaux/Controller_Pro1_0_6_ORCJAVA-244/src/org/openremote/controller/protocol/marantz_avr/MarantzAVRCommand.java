@@ -20,15 +20,23 @@
  */
 package org.openremote.controller.protocol.marantz_avr;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.deployer.Version20ModelBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
@@ -46,7 +54,6 @@ import org.openremote.controller.utils.Logger;
  */
 public abstract class MarantzAVRCommand implements Command {
 
-   
    // Class Members --------------------------------------------------------------------------------
 
    /**
@@ -55,23 +62,64 @@ public abstract class MarantzAVRCommand implements Command {
    private final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
    // Keep a list of all the command strings we receive from OR Console and the associated command class to handle that command
-   private static HashMap<String, Class<? extends MarantzAVRCommand>> commandClasses = new HashMap<String, Class<? extends MarantzAVRCommand>>();
+   private static HashMap<String, CommandConfig> commandConfigurations = new HashMap<String, CommandConfig>();
 
    static {
-      commandClasses.put("POWER", BooleanCommand.class);
-      commandClasses.put("MUTE", BooleanCommand.class);
-      commandClasses.put("INPUT", MultipleOptionsCommand.class);
-      commandClasses.put("SURROUND_MODE", MultipleOptionsCommand.class);
-      commandClasses.put("VOLUME", VolumeCommand.class);
-      commandClasses.put("UP", NoFeedbackCommand.class);
-      commandClasses.put("DOWN", NoFeedbackCommand.class);
-      commandClasses.put("LEFT", NoFeedbackCommand.class);
-      commandClasses.put("RIGHT", NoFeedbackCommand.class);
-      commandClasses.put("ENTER", NoFeedbackCommand.class);
-      commandClasses.put("RETURN", NoFeedbackCommand.class);
+      CommandConfig cfg = new CommandConfig("POWER", "PW", BooleanCommand.class);
+      cfg.addParameter("ON", "ON");
+      cfg.addParameter("OFF", "STANDBY");
+      cfg.addParameter("STATUS", "?");
+      commandConfigurations.put("POWER",  cfg);
+      cfg = new CommandConfig("MUTE", "MU", BooleanCommand.class);
+      cfg.addParameter("ON", "ON");
+      cfg.addParameter("OFF", "OFF");
+//         cfg.addParameter("TOGGLE", "TG");
+      cfg.addParameter("STATUS", "?");
+      commandConfigurations.put("MUTE",  cfg);
+      cfg = new CommandConfig("INPUT", "SI", MultipleOptionsCommand.class);
+      cfg.addParameter("PHONO", "PHONO");
+      cfg.addParameter("CD", "CD");
+      cfg.addParameter("DVD", "DVD");
+      cfg.addParameter("BD", "BD");
+      cfg.addParameter("TV", "TV");
+      cfg.addParameter("SAT/CBL", "SAT/CBL");
+      cfg.addParameter("VCR", "VCR");
+      cfg.addParameter("GAME", "GAME");
+      cfg.addParameter("V.AUX", "V.AUX");
+      cfg.addParameter("AUX1", "AUX1");
+      cfg.addParameter("AUX2", "AUX2");
+      cfg.addParameter("IRADIO", "IRADIO");
+      cfg.addParameter("STATUS", "?");
+      commandConfigurations.put("INPUT", cfg);
+      cfg = new CommandConfig("SURROUND_MODE", "MS", MultipleOptionsCommand.class);
+      cfg.addParameter("MOVIE", "MOVIE");
+      cfg.addParameter("MUSIC", "MUSIC");
+      cfg.addParameter("GAME", "GAME");
+      cfg.addParameter("DIRECT", "DIRECT");
+      cfg.addParameter("PURE DIRECT", "PURE DIRECT");
+      cfg.addParameter("STEREO", "STEREO");
+      cfg.addParameter("AUTO", "AUTO");
+      cfg.addParameter("NEURAL", "NEURAL");
+      cfg.addParameter("STANDARD", "STANDARD");
+      cfg.addParameter("DOLBY", "DOLBY");
+      cfg.addParameter("DTS", "DTS");
+      cfg.addParameter("MCH STEREO", "MCH STEREO");
+      cfg.addParameter("MATRIX", "MATRIX");
+      cfg.addParameter("VIRTUAL", "VIRTUAL");
+      cfg.addParameter("LEFT", "LEFT");
+      cfg.addParameter("RIGHT", "RIGHT");
+      cfg.addParameter("STATUS", "?");
+      commandConfigurations.put("SURROUND_MODE", cfg);
+      commandConfigurations.put("VOLUME", new CommandConfig("VOLUME", "MV", VolumeCommand.class));
+      commandConfigurations.put("UP", new CommandConfig("UP", "MNCUP", NoFeedbackCommand.class));
+      commandConfigurations.put("DOWN", new CommandConfig("DOWN", "MNCDN", NoFeedbackCommand.class));
+      commandConfigurations.put("LEFT", new CommandConfig("LEFT", "MNCLT", NoFeedbackCommand.class));
+      commandConfigurations.put("RIGHT", new CommandConfig("RIGHT", "MNCRT", NoFeedbackCommand.class));
+      commandConfigurations.put("ENTER", new CommandConfig("ENTER", "MNENT", NoFeedbackCommand.class));
+      commandConfigurations.put("RETURN", new CommandConfig("RETURN", "MNRTN", NoFeedbackCommand.class));
    }
-
-   /**
+/**
+   
     * Factory method for creating Marantz AVR command instances based on a
     * human-readable configuration strings.
     * 
@@ -81,19 +129,20 @@ public abstract class MarantzAVRCommand implements Command {
     log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
-      Class<? extends MarantzAVRCommand> commandClass = commandClasses.get(name);
+      CommandConfig commandConfig = commandConfigurations.get(name);
+      log.debug("This command maps to command config " + commandConfig);
 
-      log.debug("This command maps to the command class " + commandClass);
-
-      if (commandClass == null) {
+      if (commandConfig == null) {
          throw new NoSuchCommandException("Unknown command '" + name + "'.");
       }
+      
+      Class<? extends MarantzAVRCommand> commandClass = commandConfig.getCommandClass();
       MarantzAVRCommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", String.class, MarantzAVRGateway.class, String.class);
+         Method method = commandClass.getMethod("createCommand", CommandConfig.class, String.class, MarantzAVRGateway.class, String.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (MarantzAVRCommand) method.invoke(null, name, gateway, parameter);
+         cmd = (MarantzAVRCommand) method.invoke(null, commandConfig, name, gateway, parameter);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          // TODO: should this be logged, check other source code

@@ -10,6 +10,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.marantz_avr.CommandConfig;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommand;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
@@ -23,7 +24,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
     */
    protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-   public static VolumeCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public static VolumeCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
       // Check for mandatory attributes
       if (parameter == null) {
         throw new NoSuchCommandException("A parameter is always required for the VOLUME command.");

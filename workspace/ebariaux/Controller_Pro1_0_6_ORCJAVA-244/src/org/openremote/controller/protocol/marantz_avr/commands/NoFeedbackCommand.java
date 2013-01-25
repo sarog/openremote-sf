@@ -18,34 +18,34 @@ import org.openremote.controller.utils.Logger;
 
 public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
-   private final static Map<String, CommandConfig> knownCommands = new HashMap<String, CommandConfig>();
-
-   static {
-      knownCommands.put("UP", new CommandConfig("MNCUP"));
-      knownCommands.put("DOWN", new CommandConfig("MNCDN"));
-      knownCommands.put("LEFT", new CommandConfig("MNCLT"));
-      knownCommands.put("RIGHT", new CommandConfig("MNCRT"));
-      knownCommands.put("ENTER", new CommandConfig("MNENT"));
-      knownCommands.put("RETURN", new CommandConfig("MNRTN"));
-   }
-   
    /**
     * Marantz AVR logger. Uses a common category for all Marantz AVR related logging.
     */
    protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-   public static NoFeedbackCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public static NoFeedbackCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+      // Check for mandatory attributes
+      if (commandConfig == null) {
+         throw new NoSuchCommandException("No configuration provided for " + name + " command.");
+      }
+
       // parameter is optional
 
-      return new NoFeedbackCommand(name, gateway, parameter);
+      return new NoFeedbackCommand(commandConfig, name, gateway, parameter);
     }
 
-   public NoFeedbackCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public NoFeedbackCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
       super(name, gateway);
+      this.commandConfig = commandConfig;
       this.parameter = parameter;
    }
 
    // Private Instance Fields ----------------------------------------------------------------------
+
+   /**
+    * Configuration defining this command.
+    */
+   private CommandConfig commandConfig;
 
    /**
     * Parameter used by this command.
@@ -58,18 +58,14 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
     * {@inheritDoc}
     */
    public void send() {
-      CommandConfig cfg = knownCommands.get(name);
-      if (cfg == null) {
-         throw new NoSuchCommandException("Invalid command " + name);
-      }
       // Parameter is not mandatory, if no mapping is provided, just pass value as is
       String parameterValue = "";
       if (parameter != null) {
-         if (cfg.getParameter(parameter) != null) {
-            parameterValue = cfg.getParameter(parameter);
+         if (commandConfig.getParameter(parameter) != null) {
+            parameterValue = commandConfig.getParameter(parameter);
          }
       }
-     gateway.sendCommand(cfg.getCommand(), parameterValue);
+     gateway.sendCommand(commandConfig.getValue(), parameterValue);
    }
 
    // Implements EventListener -------------------------------------------------------------------
