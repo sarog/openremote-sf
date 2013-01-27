@@ -238,7 +238,13 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
    public void run() {
       logger.debug("Sensor thread started for sensor: " + sensor);
       while (doPoll) {
-         String readValue = this.requestSocket();
+         // Strip response from control characters (non-ASCII)...
+         // Patch provided by Phillip Lavender
+         String rawResult = this.requestSocket();
+         Pattern p = Pattern.compile("\\p{Cntrl}");
+         Matcher m = p.matcher(rawResult);
+         String readValue = m.replaceAll("");
+         
          if (regex != null) {
            Pattern regexPattern = Pattern.compile(regex);
            Matcher matcher = regexPattern.matcher(readValue);
