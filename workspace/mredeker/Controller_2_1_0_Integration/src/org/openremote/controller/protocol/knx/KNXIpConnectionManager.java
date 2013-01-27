@@ -101,6 +101,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private Timer connectionTimer;
   private Object connectionTimerLock;
   private String physicalBusClazz;
+  private Map<GroupAddress, GroupValueRead> registeredReadCommands = new ConcurrentHashMap<GroupAddress, GroupValueRead>(1000);
+
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -113,13 +115,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.connectionTimer = null;
     this.connectionTimerLock = new Object();
   }
-
-//  public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
-//     throws KnxIpException, IOException, InterruptedException
-//  {
-//    this();
-//    this.connection = new KNXConnectionImpl(new IpTunnelClient(srcAddr, destControlEndpointAddr));
-//  }
 
 
   // Implements DiscoveryListener -----------------------------------------------------------------
@@ -406,7 +401,17 @@ public class KNXIpConnectionManager implements DiscoveryListener
     return candidateAddresses;
   }
 
+  
+  // Public Instance Methods ------------------------------------------------------------------
 
+  public void registerReadSensor(GroupValueRead groupValueRead) {
+     registeredReadCommands.put(groupValueRead.getAddress(), groupValueRead);
+  }
+  
+  public void unregisterReadSensor(GroupValueRead groupValueRead) {
+     registeredReadCommands.remove(groupValueRead.getAddress());
+  }
+  
   // Bean Configuration ---------------------------------------------------------------------------
 
   protected void setKnxIpInterfaceHostname(String knxIpInterfaceHostname)
@@ -636,8 +641,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private class KNXConnectionImpl implements KNXConnection, IpTunnelClientListener
   {
     private IpTunnelClient client;
-    private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState =
-        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(1000);
     private Status interfaceStatus;
 
     /**
@@ -661,36 +664,18 @@ public class KNXIpConnectionManager implements DiscoveryListener
        this.service(command);
     }
 
-    @Override public synchronized ApplicationProtocolDataUnit read(GroupValueRead command)
+    @Override public synchronized void read(GroupValueRead command)
     {
-      // Send a GroupValue_Read command only if the device status has not been synchronized yet.
-      if(this.internalState.get(command.getAddress()) == null)
-      {
         this.service(command);
-
         // Wait for response after having received a confirmation
-
         try
         {
           this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
         }
-
         catch (InterruptedException e)
         {
           Thread.currentThread().interrupt();
         }
-      }
-
-      ApplicationProtocolDataUnit.ResponseAPDU response = this.internalState.get(command.getAddress());
-
-      if (response == null)
-      {
-        return null;
-      }
-
-      DataPointType dpt = command.getDataPointType();
-
-      return response.resolve(dpt);
     }
     
     @Override
@@ -964,7 +949,9 @@ public class KNXIpConnectionManager implements DiscoveryListener
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
       }
 
-      internalState.put(address, apdu);
+      if (registeredReadCommands.get(address) != null) {
+         registeredReadCommands.get(address).updateSensor(apdu);
+      }
     }
   }
   
