@@ -109,7 +109,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		RelativeLayout sliderLayout = (RelativeLayout) inflater.inflate(R.layout.vertical_seekbar,
+		RelativeLayout sliderLayout = (RelativeLayout) inflater.inflate(R.layout.slider,
 				(ViewGroup) findViewById(R.id.slider_layout));
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
 		sliderLayout.setLayoutParams(params);
@@ -198,7 +198,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
 					+ slider.getThumbImage().getSrc());
 		} else {
-			thumbDrawable = getResources().getDrawable(R.drawable.slider_thumb2);
+			thumbDrawable = getResources().getDrawable(R.drawable.slider_thumb);
 		}
 
 		int thumbU = isVertical ? thumbDrawable.getIntrinsicHeight() : thumbDrawable.getIntrinsicWidth();
