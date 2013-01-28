@@ -229,7 +229,9 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	int afterSlideValue = [self sliderValue:sender];
 	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
-	}
+	} else {
+        sender.value = self.currentValue;
+    }
 	self.sliderTip.hidden = YES;
 	[self clearSliderTipSubviews:self.sliderTip];
 }
