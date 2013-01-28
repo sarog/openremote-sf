@@ -312,7 +312,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		// Set the view
 		this.addView(sliderLayout);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
@@ -324,37 +324,36 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
         return false;
      }
 
-     if (v == thumb) {
-    	 thumbPos += isVertical ? -1 * ((int) event.getY() - halfThumb) : (int) event.getX() - halfThumb;
-   		 thumbPos = thumbPos < 0 ? 0 : thumbPos > thumbRange ? thumbRange : thumbPos;
-     }
-     
      switch (event.getAction()) {
 	     case MotionEvent.ACTION_DOWN:
-	       //setPressed(true);
 	       break;
 	
 	     case MotionEvent.ACTION_MOVE:
-	    	 updateThumbPos();
+	       if (v == thumb) {
+	      	 thumbPos += isVertical ? -1 * ((int) event.getY() - halfThumb) : (int) event.getX() - halfThumb;
+	     		 thumbPos = thumbPos < 0 ? 0 : thumbPos > thumbRange ? thumbRange : thumbPos;
+		    	 updateThumbPos();
+	       }
 	       break;
 	
 	     case MotionEvent.ACTION_UP:
 	    	 if (v == thumb) {
-	    		 updateValueFromPos();
+	    		 thumbPos += isVertical ? -1 * ((int) event.getY() - halfThumb) : (int) event.getX() - halfThumb;
 	    	 }
-//	    	 else if (v == minTrack) {
-//	    		 thumbPos = (int) (isVertical ? (-1 * event.getY()) : event.getX());
-//	    		 updateValueFromPos();
-//	    	 } else if (v == maxTrack) {
-//	    		 thumbPos = (int) (isVertical ? (trackLength - event.getY()) : thumbPos + event.getX());
-//	    		 updateValueFromPos();
-//	    	 }	    	 
+	    	 else if (v == minTrack) {
+	    		 thumbPos = (int) (isVertical ? (thumbPos - event.getY()) : event.getX());
+	    	 } else if (v == maxTrack) {
+	    		 thumbPos = (int) (isVertical ? (trackLength - event.getY()) : thumbPos + event.getX());
+	    	 }
+	    	 thumbPos = thumbPos < 0 ? 0 : thumbPos > thumbRange ? thumbRange : thumbPos;
+	    	 updateThumbPos();
+	    	 updateValueFromPos();
 	       break;
 	
 	     case MotionEvent.ACTION_CANCEL:
 	        break;
      }
-
+     
      invalidate();
      return true;
   }
