@@ -822,14 +822,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
       lastConfigurationOrientation = newOrientation;
    }
 
-   @Override
-   public boolean dispatchTouchEvent(MotionEvent ev) {
-	   boolean handled = gestureScanner.onTouchEvent(ev);
-	   if (!handled) {
-		   handled = super.dispatchTouchEvent(ev);
-	   }
-       return handled;
-   }
+//   @Override
+//   public boolean dispatchTouchEvent(MotionEvent ev) {
+//	   boolean handled = gestureScanner.onTouchEvent(ev);
+//	   if (!handled) {
+//		   handled = super.dispatchTouchEvent(ev);
+//	   }
+//       return handled;
+//   }
    
 // /**
 // * If press back key, finish the activity.
