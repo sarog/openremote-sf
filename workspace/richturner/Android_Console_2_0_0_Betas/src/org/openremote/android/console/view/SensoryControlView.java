@@ -24,13 +24,11 @@ import android.content.Context;
 /**
  * The super class of that component view which has control command and sensory.
  */
-public class SensoryControlView extends ControlView implements SensoryDelegate {
+public abstract class SensoryControlView extends ControlView implements SensoryDelegate {
 
    protected SensoryControlView(Context context) {
       super(context);
    }
 
-   public void addPollingSensoryListener() {
-   }
-
+   public abstract void addPollingSensoryListener();
 }
