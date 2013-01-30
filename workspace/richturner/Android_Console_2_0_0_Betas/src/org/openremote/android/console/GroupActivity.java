@@ -145,7 +145,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
 
       initOrientationListener();
    }
-
+   
    /**
     * Inits a orientation listener, set request orientation be sensor when the current screen's orientation equals device orientation.
     */
@@ -575,6 +575,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    protected void onStop() {
       super.onStop();
       cancelCurrentPolling();
+      finish();
    }
 
    /**
