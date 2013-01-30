@@ -38,6 +38,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.ControllerDataHelper;
 import org.openremote.android.console.ControllerObject;
@@ -261,9 +262,10 @@ public class PollingHelper {
          } if (statusCode == ControllerException.REFRESH_CONTROLLER) {
             // TODO explain "refreshing the controller"
             Main.prepareToastForRefreshingController();
-            Intent refreshControllerIntent = new Intent();
-            refreshControllerIntent.setClass(context, Main.class);
-            context.startActivity(refreshControllerIntent);
+         	 	Intent i = new Intent(context, Main.class);
+         	 	i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(i);
+
             // Notify the group activity to finish.
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, null);
             return;

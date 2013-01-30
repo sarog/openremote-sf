@@ -29,7 +29,6 @@
 				        android:id="@+id/panel_list_view"
 					    android:layout_width="fill_parent"
 					    android:layout_height="fill_parent"
-					    android:layout_above="@+id/panel_list_bottom_layout"
 				        android:cacheColorHint="#000000"
 				        android:longClickable="true"
 				        android:clickable="true"

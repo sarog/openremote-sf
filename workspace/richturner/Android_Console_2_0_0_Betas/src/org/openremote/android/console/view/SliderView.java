@@ -320,7 +320,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 	 */
   @Override
   public boolean onTouch(View v, MotionEvent event) {
-     if (!isPassive || !isEnabled() || event == null) {
+     if (isPassive || !isEnabled() || event == null) {
         return false;
      }
 

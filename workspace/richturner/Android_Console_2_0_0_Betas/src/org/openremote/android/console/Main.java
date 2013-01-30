@@ -79,11 +79,11 @@ public class Main extends GenericActivity {
         }
         
         loadingToast = Toast.makeText(this, "Refreshing from Controller...", Integer.MAX_VALUE);
-        if (!isRefreshingController) {
-           ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
-        } else {
-           loadingToast.show();
-        }
+//        if (!isRefreshingController) {
+//        } else {
+//           loadingToast.show();
+//        }
+        ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
         isRefreshingController = false;
         
         checkNetType();
