@@ -32,6 +32,7 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -179,10 +180,11 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       // initialize the standard view here
       webView = new WebView(context);
       webView.setWebViewClient(new ORWebViewClient());
-      ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(web.getFrameWidth(),
-          web.getFrameHeight());
+      ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
+      webView.setInitialScale(100);
+      webView.setBackgroundColor(0x00000000);
       URL url = web.getSrc();
       if (url != null)
       {

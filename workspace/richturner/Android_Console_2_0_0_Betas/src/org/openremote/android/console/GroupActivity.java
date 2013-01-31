@@ -575,7 +575,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    protected void onStop() {
       super.onStop();
       cancelCurrentPolling();
-      finish();
    }
 
    /**
