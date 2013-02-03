@@ -27,7 +27,7 @@ import org.junit.Assert;
 /**
  * Unit tests for {@link EspPortConfiguration} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EspPortConfigurationTest
 {

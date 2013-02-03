@@ -63,7 +63,7 @@ import java.util.List;
  *
  * @see org.openremote.controller.command.CommandBuilder
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EnOceanCommandBuilder implements CommandBuilder
 {

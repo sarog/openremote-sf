@@ -37,7 +37,7 @@ import org.openremote.controller.utils.Strings;
  *</pre>
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3ResponsePacket extends Esp3Packet
 {

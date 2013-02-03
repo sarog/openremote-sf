@@ -40,7 +40,7 @@ import java.math.RoundingMode;
  * @see Range
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class LinearScale
 {

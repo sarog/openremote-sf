@@ -30,7 +30,7 @@ import org.openremote.controller.protocol.enocean.ConnectionException;
  * This interface abstracts away the details of the different EnOcean Serial Protocol (ESP) communication settings
  * and the underlying transport and provides an uniform access to the different communication port implementations.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EspPort
 {

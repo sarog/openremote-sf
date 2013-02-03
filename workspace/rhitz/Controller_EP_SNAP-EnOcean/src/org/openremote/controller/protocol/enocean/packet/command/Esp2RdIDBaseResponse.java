@@ -45,7 +45,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp2ResponsePacket;
  * @see Esp2RdIDBaseCommand
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp2RdIDBaseResponse extends Esp2ResponsePacket
 {

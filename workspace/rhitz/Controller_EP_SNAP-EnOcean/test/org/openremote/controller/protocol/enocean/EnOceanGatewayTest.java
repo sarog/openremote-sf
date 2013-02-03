@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 /**
  * Unit tests for {@link EnOceanGateway} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EnOceanGatewayTest
 {

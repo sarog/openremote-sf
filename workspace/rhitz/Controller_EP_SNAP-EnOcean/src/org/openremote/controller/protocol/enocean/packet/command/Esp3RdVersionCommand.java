@@ -33,7 +33,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
  * @see Esp3RdVersionResponse
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3RdVersionCommand extends AbstractEsp3Command
 {

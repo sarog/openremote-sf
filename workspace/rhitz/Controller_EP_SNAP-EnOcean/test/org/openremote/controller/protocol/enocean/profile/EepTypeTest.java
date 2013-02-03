@@ -28,7 +28,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 /**
  * Unit tests for {@link EepType} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepTypeTest
 {

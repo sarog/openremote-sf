@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @see org.openremote.controller.protocol.enocean.packet.radio.Esp3RPSTelegram
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepF60201 implements EepTransceive
 {

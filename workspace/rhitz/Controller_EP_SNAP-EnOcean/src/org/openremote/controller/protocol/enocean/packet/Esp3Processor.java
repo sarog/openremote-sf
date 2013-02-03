@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * EnOcean Serial Protocol 3.0 processor implementation.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3Processor extends AbstractEspProcessor<Esp3Packet>
 {

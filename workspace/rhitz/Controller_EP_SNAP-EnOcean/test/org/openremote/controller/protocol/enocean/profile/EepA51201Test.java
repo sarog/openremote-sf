@@ -35,7 +35,7 @@ import java.math.BigDecimal;
 /**
  * Unit tests for {@link EepA51201} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA51201Test extends EepA512XXTest
 {

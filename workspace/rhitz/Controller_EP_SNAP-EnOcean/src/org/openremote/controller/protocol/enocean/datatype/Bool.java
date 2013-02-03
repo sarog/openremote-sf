@@ -32,7 +32,7 @@ import static org.openremote.controller.protocol.enocean.profile.EepConstants.*;
 /**
  * Represents a boolean EnOcean equipment profile (EEP) data field type.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Bool extends Ordinal
 {

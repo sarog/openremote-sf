@@ -50,7 +50,7 @@ package org.openremote.controller.protocol.enocean;
  *
  * An ID with all bits set (0xFFFFFFFF) is used to address all EnOcean devices (broadcast ID).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class DeviceID
 {

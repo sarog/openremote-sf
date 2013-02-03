@@ -37,7 +37,7 @@ import java.math.BigDecimal;
  * Represents an EnOcean equipment profile (EEP) data field type which
  * contains a continuous value (as opposed to an ordinal value).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Range implements DataType, EepDataListener
 {

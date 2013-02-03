@@ -35,7 +35,7 @@ import java.util.Set;
 /**
  * This class is an abstract superclass for EnOcean transmit/receive commands.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 abstract public class EnOceanCommand implements Command
 {

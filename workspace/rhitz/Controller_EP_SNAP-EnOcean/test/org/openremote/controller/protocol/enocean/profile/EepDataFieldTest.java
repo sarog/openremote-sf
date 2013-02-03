@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * Unit tests for {@link EepDataField} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepDataFieldTest
 {

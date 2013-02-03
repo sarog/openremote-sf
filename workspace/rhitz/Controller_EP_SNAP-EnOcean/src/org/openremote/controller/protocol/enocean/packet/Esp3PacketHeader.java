@@ -47,7 +47,7 @@ import org.openremote.controller.utils.Strings;
  * Note that this ESP3 header implementation contains the Synchronization Byte field at the
  * beginning and the CRC8 field at the end as opposed to the Serial Protocol 3.0 Specification.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3PacketHeader
 {

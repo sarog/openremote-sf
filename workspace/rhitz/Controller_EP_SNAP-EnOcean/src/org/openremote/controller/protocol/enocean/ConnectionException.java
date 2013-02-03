@@ -25,7 +25,7 @@ import org.openremote.controller.exception.OpenRemoteException;
 /**
  * Generic exception type to indicate EnOcean interface connectivity errors.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class ConnectionException extends OpenRemoteException
 {

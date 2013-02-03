@@ -35,7 +35,7 @@ import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 /**
  * Unit tests for {@link Esp31BSTelegram} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp31BSTelegramTest
 {

@@ -74,7 +74,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp3PacketHeader;
  * @see DeviceID
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEsp3RadioTelegram extends AbstractEsp3RequestPacket implements EspRadioTelegram
 {

@@ -42,7 +42,7 @@ package org.openremote.controller.protocol.enocean.packet;
  * the Data and Optional Data group.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3Packet implements EspPacket
 {

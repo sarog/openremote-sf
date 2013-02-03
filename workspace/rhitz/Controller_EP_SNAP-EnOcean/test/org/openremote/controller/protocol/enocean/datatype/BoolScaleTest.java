@@ -27,7 +27,7 @@ import org.openremote.controller.protocol.enocean.profile.EepOutOfRangeException
 /**
  * Unit tests for {@link BoolScale} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class BoolScaleTest
 {

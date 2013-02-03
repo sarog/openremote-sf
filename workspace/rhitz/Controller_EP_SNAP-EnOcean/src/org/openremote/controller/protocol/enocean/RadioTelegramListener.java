@@ -25,7 +25,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 /**
  * Listener interface for receiving EnOcean radio telegrams.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface RadioTelegramListener
 {

@@ -28,7 +28,7 @@ import org.openremote.controller.utils.Strings;
  * (ESP) versions.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EspRadioTelegram
 {

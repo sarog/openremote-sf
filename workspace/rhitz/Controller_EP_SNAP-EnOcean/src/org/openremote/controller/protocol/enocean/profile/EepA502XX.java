@@ -34,7 +34,7 @@ import static org.openremote.controller.protocol.enocean.Constants.TEMPERATURE_S
  * A common superclass for EnOcean temperature sensor profile implementations
  * to reuse code.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class EepA502XX implements EepReceive
 {

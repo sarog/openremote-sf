@@ -42,7 +42,7 @@ import java.util.Set;
  * @see EepDataListener
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepData
 {

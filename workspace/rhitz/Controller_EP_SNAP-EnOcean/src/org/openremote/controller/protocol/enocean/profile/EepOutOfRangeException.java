@@ -26,7 +26,7 @@ import org.openremote.controller.exception.OpenRemoteException;
  * Exception class indicating that a value is not within the valid value range
  * of an EnOcean equipment profile (EEP) data field.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepOutOfRangeException extends OpenRemoteException
 {

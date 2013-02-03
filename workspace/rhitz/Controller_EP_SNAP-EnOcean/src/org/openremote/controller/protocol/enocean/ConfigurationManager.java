@@ -25,7 +25,7 @@ import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
 /**
  * Interface for EnOcean configuration manager implementations.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface ConfigurationManager
 {

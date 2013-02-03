@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
  * Unit test base class for temperature sensor EnOcean equipment profile (EEP)
  * implementations ('A5-02-01', 'A5-02-02', 'A5-02-03'...).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA502XXTest
 {

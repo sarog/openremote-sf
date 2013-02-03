@@ -25,7 +25,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 /**
  * The interface for EnOcean connection implementations.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EnOceanConnection
 {

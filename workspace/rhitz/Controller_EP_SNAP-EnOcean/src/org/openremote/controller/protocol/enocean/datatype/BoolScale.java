@@ -32,7 +32,7 @@ import java.util.Set;
  * @see org.openremote.controller.protocol.enocean.profile.EepDataField
  * @see Bool
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class BoolScale extends CategoricalScale
 {

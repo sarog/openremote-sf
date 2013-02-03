@@ -26,7 +26,7 @@ import org.openremote.controller.model.sensor.Sensor;
  * The data type interface for EnOcean equipment profile (EEP) data type
  * implementations.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface DataType
 {

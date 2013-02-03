@@ -35,7 +35,7 @@ import static org.openremote.controller.protocol.enocean.Constants.*;
  * A common superclass for EnOcean equipment profile (RORG = A5, FUNC = 08)
  * implementations to reuse code.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class EepA508XX implements EepReceive
 {
