@@ -29,7 +29,7 @@ import java.util.Arrays;
 /**
  * Unit tests for {@link Esp3Packet.CRC8} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3PacketCRC8Test
 {

@@ -24,7 +24,7 @@ package org.openremote.controller.protocol.enocean;
  * Exception raised by incorrectly formatted EnOcean device ID when attempting to convert
  * a string representation into an instance of {@link DeviceID}
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class InvalidDeviceIDException extends Exception
 {

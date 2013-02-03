@@ -34,7 +34,7 @@ import java.math.BigDecimal;
  * value (e.g. [255..0]).
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class DataRange
 {

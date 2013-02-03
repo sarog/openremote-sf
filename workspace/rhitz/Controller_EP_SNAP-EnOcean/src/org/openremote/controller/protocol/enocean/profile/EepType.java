@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
  * characteristics (TYPE)".
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class EepType
 {

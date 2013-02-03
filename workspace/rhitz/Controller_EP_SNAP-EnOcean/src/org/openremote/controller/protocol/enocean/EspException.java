@@ -25,7 +25,7 @@ import org.openremote.controller.utils.Strings;
 /**
  * Indicates a connectivity error related to an EnOcean Serial Protocol error.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EspException extends ConnectionException
 {

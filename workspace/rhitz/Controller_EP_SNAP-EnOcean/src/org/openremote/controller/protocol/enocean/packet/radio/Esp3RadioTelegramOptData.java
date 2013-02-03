@@ -38,7 +38,7 @@ import org.openremote.controller.protocol.enocean.InvalidDeviceIDException;
  * @see AbstractEsp3RadioTelegram
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3RadioTelegramOptData
 {

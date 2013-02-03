@@ -4,7 +4,7 @@ package org.openremote.controller.protocol.enocean;
 /**
  * EnOcean serial protocol (ESP) version type.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public enum EspVersion
 {

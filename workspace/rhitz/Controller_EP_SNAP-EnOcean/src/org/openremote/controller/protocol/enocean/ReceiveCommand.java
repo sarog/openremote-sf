@@ -31,7 +31,7 @@ import org.openremote.controller.protocol.enocean.profile.EepReceive;
  * the {@link EventListener} interface and therefore acts as an entry point in
  * controller/protocol SPI.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class ReceiveCommand extends EnOceanCommand implements EventListener, RadioTelegramListener
 {

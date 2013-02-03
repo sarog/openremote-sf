@@ -34,7 +34,7 @@ import org.openremote.controller.utils.Logger;
 /**
  * EnOcean connection implementation based on the EnOcean serial protocol 2 (ESP2).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp2Connection extends AbstractConnection<Esp2Packet, Esp2Request> implements Esp2ProcessorListener
 {

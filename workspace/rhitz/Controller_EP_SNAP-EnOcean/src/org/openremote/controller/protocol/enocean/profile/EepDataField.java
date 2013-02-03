@@ -29,13 +29,13 @@ package org.openremote.controller.protocol.enocean.profile;
  * used to specify the data field location within the radio telegram payload field. <p>
  *
  * This class offers methods to read/write raw values from/to an EnOcean equipment profile
- * data field. <p><
+ * data field. <p>
  *
  * Note that EnOcean equipment profile (EEP) data field values are stored
  * in big-endian format.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepDataField
 {

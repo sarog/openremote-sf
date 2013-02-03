@@ -28,7 +28,7 @@ import org.openremote.controller.utils.Logger;
 /**
  * A common superclass for EnOcean connection implementations to reuse code.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractConnection<P extends EspPacket, R> implements EnOceanConnection
 {

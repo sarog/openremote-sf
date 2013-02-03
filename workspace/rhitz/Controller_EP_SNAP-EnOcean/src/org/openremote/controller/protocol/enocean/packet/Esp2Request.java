@@ -28,7 +28,7 @@ import org.openremote.controller.protocol.enocean.ConnectionException;
  *
  * With this interface it's possible to send a request and get the response afterwards.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface Esp2Request
 {

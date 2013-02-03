@@ -39,7 +39,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Serial port implementation based on the native library RXTX
  * (see http://rxtx.qbang.org/).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class RXTXPort implements Port
 {

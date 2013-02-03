@@ -35,7 +35,7 @@ import org.openremote.controller.protocol.enocean.EspException;
  * the request type requires a specialized response type.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEsp3RequestPacket extends Esp3Packet implements Esp3Request
 {

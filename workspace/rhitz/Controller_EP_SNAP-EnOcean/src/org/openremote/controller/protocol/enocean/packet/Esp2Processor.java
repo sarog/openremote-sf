@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * EnOcean Serial Protocol 2.0 processor implementation.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp2Processor extends AbstractEspProcessor<Esp2Packet>
 {

@@ -31,7 +31,7 @@ import java.text.MessageFormat;
 /**
  * Unit tests for {@link Bool} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class BoolTest
 {

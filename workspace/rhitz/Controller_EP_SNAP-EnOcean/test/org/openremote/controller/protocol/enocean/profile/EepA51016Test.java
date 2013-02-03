@@ -31,7 +31,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.*;
 /**
  * Unit tests for {@link EepA51016} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA51016Test
 {

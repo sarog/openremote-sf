@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 /**
  * Unit tests for {@link Esp3RdIDBaseResponse} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3RdIDBaseResponseTest
 {

@@ -25,7 +25,7 @@ import org.openremote.controller.Configuration;
 /**
  * EnOcean Serial Protocol (ESP) port configuration.
  *
- * @author  Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EspPortConfiguration extends Configuration
 {

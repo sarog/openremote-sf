@@ -97,7 +97,7 @@ import org.openremote.controller.protocol.enocean.DeviceID;
  *
  * @see org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA51200 extends EepA512XX
 {

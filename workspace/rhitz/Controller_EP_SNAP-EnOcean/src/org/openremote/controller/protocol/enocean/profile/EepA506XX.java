@@ -36,7 +36,7 @@ import static org.openremote.controller.protocol.enocean.Constants.SUPPLY_VOLTAG
  * A common superclass for EnOcean equipment light sensor profile implementations
  * to reuse code.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class EepA506XX implements EepReceive
 {

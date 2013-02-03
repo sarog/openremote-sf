@@ -28,7 +28,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
  * Interface for EnOcean equipment profile (EEP) implementations acting as a receiver
  * of radio telegrams.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EepReceive extends Eep
 {

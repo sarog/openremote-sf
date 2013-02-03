@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Unit tests for {@link Esp3Processor} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3ProcessorTest
 {

@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Unit tests for {@link Ordinal} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class OrdinalTest
 {

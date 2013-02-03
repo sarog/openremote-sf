@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * EnOcean gateway for sending and receiving radio telegrams.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EnOceanGateway implements RadioInterface, RadioTelegramListener
 {

@@ -41,7 +41,7 @@ import java.util.concurrent.*;
  * {@link #createPortReaderBuffer()} and {@link #dispatchPacket(EspPacket)}.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEspProcessor<T extends EspPacket> implements EspProcessor<T>
 {

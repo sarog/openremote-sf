@@ -31,7 +31,7 @@ package org.openremote.controller.protocol.enocean.datatype;
  *
  * @see CategoricalScale
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class ScaleCategory
 {

@@ -28,7 +28,7 @@ package org.openremote.controller.protocol.enocean.profile;
  * @see EepTransmit
  * @see EepTransceive
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface Eep
 {

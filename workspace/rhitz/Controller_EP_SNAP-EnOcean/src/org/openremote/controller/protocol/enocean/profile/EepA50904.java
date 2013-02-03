@@ -116,7 +116,7 @@ import static org.openremote.controller.protocol.enocean.profile.EepConstants.EE
  *
  * @see org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA50904 implements EepReceive
 {

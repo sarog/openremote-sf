@@ -40,7 +40,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp2PacketHeader;
  *
  * The command code is stored in the first byte of the data group.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEsp2Command extends AbstractEsp2RequestPacket
 {

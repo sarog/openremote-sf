@@ -25,7 +25,7 @@ import static org.openremote.controller.protocol.enocean.profile.EepConstants.*;
 /**
  * Constant class for global constants.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public final class Constants
 {

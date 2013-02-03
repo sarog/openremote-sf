@@ -36,7 +36,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
  * @see org.openremote.controller.protocol.enocean.DeviceID
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3RdIDBaseCommand extends AbstractEsp3Command
 {

@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.RadioInterface;
  * Interface for EnOcean equipment profile (EEP) implementations acting as a transmitter
  * of radio telegrams.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EepTransmit extends Eep
 {

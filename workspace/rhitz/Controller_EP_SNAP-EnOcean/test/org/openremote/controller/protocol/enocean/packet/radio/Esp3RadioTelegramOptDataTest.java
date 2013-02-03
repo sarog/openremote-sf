@@ -27,7 +27,7 @@ import org.openremote.controller.protocol.enocean.DeviceID;
 /**
  * Unit tests for {@link Esp3RadioTelegramOptData} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3RadioTelegramOptDataTest
 {

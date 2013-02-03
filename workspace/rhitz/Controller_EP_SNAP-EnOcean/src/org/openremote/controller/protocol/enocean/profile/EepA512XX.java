@@ -34,7 +34,7 @@ import static org.openremote.controller.protocol.enocean.Constants.*;
  * A common superclass for EnOcean equipment profile (RORG = A5,
  * FUNC = 12 : Automated meter reading (AMR)) implementations to reuse code.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA512XX implements EepReceive
 {

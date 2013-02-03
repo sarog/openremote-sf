@@ -34,7 +34,7 @@ import org.openremote.controller.protocol.enocean.ConnectionException;
  * chapter 1.6.3: Direction of packet types). <p>
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EspProcessor<T extends EspPacket>
 {

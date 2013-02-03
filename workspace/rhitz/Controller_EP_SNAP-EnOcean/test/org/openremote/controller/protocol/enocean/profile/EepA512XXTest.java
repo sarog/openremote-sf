@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram;
  * Unit test base class for automated meter reading (AMR) EnOcean equipment profile (EEP)
  * implementations ('A5-12-00', 'A5-12-01', 'A5-12-02' and 'A5-12-03').
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA512XXTest
 {

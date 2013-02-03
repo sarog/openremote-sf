@@ -25,7 +25,7 @@ import org.openremote.controller.exception.OpenRemoteException;
 /**
  * Indicates an EnOcean configuration error.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class ConfigurationException extends OpenRemoteException
 {

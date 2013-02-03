@@ -34,7 +34,7 @@ import org.openremote.controller.utils.Logger;
 /**
  * EnOcean connection implementation based on the EnOcean serial protocol 3 (ESP3).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3Connection extends AbstractConnection<Esp3Packet, Esp3Request> implements Esp3ProcessorListener
 {

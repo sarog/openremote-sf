@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Configurable test double for mocking a {@link org.openremote.controller.protocol.port.Port}
  * implementation.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class MockPort implements Port
 {

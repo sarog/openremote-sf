@@ -45,7 +45,7 @@ import java.util.Map;
  * The createComPortConfiguration() method should create a configuration which is a valid parameter
  * for {@link org.openremote.controller.protocol.port.Port#configure(java.util.Map)}.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEspComPortAdapter implements EspPort
 {

@@ -40,7 +40,7 @@ import org.openremote.controller.protocol.enocean.packet.Esp3PacketHeader;
  *</pre>
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class AbstractEsp3Command extends AbstractEsp3RequestPacket
 {

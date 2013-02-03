@@ -35,7 +35,7 @@ import java.util.HashMap;
 /**
  * EnOcean connection manager for providing an established connection to the EnOcean module.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EnOceanConnectionManager
 {

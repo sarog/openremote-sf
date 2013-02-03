@@ -39,7 +39,7 @@ import org.openremote.controller.utils.Strings;
  * Note: the TCM120 User Manual calls this message type "Received Message Telegram (RMT)".
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp2ResponsePacket extends Esp2Packet
 {

@@ -29,7 +29,7 @@ import java.util.Arrays;
 /**
  * Unit tests for {@link Esp3PacketHeader} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3PacketHeaderTest
 {

@@ -24,7 +24,7 @@ package org.openremote.controller.protocol.enocean.profile;
  * Interface for EnOcean equipment profile (EEP) implementations acting as a transmitter
  * and receiver of radio telegrams.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface EepTransceive extends EepReceive, EepTransmit
 {

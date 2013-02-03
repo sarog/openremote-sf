@@ -97,7 +97,7 @@ import org.openremote.controller.protocol.enocean.datatype.Range;
  *
  * @see org.openremote.controller.protocol.enocean.packet.radio.Esp34BSTelegram
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA50803 extends EepA508XX
 {

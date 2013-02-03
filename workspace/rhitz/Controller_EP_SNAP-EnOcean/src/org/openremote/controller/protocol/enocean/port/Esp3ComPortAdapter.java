@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * COM port adapter implementation for EnOcean Serial Protocol version 3 (ESP3).
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Esp3ComPortAdapter extends AbstractEspComPortAdapter
 {

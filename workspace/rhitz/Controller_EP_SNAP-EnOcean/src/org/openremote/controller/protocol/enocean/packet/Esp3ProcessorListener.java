@@ -25,7 +25,7 @@ import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 /**
  * ESP3 processor listener interface.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public interface Esp3ProcessorListener
 {

@@ -29,7 +29,7 @@ import org.openremote.controller.protocol.enocean.DeviceID;
 /**
  * Unit tests for {@link EepA50216} class.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class EepA50216Test extends EepA502XXTest
 {

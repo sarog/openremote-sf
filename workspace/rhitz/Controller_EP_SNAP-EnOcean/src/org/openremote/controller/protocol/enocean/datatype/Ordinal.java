@@ -39,7 +39,7 @@ import org.openremote.controller.utils.Logger;
  * term 'Enum' for specifying ordinal data types.
  *
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class Ordinal implements DataType, EepDataListener
 {

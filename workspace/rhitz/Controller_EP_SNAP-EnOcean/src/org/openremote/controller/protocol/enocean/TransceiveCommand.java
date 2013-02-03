@@ -34,7 +34,7 @@ import org.openremote.controller.utils.Logger;
  * {@link EventListener} and {@link ExecutableCommand} interfaces and therefore acts
  * as an entry point in controller/protocol SPI.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public class TransceiveCommand extends EnOceanCommand implements ExecutableCommand, EventListener, RadioTelegramListener
 {
