@@ -942,7 +942,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   
       else
       {
-        byte[] data = new byte[dataLen];
+        byte[] data = new byte[dataLen-1];
 
         System.arraycopy( cemiFrame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
 
