@@ -322,6 +322,24 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
           throw new NoSuchCommandException(e.getMessage(), e);
         }
       }
+      
+      else if (name.startsWith("TEXT"))
+      {
+        if ((parameter == null) && (name.length()>6))
+        {
+           String param = name.substring(5);
+           if (param.isEmpty()) {
+              throw new NoSuchCommandException("Missing value parameter for TEXT command.");
+           }
+           try {
+             parameter = new CommandParameter(param);
+           } catch (ConversionException e) {
+             throw new NoSuchCommandException(e.getMessage(), e);
+           }
+        }
+   
+       return ApplicationProtocolDataUnit.createText(parameter);
+      }
 
       else
       {
