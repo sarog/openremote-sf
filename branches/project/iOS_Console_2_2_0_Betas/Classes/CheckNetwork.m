@@ -34,7 +34,14 @@
 #import "ORController.h"
 #import "ServerDefinition.h"
 
-#define TIMEOUT_INTERVAL 120
+@interface CheckNetwork ()
+
+/**
+ * Check if the url of panel RESTful request if available. If it isn't, this method will throw CheckNetworkException.
+ */
++ (void)checkPanelXmlUsingTimeout:(NSTimeInterval)timeoutInterval;
+
+@end
 
 @implementation CheckNetwork
 
@@ -113,7 +120,7 @@
      */
 }
 
-+ (void)checkPanelXml {
++ (void)checkPanelXmlUsingTimeout:(NSTimeInterval)timeoutInterval {
 	@try {
 		[CheckNetwork checkControllerAvailable];
 	}
@@ -128,10 +135,10 @@
 	NSError *error = nil;
 	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrlForController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController]
                                             stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]; 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:timeoutInterval];
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
 	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
-
+    [request setHTTPMethod:@"HEAD"];
 	URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
     [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
@@ -149,9 +156,9 @@
 	}
 }
 
-+ (void)checkAll {
++ (void)checkAllUsingTimeout:(NSTimeInterval)timeoutInterval {
 	@try {
-		[CheckNetwork checkPanelXml];
+		[CheckNetwork checkPanelXmlUsingTimeout:timeoutInterval];
 	}
 	@catch (NSException * e) {
 		@throw e;

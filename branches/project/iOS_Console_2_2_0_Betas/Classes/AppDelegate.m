@@ -28,8 +28,7 @@
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
 
-#import "ORConsoleSettingsManager.h"
-#import "ORConsoleSettings.h"
+#define STARTUP_UPDATE_TIMEOUT 10
 
 #ifdef INCLUDE_SIP_SUPPORT
     #import "SipController.h"
@@ -92,7 +91,7 @@
 }
 
 - (void)checkConfigAndUpdate {
-	[updateController checkConfigAndUpdate];
+	[updateController checkConfigAndUpdateUsingTimeout:STARTUP_UPDATE_TIMEOUT];
 }
 
 // this method will be called after UpdateController give a callback.
