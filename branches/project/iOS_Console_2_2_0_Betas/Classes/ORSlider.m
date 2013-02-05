@@ -146,8 +146,8 @@ void printBounds(NSString *comment, UIView *v)
     float halfThumbWidth = (self.thumbImage.size.width / 2);
     
     self.thumbTrackWidth = trackWidth + 2.0 * THUMB_SIDE_SPACING - self.thumbImage.size.width;
-    float thumbLeftBorderPosition = (self.thumbTrackWidth - 1.0) * ratio;
-    float thumbCenterPosition = thumbLeftBorderPosition + halfThumbWidth;
+    float thumbLeftBorderPosition = (int)((self.thumbTrackWidth - 1.0) * ratio);
+    float thumbCenterPosition = (int)(thumbLeftBorderPosition + halfThumbWidth);
     
     self.minValueSpacing = (self.minimumValueImage?minImageWidth + 2.0:0.0);
     
@@ -163,13 +163,13 @@ void printBounds(NSString *comment, UIView *v)
      * In case of the max track view, some shifting is also required.
      * The track views draw up to (for min) and start from (for max) the center of the thumb.
      */
-    self.minTrackImageView.frame = CGRectMake(0.0, (self.bounds.size.height - self.minimumTrackImage.size.height) / 2.0, trackWidth, self.minimumTrackImage.size.height);
+    self.minTrackImageView.frame = CGRectMake(0.0, (int)((self.bounds.size.height - self.minimumTrackImage.size.height) / 2.0), trackWidth, self.minimumTrackImage.size.height);
     self.minTrackView.frame = CGRectMake(self.minValueSpacing + THUMB_SIDE_SPACING, 0.0, MAX(thumbCenterPosition - THUMB_SIDE_SPACING, 0.0), self.bounds.size.height);
     
     //    printFrame(@"minTrackView", self.minTrackView);
     //    printFrame(@"minTrackImageView", self.minTrackImageView);
     
-    self.maxTrackImageView.frame = CGRectMake(-thumbCenterPosition + THUMB_SIDE_SPACING, (self.bounds.size.height - self.maximumTrackImage.size.height) / 2.0, trackWidth, self.maximumTrackImage.size.height);
+    self.maxTrackImageView.frame = CGRectMake(-thumbCenterPosition + THUMB_SIDE_SPACING, (int)((self.bounds.size.height - self.maximumTrackImage.size.height) / 2.0), trackWidth, self.maximumTrackImage.size.height);
     self.maxTrackView.frame = CGRectMake(self.minValueSpacing + thumbCenterPosition, 0.0, trackWidth - thumbCenterPosition + THUMB_SIDE_SPACING, self.bounds.size.height);
     
     //    printFrame(@"maxTrackView", self.maxTrackView);
@@ -179,7 +179,7 @@ void printBounds(NSString *comment, UIView *v)
      * Using same mechanism for thumb, have a view that acts as viewport and an image view inside.
      * Here however, the thumb image is not scaled at all.
      */
-    self.thumbImageView.frame = CGRectMake(0.0, (self.bounds.size.height - self.thumbImage.size.height) / 2.0, self.thumbImage.size.width, self.thumbImage.size.height);
+    self.thumbImageView.frame = CGRectMake(0.0, (int)((self.bounds.size.height - self.thumbImage.size.height) / 2.0), self.thumbImage.size.width, self.thumbImage.size.height);
     self.thumbView.frame = CGRectMake(self.minValueSpacing + thumbLeftBorderPosition, 0.0, self.thumbImage.size.width, self.bounds.size.height);
     
     printFrame(@"thumb", self.thumbView);
