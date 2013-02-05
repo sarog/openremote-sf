@@ -64,6 +64,7 @@
 
 
 - (void)checkConfigAndUpdate;
+- (void)checkConfigAndUpdateUsingTimeout:(NSTimeInterval)timeoutInterval;
 
 - (void)useLocalCache;
 
