@@ -652,6 +652,20 @@
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
 		8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
+		912721D616C10EAC00E2D6B3 /* UISliderBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D016C10EAC00E2D6B3 /* UISliderBlue.png */; };
+		912721D716C10EAC00E2D6B3 /* UISliderBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D016C10EAC00E2D6B3 /* UISliderBlue.png */; };
+		912721D816C10EAC00E2D6B3 /* UISliderBlue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D116C10EAC00E2D6B3 /* UISliderBlue@2x.png */; };
+		912721D916C10EAC00E2D6B3 /* UISliderBlue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D116C10EAC00E2D6B3 /* UISliderBlue@2x.png */; };
+		912721DA16C10EAC00E2D6B3 /* UISliderHandle.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D216C10EAC00E2D6B3 /* UISliderHandle.png */; };
+		912721DB16C10EAC00E2D6B3 /* UISliderHandle.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D216C10EAC00E2D6B3 /* UISliderHandle.png */; };
+		912721DC16C10EAC00E2D6B3 /* UISliderHandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D316C10EAC00E2D6B3 /* UISliderHandle@2x.png */; };
+		912721DD16C10EAC00E2D6B3 /* UISliderHandle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D316C10EAC00E2D6B3 /* UISliderHandle@2x.png */; };
+		912721DE16C10EAC00E2D6B3 /* UISliderWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D416C10EAC00E2D6B3 /* UISliderWhite.png */; };
+		912721DF16C10EAC00E2D6B3 /* UISliderWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D416C10EAC00E2D6B3 /* UISliderWhite.png */; };
+		912721E016C10EAC00E2D6B3 /* UISliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D516C10EAC00E2D6B3 /* UISliderWhite@2x.png */; };
+		912721E116C10EAC00E2D6B3 /* UISliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721D516C10EAC00E2D6B3 /* UISliderWhite@2x.png */; };
+		912721E516C10ECE00E2D6B3 /* ORSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 912721E416C10ECE00E2D6B3 /* ORSlider.m */; };
+		912721E616C10ECE00E2D6B3 /* ORSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 912721E416C10ECE00E2D6B3 /* ORSlider.m */; };
 		97B00120106127AF00C31E4A /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 /* End PBXBuildFile section */
 
@@ -1459,6 +1473,14 @@
 		8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8CFDB2760FBBBF4500D204CB /* appSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = appSettings.plist; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		912721D016C10EAC00E2D6B3 /* UISliderBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderBlue.png; sourceTree = "<group>"; };
+		912721D116C10EAC00E2D6B3 /* UISliderBlue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderBlue@2x.png"; sourceTree = "<group>"; };
+		912721D216C10EAC00E2D6B3 /* UISliderHandle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderHandle.png; sourceTree = "<group>"; };
+		912721D316C10EAC00E2D6B3 /* UISliderHandle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderHandle@2x.png"; sourceTree = "<group>"; };
+		912721D416C10EAC00E2D6B3 /* UISliderWhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISliderWhite.png; sourceTree = "<group>"; };
+		912721D516C10EAC00E2D6B3 /* UISliderWhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISliderWhite@2x.png"; sourceTree = "<group>"; };
+		912721E316C10ECE00E2D6B3 /* ORSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSlider.h; sourceTree = "<group>"; };
+		912721E416C10ECE00E2D6B3 /* ORSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSlider.m; sourceTree = "<group>"; };
 		974DAC871063ADEF00B1B04B /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		97B0011F106127AF00C31E4A /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1630,6 +1652,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				912721D016C10EAC00E2D6B3 /* UISliderBlue.png */,
+				912721D116C10EAC00E2D6B3 /* UISliderBlue@2x.png */,
+				912721D216C10EAC00E2D6B3 /* UISliderHandle.png */,
+				912721D316C10EAC00E2D6B3 /* UISliderHandle@2x.png */,
+				912721D416C10EAC00E2D6B3 /* UISliderWhite.png */,
+				912721D516C10EAC00E2D6B3 /* UISliderWhite@2x.png */,
 				6055688413CF184E0035CC1A /* ControllerOK.png */,
 				6055688513CF184E0035CC1A /* ControllerOK@2x.png */,
 				6055688613CF184E0035CC1A /* ControllerNOK.png */,
@@ -2720,6 +2748,8 @@
 				338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */,
 				60DEC3C4140FB62F000FF863 /* ORImageView.h */,
 				60DEC3C5140FB62F000FF863 /* ORImageView.m */,
+				912721E316C10ECE00E2D6B3 /* ORSlider.h */,
+				912721E416C10ECE00E2D6B3 /* ORSlider.m */,
 				60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */,
 				60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */,
 				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
@@ -2914,6 +2944,12 @@
 				6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */,
 				60FA5DC5153C506500FA245E /* delete_button.png in Resources */,
 				60BC25961559682C0048A2BD /* ClientSideProtocols.plist in Resources */,
+				912721D616C10EAC00E2D6B3 /* UISliderBlue.png in Resources */,
+				912721D816C10EAC00E2D6B3 /* UISliderBlue@2x.png in Resources */,
+				912721DA16C10EAC00E2D6B3 /* UISliderHandle.png in Resources */,
+				912721DC16C10EAC00E2D6B3 /* UISliderHandle@2x.png in Resources */,
+				912721DE16C10EAC00E2D6B3 /* UISliderWhite.png in Resources */,
+				912721E016C10EAC00E2D6B3 /* UISliderWhite@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2959,6 +2995,12 @@
 				60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */,
 				60FA5DC6153C506500FA245E /* delete_button.png in Resources */,
 				60BC25971559682C0048A2BD /* ClientSideProtocols.plist in Resources */,
+				912721D716C10EAC00E2D6B3 /* UISliderBlue.png in Resources */,
+				912721D916C10EAC00E2D6B3 /* UISliderBlue@2x.png in Resources */,
+				912721DB16C10EAC00E2D6B3 /* UISliderHandle.png in Resources */,
+				912721DD16C10EAC00E2D6B3 /* UISliderHandle@2x.png in Resources */,
+				912721DF16C10EAC00E2D6B3 /* UISliderWhite.png in Resources */,
+				912721E116C10EAC00E2D6B3 /* UISliderWhite@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3202,6 +3244,7 @@
 				602418D6156E766C004E5860 /* ORTableViewController.m in Sources */,
 				602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 				602418E5156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
+				912721E516C10ECE00E2D6B3 /* ORSlider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3380,6 +3423,7 @@
 				602418D8156E766C004E5860 /* ORTableViewController.m in Sources */,
 				602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 				602418E7156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
+				912721E616C10ECE00E2D6B3 /* ORSlider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

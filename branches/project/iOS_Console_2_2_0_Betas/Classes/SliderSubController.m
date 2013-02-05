@@ -30,6 +30,7 @@
 #import "Definition.h"
 #import "LocalController.h"
 #import "NotificationConstant.h"
+#import "ORSlider.h"
 
 #define MIN_SLIDE_VARIANT 1
 
@@ -98,7 +99,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 {
     self = [super initWithComponent:aComponent];
     if (self) {
-        UISlider *uiSlider = [[UISlider alloc] initWithFrame:CGRectZero];       
+        ORSlider *uiSlider = [[ORSlider alloc] initWithFrame:CGRectZero];
         
         uiSlider.minimumValue = self.slider.minValue;
         NSString *minimumValueImageSrc = self.slider.minImage.src;
@@ -116,36 +117,38 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         NSString *maxTrackImageSrc = self.slider.maxTrackImage.src;
         NSString *thumbImageSrc = self.slider.thumbImage.src;
         
-        UIImage *stretchedLeftTrack = [[self getImageFromCacheByName:minTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-        UIImage *stretchedRightTrack = [[self getImageFromCacheByName:maxTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+//        UIImage *stretchedLeftTrack = [[self getImageFromCacheByName:minTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+//        UIImage *stretchedRightTrack = [[self getImageFromCacheByName:maxTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+        UIImage *stretchedLeftTrack = [self getImageFromCacheByName:minTrackImageSrc];
+        UIImage *stretchedRightTrack = [self getImageFromCacheByName:maxTrackImageSrc];
         UIImage *thumbImage = [self getImageFromCacheByName:thumbImageSrc];
         if (stretchedLeftTrack) {
-            [uiSlider setMinimumTrackImage:stretchedLeftTrack forState:UIControlStateNormal];
-        }
+            [uiSlider setMinimumTrackImage:stretchedLeftTrack]; //  forState:UIControlStateNormal];
+        }/*
         // Default
         else {
             UIImage *sliderDefaultMinTrackImage = [[UIImage imageNamed:@"slider_default_min_track_image_.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-            [uiSlider setMinimumTrackImage:sliderDefaultMinTrackImage forState:UIControlStateNormal];
-        }
+            [uiSlider setMinimumTrackImage:sliderDefaultMinTrackImage]; // forState:UIControlStateNormal];
+        }*/
         if (stretchedRightTrack) {
-            [uiSlider setMaximumTrackImage:stretchedRightTrack forState:UIControlStateNormal];
-        } 
+            [uiSlider setMaximumTrackImage:stretchedRightTrack]; //  forState:UIControlStateNormal];
+        } /*
         // Default
         else {
             UIImage *sliderDefaultMaxTrackImage = [[UIImage imageNamed:@"slider_default_max_track_image_.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-            [uiSlider setMaximumTrackImage:sliderDefaultMaxTrackImage forState:UIControlStateNormal];		
-        }
+            [uiSlider setMaximumTrackImage:sliderDefaultMaxTrackImage]; //  forState:UIControlStateNormal];		
+        }*/
         
         if (thumbImage) {
-            [uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
-            [uiSlider setThumbImage: thumbImage forState:UIControlStateHighlighted];
-        } 
+            [uiSlider setThumbImage: thumbImage]; //  forState:UIControlStateNormal];
+            [uiSlider setThumbImage: thumbImage]; //  forState:UIControlStateHighlighted];
+        } /*
         // Default
         else {
             UIImage *sliderDefaultThumbImage = [UIImage imageNamed:@"slider_default_thumb_image_.png"];
-            [uiSlider setThumbImage: sliderDefaultThumbImage forState:UIControlStateNormal];
-            [uiSlider setThumbImage: sliderDefaultThumbImage forState:UIControlStateHighlighted];
-        }
+            [uiSlider setThumbImage: sliderDefaultThumbImage]; //  forState:UIControlStateNormal];
+            [uiSlider setThumbImage: sliderDefaultThumbImage]; //  forState:UIControlStateHighlighted];
+        }*/
         
         //	uiSlider.continuous = YES;
         uiSlider.value = 0.0;
@@ -221,18 +224,18 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 #pragma mark Private methods
 
-- (int)sliderValue:(UISlider *)sender
+- (int)sliderValue:(ORSlider *)sender
 {
     return (int)roundf([sender value]);
 }
 
-- (void)sliderValueChanged:(UISlider *)sender
+- (void)sliderValueChanged:(ORSlider *)sender
 {
     // During the user action, always refresh the tip display
 	[self refreshTip];
 }
 
--(void) releaseSlider:(UISlider *)sender {
+-(void) releaseSlider:(ORSlider *)sender {
 	int afterSlideValue = [self sliderValue:sender];
 	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
@@ -241,7 +244,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	[self clearSliderTipSubviews:self.sliderTip];
 }
 
--(void) touchDownSlider:(UISlider *)sender {
+-(void) touchDownSlider:(ORSlider *)sender {
     [self refreshTip]; // showTip:sliderTip ofSlider:uiSlider withSender:sender];
 }
 
@@ -259,12 +262,12 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	[self clearSliderTipSubviews:self.sliderTip];
     
     // TODO: pre-calculate values that can be and cache them
-    UISlider *uiSlider = (UISlider *)self.view;
+    ORSlider *uiSlider = (ORSlider *)self.view;
 	CGFloat x = 0;
 	CGFloat y = 0;
 	CGFloat span = uiSlider.minimumValue - uiSlider.maximumValue;
-    CGFloat thumbHeight = [uiSlider thumbImageForState:UIControlStateNormal].size.height;
-    CGFloat thumbWidth = [uiSlider thumbImageForState:UIControlStateNormal].size.width;
+    CGFloat thumbHeight = [uiSlider thumbImage].size.height; //    ForState:UIControlStateNormal].size.height;
+    CGFloat thumbWidth = [uiSlider thumbImage].size.width; // ForState:UIControlStateNormal].size.width;
     CGFloat trackWidth = uiSlider.frame.size.width;
     CGFloat trackHeight = uiSlider.frame.size.height;
     if (uiSlider.minimumValueImage) {
