@@ -3572,8 +3572,8 @@
 					armv6,
 					armv7,
 				);
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3596,7 +3596,8 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3611,8 +3612,8 @@
 					armv7,
 				);
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3635,7 +3636,8 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3650,8 +3652,8 @@
 					armv7,
 				);
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3672,7 +3674,8 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3687,8 +3690,8 @@
 					armv7,
 				);
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3709,7 +3712,8 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BB68DC98-328A-4164-939E-99F44272FF29";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3823,8 +3827,8 @@
 					armv6,
 					armv7,
 				);
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3845,7 +3849,8 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3881,8 +3886,8 @@
 					armv6,
 					armv7,
 				);
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3902,7 +3907,8 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = OpenRemote;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C706C223-53D4-4036-938D-825921C2046B";
+				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
