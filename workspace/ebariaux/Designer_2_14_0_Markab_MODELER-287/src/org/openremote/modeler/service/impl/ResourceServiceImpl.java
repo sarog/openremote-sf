@@ -1157,7 +1157,7 @@ public class ResourceServiceImpl implements ResourceService
   }
 
 
-  // EBR MODELER-278 : made it public so it can be accessed from LocalFileCache
+  // EBR MODELER-287 : made it public so it can be accessed from LocalFileCache
   // EBR TODO : review usage and find other way, dependency from LocalFileCache on ResourceServiceImpl is not correct
   public static class MaxId {
       Long maxId = 0L;
