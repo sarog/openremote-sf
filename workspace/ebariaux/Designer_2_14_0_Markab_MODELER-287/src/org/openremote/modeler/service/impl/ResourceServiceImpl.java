@@ -1058,19 +1058,6 @@ public class ResourceServiceImpl implements ResourceService
     return templateFile;
   }
 
-
-
-  /**
-   * This method is calling by controllerXML.vm, to export sensors which from database.
-   */
-  public Long getMaxId(MaxId maxId)
-  {
-    // Part of patch R3181 -- include all components in controller.xml even if
-    // not bound to UI components
-
-    return maxId.maxId();
-  }
-
   @Deprecated private void addAuthentication(AbstractHttpMessage httpMessage)
   {
     httpMessage.setHeader(
