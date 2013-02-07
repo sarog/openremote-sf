@@ -70,9 +70,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
-public class ResourceServiceImplTest {
+public class ResourceServiceTest {
    
-   private static final Logger log = Logger.getLogger(ResourceServiceImplTest.class);
+   private static final Logger log = Logger.getLogger(ResourceServiceTest.class);
    private Configuration configuration;
    private ResourceService resourceService;
    private DeviceCommandService deviceCommandService;
