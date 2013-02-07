@@ -99,6 +99,9 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     resourceService.resolveDTOReferences(panelList);
 
+    // Saving the resources provides us with a valid local cache that can be used to produce the export file.
+    // This is a depency to make sure all files that are part of the export are correctly generated.
+    // Will go away with MODELER-288
     LocalFileCache cache = resourceService.saveResourcesToBeehive(panelList, maxId);
 
     try
