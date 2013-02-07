@@ -1078,22 +1078,6 @@ public class ResourceServiceImpl implements ResourceService
     return new String(Base64.encodeBase64(namePassword.getBytes()));
   }
 
-
-  // EBR MODELER-287 : made it public so it can be accessed from LocalFileCache
-  // EBR TODO : review usage and find other way, dependency from LocalFileCache on ResourceServiceImpl is not correct
-  public static class MaxId {
-      Long maxId = 0L;
-
-      public MaxId(Long maxId) {
-         this.maxId = maxId;
-      }
-
-      public Long maxId() {
-         return maxId++;
-      }
-   }
-
-
   @Override
   public File getTempDirectory(String sessionId) {
 
