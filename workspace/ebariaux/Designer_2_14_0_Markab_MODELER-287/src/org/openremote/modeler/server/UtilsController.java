@@ -99,12 +99,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     resourceService.resolveDTOReferences(panelList);
 
-    resourceService.saveResourcesToBeehive(panelList, maxId);
-
-    // TODO : should be injected
-    ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
-    // EBR above created cache does not have all the required services injected
-    // This is not an issue for the code being called here but is not good design
+    LocalFileCache cache = resourceService.saveResourcesToBeehive(panelList, maxId);
 
     try
     {
@@ -148,7 +143,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
     }
 
     // TODO : should never come from cache in the first place but from Beehive
-    return resourceService.downloadZipResource(maxId, getThreadLocalRequest().getSession().getId(), panelList);
+    return resourceService.downloadZipResource(cache, panelList, maxId);
   }
 
 

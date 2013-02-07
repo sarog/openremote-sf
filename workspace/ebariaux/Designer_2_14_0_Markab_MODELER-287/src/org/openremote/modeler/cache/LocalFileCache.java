@@ -436,6 +436,18 @@ public class LocalFileCache implements ResourceCache<File>
     );
   }
 
+  /**
+   * Replaces content of the cache with provided information.
+   * Note that this only replaces a small part of the configuration: the UI definition.
+   * All images are left untouched.
+   * Controller definition will be re-generated from the database.
+   * 
+   * @param panels
+   * @param maxOid
+   */
+  public void replace(Set<Panel> panels, long maxOid) {
+    initResources(panels, maxOid);
+  }
 
   /**
    * Indicates if we've found any resource artifacts in the cache that would imply an existing,
@@ -1783,13 +1795,8 @@ public class LocalFileCache implements ResourceCache<File>
      }
   }
   
-  //
-  // TODO :
-  //
-  // - should be private to resource cache as part of MODELER-287
-  //
   @Transactional
-  public void initResources(Collection<Panel> panels, long maxOid) {
+  private void initResources(Collection<Panel> panels, long maxOid) {
     // 1, we must serialize panels at first, otherwise after integrating panel's
     // ui component and commands(such as
     // device command, sensor ...)
