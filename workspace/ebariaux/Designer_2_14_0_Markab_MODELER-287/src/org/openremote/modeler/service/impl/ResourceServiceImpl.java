@@ -122,21 +122,20 @@ public class ResourceServiceImpl implements ResourceService
 
   private Configuration configuration;
 
-  private DeviceCommandService deviceCommandService; // EBR moved LFC
-
-  private DeviceMacroService deviceMacroService; // EBR moved LFC
+  private DeviceCommandService deviceCommandService;
+  private DeviceMacroService deviceMacroService;
 
   private SensorService sensorService;
   private SliderService sliderService;
   private SwitchService switchService;
 
-  private VelocityEngine velocity; // EBR moved LFC
 
   private UserService userService;
-
-  private ControllerConfigService controllerConfigService = null; // EBR moved LFC
-
-
+  
+  
+  // Those services are not directly used by this class but injected in LocalFileCache when it gets built
+  private ControllerConfigService controllerConfigService = null;
+  private VelocityEngine velocity;
 
   //
   // TODO : this implementation should go away with MODELER-288
@@ -442,10 +441,6 @@ public class ResourceServiceImpl implements ResourceService
          serviceLog.error(e.getMessage(), e);
          return "";
       }
-   }
-
-   public VelocityEngine getVelocity() {
-      return velocity;
    }
 
    public void setVelocity(VelocityEngine velocity) {
