@@ -2068,7 +2068,7 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("buttons", buttons);
     context.put("screens", screens);
     context.put("eventContainer", eventContainer);
-    context.put("resouceServiceImpl", this);
+    context.put("localFileCache", this);
     context.put("protocolContainer", protocolContainer);
     context.put("sensors", sensors);
     context.put("dbSensors", dbSensors);
