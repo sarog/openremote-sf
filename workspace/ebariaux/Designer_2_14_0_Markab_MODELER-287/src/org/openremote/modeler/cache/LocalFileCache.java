@@ -124,8 +124,6 @@ public class LocalFileCache implements ResourceCache<File>
   //    - http://jira.openremote.org/browse/MODELER-285 -- push resource data integrity and
   //                                                       durability aspects to Beehive
   //    - http://jira.openremote.org/browse/MODELER-286 -- Beehive API returns 404 on new users
-  //    - http://jira.openremote.org/browse/MODELER-287 -- internalize ResourceService.initResources
-  //                                                       to this implementation
   //    
 
   // Constants ------------------------------------------------------------------------------------
@@ -528,12 +526,6 @@ public class LocalFileCache implements ResourceCache<File>
 
 
   /**
-   * TODO : MODELER-287
-   *
-   *   - Note that this still has a functional dependency to the existing legacy
-   *     resource service implementation that exports the appropriate XML files
-   *     into the correct file cache directory first (initResource() call).
-   *
    * TODO : MODELER-289
    *
    *   - This method should not be public. Once the faulty export implementation in
@@ -543,6 +535,10 @@ public class LocalFileCache implements ResourceCache<File>
    *
    * Creates an exportable zip file archive on the local file system in the configured
    * account's cache directory. <p>
+   * 
+   * The archive is created based on the files as currently existing in the cache.
+   * It is up to the caller of the method to ensure the cache is in the desired state
+   * before creating the export file.
    *
    * This archive is used to send user design and configuration changes, added resource
    * files, etc. as a single HTTP POST payload to Beehive server. <p>

@@ -89,9 +89,6 @@ public interface ResourceService
   /**
    * @deprecated Can be replaced with a direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#save(java.util.Set)}.
-   * 
-   * EBR : not at this stage, as it adds a call to initResources.
-   * MODELER-287 will push initResources to LocalFileCache and then above will be true
    */
   @Deprecated LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid);
 
