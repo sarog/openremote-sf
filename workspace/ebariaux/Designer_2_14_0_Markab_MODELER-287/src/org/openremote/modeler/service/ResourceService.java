@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
@@ -44,7 +45,7 @@ public interface ResourceService
    * account resources from Beehive, not from Designer Cache. See
    * http://jira.openremote.org/browse/MODELER-288
    */
-  @Deprecated String downloadZipResource(long maxId, String sessionId, List<Panel> panels/*, List<Group> groups, List<Screen> screens*/);
+  @Deprecated String downloadZipResource(LocalFileCache cache, List<Panel> panels, long maxOid);
 
   /**
    * @deprecated unused
@@ -92,7 +93,7 @@ public interface ResourceService
    * EBR : not at this stage, as it adds a call to initResources.
    * MODELER-287 will push initResources to LocalFileCache and then above will be true
    */
-  @Deprecated void saveResourcesToBeehive(Collection<Panel> panels, long maxOid);
+  @Deprecated LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid);
 
   void saveTemplateResourcesToBeehive(Template Template);
   void downloadResourcesForTemplate(long templateOid);

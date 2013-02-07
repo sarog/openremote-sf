@@ -168,13 +168,10 @@ public class ResourceServiceImpl implements ResourceService
   //
   // TODO : this implementation should go away with MODELER-288
   //
-  @Override public String downloadZipResource(long maxOid, String sessionId, List<Panel> panels)
+  @Override public String downloadZipResource(LocalFileCache cache, List<Panel> panels, long maxOid)
   {
     try
-    {
-      LocalFileCache cache = createLocalFileCache();
-      cache.initResources(panels, maxOid);
-    	
+    {   	
       Set<String> imageNames = new HashSet<String>();
       Set<File> imageFiles = new HashSet<File>();
 
@@ -864,22 +861,25 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * This implementation has been moved and delegates to {@link DesignerState#save}.
    */
-  @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
+  @Override @Deprecated @Transactional public LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
   {
 
 	User currentUser = userService.getCurrentUser();
 	LocalFileCache cache = createLocalFileCache();
-    cache.initResources(panels, maxOid);
 
     // Create a set of panels to eliminate potential duplicate instances...
 
     HashSet<Panel> panelSet = new HashSet<Panel>();
     panelSet.addAll(panels);
+    
+    cache.replace(panelSet, maxOid);
 
     // Delegate implementation to DesignerState...
 
     DesignerState state = new DesignerState(configuration, currentUser, cache);
     state.save(panelSet);
+    
+    return cache;
   }
 
 
