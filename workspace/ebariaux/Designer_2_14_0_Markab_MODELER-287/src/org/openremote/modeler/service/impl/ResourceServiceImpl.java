@@ -836,7 +836,6 @@ public class ResourceServiceImpl implements ResourceService
    */
   @Override @Deprecated @Transactional public LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
   {
-
 	User currentUser = userService.getCurrentUser();
 	LocalFileCache cache = createLocalFileCache();
 
@@ -845,12 +844,10 @@ public class ResourceServiceImpl implements ResourceService
     HashSet<Panel> panelSet = new HashSet<Panel>();
     panelSet.addAll(panels);
     
-    cache.replace(panelSet, maxOid);
-
     // Delegate implementation to DesignerState...
 
     DesignerState state = new DesignerState(configuration, currentUser, cache);
-    state.save(panelSet);
+    state.save(panelSet, maxOid);
     
     return cache;
   }

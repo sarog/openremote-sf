@@ -525,7 +525,7 @@ class DesignerState
    *
    * @throws UIRestoreException   TODO : should use appropriate checked exception type or return value
    */
-  protected void save(Set<Panel> panels)
+  protected void save(Set<Panel> panels, long maxOid)
   {
 
     PerformanceLog perf = new PerformanceLog(PerformanceLog.Category.SAVE_PERFORMANCE);
@@ -537,7 +537,8 @@ class DesignerState
 
       addContextLog();
 
-      // TODO : assumes cache state is in sync, see MODELER-287
+      // Pushes in-memory model to our local cache, as this is used as the source to save to beehive
+      cache.replace(panels, maxOid);
 
       Account acct = user.getAccount();
 
