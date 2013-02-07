@@ -20,40 +20,39 @@
  */
 package org.openremote.modeler.service.impl;
 
-import java.io.File;
-import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
+import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.StreamCorruptedException;
 import java.io.IOException;
 import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
-import java.io.EOFException;
+import java.io.StreamCorruptedException;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
 
-import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.beehive.Beehive30API;
+import org.openremote.modeler.beehive.BeehiveService;
+import org.openremote.modeler.cache.CacheOperationException;
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.ConfigurationException;
-import org.openremote.modeler.beehive.Beehive30API;
-import org.openremote.modeler.beehive.BeehiveService;
-import org.openremote.modeler.cache.LocalFileCache;
-import org.openremote.modeler.cache.ResourceCache;
-import org.openremote.modeler.cache.CacheOperationException;
-import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
 
 
 /**
