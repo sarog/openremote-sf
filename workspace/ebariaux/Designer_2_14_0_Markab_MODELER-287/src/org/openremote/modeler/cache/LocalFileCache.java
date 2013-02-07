@@ -102,7 +102,6 @@ import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.impl.ResourceServiceImpl;
-import org.openremote.modeler.service.impl.ResourceServiceImpl.MaxId;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
@@ -2504,6 +2503,18 @@ public class LocalFileCache implements ResourceCache<File>
       return "Stream Target : " + temp.getAbsolutePath();
     }
   }
+
+  private static class MaxId {
+    Long maxId = 0L;
+
+    public MaxId(Long maxId) {
+       this.maxId = maxId;
+    }
+
+    public Long maxId() {
+       return maxId++;
+    }
+ }
 
 }
 
