@@ -151,8 +151,8 @@ public class LocalFileCache implements ResourceCache<File>
    */
   private final static int DAY  = 24 * HOUR;
 
-  public static final String PANEL_XML_TEMPLATE = "panelXML.vm";
-  public static final String CONTROLLER_XML_TEMPLATE = "controllerXML.vm";
+  private static final String PANEL_XML_TEMPLATE = "panelXML.vm";
+  private static final String CONTROLLER_XML_TEMPLATE = "controllerXML.vm";
 
   // Class Members --------------------------------------------------------------------------------
 
