@@ -1025,7 +1025,7 @@ public class ResourceServiceImpl implements ResourceService
    *
    * @param panels
    */
-  private void populateDTOReferences(Collection<Panel> panels) {
+  public void populateDTOReferences(Collection<Panel> panels) {
     for (Panel panel : panels) {
       for (GroupRef groupRef : panel.getGroupRefs()) {
         Group group = groupRef.getGroup();

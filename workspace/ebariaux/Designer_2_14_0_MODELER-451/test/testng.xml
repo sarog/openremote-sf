@@ -7,6 +7,7 @@
 			<package name="org.openremote.modeler.service.*"></package>
 			<package name="org.openremote.modeler.protocol.*"></package>
 			<package name="org.openremote.modeler.touchpanel.*"></package>
+			<package name="org.openremote.modeler.shared.dto.*"></package>
 			
 			<!--<package name="org.openremote.modeler.ui.*"></package>
 			
