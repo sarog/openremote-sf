@@ -49,6 +49,7 @@ public class Constants
 
   // TODO : can be replaced with HttpURLConnection.HTTP_OK
   public static final int HTTP_SUCCESS = 200;
+  public static final int HTTP_UNAUTHORISED = 401; 
   /**
    * Default timeout (in milliseconds) to wait for a connection to a controller
    * to be established

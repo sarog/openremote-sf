@@ -138,7 +138,7 @@ public class AddEditControllerActivity extends GenericActivity {
 									controller.getUrl().equals(controllerUrl) &&
 									controller.getDefaultPanel().equals(defaultPanel) &&
 									controller.getUsername().equals(username) &&
-									((controller.getUserPass().isEmpty() && userpass.isEmpty()) || (!controller.getUserPass().isEmpty() && !userpass.equals(PASSWORD_MASK)))
+									((controller.getUserPass().equals("") && userpass.equals("")) || (!controller.getUserPass().equals("") && !userpass.equals(PASSWORD_MASK)))
 							) {
 								// Nothing has changed so just finish
 								finish();
@@ -151,6 +151,12 @@ public class AddEditControllerActivity extends GenericActivity {
 							ControllerObject newController = new ControllerObject(controllerUrl, defaultPanel, username, userpass);
 							
 							if (editMode) {
+								// If controller url changed check new one doesn't already exist
+								if (!controller.getUrl().equals(controllerUrl) && dh.controllerExists(controllerUrl)) {
+									Toast toast = Toast.makeText(AddEditControllerActivity.this, "New Controller URL Already Exists!", 1);
+									toast.show();
+									return;
+								}									
 								dh.updateController(controller, newController);
 							} else {
 								dh.addController(newController);

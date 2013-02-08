@@ -71,21 +71,33 @@ public class LabelView extends ComponentView implements SensoryDelegate {
     * 
     */
    private void initLabel(Label label) {
+     	setLayoutParams(new LayoutParams(label.getFrameWidth(), label.getFrameHeight()));
+     	setGravity(Gravity.CENTER);
       textView.setId(label.getComponentId());
+      textView.setLines(1);
       textView.setGravity(Gravity.CENTER);
-      textView.setLayoutParams(new FrameLayout.LayoutParams(label.getFrameWidth(), label.getFrameHeight()));
+      LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+      layout.gravity = Gravity.CENTER;
+      textView.setIncludeFontPadding(false);
+      
       text = label.getText();
       if (text != null) {
          textView.setText(text);
       }
       if (label.getFontSize() > 0) {
-         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, label.getFontSize());
+      	textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, label.getFontSize());
+      	
+      	if (textView.getLineHeight() > label.getFrameHeight()) {
+      		int spacing = (int)Math.round(((float)label.getFrameHeight() - textView.getLineHeight()) / 2.8); // Trial and error
+          layout.setMargins(0, spacing, 0, 0);
+      	}
       }
       if (label.getColor() != null) {
-         textView.setTextColor(Color.parseColor(label.getColor()));
+      	textView.setTextColor(Color.parseColor(label.getColor()));
       }
+
+      textView.setLayoutParams(layout);
       addView(textView);
-      setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
    }
    
    /* (non-Javadoc)
