@@ -184,7 +184,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
       webView.setInitialScale(100);
-      webView.setBackgroundColor(0x00000000);
+
       URL url = web.getSrc();
       if (url != null)
       {
@@ -197,6 +197,10 @@ public class ORWebView extends ComponentView implements SensoryDelegate
             context.getResources().getString(R.string.web_element_invalid_or_missing_src_url) +
             " " + web.getComponentId()), "text/html", "utf-8");
       }
+      
+      webView.setBackgroundColor(0x00000000);
+      //webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+      
       addView(webView);
 
       if (web.getSensor() != null)

@@ -22,10 +22,10 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class SecuritySettingsActivity extends GenericActivity {
+public class ControllerListActivity extends GenericActivity {
     public static final String OPEN_REMOTE_PREFS = "openRemoteConfig";
 
-    public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "SecuritySettingsActivity";
+    public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "ControllerListActivity";
     
 public void onCreate(Bundle savedState) {
     super.onCreate(savedState);
@@ -85,7 +85,7 @@ public void onCreate(Bundle savedState) {
 
             // Set SSL state in config model accordingly...
 
-            AppSettingsModel.enableSSL(SecuritySettingsActivity.this, isEnabled);
+            AppSettingsModel.enableSSL(ControllerListActivity.this, isEnabled);
 
             // Enable/Disable SSL Port text field according to SSL toggle on/off state...
 
@@ -111,7 +111,7 @@ public void onCreate(Bundle savedState) {
           try
           {
             int sslPort = Integer.parseInt(sslPortStr.trim());
-            AppSettingsModel.setSSLPort(SecuritySettingsActivity.this, sslPort);
+            AppSettingsModel.setSSLPort(ControllerListActivity.this, sslPort);
           }
 
           catch (NumberFormatException ex)
@@ -127,7 +127,7 @@ public void onCreate(Bundle savedState) {
             Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), 2);
             toast.show();
 
-            sslPortEditField.setText("" + AppSettingsModel.getSSLPort(SecuritySettingsActivity.this));
+            sslPortEditField.setText("" + AppSettingsModel.getSSLPort(ControllerListActivity.this));
              
             return false;
           }

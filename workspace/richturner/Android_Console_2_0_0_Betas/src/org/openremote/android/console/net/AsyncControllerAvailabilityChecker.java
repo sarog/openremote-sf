@@ -69,7 +69,7 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
     try{
       response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl + "/rest/servers"), false);
      
-      if (response != null) {
+      if (response != null && (response.getStatusLine().getStatusCode() != Constants.HTTP_SUCCESS || response.getStatusLine().getStatusCode() != Constants.HTTP_UNAUTHORISED)) {
 	      Log.i(TAG, controllerUrl + " Response: "+ response.getStatusLine());
 	      isAvailable=true;
       }

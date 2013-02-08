@@ -20,6 +20,7 @@
 package org.openremote.android.console.view;
 
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -29,34 +30,45 @@ import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.RelativeLayout;
 
 /**
  * This class is responsible for rendering the switch in screen with the switch data.
  * It has control command and sensory.
- * 
-s */
+ *
+ * RT: Changed layout to use a Relative Layout View Group and Image Views to prevent switch image scaling
+ * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
+ */
 public class SwitchView extends SensoryControlView {
 
    private Button button;
-   private Drawable onImage;
-   private Drawable offImage;
+   private ImageView imageView;
+   private BitmapDrawable onImage;
+   private BitmapDrawable offImage;
    private boolean isOn;
    private boolean canUseImage;
    public SwitchView(Context context, Switch switchComponent) {
       super(context);
-      setComponent(switchComponent);
+
       if (switchComponent != null) {
-         button = new Button(context, null, android.R.attr.buttonStyleSmall);
-         button.setTextSize(Constants.DEFAULT_FONT_SIZE);
+      	 setComponent(switchComponent);
          initSwitch(switchComponent);
+         
          if (switchComponent.getSensor() != null) {
             addPollingSensoryListener();
          }
@@ -73,63 +85,57 @@ public class SwitchView extends SensoryControlView {
    private void initSwitch(Switch switchComponent) {
       int width = switchComponent.getFrameWidth();
       int height = switchComponent.getFrameHeight();
-      button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
+      
+  		RelativeLayout switchLayout = new RelativeLayout(this.getContext());
+  		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+  		switchLayout.setLayoutParams(params);
+      
+      button = new Button(context, null, android.R.attr.buttonStyleSmall);
+      button.setTextSize(Constants.DEFAULT_FONT_SIZE);
+      button.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+      
       if (switchComponent.getOnImage() != null) {
          onImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
-         button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+         onImage.setGravity(Gravity.TOP | Gravity.LEFT);
       }
       if (switchComponent.getOffImage() != null) {
          offImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
+         offImage.setGravity(Gravity.TOP | Gravity.LEFT);
       }
+      
       if (onImage != null && offImage != null) {
          canUseImage = true;
+         button.setBackgroundColor(Color.TRANSPARENT);
          button.setText(null);
-         if (isOn) {
-            button.setBackgroundDrawable(onImage);
-         } else {
-            button.setBackgroundDrawable(offImage);
-         }
-      } else {
-         if (isOn) {
-            button.setText("ON");
-         } else {
-            button.setText("OFF");
-         }
+         
+         imageView = new ImageView(context);
+         imageView.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+         imageView.setScaleType(ScaleType.MATRIX); // Prevent scaling
+         switchLayout.addView(imageView);
       }
+      
+      updateState();
+      switchLayout.addView(button);
+      
       button.setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-               if (canUseImage) {
-                  if (isOn) {
-                     onImage.setAlpha(200);
-                     button.setBackgroundDrawable(onImage);
-                  } else {
-                     offImage.setAlpha(200);
-                     button.setBackgroundDrawable(offImage);
-                  }
-               }
+            	updatePressedState(true);
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-               if (canUseImage) {
-                  if (isOn) {
-                     onImage.setAlpha(255);
-                     button.setBackgroundDrawable(onImage);
-                  } else {
-                     offImage.setAlpha(255);
-                     button.setBackgroundDrawable(offImage);
-                  }
-               }
-               Log.i("SwitchView", "sendWriteCommand");
-               if (isOn) {
-                  sendCommandRequest(Switch.OFF);
-               } else {
-                  sendCommandRequest(Switch.ON);
-               }
+            	updatePressedState(false);
+              Log.i("SwitchView", "sendWriteCommand");
+              if (isOn) {
+              	sendCommandRequest(Switch.OFF);
+              } else {
+              	sendCommandRequest(Switch.ON);
+              }
             }
             return false;
          }
         
      });
-      addView(button);
+      
+     addView(switchLayout);
    }
    
    @Override
@@ -154,21 +160,32 @@ public class SwitchView extends SensoryControlView {
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
-         if (canUseImage) {
-            if (isOn) {
-               button.setBackgroundDrawable(onImage);
-            } else {
-               button.setBackgroundDrawable(offImage);
-            }
-         } else {
-            if (isOn) {
-               button.setText("ON");
-            } else {
-               button.setText("OFF");
-            }
-         }
-         super.handleMessage(msg);
+      	updateState();
+      	super.handleMessage(msg);
       }
-  };
+  };  
   
+  private void updatePressedState(boolean isPressed) {
+  	int opacity = isPressed ? 200 : 255;
+  	
+    if (canUseImage) {
+    	imageView.setAlpha(opacity);
+    }
+  }
+  
+  private void updateState() {
+		if (canUseImage) {
+			if (isOn) {
+				imageView.setImageDrawable(onImage);
+			} else {
+				imageView.setImageDrawable(offImage);
+			}
+		} else {
+				if (isOn) {
+					button.setText("ON");
+				} else {
+					button.setText("OFF");
+			}
+		}
+  }
 }
