@@ -126,7 +126,10 @@ public class AppSettingsModel implements Serializable
     }
 
   	ControllerDataHelper dh = new ControllerDataHelper(context);
-  	return dh.getControllerByUrl(currentServer);
+  	ControllerObject controller = dh.getControllerByUrl(currentServer);
+  	dh.closeConnection();
+  	
+  	return controller; 
   }
 
 
