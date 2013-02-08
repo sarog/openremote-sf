@@ -28,6 +28,7 @@ import java.util.List;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
 
 /**
@@ -110,6 +111,11 @@ public interface ResourceService
    File getTempDirectory(String sessionId);
    
    void deleteImage(String imageName);
+   
+   
+   
+   void populateDTOReferences(Collection<Panel> panels);
+
 }
 
    
