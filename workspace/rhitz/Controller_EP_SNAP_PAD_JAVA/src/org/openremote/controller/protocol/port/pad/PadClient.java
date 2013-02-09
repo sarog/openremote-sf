@@ -6,9 +6,11 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.protocol.port.PortException;
 
 class PadClient {
+   public final static String PAD_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "pad";
    private static PadClient INSTANCE = new PadClient();
    public static final int SERVICE_TIMEOUT = 1000;
    private Socket socket;
