@@ -52,7 +52,7 @@ public class PanelState
 
   public enum StateType
   {
-    ZONE, ZONE_ALARM, PARTITION, LABEL
+    ZONE, ZONE_ALARM, PARTITION, LABEL, LED
   }
 
   public enum ZoneState implements State
@@ -72,8 +72,14 @@ public class PanelState
 
   /**
    * A security system label (i.e. Back Door, Basement Motion Detector)
-   * 
+   *
    */
+  public enum LedState implements State
+  {
+    OFF,ON,FLASH
+  }
+
+
   public class Label implements State
   {
     private String label;
@@ -152,7 +158,29 @@ public class PanelState
    */
   public synchronized void processPacket(Packet packet)
   {
-    if (packet.getCommand().equals("570"))
+    if (packet.getCommand().equals("510"))
+    { // Led Update
+      int leds = Integer.parseInt(packet.getData().substring(0, 2),16);
+      int mask = 1 << 7;
+      for (int c=1;c<=8;c++)
+      {
+        log.debug("LED Status update [LED"+String.valueOf(c)+"="+((leds&mask)==0?"OFF":"ON")+"]");
+        updateInternalState(StateType.LED, String.valueOf(c), (leds&mask)==0?LedState.OFF:LedState.ON);
+        leds <<= 1;
+      }
+    }
+    else if (packet.getCommand().equals("511"))
+    { // Led Update
+      int leds = Integer.parseInt(packet.getData().substring(0, 2),16);
+      int mask = 1 << 7;
+      for (int c=1;c<=8;c++)
+      {
+        log.debug("LED Status update [LED"+String.valueOf(c)+"="+((leds&mask)==0?"OFF":"FLASH")+"]");
+        updateInternalState(StateType.LED, String.valueOf(c), (leds&mask)==0?LedState.OFF:LedState.FLASH);
+        leds <<= 1;
+      }
+    }
+    else if (packet.getCommand().equals("570"))
     { // Broadcast Labels
       String num = packet.getData().substring(0, 3);
       num = trimLeadingZeros(num);

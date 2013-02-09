@@ -27,6 +27,7 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.Constants;
 
 public class DSCIT100CommandBuilder implements CommandBuilder
 {
@@ -38,7 +39,7 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related
    * to DSCIT100 implementation.
    */
-  public final static String DSCIT100_LOG_CATEGORY = "DSCIT100";
+  public final static String DSCIT100_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "dscit100";
 
   /**
    * String constant for parsing DSCIT100 protocol XML entries from
@@ -132,12 +133,14 @@ public class DSCIT100CommandBuilder implements CommandBuilder
   // ------------------------------------------------------------------------------
 
   private final DSCIT100ConnectionManager connectionManager = new DSCIT100ConnectionManager();
+  public static String dscPassword;
 
   // Constructors
   // ---------------------------------------------------------------------------------
 
-  public DSCIT100CommandBuilder()
+  public DSCIT100CommandBuilder(String dscPassword)
   {
+	this.dscPassword=dscPassword;
     // TODO Auto-generated constructor stub
   }
 
