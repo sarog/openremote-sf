@@ -194,7 +194,31 @@ public class ExecuteCommand extends DSCIT100Command implements
     private static Packet get(final String name, final String code,
         final String target)
     {
-      if (name.equals("ARM_AWAY"))
+      if (name.equals("POLL"))
+      {
+        return new Packet("000", "");
+      }
+      else if (name.equals("STATUS"))
+      {
+        return new Packet("001", "");
+      }
+      else if (name.equals("LOGIN"))
+      {
+        return new Packet("005", "user");
+      }
+      else if (name.equals("ZONE_TIMERS"))
+      {
+        return new Packet("008", "");
+      }
+      else if (name.equals("SET_DATETIME"))
+      {
+        return new Packet("010", code);
+      }
+      else if (name.equals("COMMAND_OUTPUT"))
+      {
+        return new Packet("020", target + code);
+      }
+      else if (name.equals("ARM_AWAY"))
       {
         return new Packet("030", target);
       }
@@ -231,6 +255,18 @@ public class ExecuteCommand extends DSCIT100Command implements
       {
         return new Packet("040", target + code);
       }
+      else if (name.equals("TIMESTAMP"))
+      {
+        return new Packet("055", target);
+      }
+      else if (name.equals("TIME_BROADCAST"))
+      {
+        return new Packet("056", target);
+      }
+      else if (name.equals("TEMP_BROADCAST"))
+      {
+        return new Packet("057", target);
+      }
       else if (name.equals("PANIC_FIRE"))
       {
         return new Packet("060", "1");
@@ -242,6 +278,26 @@ public class ExecuteCommand extends DSCIT100Command implements
       else if (name.equals("PANIC"))
       {
         return new Packet("060", "3");
+      }
+      else if (name.equals("SINGLE_KEY"))
+      {
+        return new Packet("070", target);
+      }
+      else if (name.equals("KEYSTROKE"))
+      {
+        return new Packet("071", target + code);
+      }
+      else if (name.equals("USER_CODE_PROG"))
+      {
+        return new Packet("072", target);
+      }
+      else if (name.equals("USER_PROG"))
+      {
+        return new Packet("073", target);
+      }
+      else if (name.equals("KEEPALIVE"))
+      {
+        return new Packet("074", target);
       }
       else
       {

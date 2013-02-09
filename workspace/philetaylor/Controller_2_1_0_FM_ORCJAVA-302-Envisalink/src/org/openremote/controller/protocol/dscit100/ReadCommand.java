@@ -144,14 +144,14 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
   @Override
   public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
-    log.debug("Sensor read request [type=" + sensorType.toString()
-        + ", stateMap=" + stateMap.toString() + "]");
-    log.debug("Reading state for - " + this);
+//    log.debug("Sensor read request [type=" + sensorType.toString()
+//       + ", stateMap=" + stateMap.toString() + "]");
+//    log.debug("Reading state for - " + this);
     PanelState.State state = super.read(this);
-    if (state != null)
-      log.debug("[state=" + state.toString().toUpperCase() + "]");
-    else
-      log.debug("[state=NULL]");
+//    if (state != null)
+//     log.debug("[state=" + state.toString().toUpperCase() + "]");
+//    else
+//      log.debug("[state=NULL]");
     if (sensorType == EnumSensorType.CUSTOM)
     {
       return state != null ? state.toString().toUpperCase() : "";
@@ -194,6 +194,10 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
       else if (name.equals("LABEL"))
       {
         return new StateDefinition(PanelState.StateType.LABEL, target);
+      }
+      else if (name.equals("LED"))
+      {
+        return new StateDefinition(PanelState.StateType.LED, target);
       }
       else
       {

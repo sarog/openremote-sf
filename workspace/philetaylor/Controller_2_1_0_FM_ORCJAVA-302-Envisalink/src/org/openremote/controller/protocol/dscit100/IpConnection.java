@@ -186,10 +186,14 @@ public class IpConnection implements DSCIT100Connection
       log.info("Starting read loop for "
           + socket.getInetAddress().getHostAddress());
 
+      // Main difference between it100 and envisalink is that envisalink needs a password!
+      if (DSCIT100CommandBuilder.dscPassword != null)
+              sendInternal(new Packet("005", DSCIT100CommandBuilder.dscPassword)); // Always login when new connection
+
       // Send IT100 state discovery packet to get current system state
       sendInternal(new Packet("001", ""));
       // Send IT100 labels request packet to get system labels
-      sendInternal(new Packet("002", ""));
+      //sendInternal(new Packet("002", ""));
 
       boolean isConnected = true;
 
@@ -212,15 +216,43 @@ public class IpConnection implements DSCIT100Connection
           IpConnection.this.close();
         }
 
-        if (packet != null)
-        {
-          state.processPacket(packet);
 
-          if (packetCallback != null)
+        try
+        {
+          if (packet != null)
           {
-            log.debug("Executing callback method for packet " + packet);
-            packetCallback.receive(IpConnection.this, packet);
+            if (packet.getCommand().equals("505"))
+            { // Login interraction
+                String num = packet.getData().substring(0, 1);
+                log.debug("Login Interraction [number=" + num + "]");
+                if (num == "3"){
+                  log.debug("Login required");
+                      sendInternal(new Packet("005", "user"));
+
+                } else if (num == "1") {
+                  log.debug("Login successful");
+                } else if (num == "0") {
+                  log.debug("Invalid password");
+                }
+
+            } else {
+                  state.processPacket(packet);
+            }
+
+            if (packetCallback != null)
+            {
+              log.debug("Executing callback method for packet " + packet);
+              packetCallback.receive(IpConnection.this, packet);
+            }
           }
+        }
+        catch (Exception e)
+        {
+          log.warn("Error in packet", e);
+          isConnected = false;
+          // Connection has failed, close the socket so it can be recreated
+          // later
+          IpConnection.this.close();
         }
 
       }

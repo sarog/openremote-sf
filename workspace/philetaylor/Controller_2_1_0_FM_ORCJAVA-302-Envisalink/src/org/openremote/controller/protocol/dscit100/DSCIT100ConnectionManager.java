@@ -53,7 +53,7 @@ public class DSCIT100ConnectionManager
   /**
    * Default TCP port if none is provided in command definition
    */
-  private final static int DEFAULT_TCP_PORT = 5000;
+  private final static int DEFAULT_TCP_PORT = 4025;
 
   // Instance Fields
   // ------------------------------------------------------------------------------
