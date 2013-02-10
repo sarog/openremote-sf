@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -48,7 +48,7 @@ public class DSCIT100CommandBuilderTest
   @Before
   public void setUp() throws Exception
   {
-    builder = new DSCIT100CommandBuilder();
+    builder = new DSCIT100CommandBuilder(null /*password*/);
   }
 
   // Tests
