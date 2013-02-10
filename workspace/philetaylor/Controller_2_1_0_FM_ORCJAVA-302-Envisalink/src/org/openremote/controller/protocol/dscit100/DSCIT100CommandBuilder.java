@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -29,24 +29,39 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.Constants;
 
+/**
+ * TODO
+ *
+ * @author Greg Rapp
+ * @author Phil Taylor
+ * @author Juha Lindfors
+ */
 public class DSCIT100CommandBuilder implements CommandBuilder
 {
 
-  // Constants
-  // ------------------------------------------------------------------------------------
+  //
+  // TODO  :
+  //
+  //   - This implementation is now used for both DSC IT-100 interface and Envisalink
+  //     interface -- may be a candidate for a rename to simply DSC
+
+
+  // Constants ------------------------------------------------------------------------------------
 
   /**
    * A common log category name intended to be used across all classes related
-   * to DSCIT100 implementation.
+   * to DSC implementation.
    */
+
+  // TODO : rename log category to DSC
+
   public final static String DSCIT100_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "dscit100";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC IT-100 protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 addresses (
-   * <code>{@value}</code>):
+   * This constant is the expected property name value for DSC IT-100 addresses
+   * (<code>{@value}</code>):
    * 
    * <pre>
    * {@code
@@ -62,10 +77,9 @@ public class DSCIT100CommandBuilder implements CommandBuilder
   public final static String DSCIT100_XMLPROPERTY_ADDRESS = "address";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC IT-100 protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
+   * This constant is the expected property name value for DSC IT-100 commands
    * ({@value} ):
    * 
    * <pre>
@@ -82,10 +96,9 @@ public class DSCIT100CommandBuilder implements CommandBuilder
   public final static String DSCIT100_XMLPROPERTY_COMMAND = "command";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC IT-100 protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
+   * This constant is the expected property name value for DSC IT-100 commands
    * ({@value} ):
    * 
    * <pre>
@@ -102,10 +115,9 @@ public class DSCIT100CommandBuilder implements CommandBuilder
   public final static String DSCIT100_XMLPROPERTY_CODE = "code";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC IT-100 protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
+   * This constant is the expected property name value for DSC IT-100 commands
    * ({@value} ):
    * 
    * <pre>
@@ -121,33 +133,33 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    */
   public final static String DSCIT100_XMLPROPERTY_TARGET = "target";
 
-  // Class Members
-  // --------------------------------------------------------------------------------
+
+  // Class Members --------------------------------------------------------------------------------
 
   /**
-   * Logging. Use common DSCIT100 log category for all DSCIT100 related classes.
+   * Logging. Use common DSC IT-100 log category for all DSC IT-100 related classes.
    */
   private static Logger log = Logger.getLogger(DSCIT100_LOG_CATEGORY);
 
-  // Instance Fields
-  // ------------------------------------------------------------------------------
+
+  // Instance Fields ------------------------------------------------------------------------------
 
   private final DSCIT100ConnectionManager connectionManager = new DSCIT100ConnectionManager();
+
+  // TODO : convert to instance fields
   public static String dscPassword;
 
-  // Constructors
-  // ---------------------------------------------------------------------------------
+
+  // Constructors ---------------------------------------------------------------------------------
 
   public DSCIT100CommandBuilder(String dscPassword)
   {
-	this.dscPassword=dscPassword;
-    // TODO Auto-generated constructor stub
+	  this.dscPassword=dscPassword;
   }
 
   /**
-   * Parses the DSCIT100 command XML snippets and builds a corresponding
-   * DSCIT100 command instance.
-   * <p>
+   * Parses the DSC IT-100 command XML snippets and builds a corresponding DSC IT-100 command
+   * instance. <p>
    * 
    * The expected XML structure is:
    * 
@@ -167,16 +179,14 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * @see DSCIT100Command
    * 
    * @throws NoSuchCommandException
-   *           if the DSCIT100 command instance cannot be constructed from the
+   *           if the DSC IT-100 command instance cannot be constructed from the
    *           XML snippet for any reason
    * 
-   * @return an immutable DSCIT100 command instance with known configured
+   * @return an immutable DSC IT-100 command instance with known configured
    *         properties set
    */
-  @Override
-  public Command build(Element element)
+  @Override public Command build(Element element)
   {
-
     String address = null;
     String command = null;
     String code = null;
@@ -237,6 +247,6 @@ public class DSCIT100CommandBuilder implements CommandBuilder
     log.info("Created DSCIT100 Command " + cmd);
 
     return cmd;
-  } // end build(Element element)
+  } 
 
 }
