@@ -186,15 +186,12 @@ public class IpConnection implements DSCIT100Connection
       log.info("Starting read loop for "
           + socket.getInetAddress().getHostAddress());
 
-      // Main difference between it100 and envisalink is that envisalink needs a password!
-      if (DSCIT100CommandBuilder.dscPassword != null)
-              sendInternal(new Packet("005", DSCIT100CommandBuilder.dscPassword)); // Always login when new connection
-
-      // Send IT100 state discovery packet to get current system state
-      sendInternal(new Packet("001", ""));
-      // Send IT100 labels request packet to get system labels
-      //sendInternal(new Packet("002", ""));
-
+      // Send IT100 state discovery packet to get current system state (not used for EnvisaLink)
+      if (DSCIT100CommandBuilder.dscPassword == null) {
+      		sendInternal(new Packet("001", ""));
+      		// Send IT100 labels request packet to get system labels
+      		sendInternal(new Packet("002", ""));
+	  }
       boolean isConnected = true;
 
       while (isConnected)
@@ -220,21 +217,28 @@ public class IpConnection implements DSCIT100Connection
         try
         {
           if (packet != null)
-          {
+            {
+            /* 505 commands are sent by the EnvisaLink to request authentication
+               As this isn't relevant to the panel state, process it here */
             if (packet.getCommand().equals("505"))
-            { // Login interraction
+            { 
+            	// Login interaction
                 String num = packet.getData().substring(0, 1);
-                log.debug("Login Interraction [number=" + num + "]");
-                if (num == "3"){
-                  log.debug("Login required");
-                      sendInternal(new Packet("005", "user"));
-
-                } else if (num == "1") {
-                  log.debug("Login successful");
-                } else if (num == "0") {
-                  log.debug("Invalid password");
+                if (num.equals("3")){
+                  log.info("EnvisaLink: Login required");
+                  sendInternal(new Packet("005", DSCIT100CommandBuilder.dscPassword));
+                } else if (num.equals("1")) {
+                  log.info("EnvisaLink: Login successful");
+                  sendInternal(new Packet("001", "")); // Ask for panel status.
+                } else if (num.equals("0")) {
+                  log.error("EnvisaLink: Invalid password");
+                  isConnected=false;
+                  IpConnection.this.close();
+                } else if (num.equals("2")) {
+                  log.error("EnvisaLink: connection timeout");
+                  isConnected=false;
+                  IpConnection.this.close();
                 }
-
             } else {
                   state.processPacket(packet);
             }
