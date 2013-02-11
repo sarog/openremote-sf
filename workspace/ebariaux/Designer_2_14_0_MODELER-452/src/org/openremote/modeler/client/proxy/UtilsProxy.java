@@ -80,10 +80,6 @@ public class UtilsProxy {
       AsyncServiceFactory.getUtilsRPCServiceAsync().restore(callback);
    }
    
-   public static void canRestore(final AsyncCallback<Boolean> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().canRestore(callback);
-   }
-   
    /**
     * Gets the beehive rest icon url.
     * 
