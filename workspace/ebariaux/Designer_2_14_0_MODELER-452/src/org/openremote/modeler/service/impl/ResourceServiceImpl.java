@@ -600,10 +600,13 @@ public class ResourceServiceImpl implements ResourceService
   }
   
   /**
-   * {@inheritDoc}
+   * Goes over the whole object graph, replacing all DTO references with pointer to the real BusinessEntity object.
+   * This is for all "building modeler" objects, because we don't want any Hibernate entities to go over the wire.
+   * 
+   * @param panels
    */
-  @Override @Transactional
-  public void resolveDTOReferences(Collection<Panel> panels) {
+  @Transactional
+  private void resolveDTOReferences(Collection<Panel> panels) {
   	Panel.walkAllUIComponents(panels, new UIComponentOperation() {
 
 			@Override
@@ -763,6 +766,8 @@ public class ResourceServiceImpl implements ResourceService
 	User currentUser = userService.getCurrentUser();
 	LocalFileCache cache = createLocalFileCache();
 
+  resolveDTOReferences(panels);
+  
     // Create a set of panels to eliminate potential duplicate instances...
 
     HashSet<Panel> panelSet = new HashSet<Panel>();
