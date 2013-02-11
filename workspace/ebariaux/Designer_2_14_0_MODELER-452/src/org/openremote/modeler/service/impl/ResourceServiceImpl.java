@@ -124,6 +124,9 @@ public class ResourceServiceImpl implements ResourceService
 
   private Configuration configuration;
 
+  private UserService userService;
+  
+  // Those services are not directly used by this class but injected in LocalFileCache or DesignerState when they get built
   private DeviceCommandService deviceCommandService;
   private DeviceMacroService deviceMacroService;
 
@@ -131,11 +134,6 @@ public class ResourceServiceImpl implements ResourceService
   private SliderService sliderService;
   private SwitchService switchService;
 
-
-  private UserService userService;
-  
-  
-  // Those services are not directly used by this class but injected in LocalFileCache when it gets built
   private ControllerConfigService controllerConfigService = null;
   private VelocityEngine velocity;
 
@@ -369,11 +367,6 @@ public class ResourceServiceImpl implements ResourceService
   public void setConfiguration(Configuration configuration)
   {
     this.configuration = configuration;
-  }
-
-  public DeviceCommandService getDeviceCommandService()
-  {
-    return deviceCommandService;
   }
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService)
