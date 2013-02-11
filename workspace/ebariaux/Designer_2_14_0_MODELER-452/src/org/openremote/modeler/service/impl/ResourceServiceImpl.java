@@ -561,7 +561,7 @@ public class ResourceServiceImpl implements ResourceService
     try
     {
       User currentUser = userService.getCurrentUser();
-      LocalFileCache cache = createLocalFileCache();
+      LocalFileCache cache = createLocalFileCache(currentUser);
     	
       DesignerState state = createDesignerState(currentUser, cache);
       state.restore();
@@ -601,7 +601,7 @@ public class ResourceServiceImpl implements ResourceService
   @Override @Deprecated @Transactional public LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid)
   {
 	User currentUser = userService.getCurrentUser();
-	LocalFileCache cache = createLocalFileCache();
+	LocalFileCache cache = createLocalFileCache(currentUser);
 
   resolveDTOReferences(panels);
   
@@ -847,8 +847,8 @@ public class ResourceServiceImpl implements ResourceService
    * 
    * @return LocalFileCache a correctly configured LocalFileCache
    */
-  private LocalFileCache createLocalFileCache() {
-	  LocalFileCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+  private LocalFileCache createLocalFileCache(User user) {
+	  LocalFileCache cache = new LocalFileCache(configuration, user);
 	  
 	  cache.setDeviceMacroService(deviceMacroService);
 	  cache.setDeviceCommandService(deviceCommandService);
