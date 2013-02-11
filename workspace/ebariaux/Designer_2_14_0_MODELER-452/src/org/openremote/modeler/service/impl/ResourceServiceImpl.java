@@ -473,85 +473,6 @@ public class ResourceServiceImpl implements ResourceService
       }
   	 });
    }
-  
-  /**
-   * Goes over the whole object graph, replacing all DTO references with pointer to the real BusinessEntity object.
-   * This is for all "building modeler" objects, because we don't want any Hibernate entities to go over the wire.
-   * 
-   * @param panels
-   */
-  @Transactional
-  private void resolveDTOReferences(Collection<Panel> panels) {
-  	Panel.walkAllUIComponents(panels, new UIComponentOperation() {
-
-			@Override
-      public void execute(UIComponent component) {
-		    if (component instanceof SensorOwner) {
-		      SensorOwner owner = (SensorOwner) component;
-		      if (owner.getSensor() == null && owner.getSensorDTO() != null) {
-		        Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
-		        owner.setSensor(sensor);
-		        owner.setSensorDTO(null);
-		        if (owner instanceof SensorLinkOwner) {
-		          ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
-		          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
-		        }
-		      }
-		    }
-		    if (component instanceof UISlider) {
-		      UISlider uiSlider = (UISlider)component;
-		      if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
-		        Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
-		        uiSlider.setSlider(slider);
-		        uiSlider.setSliderDTO(null);
-		      }
-		    }
-		    if (component instanceof UISwitch) {
-		      UISwitch uiSwitch = (UISwitch)component;
-		      if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
-		        Switch sw = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
-		        uiSwitch.setSwitchCommand(sw);
-		        uiSwitch.setSwitchDTO(null);
-		      }
-		    }
-		    if (component instanceof UIButton) {
-		      UIButton uiButton = (UIButton)component;
-		      if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
-		        uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
-		        uiButton.setUiCommandDTO(null);
-		      }
-		    }
-		    if (component instanceof ColorPicker) {
-		      ColorPicker colorPicker = (ColorPicker)component;
-		      if (colorPicker.getUiCommand() == null && colorPicker.getUiCommandDTO() != null) {
-		        colorPicker.setUiCommand(lookupUiCommandFromDTO(colorPicker.getUiCommandDTO()));
-		        colorPicker.setUiCommandDTO(null);
-		      }
-		    }
-		    if (component instanceof Gesture) {
-		    	Gesture gesture = (Gesture)component;
-			    if (gesture.getUiCommand() == null && gesture.getUiCommandDTO() != null) {        
-			      gesture.setUiCommand(lookupUiCommandFromDTO(gesture.getUiCommandDTO()));
-			      gesture.setUiCommandDTO(null);
-			    }
-		    }
-      }
-
-		  private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
-		    if (uiCommandDTO instanceof DeviceCommandDTO) {
-		      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid(), true); // Load device and its relationships eagerly
-		      return  (dc != null)?new DeviceCommandRef(dc):null;
-		    } else if (uiCommandDTO instanceof MacroDTO) {
-		      DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
-		      return (dm != null)?new DeviceMacroRef(dm):null;
-		    }
-		    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
-		  }
-
-  	});
-  }
-
-
 
   /**
    * This implementation has been moved and delegates to {@link DesignerState#restore}.
@@ -603,8 +524,6 @@ public class ResourceServiceImpl implements ResourceService
 	User currentUser = userService.getCurrentUser();
 	LocalFileCache cache = createLocalFileCache(currentUser);
 
-  resolveDTOReferences(panels);
-  
     // Create a set of panels to eliminate potential duplicate instances...
 
     HashSet<Panel> panelSet = new HashSet<Panel>();
