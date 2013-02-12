@@ -174,7 +174,11 @@ public class IpConnection implements DSCIT100Connection
         this.packetCallback = packet.getCallback();
       }
 
-      out.println(packet.toPacket());
+	  /* Replace out.println() with out.print() as println appends a "platform dependant" newline
+		 character which causes the EnvisaLink to generate a 502020 (API Format) error.
+		 Also need to flush the buffer (I suspect that println does that itself) ? */
+      out.print(packet.toPacket());
+	  out.flush();
     }
 
     else
