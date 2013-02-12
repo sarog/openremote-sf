@@ -60,8 +60,8 @@ public abstract class MarantzAVRCommand implements Command {
 
    static {
       SAXBuilder builder = new SAXBuilder();
-      URL configResource = MarantzAVRCommand.class.getResource("marantz_avr_config.xml");
       
+      URL configResource = MarantzAVRCommand.class.getResource("marantz_avr_config.xml");     
       log.debug("Marantz configuration file is " + configResource);
       
       if (configResource != null) {
@@ -71,12 +71,9 @@ public abstract class MarantzAVRCommand implements Command {
             List<Element> commandElements = doc.getRootElement().getChildren();
             for (Element commandElement : commandElements) {
                String commandName = commandElement.getAttributeValue("name");
-               System.out.println(commandName + "=" + commandElement.getAttributeValue("value"));
-               System.out.println(commandElement.getAttributeValue("class"));
-               @SuppressWarnings("unchecked")
-               Class<? extends MarantzAVRCommand> clazz = (Class<? extends MarantzAVRCommand>) Class.forName(commandElement.getAttributeValue("class"));
-               System.out.println("Got class " + clazz);
 
+               @SuppressWarnings("unchecked")
+               Class<? extends MarantzAVRCommand> clazz = (Class<? extends MarantzAVRCommand>)Class.forName(commandElement.getAttributeValue("class"));
                CommandConfig commandConfig = new CommandConfig(commandName, commandElement.getAttributeValue("value"), clazz);
                
                Element parametersElement = commandElement.getChild("parameters");
@@ -85,7 +82,6 @@ public abstract class MarantzAVRCommand implements Command {
                   List<Element> parameterElements = parametersElement.getChildren();
                   if (parameterElements != null) {
                      for (Element parameterElement : parameterElements) {
-                        System.out.println(parameterElement.getAttributeValue("name") + "=" + parameterElement.getText());
                         commandConfig.addParameter(parameterElement.getAttributeValue("name"), parameterElement.getText());
                      }
                   }
@@ -111,7 +107,7 @@ public abstract class MarantzAVRCommand implements Command {
     * @return new Marantz AVR command instance
     */
    static MarantzAVRCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
-    log.debug("Received request to build command with name " + name);
+      log.debug("Received request to build command with name " + name);
     
       name = name.trim().toUpperCase();
       CommandConfig commandConfig = commandConfigurations.get(name);
