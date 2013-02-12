@@ -22,7 +22,7 @@
 	<link href = "image/OpenRemote.Logo.16x16.png" type = "image/png" rel = "icon"/>
 
 
-    <link rel="stylesheet" type="text/css" href="Modeler/reset.css" />
+    <link rel="stylesheet" type="text/css" href="modeler/reset.css" />
 
 
     <!--                                                               -->
