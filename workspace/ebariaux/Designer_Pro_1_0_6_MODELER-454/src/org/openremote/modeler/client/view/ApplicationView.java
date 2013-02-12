@@ -290,7 +290,7 @@ public class ApplicationView implements View {
      downloadButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-          Window.open("download/OpenRemote_Controller.zip", "_blank", "");
+          Window.open("/download/OpenRemote_Controller.zip", "_blank", "");
         }
      });
      return downloadButton;
