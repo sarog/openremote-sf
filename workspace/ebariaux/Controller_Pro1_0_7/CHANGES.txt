@@ -1,3 +1,10 @@
+Controller Pro 1.0.7
+====================
+
+New Features:
+
+  - Support Marantz receivers / pre-pro IP control (ORCJAVA-244)
+
 Controller Pro 1.0.6
 ====================
 
