@@ -33,6 +33,13 @@ import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Handle command that manages a value with multiple options in the protocol, such as source selection.
+ * 
+ * Maps to custom sensor values, all other sensor types are not supported.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class MultipleOptionsCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
    /**
@@ -109,8 +116,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
    }
    
    @Override
-   protected void updateWithResponse(MarantzResponse response)
-   {
+   protected void updateWithResponse(MarantzResponse response) {
       updateSensorsWithValue(commandConfig.lookupResponseParam(response.parameter));
    }
    

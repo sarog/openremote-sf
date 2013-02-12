@@ -33,6 +33,13 @@ import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Handle command that manages a boolean value in the protocol, such as power or mute state.
+ * 
+ * Maps to on/off values for switch sensors and 1/0 values for range sensors.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class BooleanCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
    /**

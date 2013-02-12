@@ -31,6 +31,13 @@ import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Handle command that sends a value but never receives any feedback, such as cursor/menu navigation.
+ * 
+ * Does not provide any feedback to sensors and ignores feedback strings.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
    /**

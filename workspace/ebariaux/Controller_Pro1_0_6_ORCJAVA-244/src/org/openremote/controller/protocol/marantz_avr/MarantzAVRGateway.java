@@ -41,9 +41,9 @@ import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL.Coalesc
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Gateway implements TCP/IP connection and protocol handling to device.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class MarantzAVRGateway {
 
@@ -70,7 +70,7 @@ public class MarantzAVRGateway {
    public synchronized void startGateway() {
       if (marantzConfig == null) {
          marantzConfig = MarantzAVRConfig.readXML();
-         // Check config, report error if any -> TODO: auto discovery ?
+         // Check config, report error if any
          log.info("Got Marantz config");
          log.info("Address >" + marantzConfig.getAddress() + "<");
       }
@@ -216,13 +216,11 @@ public class MarantzAVRGateway {
          }
          do {
            try {
-              System.out.println("Reader thread got line >" + line + "<");
-//              log.info("Reader thread got line >" + line + "<");
+              log.info("Reader thread got line >" + line + "<");
 
                 MarantzResponse response = parseResponse(line);
                 if (response != null) {
                   List<MarantzAVRCommand> commands = registeredCommands.get(response.command);
-                  System.out.println("registered commands " + commands);
                   if (commands != null) { 
                      for (MarantzAVRCommand command : commands) {
                         command.updateWithResponse(response);
@@ -291,13 +289,12 @@ public class MarantzAVRGateway {
          if (!(other instanceof MarantzCommand)) {
             return false;
          }
-         MarantzCommand otherCommand = (MarantzCommand) other;
-
+//         MarantzCommand otherCommand = (MarantzCommand) other;
          return false;
 
-         // TODO: if we want to be coalesable, need to have more fine grained information e.g. must have distinct
-         // channel or level value
-
+         // TODO: To be coalescable requires quite a bit of knownledge on commands
+         // For instance, 2 absolute volume settings can be coalesced into the last occurence
+         // where as 2 UP volume commands must not.
       }
 
    }
