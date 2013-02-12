@@ -64,8 +64,8 @@ public abstract class MarantzAVRCommand implements Command {
 
    static {
       SAXBuilder builder = new SAXBuilder();
-      
-      URL configResource = MarantzAVRCommand.class.getResource("marantz_avr_config.xml");     
+
+      URL configResource = Thread.currentThread().getContextClassLoader().getResource("/org/openremote/controller/protocol/marantz_avr/marantz_avr_config.xml");     
       log.debug("Marantz configuration file is " + configResource);
       
       if (configResource != null) {
