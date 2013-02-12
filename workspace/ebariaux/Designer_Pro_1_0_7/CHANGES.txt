@@ -2,6 +2,7 @@ Pro 1.0.7
 =========
 
 Fixes:
+ - MODELER-454: Impossible to download Pro controller from Pro Designer
  - MODELER-455: Incorrectly referenced css
 
 Pro 1.0.6
