@@ -25,6 +25,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.MarantzAVRConfig;
 import org.openremote.controller.OpenRemoteRuntime;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
@@ -92,6 +93,7 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
+    MARANTZ_AVR_CONFIGURATION("marantzAVRConfig"),            // TODO : To be removed, see ORCJAVA-183
     AMX_NI_CONFIGURATION("AMXNIConfig"),                      // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
@@ -181,6 +183,26 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static MarantzAVRConfig getMarantzAVRConfiguration()
+  {
+    try
+    {
+      return (MarantzAVRConfig)getInstance().getService(ServiceName.MARANTZ_AVR_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Marantz AVR Configuration service has had an incompatible change.", e
       );
     }
   }
