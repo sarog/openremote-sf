@@ -41,7 +41,7 @@ public class DSCIT100CommandTest
   @Before
   public void setUp() throws Exception
   {
-    connManager = new DSCIT100ConnectionManager();
+    connManager = new DSCIT100ConnectionManager(null /*password*/);
   }
 
   /**
