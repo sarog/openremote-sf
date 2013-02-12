@@ -30,9 +30,10 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Builder creating the appropriate MarantzAVRCommand subclass based
+ * on configuration information coming from Designer.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public class MarantzAVRCommandBuilder implements CommandBuilder {
 

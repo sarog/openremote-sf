@@ -42,9 +42,13 @@ import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzR
 import org.openremote.controller.utils.Logger;
 
 /**
+ * Base class for all Commands understood by Marantz AVR protocol.
+ * 
+ * Reads configuration of all known commands from marantz_avr_config.xml file.
+ * 
+ * Provides a basic mechanism to register and update sensors.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- * 
  */
 public abstract class MarantzAVRCommand implements Command {
 
@@ -210,6 +214,8 @@ public abstract class MarantzAVRCommand implements Command {
 
    /**
     * Update the specified sensor with provided value.
+    * 
+    * Converts to provided value as appropriate for the type of sensor to be updated.
     * 
     * @param sensor Sensor to update
     */

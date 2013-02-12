@@ -23,12 +23,25 @@ package org.openremote.controller.protocol.marantz_avr;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO : base class for commandClass should parametrize this class
-
 /**
+ * Defines the configuration of commands supported by the Marantz AVR protocol.
  * 
- * @author ebariaux
+ * It provides the mapping from strings as defined in the Designer configuration
+ * (which should be standardized for all protocols in OR) and the strings used
+ * by the Marantz protocol "over the wire" to the device. 
  *
+ * name is the command name as used in the Designer configuration
+ * value is the corresponding command string used by the Marantz procotol
+ * 
+ * Some commands can be handled by the same generic implementation,
+ * whereas others require a specific implementation.
+ * 
+ * commandClass is the specific MarantzAVRCommand subclass that handles the given command
+ * 
+ * A similar mapping from generic to Marantz specific strings exists
+ * for the command parameters.
+ *  
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class CommandConfig {
    
@@ -82,5 +95,24 @@ public class CommandConfig {
      return null;
    }
    
-   // TODO : toString
+   public String toString() {
+      StringBuffer buf = new StringBuffer();
+      buf.append("Command ");
+      buf.append(name);
+      buf.append(" : ");
+      buf.append(value);
+      buf.append(" is handled by class ");
+      buf.append(commandClass);
+      if (!knownParameters.isEmpty()) {
+         buf.append("\n");
+         buf.append("Parameters:");
+      }
+      for (Map.Entry<String,String> e : knownParameters.entrySet()) {
+         buf.append("\n  ");
+         buf.append(e.getKey());
+         buf.append(" : ");
+         buf.append(e.getValue());
+      }
+      return buf.toString();
+   }
 }

@@ -37,6 +37,13 @@ import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
 
+/**
+ * Specific command to handle volume.
+ * 
+ * Handles all sensor types. Switch sensor is considered on as soon as volume is non zero.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class VolumeCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
 
    /**
