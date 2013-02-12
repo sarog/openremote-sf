@@ -40,7 +40,7 @@ public abstract class DSCIT100Command implements Command
   //   - since both IT100 and Envisalink gateways are now supported, this class should drop the
   //     IT100 from the name
 
-  
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -93,7 +93,7 @@ public abstract class DSCIT100Command implements Command
     throw new NoSuchCommandException("Unknown command '" + command + "'.");
   }
 
-  // Private Instance Fields ----------------------------------------------------------------------
+  // Instance Fields ------------------------------------------------------------------------------
 
   /**
    * Destination address for this command.
