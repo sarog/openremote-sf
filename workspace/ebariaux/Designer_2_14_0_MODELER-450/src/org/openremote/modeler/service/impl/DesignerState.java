@@ -35,9 +35,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -46,7 +44,6 @@ import org.openremote.modeler.beehive.Beehive30API;
 import org.openremote.modeler.beehive.BeehiveService;
 import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
-import org.openremote.modeler.cache.ResourceCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
@@ -58,13 +55,13 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Panel.UIComponentOperation;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
-import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.SensorLinkOwner;
@@ -92,7 +89,6 @@ import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 
 /**
