@@ -33,6 +33,7 @@ import org.openremote.android.console.util.ImageUtil;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -43,8 +44,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.view.View;
 
@@ -67,7 +70,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 	private ImageView minImage;
 	private ImageView maxImage;
 	private ImageView thumb;
-	private ImageView minTrack;
+	private View minTrack;
 	private ImageView maxTrack;
 	private boolean isVertical = false;
 	private boolean isPassive = false;
@@ -233,11 +236,37 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			
 			// Position the image within the view
 			if (isVertical) {
-				// Position center bottom
+				// Position center bottom - can't align background image to bottom so have to do this
+				// a more complicated way
 				minTrackBitmap.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+				LinearLayout minContainer = new LinearLayout(context);
+				minContainer.setOrientation(LinearLayout.VERTICAL);
+				int imgHeight = minTrackBitmap.getIntrinsicHeight();
+				int repeats = (int)Math.ceil((double)trackLength / imgHeight);
+				
+				for (int i=0; i<repeats; i++) {
+					// Add an imageview for each repeat
+					ImageView img = new ImageView(context);
+					img.setImageDrawable(minTrackBitmap);
+					img.setScaleType(ScaleType.MATRIX);
+					img.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, imgHeight));
+					minContainer.addView(img,0);
+				}
+				
+				// Swap out Image View for this LinearLayout
+				FrameLayout.LayoutParams minContainerLayout = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, repeats * imgHeight);
+				minContainerLayout.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+				minContainer.setLayoutParams(minContainerLayout);
+				FrameLayout frame = new FrameLayout(context);
+				frame.addView(minContainer);
+				sliderLayout.removeView(minTrack);
+				sliderLayout.addView(frame);
+				minTrack = frame;
+				minTrack.setId(3);
 			} else {
 				// Position left center
 				minTrackBitmap.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+				minTrackBitmap.setTileModeY(TileMode.REPEAT);
 			}
 			
 			minTrackDrawable = minTrackBitmap;
@@ -254,11 +283,13 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			if (isVertical) {
 				// Position center top
 				maxTrackBitmap.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+				maxTrackBitmap.setTileModeY(TileMode.REPEAT);
 			} else {
 				// Position right center
 				maxTrackBitmap.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+				maxTrackBitmap.setTileModeX(TileMode.REPEAT);
 			}
-			
+
 			maxTrackDrawable = maxTrackBitmap;
 		} else {
 			int maxId = isVertical ? R.drawable.slider_max_track_v : R.drawable.slider_max_track;
@@ -298,7 +329,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			maxLayoutParams.addRule(RelativeLayout.LEFT_OF, maxImage.getId());
 		}
 
-		minTrack.setBackgroundDrawable(minTrackDrawable);
+		//minTrack.setBackgroundDrawable(minTrackDrawable);
 		minTrack.setLayoutParams(minLayoutParams);
 		minTrack.setOnTouchListener(this);
 		maxTrack.setBackgroundDrawable(maxTrackDrawable);

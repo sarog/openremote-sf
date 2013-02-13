@@ -11,8 +11,8 @@
 	    android:layout_height="0px" />
 	
 	<ImageView android:id="@+id/slider_mintrack"
-	    android:layout_width="0px"
-	    android:layout_height="0px" />
+    	android:layout_width="0px"
+    	android:layout_height="0px" />
 	
 	<ImageView android:id="@+id/slider_maxtrack"
 	    android:layout_width="0px"

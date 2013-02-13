@@ -106,6 +106,8 @@ public class ButtonView extends ControlView {
                } else if (defaultImage != null) {
                   defaultImage.setAlpha(200);
                   uiButton.setBackgroundDrawable(defaultImage);
+               } else {
+                 uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_pressed));
                }
                if (button.isHasControlCommand()) {
                   sendCommand();
@@ -124,6 +126,8 @@ public class ButtonView extends ControlView {
                if (defaultImage != null) {
                   defaultImage.setAlpha(255);
                   uiButton.setBackgroundDrawable(defaultImage);
+               } else {
+              	 uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button));
                }
                if (button.getNavigate() != null) {
                   uiButton.setPressed(false);
