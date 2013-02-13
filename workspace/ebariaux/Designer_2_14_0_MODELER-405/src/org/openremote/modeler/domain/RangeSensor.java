@@ -19,11 +19,19 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Transient;
+
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 /**
  * The RangeSensor define a integer range that the sensor should to be.
@@ -75,4 +83,23 @@ public class RangeSensor extends Sensor {
       sb.append("</link>");
       return sb.toString();
    }
+
+  @Override
+  @Transient
+  public SensorDetailsDTO getSensorDetailsDTO() {
+    SensorDetailsDTO dto;
+
+    dto = new SensorDetailsDTO(getOid(), getName(), getType(), getSensorCommandRef().getDisplayName(), getMin(), getMax(), null);
+    if (getSensorCommandRef() != null) {
+      dto.setCommand(new DTOReference(getSensorCommandRef().getDeviceCommand().getOid()));
+    }
+    return dto;
+  }
+
+  @Override
+  @Transient
+  public SensorWithInfoDTO getSensorWithInfoDTO() {
+    return new SensorWithInfoDTO(getOid(), getDisplayName(), getType(), getSensorCommandRef().getDisplayName(), Integer.toString(getMin()), Integer.toString(getMax()), null);
+  }
+
 }
