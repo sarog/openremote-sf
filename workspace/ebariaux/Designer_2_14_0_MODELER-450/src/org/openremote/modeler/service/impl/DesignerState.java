@@ -445,7 +445,7 @@ class DesignerState
         return;
       }
 
-
+      // Restore XML state first, as this is now the format used for saving
       if (hasXMLUIState)
       {
         
@@ -453,17 +453,13 @@ class DesignerState
                 
         restoreLog.info("Restored UI state from XML : {0}", this);
 
-        // TODO
+        // TODO, should we delete legacy file if it exists ?
+        // Otherwise we'll just have outdated legacy files laying around
         
         return;
       }
 
       
-      // Migrate conservately and make as little waves as possible... therefore attempt
-      // to restore from the legacy binary serialization format first (even if better
-      // options are available). This restore order can be modified once we are more
-      // confident in the implementation.
-
       if (hasLegacyDesignerUIState)
       {
         try
