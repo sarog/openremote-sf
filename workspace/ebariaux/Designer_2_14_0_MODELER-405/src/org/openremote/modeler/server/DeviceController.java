@@ -139,7 +139,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
-     return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
+     return device.getDeviceDetailsDTO();
    }
    
    @Override
