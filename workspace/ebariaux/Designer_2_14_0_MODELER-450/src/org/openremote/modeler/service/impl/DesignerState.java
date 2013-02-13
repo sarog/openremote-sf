@@ -91,12 +91,6 @@ import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
-import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
-import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedMapConverter;
-import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSetConverter;
-import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
-import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
@@ -742,17 +736,7 @@ class DesignerState
   }
 
   private void generateXMLUiState(File xmlUIFile) {
-    XStream xstream = new XStream(new StaxDriver() {
-      protected MapperWrapper wrapMapper(final MapperWrapper next) {
-        return new HibernateMapper(next);
-      }
-    });
-    xstream.registerConverter(new HibernateProxyConverter());
-    xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
-    xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
-    xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
-    xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
-    
+    XStream xstream = new XStream(new StaxDriver());
     xstream.alias("panel", Panel.class);
     xstream.alias("group", GroupRef.class);
     xstream.alias("screenPair", ScreenPairRef.class);
