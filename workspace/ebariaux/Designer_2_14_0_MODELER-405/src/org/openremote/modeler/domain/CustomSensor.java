@@ -20,6 +20,7 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
+
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 /**
  * Make user to define custom sensor states.
@@ -68,4 +74,31 @@ public class CustomSensor extends Sensor {
       sb.append("</link>");
       return sb.toString();
    }
+   
+  @Override
+  @Transient
+  public SensorDetailsDTO getSensorDetailsDTO() {
+    SensorDetailsDTO dto;
+
+    HashMap<String, String> states = new HashMap<String, String>();
+    for (State state : getStates()) {
+      states.put(state.getName(), state.getValue());
+    }
+    dto = new SensorDetailsDTO(getOid(), getName(), getType(), getSensorCommandRef().getDisplayName(), null, null, states);
+    if (getSensorCommandRef() != null) {
+      dto.setCommand(new DTOReference(getSensorCommandRef().getDeviceCommand().getOid()));
+    }
+    return dto;
+  }
+
+  @Override
+  @Transient
+  public SensorWithInfoDTO getSensorWithInfoDTO() {
+    ArrayList<String> states = new ArrayList<String>();
+    for (State state : getStates()) {
+      states.add(state.getName());
+    }
+    return new SensorWithInfoDTO(getOid(), getDisplayName(), getType(), getSensorCommandRef().getDisplayName(), null, null, states);
+  }
+
 }
