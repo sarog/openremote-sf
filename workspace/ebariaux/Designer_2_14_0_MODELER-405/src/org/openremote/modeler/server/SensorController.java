@@ -123,7 +123,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
   public static SensorDTO createSensorDTO(Sensor sensor) {
     SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName(), sensor.getType());
     DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
-    sensorDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()));
+    sensorDTO.setCommand(dc.getDeviceCommandDTO());
     return sensorDTO;
   }
   
