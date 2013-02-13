@@ -511,9 +511,6 @@ class DesignerState
             );
           }
 
-          // EBR - MODELER-390
-          generateXMLUiState(cache.getXMLUIFile());
-
           return;
         }
 
@@ -731,23 +728,6 @@ class DesignerState
     });
   }
 
-  private void generateXMLUiState(File xmlUIFile) {
-    XStream xstream = new XStream(new StaxDriver());
-    xstream.alias("panel", Panel.class);
-    xstream.alias("group", GroupRef.class);
-    xstream.alias("screenPair", ScreenPairRef.class);
-    xstream.alias("absolute", Absolute.class);
-    FileWriter fw;
-    try {
-      fw = new FileWriter(xmlUIFile);
-      xstream.toXML(transformToPanelsAndMaxOid(), fw);
-      fw.close();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-  
   /**
    * Saves the account artifacts from the current in-memory domain model to Beehive server.
    *
