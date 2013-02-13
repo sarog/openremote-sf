@@ -1702,6 +1702,14 @@ public class LocalFileCache implements ResourceCache<File>
   }
   
   /**
+   * @return File for storing UI elements state in XML format.
+   */
+  public File getXMLUIFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "ui_state.xml");
+  }
+
+  /**
    * @return File for panel XML description (panel.xml)
    */
   public File getPanelXmlFile() {
@@ -1728,9 +1736,6 @@ public class LocalFileCache implements ResourceCache<File>
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
    *
-   * @param pathConfig      Designer path configuration
-   * @param panelsObjFile   file path to the legacy binary panels.objs UI state serialization file
-   *
    * @return      true if the panels.obj file is present in local beehive archive cache folder,
    *              false otherwise
    *
@@ -1753,6 +1758,35 @@ public class LocalFileCache implements ResourceCache<File>
 
       throw new ConfigurationException(
           "Security manager denied access to " + panelsObjFile.getAbsoluteFile() +
+          ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
+      );
+    }
+  }
+  
+  /**
+   * Detects the presence of XML designer UI state serialization file.
+   *
+   * @return      true if the ui_state.xml file is present in local beehive archive cache folder,
+   *              false otherwise
+   *
+   * @throws ConfigurationException
+   *              if read access to the file system is denied for any reason
+   */
+  public boolean hasXMLUIState() throws ConfigurationException
+  {
+    File xmlUIStateFile = getXMLUIFile();
+    try
+    {
+      return xmlUIStateFile.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      // convert the potential security exception to a checked exception...
+
+      throw new ConfigurationException(
+          "Security manager denied access to " + xmlUIStateFile.getAbsoluteFile() +
           ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
       );
     }

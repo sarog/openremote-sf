@@ -25,6 +25,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
@@ -34,7 +35,9 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -43,19 +46,23 @@ import org.openremote.modeler.beehive.Beehive30API;
 import org.openremote.modeler.beehive.BeehiveService;
 import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
+import org.openremote.modeler.cache.ResourceCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.component.ColorPicker;
@@ -82,6 +89,16 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSetConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 
 /**
@@ -416,7 +433,7 @@ class DesignerState
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
       boolean hasCachedState = cache.hasState();
-      boolean hasXMLUIState = hasXMLUIState();
+      boolean hasXMLUIState = cache.hasXMLUIState();
 
 
       // If we can't find any serialization binary (panels.obj), XML serialization file and
@@ -438,6 +455,20 @@ class DesignerState
         return;
       }
 
+
+      if (hasXMLUIState)
+      {
+        
+        restoreXMLUIState(cache.getXMLUIFile());
+                
+        restoreLog.info("Restored UI state from XML : {0}", this);
+
+        // TODO
+        
+        return;
+      }
+
+      
       // Migrate conservately and make as little waves as possible... therefore attempt
       // to restore from the legacy binary serialization format first (even if better
       // options are available). This restore order can be modified once we are more
@@ -490,6 +521,9 @@ class DesignerState
             );
           }
 
+          // EBR - MODELER-390
+          generateXMLUiState(cache.getXMLUIFile());
+
           return;
         }
 
@@ -501,12 +535,6 @@ class DesignerState
           );
         }
       }
-
-      if (hasXMLUIState)
-      {
-        // TODO
-      }
-
 
       // TODO :
       //
@@ -713,6 +741,33 @@ class DesignerState
     });
   }
 
+  private void generateXMLUiState(File xmlUIFile) {
+    XStream xstream = new XStream(new StaxDriver() {
+      protected MapperWrapper wrapMapper(final MapperWrapper next) {
+        return new HibernateMapper(next);
+      }
+    });
+    xstream.registerConverter(new HibernateProxyConverter());
+    xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
+    
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    FileWriter fw;
+    try {
+      fw = new FileWriter(xmlUIFile);
+      xstream.toXML(transformToPanelsAndMaxOid(), fw);
+      fw.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
   /**
    * Saves the account artifacts from the current in-memory domain model to Beehive server.
    *
@@ -927,6 +982,18 @@ class DesignerState
         );
       }
     }
+  }
+  
+  private void restoreXMLUIState(File xmlUIFile) throws RestoreFailureException
+  {
+    XStream xstream = new XStream(new StaxDriver());
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(xmlUIFile);
+    panels = panelsAndMaxOid.getPanels();
+    maxOID = panelsAndMaxOid.getMaxOid();
   }
 
 
