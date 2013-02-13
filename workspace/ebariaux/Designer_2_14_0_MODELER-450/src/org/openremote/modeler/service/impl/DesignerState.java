@@ -20,40 +20,56 @@
  */
 package org.openremote.modeler.service.impl;
 
-import java.io.File;
-import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
+import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.StreamCorruptedException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
-import java.io.EOFException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.io.StreamCorruptedException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.openremote.modeler.configuration.PathConfig;
-import org.openremote.modeler.client.Configuration;
-import org.openremote.modeler.client.utils.PanelsAndMaxOid;
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Panel;
-import org.openremote.modeler.domain.User;
-import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.exception.NetworkException;
-import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.beehive.Beehive30API;
 import org.openremote.modeler.beehive.BeehiveService;
+import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.cache.ResourceCache;
-import org.openremote.modeler.cache.CacheOperationException;
-import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.ScreenPairRef;
+import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.ConfigurationException;
+import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSetConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 
 /**
@@ -377,10 +393,11 @@ class DesignerState
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       File legacyPanelsObjFile = new File(pathConfig.getSerializedPanelsFile(user.getAccount())); // TODO : should go through ResourceCache interface
+      File xmlUIFile = new File(pathConfig.getXMLUIFile(user.getAccount()));
 
       boolean hasLegacyDesignerUIState = hasLegacyDesignerUIState(pathConfig, legacyPanelsObjFile);
       boolean hasCachedState = cache.hasState();
-      boolean hasXMLUIState = hasXMLUIState();
+      boolean hasXMLUIState = hasLegacyDesignerUIState(pathConfig, xmlUIFile);// hasXMLUIState();
 
 
       // If we can't find any serialization binary (panels.obj), XML serialization file and
@@ -402,6 +419,20 @@ class DesignerState
         return;
       }
 
+
+      if (hasXMLUIState)
+      {
+        
+        restoreXMLUIState(xmlUIFile);
+                
+        restoreLog.info("Restored UI state from XML : {0}", this);
+
+        // TODO
+        
+        return;
+      }
+
+      
       // Migrate conservately and make as little waves as possible... therefore attempt
       // to restore from the legacy binary serialization format first (even if better
       // options are available). This restore order can be modified once we are more
@@ -414,7 +445,10 @@ class DesignerState
           restoreLegacyDesignerUIState(legacyPanelsObjFile);
 
           restoreLog.info("Restored UI state : {0}", this);
-
+          
+          // EBR - MODELER-390
+          generateXMLUiState(xmlUIFile);
+          
           return;
         }
 
@@ -426,12 +460,6 @@ class DesignerState
           );
         }
       }
-
-      if (hasXMLUIState)
-      {
-        // TODO
-      }
-
 
       // TODO :
       //
@@ -513,6 +541,34 @@ class DesignerState
     }
   }
 
+
+
+  private void generateXMLUiState(File xmlUIFile) {
+    XStream xstream = new XStream(new StaxDriver() {
+      protected MapperWrapper wrapMapper(final MapperWrapper next) {
+        return new HibernateMapper(next);
+      }
+    });
+    xstream.registerConverter(new HibernateProxyConverter());
+    xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
+    xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
+    
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    FileWriter fw;
+    try {
+      fw = new FileWriter(xmlUIFile);
+      xstream.toXML(transformToPanelsAndMaxOid(), fw);
+      fw.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
 
   /**
@@ -730,6 +786,18 @@ class DesignerState
         );
       }
     }
+  }
+  
+  private void restoreXMLUIState(File xmlUIFile) throws RestoreFailureException
+  {
+    XStream xstream = new XStream(new StaxDriver());
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(xmlUIFile);
+    panels = panelsAndMaxOid.getPanels();
+    maxOID = panelsAndMaxOid.getMaxOid();
   }
 
 
