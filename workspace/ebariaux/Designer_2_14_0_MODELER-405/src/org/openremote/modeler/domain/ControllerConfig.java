@@ -174,7 +174,7 @@ public class ControllerConfig extends BusinessEntity{
    
    @Transient
    public ControllerConfigDTO getControllerConfigDTO() {
-     new ControllerConfigDTO(getOid(), getCategory(), getName(), getValue(), getHint(), getValidation(), getOptions());
+     return new ControllerConfigDTO(getOid(), getCategory(), getName(), getValue(), getHint(), getValidation(), getOptions());
    }
    
 }

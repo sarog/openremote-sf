@@ -347,7 +347,7 @@ public class Device extends BusinessEntity {
    @Transient
    @JSON(include = false)
    public DeviceDTO getDeviceDTO() {
-     return new DeviceDTO(getOid(), getDisplayName()));
+     return new DeviceDTO(getOid(), getDisplayName());
    }
    
    @Transient
