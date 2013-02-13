@@ -267,7 +267,24 @@ public class PathConfig {
    @Deprecated public String getSerializedPanelsFile(Account account){
       return userFolder(account)+"panels.obj";
    }
+
+  /**
+   * @param account - User account owning file
+   * @return Path to file storing UI elements in XML format
+   */
+  @Deprecated public String getXMLUIFile(Account account) {
+   return userFolder(account) + "ui_state.xml";
+  }
    
+  /**
+   * @param account - User account owning file
+   * @return Path to file storing building configuration elements in XML format
+   */
+  @Deprecated public String buildingModelerXmlFilePath(Account account) {
+    return userFolder(account) + "building_modeler.xml";
+  }
+
+
 //   public String getControllerConfigPath(){
 //      return configuration.getControllerConfigPath();
 //   }
