@@ -19,15 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.protocol.elexolUSB;
-//package org.openremote.controller.protocol.x10;
 
 /**
  * Enumeration of supported Elexol USB device  commands that can be sent over the USB.
  * 
  * Right now supports ON, OFF and PULSE
  *
- * @author John Whitmore
- * @author <a href="mailto:johnfwhitmore@gmail.com">Juha Lindfors</a>
+ * @author <a href="mailto:johnfwhitmore@gmail.com">John Whitmore</a>
  */
 public enum CommandType
 {
@@ -35,17 +33,17 @@ public enum CommandType
   /**
    * Switches on the target Output Pin
    */
-  SWITCH_ON(new String("ON")),
+  SWITCH_ON(new String("On")),
 
   /**
    * Switches off the target Output Pin
    */
-  SWITCH_OFF(new String("OFF")),
+  SWITCH_OFF(new String("Off")),
 
   /**
    * Pulses the target Output Pin
    */
-  PULSE(new String("PULSE"));
+  PULSE(new String("Pulse"));
 
   // Enum Fields ----------------------------------------------------------------------------------
 

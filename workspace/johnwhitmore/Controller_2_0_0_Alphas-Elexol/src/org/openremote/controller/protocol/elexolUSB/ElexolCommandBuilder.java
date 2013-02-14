@@ -41,209 +41,193 @@ import java.util.regex.Matcher;
 public class ElexolCommandBuilder implements CommandBuilder
 {
 
-  // Constants ------------------------------------------------------------------------------------
+    // Constants ------------------------------------------------------------------------------------
 
-  /**
-   * A common log category name intended to be used across all classes related to
-   * ElexolUSB implementation.
-   */
-  public final static String ELEXOL_USB_LOG_CATEGORY = "ELEXOL_USB";
-
-  /**
-   * String constant for parsing X10 protocol XML entries from controller.xml file.
-   *
-   * This constant is the expected property name value for X10 addresses
-   * (<code>{@value}</code>):
-   *
-   * <pre>{@code
-   * <command protocol = "x10" >
-   *   <property name = "address" value = "A1"/>
-   *   <property name = "command" value = "ON"/>
-   * </command>
-   * }</pre>
-   */
-  public final static String X10_XMLPROPERTY_ADDRESS = "address";
-
-  /**
-   * String constant for parsing X10 protocol XML entries from controller.xml file.
-   *
-   * This constant is the expected property name value for X10 commands ({@value}):
-   *
-   * <pre>{@code
-   * <command protocol = "x10" >
-   *   <property name = "address" value = "A1"/>
-   *   <property name = "command" value = "ON"/>
-   * </command>
-   * }</pre>
-   */
-  public final static String X10_XMLPROPERTY_COMMAND = "command";
-
-
-  // Class Members --------------------------------------------------------------------------------
-
-  /**
-   * Logging. Use common Elexol USB log category.
-   */
-  private static Logger log = Logger.getLogger(ELEXOL_USB_LOG_CATEGORY);
-
-
-
-  // Instance Fields ------------------------------------------------------------------------------
-
-  private static SerialPortManager usbPort = new SerialPortManager();
-
-
-
-  // Implements CommandBuilder --------------------------------------------------------------------
-
-  /**
-   * Parses the X10 command XML snippets and builds a corresponding X10 command instance.  <p>
-   *
-   * The expected XML structure is:
-   *
-   * <pre>{@code
-   * <command protocol = "x10" >
-   *   <property name = "address" value = "A1"/>
-   *   <property name = "command" value = "ON"/>
-   * </command>
-   * }</pre>
-   *
-   * Additional properties not listed here are ignored.
-   *
-   * @see X10Command
-   *
-   * @throws org.openremote.controller.exception.NoSuchCommandException
-   *            if the X10 command instance cannot be constructed from the XML snippet
-   *            for any reason
-   *
-   * @return an X10 command instance with known configured properties set
-   */
-  public Command build(Element element)
-  {
-    /*
-     * TODO : ${param} handling
-     *
+    /**
+     * A common log category name intended to be used across all classes related to
+     * ElexolUSB implementation.
      */
+    public final static String ELEXOL_USB_LOG_CATEGORY = "ELEXOL_USB";
 
-    String address = null;
-    String commandAsString = null;
-    String portAsString = null;
-    String pinAsString = null;
+    /**
+     * String constants for parsing Elexol USB protocol XML entries from controller.xml file.
+     *
+     * <pre>{@code
+     * <command protocol = "elexol-USB" >
+     *   <attr name = "usbPort" label = "USB Port">
+     *   <attr name = "ioPort" label = "I/O Port">
+     *   <attr name = "pinNumber" label = "I/O Pin">
+     *   <attr name = "command" label = "Command">
+     *   <attr name = "pulseDuration" label = "Pulse Duration">
+     * </command>
+     * }</pre>
+     */
+    public final static String ELEXOL_USB_XMLPROPERTY_USB_PORT = "usbPort";
+    public final static String ELEXOL_USB_XMLPROPERTY_IO_PORT = "ioPort";
+    public final static String ELEXOL_USB_XMLPROPERTY_PIN_NUMBER = "pinNumber";
+    public final static String ELEXOL_USB_XMLPROPERTY_COMMAND = "command";
+    public final static String ELEXOL_USB_XMLPROPERTY_PULSE_DURATION = "pulseDuration";
 
-    // Properties come in as child elements...
 
-    List<Element> propertyElements = element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY,
-                                                         element.getNamespace());
+    // Class Members --------------------------------------------------------------------------------
 
-    for (Element el : propertyElements)
+    /**
+     * Logging. Use common Elexol USB log category.
+     */
+    public static Logger log = Logger.getLogger(ELEXOL_USB_LOG_CATEGORY);
+    
+    // Implements CommandBuilder --------------------------------------------------------------------
+
+    /**
+     * Parses the Elexol USB command XML snippets and builds a corresponding command instance.  <p>
+     *
+     * The expected XML structure is:
+     *
+     * <pre>{@code
+     * <command protocol = "elexol-USB" >
+     *   <attr name = "usbPort" label = "USB Port">
+     *   <attr name = "ioPort" label = "I/O Port">
+     *   <attr name = "pinNumber" label = "I/O Pin">
+     *   <attr name = "command" label = "Command">
+     *   <attr name = "pulseDuration" label = "Pulse Duration">
+     * </command>
+     * }</pre>
+     *
+     * Additional properties not listed here are ignored.
+     *
+     * @see ElexolCommand
+     *
+     * @throws org.openremote.controller.exception.NoSuchCommandException
+     *            if the Elexol command instance cannot be constructed from the XML snippet
+     *            for any reason
+     *
+     * @return an Elexol command instance with known configured properties set
+     */
+    public Command build(Element element)
     {
-      String x10CommandPropertyName = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
-      String x10CommandPropertyValue = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
+	/*
+	 * TODO : ${param} handling
+	 *
+	 */
+	
+	String usbPort = null;
+	String ioPort = null;
+	String pinNumber = null;
+	String commandString = null;
+	String pulseDuration = null;
+	Integer duration = 0;
+	
+	// Properties come in as child elements...
+	
+	List<Element> propertyElements = element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY,
+							     element.getNamespace());
 
-      if (X10_XMLPROPERTY_ADDRESS.equalsIgnoreCase(x10CommandPropertyName))
-      {
-        address = x10CommandPropertyValue;
-      }
-      else if (X10_XMLPROPERTY_COMMAND.equalsIgnoreCase(x10CommandPropertyName))
-      {
-        commandAsString = x10CommandPropertyValue;
-      }
-      else
-      {
-        log.warn(
-            "Unknown X10 property '<" + XML_ELEMENT_PROPERTY + " " +
-            XML_ATTRIBUTENAME_NAME + " = \"" + x10CommandPropertyName + "\" " +
-            XML_ATTRIBUTENAME_VALUE + " = \"" + x10CommandPropertyValue + "\"/>'."
-        );
-      }
+	for (Element el : propertyElements){
+	    String commandPropertyName = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
+	    String commandPropertyValue = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
+
+	    if (ELEXOL_USB_XMLPROPERTY_USB_PORT.equalsIgnoreCase(commandPropertyName)){
+		usbPort = commandPropertyValue;
+	    }
+	    else if (ELEXOL_USB_XMLPROPERTY_IO_PORT.equalsIgnoreCase(commandPropertyName)){
+		ioPort = commandPropertyValue;
+	    }
+	    else if (ELEXOL_USB_XMLPROPERTY_PIN_NUMBER.equalsIgnoreCase(commandPropertyName)){
+		pinNumber = commandPropertyValue;
+	    }
+	    else if (ELEXOL_USB_XMLPROPERTY_COMMAND.equalsIgnoreCase(commandPropertyName)){
+		commandString = commandPropertyValue;
+	    }
+	    else if (ELEXOL_USB_XMLPROPERTY_PULSE_DURATION.equalsIgnoreCase(commandPropertyName)){
+		pulseDuration = commandPropertyValue;
+	    }
+	    else{
+		log.warn(
+		     "Unknown Elexol USB property '<" + XML_ELEMENT_PROPERTY + " " +
+		     XML_ATTRIBUTENAME_NAME + " = \"" + commandPropertyName + "\" " +
+		     XML_ATTRIBUTENAME_VALUE + " = \"" + commandPropertyValue + "\"/>'."
+		     );
+	    }
+	}
+
+	// sanity checks...
+	if (usbPort == null || ("").equals(usbPort)){
+	    throw new NoSuchCommandException(
+					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_USB_PORT + "' property"
+					 );
+	}
+
+	if (ioPort == null || ("").equals(ioPort)){
+	    throw new NoSuchCommandException(
+					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_IO_PORT + "' property"
+					 );
+	}
+
+	if (pinNumber == null || ("").equals(pinNumber)){
+	    throw new NoSuchCommandException(
+					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_PIN_NUMBER + "' property"
+					 );
+	}
+
+	if (commandString == null || ("").equals(commandString)){
+	    throw new NoSuchCommandException(
+					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_COMMAND + "' property"
+					     );
+	}
+
+	// Translate the command string to a type safe ElexolUSBCommandType enum...
+
+	CommandType command = null;
+
+	if (CommandType.SWITCH_ON.isEqual(commandString)){
+	    command = CommandType.SWITCH_ON;
+	}
+	else if (CommandType.SWITCH_OFF.isEqual(commandString)){
+	    command = CommandType.SWITCH_OFF;
+	}
+	else if (CommandType.PULSE.isEqual(commandString)){
+	    command = CommandType.PULSE;
+
+	    if (pulseDuration == null || ("").equals(pulseDuration)){
+		throw new NoSuchCommandException(
+						 "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_PULSE_DURATION + "' property"
+					     );
+	    }
+      
+	    duration = Integer.parseInt(pulseDuration);
+
+	}
+	else{
+	    throw new NoSuchCommandException("Elexol USB command '" + commandString + "' is not recognized.");
+	}
+
+	PortType port = null;
+
+	if (PortType.PORT_A.isEqual(ioPort)){
+	    port = PortType.PORT_A;
+	}
+	else if (PortType.PORT_B.isEqual(ioPort)){
+	    port = PortType.PORT_B;
+	}
+	else if (PortType.PORT_C.isEqual(ioPort)){
+	    port = PortType.PORT_C;
+	}
+	else{
+	    throw new NoSuchCommandException("Elexol USB I/O port '" + ioPort + "' is not recognized.");
+	}
+
+	PinType pin = PinType.convert(pinNumber);
+
+	if (pin == null){
+	    throw new NoSuchCommandException("Elexol USB I/O Pin Number '" + pinNumber + "' is not recognized.");
+	} 
+	// Done!
+
+	ElexolCommand cmd = new ElexolCommand(usbPort, port, pin, command, duration);
+
+	log.warn("ElexolCommand Created");
+
+	return cmd;
     }
-
-    // sanity checks...
-
-    if (commandAsString == null || ("").equals(commandAsString))
-    {
-      throw new NoSuchCommandException(
-         "X10 command is missing a mandatory '" + X10_XMLPROPERTY_COMMAND + "' property"
-      );
-    }
-
-    if (address == null || ("").equals(address))
-    {
-      throw new NoSuchCommandException(
-         "X10 command is missing a mandatory '" + X10_XMLPROPERTY_ADDRESS + "' property"
-      );
-    }
-
-
-    // Translate the command string to a type safe ElexolUSBCommandType enum...
-
-    CommandType command = null;
-
-    if (CommandType.SWITCH_ON.isEqual(commandAsString))
-    {
-      command = CommandType.SWITCH_ON;
-    }
-    else if (CommandType.SWITCH_OFF.isEqual(commandAsString))
-    {
-      command = CommandType.SWITCH_OFF;
-    }
-    else if (CommandType.PULSE.isEqual(commandAsString))
-    {
-      command = CommandType.PULSE;
-    }
-    else
-    {
-      throw new NoSuchCommandException("Elexol USB command '" + commandAsString + "' is not recognized.");
-    }
-
-    // Validate X10 addressing...
-
-    String houseCodes = "[A-Pa-p]";           // characters A to P
-    String deviceCodes = "([1-9]|(1[0-6]))";  // single digit 0-9 or double digit 10-16
-
-    String pattern = houseCodes + "" + deviceCodes;
-    Pattern regex = Pattern.compile(pattern);
-    Matcher match = regex.matcher(address);
-
-    if (!match.matches())
-    {
-      throw new NoSuchCommandException("X10 address '" + address + "' is not recognized.");
-    }
-
-    PortType port = null;
-
-    portAsString = new String(address.substring(0,1));
-
-    if (PortType.PORT_A.isEqual(portAsString))
-    {
-      port = PortType.PORT_A;
-    }
-    else if (PortType.PORT_B.isEqual(portAsString))
-    {
-      port = PortType.PORT_B;
-    }
-    else if (PortType.PORT_C.isEqual(portAsString))
-    {
-      port = PortType.PORT_C;
-    }
-    else
-    {
-      throw new NoSuchCommandException("Elexol USB I/O port '" + portAsString + "' is not recognized.");
-    }
-
-    pinAsString = new String(address.substring(1,2));
-
-    PinType pin = PinType.convert(pinAsString);
-
-    if (pin == null){
-      throw new NoSuchCommandException("Elexol USB I/O pin '" + pinAsString + "' is not recognized.");
-    } 
-    // Done!
-
-    ElexolCommand cmd = new ElexolCommand(usbPort, command, port, pin);
-
-    return cmd;
-  }
-
 }
        
