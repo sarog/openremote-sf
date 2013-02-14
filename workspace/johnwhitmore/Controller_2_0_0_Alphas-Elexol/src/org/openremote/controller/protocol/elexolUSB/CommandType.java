@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -21,53 +21,52 @@
 package org.openremote.controller.protocol.elexolUSB;
 
 /**
- * Enumeration of supported Elexol USB device  commands that can be sent over the USB.
+ * Enumeration of supported Elexol USB device commands that can be sent over the USB.
  * 
- * Right now supports ON, OFF and PULSE
+ * Right now support ON, OFF and PULSE
  *
  * @author <a href="mailto:johnfwhitmore@gmail.com">John Whitmore</a>
  */
 public enum CommandType
 {
 
-  /**
-   * Switches on the target Output Pin
-   */
-  SWITCH_ON(new String("On")),
+    /**
+     * Switches on the target Output Pin
+     */
+    SWITCH_ON(new String("On")),
 
-  /**
-   * Switches off the target Output Pin
-   */
-  SWITCH_OFF(new String("Off")),
+    /**
+     * Switches off the target Output Pin
+     */
+    SWITCH_OFF(new String("Off")),
 
-  /**
-   * Pulses the target Output Pin
-   */
-  PULSE(new String("Pulse"));
+    /**
+     * Pulses the target Output Pin
+     */
+    PULSE(new String("Pulse"));
 
-  // Enum Fields ----------------------------------------------------------------------------------
+    // Enum Fields ----------------------------------------------------------------------------------
 
-  private String command = null;
+    private String command = null;
   
-  // Enum Constructors ----------------------------------------------------------------------------
+    // Enum Constructors ----------------------------------------------------------------------------
 
-  private CommandType(String command)
-  {
-    this.command = command;
-  }
+    private CommandType(String command)
+    {
+	this.command = command;
+    }
 
-  // Enum Methods ---------------------------------------------------------------------------------
+    // Enum Methods ---------------------------------------------------------------------------------
 
-  /**
-   * @return true if the passed command is equal to this command, false otherwise
-   */
-  boolean isEqual(String command)
-  {
-      if (this.command.equalsIgnoreCase(command))
-      {
-        return true;
-      }
+    /**
+     * @return true if the passed command is equal to this command, false otherwise
+     */
+    boolean isEqual(String command)
+    {
+	if (this.command.equalsIgnoreCase(command)){
+	    return true;
+	}
 
-    return false;
-  }
+	return false;
+    }
 }

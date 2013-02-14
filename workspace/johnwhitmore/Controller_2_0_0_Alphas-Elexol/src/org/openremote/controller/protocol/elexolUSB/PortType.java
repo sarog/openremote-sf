@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -19,15 +19,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.protocol.elexolUSB;
-//package org.openremote.controller.protocol.x10;
 
 /**
- * Enumeration of supported Elexol USB device  commands that can be sent over the USB.
- * 
- * Right now supports ON, OFF and PULSE
+ * Enumeration of supported Elexol USB device I/O Ports (A,B and C).
  *
- * @author John Whitmore
- * @author <a href="mailto:johnfwhitmore@gmail.com">Juha Lindfors</a>
+ * Not sure if Java Enum ain't more trouble then it's worth but I'll go
+ * with it for the time being.
+ *
+ * @author <a href="mailto:johnfwhitmore@gmail.com">John Whitmore</a>
  */
 public enum PortType
 {
@@ -38,32 +37,32 @@ public enum PortType
 
     PORT_C(new String ("C"));
 
-  // Enum Fields ----------------------------------------------------------------------------------
+    // Enum Fields ----------------------------------------------------------------------------------
 
-  private String portString = null;
+    private String portString = null;
   
-  // Enum Constructors ----------------------------------------------------------------------------
+    // Enum Constructors ----------------------------------------------------------------------------
 
-  private PortType(String portString)
-  {
-    this.portString = portString;
-  }
+    private PortType(String portString)
+    {
+	this.portString = portString;
+    }
 
-  // Enum Methods ---------------------------------------------------------------------------------
+    // Enum Methods ---------------------------------------------------------------------------------
 
-  /**
-   * @return true if the passed command is equal to this command, false otherwise
-   */
-  boolean isEqual(String port)
-  {
-      if (portString.equalsIgnoreCase(port))
-      {
-        return true;
-      }
-    return false;
-  }
+    /**
+     * @return true if the passed command is equal to this command, false otherwise
+     */
+    boolean isEqual(String port)
+    {
+	if (portString.equalsIgnoreCase(port)){
+	    return true;
+	}
+	return false;
+    }
 
-  public String toString() {
-      return portString;
-  }
+    public String toString() 
+    {
+	return portString;
+    }
 }
