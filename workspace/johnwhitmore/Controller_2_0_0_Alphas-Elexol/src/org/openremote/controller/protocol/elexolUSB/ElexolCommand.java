@@ -1,18 +1,24 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.elexolUSB;
-//package org.openremote.controller.protocol.x10;
-
-// import java.util.Map;
-// import java.io.OutputStream;
-// import java.io.InputStream;
-// import java.io.UnsupportedEncodingException;
-// import java.io.IOException;
-// import java.lang.InterruptedException;
-
-// import gnu.io.PortInUseException;
-// import gnu.io.UnsupportedCommOperationException;
-// import gnu.io.NoSuchPortException;
-// import gnu.io.CommPortIdentifier;
-// import gnu.io.SerialPort;
 
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -27,10 +33,10 @@ public class ElexolCommand implements ExecutableCommand {
     private static Logger log = Logger.getLogger(ElexolCommandBuilder.ELEXOL_USB_LOG_CATEGORY);
 
     private ElexolUsbDevice device = null;
-    private CommandType command;
-    private PortType    port;
-    private PinType     pin;
-    private Integer     duration;
+    private CommandType     command;
+    private PortType        port;
+    private PinType         pin;
+    private Integer         duration;
 
     public ElexolCommand(String usbPort, PortType ioPort, PinType pinNumber, CommandType command, Integer duration)
     {
@@ -46,6 +52,6 @@ public class ElexolCommand implements ExecutableCommand {
 
 	this.device.Send(this.command, this.port, this.pin, this.duration);
 
-	log.warn("ElexolCommand Sent");
+	log.debug("ElexolCommand Sent");
     }
 }

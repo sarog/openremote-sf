@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -35,7 +35,6 @@ import java.util.regex.Matcher;
  * ElexolCommandBuilder is responsible for parsing the XML model from controller.xml and create
  * appropriate Command objects for it. <p>
  *
- * @author John Whitmore
  * @author <a href="mailto:johnfwhitmore@gmail.com>John Whitmore</a>
  */
 public class ElexolCommandBuilder implements CommandBuilder
@@ -76,8 +75,6 @@ public class ElexolCommandBuilder implements CommandBuilder
      */
     public static Logger log = Logger.getLogger(ELEXOL_USB_LOG_CATEGORY);
     
-    // Implements CommandBuilder --------------------------------------------------------------------
-
     /**
      * Parses the Elexol USB command XML snippets and builds a corresponding command instance.  <p>
      *
@@ -105,11 +102,6 @@ public class ElexolCommandBuilder implements CommandBuilder
      */
     public Command build(Element element)
     {
-	/*
-	 * TODO : ${param} handling
-	 *
-	 */
-	
 	String usbPort = null;
 	String ioPort = null;
 	String pinNumber = null;
@@ -153,25 +145,25 @@ public class ElexolCommandBuilder implements CommandBuilder
 	// sanity checks...
 	if (usbPort == null || ("").equals(usbPort)){
 	    throw new NoSuchCommandException(
-					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_USB_PORT + "' property"
-					 );
+		      "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_USB_PORT + "' property"
+					     );
 	}
 
 	if (ioPort == null || ("").equals(ioPort)){
 	    throw new NoSuchCommandException(
-					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_IO_PORT + "' property"
-					 );
+		      "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_IO_PORT + "' property"
+					     );
 	}
 
 	if (pinNumber == null || ("").equals(pinNumber)){
 	    throw new NoSuchCommandException(
-					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_PIN_NUMBER + "' property"
-					 );
+		      "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_PIN_NUMBER + "' property"
+					     );
 	}
 
 	if (commandString == null || ("").equals(commandString)){
 	    throw new NoSuchCommandException(
-					     "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_COMMAND + "' property"
+		      "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_COMMAND + "' property"
 					     );
 	}
 
@@ -189,13 +181,13 @@ public class ElexolCommandBuilder implements CommandBuilder
 	    command = CommandType.PULSE;
 
 	    if (pulseDuration == null || ("").equals(pulseDuration)){
-		throw new NoSuchCommandException(
-						 "Elexol USB command is missing a mandatory '" + ELEXOL_USB_XMLPROPERTY_PULSE_DURATION + "' property"
-					     );
+		/*
+		 * If no Pulse Duration is given use 50mS as default
+		 */
+		duration = 50;
+	    } else {
+		duration = Integer.parseInt(pulseDuration);
 	    }
-      
-	    duration = Integer.parseInt(pulseDuration);
-
 	}
 	else{
 	    throw new NoSuchCommandException("Elexol USB command '" + commandString + "' is not recognized.");
@@ -216,16 +208,17 @@ public class ElexolCommandBuilder implements CommandBuilder
 	    throw new NoSuchCommandException("Elexol USB I/O port '" + ioPort + "' is not recognized.");
 	}
 
+
 	PinType pin = PinType.convert(pinNumber);
 
 	if (pin == null){
 	    throw new NoSuchCommandException("Elexol USB I/O Pin Number '" + pinNumber + "' is not recognized.");
 	} 
-	// Done!
+
 
 	ElexolCommand cmd = new ElexolCommand(usbPort, port, pin, command, duration);
 
-	log.warn("ElexolCommand Created");
+	log.debug("ElexolCommand Created");
 
 	return cmd;
     }

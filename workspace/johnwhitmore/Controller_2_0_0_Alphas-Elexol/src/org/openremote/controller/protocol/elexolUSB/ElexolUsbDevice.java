@@ -1,3 +1,23 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.elexolUSB;
 
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -15,7 +35,7 @@ import gnu.io.SerialPort;
 
 import org.apache.log4j.Logger;
 
-public class ElexolUsbDevice /* extends Thread*/ {
+public class ElexolUsbDevice {
 
     /**
      * Logging. Use common Elexol USB log category.
@@ -114,23 +134,14 @@ public class ElexolUsbDevice /* extends Thread*/ {
 
 	byte value = 0x00;
 
-	log.warn("SerialPortManager Send");
-	// System.out.print("USBPortManagerSend");
-	// if(command == ElexolUSBCommandType.SWITCH_ON){
-	//     System.out.print("On");
-	// }
-	// else if(command == ElexolUSBCommandType.SWITCH_ON){
-	//     System.out.print("Off");
-	// }
-	// System.out.print("Port " + port);
-	// System.out.print("Pin" + Byte.toString(pin));
+	log.debug("SerialPortManager Send");
 	
 	if(serialPort != null){
 
-	    log.error("SerialPortManager Serial port Open");
+	    log.debug("SerialPortManager Serial port Open");
 
 	    synchronized(serialLock){
-		log.error("SerialPortManager Sync'd");
+		log.debug("SerialPortManager Sync'd");
 		try{
 		    /*
 		     * work out the new value to write to the port
@@ -179,7 +190,7 @@ public class ElexolUsbDevice /* extends Thread*/ {
 			try{
 			    Thread.sleep(duration);  
 			} catch (InterruptedException ie){
-			    System.out.println(ie.getMessage());
+			    log.error("ElexolUsbDevice Interrupted!");
 			}
 
 			if(port == PortType.PORT_A){
@@ -197,16 +208,13 @@ public class ElexolUsbDevice /* extends Thread*/ {
 
 			outputStream.write(port.toString().getBytes("UTF8"));
 			outputStream.write(value);
-			//this.start();
 		    }
 		}
 		catch (UnsupportedEncodingException e) {
 		    log.error("SerialPortManager UnsupportedEncodingException");
-		    e.printStackTrace();
 		}
 		catch (IOException e) {
 		    log.error("SerialPortManager IOException");
-		    e.printStackTrace();
 		}
 	    }
 	    log.error("SerialPortManager Finished Sync Section");
@@ -215,12 +223,4 @@ public class ElexolUsbDevice /* extends Thread*/ {
 	    log.error("SerialPortManager Serial port not open");
 	}
     }
-
-    public void run() {
-	/*
-	 * end the pulse that was started
-	 */
-    }
-
-
 }
