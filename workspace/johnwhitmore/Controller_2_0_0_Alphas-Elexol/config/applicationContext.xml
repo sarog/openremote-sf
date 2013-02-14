@@ -173,6 +173,7 @@
         <prop key = "ir">irCommandBuilder</prop>
         <prop key = "knx">knxCommandBuilder</prop>
         <prop key = "x10">x10CommandBuilder</prop>
+        <prop key = "elexolUSB">ElexolCommandBuilder</prop>
         <prop key = "socket">tcpSocketCommandBuilder</prop>
         <prop key = "telnet">telnetCommandBuilder</prop>
         <prop key = "http">httpGetCommandBuilder</prop>
@@ -215,7 +216,11 @@
 	      scope = "prototype"/>
 	      
 	<!-- X10 Command Builder -->
-	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
+	<bean id = "x10CommandBuilder" class =
+	      "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
+
+	<!-- Elexol USB Command Builder -->
+	<bean id = "ElexolCommandBuilder" class = "org.openremote.controller.protocol.elexolUSB.ElexolCommandBuilder"/>
 	
 	<!-- Telnet Command Builder -->
 	<bean id = "telnetCommandBuilder" class = "org.openremote.controller.protocol.telnet.TelnetCommandBuilder"
