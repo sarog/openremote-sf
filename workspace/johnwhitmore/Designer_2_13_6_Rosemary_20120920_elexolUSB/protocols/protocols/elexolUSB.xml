@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns = "http://www.openremote.org"
+            xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation = "http://www.openremote.org protocol.xsd">
+
+  <protocol displayName = "elexol-USB" tagName = "elexolUSB">
+
+    <attr name = "usbPort" label = "USB Port">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <!-- message is option -->
+        <!-- <regex message="group address should be 1.4.1.4">(\d\.){3}\d</regex> -->
+      </validations>
+    </attr>
+
+    <attr name = "ioPort" label = "I/O Port">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <maxLength>1</maxLength>
+        <regex message = "I/O Port A, B or C ">[ABC]</regex>
+      </validations>
+    </attr>
+
+    <attr name = "pinNumber" label = "I/O Pin">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <maxLength>1</maxLength>
+        <regex message = "Pin Number 0-7">[0-7]</regex>
+      </validations>
+    </attr>
+
+    <attr name = "command" label = "Command">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message="Command should be 'On', 'Off' or 'Pulse'">^On$|^Off$|^Pulse$</regex>
+      </validations>
+    </attr>
+
+    <attr name = "pulseDuration" label = "Pulse Duration">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <maxLength>5</maxLength>
+        <regex message="Duration in MilliSeconds (less then 100000)">^\d+$</regex>
+      </validations>
+    </attr>
+
+  </protocol>
+  
+</openremote>
