@@ -27,31 +27,32 @@ import org.apache.log4j.Logger;
 
 public class ElexolCommand implements ExecutableCommand {
 
-    /**
-     * Logging. Use common Elexol USB log category.
-     */
-    private static Logger log = Logger.getLogger(ElexolCommandBuilder.ELEXOL_USB_LOG_CATEGORY);
+  /**
+   * Logging. Use common Elexol USB log category.
+   */
+  private static Logger log = Logger.getLogger(ElexolCommandBuilder.ELEXOL_USB_LOG_CATEGORY);
 
-    private ElexolUsbDevice device = null;
-    private CommandType     command;
-    private PortType        port;
-    private PinType         pin;
-    private Integer         duration;
+  private ElexolUsbDevice device = null;
+  private CommandType     command;
+  private PortType        port;
+  private PinType         pin;
+  private Integer         duration;
 
-    public ElexolCommand(String usbPort, PortType ioPort, PinType pinNumber, CommandType command, Integer duration)
-    {
-	this.device = DeviceManager.GetDevice(usbPort);
-	this.command = command;
-	this.port = ioPort;
-	this.pin = pinNumber;
-        this.duration = duration;
-    }
+  public ElexolCommand(String usbPort, PortType ioPort, PinType pinNumber, CommandType command, Integer duration)
+  {
+    this.device = DeviceManager.GetDevice(usbPort);
+    this.command = command;
+    this.port = ioPort;
+    this.pin = pinNumber;
+    this.duration = duration;
+  }
 	
-    @Override
-    public void send() {
+  @Override
+  public void send()
+  {
 
-	this.device.Send(this.command, this.port, this.pin, this.duration);
+    this.device.Send(this.command, this.port, this.pin, this.duration);
 
-	log.debug("ElexolCommand Sent");
-    }
+    log.debug("ElexolCommand Sent");
+  }
 }
