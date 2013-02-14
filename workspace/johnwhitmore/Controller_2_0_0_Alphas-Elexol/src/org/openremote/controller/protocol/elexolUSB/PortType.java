@@ -30,39 +30,39 @@ package org.openremote.controller.protocol.elexolUSB;
  */
 public enum PortType
 {
+  PORT_A(new String ("A")),
 
-    PORT_A(new String ("A")),
+  PORT_B(new String ("B")),
 
-    PORT_B(new String ("B")),
+  PORT_C(new String ("C"));
 
-    PORT_C(new String ("C"));
+  // Enum Fields ----------------------------------------------------------------------------------
 
-    // Enum Fields ----------------------------------------------------------------------------------
-
-    private String portString = null;
+  private String portString = null;
   
-    // Enum Constructors ----------------------------------------------------------------------------
+  // Enum Constructors ----------------------------------------------------------------------------
 
-    private PortType(String portString)
+  private PortType(String portString)
+  {
+    this.portString = portString;
+  }
+
+  // Enum Methods ---------------------------------------------------------------------------------
+
+  /**
+   * @return true if the passed command is equal to this command, false otherwise
+   */
+  boolean isEqual(String port)
+  {
+    if (portString.equalsIgnoreCase(port))
     {
-	this.portString = portString;
+      return true;
     }
+    return false;
+  }
 
-    // Enum Methods ---------------------------------------------------------------------------------
-
-    /**
-     * @return true if the passed command is equal to this command, false otherwise
-     */
-    boolean isEqual(String port)
-    {
-	if (portString.equalsIgnoreCase(port)){
-	    return true;
-	}
-	return false;
-    }
-
-    public String toString() 
-    {
-	return portString;
-    }
+  public String toString() 
+  {
+    return portString;
+  }
 }

@@ -30,14 +30,14 @@ package org.openremote.controller.protocol.elexolUSB;
  */
 public enum PinType
 {
-    PIN_1(1),
-    PIN_2(2),
-    PIN_3(3),
-    PIN_4(4),
-    PIN_5(5),
-    PIN_6(6),
-    PIN_7(7),
-    PIN_8(8);
+  PIN_1(1),
+  PIN_2(2),
+  PIN_3(3),
+  PIN_4(4),
+  PIN_5(5),
+  PIN_6(6),
+  PIN_7(7),
+  PIN_8(8);
 
   // Enum Fields ----------------------------------------------------------------------------------
 
@@ -50,19 +50,22 @@ public enum PinType
     this.pin = pin;
   }
 
-  public static PinType convert( String pinString ) {
+  public static PinType convert( String pinString )
+  {
+    int pin = Integer.parseInt(pinString);
 
-      int pin = Integer.parseInt(pinString);
-
-      for ( PinType current : values() ) {
-	  if ( current.ordinal() == pin ) {
-	      return current;
-	  }
+    for ( PinType current : values() )
+    {
+      if ( current.ordinal() == pin )
+      {
+	return current;
       }
-      return null;
+    }
+    return null;
   }
 
-  public byte toByte(){
-      return (byte)this.pin;
+  public byte toByte()
+  {
+    return (byte)this.pin;
   }
 }

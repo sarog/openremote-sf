@@ -52,46 +52,50 @@ import org.apache.log4j.Logger;
 
 public class DeviceManager{
 
-    private static List<ElexolUsbDevice> devices = new ArrayList<ElexolUsbDevice>();
+  private static List<ElexolUsbDevice> devices = new ArrayList<ElexolUsbDevice>();
 
-    public static ElexolUsbDevice GetDevice(String usbPort)
+  public static ElexolUsbDevice GetDevice(String usbPort)
+  {
+    CommPortIdentifier comPortID;
+
+    try 
     {
-	CommPortIdentifier comPortID;
-
-	try {
-	    comPortID = CommPortIdentifier.getPortIdentifier(usbPort);
-	}
-	catch (NoSuchPortException e) {
-	    throw new NoSuchCommandException("USB port '" + usbPort + "' is not recognized.");
-	}
-
-	/*
-	 * Check have we already got this Comm Port in out list
-	 */
-	Iterator<ElexolUsbDevice> iterator = devices.iterator();
-
-	ElexolUsbDevice device;
-	while (iterator.hasNext()) {
-	    device = iterator.next();
-	    if(device.getComPortID() == comPortID){
-		return(device);
-	    }
-	}
-
-	/*
-	 * Can't find the device in our current list so have to add it
-	 * to the list.
-	 *
-	 * Creating a new device for a USB Port can throw NoSuchCommandException
-	 * if the device is not recognised as an Elexol USB Deivce
-	 */
-	device = new ElexolUsbDevice(comPortID);
-
-	/*
-	 * Add the new device to our list of devices.
-	 */
-	devices.add(device);
-
-	return(device);
+      comPortID = CommPortIdentifier.getPortIdentifier(usbPort);
     }
+    catch (NoSuchPortException e)
+    {
+      throw new NoSuchCommandException("USB port '" + usbPort + "' is not recognized.");
+    }
+
+    /*
+     * Check have we already got this Comm Port in out list
+     */
+    Iterator<ElexolUsbDevice> iterator = devices.iterator();
+
+    ElexolUsbDevice device;
+    while (iterator.hasNext())
+    {
+      device = iterator.next();
+      if(device.getComPortID() == comPortID)
+      {
+	return(device);
+      }
+    }
+
+    /*
+     * Can't find the device in our current list so have to add it
+     * to the list.
+     *
+     * Creating a new device for a USB Port can throw NoSuchCommandException
+     * if the device is not recognised as an Elexol USB Deivce
+     */
+    device = new ElexolUsbDevice(comPortID);
+
+    /*
+     * Add the new device to our list of devices.
+     */
+    devices.add(device);
+
+    return(device);
+  }
 }

@@ -29,44 +29,44 @@ package org.openremote.controller.protocol.elexolUSB;
  */
 public enum CommandType
 {
+  /**
+   * Switches on the target Output Pin
+   */
+  SWITCH_ON(new String("On")),
 
-    /**
-     * Switches on the target Output Pin
-     */
-    SWITCH_ON(new String("On")),
+  /**
+   * Switches off the target Output Pin
+   */
+  SWITCH_OFF(new String("Off")),
 
-    /**
-     * Switches off the target Output Pin
-     */
-    SWITCH_OFF(new String("Off")),
+  /**
+   * Pulses the target Output Pin
+   */
+  PULSE(new String("Pulse"));
 
-    /**
-     * Pulses the target Output Pin
-     */
-    PULSE(new String("Pulse"));
+  // Enum Fields ----------------------------------------------------------------------------------
 
-    // Enum Fields ----------------------------------------------------------------------------------
-
-    private String command = null;
+  private String command = null;
   
-    // Enum Constructors ----------------------------------------------------------------------------
+  // Enum Constructors ----------------------------------------------------------------------------
 
-    private CommandType(String command)
+  private CommandType(String command)
+  {
+    this.command = command;
+  }
+
+  // Enum Methods ---------------------------------------------------------------------------------
+
+  /**
+   * @return true if the passed command is equal to this command, false otherwise
+   */
+  boolean isEqual(String command)
+  {
+    if (this.command.equalsIgnoreCase(command))
     {
-	this.command = command;
+      return true;
     }
 
-    // Enum Methods ---------------------------------------------------------------------------------
-
-    /**
-     * @return true if the passed command is equal to this command, false otherwise
-     */
-    boolean isEqual(String command)
-    {
-	if (this.command.equalsIgnoreCase(command)){
-	    return true;
-	}
-
-	return false;
-    }
+    return false;
+  }
 }
