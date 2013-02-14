@@ -17,25 +17,35 @@ package org.openremote.controller.protocol.elexolUSB;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
 
+import org.apache.log4j.Logger;
+
 public class ElexolCommand implements ExecutableCommand {
 
+    /**
+     * Logging. Use common Elexol USB log category.
+     */
+    private static Logger log = Logger.getLogger(ElexolCommandBuilder.ELEXOL_USB_LOG_CATEGORY);
+
+    private ElexolUsbDevice device = null;
     private CommandType command;
     private PortType    port;
     private PinType     pin;
-    private SerialPortManager USBPort;
+    private Integer     duration;
 
-    public ElexolCommand(SerialPortManager USBPort, CommandType command, PortType port, PinType pin)
+    public ElexolCommand(String usbPort, PortType ioPort, PinType pinNumber, CommandType command, Integer duration)
     {
-	this.USBPort = USBPort;
+	this.device = DeviceManager.GetDevice(usbPort);
 	this.command = command;
-	this.port = port;
-	this.pin = pin;
+	this.port = ioPort;
+	this.pin = pinNumber;
+        this.duration = duration;
     }
 	
     @Override
     public void send() {
 
-	this.USBPort.Send(this.command, this.port, this.pin);
+	this.device.Send(this.command, this.port, this.pin, this.duration);
 
+	log.warn("ElexolCommand Sent");
     }
 }
