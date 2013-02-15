@@ -95,7 +95,7 @@ public class ResourceServiceTest {
    @Test
    public void testNopanel() {
       Collection<Panel> emptyPanel = new ArrayList<Panel>();
-      resourceService.initResources(emptyPanel, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(emptyPanel, IDUtil.nextID());
    }
    
    @Test
@@ -226,7 +226,7 @@ public class ResourceServiceTest {
       
       panels.add(panel1);
       panels.add(panel2);
-      resourceService.initResources(panels, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
    }
 
    @Test
@@ -248,7 +248,7 @@ public class ResourceServiceTest {
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
    }
 @Test
 public void testScreenHasGesture() {
@@ -291,7 +291,7 @@ public void testScreenHasGesture() {
    p.setGroupRefs(groupRefs);
    
    panelWithJustOneNavigate.add(p);
-   resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+// EBR TEMP   resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
  }
    
    @Test
@@ -312,7 +312,7 @@ public void testScreenHasGesture() {
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
    }
    
 @Test
@@ -337,7 +337,7 @@ public void testScreenHasGesture() {
       items.add(item);
       p.setTabbarItems(items);
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
    }
    
 @Test
@@ -368,7 +368,7 @@ public void testScreenHasGesture() {
       
       p.addGroupRef(new GroupRef(group));
       panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
    }
    
  @Test
@@ -394,7 +394,7 @@ public void testScreenHasGesture() {
       
       p.addGroupRef(new GroupRef(group));
       panel.add(p);
-      resourceService.initResources(panel, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panel, IDUtil.nextID());
    }
  
    @Test
@@ -425,7 +425,7 @@ public void testScreenHasGesture() {
       screenPair1.setPortraitScreen(screen);      
       screenRefs.add(new ScreenPairRef(screenPair1));
       
-      resourceService.initResources(panels, IDUtil.nextID());
+// EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
    }
    
 @Test(enabled=false)
