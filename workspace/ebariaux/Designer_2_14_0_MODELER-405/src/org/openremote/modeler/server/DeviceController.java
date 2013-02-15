@@ -102,41 +102,14 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
 
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
-     for (Sensor sensor : device.getSensors()) {
-       sensorDTOs.add(SensorController.createSensorDTO(sensor));
-     }
-     deviceDTO.setSensors(sensorDTOs);
-     ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
-     for (Switch s : device.getSwitchs()) {
-       switchDTOs.add(SwitchController.createSwitchDTO(s));
-     }
-     deviceDTO.setSwitches(switchDTOs);
-     ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
-     for (Slider s : device.getSliders()) {
-       sliderDTOs.add(SliderController.createSliderDTO(s));
-     }
-     deviceDTO.setSliders(sliderDTOs);
-     return deviceDTO;
+     return device.getDeviceWithChildrenDTO();
    }
 
    public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
      Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     return deviceDTO;
+     return device.getDeviceWithCommandChildrenDTO();
    }
 
-  protected ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
-    ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
-     for (DeviceCommand dc : deviceCommands) {
-       dcDTOs.add(dc.getDeviceCommandDTO());
-     }
-    return dcDTOs;
-  }
-   
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return device.getDeviceDetailsDTO();
