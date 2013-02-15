@@ -101,26 +101,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
      return dtos;    
   }
 
-  public static SensorWithInfoDTO createSensorWithInfoDTO(Sensor sensor) {
-    if (sensor.getType() == SensorType.RANGE) {
-       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(),
-               Integer.toString(((RangeSensor)sensor).getMin()),
-               Integer.toString(((RangeSensor)sensor).getMax()), null);
-    } else if (sensor.getType() == SensorType.CUSTOM) {
-       CustomSensor customSensor = (CustomSensor)sensor;
-       ArrayList<String> states = new ArrayList<String>();
-       for (State state : customSensor.getStates()) {
-         states.add(state.getName());
-       }
-       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states);
-    } else {
-      return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-              sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null);
-    }
-  }
- 
    @Override
   public void updateSensorWithDTO(SensorDetailsDTO sensor) {
      sensorService.updateSensorWithDTO(sensor);
