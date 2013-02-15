@@ -214,15 +214,7 @@ public class DeviceMacro extends BusinessEntity {
    public MacroDetailsDTO getMacroDetailsDTO() {
      ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
      for (DeviceMacroItem dmi : getDeviceMacroItems()) {
-       if (dmi instanceof DeviceMacroRef) {
-         DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
-         items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
-       } else if (dmi instanceof DeviceCommandRef) {
-         DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
-         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getFullyQualifiedName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
-       } else if (dmi instanceof CommandDelay) {
-         items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
-       }
+       items.add(dmi.getMacroItemDetailsDTO());
      }
      return new MacroDetailsDTO(getOid(), getName(), items);
    }
