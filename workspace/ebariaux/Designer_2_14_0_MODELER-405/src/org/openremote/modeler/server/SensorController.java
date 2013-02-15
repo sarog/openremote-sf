@@ -80,7 +80,8 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
      for (Sensor s : sensorService.loadByDeviceId(id)) {
-       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName(), s.getType()));
+       // EBR - MODELER-405 : initial implementation did not include sensor command in returned DTOs
+       dtos.add(s.getSensorDTO());
      }
      return dtos;
    }
@@ -119,14 +120,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null);
     }
   }
-   
-  public static SensorDTO createSensorDTO(Sensor sensor) {
-    SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName(), sensor.getType());
-    DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
-    sensorDTO.setCommand(dc.getDeviceCommandDTO());
-    return sensorDTO;
-  }
-  
+ 
    @Override
   public void updateSensorWithDTO(SensorDetailsDTO sensor) {
      sensorService.updateSensorWithDTO(sensor);
