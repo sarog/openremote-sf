@@ -43,7 +43,7 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
          throw new UserInvitationException("Failed to send invitation");
       }
       User u = userService.inviteUser(email, role, userService.getCurrentUser());
-      return new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole());
+      return u.getUserDTO();
    }
 
    public void setUserService(UserService userService) {
@@ -56,7 +56,7 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
 
    public UserDTO updateUserRoles(long uid, String roles) {
       User u = userService.updateUserRoles(uid, roles);
-      return new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole());
+      return u.getUserDTO();
    }
 
    public void deleteUser(long uid) {
@@ -74,7 +74,7 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
    private ArrayList<UserDTO> createUserDTOsFromUsers(List<User> users) {
      ArrayList<UserDTO> dtos = new ArrayList<UserDTO>();
      for (User u : users) {
-       dtos.add(new UserDTO(u.getOid(), u.getUsername(), u.getEmail(), u.getRole()));
+       dtos.add(u.getUserDTO());
      }
      return dtos;
    }
