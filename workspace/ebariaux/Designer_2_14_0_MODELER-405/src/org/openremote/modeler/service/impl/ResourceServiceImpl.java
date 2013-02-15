@@ -1146,7 +1146,10 @@ public class ResourceServiceImpl implements ResourceService
 
           DeviceMacro dm = deviceMacroService.loadById(oid);
 
-          return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
+          // EBR - MODELER-405 : was new MacroDTO(dm.getOid(), dm.getDisplayName()), getMacroDTO() also returns the items
+          // Leaving this comment in until we're sure this is not an issue
+          
+          return (dm != null) ? dm.getMacroDTO() : null;
         }
 
         else
