@@ -42,6 +42,14 @@ public abstract class AbstractConnection<P extends EspPacket, R> implements EnOc
   }
 
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   *  Number of times to retry reading the base ID of the EnOcean module : {@value}
+   */
+  private static final int ESP_CONNECTION_READ_BASE_ID_RETRY_COUNT_MAX = 3;
+
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -113,7 +121,15 @@ public abstract class AbstractConnection<P extends EspPacket, R> implements EnOc
 
     try
     {
-      this.baseID = readBaseID(processor);
+      /*
+       *  Immediately after the start of the serial connection, it may happen that
+       *  a truncated radio telegram is received. This error is reproducible (Mac)
+       *  if the EnOcean interface (USB 300) receives several radio telegrams before
+       *  the start of the serial connection. This seems to be an error of the EnOcean
+       *  firmware (USB 300). If this happens, the base ID of the EnOcean interface
+       *  has to be read more than once, in order to synchronize the serial protocol.
+       */
+      this.baseID = readBaseIDRepeatedly();
 
       log.info("Received EnOcean gateway base ID : {0}", this.baseID);
     }
@@ -240,4 +256,32 @@ public abstract class AbstractConnection<P extends EspPacket, R> implements EnOc
    *           if sending the radio telegram failed because of a connection error
    */
   protected abstract void sendRadioTelegram(R radioTelegram, EspProcessor<P> processor) throws InterruptedException, ConnectionException;
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private DeviceID readBaseIDRepeatedly() throws InterruptedException, ConnectionException
+  {
+    int retryCount = 0;
+
+    while(true)
+    {
+      ++retryCount;
+
+      log.debug("Try to read EnOcean module base ID (retry count = {0})", retryCount);
+
+      try
+      {
+        return readBaseID(processor);
+      }
+
+      catch (ConnectionException e)
+      {
+        if(ESP_CONNECTION_READ_BASE_ID_RETRY_COUNT_MAX == retryCount)
+        {
+          throw e;
+        }
+      }
+    }
+  }
 }

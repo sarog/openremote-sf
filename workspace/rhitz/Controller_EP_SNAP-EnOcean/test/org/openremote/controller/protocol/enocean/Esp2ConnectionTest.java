@@ -24,11 +24,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.packet.Esp2Packet;
+import org.openremote.controller.protocol.enocean.packet.Esp2Processor;
 import org.openremote.controller.protocol.enocean.packet.Esp2ResponsePacket;
 import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 import org.openremote.controller.protocol.enocean.packet.command.Esp2RdIDBaseResponse;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp21BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
+import org.openremote.controller.protocol.enocean.port.Esp2ComPortAdapter;
+import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
+import org.openremote.controller.protocol.enocean.port.MockPort;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -80,6 +84,22 @@ public class Esp2ConnectionTest
     conn.disconnect();
 
     mockProcessor.verifyMethodCalls();
+  }
+
+  @Test (expected = ConnectionException.class)
+  public void testReadBaseIDFailed() throws Exception
+  {
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    config.setComPort("COM1");
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP2);
+
+    Esp2ComPortAdapter portAdapter = new Esp2ComPortAdapter(new MockPort(), config);
+    Esp2Processor processor = new Esp2Processor(portAdapter);
+
+    Esp2Connection conn = new Esp2Connection(processor, mockListener);
+
+    conn.connect();
   }
 
   @Test (expected = IllegalArgumentException.class)

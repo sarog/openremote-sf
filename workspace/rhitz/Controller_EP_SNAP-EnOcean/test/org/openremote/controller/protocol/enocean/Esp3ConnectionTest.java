@@ -24,12 +24,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.enocean.packet.Esp3Packet;
+import org.openremote.controller.protocol.enocean.packet.Esp3Processor;
 import org.openremote.controller.protocol.enocean.packet.Esp3ResponsePacket;
 import org.openremote.controller.protocol.enocean.packet.EspProcessor;
 import org.openremote.controller.protocol.enocean.packet.command.Esp3RdIDBaseResponse;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp31BSTelegram;
 import org.openremote.controller.protocol.enocean.packet.radio.Esp3RadioTelegramOptData;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
+import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
+import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
+import org.openremote.controller.protocol.enocean.port.MockPort;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -80,6 +84,22 @@ public class Esp3ConnectionTest
     conn.disconnect();
 
     mockProcessor.verifyMethodCalls();
+  }
+
+  @Test (expected = ConnectionException.class)
+  public void testReadBaseIDFailed() throws Exception
+  {
+    EspPortConfiguration config = new EspPortConfiguration();
+    config.setCommLayer(EspPortConfiguration.CommLayer.PAD);
+    config.setComPort("COM1");
+    config.setSerialProtocol(EspPortConfiguration.SerialProtocol.ESP3);
+
+    Esp3ComPortAdapter portAdapter = new Esp3ComPortAdapter(new MockPort(), config);
+    Esp3Processor processor = new Esp3Processor(portAdapter);
+
+    Esp3Connection conn = new Esp3Connection(processor, mockListener);
+
+    conn.connect();
   }
 
   @Test (expected = IllegalArgumentException.class)
