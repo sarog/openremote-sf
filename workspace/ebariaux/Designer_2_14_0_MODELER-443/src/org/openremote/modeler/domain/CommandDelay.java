@@ -23,6 +23,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+
 /**
  * It define a delay second for sending a delay command.
  */
@@ -78,5 +80,10 @@ public class CommandDelay extends DeviceMacroItem {
    public String getDisplayName() {
       return "Delay (" + getDelaySecond() + "ms)";
    }
-   
+
+   @Transient
+   public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     return new MacroItemDetailsDTO(getOid(), Integer.parseInt(getDelaySecond()));
+   }
+
 }
