@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,12 +27,19 @@ import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -149,4 +157,44 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       }
       return results;
    }
+   
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public ArrayList<MacroDetailsDTO> loadAllMacroDetailsDTOs(Account account) {
+     ArrayList<MacroDetailsDTO> dtos = new ArrayList<MacroDetailsDTO>();
+     for (DeviceMacro dm : loadAll(account)) {
+       dtos.add(createMacroDetailsDTO(dm));
+     }
+     return dtos;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public MacroDetailsDTO loadMacroDetails(long id) {    
+     return createMacroDetailsDTO(loadById(id));
+   }
+
+   private MacroDetailsDTO createMacroDetailsDTO(DeviceMacro macroBean) {
+     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
+      for (DeviceMacroItem dmi : macroBean.getDeviceMacroItems()) {
+        if (dmi instanceof DeviceMacroRef) {
+          DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
+          items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
+        } else if (dmi instanceof DeviceCommandRef) {
+          DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
+          items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
+        } else if (dmi instanceof CommandDelay) {
+          items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
+        }
+      }
+      return new MacroDetailsDTO(macroBean.getOid(), macroBean.getName(), items);
+   }
+
+    
+
+   
 }
