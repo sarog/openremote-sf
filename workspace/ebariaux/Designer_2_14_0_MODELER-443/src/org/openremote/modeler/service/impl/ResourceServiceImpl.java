@@ -436,7 +436,7 @@ public class ResourceServiceImpl implements ResourceService
 				}
       }
   	 });
-   }
+  }
 
   /**
    * This implementation has been moved and delegates to {@link DesignerState#restore}.
