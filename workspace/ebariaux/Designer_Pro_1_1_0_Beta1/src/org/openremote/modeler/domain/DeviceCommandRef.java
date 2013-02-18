@@ -25,6 +25,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
+
 import flexjson.JSON;
 
 
@@ -129,5 +133,9 @@ public class DeviceCommandRef extends DeviceMacroItem {
       return true;
    }
    
+   @Transient
+   public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     return new MacroItemDetailsDTO(getOid(), MacroItemType.Command, getDeviceCommand().getFullyQualifiedName(), new DTOReference(getDeviceCommand().getOid()));
+   }
    
 }

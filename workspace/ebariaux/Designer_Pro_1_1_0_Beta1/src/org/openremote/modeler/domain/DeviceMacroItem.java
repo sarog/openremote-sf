@@ -29,6 +29,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+
 import flexjson.JSON;
 
 
@@ -97,5 +99,10 @@ public class DeviceMacroItem extends UICommand {
          return macroItemA == null && macroItemB == null;
       }
     }
+
+   @Transient
+   public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     return null;
+   }
 
 }
