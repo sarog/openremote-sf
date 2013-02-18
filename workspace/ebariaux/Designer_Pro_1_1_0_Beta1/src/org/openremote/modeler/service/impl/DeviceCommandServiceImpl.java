@@ -191,7 +191,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       ArrayList<DeviceCommandDTO> dtos = new ArrayList<DeviceCommandDTO>();
       List<DeviceCommand> dcs = device.getDeviceCommands();
       for (DeviceCommand deviceCommand : dcs) {
-        dtos.add(new DeviceCommandDTO(deviceCommand.getOid(), deviceCommand.getDisplayName(), deviceCommand.getFullyQualifiedName(), deviceCommand.getProtocol().getType()));
+        dtos.add(deviceCommand.getDeviceCommandDTO());
       }
       return dtos;
    }
