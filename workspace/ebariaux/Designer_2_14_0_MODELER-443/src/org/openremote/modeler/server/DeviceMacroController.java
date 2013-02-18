@@ -93,10 +93,9 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
-     DeviceMacro macroBean = deviceMacroService.loadById(id);
-     return macroBean.getMacroDetailsDTO();
+     return deviceMacroService.loadMacroDetails(id);
    }
-   
+
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
      macroBean.setName(macro.getName());
