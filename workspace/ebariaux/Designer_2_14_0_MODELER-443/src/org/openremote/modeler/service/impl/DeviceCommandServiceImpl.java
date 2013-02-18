@@ -34,6 +34,7 @@ import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,8 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
  
    /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
+   
+   private DeviceService deviceService;
 
    /**
     * Sets the device macro item service.
@@ -57,8 +60,12 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
    }
+   
+  public void setDeviceService(DeviceService deviceService) {
+	this.deviceService = deviceService;
+  }
 
-   /**
+  /**
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
     */
@@ -195,4 +202,21 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       }
       return dtos;
    }
+
+   @Override
+   public DeviceCommandDetailsDTO loadCommandDetailsDTO(long id) {
+     DeviceCommand dc = loadById(id);
+     return (dc != null)?dc.getDeviceCommandDetailsDTO():null;
+   }
+
+   @Override
+   public void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId) {
+     DeviceCommand dc = DeviceCommand.createDeviceCommandFromDTO(dto);
+
+     Device device = deviceService.loadById(deviceId);
+     dc.setDevice(device);
+
+     save(dc);
+   }
+
 }
