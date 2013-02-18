@@ -100,16 +100,17 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      return dtos;
   }
 
+   @Override
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
-     Device device = deviceService.loadById(oid);
-     return device.getDeviceWithChildrenDTO();
+     return deviceService.loadDeviceWithChildrenDTOById(oid);
    }
-
+   
+   @Override
    public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
-     Device device = deviceService.loadById(oid);
-     return device.getDeviceWithCommandChildrenDTO();
+     return deviceService.loadDeviceWithChildrenDTOById(oid);
    }
 
+   @Override
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
      return device.getDeviceDetailsDTO();
