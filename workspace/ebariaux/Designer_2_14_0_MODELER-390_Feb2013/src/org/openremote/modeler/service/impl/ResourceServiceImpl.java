@@ -224,15 +224,6 @@ public class ResourceServiceImpl implements ResourceService
 
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
-      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-      if (tmpDir.exists() && tmpDir.isDirectory()) {
-         try {
-            FileUtils.deleteDirectory(tmpDir);
-         } catch (IOException e) {
-            throw new FileOperationException("Error in deleting temp dir", e);
-         }
-      }
-      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
       String dotImportFileContent = "";
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
@@ -309,29 +300,6 @@ public class ResourceServiceImpl implements ResourceService
                   deviceMacroService.saveNewMacro(m);
                 }
               }
-
-              /*
-               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-                  dotImportFileContent = IOUtils.toString(zipInputStream);
-               }
-               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
-               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
-               }
-
-               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-                  FileUtils.touch(file);
-
-                  fileOutputStream = new FileOutputStream(file);
-                  int b;
-                  while ((b = zipInputStream.read()) != -1) {
-                     fileOutputStream.write(b);
-                  }
-                  fileOutputStream.close();
-               }
-               */
             }
 
          }
