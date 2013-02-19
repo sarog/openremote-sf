@@ -297,6 +297,23 @@ public class ResourceServiceImpl implements ResourceService
                   deviceMacroService.saveNewMacro(m);
                 }
                 
+                
+                
+       DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+       state.restore(false);
+
+       // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
+       // For now, this code will crash if panels are restored that reference any building modeler objects.
+      
+       PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+      
+       initResources(panels.getPanels(), panels.getMaxOid());
+       saveResourcesToBeehive(panels.getPanels());
+
+
+
+
+                
      return importedDeviceDTOs;
    }
 
@@ -546,7 +563,7 @@ public class ResourceServiceImpl implements ResourceService
       LocalFileCache cache = createLocalFileCache(currentUser);
     	
       DesignerState state = createDesignerState(currentUser, cache);
-      state.restore();
+      state.restore(true);
 
       PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
 
