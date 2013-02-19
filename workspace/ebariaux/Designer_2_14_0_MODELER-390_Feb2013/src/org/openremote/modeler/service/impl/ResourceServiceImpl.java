@@ -55,6 +55,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Panel;
@@ -168,10 +169,34 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
-   @Deprecated @Override public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+     // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
+     // TODO: delete of UI is not working at all
+     // -> client side must be instructed to reload
+     
+     // First part of import is getting rid of what's currently in the account
+
+     // UI
+	 LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
+	 Set<Panel> noPanels = new HashSet<Panel>(); 
+	 cache.replace(noPanels, 0);
+     saveResourcesToBeehive(noPanels, 0);
+     
+     // Clean images
+     // TODO
+
+     // Remove all building modeler information (except for configuration)
+     Account account = userService.getAccount();
+     List<Device> allDevices = deviceService.loadAll(account);
+     for (Device d : allDevices) {
+       deviceService.deleteDevice(d.getOid());
+     }
+     // TODO: macro
+
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
+     /*
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
@@ -279,7 +304,7 @@ public class ResourceServiceImpl implements ResourceService
                   }
                   fileOutputStream.close();
                }
-               */
+               *//*
             }
 
          }
@@ -296,6 +321,7 @@ public class ResourceServiceImpl implements ResourceService
          }
 
       }
+      */
      return importedDeviceDTOs;
    }
 
