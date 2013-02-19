@@ -35,7 +35,7 @@ public class Dimmer extends Switch {
       cmdUrl.append(client.getAddress());
       cmdUrl.append(":3480/data_request?id=lu_action&output_format=xml&DeviceNum=");
       cmdUrl.append(id);
-      cmdUrl.append("&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadLevelTarget=");
+      cmdUrl.append("&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=");
       cmdUrl.append(paramValue);
       getClient().sendCommand(cmdUrl.toString());
    }
@@ -52,7 +52,7 @@ public class Dimmer extends Switch {
    protected void updateDeviceSpecificStatus(Element element) {
       super.updateDeviceSpecificStatus(element);
       if (element.getAttributeValue("level") != null) {
-         this.level = Integer.parseInt(element.getAttributeValue("status"));
+         this.level = Integer.parseInt(element.getAttributeValue("level"));
       }
    }
 

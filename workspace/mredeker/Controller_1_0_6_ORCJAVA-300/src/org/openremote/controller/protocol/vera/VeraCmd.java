@@ -27,11 +27,15 @@ public enum VeraCmd {
    OFF,
    GET_STATUS,
    SET_LEVEL,
+   SET_HEAT_SETPOINT,
+   GET_HEAT_SETPOINT,
    GET_LEVEL,
    GET_TEMPERATURE,
    GET_HUMIDITY,
    GET_WATTS,
-   GET_CONSUMPTION;
+   GET_CONSUMPTION,
+   GET_ARMED,
+   GET_TRIPPED;
 
    /**
     * All: getComment, getBatteryLevel
