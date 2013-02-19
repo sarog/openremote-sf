@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,11 +27,11 @@ import java.util.Set;
 
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.client.event.DevicesCreatedEvent;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
-import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -50,13 +51,12 @@ import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -70,16 +70,19 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * The application's main view, which create a viewport and added it into rootPanel.
@@ -229,6 +232,9 @@ public class ApplicationView implements View {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
+         
+         applicationToolBar.add(createImportButton());
+         
          applicationToolBar.add(createOnLineTestBtn());
       } else if (roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
          initSaveAndExportButtons();
@@ -404,25 +410,43 @@ public class ApplicationView implements View {
     * @return the menu item
     */
    @SuppressWarnings("unused")
-   private MenuItem createImportMenuItem() {
-      MenuItem importMenuItem = new MenuItem("Import");
-      importMenuItem.ensureDebugId(DebugId.IMPORT);
-      //importMenuItem.setIcon(icons.importIcon());
-      final ApplicationView that = this;
-      importMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
-         @Override
-         public void componentSelected(MenuEvent ce) {
-            final ImportZipWindow importWindow = new ImportZipWindow();
-            importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
-               @Override
-               public void afterSubmit(ResponseJSONEvent be) {
-                  // that.activityPanel.reRenderTree(be.getData().toString(), screenTab);
-                  importWindow.hide();
-               }
-            });
-         }
-      });
-      return importMenuItem;
+   private Button createImportButton() {
+     
+     Button importButton = new Button();
+     importButton.setIcon(icons.saveIcon());
+     importButton.setToolTip("Import");
+     importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+        final ImportZipWindow importWindow = new ImportZipWindow();
+        importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
+           @Override
+           public void afterSubmit(ResponseJSONEvent be) {
+             
+             
+             // TODO: encapsulated in std response and test for error messages
+             // TODO: or this is done one level above (in import window)
+             
+             // TODO: depending on what was displayed in the tree, must reload either device or macro or panel ...
+             // -> fire all events, depending on listener will pickup what is required
+
+             ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
+             JSONArray jsonDeviceDTOs = JSONParser.parseStrict((String) be.getData()).isArray();
+
+             for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
+               JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
+               DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
+               deviceDTOs.add(deviceDTO);
+             }
+             eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
+
+             importWindow.hide();
+           }
+        });
+      }
+     });
+      return importButton;
    }
 
 
