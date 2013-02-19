@@ -196,7 +196,6 @@ public class ResourceServiceImpl implements ResourceService
 
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
      
-     /*
       File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
       if (tmpDir.exists() && tmpDir.isDirectory()) {
          try {
@@ -304,7 +303,7 @@ public class ResourceServiceImpl implements ResourceService
                   }
                   fileOutputStream.close();
                }
-               *//*
+               */
             }
 
          }
@@ -321,7 +320,6 @@ public class ResourceServiceImpl implements ResourceService
          }
 
       }
-      */
      return importedDeviceDTOs;
    }
 
