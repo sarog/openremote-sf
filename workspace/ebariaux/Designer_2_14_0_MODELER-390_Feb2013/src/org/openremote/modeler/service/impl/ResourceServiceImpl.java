@@ -50,6 +50,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.velocity.app.VelocityEngine;
+import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -70,6 +71,7 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.NetworkException;
@@ -173,7 +175,7 @@ public class ResourceServiceImpl implements ResourceService
     File temporaryFile = null;
     FileOutputStream fileOutputStream = null;
 	try {
-	  temporaryFile = File.createTempFile("import", "zip", new File(PathConfig.getInstance(configuration).tempFolder()));
+	  temporaryFile = File.createTempFile("import_", ".zip", new File(PathConfig.getInstance(configuration).tempFolder()));
       fileOutputStream = new FileOutputStream(temporaryFile);
 	  IOUtils.copy(inputStream, fileOutputStream);
     } catch (IOException e) {
@@ -191,7 +193,7 @@ public class ResourceServiceImpl implements ResourceService
 	return temporaryFile;
   }
   
-   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) {
+   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	 // Store the upload zip file locally before processing
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
 
@@ -222,22 +224,17 @@ public class ResourceServiceImpl implements ResourceService
      }
      // TODO: macro
 
+     LocalFileCache lfc = new LocalFileCache(configuration, userService.getCurrentUser());
+     lfc.replace(importFile);
+
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
-     
-      String dotImportFileContent = "";
-      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-      ZipEntry zipEntry;
-      FileOutputStream fileOutputStream = null;
-      try {
-         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (!zipEntry.isDirectory()) {
-              if ("building_modeler.xml".equalsIgnoreCase(zipEntry.getName())) {
-                
+
+
                 // TODO: try get rid of hibernate extension on save also -> seems to work
                 
                 
                 XStream xstream = new XStream(new StaxDriver());
-                Map<String, Object> map = (Map<String, Object>) xstream.fromXML(zipInputStream);
+                Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
                 Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
                 
                 List<Device> importedDevices = new ArrayList<Device>();
@@ -299,23 +296,7 @@ public class ResourceServiceImpl implements ResourceService
                   
                   deviceMacroService.saveNewMacro(m);
                 }
-              }
-            }
-
-         }
-      } catch (IOException e) {
-         throw new FileOperationException("Error in reading import file from zip", e);
-      } finally {
-         try {
-            zipInputStream.closeEntry();
-            if (fileOutputStream != null) {
-               fileOutputStream.close();
-            }
-         } catch (IOException e) {
-            serviceLog.warn("Failed to close import file resources", e);
-         }
-
-      }
+                
      return importedDeviceDTOs;
    }
 
