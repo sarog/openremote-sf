@@ -119,7 +119,6 @@ public class ResourceServiceImpl implements ResourceService
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
-
   private Configuration configuration;
 
   private UserService userService;
@@ -203,17 +202,13 @@ public class ResourceServiceImpl implements ResourceService
    @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	 // Store the upload zip file locally before processing
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
-
-	  System.out.println("local import file is " + importFile.getAbsolutePath());
-
 	 
      // TODO: try to revert changes on all loadAll methods now that this method is transactional
      
-     // TODO: delete of UI is not working at all
-     // -> client side must be instructed to reload
-     
      // First part of import is getting rid of what's currently in the account
 
+	 // TODO : is UI cleanup really required as local cache will later be overwritten with imported file
+	 
      // UI
 	 LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
 	 Set<Panel> noPanels = new HashSet<Panel>(); 
@@ -238,33 +233,28 @@ public class ResourceServiceImpl implements ResourceService
     // TODO: macro
     account.getDeviceMacros().clear();
 
-     cache.replace(importFile);
+    cache.replace(importFile);
 
-     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
+    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
+    XStream xstream = new XStream(new StaxDriver());
+    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
+    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
+    
+    List<Device> importedDevices = new ArrayList<Device>();
+    
+    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
+    for (DeviceDetailsWithChildrenDTO dev : devices) {
 
-                // TODO: try get rid of hibernate extension on save also -> seems to work
-                
-                
-                XStream xstream = new XStream(new StaxDriver());
-                Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
-                Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
-                
-                List<Device> importedDevices = new ArrayList<Device>();
-                
-                // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
-                for (DeviceDetailsWithChildrenDTO dev : devices) {
+      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
+      // Must iterate all DTOReferences, replacing ids with dto.
+      dev.replaceIdWithDTOInReferences();
 
-                  // The archived graph has DTOReferences with id, as it originally came from objects in DB.
-                  // Must iterate all DTOReferences, replacing ids with dto.
-                  dev.replaceIdWithDTOInReferences();
+      // TODO EBR review : original MODELER-390 line was
+      // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
 
-                  // TODO EBR review : original MODELER-390 line was
-                  // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-
-                  
-                  importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-                }
+      importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+    }
     
     final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
     final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
@@ -293,11 +283,10 @@ public class ResourceServiceImpl implements ResourceService
       
       importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
     }
-    
-    
-    
+
     // TODO: what about macro order ???
     // If one macro depends on another, the second should be imported first !
+    // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
     
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
     for (MacroDetailsDTO m : macros) {
@@ -310,74 +299,73 @@ public class ResourceServiceImpl implements ResourceService
       deviceMacroService.saveNewMacro(m);
     }
                 
-       DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
-       state.restore(false);
+    DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
+    state.restore(false);
 
-       // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
-       // For now, this code will crash if panels are restored that reference any building modeler objects.
+    // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
+    // For now, this code will crash if panels are restored that reference any building modeler objects.
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
     
     // All DTOs in the just imported object graph have ids of building elements from the original DB.
     // Walk the graph and change ids to the newly saved domain objects.
     Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
-			@Override
+
+	  @Override
       public void execute(UIComponent component) {
-		    if (component instanceof SensorLinkOwner) {
-					SensorLinkOwner owner = ((SensorLinkOwner) component);
-					if (owner.getSensorLink() != null) {
-						SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
-						if (sensorDTO.getOid() != null) {
-							sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
-						}
-					}
-		    }
-		    if (component instanceof UISlider) {
-		      UISlider uiSlider = (UISlider)component;
-		      if (uiSlider.getSliderDTO() != null) {
-		      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
-		      	if (sliderDTO.getOid() != null) {
-		      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
-		      	}
-		      }
-		    }
-		    if (component instanceof UISwitch) {
-		      UISwitch uiSwitch = (UISwitch)component;
-		      if (uiSwitch.getSwitchDTO() != null) {
-		      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
-		      	if (switchDTO.getOid() != null) {
-		      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
-		      	}
-		      }
-		    }
-		    if (component instanceof UIButton) {
-		    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
-		    }
-		    if (component instanceof ColorPicker) {
-		    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
-		    }
-		    if (component instanceof Gesture) {
-		    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
-			  }
-      }
-			
-			private void replaceOldOidWithNew(UICommandDTO commandDTO)
-			{
-				if (commandDTO == null) {
-					return;
+	    if (component instanceof SensorLinkOwner) {
+			SensorLinkOwner owner = ((SensorLinkOwner) component);
+			if (owner.getSensorLink() != null) {
+				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+				if (sensorDTO.getOid() != null) {
+					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
 				}
-      	if (commandDTO.getOid() != null) {
-      		commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
-      	}			      	
 			}
-    	
+	    }
+	    if (component instanceof UISlider) {
+	      UISlider uiSlider = (UISlider)component;
+	      if (uiSlider.getSliderDTO() != null) {
+	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+	      	if (sliderDTO.getOid() != null) {
+	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+	      	}
+	      }
+	    }
+	    if (component instanceof UISwitch) {
+	      UISwitch uiSwitch = (UISwitch)component;
+	      if (uiSwitch.getSwitchDTO() != null) {
+	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+	      	if (switchDTO.getOid() != null) {
+	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+	      	}
+	      }
+	    }
+	    if (component instanceof UIButton) {
+	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+	    }
+	    if (component instanceof ColorPicker) {
+	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+	    }
+	    if (component instanceof Gesture) {
+	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+		}
+      }
+
+      private void replaceOldOidWithNew(UICommandDTO commandDTO) {
+	    if (commandDTO == null) {
+		  return;
+  	    }
+        if (commandDTO.getOid() != null) {
+          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+        }
+      }
     });
           
-       // TODO EBR : original import implementation has the following line, check if still required (new replace() call)).
-       // initResources(panels.getPanels(), panels.getMaxOid());
-       saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
+    // TODO EBR : original import implementation has the following line, check if still required (new replace() call)).
+    // initResources(panels.getPanels(), panels.getMaxOid());
+    saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
                 
-     return importedDeviceDTOs;
-   }
+    return importedDeviceDTOs;
+  }
 
 
   /**
