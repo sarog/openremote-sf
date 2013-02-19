@@ -42,10 +42,6 @@ import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 public class SliderController extends BaseGWTSpringController implements SliderRPCService {
 
   private SliderService sliderService;
-  private SensorService sensorService;
-  private DeviceCommandService deviceCommandService;
-
-  private UserService userService;
 
   @Override
   public void delete(long id) {
@@ -56,31 +52,14 @@ public class SliderController extends BaseGWTSpringController implements SliderR
     this.sliderService = switchService;
   }
 
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
-
-  public void setSensorService(SensorService sensorService) {
-    this.sensorService = sensorService;
-  }
-
-  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-    this.deviceCommandService = deviceCommandService;
-  }
-
   @Override
   public SliderDetailsDTO loadSliderDetails(long id) {
-    Slider slider = sliderService.loadById(id);
-    return (slider != null)?slider.getSliderDetailsDTO():null;
+	  return sliderService.loadSliderDetailsDTO(id);
   }
 
   @Override
   public ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO() {
-    ArrayList<SliderWithInfoDTO> dtos = new ArrayList<SliderWithInfoDTO>();
-    for (Slider slider : sliderService.loadAll()) {
-      dtos.add(slider.getSliderWithInfoDTO());
-    }
-    return dtos;
+    return new ArrayList<SliderWithInfoDTO>(sliderService.loadAllSliderWithInfosDTO());
   }
 
   @Override
@@ -88,17 +67,9 @@ public class SliderController extends BaseGWTSpringController implements SliderR
     sliderService.updateSliderWithDTO(sliderDTO);
   }
 
+  @Override
   public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
-    Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
-    DeviceCommand command = null;
-    if (sliderDTO.getCommand() != null) {
-      command = deviceCommandService.loadById(sliderDTO.getCommand().getId());
-    }
-
-    Slider slider = new Slider(sliderDTO.getName(), command, sensor);
-    slider.setAccount(userService.getAccount());
-
-    sliderService.save(slider);
+    sliderService.saveNewSlider(sliderDTO, deviceId);
   }
 
 }
