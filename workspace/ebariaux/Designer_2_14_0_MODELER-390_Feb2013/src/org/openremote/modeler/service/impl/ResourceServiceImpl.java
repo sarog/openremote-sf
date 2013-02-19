@@ -224,8 +224,7 @@ public class ResourceServiceImpl implements ResourceService
      }
      // TODO: macro
 
-     LocalFileCache lfc = new LocalFileCache(configuration, userService.getCurrentUser());
-     lfc.replace(importFile);
+     cache.replace(importFile);
 
      List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
@@ -299,7 +298,7 @@ public class ResourceServiceImpl implements ResourceService
                 
                 
                 
-       DesignerState state = new DesignerState(configuration, userService.getCurrentUser());
+       DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
        state.restore(false);
 
        // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
@@ -307,8 +306,9 @@ public class ResourceServiceImpl implements ResourceService
       
        PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
       
-       initResources(panels.getPanels(), panels.getMaxOid());
-       saveResourcesToBeehive(panels.getPanels());
+       // TODO EBR : original import implementation has the following line, check if still required (new replace() call)).
+       // initResources(panels.getPanels(), panels.getMaxOid());
+       saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
 
 
 
