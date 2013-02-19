@@ -96,6 +96,8 @@ public interface DeviceMacroService {
     
     List<DeviceMacro> loadSameMacro(DeviceMacro macro);
 
+    List<MacroDTO> loadAllMacroDTOs(Account account);
+
     /**
      * Loads all macros for a given account and creates DTOs with all information on the macros and their items.
      * 

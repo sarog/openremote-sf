@@ -85,11 +85,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    }
 
    public ArrayList<MacroDTO> loadAllDTOs() {
-     ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
-     for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
-       dtos.add(dm.getMacroDTO());
-     }
-     return dtos;
+      return new ArrayList<MacroDTO>(deviceMacroService.loadAllMacroDTOs(userService.getAccount()));
    }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
