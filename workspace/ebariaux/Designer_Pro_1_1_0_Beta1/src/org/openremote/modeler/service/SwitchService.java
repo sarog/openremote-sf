@@ -22,6 +22,8 @@ package org.openremote.modeler.service;
 import java.util.List;
 
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 public interface SwitchService {
    
@@ -36,4 +38,13 @@ public interface SwitchService {
    Switch update(Switch switchToggle);
    
    List<Switch> loadSameSwitchs(Switch swh);
+   
+   SwitchDetailsDTO loadSwitchDetailsDTO(long id);
+
+   List<SwitchWithInfoDTO> loadAllSwitchWithInfosDTO();
+   
+   void updateSwitchWithDTO(SwitchDetailsDTO switchDTO);
+
+   void saveNewSwitch(SwitchDetailsDTO switchDTO, long deviceId);
+
 }

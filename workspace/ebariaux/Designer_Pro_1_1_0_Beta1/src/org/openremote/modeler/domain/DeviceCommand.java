@@ -234,4 +234,18 @@ public class DeviceCommand extends BusinessEntity {
      dto.setProtocolAttributes(attributes);
      return dto;
    }
+   
+   public static DeviceCommand createDeviceCommandFromDTO(DeviceCommandDetailsDTO dto) {
+     DeviceCommand dc = new DeviceCommand();     
+     dc.setName(dto.getName());
+     Protocol protocol = new Protocol();
+     protocol.setDeviceCommand(dc);
+     dc.setProtocol(protocol);
+     protocol.setType(dto.getProtocolType());
+     for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
+     return dc;
+   }
+
 }

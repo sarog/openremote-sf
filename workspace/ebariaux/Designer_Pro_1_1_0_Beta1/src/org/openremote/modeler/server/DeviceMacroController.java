@@ -85,60 +85,19 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    }
 
    public ArrayList<MacroDTO> loadAllDTOs() {
-     ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
-     for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
-       dtos.add(dm.getMacroDTO());
-     }
-     return dtos;
+      return new ArrayList<MacroDTO>(deviceMacroService.loadAllMacroDTOs(userService.getAccount()));
    }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
-     DeviceMacro macroBean = deviceMacroService.loadById(id);
-     return macroBean.getMacroDetailsDTO();
+     return deviceMacroService.loadMacroDetails(id);
    }
-   
+
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
-     DeviceMacro macroBean = new DeviceMacro();
-     macroBean.setName(macro.getName());
-     macroBean.setAccount(userService.getAccount());
-     
-     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
-     
-     macroBean.setDeviceMacroItems(macroItemBeans);
-     return deviceMacroService.saveDeviceMacro(macroBean).getMacroDTO();
+     return deviceMacroService.saveNewMacro(macro);
    }
 
    public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
-     DeviceMacro macroBean = deviceMacroService.loadById(macro.getOid());
-     macroBean.setName(macro.getName());
-
-     List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
-     return deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans).getMacroDTO();
-   }
-
-   protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
-     List<DeviceMacroItem> macroItemBeans = new ArrayList<DeviceMacroItem>();
-      for (MacroItemDetailsDTO item : macro.getItems()) {
-        DeviceMacroItem itemBean = null;
-        switch(item.getType()) {
-          case Command:
-            DeviceCommand dc = deviceCommandService.loadById(item.getDto().getId());
-            itemBean = new DeviceCommandRef(dc);
-            break;
-          case Macro:
-            DeviceMacro dm = deviceMacroService.loadById(item.getDto().getId());
-            itemBean = new DeviceMacroRef(dm);
-            break;
-          case Delay:
-            itemBean = new CommandDelay(Integer.toString(item.getDelay()));
-            break;
-        }
-        if (itemBean != null) {
-          macroItemBeans.add(itemBean);
-          itemBean.setParentDeviceMacro(macroBean);
-        }
-      }
-     return macroItemBeans;
+     return deviceMacroService.updateMacroWithDTO(macro);
    }
 
 }
