@@ -55,6 +55,7 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
@@ -67,9 +68,14 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.domain.component.ColorPicker;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.FileOperationException;
@@ -92,6 +98,10 @@ import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ZipUtils;
@@ -258,68 +268,116 @@ public class ResourceServiceImpl implements ResourceService
                   
                   importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
                 }
-                
-                Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-                Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
-                
-                // Domain objects have been created and saved with a new id
-                // During this process, old id has been saved as transient info
-                // Create lookup map from originalId to new one
-                for (Device dev : importedDevices) {
-                  devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
-                  
-                  for (DeviceCommand dc : dev.getDeviceCommands()) {
-                    commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
-                  }
-                  for (Sensor s : dev.getSensors()) {
-                    sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  for (Switch s : dev.getSwitchs()) {
-                    switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  for (Slider s : dev.getSliders()) {
-                    slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-                  }
-                  
-                  importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
-                }
-                
-                
-                
-                // TODO: what about macro order ???
-                // If one macro depends on another, the second should be imported first !
-                
-                Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
-                for (MacroDetailsDTO m : macros) {
-                  
-                  // Replace old with new command ids
-                  for (MacroItemDetailsDTO item : m.getItems()) {
-                    item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-                  }
-                  
-                  deviceMacroService.saveNewMacro(m);
-                }
-                
-                
+    
+    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+    
+    // Domain objects have been created and saved with a new id
+    // During this process, old id has been saved as transient info
+    // Create lookup map from originalId to new one
+    for (Device dev : importedDevices) {
+      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
+      
+      for (DeviceCommand dc : dev.getDeviceCommands()) {
+        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+      }
+      for (Sensor s : dev.getSensors()) {
+        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Switch s : dev.getSwitchs()) {
+        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Slider s : dev.getSliders()) {
+        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      
+      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+    
+    
+    
+    // TODO: what about macro order ???
+    // If one macro depends on another, the second should be imported first !
+    
+    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
+    for (MacroDetailsDTO m : macros) {
+      
+      // Replace old with new command ids
+      for (MacroItemDetailsDTO item : m.getItems()) {
+        item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+      }
+      
+      deviceMacroService.saveNewMacro(m);
+    }
                 
        DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
        state.restore(false);
 
        // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
        // For now, this code will crash if panels are restored that reference any building modeler objects.
-      
-       PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
-      
+    PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+    
+    // All DTOs in the just imported object graph have ids of building elements from the original DB.
+    // Walk the graph and change ids to the newly saved domain objects.
+    Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
+			@Override
+      public void execute(UIComponent component) {
+		    if (component instanceof SensorLinkOwner) {
+					SensorLinkOwner owner = ((SensorLinkOwner) component);
+					if (owner.getSensorLink() != null) {
+						SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+						if (sensorDTO.getOid() != null) {
+							sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+						}
+					}
+		    }
+		    if (component instanceof UISlider) {
+		      UISlider uiSlider = (UISlider)component;
+		      if (uiSlider.getSliderDTO() != null) {
+		      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+		      	if (sliderDTO.getOid() != null) {
+		      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+		      	}
+		      }
+		    }
+		    if (component instanceof UISwitch) {
+		      UISwitch uiSwitch = (UISwitch)component;
+		      if (uiSwitch.getSwitchDTO() != null) {
+		      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+		      	if (switchDTO.getOid() != null) {
+		      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+		      	}
+		      }
+		    }
+		    if (component instanceof UIButton) {
+		    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+		    }
+		    if (component instanceof ColorPicker) {
+		    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+		    }
+		    if (component instanceof Gesture) {
+		    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+			  }
+      }
+			
+			private void replaceOldOidWithNew(UICommandDTO commandDTO)
+			{
+				if (commandDTO == null) {
+					return;
+				}
+      	if (commandDTO.getOid() != null) {
+      		commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+      	}			      	
+			}
+    	
+    });
+          
        // TODO EBR : original import implementation has the following line, check if still required (new replace() call)).
        // initResources(panels.getPanels(), panels.getMaxOid());
        saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
-
-
-
-
                 
      return importedDeviceDTOs;
    }
