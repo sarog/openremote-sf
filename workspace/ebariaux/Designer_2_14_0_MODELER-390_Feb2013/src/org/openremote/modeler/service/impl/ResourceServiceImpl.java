@@ -216,13 +216,20 @@ public class ResourceServiceImpl implements ResourceService
      // Clean images
      // TODO
 
-     // Remove all building modeler information (except for configuration)
-     Account account = userService.getAccount();
-     List<Device> allDevices = deviceService.loadAll(account);
-     for (Device d : allDevices) {
-       deviceService.deleteDevice(d.getOid());
-     }
-     // TODO: macro
+
+    // Remove all building modeler information (except for configuration)
+    Account account = userService.getAccount();
+    List<Device> allDevices = deviceService.loadAll(account);
+    for (Device d : allDevices) {
+      deviceService.deleteDevice(d.getOid());
+    }
+    account.getDevices().clear();
+    account.getSensors().clear();
+    account.getSwitches().clear();
+    account.getSliders().clear();
+    
+    // TODO: macro
+    account.getDeviceMacros().clear();
 
      cache.replace(importFile);
 
