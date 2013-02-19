@@ -34,8 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -55,7 +53,6 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
-import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
