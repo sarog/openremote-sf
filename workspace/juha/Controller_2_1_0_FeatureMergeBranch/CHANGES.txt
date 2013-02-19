@@ -66,6 +66,7 @@ Bug Fixes:
   - Fix issues with installing Controller to a file system location that contained
     white spaces in path names - commonly 'Program Files' on Windows environments
     (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286)
+  - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
 
 
 Controller 2.0.1 (2012-11-21)
