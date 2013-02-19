@@ -39,6 +39,15 @@ New Features:
     commands (Eric Bariaux, ORCJAVA-231)
   - Color selection widget is now supported by the controller (Eric Bariaux,
     ORCJAVA-235)
+  - Direct Tomcat container logging to /logs/container/tomcat-server.log 
+    (Tomcat server logging) and /logs/container/appcontext.log (Controller
+    web application logging) files, and output directed to standard output
+    and error streams to /logs/container/stderrout.log -- catalina.out is
+    no longer created (ORCJAVA-273)
+  - Adjusted 'start' and 'run' targets of openremote.sh to configure default
+    standard output console logging differently -- 'run' target will still
+    output logs to console where as 'start' target will redirect all logging
+    to files (ORCJAVA-273)
 
 
 Bug Fixes:
@@ -54,7 +63,10 @@ Bug Fixes:
     before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
   - Fix null pointer exception at controller shutdown in logging system
     (Eric Bariaux, ORCJAVA-222)
- 
+  - Fix issues with installing Controller to a file system location that contained
+    white spaces in path names - commonly 'Program Files' on Windows environments
+    (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286)
+
 
 Controller 2.0.1 (2012-11-21)
 =============================
