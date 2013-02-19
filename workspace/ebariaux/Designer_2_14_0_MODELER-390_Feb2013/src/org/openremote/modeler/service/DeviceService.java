@@ -37,6 +37,8 @@ import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
  */
 public interface DeviceService {
    
+  public static String ORIGINAL_OID_KEY = "OriginalOid";
+  
    /**
     * Save device.
     * 
@@ -118,7 +120,7 @@ public interface DeviceService {
    
    DeviceDTO saveNewDevice(DeviceDetailsDTO deviceDTO);
 
-   DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
+   Device saveNewDeviceWithChildren(DeviceDetailsDTO device, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
            List<SwitchDetailsDTO> switches, List<SliderDetailsDTO> sliders);
 
    void updateDeviceWithDTO(DeviceDetailsDTO deviceDTO);
