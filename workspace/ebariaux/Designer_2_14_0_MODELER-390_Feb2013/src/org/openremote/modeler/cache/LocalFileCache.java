@@ -105,6 +105,7 @@ import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
@@ -210,7 +211,9 @@ public class LocalFileCache implements ResourceCache<File>
    */
   private File cacheFolder;
 
-
+  // Dependency introduced as part of MODELER-390
+  private DeviceService deviceService;
+  
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
@@ -1896,7 +1899,25 @@ public class LocalFileCache implements ResourceCache<File>
      * validate and output controller.xml
      */
     try {
-      FileUtilsExt.deleteQuietly(panelXMLFile);
+        
+        
+        
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
+        map.put("macros", deviceMacroService.loadAllMacroDetailsDTOs(account));
+        
+        
+        // TODO
+//        map.put("configuration", controllerConfigService.listAllConfigs());
+        
+        
+        // TODO: add configuration
+        XStream xstream = new XStream(new StaxDriver());
+        FileWriter fw = new FileWriter(new File(pathConfig.buildingModelerXmlFilePath(account)));
+        xstream.toXML(map, fw);
+        fw.close();
+
+        FileUtilsExt.deleteQuietly(panelXMLFile);
       FileUtilsExt.deleteQuietly(controllerXMLFile);
       FileUtilsExt.deleteQuietly(lircdFile);
       FileUtilsExt.deleteQuietly(rulesFile);
@@ -2409,6 +2430,10 @@ public class LocalFileCache implements ResourceCache<File>
    velocity.mergeTemplate(templateLocation, "UTF8", velocityContext, result);
    return result.toString();
  }
+ 
+  public void setDeviceService(DeviceService deviceService) {
+	this.deviceService = deviceService;
+  }
 
   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
     this.deviceMacroService = deviceMacroService;
