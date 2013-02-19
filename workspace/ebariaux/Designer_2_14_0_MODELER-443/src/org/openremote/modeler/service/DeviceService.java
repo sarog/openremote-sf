@@ -24,7 +24,13 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
  * The Interface DeviceService.
@@ -105,5 +111,16 @@ public interface DeviceService {
     * @return a list of DTOs with information about the devices and their commands
     */
    ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account);
+
+   List<DeviceDTO> loadAllDTOs(Account account);
+
+   DeviceDetailsDTO loadDeviceDetailsDTOById(long id);
+   
+   DeviceDTO saveNewDevice(DeviceDetailsDTO deviceDTO);
+
+   DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
+           List<SwitchDetailsDTO> switches, List<SliderDetailsDTO> sliders);
+
+   void updateDeviceWithDTO(DeviceDetailsDTO deviceDTO);
 
 }
