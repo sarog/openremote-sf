@@ -103,6 +103,17 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       return list;
    }
 
+   @Override
+   @Transactional
+   public List<MacroDTO> loadAllMacroDTOs(Account account) {
+     ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
+     List<DeviceMacro> macros = loadAll(userService.getAccount());
+     for (DeviceMacro dm : macros) {
+       dtos.add(dm.getMacroDTO());
+     }
+     return dtos;
+   }
+
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#saveDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
