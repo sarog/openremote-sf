@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -208,7 +210,7 @@ public class ResourceServiceImpl implements ResourceService
 	 // The whole cache is deleted later before being replaced with the uploaded file.
 
 	 // Remove all building modeler information (except for configuration)
-    Account account = userService.getAccount();
+    final Account account = userService.getAccount();
     List<Device> allDevices = deviceService.loadAll(account);
     for (Device d : allDevices) {
       deviceService.deleteDevice(d.getOid());
@@ -360,7 +362,25 @@ public class ResourceServiceImpl implements ResourceService
         }
       }
     });
-          
+    
+    // All images still references original account, update their source to use this account
+    for (Panel panel : panels.getPanels()) {
+  	  panel.fixImageSource(new Panel.ImageSourceResolver() {
+		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
+
+  		  
+		@Override
+		public String resolveImageSource(String source) {
+			System.out.println("Will process source >" + source + "<");
+			Matcher m = p.matcher(source);
+			System.out.println("Matches ? " + m.matches());
+			System.out.println("group 1 " + m.group(1));
+			System.out.println("replacing with >" + ((m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(1):source) + "<");
+			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(1):source;
+		}
+  	  });
+    }
+    
     cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
     saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
                 
