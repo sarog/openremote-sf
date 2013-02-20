@@ -2004,7 +2004,7 @@ public class LocalFileCache implements ResourceCache<File>
         
         // TODO: add configuration
         XStream xstream = new XStream(new StaxDriver());
-        FileWriter fw = new FileWriter(new File(pathConfig.buildingModelerXmlFilePath(account)));
+        FileWriter fw = new FileWriter(getBuildingModelerXmlFile());
         xstream.toXML(map, fw);
         fw.close();
 
