@@ -855,21 +855,10 @@ public class LocalFileCache implements ResourceCache<File>
   {
     try
     {
-      boolean success = cacheFolder.delete();
-
-      if (!success)
-      {
-        throw new ConfigurationException(
-            "Unable to delete cache directory for ''{0}''.", cacheFolder.getAbsolutePath()
-        );
-      }
-
-      else
-      {
-        cacheLog.info(
-            "Deleted account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
-        );
-      }
+      FileUtils.deleteDirectory(cacheFolder);
+      cacheLog.info(
+          "Deleted account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
+      );
     }
 
     catch (SecurityException e)
@@ -879,6 +868,13 @@ public class LocalFileCache implements ResourceCache<File>
           e, cacheFolder.getAbsolutePath(), e.getMessage()
       );
     }
+    
+    catch (IOException e)
+    {
+    	throw new ConfigurationException(
+            "Unable to delete cache directory for ''{0}''.", cacheFolder.getAbsolutePath()
+        );
+    }	
   }
 
   /**
