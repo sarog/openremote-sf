@@ -292,6 +292,19 @@ class DesignerState
       );
     }
   }
+  
+  
+  private void fixImageSourcePathIssue() {
+      for (Panel panel : panels)
+      {
+    	  panel.fixImageSource(new Panel.ImageSourceResolver() {
+			@Override
+			public String resolveImageSource(String source) {
+				return uglyImageSourcePathHack(user, source);
+			}
+		});
+      }
+  }
 
 
   protected static String uglyImageSourcePathHack(User user, String str)
@@ -509,6 +522,10 @@ class DesignerState
                 "any potential data corruption issues: " + t.getMessage(), t
             );
           }
+          
+          // Certain image sources still include path in their names (although they should
+	      //  not anymore), fix that in the restored configuration.
+          fixImageSourcePathIssue();
 
           return;
         }
