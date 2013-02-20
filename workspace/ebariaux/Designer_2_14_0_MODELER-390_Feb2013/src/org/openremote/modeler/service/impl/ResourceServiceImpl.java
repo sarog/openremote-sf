@@ -204,19 +204,10 @@ public class ResourceServiceImpl implements ResourceService
 	 // Store the upload zip file locally before processing
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
-     // First part of import is getting rid of what's currently in the account
-	 // TODO : is UI cleanup really required as local cache will later be overwritten with imported file
-	 
-     // UI
-	 LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
-	 Set<Panel> noPanels = new HashSet<Panel>(); 
-	 cache.replace(noPanels, 0);
-     saveResourcesToBeehive(noPanels, 0);
-     
-     // Clean images
-     // TODO
+     // No need to clean any of the resources stored in the cache (UI, images, rules...).
+	 // The whole cache is deleted later before being replaced with the uploaded file.
 
-    // Remove all building modeler information (except for configuration)
+	 // Remove all building modeler information (except for configuration)
     Account account = userService.getAccount();
     List<Device> allDevices = deviceService.loadAll(account);
     for (Device d : allDevices) {
@@ -237,6 +228,7 @@ public class ResourceServiceImpl implements ResourceService
     
     // TODO: configuration or not, see above comment ?
 
+    LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
     cache.replace(importFile);
 
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
