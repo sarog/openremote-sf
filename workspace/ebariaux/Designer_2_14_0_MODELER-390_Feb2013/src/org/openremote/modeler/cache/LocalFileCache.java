@@ -671,7 +671,7 @@ public class LocalFileCache implements ResourceCache<File>
     File rulesFile = new File("rules", "modeler_rules.drl");
 
     File uiXMLFile = new File("ui_state.xml");
-//    File buildingXMLFile = new File("building_modeler.xml");
+    File buildingXMLFile = new File("building_modeler.xml");
 
     // Collect all the files going into the archive...
 
@@ -679,7 +679,7 @@ public class LocalFileCache implements ResourceCache<File>
     exportFiles.addAll(this.imageFiles);
     
     exportFiles.add(uiXMLFile);
-//    exportFiles.add(buildingXMLFile);
+    exportFiles.add(buildingXMLFile);
     
     
     exportFiles.add(panelXMLFile);
