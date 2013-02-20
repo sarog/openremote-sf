@@ -367,13 +367,10 @@ public class ResourceServiceImpl implements ResourceService
     for (Panel panel : panels.getPanels()) {
   	  panel.fixImageSource(new Panel.ImageSourceResolver() {
 		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
-
   		  
 		@Override
 		public String resolveImageSource(String source) {
-			System.out.println("Will process source >" + source + "<");
 			Matcher m = p.matcher(source);
-			System.out.println("replacing with >" + ((m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source) + "<");
 			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
 		}
   	  });
