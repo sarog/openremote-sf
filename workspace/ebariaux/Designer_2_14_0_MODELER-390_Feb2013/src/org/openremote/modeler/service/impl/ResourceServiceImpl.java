@@ -204,7 +204,8 @@ public class ResourceServiceImpl implements ResourceService
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
      // TODO: try to revert changes on all loadAll methods now that this method is transactional
-     
+     // TODO: this has never been done in this branch, see if it causes any issue
+	 
      // First part of import is getting rid of what's currently in the account
 
 	 // TODO : is UI cleanup really required as local cache will later be overwritten with imported file
@@ -232,6 +233,8 @@ public class ResourceServiceImpl implements ResourceService
     
     // TODO: macro
     account.getDeviceMacros().clear();
+    
+    // TODO: configuration or not, see above comment ?
 
     cache.replace(importFile);
 
