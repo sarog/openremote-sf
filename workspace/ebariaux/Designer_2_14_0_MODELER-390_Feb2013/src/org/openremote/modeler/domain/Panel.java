@@ -396,6 +396,155 @@ public class Panel extends BusinessEntity implements BeanModelTag
 
   // Instance Methods -----------------------------------------------------------------------------
 
+  /**
+   * Walks all images references in this panel and updates its source according to the provided resolver.
+   * 
+   * @param resolver an ImageSourceResolver that does map current image source to desired image source
+   */
+  public void fixImageSource(ImageSourceResolver resolver)
+  {
+    // All images of a panel-wide tab bar items...
+
+    if (getTabbar() != null)
+    {
+    	fixTabbarImageSource(getTabbar(), resolver);
+    }
+
+    // All images related to a custom panel definition...
+
+    if (Constants.CUSTOM_PANEL.equals(getType()))
+    {
+    	fixCustomPanelImages(resolver);
+    }
+
+
+    List<GroupRef> groupRefs = getGroupRefs();
+
+    if (groupRefs == null)
+    {
+      return;
+    }
+
+
+    // Iterate through all the groups in a panel...
+
+    for (GroupRef groupRef : groupRefs)
+    {
+      Group group = groupRef.getGroup();
+
+
+      // If has a group specific tab bar definition, get all tab bar item images...
+
+      if (group.getTabbar() != null)
+      {
+    	  fixTabbarImageSource(group.getTabbar(), resolver);
+      }
+
+      List<ScreenPairRef> screenPairRefs = group.getScreenRefs();
+
+      if (screenPairRefs == null)
+      {
+        continue;
+      }
+
+
+      // Iterate through all screens within a group...
+
+      for (ScreenPairRef screenPairRef : screenPairRefs)
+      {
+        ScreenPair screenPair = screenPairRef.getScreen();
+
+        if (ScreenPair.OrientationType.PORTRAIT.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getPortraitScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+        	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+          }
+        }
+
+        else if (ScreenPair.OrientationType.LANDSCAPE.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getLandscapeScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+        	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+          }
+        }
+
+        else if (ScreenPair.OrientationType.BOTH.equals(screenPair.getOrientation()))
+        {
+          Collection<ImageSource> sources = screenPair.getPortraitScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+        	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+          }
+
+          sources = screenPair.getLandscapeScreen().getAllImageSources();
+
+          for (ImageSource source : sources)
+          {
+        	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+          }
+        }
+      }
+    }
+  }
+  
+  private void fixTabbarImageSource(UITabbar tabbar, ImageSourceResolver resolver)
+  {
+    if (tabbar == null)
+    {
+      return;
+    }
+
+    List<UITabbarItem> items = tabbar.getTabbarItems();
+
+    if (items == null)
+    {
+      return;
+    }
+
+    for (UITabbarItem item : items)
+    {
+      ImageSource source = item.getImage();
+
+      if (source != null && !source.isEmpty())
+      {
+    	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+      }
+    }
+  }
+
+  /**
+   * TODO :
+   *
+   *   should be part of TouchPanel API -- see comments why not refactored the move yet
+   */
+  private void fixCustomPanelImages(ImageSourceResolver resolver)
+  {
+      String vBgImage = getTouchPanelDefinition().getBgImage();
+      if (vBgImage != null && !vBgImage.isEmpty())
+      {
+    	  getTouchPanelDefinition().setBgImage(resolver.resolveImageSource(vBgImage));
+      }
+
+      String hBgImage = getTouchPanelDefinition().getHorizontalDefinition().getBgImage();
+      if (hBgImage != null && !hBgImage.isEmpty())
+      {
+    	  getTouchPanelDefinition().getHorizontalDefinition().setBgImage(resolver.resolveImageSource(hBgImage));
+      }
+      
+      ImageSource source = getTouchPanelDefinition().getTabbarDefinition().getBackground();
+      if (source != null && !source.isEmpty())
+      {
+    	  source.setSrc(resolver.resolveImageSource(source.getSrc()));
+      }
+  }
+  
   public String getName()
   {
     return name;
@@ -525,4 +674,18 @@ public class Panel extends BusinessEntity implements BeanModelTag
 		 */
 		void execute(UIComponent component);
 	}
+	
+  /**
+   * An ImageSourceResolver provides a translation from one source value to another.
+   */
+  public interface ImageSourceResolver
+  {
+	/**
+	 * Translate from given to desired source.
+	 * 
+	 * @param source current value of image source
+	 * @return String desired value for image source
+	 */
+	String resolveImageSource(String source);
+  }
 }
