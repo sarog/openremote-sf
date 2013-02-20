@@ -242,7 +242,7 @@ public class ResourceServiceImpl implements ResourceService
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
     XStream xstream = new XStream(new StaxDriver());
-    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(new File(PathConfig.getInstance(configuration).buildingModelerXmlFilePath(account)));
+    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(cache.getBuildingModelerXmlFile());
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
     
     List<Device> importedDevices = new ArrayList<Device>();
