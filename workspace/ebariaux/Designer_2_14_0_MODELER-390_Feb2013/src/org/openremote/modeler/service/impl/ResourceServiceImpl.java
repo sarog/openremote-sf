@@ -57,6 +57,7 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.ScreenPair;
@@ -203,11 +204,7 @@ public class ResourceServiceImpl implements ResourceService
 	 // Store the upload zip file locally before processing
 	 File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
-     // TODO: try to revert changes on all loadAll methods now that this method is transactional
-     // TODO: this has never been done in this branch, see if it causes any issue
-	 
      // First part of import is getting rid of what's currently in the account
-
 	 // TODO : is UI cleanup really required as local cache will later be overwritten with imported file
 	 
      // UI
@@ -218,7 +215,6 @@ public class ResourceServiceImpl implements ResourceService
      
      // Clean images
      // TODO
-
 
     // Remove all building modeler information (except for configuration)
     Account account = userService.getAccount();
@@ -231,8 +227,13 @@ public class ResourceServiceImpl implements ResourceService
     account.getSwitches().clear();
     account.getSliders().clear();
     
-    // TODO: macro
+    List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
+    for (DeviceMacro dm : allMacros) {
+    	deviceMacroService.deleteDeviceMacro(dm.getOid());
+    }
     account.getDeviceMacros().clear();
+
+    // TODO: check database to verify objects are indeed deleted
     
     // TODO: configuration or not, see above comment ?
 
