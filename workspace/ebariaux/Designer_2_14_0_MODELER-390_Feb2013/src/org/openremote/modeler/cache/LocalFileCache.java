@@ -1803,6 +1803,14 @@ public class LocalFileCache implements ResourceCache<File>
     PathConfig pathConfig = PathConfig.getInstance(configuration);
     return new File(pathConfig.userFolder(account) + "ui_state.xml");
   }
+  
+  /**
+   * @return File for storing building configuration elements in XML format.
+   */
+  public File getBuildingModelerXmlFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "building_modeler.xml");
+  }
 
   /**
    * @return File for panel XML description (panel.xml)
