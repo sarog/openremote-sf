@@ -292,14 +292,16 @@ public class ResourceServiceImpl implements ResourceService
     // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
     
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
-    for (MacroDetailsDTO m : macros) {
-      
-      // Replace old with new command ids
-      for (MacroItemDetailsDTO item : m.getItems()) {
-        item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-      }
-      
-      deviceMacroService.saveNewMacro(m);
+    if (macros != null) {
+	  for (MacroDetailsDTO m : macros) {
+        // Replace old with new command ids
+	    if (m.getItems() != null) {
+		  for (MacroItemDetailsDTO item : m.getItems()) {
+		    item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+		  }
+	    }
+	    deviceMacroService.saveNewMacro(m);
+	  }
     }
                 
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
