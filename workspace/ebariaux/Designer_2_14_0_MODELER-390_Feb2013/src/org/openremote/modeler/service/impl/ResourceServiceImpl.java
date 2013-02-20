@@ -363,8 +363,7 @@ public class ResourceServiceImpl implements ResourceService
       }
     });
           
-    // TODO EBR : original import implementation has the following line, check if still required (new replace() call)).
-    // initResources(panels.getPanels(), panels.getMaxOid());
+    cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
     saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
                 
     return importedDeviceDTOs;
