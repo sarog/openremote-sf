@@ -469,7 +469,7 @@ public class LocalFileCache implements ResourceCache<File>
    *            assumption here is that network exceptions are recoverable (within a certain
    *            time period) and the method call can optionally be re-attempted at later time.
    *            Do note that the exception class provides a severity level which can be used
-   *            to indicate the likelyhood that the network error can be recovered from.
+   *            to indicate the likelihood that the network error can be recovered from.
    *
    * @throws ConfigurationException
    *            If any of the cache operations cannot be performed due to security restrictions
@@ -515,18 +515,14 @@ public class LocalFileCache implements ResourceCache<File>
     cacheLog.info("Replacing account cache for {0}.", printUserAccountLog(currentUser));
 
 
-    // Make sure cache folder is present, if not then create it...
-
-    if (!hasCacheFolder())
-    {
-      createCacheFolder();      
+    // We want to be sure we don't have any leftovers in the cache
+    // Delete cache folder if it exists
+    if (hasCacheFolder()) {
+      removeCacheFolder();      
     }
+    
+    createCacheFolder();      
 
-
-    // Replace cache archive with provided file
-    if (getCachedArchive().exists()) {
-    	getCachedArchive().delete();
-    }
     configurationArchive.renameTo(getCachedArchive());
 
     // If we made through all the error checking, we're ready to go. Unzip the archive and finish.
@@ -844,7 +840,46 @@ public class LocalFileCache implements ResourceCache<File>
       createBackupFolder();
     }
   }
+  
+  /**
+   * Removes the local filesystem directory structure to store a cached
+   * Beehive archive associated with a given account. <p>
+   *
+   * @see #createCacheFolder
+   * @see #hasCacheFolder
+   *
+   * @throws ConfigurationException
+   *            if the deletion of the directories fail for any reason
+   */
+  private void removeCacheFolder() throws ConfigurationException
+  {
+    try
+    {
+      boolean success = cacheFolder.delete();
 
+      if (!success)
+      {
+        throw new ConfigurationException(
+            "Unable to delete cache directory for ''{0}''.", cacheFolder.getAbsolutePath()
+        );
+      }
+
+      else
+      {
+        cacheLog.info(
+            "Deleted account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
+        );
+      }
+    }
+
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager has denied read/write access to local user cache in ''{0}'' : {1}",
+          e, cacheFolder.getAbsolutePath(), e.getMessage()
+      );
+    }
+  }
 
   /**
    * Checks for the existence of local cache folder this cache implementation uses for its
