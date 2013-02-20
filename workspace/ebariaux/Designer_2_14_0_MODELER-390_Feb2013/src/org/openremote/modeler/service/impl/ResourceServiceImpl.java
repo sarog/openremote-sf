@@ -297,7 +297,10 @@ public class ResourceServiceImpl implements ResourceService
         // Replace old with new command ids
 	    if (m.getItems() != null) {
 		  for (MacroItemDetailsDTO item : m.getItems()) {
-		    item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+			// Delays do not reference any DTO
+			if (item.getDto() != null) {
+		      item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+			}
 		  }
 	    }
 	    deviceMacroService.saveNewMacro(m);
