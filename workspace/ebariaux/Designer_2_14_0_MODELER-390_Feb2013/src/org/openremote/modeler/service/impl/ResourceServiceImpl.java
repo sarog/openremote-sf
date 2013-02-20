@@ -373,10 +373,8 @@ public class ResourceServiceImpl implements ResourceService
 		public String resolveImageSource(String source) {
 			System.out.println("Will process source >" + source + "<");
 			Matcher m = p.matcher(source);
-			System.out.println("Matches ? " + m.matches());
-			System.out.println("group 1 " + m.group(1));
-			System.out.println("replacing with >" + ((m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(1):source) + "<");
-			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(1):source;
+			System.out.println("replacing with >" + ((m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source) + "<");
+			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
 		}
   	  });
     }
