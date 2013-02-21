@@ -96,6 +96,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
+   @Override
    @Transactional public Device saveDevice(Device device) {
       genericDAO.save(device);
       /*
@@ -111,6 +112,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
+  @Override
   @Transactional public void deleteDevice(long id) 
   {
     try
@@ -150,6 +152,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
+   @Override
    public List<DeviceDTO> loadAllDTOs(Account account) {
       List<Device> devices = account.getDevices();
       ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
@@ -159,6 +162,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return dtos;
    }
 
+   @Override
    public List<Device> loadAll(Account account) {
       return account.getDevices();
    }
@@ -166,6 +170,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
+   @Override
    @Transactional public void updateDevice(Device device) {
       genericDAO.saveOrUpdate(device);
    }
@@ -173,6 +178,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
+   @Override
    @Transactional public Device loadById(long id) {
       Device device = super.loadById(id);
       if (device.getAccount() != null) {
@@ -215,6 +221,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       return device;
    }
 
+   @Override
    public List<Device> loadSameDevices(Device device) {
       DetachedCriteria critera = DetachedCriteria.forClass(Device.class);
       critera.add(Restrictions.eq("name", device.getName()));
