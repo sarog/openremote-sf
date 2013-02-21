@@ -213,6 +213,9 @@ public class ResourceServiceImpl implements ResourceService
     final Account account = userService.getAccount();
 
     // Remove macros first, as they might reference commands
+    
+    // TODO: might need to do macros in appropriate order if dependencies between them
+    
     List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
     for (DeviceMacro dm : allMacros) {
       deviceMacroService.deleteDeviceMacro(dm.getOid());
@@ -288,21 +291,22 @@ public class ResourceServiceImpl implements ResourceService
     // TODO: what about macro order ???
     // If one macro depends on another, the second should be imported first !
     // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
+    // Deadlock currentl possible -> will prevent that, but code should be robust enough to not deadlock/crash with such data
     
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
     if (macros != null) {
-	  for (MacroDetailsDTO m : macros) {
-        // Replace old with new command ids
-	    if (m.getItems() != null) {
-		  for (MacroItemDetailsDTO item : m.getItems()) {
-			// Delays do not reference any DTO
-			if (item.getDto() != null) {
-		      item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-			}
-		  }
-	    }
-	    deviceMacroService.saveNewMacro(m);
-	  }
+      for (MacroDetailsDTO m : macros) {
+          // Replace old with new command ids
+        if (m.getItems() != null) {
+    		  for (MacroItemDetailsDTO item : m.getItems()) {
+      			// Delays do not reference any DTO
+      			if (item.getDto() != null) {
+      		      item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+      			}
+    		  }
+        }
+        deviceMacroService.saveNewMacro(m);
+      }
     }
                 
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
@@ -316,50 +320,50 @@ public class ResourceServiceImpl implements ResourceService
     // Walk the graph and change ids to the newly saved domain objects.
     Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
 
-	  @Override
+  	  @Override
       public void execute(UIComponent component) {
-	    if (component instanceof SensorLinkOwner) {
-			SensorLinkOwner owner = ((SensorLinkOwner) component);
-			if (owner.getSensorLink() != null) {
-				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
-				if (sensorDTO.getOid() != null) {
-					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
-				}
-			}
-	    }
-	    if (component instanceof UISlider) {
-	      UISlider uiSlider = (UISlider)component;
-	      if (uiSlider.getSliderDTO() != null) {
-	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
-	      	if (sliderDTO.getOid() != null) {
-	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
-	      	}
-	      }
-	    }
-	    if (component instanceof UISwitch) {
-	      UISwitch uiSwitch = (UISwitch)component;
-	      if (uiSwitch.getSwitchDTO() != null) {
-	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
-	      	if (switchDTO.getOid() != null) {
-	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
-	      	}
-	      }
-	    }
-	    if (component instanceof UIButton) {
-	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
-	    }
-	    if (component instanceof ColorPicker) {
-	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
-	    }
-	    if (component instanceof Gesture) {
-	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
-		}
+  	    if (component instanceof SensorLinkOwner) {
+    			SensorLinkOwner owner = ((SensorLinkOwner) component);
+    			if (owner.getSensorLink() != null) {
+    				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+    				if (sensorDTO.getOid() != null) {
+    					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+    				}
+    			}
+  	    }
+  	    if (component instanceof UISlider) {
+  	      UISlider uiSlider = (UISlider)component;
+  	      if (uiSlider.getSliderDTO() != null) {
+  	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+  	      	if (sliderDTO.getOid() != null) {
+  	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+  	      	}
+  	      }
+  	    }
+  	    if (component instanceof UISwitch) {
+  	      UISwitch uiSwitch = (UISwitch)component;
+  	      if (uiSwitch.getSwitchDTO() != null) {
+  	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+  	      	if (switchDTO.getOid() != null) {
+  	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+  	      	}
+  	      }
+  	    }
+  	    if (component instanceof UIButton) {
+  	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+  	    }
+  	    if (component instanceof ColorPicker) {
+  	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+  	    }
+  	    if (component instanceof Gesture) {
+  	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+  	    }
       }
 
       private void replaceOldOidWithNew(UICommandDTO commandDTO) {
-	    if (commandDTO == null) {
-		  return;
-  	    }
+  	    if (commandDTO == null) {
+  		    return;
+    	  }
         if (commandDTO.getOid() != null) {
           commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
         }
@@ -369,13 +373,13 @@ public class ResourceServiceImpl implements ResourceService
     // All images still references original account, update their source to use this account
     for (Panel panel : panels.getPanels()) {
   	  panel.fixImageSource(new Panel.ImageSourceResolver() {
-		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
-  		  
-		@Override
-		public String resolveImageSource(String source) {
-			Matcher m = p.matcher(source);
-			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
-		}
+    		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
+      		  
+    		@Override
+    		public String resolveImageSource(String source) {
+    			Matcher m = p.matcher(source);
+    			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
+    		}
   	  });
     }
     
