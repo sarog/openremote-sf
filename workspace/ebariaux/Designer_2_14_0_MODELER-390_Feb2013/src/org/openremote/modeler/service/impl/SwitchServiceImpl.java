@@ -78,7 +78,6 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       return result;
    }
 
-
    @Override
    @Transactional
    public Switch save(Switch switchToggle) {
@@ -171,6 +170,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
      }
    }
 
+   @Override
    public List<Switch> loadSameSwitchs(Switch swh) {
       List<Switch> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
