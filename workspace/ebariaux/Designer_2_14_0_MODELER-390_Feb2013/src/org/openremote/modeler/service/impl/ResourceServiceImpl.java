@@ -211,20 +211,23 @@ public class ResourceServiceImpl implements ResourceService
 
 	 // Remove all building modeler information (except for configuration)
     final Account account = userService.getAccount();
+
+    // Remove macros first, as they might reference commands
+    List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
+    for (DeviceMacro dm : allMacros) {
+      deviceMacroService.deleteDeviceMacro(dm.getOid());
+    }
+    account.getDeviceMacros().clear();
+    
     List<Device> allDevices = deviceService.loadAll(account);
     for (Device d : allDevices) {
       deviceService.deleteDevice(d.getOid());
     }
-    account.getDevices().clear();
-    account.getSensors().clear();
     account.getSwitches().clear();
     account.getSliders().clear();
+    account.getSensors().clear();
+    account.getDevices().clear();
     
-    List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
-    for (DeviceMacro dm : allMacros) {
-    	deviceMacroService.deleteDeviceMacro(dm.getOid());
-    }
-    account.getDeviceMacros().clear();
 
     // TODO: check database to verify objects are indeed deleted
     
