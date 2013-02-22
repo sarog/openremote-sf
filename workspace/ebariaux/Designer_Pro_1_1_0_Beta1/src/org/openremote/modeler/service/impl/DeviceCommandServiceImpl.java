@@ -69,6 +69,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
     */
+   @Override
    @Transactional
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       for (DeviceCommand command : deviceCommands) {
@@ -85,6 +86,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#save(org.openremote.modeler.domain.DeviceCommand)
     */
+   @Override
    @Transactional
    public DeviceCommand save(DeviceCommand deviceCommand) {
       genericDAO.save(deviceCommand);
@@ -96,6 +98,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#deleteCommand(long)
     */
+   @Override
    @Transactional
    public Boolean deleteCommand(long id) {
       DeviceCommand deviceCommand = loadById(id);
@@ -114,6 +117,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#updateDeviceCommandWithDTO(DeviceCommandDetailsDTO)
     */
+   @Override
    @Transactional
    public void updateDeviceCommandWithDTO(DeviceCommandDetailsDTO dto) {
      DeviceCommand dc = loadById(dto.getOid());
@@ -133,6 +137,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
+   @Override
    public DeviceCommand loadById(long id) {
      return loadById(id, false);
    }
@@ -141,6 +146,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long, boolean)
     */
+   @Override
    public DeviceCommand loadById(long id, boolean loadDeviceEagerly) {
       DeviceCommand deviceCommand = super.loadById(id);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
@@ -160,6 +166,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#loadByDevice(long)
     */
+   @Override
    public List<DeviceCommand> loadByDevice(long id) {
       Device device = genericDAO.loadById(Device.class, id);
       List<DeviceCommand> deviceCommandList = device.getDeviceCommands();
@@ -169,6 +176,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommandList;
    }
 
+   @Override
    public List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand) {
       List<DeviceCommand> tmpResult = new ArrayList<DeviceCommand>();
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
@@ -193,6 +201,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#loadComandsDTOByDevice(long)
     */
+   @Override
    public ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id) {
       Device device = genericDAO.loadById(Device.class, id);
       ArrayList<DeviceCommandDTO> dtos = new ArrayList<DeviceCommandDTO>();
@@ -210,6 +219,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    }
 
    @Override
+   @Transactional
    public void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId) {
      DeviceCommand dc = DeviceCommand.createDeviceCommandFromDTO(dto);
 
