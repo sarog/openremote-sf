@@ -43,6 +43,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceCommand(org.openremote.modeler.domain.DeviceCommand)
     */
+   @Override
    @Transactional public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
       List<DeviceCommandRef> deviceCommandRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
@@ -54,6 +55,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
+   @Override
    @Transactional public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
       List<DeviceMacroRef> deviceMacroRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("targetDeviceMacro", targetDeviceMacro)));
@@ -65,6 +67,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceCommandId(long)
     */
+   @Override
    public List<DeviceCommandRef> loadByDeviceCommandId(long id) {
       DeviceCommand deviceCommand = genericDAO.loadById(DeviceCommand.class, id);
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
@@ -76,6 +79,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceMacroId(long)
     */
+   @Override
    public List<DeviceMacroRef> loadByDeviceMacroId(long id) {
       DeviceMacro targetDeviceMacro = genericDAO.loadById(DeviceMacro.class, id);
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
@@ -86,6 +90,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#loadByDeviceMacroId(long)
     */
+   @Override
    public DeviceMacroItem loadByDeviceMacroItemOid(long deviceMacroItemOid) {
       return loadById(deviceMacroItemOid);
    }

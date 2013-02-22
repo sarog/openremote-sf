@@ -77,6 +77,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    /**
     * {@inheritDoc}
     */
+   @Override
     public User getUserById(long id) {
       return genericDAO.getById(User.class, id);
     }
@@ -103,6 +104,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    /**
     * {@inheritDoc}
     */
+   @Override
     public Account getAccount() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
@@ -111,6 +113,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+   @Override
     public boolean createUserAccount(String username, String password, String email) {
       if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -133,6 +136,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+     @Override
      @Transactional public void saveUser(User user) {
          genericDAO.save(user.getAccount());
          genericDAO.save(user);
@@ -166,6 +170,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+    @Override
     public void updateUser(UserDTO user) {
       ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
@@ -220,6 +225,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
    
+   @Override
    public boolean isUsernameAvailable(String username) {
       return getUserByUsername(username) == null;
    }
@@ -228,6 +234,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       this.configuration = configuration;
    }
 
+   @Override
    public User getCurrentUser() {
       String username = SecurityContextHolder.getContext().getAuthentication().getName();
       User user = getUserByUsername(username);
@@ -262,6 +269,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      return inviteeDTO; 
    }
    
+   @Override
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
       long uid = 0;
       long hid = 0;
@@ -285,6 +293,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
 
+   @Override
    public boolean createInviteeAccount(String userOid, String username, String password, String email) {
       if (StringUtils.isEmpty(userOid) || StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -309,6 +318,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Override
    public List<User> getPendingInviteesByAccount(User currentUser) {
       List<User> invitees = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
@@ -322,6 +332,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return invitees;
    }
 
+   @Override
    public UserDTO updateUserRoles(long uid, String roles) {
      UserDTO user = getUserDTOById(uid);
      user.getRoles().clear();
@@ -358,6 +369,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      return roleNames.toString();
   }
 
+   @Override
    public void deleteUser(long uid) {
       ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + uid);
       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
@@ -377,6 +389,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Override
    public List<User> getAccountAccessUsers(User currentUser) {
       List<User> accessUsers = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
@@ -414,6 +427,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      return (UserDTO)res.getResult(); 
    }
 
+   @Override
    public UserDTO checkPasswordToken(long uid, String passwordToken) {
       UserDTO user = getUserDTOById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
@@ -422,6 +436,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return null;
    }
 
+   @Override
    public boolean resetPassword(long uid, String password, String passwordToken) {
       UserDTO user = getUserDTOById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {

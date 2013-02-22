@@ -65,7 +65,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 	this.userService = userService;
   }
 
-@  Transactional public Boolean deleteSensor(long id) {
+  @Override
+  @Transactional public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
       List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor", sensor)));
@@ -78,6 +79,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return true;
    }
 
+   @Override
    public List<Sensor> loadAll(Account account) {
       List<Sensor> sensors = account.getSensors();
       for (Sensor sensor : sensors) {
@@ -88,16 +90,19 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensors;
    }
 
+   @Override
    @Transactional public Sensor saveSensor(Sensor sensor) {
       genericDAO.save(sensor);
       return sensor;
    }
 
+   @Override
    @Transactional public Sensor updateSensor(Sensor sensor) {
      genericDAO.saveOrUpdate(sensor);
      return sensor;
    }
 
+   @Override
    public Sensor loadById(long id) {
       Sensor sensor = genericDAO.getById(Sensor.class, id);
       if (sensor instanceof CustomSensor) {
@@ -106,6 +111,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensor;
    }
 
+   @Override
    public List<Sensor> loadByDeviceId(long deviceId) {
       Device device = genericDAO.loadById(Device.class, deviceId);
       return device.getSensors();
@@ -138,6 +144,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
      return dtos;    
    }
 
+   @Override
    public List<Sensor> loadSameSensors(Sensor sensor) {
       List<Sensor> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
@@ -157,6 +164,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return result;
    }
 
+    @Override
     @Transactional
     public List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account) {
         for (Sensor sensor : sensorList) {
@@ -169,6 +177,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
         return sensorList;
     }
     
+    @Override
     @Transactional
     public void updateSensorWithDTO(SensorDetailsDTO sensor) {
       Sensor sensorBean = loadById(sensor.getOid());
@@ -204,6 +213,8 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       updateSensor(sensorBean);
     }
     
+  @Override
+  @Transactional
   public void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId) {
     Sensor sensor = null;
     if (sensorDTO.getType() == SensorType.RANGE) {
