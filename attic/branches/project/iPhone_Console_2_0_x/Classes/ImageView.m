@@ -47,7 +47,8 @@
 	if (!removeSubviewsTag) {
 		UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
 		defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
-		defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
+		defaultImageView.image = uiImage;
+		//defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 		[defaultImageView setContentMode:UIViewContentModeTopLeft];
 		[self addSubview:defaultImageView];
 	}
@@ -81,7 +82,7 @@
 	for (SensorState *sensorState in imageModel.sensor.states) {
 		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {
 			UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:sensorState.value]];
-			uiImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
+			//uiImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
 			defaultImageView.image = uiImage;
 			changeView = YES;
 			break;
