@@ -29,6 +29,7 @@
       <parameter name="AUX1">AUX1</parameter>
       <parameter name="AUX2">AUX2</parameter>
       <parameter name="IRADIO">IRADIO</parameter>
+      <parameter name="TUNER">TUNER</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
