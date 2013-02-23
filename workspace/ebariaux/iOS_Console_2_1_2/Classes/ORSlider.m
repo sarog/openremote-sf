@@ -149,9 +149,9 @@ void printBounds(NSString *comment, UIView *v)
     //    NSLog(@"track available width %f", trackWidth);
     float ratio = 0.0;
     if (self.userMovingSlider) {
-        ratio = self.userMovingValue / abs(self.maximumValue - self.minimumValue);
+        ratio = (self.userMovingValue - self.minimumValue) / abs(self.maximumValue - self.minimumValue);
     } else {
-        ratio = self.value / abs(self.maximumValue - self.minimumValue);
+        ratio = (self.value - self.minimumValue) / abs(self.maximumValue - self.minimumValue);
     }
     
     //    NSLog(@"ratio %f", ratio);
@@ -200,8 +200,21 @@ void printBounds(NSString *comment, UIView *v)
 
 - (void)setValue:(float)value
 {
-    _value = value;
+    // Ensure the value is always within bounds, required for correct drawing
+    _value = MIN(MAX(value, self.minimumValue), self.maximumValue);
     [self setNeedsLayout];
+}
+
+- (void)setMinimumValue:(float)minimumValue
+{
+    _minValue = minimumValue;
+    self.value = self.value; // Ensures value is within new bounds and slider is redrawn
+}
+
+- (void)setMaximumValue:(float)maximumValue
+{
+    _maxValue = maximumValue;
+    self.value = self.value; // Ensures value is within new bounds and slider is redrawn
 }
 
 - (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
@@ -294,7 +307,7 @@ void printBounds(NSString *comment, UIView *v)
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
 	UITouch *touch = [touches anyObject];
-	// If the touch was in the projectorView, move the projectorView accordingly, staying within limits
+	// If the touch was in the thumn, move the thumb accordingly, staying within limits
 	if ([touch view] == self.thumbView) {
 		CGPoint location = [touch locationInView:self];
         
@@ -330,5 +343,8 @@ void printBounds(NSString *comment, UIView *v)
     self.userMovingSlider = NO;
     [self sendActionsForControlEvents:UIControlEventTouchUpOutside];
 }
+
+@synthesize minimumValue = _minValue;
+@synthesize maximumValue = _maxValue;
 
 @end
