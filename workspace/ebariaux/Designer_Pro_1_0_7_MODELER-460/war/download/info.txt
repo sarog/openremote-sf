@@ -1,0 +1,5 @@
+This folder can take any files the user can download.
+The user had to have ADMIN_ROLE to access files from this folder.
+===============
+
+The first file here should be the "enhanced" controller for Pro accounts.
