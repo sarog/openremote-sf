@@ -35,7 +35,9 @@ public enum VeraCmd {
    GET_WATTS,
    GET_CONSUMPTION,
    GET_ARMED,
-   GET_TRIPPED;
+   GET_TRIPPED,
+   GENERIC_ACTION,
+   GENERIC_STATUS;
 
    /**
     * All: getComment, getBatteryLevel
