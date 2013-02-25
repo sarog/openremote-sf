@@ -16,7 +16,7 @@ public class TemperatureSensor extends VeraDevice {
    @Override
    protected void updateDeviceSpecificSensors() {
       if ((attachedSensors.get(VeraCmd.GET_TEMPERATURE) != null) && (temperature != null)) {
-         attachedSensors.get(VeraCmd.GET_TEMPERATURE).update(""+temperature.intValue()); //TODO the sensor should actually take the float
+         attachedSensors.get(VeraCmd.GET_TEMPERATURE).update(temperature.toString());
       }
    }
 

@@ -43,6 +43,13 @@ public class VeraCommandBuilder implements CommandBuilder {
 
    private final static String STR_ATTRIBUTE_NAME_DEVICE = "device";
    private final static String STR_ATTRIBUTE_NAME_COMMAND = "command";
+   private final static String STR_ATTRIBUTE_NAME_COMMAND_VALUE = "commandValue";
+   
+   private final static String STR_ATTRIBUTE_NAME_SERVICE_ID = "serviceId";
+   private final static String STR_ATTRIBUTE_NAME_ACTION = "action";
+   private final static String STR_ATTRIBUTE_NAME_VARIABLE = "variable";
+   private final static String STR_ATTRIBUTE_NAME_STATUS_ATTRIBUTE = "statusAttribute";
+   
 
    // Class Members --------------------------------------------------------------------------------
    private final static Logger logger = Logger.getLogger(VERA_PROTOCOL_LOG_CATEGORY);
@@ -76,7 +83,12 @@ public class VeraCommandBuilder implements CommandBuilder {
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
 
       String deviceIdString = null;
+      String commandName = null;
       String commandValue = null;
+      String serviceId = null;
+      String action = null;
+      String variable = null;
+      String statusAttribute = null;
       int deviceId;
 
       // read values from config xml
@@ -86,16 +98,36 @@ public class VeraCommandBuilder implements CommandBuilder {
          String elementValue = ele.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
 
          if (STR_ATTRIBUTE_NAME_COMMAND.equals(elementName)) {
-            commandValue = elementValue;
-            logger.debug("Vera command: command = " + commandValue);
+            commandName = elementValue;
+            logger.debug("Vera command: command = " + commandName);
          }
          else if (STR_ATTRIBUTE_NAME_DEVICE.equals(elementName)) {
             deviceIdString = elementValue;
             logger.debug("Vera command: deviceId = " + deviceIdString);
          }
+         else if (STR_ATTRIBUTE_NAME_COMMAND_VALUE.equals(elementName)) {
+            commandValue = elementValue;
+            logger.debug("Vera command value: commandValue = " + commandValue);
+         }
+         else if (STR_ATTRIBUTE_NAME_SERVICE_ID.equals(elementName)) {
+            serviceId = elementValue;
+            logger.debug("Vera serviceId: serviceId = " + serviceId);
+         }
+         else if (STR_ATTRIBUTE_NAME_ACTION.equals(elementName)) {
+            action = elementValue;
+            logger.debug("Vera action: action = " + action);
+         }
+         else if (STR_ATTRIBUTE_NAME_VARIABLE.equals(elementName)) {
+            variable = elementValue;
+            logger.debug("Vera variable: variable = " + variable);
+         }
+         else if (STR_ATTRIBUTE_NAME_STATUS_ATTRIBUTE.equals(elementName)) {
+            statusAttribute = elementValue;
+            logger.debug("Vera statusAttribute: statusAttribute = " + statusAttribute);
+         }
       }
 
-      if (null == commandValue || null == deviceIdString ) {
+      if (null == commandName || null == deviceIdString ) {
          throw new NoSuchCommandException("Unable to create Vera command, missing configuration parameter(s)");
       }
       
@@ -106,10 +138,14 @@ public class VeraCommandBuilder implements CommandBuilder {
       }
 
       String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+      if (paramValue == null || paramValue.equals(""))
+      {
+         paramValue = commandValue;
+      }
       try {
-         VeraCmd cmd = VeraCmd.valueOf(commandValue.trim().toUpperCase());
+         VeraCmd cmd = VeraCmd.valueOf(commandName.trim().toUpperCase());
          logger.debug("Vera command created successfully");
-         return new VeraCommand(deviceId, cmd, paramValue, client);
+         return new VeraCommand(deviceId, cmd, paramValue, client, serviceId, action, variable, statusAttribute);
       } catch (Exception e) {
          throw new NoSuchCommandException("Invlid commad: " + commandValue);
       }
