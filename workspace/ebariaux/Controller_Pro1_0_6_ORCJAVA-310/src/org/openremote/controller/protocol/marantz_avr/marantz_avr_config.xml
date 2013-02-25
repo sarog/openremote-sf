@@ -33,6 +33,11 @@
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
+  
+  <command name="TUNER_FREQUENCY" class="org.openremote.controller.protocol.marantz_avr.commands.TunerFrequencyCommand" value="TF"/>
+
+  <command name="TUNER_PRESET" class="org.openremote.controller.protocol.marantz_avr.commands.TunerPresetCommand" value="TP"/>
+  
   <command name="SURROUND_MODE" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand" value="MS">
     <parameters>
       <parameter name="MOVIE">MOVIE</parameter>
