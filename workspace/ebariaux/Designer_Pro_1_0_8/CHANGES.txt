@@ -1,3 +1,10 @@
+Pro 1.0.8
+=========
+
+Fixes:
+ - MODELER-460: In Controller Management window, remove id column
+
+
 Pro 1.0.7
 =========
 
