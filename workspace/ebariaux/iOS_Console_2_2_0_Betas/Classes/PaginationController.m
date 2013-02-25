@@ -32,6 +32,7 @@
 #import "ORController.h"
 #import "DirectoryDefinition.h"
 #import "NotificationConstant.h"
+#import "ORScrollView.h"
 
 #define PAGE_CONTROL_HEIGHT 20
 #define kTabBarHeight 49.0
@@ -283,7 +284,7 @@
 	[super loadView];
 	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
 
-	scrollView = [[UIScrollView alloc] init];
+	scrollView = [[ORScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
 	[scrollView setShowsVerticalScrollIndicator:NO];
