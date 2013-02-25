@@ -666,6 +666,8 @@
 		912721FC16C1127800E2D6B3 /* ORSliderWhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721F116C1127800E2D6B3 /* ORSliderWhite.png */; };
 		912721FD16C1127800E2D6B3 /* ORSliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721F216C1127800E2D6B3 /* ORSliderWhite@2x.png */; };
 		912721FE16C1127800E2D6B3 /* ORSliderWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 912721F216C1127800E2D6B3 /* ORSliderWhite@2x.png */; };
+		914C8E3916D65780003683DE /* ORScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 914C8E3816D65780003683DE /* ORScrollView.m */; };
+		914C8E3A16D65780003683DE /* ORScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 914C8E3816D65780003683DE /* ORScrollView.m */; };
 		97B00120106127AF00C31E4A /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 /* End PBXBuildFile section */
 
@@ -1482,6 +1484,8 @@
 		912721F116C1127800E2D6B3 /* ORSliderWhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ORSliderWhite.png; sourceTree = "<group>"; };
 		912721F216C1127800E2D6B3 /* ORSliderWhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ORSliderWhite@2x.png"; sourceTree = "<group>"; };
 		974DAC871063ADEF00B1B04B /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		914C8E3716D65780003683DE /* ORScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORScrollView.h; sourceTree = "<group>"; };
+		914C8E3816D65780003683DE /* ORScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORScrollView.m; sourceTree = "<group>"; };
 		97B0011F106127AF00C31E4A /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2758,6 +2762,8 @@
 				6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */,
 				6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */,
 				6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */,
+				914C8E3716D65780003683DE /* ORScrollView.h */,
+				914C8E3816D65780003683DE /* ORScrollView.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -3245,6 +3251,7 @@
 				602418DB156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 				602418E5156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
 				912721E516C10ECE00E2D6B3 /* ORSlider.m in Sources */,
+				914C8E3916D65780003683DE /* ORScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3424,6 +3431,7 @@
 				602418DD156E76BE004E5860 /* ORTableViewSectionDefinition.m in Sources */,
 				602418E7156FAC6D004E5860 /* UITableViewHelper.m in Sources */,
 				912721E616C10ECE00E2D6B3 /* ORSlider.m in Sources */,
+				914C8E3A16D65780003683DE /* ORScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3712,8 +3720,8 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				PROVISIONING_PROFILE = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5776A2A7-B55A-4176-8E96-75765D4CBA97";
+				PROVISIONING_PROFILE = "8309A90D-947F-4777-953C-9AA8D049D2D7";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8309A90D-947F-4777-953C-9AA8D049D2D7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
