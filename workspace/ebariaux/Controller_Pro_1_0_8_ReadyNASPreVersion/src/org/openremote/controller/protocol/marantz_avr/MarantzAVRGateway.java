@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.protocol.marantz_avr;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import org.openremote.controller.MarantzAVRConfig;
 import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
@@ -83,7 +86,7 @@ public class MarantzAVRGateway {
    }
 
    public void sendCommand(String command, String parameter) {
-      log.info("Asked to send command " + command);
+      log.info("Asked to send command " + command + parameter);
 
       // Ask to start gateway, if it's already done, this will do nothing
       startGateway();
@@ -205,14 +208,20 @@ public class MarantzAVRGateway {
       public void run() {
          log.info("Reader thread starting");
          log.info("TC input stream " + is);
-         BufferedReader br = new BufferedReader(new InputStreamReader(is));
-         log.info("Buffered reader " + br);
 
+         // Can not use BufferedReader.readLine because it accepts any of CR, LF or CRLF as line termination
+         // The protocol defines only CR as line end marker, data before it might contain LF byte as value
+         Scanner s = new Scanner(new BufferedInputStream(is));
+         s.useDelimiter("\r");
+         log.info("Scanner " + s);
+         
          String line = null;
          try {
-           line = br.readLine();
-         } catch (IOException e1) {
-            log.warn("Could not read from Lutron", e1);
+           line = s.next();
+         } catch (NoSuchElementException e) {
+            log.warn("Could not read from Marantz", e);
+         } catch (IllegalStateException e) {
+            log.warn("Could not read from Marantz", e);
          }
          do {
            try {
@@ -229,9 +238,11 @@ public class MarantzAVRGateway {
                 } else {
                    log.info("Received unknown information from Marantz >" + line + "<");
                 }
-              line = br.readLine();
-            } catch (IOException e) {
-               log.warn("Could not read from Marantz", e);
+              line = s.next();
+           } catch (NoSuchElementException e) {
+              log.warn("Could not read from Marantz", e);
+           } catch (IllegalStateException e) {
+              log.warn("Could not read from Marantz", e);
             }
           } while (line != null && !isInterrupted());
       }
@@ -241,11 +252,22 @@ public class MarantzAVRGateway {
       if (responseText == null) {
          return null;
       }
-
       
-      // TODO EBR : this should work for most basic commands
-      // more advanced commands are not always the first 2 characters, will need to improve this to support those
       MarantzResponse response = null;
+
+      // First try to match with a known command
+      for (String key : registeredCommands.keySet()) {
+         if (responseText.startsWith(key)) {
+            response = new MarantzResponse();
+            response.command = key;
+            response.parameter = responseText.substring(key.length());
+            
+            return response;
+         }
+      }
+
+      // Then by default (which is basically the commands we're not supporting anyway)
+      // consider that the command is using the first 2 characters
       if (responseText.length() >= 2) {
          response = new MarantzResponse();
          response.command = responseText.substring(0, 2);
