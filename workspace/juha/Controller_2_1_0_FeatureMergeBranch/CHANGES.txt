@@ -61,13 +61,25 @@ Bug Fixes:
     controller calls (ORCJAVA-179)  
   - Range and Level sensors trim the incoming values from protocol implementation
     before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
-  - Fix null pointer exception at controller shutdown in logging system
-    (Eric Bariaux, ORCJAVA-222)
   - Fix issues with installing Controller to a file system location that contained
     white spaces in path names - commonly 'Program Files' on Windows environments
     (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286)
   - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
 
+
+Controller 2.0.2 (2013-02-26)
+============================
+
+ - Update Web Console implementation to 2.1.0 (Richard Turner, ORCJAVA-312)
+ - Bug fix: sensor status cache was throwing a runtime exception
+   which was not handled if a panel requested a sensor status on
+   a sensor which failed to start (due to configuration or
+   other errors). The unhandled exception caused the client
+   call to fail instead of gracefully falling back to default or
+   error value. (Eric Bariaux, ORCJAVA-268)
+ - Bug fix: logging generated errors (null pointer exception) at
+   shutdown (Eric Bariaux, ORCJAVA-222)
+ 
 
 Controller 2.0.1 (2012-11-21)
 =============================
