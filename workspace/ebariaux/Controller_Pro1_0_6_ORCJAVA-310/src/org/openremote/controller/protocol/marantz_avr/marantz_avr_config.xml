@@ -39,6 +39,9 @@
 
   <command name="TUNER_PRESET" class="org.openremote.controller.protocol.marantz_avr.commands.TunerPresetCommand" value="TP"/>
   
+  <command name="OSD_LINE_TEXT" class="org.openremote.controller.protocol.marantz_avr.commands.OnScreenDisplayInfoCommand" value="NSE"/>
+  <command name="OSD_LINE_SELECTED" class="org.openremote.controller.protocol.marantz_avr.commands.OnScreenDisplayInfoCommand" value="NSE"/>
+  
   <command name="SURROUND_MODE" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand" value="MS">
     <parameters>
       <parameter name="MOVIE">MOVIE</parameter>
