@@ -82,9 +82,10 @@ public class VeraCommand implements EventListener, ExecutableCommand {
       logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
       VeraDevice device = client.getDevice(deviceId);
       if ((command == VeraCmd.GENERIC_STATUS) && (statusAttribute != null)) {
-         device.setStatusAttributeName(statusAttribute);
+         device.addGenericSensor(statusAttribute, sensor);
+      } else {
+         device.addSensor(command, sensor);
       }
-      device.addSensor(command, sensor);
    }
 
    @Override
