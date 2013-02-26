@@ -30,6 +30,7 @@
       <parameter name="AUX2">AUX2</parameter>
       <parameter name="IRADIO">IRADIO</parameter>
       <parameter name="TUNER">TUNER</parameter>
+      <parameter name="MEDIAPLAYER">MPLAY</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
