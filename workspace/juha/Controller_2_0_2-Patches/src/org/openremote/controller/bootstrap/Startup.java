@@ -345,28 +345,32 @@ public class Startup
     private void printWhatWeCan(Level level, String category, String message, Object[] params,
                                 Throwable thrown)
     {
-      StringBuffer[] paramStrings = new StringBuffer[params.length];
+       StringBuffer[] paramStrings = null;
+       
+       if (params != null) {
+          paramStrings = new StringBuffer[params.length];
 
-      int index = 0;
-
-      for (Object param : params)
-      {
-        try
-        {
-          paramStrings[index] = new StringBuffer().append(param);
-        }
-
-        catch (NullPointerException e)
-        {
-          paramStrings[index] = new StringBuffer().append("<null>");
-        }
-
-        finally
-        {
-          index++;
-        }
-      }
-
+         int index = 0;
+   
+         for (Object param : params)
+         {
+           try
+           {
+             paramStrings[index] = new StringBuffer().append(param);
+           }
+   
+           catch (NullPointerException e)
+           {
+             paramStrings[index] = new StringBuffer().append("<null>");
+           }
+   
+           finally
+           {
+             index++;
+           }
+         }
+       }
+   
       System.out.println(
           "Unhandled Log Messages (may occur due to undefined or incorrect shutdown order):\n" +
           "--------------------------------------------------------------------------------\n" +
