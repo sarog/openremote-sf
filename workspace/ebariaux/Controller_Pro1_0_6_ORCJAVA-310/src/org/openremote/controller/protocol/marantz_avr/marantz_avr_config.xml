@@ -50,8 +50,8 @@
       <parameter name="AUTO">AUTO</parameter>
       <parameter name="NEURAL">NEURAL</parameter>
       <parameter name="STANDARD">STANDARD</parameter>
-      <parameter name="DOLBY">DOLBY</parameter>
-      <parameter name="DTS">DTS</parameter>
+      <parameter name="DOLBY">DOLBY DIGITAL</parameter>
+      <parameter name="DTS">DTS SURROUND</parameter>
       <parameter name="MCH STEREO">MCH STEREO</parameter>
       <parameter name="MATRIX">MATRIX</parameter>
       <parameter name="VIRTUAL">VIRTUAL</parameter>
