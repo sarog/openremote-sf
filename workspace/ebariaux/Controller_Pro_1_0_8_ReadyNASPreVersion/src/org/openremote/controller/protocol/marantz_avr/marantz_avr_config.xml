@@ -30,6 +30,7 @@
       <parameter name="AUX2">AUX2</parameter>
       <parameter name="IRADIO">IRADIO</parameter>
       <parameter name="TUNER">TUNER</parameter>
+      <parameter name="MEDIAPLAYER">MPLAY</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
@@ -37,6 +38,9 @@
   <command name="TUNER_FREQUENCY" class="org.openremote.controller.protocol.marantz_avr.commands.TunerFrequencyCommand" value="TF"/>
 
   <command name="TUNER_PRESET" class="org.openremote.controller.protocol.marantz_avr.commands.TunerPresetCommand" value="TP"/>
+  
+  <command name="OSD_LINE_TEXT" class="org.openremote.controller.protocol.marantz_avr.commands.OnScreenDisplayInfoCommand" value="NSE"/>
+  <command name="OSD_LINE_SELECTED" class="org.openremote.controller.protocol.marantz_avr.commands.OnScreenDisplayInfoCommand" value="NSE"/>
   
   <command name="SURROUND_MODE" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand" value="MS">
     <parameters>
@@ -49,8 +53,8 @@
       <parameter name="AUTO">AUTO</parameter>
       <parameter name="NEURAL">NEURAL</parameter>
       <parameter name="STANDARD">STANDARD</parameter>
-      <parameter name="DOLBY">DOLBY</parameter>
-      <parameter name="DTS">DTS</parameter>
+      <parameter name="DOLBY">DOLBY DIGITAL</parameter>
+      <parameter name="DTS">DTS SURROUND</parameter>
       <parameter name="MCH STEREO">MCH STEREO</parameter>
       <parameter name="MATRIX">MATRIX</parameter>
       <parameter name="VIRTUAL">VIRTUAL</parameter>
