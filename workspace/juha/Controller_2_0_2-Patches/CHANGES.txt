@@ -1,4 +1,4 @@
-Controller 2.0.2 (2013-xx-xx)
+Controller 2.0.2 (2013-02-26)
 ============================
 
  - Update Web Console implementation to 2.1.0 (Richard Turner, ORCJAVA-312)
