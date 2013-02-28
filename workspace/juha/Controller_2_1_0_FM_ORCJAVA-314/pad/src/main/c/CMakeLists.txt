@@ -13,8 +13,11 @@ include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${APR_PATH}/include")
  
 # external libraries
-link_directories("${APR_PATH}/.libs")
-
+if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+  link_directories("${APR_PATH}/lib")
+else (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+  link_directories("${APR_PATH}/.libs")
+endif (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 
 # add the executable
 add_library(pa socket.c server.c client.c serialize.c portManager.c port.c serialPort${CMAKE_SYSTEM_NAME}.c)
