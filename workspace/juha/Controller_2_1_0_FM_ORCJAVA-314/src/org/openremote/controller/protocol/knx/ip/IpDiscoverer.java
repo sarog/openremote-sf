@@ -28,8 +28,11 @@ import org.openremote.controller.protocol.knx.ip.message.Hpai;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverReq;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.port.PortException;
+import org.openremote.controller.utils.Logger;
 
 public class IpDiscoverer implements IpProcessorListener {
+   private final static Logger log = Logger.getLogger(IpProcessor.KNXIP_LOG_CATEGORY);
    private IpProcessor processor;
    private DiscoveryListener discoveryListener;
    private InetAddress srcAddr;
@@ -40,7 +43,7 @@ public class IpDiscoverer implements IpProcessorListener {
       this.processor = new IpProcessor(this, physicalBusClazz);
    }
 
-   public void start() throws KnxIpException, IOException, InterruptedException {
+   public void start() throws KnxIpException, IOException, PortException, InterruptedException {
       InetAddress multicastAddr = InetAddress.getByName("224.0.23.12");
       this.processor.start("discovery", this.srcAddr, IpDiscoverer.getOutSocket(srcAddr, multicastAddr));
 
@@ -51,7 +54,13 @@ public class IpDiscoverer implements IpProcessorListener {
    }
 
    public void stop() throws InterruptedException {
-      this.processor.stop();
+      try {
+         this.processor.stop();
+      } catch (PortException e) {
+         log.warn("IP discoverer stop failed", e);
+      } catch (IOException e) {
+         log.warn("IP discoverer stop failed", e);
+      }
    }
 
    @Override

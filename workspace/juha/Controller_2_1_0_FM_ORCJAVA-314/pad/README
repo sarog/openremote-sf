@@ -1,0 +1,13 @@
+PAD 1.0
+=======
+
+1- Prepare and build PAD on Linux
+---------------------------------
+
+Download and extract latest apr version in this directory
+
+Update files prepare.sh and CMakeLists.txt with APR directory name.
+
+Type:
+# ./prepare
+# ./make
