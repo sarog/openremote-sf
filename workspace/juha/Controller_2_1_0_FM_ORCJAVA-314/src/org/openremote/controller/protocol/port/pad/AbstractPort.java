@@ -2,25 +2,28 @@ package org.openremote.controller.protocol.port.pad;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.protocol.port.PortException;
+import org.openremote.controller.utils.Logger;
 
 public class AbstractPort implements Port, PortListener {
+   private final static Logger log = Logger.getLogger(PadClient.PAD_LOG_CATEGORY);
    public final static String PORT_ID = "portId";
    public final static String PORT_TYPE = "portType";
    public final static String PORT_SPEED = "speed";
    public final static String PORT_NB_BITS = "nbBits";
    public final static String PORT_PARITY = "parity";
-   private Object notifyLock;
+   public final static int PORT_RX_DATA_HAND_OFF_TIMEOUT = 500;
    private PadClient padClient;
-   private NotifyMessage notification;
+   private SynchronousQueue<NotifyMessage> queue = new SynchronousQueue<NotifyMessage>();
    private String portId;
    private String portType;
 
    public AbstractPort() {
-      this.notifyLock = new Object();
       this.padClient = PadClient.instance();
       this.portId = null;
       this.portType = null;
@@ -71,23 +74,47 @@ public class AbstractPort implements Port, PortListener {
 
    @Override
    public Message receive() throws IOException {
-      synchronized (this.notifyLock) {
-         try {
-            this.notification = null;
-            this.notifyLock.wait();
-            return this.notification.getMessage();
-         } catch (InterruptedException e) {
-            // Nothing more to do
-         }
+      NotifyMessage notification = null;
+
+      try
+      {
+        notification = queue.take();
       }
-      return null;
+
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
+      }
+
+      return (notification != null ? notification.getMessage() : null);
    }
 
    @Override
    public void notifyMessage(NotifyMessage notification) {
-      synchronized (this.notifyLock) {
-         this.notification = notification;
-         this.notifyLock.notify();
+      if (notification == null)
+      {
+        return;
+      }
+
+      try
+      {
+        boolean handOff = queue.offer(
+            notification, PORT_RX_DATA_HAND_OFF_TIMEOUT,
+            TimeUnit.MILLISECONDS
+        );
+
+        if (!handOff)
+        {
+          log.error(
+              "Discarded received data from port ''{0}'' " +
+              "because of internal timeout error.", this.portId
+          );
+        }
+      }
+
+      catch (InterruptedException e)
+      {
+        Thread.currentThread().interrupt();
       }
    }
 }
