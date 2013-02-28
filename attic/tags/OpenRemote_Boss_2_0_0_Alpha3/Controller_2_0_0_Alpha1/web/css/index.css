@@ -1,0 +1,48 @@
+BODY {
+    FONT-SIZE: 12px;
+    FONT-FAMILY: Tahoma
+}
+
+TD {
+    FONT-SIZE: 12px;
+    FONT-FAMILY: Tahoma
+}
+a img{
+    border:none;
+}
+A:link {
+    COLOR: #6FA02B;
+    TEXT-DECORATION: none
+}
+
+A:visited {
+    COLOR: #6FA02B;
+    TEXT-DECORATION: none
+}
+
+A:hover {
+    COLOR: #6FA02B;
+    TEXT-DECORATION: underline
+}
+
+BODY {
+    BACKGROUND-COLOR: #cccccc;
+}
+.welcome{
+    font-family:georgia,serif;
+    color:#4B4742;
+    margin-top:10px;
+}
+.copyright,.version{
+	margin-top:20px;
+    color:#69645C;
+}
+.version{
+    margin-left:5px;
+}
+.errMsg{
+    color:red;
+}
+.msg{
+    color:green;
+}

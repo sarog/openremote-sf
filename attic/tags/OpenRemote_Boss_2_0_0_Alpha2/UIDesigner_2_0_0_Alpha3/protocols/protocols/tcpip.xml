@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="TCP/IP" tagName="socket">
+		<attr name="ipAddress" label="IP Address">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<!-- message is option -->
+				<regex message="ip address should be 192.168.1.1">(?:(?:1\d{0,2}|[3-9]\d?|2(?:[0-5]{1,2}|\d)?|0)\.){3}(?:1\d{0,2}|[3-9]\d?|2(?:[0-5]{1,2}|\d)?|0)</regex>
+			</validations>
+		</attr>
+		<attr name="port" label="Port">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<maxLength>10</maxLength>
+				<regex>\d+</regex>
+			</validations>
+		</attr>
+		<attr name="command" label="Command">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<maxLength>254</maxLength>
+				<regex>\w*</regex>
+			</validations>
+		</attr>
+	</protocol>
+</openremote>
