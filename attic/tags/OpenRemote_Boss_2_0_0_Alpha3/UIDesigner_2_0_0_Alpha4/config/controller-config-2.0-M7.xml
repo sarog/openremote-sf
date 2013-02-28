@@ -1,0 +1,153 @@
+<configs>
+   <category name="security">
+      <description>
+         <![CDATA[
+            configuration about security
+         ]]>
+      </description>
+       <config name="resource.upload.enable" value="true" options="true,false">
+            <hint>
+            <![CDATA[
+               If deploying the controller to public network, always disable (set to 'false') this resource upload feature.
+  This is a convenience feature for home users for easy deployment of
+  the controller in cases where all users of the network are trusted,
+  or the controller is still being configured and tested.  Even home
+  users should consider disabling this feature once they're happy and
+  want to lock down the configuration of the controller.
+
+  When this feature is disabled, copy all the controller configuration
+  files manually to a directory pointed by the 'resource.path' property
+  below. Access to this directory in the filesystem should be properly
+  secured with access restrictions.
+            ]]>
+            </hint>
+      </config>
+   </category>
+   <category name="resource">
+      <description>
+         <![CDATA[
+            configuration about resource
+         ]]>
+      </description>
+      <config name="resource.path" value="../webapps/controller"> 
+            <hint>
+               <![CDATA[
+                  he resource path below points to a  directory where the  controller 
+  looks for all  configuration files  (XML files),  images and other 
+  resources for panels and controllers.
+
+  With the default  distribution of  OpenRemote controller,  it is not 
+  necessary to change this location.
+
+               ]]>
+            </hint>
+      </config>
+   </category>
+   <category name="infrared">
+      <description>
+         <![CDATA[
+            configuration about infrared
+         ]]>
+      </description>
+      <config name="irsend.path" value="/usr/local/bin/irsend">
+         <hint>
+            <![CDATA[
+                 The following properties are relevant if you are using infrared
+integration via Linux LIRC project. Otherwise ignore them.  Path to LIRC irsend command. Configure this to match the location of your LIRC binary.
+            ]]>
+         </hint>
+      </config>
+      <config name="lircd.conf.path" value="/etc/lircd.conf">
+         <hint>
+            <![CDATA[
+              Default path to lircd.conf (IR commands)
+            ]]>
+         </hint>
+      </config>
+      <config name="copy.lircd.conf.on" value="true">
+         <hint>
+            <![CDATA[
+              If true, controller will copy a deployed lircd.conf to lircd.conf.path of the user
+               TODO : 
+This is disruptive to the user's system. The additional remotes
+deployed to OR controller should be concatenated to the end of an 
+existing lircd.conf file.
+            ]]>
+         </hint>
+      </config>
+   </category>
+   <category name="discovery">
+      <description>
+         <![CDATA[
+            configuration about discovery
+         ]]>
+      </description>
+      <config name="webapp.port" value="8080"> 
+            <hint>
+               <![CDATA[
+                  This is the port number the controller returns on a panel discovery
+  request. It *must* match the port number configured on the hosting
+  web container. If you change your web container port, change this
+  port  value to match  or the  panel  auto-discovery will not work
+  correctly.
+
+  TODO:
+   This is a duplicate configuration to the web container and should
+   be consolidated. It should only be necessary to define the port
+   number in one location. This may mean wrapping the web container
+   with a proper service container.
+               ]]>
+            </hint>
+      </config>
+   </category>
+   <category name="macro">
+      <description>
+         <![CDATA[
+            configuration about macro
+         ]]>
+      </description>
+      <config name="Macro.IR.Execution.Delay" value="500" validation="\d+"> 
+            <hint>
+               <![CDATA[
+                  Macro execution delay.
+ 
+  By default there's a delay between commands executed in a macro. Slow
+  receiver devices (for example most TVs controlled via infrared) won't
+  be able to process commands without significant delay. Mostly this is
+  necessary  for  infrared.  Other  protocols may  be able  to  process 
+  commands faster or without any delay at all.
+
+  The measure is in milliseconds (500ms = 0.5s).
+               ]]>
+            </hint>
+      </config>
+   </category>
+   <category name="advance">
+      <description>
+         <![CDATA[
+            advanced configuration
+         ]]>
+      </description>
+      <config name="multicast.address" value="224.0.1.100" validation="((25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(25[0-5]|2[0-4]\d|1?\d?\d)"> 
+            <hint>
+               <![CDATA[
+                  multicast address for listening to the iPhone auto discovery
+               ]]>
+            </hint>
+      </config>
+      <config name="multicast.port" value="3333" validation="\d+"> 
+            <hint>
+               <![CDATA[
+                  multicast port for listening to the iPhone auto discovery
+               ]]>
+            </hint>
+      </config> 
+      <config name="controller.applicationname" value="controller"> 
+            <hint>
+               <![CDATA[
+                  controller app name
+               ]]>
+            </hint>
+      </config> 
+   </category>
+</configs>
