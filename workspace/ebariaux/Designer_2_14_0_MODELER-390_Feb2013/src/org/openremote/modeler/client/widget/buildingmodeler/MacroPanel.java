@@ -49,7 +49,6 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTOHelper;
-import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -145,9 +144,15 @@ public class MacroPanel extends ContentPanel {
         macroTree.getStore().add(bms, true);
       } 
      });
+
      eventBus.addHandler(MacrosDeletedEvent.TYPE, new MacrosDeletedEventHandler() {
        @Override
        public void onMacrosDeleted(MacrosDeletedEvent event) {
+         // Tree has not been created yet, nothing to do
+         if (macroTree == null) {
+           return;
+         }
+         
          List<MacroDTO> macros = event.getMacros(); 
          if (macros == null || macros.isEmpty()) {
            macroTree.getStore().removeAll();
@@ -158,6 +163,7 @@ public class MacroPanel extends ContentPanel {
          }
        }
      });
+
    }
    /**
     * Creates the menu.
