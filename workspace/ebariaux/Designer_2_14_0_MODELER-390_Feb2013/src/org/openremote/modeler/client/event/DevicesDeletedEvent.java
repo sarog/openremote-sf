@@ -28,7 +28,7 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * Event indicating that devices have been deleted.
  * Event usually contains the list of devices that have been deleted,
- * but by convention, the list is null, we consider that all devices have been deleted.
+ * but by convention, if the list is null or empty, we consider that all devices have been deleted.
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
