@@ -28,6 +28,7 @@ import java.util.Set;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DevicesCreatedEvent;
+import org.openremote.modeler.client.event.DevicesDeletedEvent;
 import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
@@ -439,6 +440,9 @@ public class ApplicationView implements View {
              ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
              JSONArray jsonDeviceDTOs = JSONParser.parseStrict((String) be.getData()).isArray();
 
+             // All existing devices have been deleted as part of import, notify UI displaying devices to refresh
+             eventBus.fireEvent(new DevicesDeletedEvent());
+             
              for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
                JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
                DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
