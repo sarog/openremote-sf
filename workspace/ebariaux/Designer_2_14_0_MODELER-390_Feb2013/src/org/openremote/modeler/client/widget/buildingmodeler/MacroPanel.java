@@ -30,6 +30,8 @@ import org.openremote.modeler.client.event.MacroUpdatedEvent;
 import org.openremote.modeler.client.event.MacroUpdatedEventHandler;
 import org.openremote.modeler.client.event.MacrosCreatedEvent;
 import org.openremote.modeler.client.event.MacrosCreatedEventHandler;
+import org.openremote.modeler.client.event.MacrosDeletedEvent;
+import org.openremote.modeler.client.event.MacrosDeletedEventHandler;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -47,6 +49,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.selenium.DebugId;
 import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -141,6 +144,19 @@ public class MacroPanel extends ContentPanel {
         List<BeanModel> bms = DTOHelper.createModels(event.getMacros());
         macroTree.getStore().add(bms, true);
       } 
+     });
+     eventBus.addHandler(MacrosDeletedEvent.TYPE, new MacrosDeletedEventHandler() {
+       @Override
+       public void onMacrosDeleted(MacrosDeletedEvent event) {
+         List<MacroDTO> macros = event.getMacros(); 
+         if (macros == null || macros.isEmpty()) {
+           macroTree.getStore().removeAll();
+         } else {
+           for (MacroDTO macro : macros) {
+             macroTree.getStore().remove(DTOHelper.getBeanModel(macro));
+           }
+         }
+       }
      });
    }
    /**
