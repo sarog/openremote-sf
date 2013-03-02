@@ -1,0 +1,481 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2012, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/************************************************************************
+CUSTOM CSS FILE FOR WEBCONSOLE CHANGE TO SUIT YOUR REQUIREMENTS
+
+This CSS file can be customised to suit your needs
+************************************************************************/
+
+
+/************************************************************************
+CONSOLE UNIT
+************************************************************************/
+
+#consoleUnit {
+	background-color: #383838;
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(0,0,0)), color-stop(0.5, rgb(56,56,56)));
+	background-image: -moz-linear-gradient(center bottom, rgb(0,0,0) 0%, rgb(56,56,56) 50%);
+	/* ie10 */
+	background-image: -ms-linear-gradient(#383838,#000000);
+	/* opera 11.1 */
+	background-image: -o-linear-gradient(#383838,#000000);
+	/* The "standard" */
+	background-image: linear-gradient(#383838,#000000);			
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+
+#consoleDisplayWrapper {
+	border-color: #333333;
+}
+
+#consoleDisplay, body.fullscreen {
+	background-color: black;
+}
+
+/************************************************************************
+TAB BAR
+************************************************************************/
+
+.tabBarComponent {
+	height: 45px;
+	color: #CCC;
+	background-color: #5A5A5A;
+	background-image: linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 0%, rgb(90,90,90) 100%);	
+	background-image: -webkit-gradient(linear, left bottom,	left top, color-stop(0, rgb(0,0,0)), color-stop(1, rgb(90,90,90)));
+	/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#5A5A5A');
+}
+
+.tabBarComponent .selected {
+	font-weight: bold;
+	color: #FFF;
+	background-color: #6E6E6E;
+	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -ms-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(20,20,20)),color-stop(1, rgb(110,110,110)));
+		/* ie6 */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+	/* ie8 + */
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#6E6E6E');
+}
+
+.tabBarItem {
+	border-right: 1px solid black;
+}
+
+.tabBarItemText {
+	font-size: 12px;
+	line-height: 16px;
+}
+
+/* Pixel ratio of 1.5*/
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	.tabBarComponent {
+		height: 65px;
+	}
+	
+	.tabBarItem {
+		border-right-wdith: 2px;
+	}
+	
+	.tabBarItemText {
+		font-size: 18px;
+		line-height: 24px;
+	}
+}
+
+/* Pixel ratio of 2 */
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+	.tabBarComponent {
+		height: 90px;
+	}
+	
+	.tabBarItem {
+		border-right-wdith: 3px;
+	}
+	
+	.tabBarItemText {
+		font-size: 24px;
+		line-height: 32px;
+	}
+}
+/************************************************************************
+SCREEN INDICATOR
+*************************************************************************/
+
+.screenIndicatorItem {
+	height: 12px;
+	-moz-border-radius: 6px;
+	-o-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	/*height: 6px;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;*/
+	background-color: #6E6E6E;
+}
+
+.screenIndicatorItem.selected {
+	background-color: #FFF;
+}
+
+/* Pixel ratio of 1.5*/
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	.screenIndicatorItem {
+		height: 8px;
+		-moz-border-radius: 4px;
+		-o-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		border-radius: 4px;
+	}
+}
+
+/* Pixel ratio of 2 */
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+	.screenIndicatorItem {
+		height: 12px;
+		-moz-border-radius: 6px;
+		-o-border-radius: 6px;
+		-webkit-border-radius: 6px;
+		border-radius: 6px;
+	}
+}
+
+
+/************************************************************************
+FORM AND LIST WIDGETS
+*************************************************************************/
+
+.formPanelComponent {
+	background: #7A899E;
+	border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border: none;
+    padding: 5px 0;
+}
+
+.formFieldLabelComponent, .formFieldInputComponent {
+	font-size: 13px;
+	line-height: 13px;
+}
+
+.formFieldLabelComponent {
+	color: #333;
+	font-weight: bold;
+}
+
+.formFieldLabelComponent.invalid {
+	color: #FF0000;
+}
+
+.formFieldInputComponent {
+	border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+  	margin-bottom: 6px;
+}
+
+.formTextBoxComponent {
+	-webkit-appearance: textfield;
+}
+
+.formPasswordComponent {
+
+}
+
+.formButtonComponent {
+    margin: 10px;
+    line-height: 35px;
+    width: 80px;
+    height: 35px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    font-size: 14px;
+	background: #5A697E;
+    border: 1px solid black;
+    color: #FFF;
+    font-weight: bold;
+    font-family: arial;
+    -webkit-appearance: none;
+}
+
+
+
+.listItemComponent {
+	background: #b4ddb4; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background-image: -moz-linear-gradient(top, #b4ddb4 0%, #83c783 17%, #52b152 33%, #008a00 67%, #005700 83%, #002400 100%); /* FF3.6+ */
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b4ddb4), color-stop(17%,#83c783), color-stop(33%,#52b152), color-stop(67%,#008a00), color-stop(83%,#005700), color-stop(100%,#002400)); /* Chrome,Safari4+ */
+	background-image: -webkit-linear-gradient(top, #b4ddb4 0%,#83c783 17%,#52b152 33%,#008a00 67%,#005700 83%,#002400 100%); /* Chrome10+,Safari5.1+ */
+	background-image: -o-linear-gradient(top, #b4ddb4 0%,#83c783 17%,#52b152 33%,#008a00 67%,#005700 83%,#002400 100%); /* Opera 11.10+ */
+	background-image: -ms-linear-gradient(top, #b4ddb4 0%,#83c783 17%,#52b152 33%,#008a00 67%,#005700 83%,#002400 100%); /* IE10+ */
+	background-image: linear-gradient(to bottom, #b4ddb4 0%,#83c783 17%,#52b152 33%,#008a00 67%,#005700 83%,#002400 100%); /* W3C */
+}
+
+
+
+
+
+/* Pixel ratio of 1.5 */
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	.formPanelComponent {
+		border-radius: 12px;
+	    -moz-border-radius: 12px;
+	    -webkit-border-radius: 12px;
+	    padding: 8px 0;
+	}
+	
+	.formFieldLabelComponent, .formFieldInputComponent {
+		font-size: 16px;
+		line-height: 16px;
+	}
+
+	.formFieldInputComponent {
+		border-radius: 4px;
+	    -moz-border-radius: 4px;
+	    -webkit-border-radius: 4px;
+	  	margin-bottom: 10px;
+	}
+
+	.formButtonComponent {
+	    border-width: 2px;
+	    border-radius: 5px;
+	    -moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    margin: 15px;
+	    line-height: 50px;
+	    width: 120px;
+	    height: 50px;
+	    font-size: 21px;
+	}
+	
+	
+	
+	.listItemComponent {
+		height: 75px;
+	}
+}
+
+/* Pixel ratio of 2 */
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+	.formPanelComponent {
+		border-radius: 16px;
+	    -moz-border-radius: 16px;
+	    -webkit-border-radius: 16px;
+	    padding: 10px 0;
+	}
+
+	.formFieldLabelComponent, .formFieldInputComponent {
+		font-size: 25px;
+		line-height: 25px;
+	}
+
+	.formFieldInputComponent {
+		border-radius: 6px;
+	    -moz-border-radius: 6px;
+	    -webkit-border-radius: 6px;
+	  	margin-bottom: 15px;
+	}
+
+	.formButtonComponent {
+	    border-width: 3px;
+	    border-radius: 7px;
+	    -moz-border-radius: 7px;
+	    -webkit-border-radius: 7px;
+	    margin: 20px;
+	    line-height: 75px;
+	    width: 150px;
+	    height: 75px;
+	    font-size: 28px;
+	}
+	
+	
+	
+	.listItemComponent {
+		height: 100px;
+	}
+}
+
+
+
+/************************************************************************
+WIDGETS
+*************************************************************************/
+
+.sliderComponentThumb {
+	height: 44px;
+	-moz-border-radius: 22px;
+	-webkit-border-radius: 22px;
+	-o-border-radius: 22px;
+	border-radius: 22px;
+	border-width: 2px;
+    background-color: buttonFace;
+   	border-style: solid;
+   	border-color: black;
+}
+
+.sliderComponentTrack {
+	height: 20px;
+	border: none;
+}
+
+.sliderComponentTrackMin, .sliderComponentTrackMax {
+	border-color: black;
+	border-style: solid;
+	border-width: 2px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.sliderComponentTrackMin {
+	background-color: #4FA800;
+}
+
+.sliderComponentTrackMax {
+	background-color: buttonFace;
+}
+
+
+
+.buttonComponent, .switchComponent {
+	-moz-border-radius: 4px;
+	-ms-border-radius: 4px;
+	-o-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	font-size: 16px;
+	background-image: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -ms-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -o-linear-gradient(-90deg, #dddee1, #b4b7be);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#dddee1), to(#b4b7be));
+	background-image: linear-gradient(-90deg, #dddee1, #b4b7be);
+	border: 0px;
+	color: #525c69;
+	padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+   	font-weight: bold;
+   	font-family: "Helvetica Neue", "Arial", "sans-serif";
+	text-shadow: 0 1px #fff;
+}
+
+.buttonComponent.noImage, .switchComponent.noImage {
+	-moz-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-ms-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-o-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	-webkit-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
+	box-shadow: 0px 2px 2px rgba(0,0,0, .7);	
+}
+
+.buttonComponent.pressed, .switchComponent.pressed {
+	background-color: #3A495E;
+	color: #DDD;
+}
+
+
+
+.webElementComponent {
+	border: none;
+	overflow: hidden;
+}
+
+/* Pixel ratio of 1.5 */
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+	.sliderComponentThumb {
+		height: 66px;
+		-moz-border-radius: 33px;
+		-webkit-border-radius: 33px;
+		-o-border-radius: 33px;
+		border-radius: 33px;
+		border-width: 3px;
+	}
+	
+	.sliderComponentTrack {
+		height: 30px;
+	}
+	
+	.sliderComponentTrackMin, .sliderComponentTrackMax {
+		border-width: 3px;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+		-o-border-radius: 15px;
+		border-radius: 15px;
+	}
+	
+	.buttonComponent, .switchComponent {
+		-moz-border-radius: 6px;
+		-ms-border-radius: 6px;
+		-o-border-radius: 6px;
+		-webkit-border-radius: 6px;
+		font-size: 20px;
+	}
+}
+
+/* Pixel ratio of 2 */
+@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+	.sliderComponentThumb {
+		height: 88px;
+		-moz-border-radius: 44px;
+		-webkit-border-radius: 44px;
+		-o-border-radius: 44px;
+		border-radius: 44px;
+		border-width: 4px;
+	}
+	
+	.sliderComponentTrack {
+		height: 40px;
+	}
+	
+	.sliderComponentTrackMin, .sliderComponentTrackMax {
+		border-width: 4px;
+		-moz-border-radius: 20px;
+		-webkit-border-radius: 20px;
+		-o-border-radius: 20px;
+		border-radius: 20px;
+	}
+	
+	.buttonComponent, .switchComponent {
+		-moz-border-radius: 8px;
+		-ms-border-radius: 8px;
+		-o-border-radius: 8px;
+		-webkit-border-radius: 8px;
+		font-size: 32px;
+	}
+}
