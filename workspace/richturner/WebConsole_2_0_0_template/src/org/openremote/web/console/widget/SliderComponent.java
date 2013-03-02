@@ -171,6 +171,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				DOM.setStyleAttribute(elem, "backgroundRepeat", "no-repeat");
 				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
 				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
+				DOM.setStyleAttribute(elem, "dropShadow", "none");
 			}
 		}
 		
