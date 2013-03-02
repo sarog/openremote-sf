@@ -110,7 +110,6 @@ public class ORConnection
   {
     initHandler(context);
 
-    Log.e(LOG_CATEGORY, "after initHandler():" + url);
     delegate = delegateParam;
     this.context = context;
 
@@ -119,7 +118,6 @@ public class ORConnection
     HttpConnectionParams.setSoTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
 
     httpClient = new DefaultHttpClient(params);
-
 
     try
     {
@@ -186,9 +184,9 @@ public class ORConnection
       new Thread(new Runnable() {
          public void run() {
             try {
-            	Log.e(LOG_CATEGORY, "execute() httpRequest: " + httpRequest);
+            	Log.i(LOG_CATEGORY, "execute() httpRequest: " + httpRequest);
                httpResponse = httpClient.execute(httpRequest);
-               Log.e(LOG_CATEGORY, "after execute() httpRequest: " + httpRequest);
+               Log.i(LOG_CATEGORY, "after execute() httpRequest: " + httpRequest);
                handler.sendEmptyMessage(SUCCESS);
             } catch (SocketTimeoutException e) {
                handler.sendEmptyMessage(ERROR);
