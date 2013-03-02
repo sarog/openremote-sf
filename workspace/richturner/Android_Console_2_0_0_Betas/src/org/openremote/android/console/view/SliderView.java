@@ -108,6 +108,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		isPassive = slider.isPassive();
 		maxValue = slider.getMaxValue();
 		minValue = slider.getMinValue();
+		value = minValue;
 		
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -260,7 +261,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 				FrameLayout frame = new FrameLayout(context);
 				frame.addView(minContainer);
 				sliderLayout.removeView(minTrack);
-				sliderLayout.addView(frame);
+				sliderLayout.addView(frame,0);
 				minTrack = frame;
 				minTrack.setId(3);
 			} else {
@@ -329,7 +330,9 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			maxLayoutParams.addRule(RelativeLayout.LEFT_OF, maxImage.getId());
 		}
 
-		//minTrack.setBackgroundDrawable(minTrackDrawable);
+		if (!(minTrack instanceof FrameLayout))
+			minTrack.setBackgroundDrawable(minTrackDrawable);
+		
 		minTrack.setLayoutParams(minLayoutParams);
 		minTrack.setOnTouchListener(this);
 		maxTrack.setBackgroundDrawable(maxTrackDrawable);
@@ -412,7 +415,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
    * Update the value from the thumb position
    */
   private void updateValueFromPos() {
-  	int newValue = (int)Math.round(valuePerPixel * thumbPos);
+  	int newValue = (int)Math.round(valuePerPixel * thumbPos) + minValue;
   	setValue(newValue, false);
   }
   
@@ -433,7 +436,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
    * Update the thumb position from the value
    */
   private void updatePosFromValue() {
-  	int pos = (int)Math.round(value / valuePerPixel);
+  	int pos = (int)Math.round((value - minValue) / valuePerPixel);
   	pos = pos < 0 ? 0 : pos > thumbRange ? thumbRange : pos;
   	thumbPos = pos;
   	updateThumbPos();

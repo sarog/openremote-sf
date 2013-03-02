@@ -98,9 +98,8 @@ public class HttpXmlControllerService implements ControllerService
   protected HttpClient getHttpClient()
   {
     HttpParams params = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(params,
-        Constants.DEFAULT_CONTROLLER_CONNECTION_TIMEOUT);
-    HttpConnectionParams.setSoTimeout(params, Constants.DEFAULT_CONTROLLER_SOCKET_TIMEOUT);
+    HttpConnectionParams.setConnectionTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
+    HttpConnectionParams.setSoTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
     return new DefaultHttpClient(params);
   }
 

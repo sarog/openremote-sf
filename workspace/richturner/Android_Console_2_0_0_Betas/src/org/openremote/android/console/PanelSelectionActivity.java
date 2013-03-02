@@ -213,14 +213,14 @@ public class PanelSelectionActivity extends GenericActivity implements ORConnect
 	   });
 	   alertDialog.show();
       
-	   Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
+	   Log.e(TAG, "Can not get panel identity list", e);
    }
 
    @Override
    //This method is for setting the error dialog in the spinner
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
       int statusCode = httpResponse.getStatusLine().getStatusCode();
-      Log.e("PANEL", statusCode+"");
+      Log.i(TAG, statusCode+"");
       if (statusCode != Constants.HTTP_SUCCESS) {
          if (statusCode == ControllerException.UNAUTHORIZED) {
             LoginDialog loginDialog = new LoginDialog(this);
