@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -45,6 +45,7 @@
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
+            <value>classpath:enocean.properties</value>
           </list>
       </property>
   </bean>
@@ -98,6 +99,13 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
+    <property name="comPort" value="${enocean.comPort}" />
+    <property name="commLayer" value="${enocean.commLayer}" />
+    <property name="serialProtocol" value="${enocean.serialProtocol}" />
+  </bean>
+
 
   <!-- TODO -->
   <bean id = "controlCommandService"
@@ -239,6 +247,7 @@
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -305,6 +314,10 @@
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
+
+        <!-- EnOcean Command Builder -->
+        <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder"/>
+
 
   <!-- 1-wire protocol Command Builder -->
   <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
