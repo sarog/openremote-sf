@@ -1,7 +1,0 @@
-<label for="inspect_macro_label">Label</label><input type="text" class="text ui-widget-content ui-corner-all"  value="<%=label %>" id="inspect_macro_label">
-<%InspectView.getModel= function() { %>
-<% var model = $("#inspect_tool_bar").data("model"); %>
-<% var label = $.trim($("#inspect_macro_label").val()); %>
-<% model.label = label;%>
-<% return model;%>
-<% }; %>
