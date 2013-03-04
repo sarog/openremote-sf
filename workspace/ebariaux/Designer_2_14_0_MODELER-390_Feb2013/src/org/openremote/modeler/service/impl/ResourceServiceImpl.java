@@ -216,14 +216,44 @@ public class ResourceServiceImpl implements ResourceService
     final Account account = userService.getAccount();
 
     // Remove macros first, as they might reference commands
-    
-    // TODO: must delete macros in appropriate order if dependencies between them, first referencies ones, dependant ones last
-    
+    // Macros can also reference other macros, macros referencing others must be deleted first
+   
     List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
-    for (DeviceMacro dm : allMacros) {
-      deviceMacroService.deleteDeviceMacro(dm.getOid());
+
+    // So start by building a dependencies list
+    // On each iteration, collect macros that do not depend on others
+    // or only on the ones that have already been collected.
+    // Store those lists in a "last processed" ordered collection.
+    List<List<DeviceMacro>> orderedDeviceMacros = new ArrayList<List<DeviceMacro>>();
+    List<DeviceMacro> processedMacros = new ArrayList<DeviceMacro>();
+    while (!allMacros.isEmpty()) {
+      List<DeviceMacro> processedMacrosThisTime = new ArrayList<DeviceMacro>();
+      
+      for (DeviceMacro dm : allMacros) {
+        if (!dm.dependsOnMacrosNotInList(processedMacros)) {
+          processedMacrosThisTime.add(dm);
+        }
+      }
+      
+      if (processedMacrosThisTime.isEmpty()) {
+        throw new RuntimeException("cyclic in DB"); // TODO
+      }
+      
+      orderedDeviceMacros.add(0, processedMacrosThisTime);
+      processedMacros.addAll(processedMacrosThisTime);
+      allMacros.removeAll(processedMacrosThisTime);
     }
+
+    // Collected macros can now be processed, first list is one that has "most dependencies"
+    for (List<DeviceMacro> macrosToDelete : orderedDeviceMacros) {
+      for (DeviceMacro dm : macrosToDelete) {
+        deviceMacroService.deleteDeviceMacro(dm.getOid());
+      }
+    }
+
     account.getDeviceMacros().clear();
+
+    // Then devices, no dependencies between them
     
     List<Device> allDevices = deviceService.loadAll(account);
     for (Device d : allDevices) {
