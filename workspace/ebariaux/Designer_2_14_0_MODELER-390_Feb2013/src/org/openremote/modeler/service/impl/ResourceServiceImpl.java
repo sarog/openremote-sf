@@ -205,14 +205,14 @@ public class ResourceServiceImpl implements ResourceService
 	return temporaryFile;
   }
   
-   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
-	 // Store the upload zip file locally before processing
-	 File importFile = storeAsLocalTemporaryFile(inputStream);
+  @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	  // Store the upload zip file locally before processing
+	  File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
-     // No need to clean any of the resources stored in the cache (UI, images, rules...).
-	 // The whole cache is deleted later before being replaced with the uploaded file.
+    // No need to clean any of the resources stored in the cache (UI, images, rules...).
+	  // The whole cache is deleted later before being replaced with the uploaded file.
 
-	 // Remove all building modeler information
+	  // Remove all building modeler information
     final Account account = userService.getAccount();
 
     // Remove macros first, as they might reference commands
