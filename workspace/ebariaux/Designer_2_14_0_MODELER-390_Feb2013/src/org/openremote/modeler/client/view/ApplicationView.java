@@ -34,6 +34,7 @@ import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -160,6 +161,11 @@ public class ApplicationView implements View {
          public void onSuccess(Collection<Panel> panels) {                   
             if (panels.size() > 0) {
                initModelDataBase(panels);
+
+               if (uiDesignerPresenter != null) {
+                 uiDesignerPresenter.refreshPanelDisplay();
+               }
+
                eventBus.fireEvent(new ScreenTableLoadedEvent());
             }
             UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
@@ -452,8 +458,12 @@ public class ApplicationView implements View {
              }
              eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
 
-             loadPanelsFromSession(authority, false);
+             if (uiDesignerPresenter != null) {
+               uiDesignerPresenter.clearPanelTree();
+             }
 
+             loadPanelsFromSession(authority, false);
+             
              importWindow.hide();
            }
         });
