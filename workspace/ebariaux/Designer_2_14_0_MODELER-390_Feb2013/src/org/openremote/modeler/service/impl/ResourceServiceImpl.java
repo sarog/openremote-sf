@@ -186,25 +186,25 @@ public class ResourceServiceImpl implements ResourceService
   private File storeAsLocalTemporaryFile(InputStream inputStream) {
     File temporaryFile = null;
     FileOutputStream fileOutputStream = null;
-	try {
-	  temporaryFile = File.createTempFile("import_", ".zip", new File(PathConfig.getInstance(configuration).tempFolder()));
+	  try {
+	    temporaryFile = File.createTempFile("import_", ".zip", new File(PathConfig.getInstance(configuration).tempFolder()));
       fileOutputStream = new FileOutputStream(temporaryFile);
-	  IOUtils.copy(inputStream, fileOutputStream);
+	    IOUtils.copy(inputStream, fileOutputStream);
     } catch (IOException e) {
     	throw new FileOperationException("Error in storing zip import file", e);
-	} finally {
-	  if (fileOutputStream != null) {
+	  } finally {
+	    if (fileOutputStream != null) {
         try {
-		  fileOutputStream.close();
-		} catch (IOException e) {
+		      fileOutputStream.close();
+		    } catch (IOException e) {
           serviceLog.warn("Failed to close import file resources", e);
-		}
-	  }
-	}
+		    }
+	    }
+  	}
 	
-	return temporaryFile;
+	  return temporaryFile;
   }
-  
+
   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
