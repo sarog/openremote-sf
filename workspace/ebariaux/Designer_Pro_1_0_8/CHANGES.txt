@@ -4,6 +4,8 @@ Pro 1.0.8
 Fixes:
  - MODELER-460: In Controller Management window, remove id column
 
+New features:
+ - Support new features in Marantz AVR protocol (MODELER-461)
 
 Pro 1.0.7
 =========
