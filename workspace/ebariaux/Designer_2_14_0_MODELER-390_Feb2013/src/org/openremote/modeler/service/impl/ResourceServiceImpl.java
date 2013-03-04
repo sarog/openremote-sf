@@ -94,10 +94,13 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
@@ -247,12 +250,15 @@ public class ResourceServiceImpl implements ResourceService
     
     List<Device> importedDevices = new ArrayList<Device>();
     
+    Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
+    
     // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
     for (DeviceDetailsWithChildrenDTO dev : devices) {
 
       // The archived graph has DTOReferences with id, as it originally came from objects in DB.
       // Must iterate all DTOReferences, replacing ids with dto.
-      dev.replaceIdWithDTOInReferences();
+      // While doing this, also collect all mappings from id to commands DTO
+      commandsPerId.putAll(dev.replaceIdWithDTOInReferences());
 
       // TODO EBR review : original MODELER-390 line was
       // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
@@ -287,25 +293,67 @@ public class ResourceServiceImpl implements ResourceService
       
       importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
     }
-
-    // TODO: what about macro order ???
-    // If one macro depends on another, the second should be imported first !
-    // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
-    // Deadlock currentl possible -> will prevent that, but code should be robust enough to not deadlock/crash with such data
+    
+    // Macros
     
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
-    if (macros != null) {
-      for (MacroDetailsDTO m : macros) {
-          // Replace old with new command ids
-        if (m.getItems() != null) {
-    		  for (MacroItemDetailsDTO item : m.getItems()) {
-      			// Delays do not reference any DTO
-      			if (item.getDto() != null) {
-      		      item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-      			}
-    		  }
+    
+    // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
+    for (MacroDetailsDTO m : macros) {
+      for (MacroItemDetailsDTO item : m.getItems()) {
+        if (item.getType() == MacroItemType.Command) {
+          item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
         }
-        deviceMacroService.saveNewMacro(m);
+      }
+    }
+    
+    // Macros can reference other macros.
+    // As for commands above, id in references need to be adapted so to use one of newly saved domain object.
+    // This means macros should be processed in appropriate order, dependent macros before referencing ones.
+    // Circular dependencies (m1 -> m2 and m2 -> m1) should not be allowed,
+    // but if this is detected, it's considered an error and import is aborted.
+    
+    // Keep a list of macro ids that have already been processed.
+    // On each iteration, macros that only reference those (or no other macro) are safe to process.
+    // Ids kept are the ones of newly saved domain objects.
+    Collection<Long> processedMacroIds = new ArrayList<Long>();
+    
+    Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
+    if (macros != null) {
+      while (!macros.isEmpty()) {
+        Collection<MacroDetailsDTO> processedMacrosThisTime = new ArrayList<MacroDetailsDTO>();
+        
+        for (MacroDetailsDTO m : macros) {
+          // Macros not depending on any macro or only on ones already processed can be saved
+          if (!m.dependsOnMacroNotInList(processedMacroIds)) {
+            MacroDTO newMacro = deviceMacroService.saveNewMacro(m);
+            macrosOldOidToNewOid.put(m.getOid(), newMacro.getOid());
+            processedMacrosThisTime.add(m);
+          }
+        }
+        
+        if (processedMacrosThisTime.isEmpty()) {
+          // No macro could be processed -> there is a cyclic dependency
+          throw new RuntimeException("cyclic dependency"); // TODO: appropriate exception
+        }
+        
+        macros.removeAll(processedMacrosThisTime);
+        
+        // Keep track of macros that have been processed so far
+        for (MacroDetailsDTO item : processedMacrosThisTime) {
+          processedMacroIds.add(macrosOldOidToNewOid.get(item.getOid()));
+        }
+        
+        // Now that dependencies have been saved, ensure referencing macros are using new id
+        for (MacroDetailsDTO m : macros) {
+          for (MacroItemDetailsDTO item : m.getItems()) {
+            if (item.getType() == MacroItemType.Macro) {
+              if (macrosOldOidToNewOid.get(item.getDto().getId()) != null) {
+                item.getDto().setId(macrosOldOidToNewOid.get(item.getDto().getId()));
+              }
+            }
+          }
+        }
       }
     }
                 
