@@ -212,12 +212,12 @@ public class ResourceServiceImpl implements ResourceService
      // No need to clean any of the resources stored in the cache (UI, images, rules...).
 	 // The whole cache is deleted later before being replaced with the uploaded file.
 
-	 // Remove all building modeler information (except for configuration)
+	 // Remove all building modeler information
     final Account account = userService.getAccount();
 
     // Remove macros first, as they might reference commands
     
-    // TODO: might need to do macros in appropriate order if dependencies between them
+    // TODO: must delete macros in appropriate order if dependencies between them, first referencies ones, dependant ones last
     
     List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
     for (DeviceMacro dm : allMacros) {
@@ -234,10 +234,12 @@ public class ResourceServiceImpl implements ResourceService
     account.getSensors().clear();
     account.getDevices().clear();
     
+    // TODO : remove configuration
+    
 
     // TODO: check database to verify objects are indeed deleted
     
-    // TODO: configuration or not, see above comment ?
+    // TODO: configuration
 
     LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
     cache.replace(importFile);
@@ -360,8 +362,6 @@ public class ResourceServiceImpl implements ResourceService
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
     state.restore(false);
 
-    // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
-    // For now, this code will crash if panels are restored that reference any building modeler objects.
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
     
     // All DTOs in the just imported object graph have ids of building elements from the original DB.
