@@ -1,7 +1,9 @@
 package org.openremote.modeler.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.SpringTestContext;
@@ -71,5 +73,29 @@ public class ControllerConfigServiceTest {
             Assert.assertTrue(cfg.getValue().substring(0,cfg.getValue().indexOf(addStr)-1).matches(cfg.getValidation()));
          }
       }
+   }
+   
+   @Test
+   public void testMissingConfigByCategoryName() {
+     String testCategoryName = "advance";
+     List<String> valueNames = new ArrayList<String>();
+     
+     // Collect all config names for given category
+     for (ControllerConfig config : configs) {
+       if (config.getCategory().equals(testCategoryName)) {
+         valueNames.add(config.getName());
+       }
+     }
+     
+     Set<ControllerConfigDTO> existingConfigs = configService.listAllConfigDTOsByCategory(testCategoryName);
+     Set<ControllerConfigDTO> missingConfigs = configService.listMissedConfigDTOsByCategoryName(testCategoryName);
+     
+     Assert.assertEquals(missingConfigs.size() + existingConfigs.size(), valueNames.size(), "Total of missing and existing config entries should be equal to total number of possible entries.");
+     for (ControllerConfigDTO dto : existingConfigs) {
+       Assert.assertTrue(valueNames.contains(dto.getName()), "Invalid name for an existing config entry");
+     }
+     for (ControllerConfigDTO dto : missingConfigs) {
+       Assert.assertTrue(valueNames.contains(dto.getName()), "Invalid name for a missing config entry");
+     }
    }
 }
