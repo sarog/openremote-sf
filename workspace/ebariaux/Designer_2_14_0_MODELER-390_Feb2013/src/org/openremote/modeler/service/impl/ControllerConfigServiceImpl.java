@@ -226,4 +226,13 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
      return dtos;
    }
 
+  @Override
+  @Transactional
+  public void deleteAllConfigs() {
+    Set<ControllerConfig> configs = listAllConfigs();
+    for (ControllerConfig config : configs) {
+      genericDAO.delete(config);
+    }
+  }
+  
 }

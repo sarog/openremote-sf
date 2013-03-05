@@ -62,6 +62,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -109,6 +110,8 @@ import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import sun.security.provider.ConfigSpiFile;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -264,12 +267,10 @@ public class ResourceServiceImpl implements ResourceService
     account.getSensors().clear();
     account.getDevices().clear();
     
-    // TODO : remove configuration
-    
+    // Remove configuration
+    controllerConfigService.deleteAllConfigs();
 
     // TODO: check database to verify objects are indeed deleted
-    
-    // TODO: configuration
 
     LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
     cache.replace(importFile);
