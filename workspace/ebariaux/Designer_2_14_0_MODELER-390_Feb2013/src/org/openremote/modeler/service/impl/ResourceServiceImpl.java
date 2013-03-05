@@ -95,6 +95,7 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
@@ -389,7 +390,20 @@ public class ResourceServiceImpl implements ResourceService
         }
       }
     }
-                
+
+    // Controller configuration
+    
+    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)map.get("configuration");
+    if (configDTOs != null) {
+      // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
+      for (ControllerConfigDTO configDTO : configDTOs) {
+        configDTO.setOid(null);
+      }
+      controllerConfigService.saveAllDTOs(configDTOs);
+    }
+
+    // UI
+    
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
     state.restore(false);
 

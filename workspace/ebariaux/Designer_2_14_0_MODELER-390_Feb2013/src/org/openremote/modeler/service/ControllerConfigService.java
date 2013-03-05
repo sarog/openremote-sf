@@ -77,4 +77,6 @@ public interface ControllerConfigService {
 
    void deleteAllConfigs();
 
+   Set<ControllerConfigDTO> listAllConfigDTOs();
+
 }
