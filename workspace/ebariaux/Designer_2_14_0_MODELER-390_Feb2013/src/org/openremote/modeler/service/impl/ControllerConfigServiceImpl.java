@@ -103,6 +103,11 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       initializeConfigs(configSet);
       return configSet;
    }
+   
+   @Override
+   public Set<ControllerConfigDTO> listAllConfigDTOs() {
+     return createDTOsFromBeans(listAllConfigs());
+   }
 
    @Override
    public Set<ControllerConfig> listAllConfigs() {
