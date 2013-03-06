@@ -19,20 +19,23 @@
 */
 package org.openremote.modeler.client.view;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DevicesCreatedEvent;
-import org.openremote.modeler.client.event.ResponseJSONEvent;
+import org.openremote.modeler.client.event.DevicesDeletedEvent;
+import org.openremote.modeler.client.event.ImportConfigurationDoneEvent;
+import org.openremote.modeler.client.event.MacrosCreatedEvent;
+import org.openremote.modeler.client.event.MacrosDeletedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.listener.ImportConfigurationDoneEventListener;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -57,7 +60,6 @@ import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -85,16 +87,12 @@ import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * The application's main view, which create a viewport and added it into rootPanel.
@@ -192,6 +190,11 @@ public class ApplicationView implements View {
          public void onSuccess(Collection<Panel> panels) {                   
             if (panels.size() > 0) {
                initModelDataBase(panels);
+
+               if (uiDesignerPresenter != null) {
+                 uiDesignerPresenter.refreshPanelDisplay();
+               }
+
                eventBus.fireEvent(new ScreenTableLoadedEvent());
             }
             UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
@@ -474,32 +477,25 @@ public class ApplicationView implements View {
      importButton.setToolTip("Import");
      importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
-      @Override
-      public void componentSelected(ButtonEvent ce) {
+       public void componentSelected(ButtonEvent ce) {
         final ImportZipWindow importWindow = new ImportZipWindow();
-        importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
-           @Override
-           public void afterSubmit(ResponseJSONEvent be) {
-             
-             
-             // TODO: encapsulated in std response and test for error messages
-             // TODO: or this is done one level above (in import window)
-             
-             // TODO: depending on what was displayed in the tree, must reload either device or macro or panel ...
-             // -> fire all events, depending on listener will pickup what is required
+        importWindow.addListener(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEventListener() {
+          
+          @Override
+          public void configurationImported(ImportConfigurationDoneEvent event) {
+             // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
+             eventBus.fireEvent(new DevicesDeletedEvent());
+             eventBus.fireEvent(new MacrosDeletedEvent());
 
-             ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
-             JSONArray jsonDeviceDTOs = JSONParser.parseStrict((String) be.getData()).isArray();
+             eventBus.fireEvent(new DevicesCreatedEvent(event.getImportedDevices()));
+             eventBus.fireEvent(new MacrosCreatedEvent(event.getImportedMacros()));
 
-             for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
-               JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
-               DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
-               deviceDTOs.add(deviceDTO);
+             if (uiDesignerPresenter != null) {
+               uiDesignerPresenter.clearPanelTree();
              }
-             eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
 
              loadPanelsFromSession(authority, false);
-
+           
              importWindow.hide();
            }
         });

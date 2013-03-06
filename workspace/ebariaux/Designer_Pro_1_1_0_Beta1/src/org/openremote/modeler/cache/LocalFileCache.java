@@ -2021,19 +2021,11 @@ public class LocalFileCache implements ResourceCache<File>
      * validate and output controller.xml
      */
     try {
-        
-        
-        
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
         map.put("macros", deviceMacroService.loadAllMacroDetailsDTOs(account));
+        map.put("configuration", controllerConfigService.listAllConfigDTOs());
         
-        
-        // TODO
-//        map.put("configuration", controllerConfigService.listAllConfigs());
-        
-        
-        // TODO: add configuration
         XStream xstream = new XStream(new StaxDriver());
         FileWriter fw = new FileWriter(getBuildingModelerXmlFile());
         xstream.toXML(map, fw);

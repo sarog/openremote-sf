@@ -249,6 +249,20 @@ public class ProfilePanelPresenter implements Presenter {
       }
       panelTree.expandAll();
       eventBus.fireEvent(new ScreenTableLoadedEvent());
-    
- }
+  }
+  
+  /**
+   * Refreshes the tree displaying panels, groups and screens.
+   */
+  public void refreshPanelDisplay() {
+    initTreeWithAutoSavedPanels();
+  }
+  
+  /**
+   * Completely clears the tree displaying panels, groups and screens so it's empty.
+   */
+  public void clearPanelTree() {
+    view.clearPanelTree();
+  }
+
 }

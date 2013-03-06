@@ -103,6 +103,11 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       initializeConfigs(configSet);
       return configSet;
    }
+   
+   @Override
+   public Set<ControllerConfigDTO> listAllConfigDTOs() {
+     return createDTOsFromBeans(listAllConfigs());
+   }
 
    @Override
    public Set<ControllerConfig> listAllConfigs() {
@@ -234,4 +239,13 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
      return dtos;
    }
 
+  @Override
+  @Transactional
+  public void deleteAllConfigs() {
+    Set<ControllerConfig> configs = listAllConfigs();
+    for (ControllerConfig config : configs) {
+      genericDAO.delete(config);
+    }
+  }
+  
 }
