@@ -30,6 +30,8 @@ import org.openremote.modeler.client.event.MacroUpdatedEvent;
 import org.openremote.modeler.client.event.MacroUpdatedEventHandler;
 import org.openremote.modeler.client.event.MacrosCreatedEvent;
 import org.openremote.modeler.client.event.MacrosCreatedEventHandler;
+import org.openremote.modeler.client.event.MacrosDeletedEvent;
+import org.openremote.modeler.client.event.MacrosDeletedEventHandler;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
@@ -142,6 +144,26 @@ public class MacroPanel extends ContentPanel {
         macroTree.getStore().add(bms, true);
       } 
      });
+
+     eventBus.addHandler(MacrosDeletedEvent.TYPE, new MacrosDeletedEventHandler() {
+       @Override
+       public void onMacrosDeleted(MacrosDeletedEvent event) {
+         // Tree has not been created yet, nothing to do
+         if (macroTree == null) {
+           return;
+         }
+         
+         List<MacroDTO> macros = event.getMacros(); 
+         if (macros == null || macros.isEmpty()) {
+           macroTree.getStore().removeAll();
+         } else {
+           for (MacroDTO macro : macros) {
+             macroTree.getStore().remove(DTOHelper.getBeanModel(macro));
+           }
+         }
+       }
+     });
+
    }
    /**
     * Creates the menu.

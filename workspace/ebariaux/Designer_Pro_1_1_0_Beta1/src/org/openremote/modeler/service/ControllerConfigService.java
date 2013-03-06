@@ -75,4 +75,8 @@ public interface ControllerConfigService {
 
    Set<ControllerConfigDTO> saveAllDTOs(Set<ControllerConfigDTO> configDTOs);
 
+   void deleteAllConfigs();
+
+   Set<ControllerConfigDTO> listAllConfigDTOs();
+
 }
