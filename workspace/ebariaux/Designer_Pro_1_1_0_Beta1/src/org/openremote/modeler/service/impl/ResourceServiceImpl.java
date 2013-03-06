@@ -29,9 +29,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -46,20 +50,34 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.velocity.app.VelocityEngine;
+import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.ScreenPair;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.domain.component.ColorPicker;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.NetworkException;
@@ -69,16 +87,28 @@ import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -92,7 +122,6 @@ public class ResourceServiceImpl implements ResourceService
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
-
   private Configuration configuration;
 
   private UserService userService;
@@ -100,7 +129,8 @@ public class ResourceServiceImpl implements ResourceService
   // Those services are not directly used by this class but injected in LocalFileCache or DesignerState when they get built
   private DeviceCommandService deviceCommandService;
   private DeviceMacroService deviceMacroService;
-
+  private DeviceService deviceService;
+  
   private SensorService sensorService;
   private SliderService sliderService;
   private SwitchService switchService;
@@ -150,62 +180,207 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
-   @Deprecated @Override public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
-//      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-//      if (tmpDir.exists() && tmpDir.isDirectory()) {
-//         try {
-//            FileUtils.deleteDirectory(tmpDir);
-//         } catch (IOException e) {
-//            throw new FileOperationException("Error in deleting temp dir", e);
-//         }
-//      }
-//      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
-//      String dotImportFileContent = "";
-//      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-//      ZipEntry zipEntry;
-//      FileOutputStream fileOutputStream = null;
-//      try {
-//         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-//            if (!zipEntry.isDirectory()) {
-//               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-//                  dotImportFileContent = IOUtils.toString(zipInputStream);
-//               }
-//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-//                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
-//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-//                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
-//               }
-//
-//               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-//                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-//                  FileUtils.touch(file);
-//
-//                  fileOutputStream = new FileOutputStream(file);
-//                  int b;
-//                  while ((b = zipInputStream.read()) != -1) {
-//                     fileOutputStream.write(b);
-//                  }
-//                  fileOutputStream.close();
-//               }
-//            }
-//
-//         }
-//      } catch (IOException e) {
-//         throw new FileOperationException("Error in reading import file from zip", e);
-//      } finally {
-//         try {
-//            zipInputStream.closeEntry();
-//            if (fileOutputStream != null) {
-//               fileOutputStream.close();
-//            }
-//         } catch (IOException e) {
-//            LOGGER.warn("Failed to close import file resources", e);
-//         }
-//
-//      }
-//      return dotImportFileContent;
-     return "";
-   }
+  private File storeAsLocalTemporaryFile(InputStream inputStream) {
+    File temporaryFile = null;
+    FileOutputStream fileOutputStream = null;
+	try {
+	  temporaryFile = File.createTempFile("import_", ".zip", new File(PathConfig.getInstance(configuration).tempFolder()));
+      fileOutputStream = new FileOutputStream(temporaryFile);
+	  IOUtils.copy(inputStream, fileOutputStream);
+    } catch (IOException e) {
+    	throw new FileOperationException("Error in storing zip import file", e);
+	} finally {
+	  if (fileOutputStream != null) {
+        try {
+		  fileOutputStream.close();
+		} catch (IOException e) {
+          serviceLog.warn("Failed to close import file resources", e);
+		}
+	  }
+	}
+	
+	return temporaryFile;
+  }
+  
+   @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	 // Store the upload zip file locally before processing
+	 File importFile = storeAsLocalTemporaryFile(inputStream);
+	 
+     // No need to clean any of the resources stored in the cache (UI, images, rules...).
+	 // The whole cache is deleted later before being replaced with the uploaded file.
+
+	 // Remove all building modeler information (except for configuration)
+    final Account account = userService.getAccount();
+    List<Device> allDevices = deviceService.loadAll(account);
+    for (Device d : allDevices) {
+      deviceService.deleteDevice(d.getOid());
+    }
+    account.getDevices().clear();
+    account.getSensors().clear();
+    account.getSwitches().clear();
+    account.getSliders().clear();
+    
+    List<DeviceMacro> allMacros = deviceMacroService.loadAll(account);
+    for (DeviceMacro dm : allMacros) {
+    	deviceMacroService.deleteDeviceMacro(dm.getOid());
+    }
+    account.getDeviceMacros().clear();
+
+    // TODO: check database to verify objects are indeed deleted
+    
+    // TODO: configuration or not, see above comment ?
+
+    LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
+    cache.replace(importFile);
+
+    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
+
+    XStream xstream = new XStream(new StaxDriver());
+    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(cache.getBuildingModelerXmlFile());
+    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
+    
+    List<Device> importedDevices = new ArrayList<Device>();
+    
+    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
+    for (DeviceDetailsWithChildrenDTO dev : devices) {
+
+      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
+      // Must iterate all DTOReferences, replacing ids with dto.
+      dev.replaceIdWithDTOInReferences();
+
+      // TODO EBR review : original MODELER-390 line was
+      // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+
+      importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+    }
+    
+    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+    
+    // Domain objects have been created and saved with a new id
+    // During this process, old id has been saved as transient info
+    // Create lookup map from originalId to new one
+    for (Device dev : importedDevices) {
+      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
+      
+      for (DeviceCommand dc : dev.getDeviceCommands()) {
+        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+      }
+      for (Sensor s : dev.getSensors()) {
+        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Switch s : dev.getSwitchs()) {
+        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Slider s : dev.getSliders()) {
+        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      
+      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+
+    // TODO: what about macro order ???
+    // If one macro depends on another, the second should be imported first !
+    // Also double check if there can be a deadlock, m1 depending on m2 and m2 depending on m1 ?
+    
+    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
+    if (macros != null) {
+	  for (MacroDetailsDTO m : macros) {
+        // Replace old with new command ids
+	    if (m.getItems() != null) {
+		  for (MacroItemDetailsDTO item : m.getItems()) {
+			// Delays do not reference any DTO
+			if (item.getDto() != null) {
+		      item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
+			}
+		  }
+	    }
+	    deviceMacroService.saveNewMacro(m);
+	  }
+    }
+                
+    DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
+    state.restore(false);
+
+    // TODO: walk the just restored panels hierarchy and adapt all DTO references to the newly saved ones.
+    // For now, this code will crash if panels are restored that reference any building modeler objects.
+    PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+    
+    // All DTOs in the just imported object graph have ids of building elements from the original DB.
+    // Walk the graph and change ids to the newly saved domain objects.
+    Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
+
+	  @Override
+      public void execute(UIComponent component) {
+	    if (component instanceof SensorLinkOwner) {
+			SensorLinkOwner owner = ((SensorLinkOwner) component);
+			if (owner.getSensorLink() != null) {
+				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+				if (sensorDTO.getOid() != null) {
+					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+				}
+			}
+	    }
+	    if (component instanceof UISlider) {
+	      UISlider uiSlider = (UISlider)component;
+	      if (uiSlider.getSliderDTO() != null) {
+	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+	      	if (sliderDTO.getOid() != null) {
+	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+	      	}
+	      }
+	    }
+	    if (component instanceof UISwitch) {
+	      UISwitch uiSwitch = (UISwitch)component;
+	      if (uiSwitch.getSwitchDTO() != null) {
+	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+	      	if (switchDTO.getOid() != null) {
+	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+	      	}
+	      }
+	    }
+	    if (component instanceof UIButton) {
+	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+	    }
+	    if (component instanceof ColorPicker) {
+	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+	    }
+	    if (component instanceof Gesture) {
+	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+		}
+      }
+
+      private void replaceOldOidWithNew(UICommandDTO commandDTO) {
+	    if (commandDTO == null) {
+		  return;
+  	    }
+        if (commandDTO.getOid() != null) {
+          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+        }
+      }
+    });
+    
+    // All images still references original account, update their source to use this account
+    for (Panel panel : panels.getPanels()) {
+  	  panel.fixImageSource(new Panel.ImageSourceResolver() {
+		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
+  		  
+		@Override
+		public String resolveImageSource(String source) {
+			Matcher m = p.matcher(source);
+			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
+		}
+  	  });
+    }
+    
+    cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
+    saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
+                
+    return importedDeviceDTOs;
+  }
 
 
   /**
@@ -350,7 +525,11 @@ public class ResourceServiceImpl implements ResourceService
     this.deviceMacroService = deviceMacroService;
   }
 
-   public void setSensorService(SensorService sensorService) {
+   public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
+
+  public void setSensorService(SensorService sensorService) {
     this.sensorService = sensorService;
    }
 
@@ -449,7 +628,7 @@ public class ResourceServiceImpl implements ResourceService
       LocalFileCache cache = createLocalFileCache(currentUser);
     	
       DesignerState state = createDesignerState(currentUser, cache);
-      state.restore();
+      state.restore(true);
 
       PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
 
@@ -732,7 +911,8 @@ public class ResourceServiceImpl implements ResourceService
    */
   private LocalFileCache createLocalFileCache(User user) {
 	  LocalFileCache cache = new LocalFileCache(configuration, user);
-	  
+
+	  cache.setDeviceService(deviceService);
 	  cache.setDeviceMacroService(deviceMacroService);
 	  cache.setDeviceCommandService(deviceCommandService);
 	  cache.setControllerConfigService(controllerConfigService);

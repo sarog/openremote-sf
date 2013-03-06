@@ -293,7 +293,6 @@ class DesignerState
     }
   }
 
-
   protected static String uglyImageSourcePathHack(User user, String str)
   {
     // TODO :
@@ -383,11 +382,12 @@ class DesignerState
 
 
   /**
-   * Restores designer UI state to match the data found from Beehive. <p>
+   * Restores designer UI state to match the data found from the local cache or Beehive (if update is requested). <p>
    *
    * Note the various problems with this current implementation described in this class'
    * documentation.  <p>
    *
+   * @param updateLocalCache indicates local cache should be updated from Beehive before restore
    *
    * @throws NetworkException
    *            If any errors occur with the network connection when updating the cache
@@ -397,7 +397,7 @@ class DesignerState
    *            provides a {@link NetworkException.Severity severity level} which can be used
    *            to indicate the likelyhood that the network error can be recovered from.
    */
-  protected void restore() throws NetworkException
+  protected void restore(boolean updateLocalCache) throws NetworkException
   {
 
     // collect some performance stats...
@@ -419,7 +419,9 @@ class DesignerState
 
 
       // synchronize user data from Beehive server...
-      cache.update();
+      if (updateLocalCache) {
+    	  cache.update();
+      }
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
       boolean hasCachedState = cache.hasState();
