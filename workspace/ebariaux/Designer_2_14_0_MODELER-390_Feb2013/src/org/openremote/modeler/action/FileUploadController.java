@@ -41,6 +41,7 @@ import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
 import org.openremote.modeler.utils.MultipartFileUtil;
+import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,28 +79,26 @@ public class FileUploadController extends MultiActionController implements BeanF
      *            the response
      * 
      * @return the model and view
+     * @throws IOException 
      */
-    @SuppressWarnings("finally")
-    public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) {
+    public void importFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+      GenericResourceResultWithErrorMessage result = new GenericResourceResultWithErrorMessage();
         try {
             List<DeviceDTO> importedDeviceDTOs = resourceService.getDotImportFileForRender(request.getSession().getId(),
                     MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
             
-            
-            JSONSerializer serializer = new JSONSerializer();
-            System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importedDeviceDTOs) + "<");
-            response.setHeader("content-type", "text/html");
-            response.setCharacterEncoding("UTF-8");
-
-            
-            response.getWriter().write(serializer.exclude("*.class").deepSerialize(importedDeviceDTOs));
+            result.setResult(importedDeviceDTOs);
         } catch (Exception e) {
             LOGGER.error("Import file error.", e);
-            response.getWriter().write("");
-        } finally {
-            return null;
+            result.setErrorMessage(e.getMessage());
         }
+        JSONSerializer serializer = new JSONSerializer();
+        System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(result) + "<");
+        
+        response.setHeader("content-type", "text/html");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(serializer.exclude("*.class").deepSerialize(result));
     }
 
     public void importETS4(HttpServletRequest request, HttpServletResponse response) throws IOException {
