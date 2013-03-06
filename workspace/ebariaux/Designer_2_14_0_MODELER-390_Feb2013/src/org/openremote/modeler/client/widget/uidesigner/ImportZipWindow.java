@@ -42,6 +42,7 @@ import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -76,6 +77,7 @@ public class ImportZipWindow extends FormWindow {
    private void initial(String heading) {
       setSize(360, 140);
       setHeading(heading);
+      setLayout(new FlowLayout());
       createFields();
       createButtons();
       form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importFile");
