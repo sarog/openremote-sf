@@ -23,8 +23,10 @@ package org.openremote.modeler.action;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +39,7 @@ import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
 import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
@@ -85,10 +88,10 @@ public class FileUploadController extends MultiActionController implements BeanF
 
       GenericResourceResultWithErrorMessage result = new GenericResourceResultWithErrorMessage();
         try {
-            List<DeviceDTO> importedDeviceDTOs = resourceService.getDotImportFileForRender(request.getSession().getId(),
+          Map<String, Collection<? extends DTO>> importResult = resourceService.getDotImportFileForRender(request.getSession().getId(),
                     MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
             
-            result.setResult(importedDeviceDTOs);
+            result.setResult(importResult);
         } catch (Exception e) {
             LOGGER.error("Import file error.", e);
             result.setErrorMessage(e.getMessage());

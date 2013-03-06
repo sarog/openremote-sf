@@ -96,6 +96,7 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
@@ -209,7 +210,7 @@ public class ResourceServiceImpl implements ResourceService
 	  return temporaryFile;
   }
 
-  @Deprecated @Override @Transactional public List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
 	 
@@ -330,6 +331,7 @@ public class ResourceServiceImpl implements ResourceService
     
     // Macros
     
+    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
     
     // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
@@ -363,6 +365,7 @@ public class ResourceServiceImpl implements ResourceService
             MacroDTO newMacro = deviceMacroService.saveNewMacro(m);
             macrosOldOidToNewOid.put(m.getOid(), newMacro.getOid());
             processedMacrosThisTime.add(m);
+            importedMacroDTOs.add(newMacro);
           }
         }
         
@@ -478,8 +481,11 @@ public class ResourceServiceImpl implements ResourceService
     
     cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
     saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
-                
-    return importedDeviceDTOs;
+
+    Map<String, Collection<? extends DTO>> result = new HashMap<String, Collection<? extends DTO>>();
+    result.put("devices", importedDeviceDTOs);
+    result.put("macros", importedMacroDTOs);
+    return result;
   }
 
 

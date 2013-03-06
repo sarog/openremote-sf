@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.cache.CacheOperationException;
@@ -33,6 +34,7 @@ import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 
 /**
@@ -54,7 +56,7 @@ public interface ResourceService
   /**
    * @deprecated unused
    */
-  @Deprecated List<DeviceDTO> getDotImportFileForRender(String sessionId, InputStream inputStream)  throws NetworkException, ConfigurationException, CacheOperationException;
+  @Deprecated Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream)  throws NetworkException, ConfigurationException, CacheOperationException;
 
   /**
    * @deprecated seems unused
