@@ -19,9 +19,15 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.event.ResponseJSONEvent;
+import java.util.ArrayList;
+
+import org.openremote.modeler.client.event.ImportConfigurationDoneEvent;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -36,6 +42,11 @@ import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 
 /**
@@ -130,7 +141,49 @@ public class ImportZipWindow extends FormWindow {
    private void addListenersToForm() {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            fireEvent(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONEvent(be.getResultHtml()));
+           JSONObject jsonResponse = JSONParser.parseStrict(be.getResultHtml()).isObject();
+
+           if (jsonResponse != null) {
+             JSONString jsonErrorMessage = jsonResponse.get("errorMessage").isString();
+             if (jsonErrorMessage == null) {
+               JSONObject jsonResult = jsonResponse.get("result").isObject();
+               
+               JSONArray jsonDeviceDTOs = jsonResult.get("devices").isArray();
+               
+               // TODO: additional test for non nulls
+               ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
+               for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
+                 JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
+                 DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
+                 deviceDTOs.add(deviceDTO);
+               }
+
+               ArrayList<MacroDTO> macroDTOs = new ArrayList<MacroDTO>();
+               JSONArray jsonMacroDTOs = jsonResult.get("macros").isArray();
+               for (int i = 0; i < jsonMacroDTOs.size(); i++) {
+                 JSONObject jsonMacroDTO = jsonMacroDTOs.get(i).isObject();
+                 MacroDTO macroDTO = new MacroDTO((long)jsonMacroDTO.get("oid").isNumber().doubleValue(), jsonMacroDTO.get("displayName").isString().stringValue());
+                 JSONArray jsonMacroItemDTOs = jsonMacroDTO.get("items").isArray();
+                 ArrayList<MacroItemDTO> macroItemDTOs = new ArrayList<MacroItemDTO>();
+                 for (int j = 0; j < jsonMacroItemDTOs.size(); j++) {
+                   JSONObject jsonMacroItemDTO = jsonMacroItemDTOs.get(j).isObject();
+                   MacroItemDTO itemDTO = new MacroItemDTO(jsonMacroItemDTO.get("displayName").isString().stringValue(), MacroItemType.valueOf(jsonMacroItemDTO.get("type").isString().stringValue()));
+                   macroItemDTOs.add(itemDTO);
+                 }
+                 macroDTO.setItems(macroItemDTOs);
+                 macroDTOs.add(macroDTO);
+               }
+              fireEvent(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEvent(deviceDTOs, macroDTOs));
+
+             } else {
+               String errorMessage = jsonErrorMessage.stringValue();
+               
+               Info.display("ERROR", errorMessage);
+               // TODO: correctly display to user
+             }
+           } else {
+             // TODO
+           }
          }
       });
       add(form);
