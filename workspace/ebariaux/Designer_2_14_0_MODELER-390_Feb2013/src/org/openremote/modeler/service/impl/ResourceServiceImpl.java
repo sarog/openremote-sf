@@ -241,7 +241,7 @@ public class ResourceServiceImpl implements ResourceService
       }
       
       if (processedMacrosThisTime.isEmpty()) {
-        throw new RuntimeException("cyclic in DB"); // TODO
+        throw new ConfigurationException("There is a cyclic dependency between macros in the current configuration");
       }
       
       orderedDeviceMacros.add(0, processedMacrosThisTime);
@@ -277,6 +277,13 @@ public class ResourceServiceImpl implements ResourceService
     LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
     cache.replace(importFile);
 
+    if (!cache.getBuildingModelerXmlFile().exists()) {
+      throw new ConfigurationException("Invalid import file: no building modeler data");
+    }
+    if (!cache.hasXMLUIState()) {
+      throw new ConfigurationException("Invalid import file: no UI data");
+    }
+    
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
     XStream xstream = new XStream(new StaxDriver());
@@ -371,7 +378,7 @@ public class ResourceServiceImpl implements ResourceService
         
         if (processedMacrosThisTime.isEmpty()) {
           // No macro could be processed -> there is a cyclic dependency
-          throw new RuntimeException("cyclic dependency"); // TODO: appropriate exception
+          throw new ConfigurationException("There is a cyclic dependency between macros in the imported configuration");
         }
         
         macros.removeAll(processedMacrosThisTime);
