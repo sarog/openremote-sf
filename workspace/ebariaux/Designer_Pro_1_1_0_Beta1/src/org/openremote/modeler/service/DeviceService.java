@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
@@ -37,6 +38,8 @@ import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
  */
 public interface DeviceService {
    
+  public static String ORIGINAL_OID_KEY = "OriginalOid";
+  
    /**
     * Save device.
     * 
@@ -110,7 +113,7 @@ public interface DeviceService {
     * @param account the account owning the devices to load
     * @return a list of DTOs with information about the devices and their commands
     */
-   ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account);
+   ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account);
 
    List<DeviceDTO> loadAllDTOs(Account account);
 
@@ -118,7 +121,7 @@ public interface DeviceService {
    
    DeviceDTO saveNewDevice(DeviceDetailsDTO deviceDTO);
 
-   DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
+   Device saveNewDeviceWithChildren(DeviceDetailsDTO device, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
            List<SwitchDetailsDTO> switches, List<SliderDetailsDTO> sliders);
 
    void updateDeviceWithDTO(DeviceDetailsDTO deviceDTO);
