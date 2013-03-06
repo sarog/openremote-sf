@@ -81,6 +81,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -445,26 +446,43 @@ public class ApplicationView implements View {
              // -> fire all events, depending on listener will pickup what is required
 
              ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
-             JSONArray jsonDeviceDTOs = JSONParser.parseStrict((String) be.getData()).isArray();
+             JSONObject jsonResponse = JSONParser.parseStrict((String) be.getData()).isObject();
 
-             // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
-             eventBus.fireEvent(new DevicesDeletedEvent());
-             eventBus.fireEvent(new MacrosDeletedEvent());
-             
-             for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
-               JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
-               DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
-               deviceDTOs.add(deviceDTO);
+             if (jsonResponse != null) {
+               JSONString jsonErrorMessage = jsonResponse.get("errorMessage").isString();
+               if (jsonErrorMessage == null) {
+                 JSONArray jsonDeviceDTOs = jsonResponse.get("result").isArray();
+                 
+                 // TODO: test for non null
+
+                 // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
+                 eventBus.fireEvent(new DevicesDeletedEvent());
+                 eventBus.fireEvent(new MacrosDeletedEvent());
+                 
+                 for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
+                   JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
+                   DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
+                   deviceDTOs.add(deviceDTO);
+                 }
+                 eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
+    
+                 if (uiDesignerPresenter != null) {
+                   uiDesignerPresenter.clearPanelTree();
+                 }
+    
+                 loadPanelsFromSession(authority, false);
+               
+                 importWindow.hide();
+
+               } else {
+                 String errorMessage = jsonErrorMessage.stringValue();
+                 
+                 Info.display("ERROR", errorMessage);
+                 // TODO: correctly display to user
+               }
+             } else {
+               // TODO
              }
-             eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
-
-             if (uiDesignerPresenter != null) {
-               uiDesignerPresenter.clearPanelTree();
-             }
-
-             loadPanelsFromSession(authority, false);
-             
-             importWindow.hide();
            }
         });
       }
