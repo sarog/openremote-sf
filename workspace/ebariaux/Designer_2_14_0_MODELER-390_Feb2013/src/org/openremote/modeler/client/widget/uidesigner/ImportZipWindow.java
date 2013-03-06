@@ -155,44 +155,51 @@ public class ImportZipWindow extends FormWindow {
              JSONString jsonErrorMessage = jsonResponse.get("errorMessage").isString();
              if (jsonErrorMessage == null) {
                JSONObject jsonResult = jsonResponse.get("result").isObject();
-               
-               JSONArray jsonDeviceDTOs = jsonResult.get("devices").isArray();
-               
-               // TODO: additional test for non nulls
-               ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
-               for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
-                 JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
-                 DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
-                 deviceDTOs.add(deviceDTO);
-               }
-
-               ArrayList<MacroDTO> macroDTOs = new ArrayList<MacroDTO>();
-               JSONArray jsonMacroDTOs = jsonResult.get("macros").isArray();
-               for (int i = 0; i < jsonMacroDTOs.size(); i++) {
-                 JSONObject jsonMacroDTO = jsonMacroDTOs.get(i).isObject();
-                 MacroDTO macroDTO = new MacroDTO((long)jsonMacroDTO.get("oid").isNumber().doubleValue(), jsonMacroDTO.get("displayName").isString().stringValue());
-                 JSONArray jsonMacroItemDTOs = jsonMacroDTO.get("items").isArray();
-                 ArrayList<MacroItemDTO> macroItemDTOs = new ArrayList<MacroItemDTO>();
-                 for (int j = 0; j < jsonMacroItemDTOs.size(); j++) {
-                   JSONObject jsonMacroItemDTO = jsonMacroItemDTOs.get(j).isObject();
-                   MacroItemDTO itemDTO = new MacroItemDTO(jsonMacroItemDTO.get("displayName").isString().stringValue(), MacroItemType.valueOf(jsonMacroItemDTO.get("type").isString().stringValue()));
-                   macroItemDTOs.add(itemDTO);
+               if (jsonResult != null) {
+                 ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
+                 JSONArray jsonDeviceDTOs = jsonResult.get("devices").isArray();                 
+                 if (jsonDeviceDTOs != null) {
+                   for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
+                     JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
+                     DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
+                     deviceDTOs.add(deviceDTO);
+                   }
                  }
-                 macroDTO.setItems(macroItemDTOs);
-                 macroDTOs.add(macroDTO);
+  
+                 ArrayList<MacroDTO> macroDTOs = new ArrayList<MacroDTO>();
+                 JSONArray jsonMacroDTOs = jsonResult.get("macros").isArray();
+                 if (jsonMacroDTOs != null) {
+                   for (int i = 0; i < jsonMacroDTOs.size(); i++) {
+                     JSONObject jsonMacroDTO = jsonMacroDTOs.get(i).isObject();
+                     MacroDTO macroDTO = new MacroDTO((long)jsonMacroDTO.get("oid").isNumber().doubleValue(), jsonMacroDTO.get("displayName").isString().stringValue());
+                     JSONArray jsonMacroItemDTOs = jsonMacroDTO.get("items").isArray();
+                     ArrayList<MacroItemDTO> macroItemDTOs = new ArrayList<MacroItemDTO>();
+                     for (int j = 0; j < jsonMacroItemDTOs.size(); j++) {
+                       JSONObject jsonMacroItemDTO = jsonMacroItemDTOs.get(j).isObject();
+                       MacroItemDTO itemDTO = new MacroItemDTO(jsonMacroItemDTO.get("displayName").isString().stringValue(), MacroItemType.valueOf(jsonMacroItemDTO.get("type").isString().stringValue()));
+                       macroItemDTOs.add(itemDTO);
+                     }
+                     macroDTO.setItems(macroItemDTOs);
+                     macroDTOs.add(macroDTO);
+                   }
+                 }
+                fireEvent(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEvent(deviceDTOs, macroDTOs));
+               } else {
+                 displayError("Invalid response received from server");
                }
-              fireEvent(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEvent(deviceDTOs, macroDTOs));
-
              } else {
-               String errorMessage = jsonErrorMessage.stringValue();
-               errorLabel.setText(errorMessage);
-               unmask();
+               displayError(jsonErrorMessage.stringValue());
              }
            } else {
-             // TODO
+             displayError("Invalid response received from server");
            }
          }
       });
       add(form);
+   }
+   
+   private void displayError(String errorMessage) {
+     errorLabel.setText(errorMessage);
+     unmask();
    }
 }
