@@ -41,12 +41,12 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 
 /**
@@ -56,6 +56,8 @@ import com.sencha.gxt.widget.core.client.info.Info;
  */
 public class ImportZipWindow extends FormWindow {
    
+  LabelField errorLabel;
+
    /**
     * Instantiates a new import window.
     */
@@ -86,6 +88,11 @@ public class ImportZipWindow extends FormWindow {
     * Creates the fields.
     */
    private void createFields() {
+     
+     errorLabel = new LabelField();
+     errorLabel.setStyleAttribute("color", "red");
+     form.add(errorLabel);
+     
       FileUploadField fileUploadField = new FileUploadField();
       fileUploadField.setName("file");
       fileUploadField.setAllowBlank(false);
@@ -116,6 +123,7 @@ public class ImportZipWindow extends FormWindow {
                    public void handleEvent(MessageBoxEvent be) {
                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                           form.submit();
+                          errorLabel.setText("");
                           mask("Importing, please wait.");
                        }
                    }
@@ -177,9 +185,8 @@ public class ImportZipWindow extends FormWindow {
 
              } else {
                String errorMessage = jsonErrorMessage.stringValue();
-               
-               Info.display("ERROR", errorMessage);
-               // TODO: correctly display to user
+               errorLabel.setText(errorMessage);
+               unmask();
              }
            } else {
              // TODO
