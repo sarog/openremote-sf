@@ -19,7 +19,6 @@
 */
 package org.openremote.modeler.client.view;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.openremote.modeler.client.event.MacrosDeletedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ImportConfigurationDoneEventListener;
-import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -55,10 +53,6 @@ import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.openremote.modeler.shared.dto.MacroDTO;
-import org.openremote.modeler.shared.dto.MacroItemDTO;
-import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -82,15 +76,10 @@ import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.sencha.gxt.widget.core.client.info.Info;
 
 /**
  * The application's main view, which create a viewport and added it into rootPanel.
