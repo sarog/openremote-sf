@@ -29,12 +29,12 @@ import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.DevicesCreatedEvent;
 import org.openremote.modeler.client.event.DevicesDeletedEvent;
+import org.openremote.modeler.client.event.ImportConfigurationDoneEvent;
 import org.openremote.modeler.client.event.MacrosCreatedEvent;
 import org.openremote.modeler.client.event.MacrosDeletedEvent;
-import org.openremote.modeler.client.event.ResponseJSONEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ResponseJSONListener;
+import org.openremote.modeler.client.listener.ImportConfigurationDoneEventListener;
 import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
@@ -438,69 +438,24 @@ public class ApplicationView implements View {
       @Override
       public void componentSelected(ButtonEvent ce) {
         final ImportZipWindow importWindow = new ImportZipWindow();
-        importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
-           @Override
-           public void afterSubmit(ResponseJSONEvent be) {
-             // TODO: encapsulated in std response and test for error messages
-             // TODO: or this is done one level above (in import window)
-             
-             JSONObject jsonResponse = JSONParser.parseStrict((String) be.getData()).isObject();
+        importWindow.addListener(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEventListener() {
+          
+          @Override
+          public void configurationImported(ImportConfigurationDoneEvent event) {
+             // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
+             eventBus.fireEvent(new DevicesDeletedEvent());
+             eventBus.fireEvent(new MacrosDeletedEvent());
 
-             if (jsonResponse != null) {
-               JSONString jsonErrorMessage = jsonResponse.get("errorMessage").isString();
-               if (jsonErrorMessage == null) {
-                 JSONObject jsonResult = jsonResponse.get("result").isObject();
-                 
-                 JSONArray jsonDeviceDTOs = jsonResult.get("devices").isArray();
-                 
-                 // TODO: additional test for non nulls
-                 ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
-                 for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
-                   JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
-                   DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
-                   deviceDTOs.add(deviceDTO);
-                 }
+             eventBus.fireEvent(new DevicesCreatedEvent(event.getImportedDevices()));
+             eventBus.fireEvent(new MacrosCreatedEvent(event.getImportedMacros()));
 
-                 ArrayList<MacroDTO> macroDTOs = new ArrayList<MacroDTO>();
-                 JSONArray jsonMacroDTOs = jsonResult.get("macros").isArray();
-                 for (int i = 0; i < jsonMacroDTOs.size(); i++) {
-                   JSONObject jsonMacroDTO = jsonMacroDTOs.get(i).isObject();
-                   MacroDTO macroDTO = new MacroDTO((long)jsonMacroDTO.get("oid").isNumber().doubleValue(), jsonMacroDTO.get("displayName").isString().stringValue());
-                   JSONArray jsonMacroItemDTOs = jsonMacroDTO.get("items").isArray();
-                   ArrayList<MacroItemDTO> macroItemDTOs = new ArrayList<MacroItemDTO>();
-                   for (int j = 0; j < jsonMacroItemDTOs.size(); j++) {
-                     JSONObject jsonMacroItemDTO = jsonMacroItemDTOs.get(j).isObject();
-                     MacroItemDTO itemDTO = new MacroItemDTO(jsonMacroItemDTO.get("displayName").isString().stringValue(), MacroItemType.valueOf(jsonMacroItemDTO.get("type").isString().stringValue()));
-                     macroItemDTOs.add(itemDTO);
-                   }
-                   macroDTO.setItems(macroItemDTOs);
-                   macroDTOs.add(macroDTO);
-                 }
-                 
-                 // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
-                 eventBus.fireEvent(new DevicesDeletedEvent());
-                 eventBus.fireEvent(new MacrosDeletedEvent());
-
-                 eventBus.fireEvent(new DevicesCreatedEvent(deviceDTOs));
-                 eventBus.fireEvent(new MacrosCreatedEvent(macroDTOs));
-    
-                 if (uiDesignerPresenter != null) {
-                   uiDesignerPresenter.clearPanelTree();
-                 }
-    
-                 loadPanelsFromSession(authority, false);
-               
-                 importWindow.hide();
-
-               } else {
-                 String errorMessage = jsonErrorMessage.stringValue();
-                 
-                 Info.display("ERROR", errorMessage);
-                 // TODO: correctly display to user
-               }
-             } else {
-               // TODO
+             if (uiDesignerPresenter != null) {
+               uiDesignerPresenter.clearPanelTree();
              }
+
+             loadPanelsFromSession(authority, false);
+           
+             importWindow.hide();
            }
         });
       }
