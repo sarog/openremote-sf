@@ -108,7 +108,11 @@ public class FileUploadController extends MultiActionController implements BeanF
             result.setResult(importResult);
         } catch (Exception e) {
             LOGGER.error("Import file error.", e);
-            result.setErrorMessage(e.getMessage());
+            if (e.getMessage() != null) {
+              result.setErrorMessage(e.getMessage());
+            } else {
+              result.setErrorMessage("Error during import, please report to support");
+            }
         }
         JSONSerializer serializer = new JSONSerializer();
         System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(result) + "<");
