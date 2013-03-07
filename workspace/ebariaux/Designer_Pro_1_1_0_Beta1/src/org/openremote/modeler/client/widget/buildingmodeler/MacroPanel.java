@@ -140,6 +140,9 @@ public class MacroPanel extends ContentPanel {
      eventBus.addHandler(MacrosCreatedEvent.TYPE, new MacrosCreatedEventHandler() {
       @Override
       public void onMacrosCreated(MacrosCreatedEvent event) {
+        if (macroTree == null) {
+          return;
+        }
         List<BeanModel> bms = DTOHelper.createModels(event.getMacros());
         macroTree.getStore().add(bms, true);
       } 

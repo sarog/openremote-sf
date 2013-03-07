@@ -30,6 +30,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1935,17 +1936,17 @@ public class LocalFileCache implements ResourceCache<File>
     xstream.alias("screenPair", ScreenPairRef.class);
     xstream.alias("absolute", Absolute.class);
     
-    FileWriter fw = null;
+    OutputStreamWriter osw = null;
     try {
-      fw = new FileWriter(xmlUIFile);
-      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), fw);
+      // Going through a StreamWriter to enforce UTF-8 encoding
+      osw = new OutputStreamWriter(new FileOutputStream(xmlUIFile), "UTF-8");
+      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), osw);
     } catch (IOException e) {
-      // TODO: better error handling, don't swallow issue
-      cacheLog.error(e.getMessage() ,e);
+      throw new FileOperationException("Failed to write UI state to file " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
     } finally {
       try {
-        if (fw != null) {
-          fw.close();
+        if (osw != null) {
+          osw.close();
         }
       } catch (IOException e) {
         cacheLog.warn("Unable to close writer to '" + xmlUIFile + "'.");
@@ -2027,9 +2028,23 @@ public class LocalFileCache implements ResourceCache<File>
         map.put("configuration", controllerConfigService.listAllConfigDTOs());
         
         XStream xstream = new XStream(new StaxDriver());
-        FileWriter fw = new FileWriter(getBuildingModelerXmlFile());
-        xstream.toXML(map, fw);
-        fw.close();
+        
+        OutputStreamWriter osw = null;
+        try {
+          // Going through a StreamWriter to enforce UTF-8 encoding
+          osw = new OutputStreamWriter(new FileOutputStream(getBuildingModelerXmlFile()), "UTF-8");
+          xstream.toXML(map, osw);
+        } catch (IOException e) {
+          throw new FileOperationException("Failed to write building modeler state to file " + getBuildingModelerXmlFile().getAbsolutePath() + " : " + e.getMessage(), e);
+        } finally {
+          try {
+            if (osw != null) {
+              osw.close();
+            }
+          } catch (IOException e) {
+            cacheLog.warn("Unable to close writer to '" + getBuildingModelerXmlFile() + "'.");
+          }
+        }
 
         FileUtilsExt.deleteQuietly(panelXMLFile);
       FileUtilsExt.deleteQuietly(controllerXMLFile);

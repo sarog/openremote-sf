@@ -27,10 +27,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -949,9 +951,28 @@ class DesignerState
     xstream.alias("group", GroupRef.class);
     xstream.alias("screenPair", ScreenPairRef.class);
     xstream.alias("absolute", Absolute.class);
-    PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(xmlUIFile);
-    panels = panelsAndMaxOid.getPanels();
-    maxOID = panelsAndMaxOid.getMaxOid();
+    InputStreamReader isr = null;
+    try {
+      // Going through a StreamReader to enforce UTF-8 encoding
+      isr = new InputStreamReader(new FileInputStream(xmlUIFile), "UTF-8");
+      PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(isr);
+      panels = panelsAndMaxOid.getPanels();
+      maxOID = panelsAndMaxOid.getMaxOid();
+    } catch (UnsupportedEncodingException e) {
+      throw new RestoreFailureException("Issue reading file " + xmlUIFile.getAbsoluteFile() + " in UTF-8 : " + e.getMessage(), e);
+    } catch (FileNotFoundException e) {
+      throw new RestoreFailureException("Previously checked " + xmlUIFile.getAbsoluteFile() +
+          " can no longer be found, or was not a proper file : " + e.getMessage(), e
+      );
+    } finally {
+      if (isr != null) {
+        try {
+          isr.close();
+        } catch (IOException e) {
+          restoreLog.warn("Failed to close reader to " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
+        }
+      }
+    }
   }
 
 
