@@ -21,10 +21,14 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -287,7 +291,27 @@ public class ResourceServiceImpl implements ResourceService
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
     XStream xstream = new XStream(new StaxDriver());
-    Map<String, Object> map = (Map<String, Object>) xstream.fromXML(cache.getBuildingModelerXmlFile());
+    
+    Map<String, Object> map = null;
+    InputStreamReader isr = null;
+    try {
+      // Going through a StreamReader to enforce UTF-8 encoding
+      isr = new InputStreamReader(new FileInputStream(cache.getBuildingModelerXmlFile()), "UTF-8");
+      map = (Map<String, Object>) xstream.fromXML(isr);
+    } catch (UnsupportedEncodingException e) {
+      throw new ConfigurationException("Issue reading file " + cache.getBuildingModelerXmlFile() + " in UTF-8 : " + e.getMessage(), e);
+    } catch (FileNotFoundException e) {
+      throw new ConfigurationException("File " + cache.getBuildingModelerXmlFile() +
+          " can not be found, or was not a proper file : " + e.getMessage(), e);
+    } finally {
+      if (isr != null) {
+        try {
+          isr.close();
+        } catch (IOException e) {
+          serviceLog.warn("Failed to close reader to " + cache.getBuildingModelerXmlFile() + " : " + e.getMessage(), e);
+        }
+      }
+    }
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
     
     List<Device> importedDevices = new ArrayList<Device>();
