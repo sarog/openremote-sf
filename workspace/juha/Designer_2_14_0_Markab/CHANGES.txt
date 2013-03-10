@@ -4,16 +4,22 @@ Designer 2.14.0 (2013-XX-XX Markab)
  New Features:
 
    - Z-Wave protocol configuration
-   - panStamps Lagarto configuration (MODELER-397)
+   - panStamps Lagarto configuration (Daniel Berenguer, 
+     MODELER-397)
    - Round-robin database (RRD) configuration (MODELER-394)
+   - Add web view widget (MODELER-248)
+   - Add polling interval and regex attributes to ShellExe
+     protocol (Marcus Redeker)
 
  Fixes:
 
    - MODELER-346: regexp validation for IP fields in TCP
      and Telnet protocols were wrong. Validations have
      been disabled.
-   - Fixes to image asset manager (related to MODELER-292)
-   - MODELER-312: List of widgets does not scroll anymore
+   - Fixes to image asset manager (Eric Bariaux, related 
+     to MODELER-292)
+   - MODELER-302: List of widgets does not scroll anymore
+     (Eric Bariaux)
 
 
 Designer 2.13.6 (2012-09-20 Rosemary)
