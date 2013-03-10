@@ -21,6 +21,10 @@
     <link href = "image/OpenRemote.Logo.16x16.png" rel = "shortcut icon"/>
 	<link href = "image/OpenRemote.Logo.16x16.png" type = "image/png" rel = "icon"/>
 
+
+    <link rel="stylesheet" type="text/css" href="Modeler/reset.css" />
+
+
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->

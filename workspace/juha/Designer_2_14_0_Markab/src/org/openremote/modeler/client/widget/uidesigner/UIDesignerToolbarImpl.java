@@ -28,8 +28,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolbar {
 
@@ -49,108 +50,108 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
   final IconResources resources = IconResources.INSTANCE;
   
   @UiField
-  PushButton horizontalLeftAlignButton;
+  TextButton horizontalLeftAlignButton;
   @UiField
-  PushButton horizontalCenterAlignButton;
+  TextButton horizontalCenterAlignButton;
   @UiField
-  PushButton horizontalRightAlignButton;
+  TextButton horizontalRightAlignButton;
   
   @UiField
-  PushButton verticalTopAlignButton;
+  TextButton verticalTopAlignButton;
   @UiField
-  PushButton verticalCenterAlignButton;
+  TextButton verticalCenterAlignButton;
   @UiField
-  PushButton verticalBottomAlignButton;
+  TextButton verticalBottomAlignButton;
   
   @UiField
-  PushButton sameSizeButton;
+  TextButton sameSizeButton;
   
   @UiField
-  PushButton horizontalSpreadButton;
+  TextButton horizontalSpreadButton;
   @UiField
-  PushButton verticalSpreadButton;
+  TextButton verticalSpreadButton;
   
   @UiField
-  PushButton horizontalCenterButton;
+  TextButton horizontalCenterButton;
   @UiField
-  PushButton verticalCenterButton;
+  TextButton verticalCenterButton;
 
   public UIDesignerToolbarImpl(String firstName) {
     initWidget(uiBinder.createAndBindUi(this));
   }
 
   @UiHandler("horizontalLeftAlignButton")
-  void onLeftAlignClick(ClickEvent e) {
+  void onLeftAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onHorizontalLeftAlignButtonClicked();
     }
   }
   
   @UiHandler("horizontalCenterAlignButton")
-  void onMiddleAlignClicked(ClickEvent e) {
+  void onMiddleAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onHorizontalCenterAlignButtonClicked();
     }
   }
 
   @UiHandler("horizontalRightAlignButton")
-  void onRightAlignClicked(ClickEvent e) {
+  void onRightAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onHorizontalRightAlignButtonClicked();
     }
   }
 
   @UiHandler("verticalTopAlignButton")
-  void onVerticalTopAlignClicked(ClickEvent e) {
+  void onVerticalTopAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onVerticalTopAlignButtonClicked();
     }
   }
   
   @UiHandler("verticalCenterAlignButton")
-  void onVerticalCenterAlignClicked(ClickEvent e) {
+  void onVerticalCenterAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onVerticalCenterAlignButtonClicked();
     }
   }
   
   @UiHandler("verticalBottomAlignButton")
-  void onVerticalBottomAlignClicked(ClickEvent e) {
+  void onVerticalBottomAlignSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onVerticalBottomAlignButtonClicked();
     }
   }
   
   @UiHandler("sameSizeButton")
-  void onSameSizeButtonClicked(ClickEvent e) {
+  void onSameSizeButtonSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onSameSizeButtonClicked();
     }
   }
 
   @UiHandler("horizontalSpreadButton")
-  void onHorizontalSpreadButtonClicked(ClickEvent e) {
+  void onHorizontalSpreadButtonSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onHorizontalSpreadButtonClicked();
     }
   }
   
   @UiHandler("verticalSpreadButton")
-  void onVerticalSpreadButtonClicked(ClickEvent e) {
+  void onVerticalSpreadButtonSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onVerticalSpreadButtonClicked();
     }
   }
 
   @UiHandler("horizontalCenterButton")
-  void onHorizontalCenterButtonClicked(ClickEvent e) {
+  void onHorizontalCenterButtonSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onHorizontalCenterButtonClicked();
     }
   }
   
   @UiHandler("verticalCenterButton")
-  void onVerticalCenterButtonClicked(ClickEvent e) {
+  void onVerticalCenterButtonSelected(SelectEvent e) {
     if (presenter != null) {
       presenter.onVerticalCenterButtonClicked();
     }
@@ -160,47 +161,47 @@ public class UIDesignerToolbarImpl extends Composite implements UIDesignerToolba
     this.presenter = presenter;
   }
 
-  public PushButton getHorizontalLeftAlignButton() {
+  public TextButton getHorizontalLeftAlignButton() {
     return horizontalLeftAlignButton;
   }
 
-  public PushButton getHorizontalCenterAlignButton() {
+  public TextButton getHorizontalCenterAlignButton() {
     return horizontalCenterAlignButton;
   }
 
-  public PushButton getHorizontalRightAlignButton() {
+  public TextButton getHorizontalRightAlignButton() {
     return horizontalRightAlignButton;
   }
 
-  public PushButton getVerticalTopAlignButton() {
+  public TextButton getVerticalTopAlignButton() {
     return verticalTopAlignButton;
   }
 
-  public PushButton getVerticalCenterAlignButton() {
+  public TextButton getVerticalCenterAlignButton() {
     return verticalCenterAlignButton;
   }
 
-  public PushButton getVerticalBottomAlignButton() {
+  public TextButton getVerticalBottomAlignButton() {
     return verticalBottomAlignButton;
   }
 
-  public PushButton getSameSizeButton() {
+  public TextButton getSameSizeButton() {
     return sameSizeButton;
   }
 
-  public PushButton getHorizontalSpreadButton() {
+  public TextButton getHorizontalSpreadButton() {
     return horizontalSpreadButton;
   }
 
-  public PushButton getVerticalSpreadButton() {
+  public TextButton getVerticalSpreadButton() {
     return verticalSpreadButton;
   }
 
-  public PushButton getHorizontalCenterButton() {
+  public TextButton getHorizontalCenterButton() {
     return horizontalCenterButton;
   }
 
-  public PushButton getVerticalCenterButton() {
+  public TextButton getVerticalCenterButton() {
     return verticalCenterButton;
   }
 
