@@ -1,3 +1,9 @@
+Designer MODELER-302
+====================
+
+- List of widgets does not scroll anymore
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
