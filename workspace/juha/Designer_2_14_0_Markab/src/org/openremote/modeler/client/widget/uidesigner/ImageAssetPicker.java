@@ -23,7 +23,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -109,10 +109,10 @@ public class ImageAssetPicker extends DialogBox {
       @Override
       public void update(int index, final GraphicalAssetDTO object, String value) {        
         if (isImageInUse(object.getName())) {
-          // TODO : display proper alert
-          Info.display("INFO", "Delete not allowed");
-        } else {
+          // TODO: this gets displayed behind our panel !!! -> re-check when everything moved to GXT 3
           
+          MessageBox.alert("Warn", "The image is used and can't be deleted.", null);
+        } else {          
           UtilsProxy.deleteImage(object.getName(), new AsyncCallback<Void>() {
 
             @Override
