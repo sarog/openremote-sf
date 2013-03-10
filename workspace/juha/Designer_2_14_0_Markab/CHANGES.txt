@@ -9,7 +9,7 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - Round-robin database (RRD) configuration (MODELER-394)
    - Add web view widget (MODELER-248)
    - Add polling interval and regex attributes to ShellExe
-     protocol (Marcus Redeker)
+     protocol (MODELER-463, Marcus Redeker)
 
  Fixes:
 
