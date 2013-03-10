@@ -10,6 +10,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - Add web view widget (MODELER-248)
    - Add polling interval and regex attributes to ShellExe
      protocol (MODELER-463, Marcus Redeker)
+   - Add polling interval to telnet protocol (MODELER-464,
+     Marcus Redeker)
+
 
  Fixes:
 
