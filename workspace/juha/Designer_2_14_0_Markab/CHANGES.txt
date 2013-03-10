@@ -13,6 +13,7 @@ Designer 2.14.0 (2013-XX-XX Markab)
      and Telnet protocols were wrong. Validations have
      been disabled.
    - Fixes to image asset manager (related to MODELER-292)
+   - MODELER-312: List of widgets does not scroll anymore
 
 
 Designer 2.13.6 (2012-09-20 Rosemary)
