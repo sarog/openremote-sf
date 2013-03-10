@@ -12,6 +12,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      protocol (MODELER-463, Marcus Redeker)
    - Add polling interval to telnet protocol (MODELER-464,
      Marcus Redeker)
+   - Add IP address to Samsung SmartTV protocol, enabling
+     use of multiple devices (MODELER-465, Ivan Martinez)
 
 
  Fixes:
