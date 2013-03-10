@@ -40,12 +40,12 @@
                 <allowBlank>false</allowBlank>
             </validations>
         </attr>
-        
+
         <attr name="ipAddress" label="IP-Address" tooltipMessage="Can be used to control multiple devices">
             <validations>
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
-        
+
     </protocol>
 </openremote>
