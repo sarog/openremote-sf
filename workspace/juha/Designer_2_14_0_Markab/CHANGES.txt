@@ -25,6 +25,10 @@ Designer 2.14.0 (2013-XX-XX Markab)
      to MODELER-292)
    - MODELER-302: List of widgets does not scroll anymore
      (Eric Bariaux)
+   - MODELER-304: UI elements (from panels.obj) restored 
+     on login and not when UI designer pane is displayed. 
+     "Please wait" message on login only dismissed when 
+     UI has been built and initialized. (Eric Bariaux)
 
 
 Designer 2.13.6 (2012-09-20 Rosemary)
