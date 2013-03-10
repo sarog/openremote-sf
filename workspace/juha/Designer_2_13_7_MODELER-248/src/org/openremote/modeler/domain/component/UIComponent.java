@@ -101,7 +101,9 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
          } else if (uiComponent instanceof UIImage) {
             result = new UIImage();
          } else if (uiComponent instanceof UITabbar) {
-            return new UITabbar();
+        	 result = new UITabbar();
+         }else if (uiComponent instanceof UIWebView) {
+        	 result = new UIWebView();
          }
       }
       result.setOid(IDUtil.nextID());
@@ -128,7 +130,10 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
             return new UIImage((UIImage) uiComponent);
          }  else if (uiComponent instanceof UITabbar) {
             return new UITabbar((UITabbar)uiComponent);
-         }
+         }//Added by Selva
+         else if (uiComponent instanceof UIWebView) {
+             return new UIWebView((UIWebView)uiComponent);
+          }
       }
       return null;
    }
