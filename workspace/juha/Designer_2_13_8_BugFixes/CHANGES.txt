@@ -1,3 +1,11 @@
+Designer 2.13.8 (2013-03-10 RoseMary)
+=====================================
+
+ - MODELER-410: KNX import getting namespace used 
+   on XPath from document instead of hardcoded, 
+   more robust to changes.
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
