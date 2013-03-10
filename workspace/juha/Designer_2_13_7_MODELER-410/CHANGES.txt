@@ -1,3 +1,11 @@
+Designer MODELER-410
+====================
+
+ - MODELER-410: Getting namespace used on XPath from 
+   document instead of hardcoded, more robust to changes.
+
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
