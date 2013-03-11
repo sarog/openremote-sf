@@ -85,6 +85,12 @@ Pro 1.0.1
 - MODELER-389: LazyInitializationException on
   Device.deviceAttrs
 
+Designer 2.14.0
+==============
+
+New features:
+ - Add support for <web> element (MODELER-240)
+
 Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
 
