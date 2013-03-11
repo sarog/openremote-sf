@@ -3,7 +3,6 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  New Features:
 
-   - Z-Wave protocol configuration
    - panStamps Lagarto configuration (Daniel Berenguer, 
      MODELER-397)
    - Round-robin database (RRD) configuration (MODELER-394)
@@ -29,6 +28,12 @@ Designer 2.14.0 (2013-XX-XX Markab)
      on login and not when UI designer pane is displayed. 
      "Please wait" message on login only dismissed when 
      UI has been built and initialized. (Eric Bariaux)
+
+
+Designer 2.13.7 (2012-10-07 Rosemary)
+=====================================
+
+ - Add Z-wave configuration
 
 
 Designer 2.13.6 (2012-09-20 Rosemary)
