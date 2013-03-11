@@ -88,6 +88,9 @@ Pro 1.0.1
 Designer 2.14.0
 ==============
 
+Fixes:
+ - MODELER-302: List of widgets does not scroll anymore
+
 New features:
  - Add support for <web> element (MODELER-240)
 
