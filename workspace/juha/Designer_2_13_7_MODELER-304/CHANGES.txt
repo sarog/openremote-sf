@@ -1,3 +1,12 @@
+Designer MODELER-304
+====================
+
+ - MODELER-304: UI elements (from panels.obj) restored
+   on login and not when UI designer pane is displayed.
+   "Please wait" message on login only dismissed when
+   UI has been built and initialized. (Eric Bariaux)
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
