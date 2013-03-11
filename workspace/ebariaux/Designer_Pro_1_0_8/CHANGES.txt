@@ -168,6 +168,9 @@ Designer 2.13.0 (2012-06-01 Rosemary)
  - KNX DPT 9.001 support in KNX Import Wizard 
  - Performance improvements of the client side (web browser
    Javascript) code with an improvement data serialization mechanism
+ - Add IP configuration to Samsung Smart TV protocol (MODELER-465)
+ - Add Polling Interval and Regex properties to ShellExe protocol (MODELER-463)
+ - Add polling interval to telnet protocol (MODELER-464)
    
 
 Designer 2.12.0 (2012-05-20 Jura)
