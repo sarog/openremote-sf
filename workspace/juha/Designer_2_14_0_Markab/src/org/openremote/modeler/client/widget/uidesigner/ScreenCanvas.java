@@ -398,7 +398,7 @@ public class ScreenCanvas extends ComponentContainer {
                      resizable.setMinWidth(10);
                   }
                   
-                  // TODO EBR : OK, dragged from "papette" to screen, not grid
+                  // TODO EBR : OK, dragged from "palette" to screen, not grid
                   canvas.add(componentContainer);
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {

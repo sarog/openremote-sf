@@ -30,6 +30,11 @@ Designer 2.14.0 (2013-XX-XX Markab)
      UI has been built and initialized. (Eric Bariaux)
 
 
+ Internal:
+
+  - Upgrade to GXT3
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
