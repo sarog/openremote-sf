@@ -32,7 +32,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  Internal:
 
-  - Upgrade to GXT3
+  - Upgrade to GXT3:
+     * Image Asset Picker converted (Eric Bariaux, MODELER-330)
 
 
 Designer 2.13.7 (2012-10-07 Rosemary)
