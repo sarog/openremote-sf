@@ -63,7 +63,7 @@ class PanelState
 
   enum PartitionState implements State
   {
-    READY, NOTREADY, ARMED_AWAY, ARMED_STAY, ARMED_AWAY_NODELAY, ARMED_STAY_NODELAY, ALARM,
+    READY, NOTREADY, AWAYARMED, STAYARMED, AWAYARMEDND, STAYARMEDND, ALARM,
     DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
   }
 
@@ -225,22 +225,22 @@ class PanelState
 
       if (mode.equals("0"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_AWAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMED);
       }
 
       else if (mode.equals("1"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_STAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMED);
       }
 
       else if (mode.equals("2"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_AWAY_NODELAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMEDND);
       }
 
       else if (mode.equals("3"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_STAY_NODELAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMEDND);
       }
     }
 
