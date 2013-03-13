@@ -109,6 +109,8 @@ public class IpConnection implements DSCIT100Connection
 
   @Override public boolean isConnected()
   {
+    // isConnected() will ALWAYS return true IF you have connected the socket.
+    // isClosed() will return false ONLY if YOU have disconnected the socket.
     return socket.isConnected() & !socket.isClosed();
   }
 
@@ -234,8 +236,11 @@ public class IpConnection implements DSCIT100Connection
 
       // Send IT100 state discovery packet to get current system state (not used for EnvisaLink)...
 
-      if (credentials == null)
+      if (credentials == null || credentials.equals(""))
       {
+      		// The First ever command seems to get lost by
+      		// my Ethernet->Serial adaptor!
+      		sendInternal(new Packet("000", ""));
       		sendInternal(new Packet("001", ""));
 
       		// Send IT100 labels request packet to get system labels...
