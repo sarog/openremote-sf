@@ -36,6 +36,18 @@ Designer 2.14.0 (2013-XX-XX Markab)
      * Image Asset Picker converted (Eric Bariaux, MODELER-330)
 
 
+Designer 2.13.8 (2013-03-13 Rosemary)
+=====================================
+
+Bug fix release:
+
+ - MODELER-410: KNX import getting namespace used 
+   on XPath from document instead of hardcoded, 
+   more robust to changes.
+ - MODELER-397: panStamps Lagarto configuration
+   included in controller configuration options
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 

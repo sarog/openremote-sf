@@ -21,8 +21,6 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import net.customware.gwt.dispatch.client.DispatchAsync;
 
