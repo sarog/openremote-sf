@@ -202,6 +202,7 @@ public class ConfigurationFileImporter {
     controllerConfigService.deleteAllConfigs();
   }
   
+  @SuppressWarnings("unchecked")
   private Map<String, Object> readBuildingModelerConfigurationFile(LocalFileCache cache) throws ConfigurationException {
     Map<String, Object> map = null;
     InputStreamReader isr = null;
@@ -229,6 +230,7 @@ public class ConfigurationFileImporter {
   }
   
   private List<Device> importDevices(Map<String, Object> buildingModelerConfiguration) {
+    @SuppressWarnings("unchecked")
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
 
     List<Device> importedDevices = new ArrayList<Device>();
@@ -249,10 +251,11 @@ public class ConfigurationFileImporter {
   }
   
   private List<MacroDTO> importMacros(Map<String, Object> buildingModelerConfiguration, Map<Long, Long> commandsOldOidToNewOid) throws ConfigurationException {
-    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
-
+    @SuppressWarnings("unchecked")
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)buildingModelerConfiguration.get("macros");
     
+    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
+
     // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
     for (MacroDetailsDTO m : macros) {
       for (MacroItemDetailsDTO item : m.getItems()) {
@@ -316,7 +319,9 @@ public class ConfigurationFileImporter {
   }
   
   private void importModelerConfiguration(Map<String, Object> buildingModelerConfiguration) {
+    @SuppressWarnings("unchecked")
     Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
+    
     if (configDTOs != null) {
       // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
       for (ControllerConfigDTO configDTO : configDTOs) {
