@@ -214,16 +214,7 @@ public class ResourceServiceImpl implements ResourceService
 	  return temporaryFile;
   }
 
-  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
-	  // Store the upload zip file locally before processing
-	  File importFile = storeAsLocalTemporaryFile(inputStream);
-	 
-    // No need to clean any of the resources stored in the cache (UI, images, rules...).
-	  // The whole cache is deleted later before being replaced with the uploaded file.
-
-	  // Remove all building modeler information
-    final Account account = userService.getAccount();
-
+  private void deleteBuildingModelerConfiguration(Account account) throws ConfigurationException {
     // Remove macros first, as they might reference commands
     deviceMacroService.deleteAll(account);
 
@@ -239,6 +230,19 @@ public class ResourceServiceImpl implements ResourceService
     
     // Remove configuration
     controllerConfigService.deleteAllConfigs();
+  }
+  
+  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	  // Store the upload zip file locally before processing
+	  File importFile = storeAsLocalTemporaryFile(inputStream);
+	 
+    // No need to clean any of the resources stored in the cache (UI, images, rules...).
+	  // The whole cache is deleted later before being replaced with the uploaded file.
+
+    final Account account = userService.getAccount();
+    
+    // Remove all building modeler information
+    deleteBuildingModelerConfiguration(account);
 
     // TODO: check database to verify objects are indeed deleted
 
