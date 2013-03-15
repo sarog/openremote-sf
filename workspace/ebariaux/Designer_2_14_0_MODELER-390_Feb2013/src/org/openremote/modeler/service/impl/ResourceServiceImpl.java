@@ -232,6 +232,32 @@ public class ResourceServiceImpl implements ResourceService
     controllerConfigService.deleteAllConfigs();
   }
   
+  private Map<String, Object> readBuildingModelerConfigurationFile(LocalFileCache cache) throws ConfigurationException {
+    Map<String, Object> map = null;
+    InputStreamReader isr = null;
+    try {
+      XStream xstream = new XStream(new StaxDriver());
+
+      // Going through a StreamReader to enforce UTF-8 encoding
+      isr = new InputStreamReader(new FileInputStream(cache.getBuildingModelerXmlFile()), "UTF-8");
+      map = (Map<String, Object>) xstream.fromXML(isr);
+    } catch (UnsupportedEncodingException e) {
+      throw new ConfigurationException("Issue reading file " + cache.getBuildingModelerXmlFile() + " in UTF-8 : " + e.getMessage(), e);
+    } catch (FileNotFoundException e) {
+      throw new ConfigurationException("File " + cache.getBuildingModelerXmlFile() +
+          " can not be found, or was not a proper file : " + e.getMessage(), e);
+    } finally {
+      if (isr != null) {
+        try {
+          isr.close();
+        } catch (IOException e) {
+          serviceLog.warn("Failed to close reader to " + cache.getBuildingModelerXmlFile() + " : " + e.getMessage(), e);
+        }
+      }
+    }
+    return map;
+  }
+  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
@@ -258,28 +284,7 @@ public class ResourceServiceImpl implements ResourceService
     
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
-    XStream xstream = new XStream(new StaxDriver());
-    
-    Map<String, Object> map = null;
-    InputStreamReader isr = null;
-    try {
-      // Going through a StreamReader to enforce UTF-8 encoding
-      isr = new InputStreamReader(new FileInputStream(cache.getBuildingModelerXmlFile()), "UTF-8");
-      map = (Map<String, Object>) xstream.fromXML(isr);
-    } catch (UnsupportedEncodingException e) {
-      throw new ConfigurationException("Issue reading file " + cache.getBuildingModelerXmlFile() + " in UTF-8 : " + e.getMessage(), e);
-    } catch (FileNotFoundException e) {
-      throw new ConfigurationException("File " + cache.getBuildingModelerXmlFile() +
-          " can not be found, or was not a proper file : " + e.getMessage(), e);
-    } finally {
-      if (isr != null) {
-        try {
-          isr.close();
-        } catch (IOException e) {
-          serviceLog.warn("Failed to close reader to " + cache.getBuildingModelerXmlFile() + " : " + e.getMessage(), e);
-        }
-      }
-    }
+    Map<String, Object> map = readBuildingModelerConfigurationFile(cache);
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
     
     List<Device> importedDevices = new ArrayList<Device>();
