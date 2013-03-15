@@ -103,11 +103,20 @@ public class ConfigurationFileImporter {
   }
 
   public Map<String, Collection<? extends DTO>> importConfiguration() throws ConfigurationException, NetworkException, CacheOperationException {
-    
-    
+
+    // Validate that we're in a correct state to import
+    if (deviceMacroService == null) {
+      throw new IllegalStateException("ConfigurationFileImporter does not have all required dependencies");
+    }
+    if (deviceService == null) {
+      throw new IllegalStateException("ConfigurationFileImporter does not have all required dependencies");
+    }
+    if (controllerConfigService == null) {
+      throw new IllegalStateException("ConfigurationFileImporter does not have all required dependencies");
+    }
+
     // No need to clean any of the resources stored in the cache (UI, images, rules...).
     // The whole cache is deleted later before being replaced with the uploaded file.
-
     
     // Remove all building modeler information
     deleteBuildingModelerConfiguration(account);
