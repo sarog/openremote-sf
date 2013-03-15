@@ -284,8 +284,8 @@ public class ResourceServiceImpl implements ResourceService
     
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
-    Map<String, Object> map = readBuildingModelerConfigurationFile(cache);
-    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
+    Map<String, Object> buildingModelerConfiguration = readBuildingModelerConfigurationFile(cache);
+    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
     
     List<Device> importedDevices = new ArrayList<Device>();
     
@@ -336,7 +336,7 @@ public class ResourceServiceImpl implements ResourceService
     // Macros
     
     List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
-    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
+    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)buildingModelerConfiguration.get("macros");
     
     // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
     for (MacroDetailsDTO m : macros) {
@@ -400,7 +400,7 @@ public class ResourceServiceImpl implements ResourceService
 
     // Controller configuration
     
-    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)map.get("configuration");
+    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
     if (configDTOs != null) {
       // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
       for (ControllerConfigDTO configDTO : configDTOs) {
