@@ -414,6 +414,20 @@ public class ResourceServiceImpl implements ResourceService
     });
   }
   
+  private void fixImageSourcesForAccount(Collection<Panel> panels, final Account account) {
+    for (Panel panel : panels) {
+      panel.fixImageSource(new Panel.ImageSourceResolver() {
+        Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
+            
+        @Override
+        public String resolveImageSource(String source) {
+          Matcher m = p.matcher(source);
+          return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
+        }
+      });
+    }
+  }
+  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
@@ -487,17 +501,7 @@ public class ResourceServiceImpl implements ResourceService
     fixPanelsDTOReferences(panels.getPanels(), commandsOldOidToNewOid, sensorsOldOidToNewOid, switchesOldOidToNewOid, slidersOldOidToNewOid);
     
     // All images still references original account, update their source to use this account
-    for (Panel panel : panels.getPanels()) {
-  	  panel.fixImageSource(new Panel.ImageSourceResolver() {
-    		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
-      		  
-    		@Override
-    		public String resolveImageSource(String source) {
-    			Matcher m = p.matcher(source);
-    			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
-    		}
-  	  });
-    }
+    fixImageSourcesForAccount(panels.getPanels(), account);
     
     cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
     saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
