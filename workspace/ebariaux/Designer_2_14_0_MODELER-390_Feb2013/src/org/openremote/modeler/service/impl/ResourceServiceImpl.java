@@ -278,67 +278,9 @@ public class ResourceServiceImpl implements ResourceService
     return importedDevices;
   }
   
-  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
-	  // Store the upload zip file locally before processing
-	  File importFile = storeAsLocalTemporaryFile(inputStream);
-	 
-    // No need to clean any of the resources stored in the cache (UI, images, rules...).
-	  // The whole cache is deleted later before being replaced with the uploaded file.
-
-    final Account account = userService.getAccount();
-    
-    // Remove all building modeler information
-    deleteBuildingModelerConfiguration(account);
-
-    // TODO: check database to verify objects are indeed deleted
-
-    LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
-    cache.replace(importFile);
-
-    if (!cache.getBuildingModelerXmlFile().exists()) {
-      throw new ConfigurationException("Invalid import file: no building modeler data");
-    }
-    if (!cache.hasXMLUIState()) {
-      throw new ConfigurationException("Invalid import file: no UI data");
-    }
-    
-    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
-
-    Map<String, Object> buildingModelerConfiguration = readBuildingModelerConfigurationFile(cache);
-    
-    List<Device> importedDevices = importDevices(buildingModelerConfiguration);
-    
-    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
-    
-    // Domain objects have been created and saved with a new id
-    // During this process, old id has been saved as transient info
-    // Create lookup map from originalId to new one
-    for (Device dev : importedDevices) {
-      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
-      
-      for (DeviceCommand dc : dev.getDeviceCommands()) {
-        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
-      }
-      for (Sensor s : dev.getSensors()) {
-        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Switch s : dev.getSwitchs()) {
-        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Slider s : dev.getSliders()) {
-        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      
-      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
-    }
-    
-    // Macros
-    
+  private List<MacroDTO> importMacros(Map<String, Object> buildingModelerConfiguration, Map<Long, Long> commandsOldOidToNewOid) throws ConfigurationException {
     List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
+
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)buildingModelerConfiguration.get("macros");
     
     // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
@@ -400,6 +342,71 @@ public class ResourceServiceImpl implements ResourceService
         }
       }
     }
+    return importedMacroDTOs;
+  }
+  
+  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	  // Store the upload zip file locally before processing
+	  File importFile = storeAsLocalTemporaryFile(inputStream);
+	 
+    // No need to clean any of the resources stored in the cache (UI, images, rules...).
+	  // The whole cache is deleted later before being replaced with the uploaded file.
+
+    final Account account = userService.getAccount();
+    
+    // Remove all building modeler information
+    deleteBuildingModelerConfiguration(account);
+
+    // TODO: check database to verify objects are indeed deleted
+
+    LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
+    cache.replace(importFile);
+
+    if (!cache.getBuildingModelerXmlFile().exists()) {
+      throw new ConfigurationException("Invalid import file: no building modeler data");
+    }
+    if (!cache.hasXMLUIState()) {
+      throw new ConfigurationException("Invalid import file: no UI data");
+    }
+    
+    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
+
+    Map<String, Object> buildingModelerConfiguration = readBuildingModelerConfigurationFile(cache);
+    
+    List<Device> importedDevices = importDevices(buildingModelerConfiguration);
+    
+    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+    
+    // Domain objects have been created and saved with a new id
+    // During this process, old id has been saved as transient info
+    // Create lookup map from originalId to new one
+    for (Device dev : importedDevices) {
+      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
+      
+      for (DeviceCommand dc : dev.getDeviceCommands()) {
+        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+      }
+      for (Sensor s : dev.getSensors()) {
+        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Switch s : dev.getSwitchs()) {
+        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Slider s : dev.getSliders()) {
+        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      
+      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+    
+    // Macros
+    
+    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
+    importMacros(buildingModelerConfiguration, commandsOldOidToNewOid);
 
     // Controller configuration
     
