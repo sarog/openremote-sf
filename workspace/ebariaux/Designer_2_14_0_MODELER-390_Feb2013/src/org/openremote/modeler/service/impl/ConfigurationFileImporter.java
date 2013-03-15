@@ -91,6 +91,14 @@ public class ConfigurationFileImporter {
   private DeviceService deviceService;
   private ControllerConfigService controllerConfigService;
 
+  // Private information collected and used during the import process
+  private Map<String, Object> buildingModelerConfiguration;
+  
+  final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+  final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+  final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+  final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
@@ -114,12 +122,16 @@ public class ConfigurationFileImporter {
     if (controllerConfigService == null) {
       throw new IllegalStateException("ConfigurationFileImporter does not have all required dependencies");
     }
+    
+    if (buildingModelerConfiguration != null) {
+      throw new IllegalStateException("ConfigurationFileImporter can not be re-used for other import");
+    }
 
     // No need to clean any of the resources stored in the cache (UI, images, rules...).
     // The whole cache is deleted later before being replaced with the uploaded file.
     
     // Remove all building modeler information
-    deleteBuildingModelerConfiguration(account);
+    deleteBuildingModelerConfiguration();
 
     // TODO: check database to verify objects are indeed deleted
 
@@ -134,15 +146,10 @@ public class ConfigurationFileImporter {
     
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
-    Map<String, Object> buildingModelerConfiguration = readBuildingModelerConfigurationFile(cache);
+    buildingModelerConfiguration = readBuildingModelerConfigurationFile();
     
-    List<Device> importedDevices = importDevices(buildingModelerConfiguration);
-    
-    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
-    
+    List<Device> importedDevices = importDevices();
+
     // Domain objects have been created and saved with a new id
     // During this process, old id has been saved as transient info
     // Create lookup map from originalId to new one
@@ -166,10 +173,10 @@ public class ConfigurationFileImporter {
     // Macros
     
     List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
-    importMacros(buildingModelerConfiguration, commandsOldOidToNewOid);
+    importMacros();
 
     // Controller configuration
-    importModelerConfiguration(buildingModelerConfiguration);
+    importModelerConfiguration();
     
     // UI
     
@@ -177,10 +184,10 @@ public class ConfigurationFileImporter {
 
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
     
-    fixPanelsDTOReferences(panels.getPanels(), commandsOldOidToNewOid, sensorsOldOidToNewOid, switchesOldOidToNewOid, slidersOldOidToNewOid);
+    fixPanelsDTOReferences(panels.getPanels());
     
     // All images still references original account, update their source to use this account
-    fixImageSourcesForAccount(panels.getPanels(), account);
+    fixImageSourcesForAccount(panels.getPanels());
 
     Set<Panel> panelSet = new HashSet<Panel>(panels.getPanels());
     cache.replace(panelSet, panels.getMaxOid());
@@ -192,7 +199,7 @@ public class ConfigurationFileImporter {
     return result;
   }
   
-  private void deleteBuildingModelerConfiguration(Account account) throws ConfigurationException {
+  private void deleteBuildingModelerConfiguration() throws ConfigurationException {
     // Remove macros first, as they might reference commands
     deviceMacroService.deleteAll(account);
 
@@ -211,7 +218,7 @@ public class ConfigurationFileImporter {
   }
   
   @SuppressWarnings("unchecked")
-  private Map<String, Object> readBuildingModelerConfigurationFile(LocalFileCache cache) throws ConfigurationException {
+  private Map<String, Object> readBuildingModelerConfigurationFile() throws ConfigurationException {
     Map<String, Object> map = null;
     InputStreamReader isr = null;
     try {
@@ -237,7 +244,7 @@ public class ConfigurationFileImporter {
     return map;
   }
   
-  private List<Device> importDevices(Map<String, Object> buildingModelerConfiguration) {
+  private List<Device> importDevices() {
     @SuppressWarnings("unchecked")
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
 
@@ -258,7 +265,7 @@ public class ConfigurationFileImporter {
     return importedDevices;
   }
   
-  private List<MacroDTO> importMacros(Map<String, Object> buildingModelerConfiguration, Map<Long, Long> commandsOldOidToNewOid) throws ConfigurationException {
+  private List<MacroDTO> importMacros() throws ConfigurationException {
     @SuppressWarnings("unchecked")
     Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)buildingModelerConfiguration.get("macros");
     
@@ -326,7 +333,7 @@ public class ConfigurationFileImporter {
     return importedMacroDTOs;
   }
   
-  private void importModelerConfiguration(Map<String, Object> buildingModelerConfiguration) {
+  private void importModelerConfiguration() {
     @SuppressWarnings("unchecked")
     Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
     
@@ -339,9 +346,7 @@ public class ConfigurationFileImporter {
     }
   }
   
-  private void fixPanelsDTOReferences(Collection<Panel> panels,
-                                       final Map<Long, Long> commandsOldOidToNewOid, final Map<Long, Long> sensorsOldOidToNewOid,
-                                       final Map<Long, Long> switchesOldOidToNewOid, final Map<Long, Long> slidersOldOidToNewOid) {
+  private void fixPanelsDTOReferences(Collection<Panel> panels) {
     // All DTOs in the just imported object graph have ids of building elements from the original DB.
     // Walk the graph and change ids to the newly saved domain objects.
     Panel.walkAllUIComponents(panels, new UIComponentOperation() {
@@ -397,7 +402,7 @@ public class ConfigurationFileImporter {
     });
   }
   
-  private void fixImageSourcesForAccount(Collection<Panel> panels, final Account account) {
+  private void fixImageSourcesForAccount(Collection<Panel> panels) {
     for (Panel panel : panels) {
       panel.fixImageSource(new Panel.ImageSourceResolver() {
         Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
