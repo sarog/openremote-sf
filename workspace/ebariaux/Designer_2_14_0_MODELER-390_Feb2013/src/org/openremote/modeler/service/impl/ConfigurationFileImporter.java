@@ -61,7 +61,6 @@ import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
-import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
@@ -91,7 +90,6 @@ public class ConfigurationFileImporter {
   private DeviceMacroService deviceMacroService;
   private DeviceService deviceService;
   private ControllerConfigService controllerConfigService;
-  private ResourceService resourceService;
 
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
@@ -174,9 +172,10 @@ public class ConfigurationFileImporter {
     
     // All images still references original account, update their source to use this account
     fixImageSourcesForAccount(panels.getPanels(), account);
-    
-    cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
-    resourceService.saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
+
+    Set<Panel> panelSet = new HashSet<Panel>(panels.getPanels());
+    cache.replace(panelSet, panels.getMaxOid());
+    state.save(panelSet, panels.getMaxOid());
 
     Map<String, Collection<? extends DTO>> result = new HashMap<String, Collection<? extends DTO>>();
     result.put("devices", importedDeviceDTOs);
@@ -413,10 +412,6 @@ public class ConfigurationFileImporter {
 
   public void setControllerConfigService(ControllerConfigService controllerConfigService) {
     this.controllerConfigService = controllerConfigService;
-  }
-
-  public void setResourceService(ResourceService resourceService) {
-    this.resourceService = resourceService;
   }
 
 }

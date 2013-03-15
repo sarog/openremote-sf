@@ -188,7 +188,6 @@ public class ResourceServiceImpl implements ResourceService
     importer.setControllerConfigService(controllerConfigService);
     importer.setDeviceMacroService(deviceMacroService);
     importer.setDeviceService(deviceService);
-    importer.setResourceService(this);
     
     return importer.importConfiguration();
   }
