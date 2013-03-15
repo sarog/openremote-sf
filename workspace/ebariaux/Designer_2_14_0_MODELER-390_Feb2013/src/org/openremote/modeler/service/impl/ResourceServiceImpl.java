@@ -356,6 +356,64 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
   
+  private void fixPanelsDTOReferences(Collection<Panel> panels,
+                                       final Map<Long, Long> commandsOldOidToNewOid, final Map<Long, Long> sensorsOldOidToNewOid,
+                                       final Map<Long, Long> switchesOldOidToNewOid, final Map<Long, Long> slidersOldOidToNewOid) {
+    // All DTOs in the just imported object graph have ids of building elements from the original DB.
+    // Walk the graph and change ids to the newly saved domain objects.
+    Panel.walkAllUIComponents(panels, new UIComponentOperation() {
+
+      @Override
+      public void execute(UIComponent component) {
+        if (component instanceof SensorLinkOwner) {
+          SensorLinkOwner owner = ((SensorLinkOwner) component);
+          if (owner.getSensorLink() != null) {
+            SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
+            if (sensorDTO.getOid() != null) {
+              sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+            }
+          }
+        }
+        if (component instanceof UISlider) {
+          UISlider uiSlider = (UISlider)component;
+          if (uiSlider.getSliderDTO() != null) {
+            SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
+            if (sliderDTO.getOid() != null) {
+              sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
+            }
+          }
+        }
+        if (component instanceof UISwitch) {
+          UISwitch uiSwitch = (UISwitch)component;
+          if (uiSwitch.getSwitchDTO() != null) {
+            SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
+            if (switchDTO.getOid() != null) {
+              switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
+            }
+          }
+        }
+        if (component instanceof UIButton) {
+          replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
+        }
+        if (component instanceof ColorPicker) {
+          replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
+        }
+        if (component instanceof Gesture) {
+          replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
+        }
+      }
+
+      private void replaceOldOidWithNew(UICommandDTO commandDTO) {
+        if (commandDTO == null) {
+          return;
+        }
+        if (commandDTO.getOid() != null) {
+          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+        }
+      }
+    });
+  }
+  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
@@ -429,59 +487,7 @@ public class ResourceServiceImpl implements ResourceService
 
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
     
-    // All DTOs in the just imported object graph have ids of building elements from the original DB.
-    // Walk the graph and change ids to the newly saved domain objects.
-    Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
-
-  	  @Override
-      public void execute(UIComponent component) {
-  	    if (component instanceof SensorLinkOwner) {
-    			SensorLinkOwner owner = ((SensorLinkOwner) component);
-    			if (owner.getSensorLink() != null) {
-    				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
-    				if (sensorDTO.getOid() != null) {
-    					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
-    				}
-    			}
-  	    }
-  	    if (component instanceof UISlider) {
-  	      UISlider uiSlider = (UISlider)component;
-  	      if (uiSlider.getSliderDTO() != null) {
-  	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
-  	      	if (sliderDTO.getOid() != null) {
-  	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
-  	      	}
-  	      }
-  	    }
-  	    if (component instanceof UISwitch) {
-  	      UISwitch uiSwitch = (UISwitch)component;
-  	      if (uiSwitch.getSwitchDTO() != null) {
-  	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
-  	      	if (switchDTO.getOid() != null) {
-  	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
-  	      	}
-  	      }
-  	    }
-  	    if (component instanceof UIButton) {
-  	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
-  	    }
-  	    if (component instanceof ColorPicker) {
-  	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
-  	    }
-  	    if (component instanceof Gesture) {
-  	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
-  	    }
-      }
-
-      private void replaceOldOidWithNew(UICommandDTO commandDTO) {
-  	    if (commandDTO == null) {
-  		    return;
-    	  }
-        if (commandDTO.getOid() != null) {
-          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
-        }
-      }
-    });
+    fixPanelsDTOReferences(panels.getPanels(), commandsOldOidToNewOid, sensorsOldOidToNewOid, switchesOldOidToNewOid, slidersOldOidToNewOid);
     
     // All images still references original account, update their source to use this account
     for (Panel panel : panels.getPanels()) {
