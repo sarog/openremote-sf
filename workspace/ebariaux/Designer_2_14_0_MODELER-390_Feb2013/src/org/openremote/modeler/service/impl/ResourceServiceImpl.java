@@ -263,15 +263,12 @@ public class ResourceServiceImpl implements ResourceService
 
     List<Device> importedDevices = new ArrayList<Device>();
     
-    Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
-    
     // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
     for (DeviceDetailsWithChildrenDTO dev : devices) {
 
       // The archived graph has DTOReferences with id, as it originally came from objects in DB.
       // Must iterate all DTOReferences, replacing ids with dto.
-      // While doing this, also collect all mappings from id to commands DTO
-      commandsPerId.putAll(dev.replaceIdWithDTOInReferences());
+      dev.replaceIdWithDTOInReferences();
 
       // TODO EBR review : original MODELER-390 line was
       // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
