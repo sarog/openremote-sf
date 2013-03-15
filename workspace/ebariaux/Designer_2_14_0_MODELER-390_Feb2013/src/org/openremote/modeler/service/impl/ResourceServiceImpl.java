@@ -345,6 +345,17 @@ public class ResourceServiceImpl implements ResourceService
     return importedMacroDTOs;
   }
   
+  private void importModelerConfiguration(Map<String, Object> buildingModelerConfiguration) {
+    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
+    if (configDTOs != null) {
+      // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
+      for (ControllerConfigDTO configDTO : configDTOs) {
+        configDTO.setOid(null);
+      }
+      controllerConfigService.saveAllDTOs(configDTOs);
+    }
+  }
+  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
@@ -409,16 +420,8 @@ public class ResourceServiceImpl implements ResourceService
     importMacros(buildingModelerConfiguration, commandsOldOidToNewOid);
 
     // Controller configuration
+    importModelerConfiguration(buildingModelerConfiguration);
     
-    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
-    if (configDTOs != null) {
-      // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
-      for (ControllerConfigDTO configDTO : configDTOs) {
-        configDTO.setOid(null);
-      }
-      controllerConfigService.saveAllDTOs(configDTOs);
-    }
-
     // UI
     
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
