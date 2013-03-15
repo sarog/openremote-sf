@@ -144,39 +144,13 @@ public class ConfigurationFileImporter {
       throw new ConfigurationException("Invalid import file: no UI data");
     }
     
-    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
-
     buildingModelerConfiguration = readBuildingModelerConfigurationFile();
     
-    List<Device> importedDevices = importDevices();
+    List <DeviceDTO> importedDeviceDTOs = importDevices();
 
-    // Domain objects have been created and saved with a new id
-    // During this process, old id has been saved as transient info
-    // Create lookup map from originalId to new one
-    for (Device dev : importedDevices) {
-      for (DeviceCommand dc : dev.getDeviceCommands()) {
-        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
-      }
-      for (Sensor s : dev.getSensors()) {
-        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Switch s : dev.getSwitchs()) {
-        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Slider s : dev.getSliders()) {
-        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      
-      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
-    }
-    
-    // Macros
-    
-    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
-    importMacros();
+    List <MacroDTO> importedMacroDTOs = importMacros();
 
-    // Controller configuration
-    importModelerConfiguration();
+    importControllerConfiguration();
     
     // UI
     
@@ -244,11 +218,12 @@ public class ConfigurationFileImporter {
     return map;
   }
   
-  private List<Device> importDevices() {
+  private List<DeviceDTO> importDevices() {
     @SuppressWarnings("unchecked")
     Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
 
     List<Device> importedDevices = new ArrayList<Device>();
+    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
     
     // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
     for (DeviceDetailsWithChildrenDTO dev : devices) {
@@ -262,7 +237,28 @@ public class ConfigurationFileImporter {
 
       importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));      
     }
-    return importedDevices;
+
+    // Domain objects have been created and saved with a new id
+    // During this process, old id has been saved as transient info
+    // Create lookup map from originalId to new one
+    for (Device dev : importedDevices) {
+      for (DeviceCommand dc : dev.getDeviceCommands()) {
+        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
+      }
+      for (Sensor s : dev.getSensors()) {
+        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Switch s : dev.getSwitchs()) {
+        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      for (Slider s : dev.getSliders()) {
+        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
+      }
+      
+      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+    }
+
+    return importedDeviceDTOs;
   }
   
   private List<MacroDTO> importMacros() throws ConfigurationException {
@@ -333,7 +329,7 @@ public class ConfigurationFileImporter {
     return importedMacroDTOs;
   }
   
-  private void importModelerConfiguration() {
+  private void importControllerConfiguration() {
     @SuppressWarnings("unchecked")
     Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)buildingModelerConfiguration.get("configuration");
     
