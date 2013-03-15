@@ -444,7 +444,6 @@ public class ResourceServiceImpl implements ResourceService
     
     List<Device> importedDevices = importDevices(buildingModelerConfiguration);
     
-    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
     final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
     final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
     final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
@@ -454,8 +453,6 @@ public class ResourceServiceImpl implements ResourceService
     // During this process, old id has been saved as transient info
     // Create lookup map from originalId to new one
     for (Device dev : importedDevices) {
-      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
-      
       for (DeviceCommand dc : dev.getDeviceCommands()) {
         commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
       }
