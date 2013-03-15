@@ -258,6 +258,29 @@ public class ResourceServiceImpl implements ResourceService
     return map;
   }
   
+  private List<Device> importDevices(Map<String, Object> buildingModelerConfiguration) {
+    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
+
+    List<Device> importedDevices = new ArrayList<Device>();
+    
+    Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
+    
+    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
+    for (DeviceDetailsWithChildrenDTO dev : devices) {
+
+      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
+      // Must iterate all DTOReferences, replacing ids with dto.
+      // While doing this, also collect all mappings from id to commands DTO
+      commandsPerId.putAll(dev.replaceIdWithDTOInReferences());
+
+      // TODO EBR review : original MODELER-390 line was
+      // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
+
+      importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));      
+    }
+    return importedDevices;
+  }
+  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
@@ -285,25 +308,8 @@ public class ResourceServiceImpl implements ResourceService
     List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
 
     Map<String, Object> buildingModelerConfiguration = readBuildingModelerConfigurationFile(cache);
-    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)buildingModelerConfiguration.get("devices");
     
-    List<Device> importedDevices = new ArrayList<Device>();
-    
-    Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
-    
-    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
-    for (DeviceDetailsWithChildrenDTO dev : devices) {
-
-      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
-      // Must iterate all DTOReferences, replacing ids with dto.
-      // While doing this, also collect all mappings from id to commands DTO
-      commandsPerId.putAll(dev.replaceIdWithDTOInReferences());
-
-      // TODO EBR review : original MODELER-390 line was
-      // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-
-      importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-    }
+    List<Device> importedDevices = importDevices(buildingModelerConfiguration);
     
     final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
     final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
