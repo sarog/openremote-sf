@@ -133,8 +133,6 @@ public class ConfigurationFileImporter {
     // Remove all building modeler information
     deleteBuildingModelerConfiguration();
 
-    // TODO: check database to verify objects are indeed deleted
-
     cache.replace(importFile);
 
     if (!cache.getBuildingModelerXmlFile().exists()) {
