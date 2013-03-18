@@ -6,6 +6,7 @@ Fixes:
 
 New features:
  - Support new features in Marantz AVR protocol (MODELER-461)
+ - Add protocol definition for MicasaVerde Vera protocol and add controller property (MODELER-456)
 
 Pro 1.0.7
 =========
