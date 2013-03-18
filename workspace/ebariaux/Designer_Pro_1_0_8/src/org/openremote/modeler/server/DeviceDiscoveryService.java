@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2013, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
@@ -54,7 +53,7 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 /**
- * The Class is for managing linked controller
+ * The Class is for managing access to Beehive DiscoveredDevices REST service and also handles automatic device creation
  */
 public class DeviceDiscoveryService extends BaseGWTSpringController implements DeviceDiscoveryRPCService {
 
@@ -219,10 +218,16 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     if (discoveredDeviceDTO.getProtocol().equalsIgnoreCase("zwave")) {
       addZwaveCommands(device, discoveredDeviceDTO);
       addZwaveSensors(device, discoveredDeviceDTO);
-      addZwaveSwitches(device, name);
-      addZwaveSliders(device, name);
-    } else {
-      throw new DeviceDiscoveryException("Only Z-Wave is supported for the Device Wizard in the moment");
+      addSwitches(device, name);
+      addSliders(device, name);
+    } else if (discoveredDeviceDTO.getProtocol().equalsIgnoreCase("vera")) {
+      addVeraCommands(device, discoveredDeviceDTO);
+      addVeraSensors(device, discoveredDeviceDTO);
+      addSwitches(device, name);
+      addSliders(device, name);      
+    } else
+    {
+      throw new DeviceDiscoveryException("Only Z-Wave or Vera is supported for the Device Wizard in the moment");
     }
    
     return device;
@@ -320,7 +325,170 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
       }
     }
   }
+  
+  private void addVeraCommands(Device device, DiscoveredDeviceDTO discoveredDeviceDTO)
+  {
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("switch") || discoveredDeviceDTO.getType().equalsIgnoreCase("dimmablelight")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-On");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "ON");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+      
+      deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-Off");
+      attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "OFF");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+      
+      deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-Status");
+      attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_STATUS");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("dimmablelight")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-SetDimLevel");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "SET_LEVEL");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("dimmablelight")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetDimLevel");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_LEVEL");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("Thermostat")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetHeatSetpoint");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_HEAT_SETPOINT");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
 
+      deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-SetHeatSetpoint");
+      attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "SET_HEAT_SETPOINT");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("SecuritySensor")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetTripped");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_TRIPPED");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("TemperatureSensor")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetTemperature");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_TEMPERATURE");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("HumiditySensor")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetHumidity");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_HUMIDITY");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+    if (discoveredDeviceDTO.getType().equalsIgnoreCase("PowerMeter")) {
+      DeviceCommand deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetWatts");
+      HashMap<String, String> attrMap = new HashMap<String, String>();
+      attrMap.put("device", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_WATTS");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+      
+      deviceCommand = new DeviceCommand();
+      deviceCommand.setDevice(device);
+      deviceCommand.setName(discoveredDeviceDTO.getName()+ "-GetConsumption");
+      attrMap = new HashMap<String, String>();
+      attrMap.put("nodeId", discoveredDeviceDTO.getDeviceAttrs().get(0).getValue());
+      attrMap.put("command", "GET_CONSUMPTION");
+      deviceCommand.createProtocolWithAttributes("Vera", attrMap);
+      device.getDeviceCommands().add(deviceCommand);
+    }
+    
+  }
+  
+  private void addVeraSensors(Device device, DiscoveredDeviceDTO discoveredDeviceDTO)
+  {
+    String name = discoveredDeviceDTO.getName();
+    List<DeviceCommand> commands = device.getDeviceCommands();
+    for (DeviceCommand deviceCommand : commands) {
+      if (deviceCommand.getName().equals(name+"-Status")) {
+        if ((discoveredDeviceDTO.getType().equalsIgnoreCase("Switch")) || (discoveredDeviceDTO.getType().equalsIgnoreCase("DimmableLight"))) {
+          Sensor sensor = createSensor(name+"-OnOffSensor",SensorType.SWITCH, deviceCommand, device, 0, 0);
+          device.getSensors().add(sensor);
+        }
+      }
+      
+      if (deviceCommand.getName().equals(name+"-GetDimLevel")) {
+        if (discoveredDeviceDTO.getType().equalsIgnoreCase("DimmableLight")) {
+          Sensor sensor = createSensor(name+"-DimSensor",SensorType.RANGE, deviceCommand, device, 0, 100);
+          device.getSensors().add(sensor);
+        }
+      }
+      
+      if (deviceCommand.getName().equals(name+"-GetHeatSetpoint")) {
+        if (discoveredDeviceDTO.getType().equalsIgnoreCase("Thermostat")) {
+          Sensor sensor = createSensor(name+"-HeatSetpointSensor", SensorType.RANGE, deviceCommand, device, 15, 30);
+          device.getSensors().add(sensor);
+        }
+      }
+      if (deviceCommand.getName().equals(name+"-GetTripped")) {
+        if (discoveredDeviceDTO.getType().equalsIgnoreCase("SecuritySensor")) {
+          Sensor sensor = createSensor(name+"-OnOffSensor",SensorType.SWITCH, deviceCommand, device, 0, 0);
+          device.getSensors().add(sensor);
+        }
+      }
+    }
+  }
+
+  
   private Sensor createSensor(String sensorName, SensorType type, DeviceCommand command, Device device, int min, int max) {
     Sensor sensor;
     if (type == SensorType.RANGE) {
@@ -344,7 +512,7 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     return sensor;
   }
   
-  private void addZwaveSwitches(Device device, String name)
+  private void addSwitches(Device device, String name)
   {
     DeviceCommand on = null;
     DeviceCommand off = null;
@@ -369,18 +537,25 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     }
   }
 
-  private void addZwaveSliders(Device device, String name)
+  private void addSliders(Device device, String name)
   {
     DeviceCommand sliderCommand = null;
     Sensor sliderSensor = null;
     
     for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
-      if (deviceCommand.getName().equals(name+"-Dim") || deviceCommand.getName().equals(name+"-Temp")) {
+      if (deviceCommand.getName().equals(name+"-Dim") 
+              || deviceCommand.getName().equals(name+"-Temp")
+              || deviceCommand.getName().equals(name+"-SetDimLevel")
+              || deviceCommand.getName().equals(name+"-SetHeatSetpoint")) 
+      {
         sliderCommand = deviceCommand;
       }
     }
     for (Sensor sensor : device.getSensors()) {
-      if (sensor.getName().equals(name+"-DimSensor") || sensor.getName().equals(name+"-TempSensor")) {
+      if (sensor.getName().equals(name+"-DimSensor") 
+              || sensor.getName().equals(name+"-TempSensor")
+              || sensor.getName().equals(name+"-HeatSetpointSensor"))
+      {
         sliderSensor = sensor;
       }
     }
