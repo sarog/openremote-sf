@@ -16,6 +16,7 @@ Designer 2.14.0 (2012-08-XX Markab)
    - In edit/new macro window, command tree must include device name (MODELER-361)
    - Add support for Marantz Receivers protocol (MODELER-442)
    - Support new features in Marantz AVR protocol (MODELER-461)
+   - Add protocol definition for MicasaVerde Vera protocol and add controller property (MODELER-456)
 
  Fixes:
 
