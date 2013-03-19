@@ -79,8 +79,16 @@ void printBounds(NSString *comment, UIView *v)
         [self addSubview:self.thumbView];
         
         // Use default images used by iOS
-        self.minimumTrackImage = [[UIImage imageNamed:@"ORSliderGreen"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
-        self.maximumTrackImage = [[UIImage imageNamed:@"ORSliderWhite"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
+        UIImage *greenSlider = [UIImage imageNamed:@"ORSliderGreen"];
+        UIImage *whiteSlider = [UIImage imageNamed:@"ORSliderWhite"];
+        if ([greenSlider respondsToSelector:@selector(resizableImageWithCapInsets)]) {
+            // iOS 5.0 and above
+            self.minimumTrackImage = [greenSlider resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
+            self.maximumTrackImage = [whiteSlider resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0)];
+        } else {
+            self.minimumTrackImage = [greenSlider stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
+            self.maximumTrackImage = [whiteSlider stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
+        }
         self.thumbImage = [UIImage imageNamed:@"ORSliderThumb"];
         
         self.continuous = YES;
