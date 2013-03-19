@@ -349,9 +349,9 @@ public class ConfigurationFileImporter {
       public void execute(UIComponent component) {
         if (component instanceof SensorLinkOwner) {
           SensorLinkOwner owner = ((SensorLinkOwner) component);
-          if (owner.getSensorLink() != null) {
+          if (owner != null && owner.getSensorLink() != null) {
             SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
-            if (sensorDTO.getOid() != null) {
+            if (sensorDTO != null && sensorDTO.getOid() != null) {
               sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
             }
           }
