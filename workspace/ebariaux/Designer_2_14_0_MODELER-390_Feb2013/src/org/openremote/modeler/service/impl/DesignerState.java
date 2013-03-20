@@ -459,7 +459,23 @@ class DesignerState
 
         // TODO, should we delete legacy file if it exists ?
         // Otherwise we'll just have outdated legacy files laying around
-        
+
+        try {
+          // The UI state does store full definition (e.g. including names) of the modeler elements it references         
+          // The current UI does not properly update those linked DTOs, it only updates properly the database.
+          // See MODELER-322
+          // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
+          refreshLinkedDTOReferences(panels);
+        } catch (Throwable t) {
+          // This exception type and message will propagate to the user...
+
+          throw new UIRestoreException(
+              "Restoring your account data has failed. Please contact an administrator for " +
+              "assistance. Avoid making further changes to your account and design to prevent " +
+              "any potential data corruption issues: " + t.getMessage(), t
+          );
+        }
+
         return;
       }
 
@@ -727,7 +743,111 @@ class DesignerState
 
     });
   }
+  
+  /**
+   * Walks through all the UI elements of the given panels and refresh the DTOs of the building modeler objects linked to them.
+   * The refresh is done by looking up, by id, the corresponding entity objects in the database,
+   * recreating the DTOs and using those new DTOs in the UI elements.
+   *
+   * @param panels
+   */
+  private void refreshLinkedDTOReferences(Collection<Panel> panels) {
+    Panel.walkAllUIComponents(panels, new UIComponentOperation() {
 
+      @Override
+      public void execute(UIComponent component) {
+        if (component instanceof SensorOwner) {
+          SensorOwner owner = (SensorOwner) component;
+          if (owner.getSensorDTO() != null && owner.getSensorDTO().getOid() != null) {
+            Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
+
+            if (sensor != null) {
+              owner.setSensorDTO(sensor.getSensorWithInfoDTO());
+            }
+
+            if (owner instanceof SensorLinkOwner) {
+              ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
+            }
+          }
+        }
+        if (component instanceof UISlider) {
+          UISlider uiSlider = (UISlider)component;
+          if (uiSlider.getSliderDTO() != null && uiSlider.getSliderDTO().getOid() != null) {
+            // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+            Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+            if (slider != null) { // Just in case we have a dangling pointer
+              uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
+            }
+          }
+        }
+        if (component instanceof UISwitch) {
+          UISwitch uiSwitch = (UISwitch)component;
+          if (uiSwitch.getSwitchDTO() != null && uiSwitch.getSwitchDTO().getOid() != null) {
+            Switch switchBean = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
+            if (switchBean != null) { // Just in case we have a dangling pointer
+              uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
+            }
+          }
+        }
+        if (component instanceof UIButton) {
+          UIButton uiButton = (UIButton)component;
+          if (uiButton.getUiCommandDTO() != null && uiButton.getUiCommandDTO().getOid() != null) {
+            uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommandDTO()));
+          }
+        }
+        if (component instanceof ColorPicker) {
+          ColorPicker colorPicker = (ColorPicker)component;
+          if (colorPicker.getUiCommandDTO() != null && colorPicker.getUiCommandDTO().getOid() != null) {
+            colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommandDTO()));
+          }
+        }
+        if (component instanceof Gesture) {
+          Gesture gesture = (Gesture)component;
+          if (gesture.getUiCommandDTO() != null && gesture.getUiCommandDTO().getOid() != null) {
+            gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommandDTO()));
+          }
+        }
+      }
+
+      private UICommandDTO createUiCommandDTO(UICommandDTO uiCommandDTO)
+      {
+        if (uiCommandDTO instanceof DeviceCommandDTO)
+        {
+          try
+          {
+            DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
+            return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()):null;
+          }
+          catch (ObjectNotFoundException e)
+          {
+            restoreLog.warn("Button is referencing inexistent command with id " + uiCommandDTO.getOid(), e);
+            return null;
+          }
+        }
+
+        else if (uiCommandDTO instanceof MacroDTO)
+        {
+          try
+          {
+            DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
+
+            return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
+
+          }
+
+          catch (ObjectNotFoundException e)
+          {
+            restoreLog.warn("Button is referencing inexistent macro with id " + uiCommandDTO.getOid(), e);
+            return null;
+          }
+        }
+
+        throw new RuntimeException("We don't expect any other type of UICommandDTO"); // TODO : review that exception type
+      }
+
+    });
+  }
+  
   /**
    * Saves the account artifacts from the current in-memory domain model to Beehive server.
    *
