@@ -7,6 +7,7 @@ Richard Turner
 Andrew Ball
 Daniel Berenguer
 Ivan Martinez
+Rainer Hitz
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote Designer each
