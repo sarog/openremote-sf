@@ -3,6 +3,7 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  New Features:
 
+   - EnOcean configuration (Rainer Hitz, MODELER-470)
    - panStamps Lagarto configuration (Daniel Berenguer, 
      MODELER-397)
    - Round-robin database (RRD) configuration (MODELER-394)
