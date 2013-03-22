@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -29,6 +29,8 @@
         textField = [[UITextField alloc] initWithFrame:CGRectZero];
         textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
         textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
+        textField.textAlignment = UITextAlignmentRight;
+        textField.clearButtonMode = UITextFieldViewModeWhileEditing;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self.contentView addSubview:textField];
         [textField release];
@@ -39,11 +41,15 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    
+
     textField.font = self.detailTextLabel.font;
     textField.textColor = self.detailTextLabel.textColor;
-    int offset = 300;
-    textField.frame = CGRectMake(self.textLabel.frame.origin.x + offset, self.textLabel.frame.origin.y, self.contentView.bounds.size.width - offset - self.textLabel.frame.origin.x, self.textLabel.frame.size.height);
+    
+    [self.textLabel sizeToFit];
+    int offset = self.textLabel.frame.size.width + 20;
+    
+    textField.frame = CGRectMake(self.textLabel.frame.origin.x + offset, self.textLabel.frame.origin.y,
+                                 self.contentView.bounds.size.width - offset - self.textLabel.frame.origin.x - 20, self.textLabel.frame.size.height);
 }
 
 @synthesize textField;
