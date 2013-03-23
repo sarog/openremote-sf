@@ -107,7 +107,9 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof SliderDTO) {
          SliderDTO slider = beanModel.getBean();
          List<BeanModel> sliderModels = new ArrayList<BeanModel>();
-         sliderModels.add(DTOHelper.getBeanModel(slider.getCommand()));
+         if (slider.getCommand() != null) {
+           sliderModels.add(DTOHelper.getBeanModel(slider.getCommand()));
+         }
          callback.onSuccess(sliderModels);
       } else if(beanModel.getBean() instanceof SwitchDTO) {
          SwitchDTO swh = beanModel.getBean();

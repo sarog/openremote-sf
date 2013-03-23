@@ -271,6 +271,9 @@ public class TreePanelBuilder {
                if (beanModel.getBean() instanceof DeviceCommandDTO || beanModel.getBean() instanceof UICommand) { // TODO EBR : can there be UICommand here ?
                   return false;
                }
+               if (beanModel.getBean() instanceof SliderDTO) {
+                 return (((SliderDTO)beanModel.getBean()).getCommand() != null);
+               }
                return true;
             }
          };

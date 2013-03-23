@@ -34,6 +34,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.component.SelectAndDeleteButtonWidget;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
@@ -58,6 +59,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.event.shared.EventBus;
+
 /**
  * The window to creates or update a slider and save it into server.
  * 
@@ -76,7 +78,7 @@ public class SliderWindow extends FormWindow {
    
    private TextField<String> nameField = new TextField<String>();
    protected ComboBox<ModelData> sensorField = new ComboBoxExt();
-   protected Button setValueBtn = new Button("select");
+   protected SelectAndDeleteButtonWidget setValueBtn = new SelectAndDeleteButtonWidget();
    
    private boolean edit = false;
    
@@ -155,9 +157,11 @@ public class SliderWindow extends FormWindow {
       sensorField.setStore(sensorStore);
       sensorField.addSelectionChangedListener(new SensorSelectChangeListener());
 
+      setValueBtn.setButtonWidth(185);
+      setValueBtn.setButtonTextLengthBeforeTruncation(28);
       if (edit) {
          nameField.setValue(sliderDTO.getName());
-         setValueBtn.setText(sliderDTO.getCommandName());
+         setValueBtn.setText((sliderDTO.getCommandName() != null)?sliderDTO.getCommandName():"Select");
       }
 
       AdapterField switchOnAdapter = new AdapterField(setValueBtn);
@@ -176,6 +180,7 @@ public class SliderWindow extends FormWindow {
       form.addButton(resetButton);
       
       setValueBtn.addSelectionListener(new CommandSelectListener());
+      setValueBtn.addDeleteListener(new CommandDeleteListener());
       
       form.addListener(Events.BeforeSubmit, new SliderSubmitListener());      
       add(form);
@@ -188,11 +193,7 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        if (sliderDTO.getCommand() == null) {
-          MessageBox.alert("Slider", "A slider must have a command defined to set its value", null);
-          submitBtn.enable();
-          return;
-        }
+        // MODELER-342: It's not mandatory that the slider has a command, this is the way a passive slider is configured.
         if (sliderDTO.getSensor() == null) {
           MessageBox.alert("Slider", "A slider must have a sensor defined to read its value", null);
           submitBtn.enable();
@@ -234,17 +235,25 @@ public class SliderWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          final DeviceCommandSelectWindow selectCommandWindow = new DeviceCommandSelectWindow(device.getOid());
-         final Button command = ce.getButton();
          selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel dataModel = be.<BeanModel> getData();
                DeviceCommandDTO dc = dataModel.getBean();
-               command.setText(dc.getDisplayName());
+               setValueBtn.setText(dc.getDisplayName());
                sliderDTO.setCommand(new DTOReference(dc.getOid()));
                sliderDTO.setCommandName(dc.getDisplayName());
             }
          });
+      }
+   }
+   
+   class CommandDeleteListener extends SelectionListener<ButtonEvent> {
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+        sliderDTO.setCommand(null);
+        sliderDTO.setCommandName("");
+        setValueBtn.setText("Select");
       }
    }
    
