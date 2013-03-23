@@ -63,7 +63,7 @@ Bug Fixes:
     before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
   - Fix issues with installing Controller to a file system location that contained
     white spaces in path names - commonly 'Program Files' on Windows environments
-    (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286)
+    (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286, ORCJAVA-311)
   - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
 
 
