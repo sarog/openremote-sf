@@ -4,6 +4,8 @@ Controller Pro 1.0.8
 New Features:
 
   - Marantz AVR protocol improvements (ORCJAVA-310)
+  - Create protocol support for Vera (ORCJAVA-300)
+
 Bug Fixes:
 
   - openremote.sh script must write correct pid to file if CATALINA_PID is specified (ORCJAVA-311)
