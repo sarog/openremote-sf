@@ -52,4 +52,8 @@ public class ImageSelectAdapterField extends AdapterField {
    public void removeImageText() {
       setText("Select");
    }
+   
+   public void setDeleteButtonEnabled(boolean enabled) {
+     ((SelectAndDeleteButtonWidget)this.widget).setDeleteButtonEnabled(enabled);
+   }
 }
