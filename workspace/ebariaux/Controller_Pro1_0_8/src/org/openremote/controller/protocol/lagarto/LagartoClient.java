@@ -48,16 +48,17 @@ public class LagartoClient extends Thread
   private Map<String, LagartoNetwork> networkMap = new HashMap<String, LagartoNetwork>();
 
   /**
-   * ZeroMQ subscribing address
+   * ZeroMQ subscribing address. Connect to local lagarto-max process
    */
-  private String broadcastAddr = "tcp://127.0.0.1:5001";
+  private String broadcastAddr = "tcp://127.0.0.1:5002";
 
   /**
    * Class constructor
    */
   public LagartoClient()
   {
-    broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
+    // FIXME: Currently unable to get the new broadcast address from Designer
+    //broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
   }
 
   /**
