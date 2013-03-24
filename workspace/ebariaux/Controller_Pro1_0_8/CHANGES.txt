@@ -9,6 +9,7 @@ New Features:
 Bug Fixes:
 
   - openremote.sh script must write correct pid to file if CATALINA_PID is specified (ORCJAVA-311)
+  - Change controller to connect to local lagarto-max through port 5002 (ORCJAVA-321)
 
 Controller Pro 1.0.7
 ====================
