@@ -153,8 +153,9 @@ public class ConfigurationFileImporter {
     importControllerConfiguration();
     
     // UI
-    
-    state.restore(false);
+
+    state.restore(false, // Don't restore from Beehive, we provided the file to use
+                  false); // Don't refresh DTOs from DB, they're not persisted yet
 
     PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
     
