@@ -437,7 +437,7 @@ public class ResourceServiceImpl implements ResourceService
       LocalFileCache cache = createLocalFileCache(currentUser);
     	
       DesignerState state = createDesignerState(currentUser, cache);
-      state.restore(true);
+      state.restore(true, true);
 
       PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
 

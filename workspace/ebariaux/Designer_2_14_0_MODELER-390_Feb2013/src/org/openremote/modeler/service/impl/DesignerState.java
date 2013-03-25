@@ -390,6 +390,8 @@ class DesignerState
    * documentation.  <p>
    *
    * @param updateLocalCache indicates local cache should be updated from Beehive before restore
+   * @param refreshDTOReferences indicates if DTOs linked to from UI elements should be refreshed from database.
+   *          This only applies if restoring the configuration from the new XML format.
    *
    * @throws NetworkException
    *            If any errors occur with the network connection when updating the cache
@@ -399,7 +401,7 @@ class DesignerState
    *            provides a {@link NetworkException.Severity severity level} which can be used
    *            to indicate the likelyhood that the network error can be recovered from.
    */
-  protected void restore(boolean updateLocalCache) throws NetworkException
+  protected void restore(boolean updateLocalCache, boolean refreshDTOReferences) throws NetworkException
   {
 
     // collect some performance stats...
@@ -460,20 +462,22 @@ class DesignerState
         // TODO, should we delete legacy file if it exists ?
         // Otherwise we'll just have outdated legacy files laying around
 
-        try {
-          // The UI state does store full definition (e.g. including names) of the modeler elements it references         
-          // The current UI does not properly update those linked DTOs, it only updates properly the database.
-          // See MODELER-322
-          // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
-          refreshLinkedDTOReferences(panels);
-        } catch (Throwable t) {
-          // This exception type and message will propagate to the user...
-
-          throw new UIRestoreException(
-              "Restoring your account data has failed. Please contact an administrator for " +
-              "assistance. Avoid making further changes to your account and design to prevent " +
-              "any potential data corruption issues: " + t.getMessage(), t
-          );
+        if (refreshDTOReferences) {
+          try {
+            // The UI state does store full definition (e.g. including names) of the modeler elements it references         
+            // The current UI does not properly update those linked DTOs, it only updates properly the database.
+            // See MODELER-322
+            // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
+            refreshLinkedDTOReferences(panels);
+          } catch (Throwable t) {
+            // This exception type and message will propagate to the user...
+  
+            throw new UIRestoreException(
+                "Restoring your account data has failed. Please contact an administrator for " +
+                "assistance. Avoid making further changes to your account and design to prevent " +
+                "any potential data corruption issues: " + t.getMessage(), t
+            );
+          }
         }
 
         return;
