@@ -63,6 +63,7 @@ import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.shared.dto.DTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
@@ -98,6 +99,7 @@ public class ConfigurationFileImporter {
   final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
   final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
   final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+  final Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
 
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
@@ -285,7 +287,6 @@ public class ConfigurationFileImporter {
     // Ids kept are the ones of newly saved domain objects.
     Collection<Long> processedMacroIds = new ArrayList<Long>();
     
-    Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
     if (macros != null) {
       while (!macros.isEmpty()) {
         Collection<MacroDetailsDTO> processedMacrosThisTime = new ArrayList<MacroDetailsDTO>();
@@ -389,8 +390,15 @@ public class ConfigurationFileImporter {
         if (commandDTO == null) {
           return;
         }
+
         if (commandDTO.getOid() != null) {
-          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+          if (commandDTO instanceof DeviceCommandDTO) {
+            commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+          } else if (commandDTO instanceof MacroDTO) {
+            commandDTO.setOid(macrosOldOidToNewOid.get(commandDTO.getOid()));
+          } else {
+            throw new RuntimeException("We don't expect any other type of UICommandDTO"); // TODO : review that exception type
+          }
         }
       }
     });
