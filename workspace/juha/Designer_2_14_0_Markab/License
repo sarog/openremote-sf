@@ -709,6 +709,8 @@ OpenRemote Designer Sub-components:
 * GWT 2.04 library is licensed under Apache License, v2.0
 * GWT Dispatch 1.2.0 library is licensed under BSD-like license which is
   included below.
+* GwtCacheControlFilter class in package org.codehaus.groovy.grails.plugins.gwt
+  is licensed under Apache License, v2.0
 * Guice 3.0 framework and dependent libraries aopalliance.jar and
   javax.inject.jar are licensed under Apache License, v2.0
 * Hibernate Core 3.2.2, Hibernate Common Annotations 3.0.0 and
