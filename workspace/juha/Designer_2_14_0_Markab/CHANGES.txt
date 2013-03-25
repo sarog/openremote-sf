@@ -33,9 +33,10 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  Internal:
 
+  - Dev Mode target in GWT build (MODELER-344)
   - Upgrade to GXT3:
      * Image Asset Picker converted (Eric Bariaux, MODELER-330)
-
+  
 
 Designer 2.13.8 (2013-03-13 Rosemary)
 =====================================
