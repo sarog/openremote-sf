@@ -41,4 +41,7 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openremote.modeler.client.Modeler'/>
+  
+  @_BROWSER_LIMIT_@
+
 </module>
