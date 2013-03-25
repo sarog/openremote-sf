@@ -107,9 +107,9 @@ public class ImportZipWindow extends FormWindow {
     * Creates the buttons.
     */
    private void createButtons() {
-      Button importBtn = new Button("import");
+      Button importBtn = new Button("Import");
       importBtn.ensureDebugId(DebugId.IMPORT_WINDOW_UPLOAD_BTN);
-      Button cancelBtn = new Button("cancel");
+      Button cancelBtn = new Button("Cancel");
       cancelBtn.ensureDebugId(DebugId.IMPORT_WINDOW_CANCEL_BTN);
 
       importBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -120,7 +120,7 @@ public class ImportZipWindow extends FormWindow {
                box.setButtons(MessageBox.YESNO);
                box.setIcon(MessageBox.QUESTION);
                box.setTitle("Import");
-               box.setMessage("The activities tree will be rebuilt. Are you sure you want to import?");
+               box.setMessage("Your current configuration will be deleted. Are you sure you want to import?");
                box.addCallback(new Listener<MessageBoxEvent>() {
                    public void handleEvent(MessageBoxEvent be) {
                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
