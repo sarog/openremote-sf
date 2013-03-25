@@ -140,26 +140,63 @@
 			<fileset dir="${config.dir}" includes="**/**"/>
 			<fileset dir="protocols" includes="**/**"/>
 			<fileset dir="touchpanels" includes="**/**"/>
-
-      <filterchain><expandproperties/></filterchain>
+      			<filterchain><expandproperties/></filterchain>
 		</copy>
 	</target>
+
+	<!-- ==================================================================== -->
+	<!-- Define if task                                                       -->
+	<!-- ==================================================================== -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="project.class.path" />
 
 	<!-- ==================================================================== -->
 	<!-- Run GWT Compile                                                      -->
 	<!-- ==================================================================== -->
 	<target name="compile" depends="javac" description="GWT compile to JavaScript">
-		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
-			<classpath>
-				<pathelement location="${src.dir}"/>
-				<path refid="project.class.path"/>
-			</classpath>
-			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
-			<jvmarg value="-Xmx512M"/>
-			<jvmarg value="-Xss64m"/>
-			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
-			<arg value="org.openremote.modeler.Modeler"/>
-		</java>
+
+		<condition property="token_browser_limit" value="&lt;set-property name=&quot;user.agent&quot; value=&quot;safari&quot;/&gt; &lt;set-property name=&quot;gxt.user.agent&quot; value=&quot;safari3,safari4,safari5,chrome,air&quot;/&gt;" else="">
+			<isset property="devmode" />
+		</condition>
+
+		<copy file="config/Modeler.gwt.xml" todir="src/org/openremote/modeler" overwrite="true">
+			<filterset>
+				<filter token="_BROWSER_LIMIT_" value="${token_browser_limit}"/>
+			</filterset>
+		</copy>
+		<if>
+			<isset property="devmode"/>
+			<then>
+				<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+					<classpath>
+						<pathelement location="${src.dir}"/>
+						<path refid="project.class.path"/>
+					</classpath>
+					<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+					<jvmarg value="-Xmx512M"/>
+					<jvmarg value="-Xss64m"/>
+					<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+					<arg value="-localWorkers"/>
+					<arg value="2"/>
+					<arg value="org.openremote.modeler.Modeler"/>
+					<arg value="-draftCompile"/>
+				</java>
+			</then>
+			<else>
+				<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+					<classpath>
+						<pathelement location="${src.dir}"/>
+						<path refid="project.class.path"/>
+					</classpath>
+					<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+					<jvmarg value="-Xmx512M"/>
+					<jvmarg value="-Xss64m"/>
+					<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+					<arg value="-localWorkers"/>
+					<arg value="2"/>
+					<arg value="org.openremote.modeler.Modeler"/>
+				</java>
+			</else>
+		</if>
 	</target>
 
 	<!-- ==================================================================== -->
