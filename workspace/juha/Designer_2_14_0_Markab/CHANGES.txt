@@ -21,6 +21,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - MODELER-346: regexp validation for IP fields in TCP
      and Telnet protocols were wrong. Validations have
      been disabled.
+   - MODELER-348: Prevent caching of GWT Javascript files
+     on client browser to avoid Javascript conflicts when
+     upgrading to a newer Designer version
    - Fixes to image asset manager (Eric Bariaux, related 
      to MODELER-292)
    - MODELER-302: List of widgets does not scroll anymore
