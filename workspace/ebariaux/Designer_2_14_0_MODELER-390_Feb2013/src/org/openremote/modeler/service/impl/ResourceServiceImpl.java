@@ -53,6 +53,7 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.ScreenPair;
@@ -105,7 +106,9 @@ public class ResourceServiceImpl implements ResourceService
   private DeviceCommandService deviceCommandService;
   private DeviceMacroService deviceMacroService;
   private DeviceService deviceService;
-  
+
+  private GenericDAO genericDAO;
+
   private SensorService sensorService;
   private SliderService sliderService;
   private SwitchService switchService;
@@ -188,6 +191,7 @@ public class ResourceServiceImpl implements ResourceService
     importer.setControllerConfigService(controllerConfigService);
     importer.setDeviceMacroService(deviceMacroService);
     importer.setDeviceService(deviceService);
+    importer.setGenericDAO(genericDAO);
     
     return importer.importConfiguration();
   }
@@ -747,4 +751,8 @@ public class ResourceServiceImpl implements ResourceService
     return state;
   }
   
+  public void setGenericDAO(GenericDAO genericDAO) {
+     this.genericDAO = genericDAO;
+  }
+
 }
