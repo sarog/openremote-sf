@@ -164,8 +164,10 @@ public class DevicePanel extends ContentPanel {
      eventBus.addHandler(DevicesCreatedEvent.TYPE, new DevicesCreatedEventHandler() {
       @Override
       public void onDevicesCreated(DevicesCreatedEvent event) {
-        List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
-        tree.getStore().add(bms, true);
+        if (tree.isRendered()) {
+          List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
+          tree.getStore().add(bms, true);
+        }
       } 
      });
      eventBus.addHandler(DevicesDeletedEvent.TYPE, new DevicesDeletedEventHandler() {
