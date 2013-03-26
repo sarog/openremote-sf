@@ -145,9 +145,9 @@
 					<state name="off"/>
 				#elseif(${sensor.getType().toString().equals("custom")})
 					#foreach($state in $sensor.getStates())
-						<state name="${stringUtils.escapeXml($state.getName())}" 
+						<state name="${state.getName()}" 
 						#if($state.getValue())
-						   value="${stringUtils.escapeXml($state.getValue())}" 
+						   value="${state.getValue()}" 
 						#end
 						/>
 					#end
@@ -170,9 +170,9 @@
 					<state name="off"/>
 				#elseif(${sensor.getType().toString().equals("custom")})
 					#foreach($state in $sensor.getStates())
-						<state name="${stringUtils.escapeXml($state.getName())}" 
+						<state name="${state.getName()}" 
 						#if($state.getValue())
-						   value="${stringUtils.escapeXml($state.getValue())}" 
+						   value="${state.getValue()}" 
 						#end
 						/>
 					#end
@@ -189,9 +189,9 @@
     		<command id="${uiButtonEvent.getId()}" protocol="${protocalTagName}" >
     		#set($protocoAttrKeySet=${uiButtonEvent.getProtocolAttrs().keySet()})
     		#foreach($property in $protocoAttrKeySet)
-    			<property name="${property}" value="$!{stringUtils.escapeXml($uiButtonEvent.getProtocolAttrs().get(${property}))}" />
+    			<property name="${property}" value="$!{uiButtonEvent.getProtocolAttrs().get(${property})}" />
     		#end
-    			<property name="name" value="${stringUtils.escapeXml($uiButtonEvent.getLabel())}" />
+    			<property name="name" value="${uiButtonEvent.getLabel()}" />
     		</command>
     	#end
     #end
