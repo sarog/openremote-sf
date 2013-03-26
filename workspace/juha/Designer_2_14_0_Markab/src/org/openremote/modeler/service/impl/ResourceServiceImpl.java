@@ -27,6 +27,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,8 +53,10 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.VelocityException;
+import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.app.event.implement.EscapeXmlReference;
 import org.hibernate.ObjectNotFoundException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
@@ -125,12 +128,10 @@ import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
-import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -655,17 +656,15 @@ public class ResourceServiceImpl implements ResourceService
       Set<Screen> screens = new LinkedHashSet<Screen>();
       initGroupsAndScreens(panels, groups, screens);
 
+      Map<String, Object> context = new HashMap<String, Object>();
+      context.put("panels", panels);
+      context.put("groups", groups);
+      context.put("screens", screens);
       try {
-         Map<String, Object> context = new HashMap<String, Object>();
-         context.put("panels", panels);
-         context.put("groups", groups);
-         context.put("screens", screens);
-         context.put("stringUtils", StringUtils.class);
-         return VelocityEngineUtils.mergeTemplateIntoString(velocity, PANEL_XML_TEMPLATE, context);
-      } catch (VelocityException e) {
+        return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
+      } catch (Exception e) {
          throw new XmlExportException("Failed to read panel.xml", e);
       }
-
    }
 
    public VelocityEngine getVelocity() {
@@ -764,9 +763,12 @@ public class ResourceServiceImpl implements ResourceService
       context.put("colorPickers", colorPickers);
       context.put("maxId", maxId);
       context.put("configs", configs);
-      context.put("stringUtils", StringUtils.class);
-
-      return VelocityEngineUtils.mergeTemplateIntoString(velocity, CONTROLLER_XML_TEMPLATE, context);
+      
+      try {
+        return mergeXMLTemplateIntoString(CONTROLLER_XML_TEMPLATE, context);
+      } catch (Exception e) {
+        throw new XmlExportException("Failed to read panel.xml", e);
+      }
    }
 
   //
@@ -1750,4 +1752,40 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
+  /**
+   * Executes merge on template, performing appropriate XML escaping and returns result as String.
+   * 
+   * This is basically a simplified copy of the code from VelocityEngineUtils class of Spring framework,
+   * but is required to have access to the context before doing the merge.
+   * This allows using an EscapeXmlReference subclass to do proper escaping for XML output.
+   * The subclass modifies to standard XML escaping to ensure the XML output of our
+   * getPanelXml() methods on the UI model don't get escaped. 
+   * 
+   * @see https://github.com/SpringSource/spring-framework/blob/master/spring-context-support/src/main/java/org/springframework/ui/velocity/VelocityEngineUtils.java
+   * 
+   * @param templateLocation
+   * @param model
+   * @return
+   * @throws Exception 
+   */
+  public String mergeXMLTemplateIntoString(String templateLocation, Map model) throws Exception {
+    StringWriter result = new StringWriter();
+    VelocityContext velocityContext = new VelocityContext(model);
+    EventCartridge ec = new EventCartridge();
+    ec.addEventHandler(new EscapeXmlReference() {
+      @Override
+      public Object referenceInsert(String reference, Object value) {
+        int lastDot = reference.lastIndexOf(".");
+        if (lastDot != -1) {
+          if (".getPanelXml()}".equals(reference.substring(lastDot))) {
+            return value;
+          }
+        }
+        return super.referenceInsert(reference, value);
+      }
+    });
+    ec.attachToContext(velocityContext);
+    velocity.mergeTemplate(templateLocation, "UTF8", velocityContext, result);
+    return result.toString();
+  }
 }

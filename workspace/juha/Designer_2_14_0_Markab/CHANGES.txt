@@ -22,6 +22,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - MODELER-346: regexp validation for IP fields in TCP
      and Telnet protocols were wrong. Validations have
      been disabled.
+   - MODELER-360: Encoding of restricted characters in XML
+     is now done properly for user entered names for 
+     commands, switches, sensors, etc.
    - MODELER-348: Prevent caching of GWT Javascript files
      on client browser to avoid Javascript conflicts when
      upgrading to a newer Designer version
