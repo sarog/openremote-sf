@@ -1,3 +1,10 @@
+MODELER-360
+===========
+
+ - MODELER-360: Command, Sensor, Switch names are
+   not correctly encoded/decoded
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
