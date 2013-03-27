@@ -45,6 +45,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
+import org.openremote.modeler.client.widget.uidesigner.ImportConfigurationWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -426,6 +427,7 @@ public class ApplicationView implements View {
 
       @Override
       public void componentSelected(ButtonEvent ce) {
+        
         final ImportZipWindow importWindow = new ImportZipWindow();
         importWindow.addListener(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEventListener() {
           
@@ -447,6 +449,11 @@ public class ApplicationView implements View {
              importWindow.hide();
            }
         });
+        
+        /*
+        ImportConfigurationWindow importWindow = new ImportConfigurationWindow();
+        importWindow.center();
+        */
       }
      });
       return importButton;
