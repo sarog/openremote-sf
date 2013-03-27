@@ -1,3 +1,10 @@
+
+MODELER-391
+===========
+
+- Add Domintell connection configuration
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
