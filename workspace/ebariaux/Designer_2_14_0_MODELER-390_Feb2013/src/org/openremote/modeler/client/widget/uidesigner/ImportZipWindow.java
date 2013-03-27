@@ -75,7 +75,8 @@ public class ImportZipWindow extends FormWindow {
     * @param heading the heading
     */
    private void initial(String heading) {
-      setSize(360, 140);
+      setSize(360, 160);
+      setAutoHeight(true);
       setHeading(heading);
       setLayout(new FlowLayout());
       createFields();
