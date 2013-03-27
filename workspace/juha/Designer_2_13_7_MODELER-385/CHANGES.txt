@@ -1,3 +1,8 @@
+Designer MODELER-385
+====================
+
+- Double scrollbar on widget selection
+
 Designer MODELER-302
 ====================
 
