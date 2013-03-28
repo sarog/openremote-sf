@@ -23,8 +23,10 @@ package org.openremote.modeler.client.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.BusinessEntity;
@@ -334,7 +336,9 @@ public class BeanModelTable {
     * Clear table.
     */
    public void clear() {
-      for (long key : map.keySet()) {
+     // Deleting entries from the map during iteration -> must iterate on copy of keys set or will cause ConcurrentModificationException
+     Set<Long> keysToDelete = new HashSet<Long>(map.keySet());    
+      for (long key : keysToDelete) {
          delete(map.get(key));
       }
       changeListeners.clear();
