@@ -1,12 +1,15 @@
 package org.openremote.modeler.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -53,22 +56,46 @@ public class ControllerConfigServiceTest {
    @Test
    public void update(){
       String addStr = "...updated";
-      Set<ControllerConfig> cfgs = configService.listAllConfigsByCategory("advance");
-      Assert.assertTrue(cfgs.size()>0);
-      for(ControllerConfig cfg : cfgs){
+      Set<ControllerConfigDTO> configDTOs = configService.listAllConfigDTOsByCategory("advance");
+      Assert.assertTrue(configDTOs.size()>0);
+      for(ControllerConfigDTO cfg : configDTOs){
          if(cfg.getOptions().equals("")&&(addStr+cfg.getValue()).matches(cfg.getValidation())){
             cfg.setValue(cfg.getValue()+addStr);
          }
       }
       
-      configService.saveAll(cfgs);
+      configService.saveAllDTOs(configDTOs);
       
-      Collection<ControllerConfig> cfgs2 = configService.listAllConfigsByCategory("advance");
-      Assert.assertTrue(cfgs2.size()>0);
-      for(ControllerConfig cfg : cfgs2){
+      Collection<ControllerConfigDTO> configDTOs2 = configService.listAllConfigDTOsByCategory("advance");
+      Assert.assertTrue(configDTOs2.size()>0);
+      for(ControllerConfigDTO cfg : configDTOs2){
          if(cfg.getValue().endsWith(addStr)){
             Assert.assertTrue(cfg.getValue().substring(0,cfg.getValue().indexOf(addStr)-1).matches(cfg.getValidation()));
          }
       }
+   }
+   
+   @Test
+   public void testMissingConfigByCategoryName() {
+     String testCategoryName = "advance";
+     List<String> valueNames = new ArrayList<String>();
+     
+     // Collect all config names for given category
+     for (ControllerConfig config : configs) {
+       if (config.getCategory().equals(testCategoryName)) {
+         valueNames.add(config.getName());
+       }
+     }
+     
+     Set<ControllerConfigDTO> existingConfigs = configService.listAllConfigDTOsByCategory(testCategoryName);
+     Set<ControllerConfigDTO> missingConfigs = configService.listMissedConfigDTOsByCategoryName(testCategoryName);
+     
+     Assert.assertEquals(missingConfigs.size() + existingConfigs.size(), valueNames.size(), "Total of missing and existing config entries should be equal to total number of possible entries.");
+     for (ControllerConfigDTO dto : existingConfigs) {
+       Assert.assertTrue(valueNames.contains(dto.getName()), "Invalid name for an existing config entry");
+     }
+     for (ControllerConfigDTO dto : missingConfigs) {
+       Assert.assertTrue(valueNames.contains(dto.getName()), "Invalid name for a missing config entry");
+     }
    }
 }

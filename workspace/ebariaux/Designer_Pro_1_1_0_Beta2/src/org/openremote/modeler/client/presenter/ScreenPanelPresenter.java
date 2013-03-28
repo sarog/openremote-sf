@@ -45,6 +45,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 import com.google.gwt.event.shared.EventBus;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
 
@@ -73,6 +74,11 @@ public class ScreenPanelPresenter implements Presenter, ScreenPanel.Presenter {
     eventBus.addHandler(ScreenTableLoadedEvent.TYPE, new ScreenTableLoadedEventHandler() {
       @Override
       public void onScreenTableLoaded(ScreenTableLoadedEvent event) {
+        
+        Info.display("TRACE", "Listener insert");
+        
+        // TODO: might want to check if listener is already there as this is now executed multiple time because of import
+        
         BeanModelDataBase.screenTable.setInsertListener(Constants.SCREEN_TABLE_OID, new ChangeListener() {
           public void modelChanged(ChangeEvent event) {
             if (event.getType() == BeanModelTable.ADD) {

@@ -62,7 +62,7 @@ public class CreateRussoundDeviceActionHandler implements ActionHandler<CreateRu
     
     ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
     for (Device dev : createRussoundDevices(action.getDeviceName(), action.getModel(), action.getControllerCount())) {
-      dtos.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
+      dtos.add(dev.getDeviceDTO());
     }
     result.setDevices(dtos);
     return result;

@@ -74,20 +74,27 @@ public class ProtocolParserTest {
       ProtocolValidator regex = new ProtocolValidator(ProtocolValidator.REGEX_TYPE, "(\\d\\.){3}\\d",
             "group address should be 1.4.1.4");
       groupAddressAttr.getValidators().add(allowBlank);
-      groupAddressAttr.getValidators().add(regex);
       definition.getAttrs().add(groupAddressAttr);
 
       ProtocolAttrDefinition commandAttr = new ProtocolAttrDefinition();
       commandAttr.setName("command");
       commandAttr.setLabel("KNX Command");
-      commandAttr.setTooltipMessage("KNX Group Address");
       ProtocolValidator allowBlank2 = new ProtocolValidator(ProtocolValidator.ALLOW_BLANK_TYPE, "false", null);
-      ProtocolValidator maxLength2 = new ProtocolValidator(ProtocolValidator.MAX_LENGTH_TYPE, "10", null);
-      ProtocolValidator regex2 = new ProtocolValidator(ProtocolValidator.REGEX_TYPE, "\\w*", null);
+      ProtocolValidator maxLength2 = new ProtocolValidator(ProtocolValidator.MAX_LENGTH_TYPE, "20", null);
+      ProtocolValidator regex2 = new ProtocolValidator(ProtocolValidator.REGEX_TYPE, ".*\\w+.*", "Command is necessary. ");
       commandAttr.getValidators().add(allowBlank2);
       commandAttr.getValidators().add(maxLength2);
       commandAttr.getValidators().add(regex2);
       definition.getAttrs().add(commandAttr);
+      
+      ProtocolAttrDefinition dptAttr = new ProtocolAttrDefinition();
+      dptAttr.setName("DPT");
+      dptAttr.setLabel("KNX DataPoint Type (DPT)");
+      ProtocolValidator allowBlank3 = new ProtocolValidator(ProtocolValidator.ALLOW_BLANK_TYPE, "false", null);
+      ProtocolValidator maxLength3 = new ProtocolValidator(ProtocolValidator.MAX_LENGTH_TYPE, "8", null);
+      dptAttr.getValidators().add(allowBlank3);
+      dptAttr.getValidators().add(maxLength3);
+      definition.getAttrs().add(dptAttr);
 
       return definition;
    }

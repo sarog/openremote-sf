@@ -25,6 +25,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
+
 
 /**
  * The Class DeviceMacroRef.
@@ -84,5 +88,9 @@ public class DeviceMacroRef extends DeviceMacroItem {
    public String getDisplayName() {
       return getTargetDeviceMacro().getName() + " (Macro)";
    }
-   
+
+   @Transient
+   public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     return new MacroItemDetailsDTO(getOid(), MacroItemType.Macro, getTargetDeviceMacro().getDisplayName(), new DTOReference(getTargetDeviceMacro().getOid()));
+   }
 }

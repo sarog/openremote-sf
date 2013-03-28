@@ -67,6 +67,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return config;
    }
    
+   @Override
    @Transactional
    public Set<ControllerConfig> saveAll(Set<ControllerConfig> configs) {
       Set<ControllerConfig> cfgs = new LinkedHashSet<ControllerConfig>();
@@ -87,9 +88,9 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    }
 
    @Override
-   public Set<ControllerConfig> listAllConfigsByCategory(String categoryName) {
+   public Set<ControllerConfigDTO> listAllConfigDTOsByCategory(String categoryName) {
       Account account = userService.getAccount();
-      return this.listAllConfigsByCategoryNameForAccount(categoryName, account);
+      return createDTOsFromBeans(this.listAllConfigsByCategoryNameForAccount(categoryName, account));
    }
 
    @SuppressWarnings("unchecked")
@@ -101,6 +102,11 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       configSet.addAll(configs);
       initializeConfigs(configSet);
       return configSet;
+   }
+   
+   @Override
+   public Set<ControllerConfigDTO> listAllConfigDTOs() {
+     return createDTOsFromBeans(listAllConfigs());
    }
 
    @Override
@@ -116,21 +122,31 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       return categories;
    }
+   
    @Override
-   public Set<ControllerConfig> listMissedConfigsByCategoryName(String categoryName) {
+   public Set<ControllerConfigDTO> listMissedConfigDTOsByCategoryName(String categoryName) {
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
+
+      // First collect name of config entries already existing for this category
+      Set<ControllerConfigDTO> existingConfigurations = this.listAllConfigDTOsByCategory(categoryName);
+      Set<String> existingConfigEntryNames = new HashSet<String>();
+      for (ControllerConfigDTO configDTO : existingConfigurations) {
+        if (configDTO.getCategory().equals(categoryName)) {
+          existingConfigEntryNames.add(configDTO.getName());
+        }
+      }
       
-      Set<ControllerConfig> unMissedConfigs = this.listAllConfigsByCategory(categoryName);
-      Set<ControllerConfig> missedConfigs = new HashSet<ControllerConfig> ();
+      Set<ControllerConfigDTO> missedConfigs = new HashSet<ControllerConfigDTO> ();
       for (ControllerConfig cfg : allDefaultConfigs) {
-         if (cfg.getCategory().equals(categoryName) && !unMissedConfigs.contains(cfg)) {
-            missedConfigs.add(cfg);
-         }
+        if (cfg.getCategory().equals(categoryName) && !existingConfigEntryNames.contains(cfg.getName())) {
+          missedConfigs.add(cfg.getControllerConfigDTO());
+        }
       }
       return missedConfigs;
    }
+   
    @Override
    public Set<ControllerConfig> listAllMissingConfigs() {
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
@@ -147,6 +163,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return missedConfigs;
    }
    
+   @Override
    public Set<ControllerConfig> listAllexpiredConfigs() {
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(new HashSet<ConfigCategory>(), allDefaultConfigs);
@@ -160,9 +177,11 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       
       return expiredConfigs;
    }
+   
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+   
    private static void initializeConfigs(Set<ControllerConfig> configs){
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
@@ -181,9 +200,9 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       }
    }
    
-   
+   @Override
    @Transactional
-   public Set<ControllerConfig> saveAllDTOs(HashSet<ControllerConfigDTO> configDTOs) {
+   public Set<ControllerConfigDTO> saveAllDTOs(Set<ControllerConfigDTO> configDTOs) {
      Set<ControllerConfig> configs = new HashSet<ControllerConfig>();
      for (ControllerConfigDTO dto : configDTOs) {
        ControllerConfig config;
@@ -200,7 +219,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
        configs.add(config);
      }
      initializeConfigs(configs);
-     return configs;
+     return createDTOsFromBeans(configs);
    }
 
   private void updateControllerConfigWithDTO(ControllerConfig config, ControllerConfigDTO dto) {
@@ -211,5 +230,22 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
     config.setValidation(dto.getValidation());
     config.setOptions(dto.getOptions());
   }
-   
+
+  private HashSet<ControllerConfigDTO> createDTOsFromBeans(Set<ControllerConfig> configs) {
+     HashSet<ControllerConfigDTO> dtos = new HashSet<ControllerConfigDTO>();
+     for (ControllerConfig cc : configs) {
+       dtos.add(cc.getControllerConfigDTO());
+     }
+     return dtos;
+   }
+
+  @Override
+  @Transactional
+  public void deleteAllConfigs() {
+    Set<ControllerConfig> configs = listAllConfigs();
+    for (ControllerConfig config : configs) {
+      genericDAO.delete(config);
+    }
+  }
+  
 }
