@@ -33,6 +33,7 @@ import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
@@ -263,6 +264,47 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
         }
       }
      return macroItemBeans;
+   }
+
+   @Override
+   @Transactional
+   public void deleteAll(Account account) throws ConfigurationException {
+
+     // Macros can reference other macros, macros referencing others must be deleted first
+     List<DeviceMacro> allMacros = loadAll(account);
+
+     // So start by building a dependencies list
+     // On each iteration, collect macros that do not depend on others
+     // or only on the ones that have already been collected.
+     // Store those lists in a "last processed" ordered collection.
+     List<List<DeviceMacro>> orderedDeviceMacros = new ArrayList<List<DeviceMacro>>();
+     List<DeviceMacro> processedMacros = new ArrayList<DeviceMacro>();
+     while (!allMacros.isEmpty()) {
+       List<DeviceMacro> processedMacrosThisTime = new ArrayList<DeviceMacro>();
+       
+       for (DeviceMacro dm : allMacros) {
+         if (!dm.dependsOnMacrosNotInList(processedMacros)) {
+           processedMacrosThisTime.add(dm);
+         }
+       }
+       
+       if (processedMacrosThisTime.isEmpty()) {
+         throw new ConfigurationException("There is a cyclic dependency between macros in the current configuration");
+       }
+       
+       orderedDeviceMacros.add(0, processedMacrosThisTime);
+       processedMacros.addAll(processedMacrosThisTime);
+       allMacros.removeAll(processedMacrosThisTime);
+     }
+
+     // Collected macros can now be processed, first list is one that has "most dependencies"
+     for (List<DeviceMacro> macrosToDelete : orderedDeviceMacros) {
+       for (DeviceMacro dm : macrosToDelete) {
+         deleteDeviceMacro(dm.getOid());
+       }
+     }
+
+     account.getDeviceMacros().clear();
    }
    
 }
