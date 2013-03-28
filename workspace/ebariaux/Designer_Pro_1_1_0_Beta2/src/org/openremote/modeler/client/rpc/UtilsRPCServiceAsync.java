@@ -82,8 +82,6 @@ public interface UtilsRPCServiceAsync {
    
    void restore(AsyncCallback<PanelsAndMaxOid> panels);
    
-   void canRestore(AsyncCallback<Boolean> canRestore);
-   
    void rotateImage(UISlider uiSlider,AsyncCallback<UISlider> callback);
    
    void getAccountPath(AsyncCallback<String> callback);

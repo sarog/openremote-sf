@@ -637,5 +637,21 @@ public class UIDesignerPresenter implements Presenter, UIDesignerToolbar.Present
       }
     }    
   }
-  
+
+  /**
+   * Refreshes the tree displaying panels, groups and screens.
+   */
+  public void refreshPanelDisplay() {
+    if (profilePanelPresenter != null) {
+      profilePanelPresenter.refreshPanelDisplay();
+    }
+  }
+
+  /**
+   * Completely clears the tree displaying panels, groups and screens so it's empty.
+   */
+  public void clearPanelTree() {
+    profilePanelPresenter.clearPanelTree();
+  }
+
 }

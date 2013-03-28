@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,6 +32,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 
 
 /**
@@ -214,4 +218,34 @@ public class DeviceCommand extends BusinessEntity {
      }
      return proto;
    }
+
+   @Transient
+   public DeviceCommandDTO getDeviceCommandDTO() {
+     return new DeviceCommandDTO(getOid(), getDisplayName(), getFullyQualifiedName(), getProtocol().getType());
+   }
+
+   @Transient
+   public DeviceCommandDetailsDTO getDeviceCommandDetailsDTO() {
+     DeviceCommandDetailsDTO dto = new DeviceCommandDetailsDTO(getOid(), getName(), getProtocol().getType());
+     HashMap<String, String> attributes = new HashMap<String, String>();
+     for (ProtocolAttr attr : getProtocol().getAttributes()) {
+       attributes.put(attr.getName(), attr.getValue());
+     }
+     dto.setProtocolAttributes(attributes);
+     return dto;
+   }
+   
+   public static DeviceCommand createDeviceCommandFromDTO(DeviceCommandDetailsDTO dto) {
+     DeviceCommand dc = new DeviceCommand();     
+     dc.setName(dto.getName());
+     Protocol protocol = new Protocol();
+     protocol.setDeviceCommand(dc);
+     dc.setProtocol(protocol);
+     protocol.setType(dto.getProtocolType());
+     for (Map.Entry<String, String> e : dto.getProtocolAttributes().entrySet()) {
+       protocol.addProtocolAttribute(e.getKey(), e.getValue());
+     }
+     return dc;
+   }
+
 }

@@ -47,7 +47,7 @@ public interface ControllerConfigService {
     * @param categoryName
     * @return
     */
-   Set<ControllerConfig> listMissedConfigsByCategoryName(String categoryName);
+   Set<ControllerConfigDTO> listMissedConfigDTOsByCategoryName(String categoryName);
    
    /**
     * This method is used to get all missing controller configurations 
@@ -64,7 +64,7 @@ public interface ControllerConfigService {
    
    Set<ControllerConfig> listAllexpiredConfigs();
    
-   Set<ControllerConfig> listAllConfigsByCategory(String categoryName);
+   Set<ControllerConfigDTO> listAllConfigDTOsByCategory(String categoryName);
    
    Set<ControllerConfig> listAllConfigs();
    
@@ -73,6 +73,10 @@ public interface ControllerConfigService {
    Set<ConfigCategory> listAllCategory();
    
 
-   Set<ControllerConfig> saveAllDTOs(HashSet<ControllerConfigDTO> configDTOs);
+   Set<ControllerConfigDTO> saveAllDTOs(Set<ControllerConfigDTO> configDTOs);
+
+   void deleteAllConfigs();
+
+   Set<ControllerConfigDTO> listAllConfigDTOs();
 
 }

@@ -42,10 +42,6 @@ import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 public class SliderController extends BaseGWTSpringController implements SliderRPCService {
 
   private SliderService sliderService;
-  private SensorService sensorService;
-  private DeviceCommandService deviceCommandService;
-
-  private UserService userService;
 
   @Override
   public void delete(long id) {
@@ -56,52 +52,14 @@ public class SliderController extends BaseGWTSpringController implements SliderR
     this.sliderService = switchService;
   }
 
-  public void setUserService(UserService userService) {
-    this.userService = userService;
-  }
-
-  public void setSensorService(SensorService sensorService) {
-    this.sensorService = sensorService;
-  }
-
-  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-    this.deviceCommandService = deviceCommandService;
-  }
-
   @Override
   public SliderDetailsDTO loadSliderDetails(long id) {
-    SliderDetailsDTO sliderDetailsDTO = null;
-    Slider slider = sliderService.loadById(id);
-    if (slider.getSetValueCmd() != null) {
-      DeviceCommand command = slider.getSetValueCmd().getDeviceCommand();
-      sliderDetailsDTO = new SliderDetailsDTO(slider.getOid(), slider.getName(), new DTOReference(slider.getSliderSensorRef().getSensor().getOid()), new DTOReference(command.getOid()), command.getDisplayName());
-    } else {
-      sliderDetailsDTO = new SliderDetailsDTO(slider.getOid(), slider.getName(), new DTOReference(slider.getSliderSensorRef().getSensor().getOid()), null, null);
-    }
-    return sliderDetailsDTO;
+	  return sliderService.loadSliderDetailsDTO(id);
   }
 
   @Override
   public ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO() {
-    ArrayList<SliderWithInfoDTO> dtos = new ArrayList<SliderWithInfoDTO>();
-    for (Slider slider : sliderService.loadAll()) {
-      dtos.add(createSliderWithInfoDTO(slider));
-    }
-    return dtos;
-  }
-
-  public static SliderWithInfoDTO createSliderWithInfoDTO(Slider slider) {
-    return new SliderWithInfoDTO(slider.getOid(), slider.getDisplayName(), (slider.getSetValueCmd() != null) ? slider.getSetValueCmd().getDisplayName() : null, (slider.getSliderSensorRef() != null) ? slider.getSliderSensorRef().getDisplayName() : null,
-            slider.getDevice().getDisplayName());
-  }
-
-  public static SliderDTO createSliderDTO(Slider slider) {
-    SliderDTO sliderDTO = new SliderDTO(slider.getOid(), slider.getDisplayName());
-    if (slider.getSetValueCmd() != null) {
-      DeviceCommand dc = slider.getSetValueCmd().getDeviceCommand();
-      sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()));
-    }
-    return sliderDTO;
+    return new ArrayList<SliderWithInfoDTO>(sliderService.loadAllSliderWithInfosDTO());
   }
 
   @Override
@@ -109,17 +67,9 @@ public class SliderController extends BaseGWTSpringController implements SliderR
     sliderService.updateSliderWithDTO(sliderDTO);
   }
 
+  @Override
   public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
-    Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
-    DeviceCommand command = null;
-    if (sliderDTO.getCommand() != null) {
-      command = deviceCommandService.loadById(sliderDTO.getCommand().getId());
-    }
-
-    Slider slider = new Slider(sliderDTO.getName(), command, sensor);
-    slider.setAccount(userService.getAccount());
-
-    sliderService.save(slider);
+    sliderService.saveNewSlider(sliderDTO, deviceId);
   }
 
 }
