@@ -40,6 +40,7 @@ import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -63,6 +64,7 @@ import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.shared.dto.DTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
@@ -91,14 +93,22 @@ public class ConfigurationFileImporter {
   private DeviceService deviceService;
   private ControllerConfigService controllerConfigService;
 
+  private GenericDAO genericDAO;
+
   // Private information collected and used during the import process
   private Map<String, Object> buildingModelerConfiguration;
   
-  final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-  final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-  final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-  final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+  final private Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
+  final private Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
+  final private Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
+  final private Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
+  final private Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
+  
+  private List <DeviceDTO> importedDeviceDTOs;
+  private List <MacroDTO> importedMacroDTOs;
 
+  private PanelsAndMaxOid panels;
+  
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
@@ -127,6 +137,43 @@ public class ConfigurationFileImporter {
       throw new IllegalStateException("ConfigurationFileImporter can not be re-used for other import");
     }
 
+    try {
+      importCore();
+      
+      // Once core functionality is done, ensure DB operations are executed
+      // so any potential errors are raised before we return to caller.
+      genericDAO.flush();
+      
+      // We can now persist panels to Beehive, no turning back
+      state.save(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
+    } catch (ConfigurationException e) {
+      // Any error happened during the import, we restore previous design from Beehive
+      state.restore(true, true);
+      throw e;
+    } catch (NetworkException e) {
+      state.restore(true, true);
+      throw e;
+    } catch (CacheOperationException e) {
+      state.restore(true, true);
+      throw e;
+    } catch (RuntimeException e) {
+      state.restore(true, true);
+      throw e;
+    }
+    
+    Map<String, Collection<? extends DTO>> result = new HashMap<String, Collection<? extends DTO>>();
+    result.put("devices", importedDeviceDTOs);
+    result.put("macros", importedMacroDTOs);
+    
+    return result;
+  }
+
+  /**
+   * Core functionality of the import.
+   * It has been isolated in this one method so any error can be caught
+   * and a proper restore initiated.
+   */
+  private void importCore() throws ConfigurationException, NetworkException, CacheOperationException {
     // No need to clean any of the resources stored in the cache (UI, images, rules...).
     // The whole cache is deleted later before being replaced with the uploaded file.
     
@@ -144,31 +191,27 @@ public class ConfigurationFileImporter {
     
     buildingModelerConfiguration = readBuildingModelerConfigurationFile();
     
-    List <DeviceDTO> importedDeviceDTOs = importDevices();
+    importedDeviceDTOs = importDevices();
 
-    List <MacroDTO> importedMacroDTOs = importMacros();
+    importedMacroDTOs = importMacros();
 
     importControllerConfiguration();
     
     // UI
-    
-    state.restore(false);
 
-    PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+    state.restore(false, // Don't restore from Beehive, we provided the file to use
+                  false); // Don't refresh DTOs from DB, they're not persisted yet
+
+    panels = state.transformToPanelsAndMaxOid();
     
     fixPanelsDTOReferences(panels.getPanels());
     
     // All images still references original account, update their source to use this account
     fixImageSourcesForAccount(panels.getPanels());
 
-    Set<Panel> panelSet = new HashSet<Panel>(panels.getPanels());
-    cache.replace(panelSet, panels.getMaxOid());
-    state.save(panelSet, panels.getMaxOid());
-
-    Map<String, Collection<? extends DTO>> result = new HashMap<String, Collection<? extends DTO>>();
-    result.put("devices", importedDeviceDTOs);
-    result.put("macros", importedMacroDTOs);
-    return result;
+    // Although this operation will be done again when save the cache to Beehive
+    // it's done here first so potential errors happen in coreImport and can be caught.
+    cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
   }
   
   private void deleteBuildingModelerConfiguration() throws ConfigurationException {
@@ -285,7 +328,6 @@ public class ConfigurationFileImporter {
     // Ids kept are the ones of newly saved domain objects.
     Collection<Long> processedMacroIds = new ArrayList<Long>();
     
-    Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
     if (macros != null) {
       while (!macros.isEmpty()) {
         Collection<MacroDetailsDTO> processedMacrosThisTime = new ArrayList<MacroDetailsDTO>();
@@ -389,8 +431,15 @@ public class ConfigurationFileImporter {
         if (commandDTO == null) {
           return;
         }
+
         if (commandDTO.getOid() != null) {
-          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+          if (commandDTO instanceof DeviceCommandDTO) {
+            commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
+          } else if (commandDTO instanceof MacroDTO) {
+            commandDTO.setOid(macrosOldOidToNewOid.get(commandDTO.getOid()));
+          } else {
+            throw new RuntimeException("We don't expect any other type of UICommandDTO"); // TODO : review that exception type
+          }
         }
       }
     });
@@ -420,6 +469,10 @@ public class ConfigurationFileImporter {
 
   public void setControllerConfigService(ControllerConfigService controllerConfigService) {
     this.controllerConfigService = controllerConfigService;
+  }
+
+  public void setGenericDAO(GenericDAO genericDAO) {
+     this.genericDAO = genericDAO;
   }
 
 }

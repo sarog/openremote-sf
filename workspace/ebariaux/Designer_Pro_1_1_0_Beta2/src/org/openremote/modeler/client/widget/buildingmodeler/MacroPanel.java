@@ -143,8 +143,10 @@ public class MacroPanel extends ContentPanel {
         if (macroTree == null) {
           return;
         }
-        List<BeanModel> bms = DTOHelper.createModels(event.getMacros());
-        macroTree.getStore().add(bms, true);
+        if (macroTree.isRendered()) {
+          List<BeanModel> bms = DTOHelper.createModels(event.getMacros());
+          macroTree.getStore().add(bms, true);
+        }
       } 
      });
 
