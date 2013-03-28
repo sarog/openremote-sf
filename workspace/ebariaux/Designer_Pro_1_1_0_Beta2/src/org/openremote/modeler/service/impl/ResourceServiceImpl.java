@@ -21,25 +21,18 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -60,27 +53,14 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
-import org.openremote.modeler.domain.Account;
-import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.ScreenPair;
-import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.Slider;
-import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.domain.component.ColorPicker;
-import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
-import org.openremote.modeler.domain.component.SensorLinkOwner;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
-import org.openremote.modeler.domain.component.UISlider;
-import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.FileOperationException;
@@ -99,28 +79,11 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
-import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.shared.dto.DTO;
-import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
-import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
-import org.openremote.modeler.shared.dto.MacroDTO;
-import org.openremote.modeler.shared.dto.MacroDetailsDTO;
-import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
-import org.openremote.modeler.shared.dto.MacroItemType;
-import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
-import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
-import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
-import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ZipUtils;
 import org.springframework.transaction.annotation.Transactional;
-
-import sun.security.provider.ConfigSpiFile;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * TODO : this class is a total garbage bin -- everything and the kitchen sink is thrown in. Blah.
@@ -214,279 +177,20 @@ public class ResourceServiceImpl implements ResourceService
 	  return temporaryFile;
   }
 
-  private void deleteBuildingModelerConfiguration(Account account) throws ConfigurationException {
-    // Remove macros first, as they might reference commands
-    deviceMacroService.deleteAll(account);
-
-    // Then devices, no dependencies between them   
-    List<Device> allDevices = deviceService.loadAll(account);
-    for (Device d : allDevices) {
-      deviceService.deleteDevice(d.getOid());
-    }
-    account.getSwitches().clear();
-    account.getSliders().clear();
-    account.getSensors().clear();
-    account.getDevices().clear();
-    
-    // Remove configuration
-    controllerConfigService.deleteAllConfigs();
-  }
-  
   @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
 	  // Store the upload zip file locally before processing
 	  File importFile = storeAsLocalTemporaryFile(inputStream);
-	 
-    // No need to clean any of the resources stored in the cache (UI, images, rules...).
-	  // The whole cache is deleted later before being replaced with the uploaded file.
-
-    final Account account = userService.getAccount();
-    
-    // Remove all building modeler information
-    deleteBuildingModelerConfiguration(account);
-
-    // TODO: check database to verify objects are indeed deleted
-
+	  
     LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
-    cache.replace(importFile);
-
-    if (!cache.getBuildingModelerXmlFile().exists()) {
-      throw new ConfigurationException("Invalid import file: no building modeler data");
-    }
-    if (!cache.hasXMLUIState()) {
-      throw new ConfigurationException("Invalid import file: no UI data");
-    }
-    
-    List <DeviceDTO> importedDeviceDTOs = new ArrayList<DeviceDTO>();
-
-    XStream xstream = new XStream(new StaxDriver());
-    
-    Map<String, Object> map = null;
-    InputStreamReader isr = null;
-    try {
-      // Going through a StreamReader to enforce UTF-8 encoding
-      isr = new InputStreamReader(new FileInputStream(cache.getBuildingModelerXmlFile()), "UTF-8");
-      map = (Map<String, Object>) xstream.fromXML(isr);
-    } catch (UnsupportedEncodingException e) {
-      throw new ConfigurationException("Issue reading file " + cache.getBuildingModelerXmlFile() + " in UTF-8 : " + e.getMessage(), e);
-    } catch (FileNotFoundException e) {
-      throw new ConfigurationException("File " + cache.getBuildingModelerXmlFile() +
-          " can not be found, or was not a proper file : " + e.getMessage(), e);
-    } finally {
-      if (isr != null) {
-        try {
-          isr.close();
-        } catch (IOException e) {
-          serviceLog.warn("Failed to close reader to " + cache.getBuildingModelerXmlFile() + " : " + e.getMessage(), e);
-        }
-      }
-    }
-    Collection<DeviceDetailsWithChildrenDTO> devices = (Collection<DeviceDetailsWithChildrenDTO>)map.get("devices");
-    
-    List<Device> importedDevices = new ArrayList<Device>();
-    
-    Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
-    
-    // DTOs restored have oid but we don't care, they're not taken into account when saving new devices
-    for (DeviceDetailsWithChildrenDTO dev : devices) {
-
-      // The archived graph has DTOReferences with id, as it originally came from objects in DB.
-      // Must iterate all DTOReferences, replacing ids with dto.
-      // While doing this, also collect all mappings from id to commands DTO
-      commandsPerId.putAll(dev.replaceIdWithDTOInReferences());
-
-      // TODO EBR review : original MODELER-390 line was
-      // importedDevices.add(deviceService.saveNewDeviceWithChildren(userService.getAccount(), dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-
-      importedDevices.add(deviceService.saveNewDeviceWithChildren(dev, dev.getDeviceCommands(), dev.getSensors(), dev.getSwitches(), dev.getSliders()));
-    }
-    
-    final Map<Long, Long> devicesOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> commandsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> sensorsOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> switchesOldOidToNewOid = new HashMap<Long, Long>();
-    final Map<Long, Long> slidersOldOidToNewOid = new HashMap<Long, Long>();
-    
-    // Domain objects have been created and saved with a new id
-    // During this process, old id has been saved as transient info
-    // Create lookup map from originalId to new one
-    for (Device dev : importedDevices) {
-      devicesOldOidToNewOid.put((Long)dev.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dev.getOid());
-      
-      for (DeviceCommand dc : dev.getDeviceCommands()) {
-        commandsOldOidToNewOid.put((Long)dc.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), dc.getOid());
-      }
-      for (Sensor s : dev.getSensors()) {
-        sensorsOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Switch s : dev.getSwitchs()) {
-        switchesOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      for (Slider s : dev.getSliders()) {
-        slidersOldOidToNewOid.put((Long)s.retrieveTransient(DeviceService.ORIGINAL_OID_KEY), s.getOid());
-      }
-      
-      importedDeviceDTOs.add(new DeviceDTO(dev.getOid(), dev.getDisplayName()));
-    }
-    
-    // Macros
-    
-    List <MacroDTO> importedMacroDTOs = new ArrayList<MacroDTO>();
-    Collection<MacroDetailsDTO> macros = (Collection<MacroDetailsDTO>)map.get("macros");
-    
-    // Iterate over commands referenced in macros to adapt id to one of newly saved domain objects
-    for (MacroDetailsDTO m : macros) {
-      for (MacroItemDetailsDTO item : m.getItems()) {
-        if (item.getType() == MacroItemType.Command) {
-          item.getDto().setId(commandsOldOidToNewOid.get(item.getDto().getId()));
-        }
-      }
-    }
-    
-    // Macros can reference other macros.
-    // As for commands above, id in references need to be adapted so to use one of newly saved domain object.
-    // This means macros should be processed in appropriate order, dependent macros before referencing ones.
-    // Circular dependencies (m1 -> m2 and m2 -> m1) should not be allowed,
-    // but if this is detected, it's considered an error and import is aborted.
-    
-    // Keep a list of macro ids that have already been processed.
-    // On each iteration, macros that only reference those (or no other macro) are safe to process.
-    // Ids kept are the ones of newly saved domain objects.
-    Collection<Long> processedMacroIds = new ArrayList<Long>();
-    
-    Map<Long, Long> macrosOldOidToNewOid = new HashMap<Long, Long>();
-    if (macros != null) {
-      while (!macros.isEmpty()) {
-        Collection<MacroDetailsDTO> processedMacrosThisTime = new ArrayList<MacroDetailsDTO>();
-        
-        for (MacroDetailsDTO m : macros) {
-          // Macros not depending on any macro or only on ones already processed can be saved
-          if (!m.dependsOnMacroNotInList(processedMacroIds)) {
-            MacroDTO newMacro = deviceMacroService.saveNewMacro(m);
-            macrosOldOidToNewOid.put(m.getOid(), newMacro.getOid());
-            processedMacrosThisTime.add(m);
-            importedMacroDTOs.add(newMacro);
-          }
-        }
-        
-        if (processedMacrosThisTime.isEmpty()) {
-          // No macro could be processed -> there is a cyclic dependency
-          throw new ConfigurationException("There is a cyclic dependency between macros in the imported configuration");
-        }
-        
-        macros.removeAll(processedMacrosThisTime);
-        
-        // Keep track of macros that have been processed so far
-        for (MacroDetailsDTO item : processedMacrosThisTime) {
-          processedMacroIds.add(macrosOldOidToNewOid.get(item.getOid()));
-        }
-        
-        // Now that dependencies have been saved, ensure referencing macros are using new id
-        for (MacroDetailsDTO m : macros) {
-          for (MacroItemDetailsDTO item : m.getItems()) {
-            if (item.getType() == MacroItemType.Macro) {
-              if (macrosOldOidToNewOid.get(item.getDto().getId()) != null) {
-                item.getDto().setId(macrosOldOidToNewOid.get(item.getDto().getId()));
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Controller configuration
-    
-    Set<ControllerConfigDTO> configDTOs = (Set<ControllerConfigDTO>)map.get("configuration");
-    if (configDTOs != null) {
-      // Must reset oid before saving, or it'll update the "old" config elements (or crash if not found or random configs)!
-      for (ControllerConfigDTO configDTO : configDTOs) {
-        configDTO.setOid(null);
-      }
-      controllerConfigService.saveAllDTOs(configDTOs);
-    }
-
-    // UI
-    
     DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
-    state.restore(false);
 
-    PanelsAndMaxOid panels = state.transformToPanelsAndMaxOid();
+    ConfigurationFileImporter importer = new ConfigurationFileImporter(userService.getAccount(), cache, state, importFile);
+    importer.setControllerConfigService(controllerConfigService);
+    importer.setDeviceMacroService(deviceMacroService);
+    importer.setDeviceService(deviceService);
     
-    // All DTOs in the just imported object graph have ids of building elements from the original DB.
-    // Walk the graph and change ids to the newly saved domain objects.
-    Panel.walkAllUIComponents(panels.getPanels(), new UIComponentOperation() {
-
-  	  @Override
-      public void execute(UIComponent component) {
-  	    if (component instanceof SensorLinkOwner) {
-    			SensorLinkOwner owner = ((SensorLinkOwner) component);
-    			if (owner.getSensorLink() != null) {
-    				SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
-    				if (sensorDTO.getOid() != null) {
-    					sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
-    				}
-    			}
-  	    }
-  	    if (component instanceof UISlider) {
-  	      UISlider uiSlider = (UISlider)component;
-  	      if (uiSlider.getSliderDTO() != null) {
-  	      	SliderWithInfoDTO sliderDTO = uiSlider.getSliderDTO();
-  	      	if (sliderDTO.getOid() != null) {
-  	      		sliderDTO.setOid(slidersOldOidToNewOid.get(sliderDTO.getOid()));
-  	      	}
-  	      }
-  	    }
-  	    if (component instanceof UISwitch) {
-  	      UISwitch uiSwitch = (UISwitch)component;
-  	      if (uiSwitch.getSwitchDTO() != null) {
-  	      	SwitchWithInfoDTO switchDTO = uiSwitch.getSwitchDTO();
-  	      	if (switchDTO.getOid() != null) {
-  	      		switchDTO.setOid(switchesOldOidToNewOid.get(switchDTO.getOid()));
-  	      	}
-  	      }
-  	    }
-  	    if (component instanceof UIButton) {
-  	    	replaceOldOidWithNew(((UIButton)component).getUiCommandDTO());
-  	    }
-  	    if (component instanceof ColorPicker) {
-  	    	replaceOldOidWithNew(((ColorPicker)component).getUiCommandDTO());
-  	    }
-  	    if (component instanceof Gesture) {
-  	    	replaceOldOidWithNew(((Gesture)component).getUiCommandDTO());
-  	    }
-      }
-
-      private void replaceOldOidWithNew(UICommandDTO commandDTO) {
-  	    if (commandDTO == null) {
-  		    return;
-    	  }
-        if (commandDTO.getOid() != null) {
-          commandDTO.setOid(commandsOldOidToNewOid.get(commandDTO.getOid()));
-        }
-      }
-    });
-    
-    // All images still references original account, update their source to use this account
-    for (Panel panel : panels.getPanels()) {
-  	  panel.fixImageSource(new Panel.ImageSourceResolver() {
-    		Pattern p = Pattern.compile(PathConfig.RESOURCEFOLDER + "/(\\d+)/(.*)");
-      		  
-    		@Override
-    		public String resolveImageSource(String source) {
-    			Matcher m = p.matcher(source);
-    			return (m.matches())?PathConfig.RESOURCEFOLDER + "/" + account.getOid() + "/" + m.group(2):source;
-    		}
-  	  });
-    }
-    
-    cache.replace(new HashSet<Panel>(panels.getPanels()), panels.getMaxOid());
-    saveResourcesToBeehive(panels.getPanels(), panels.getMaxOid());
-
-    Map<String, Collection<? extends DTO>> result = new HashMap<String, Collection<? extends DTO>>();
-    result.put("devices", importedDeviceDTOs);
-    result.put("macros", importedMacroDTOs);
-    return result;
+    return importer.importConfiguration();
   }
-
 
   /**
    * TODO
