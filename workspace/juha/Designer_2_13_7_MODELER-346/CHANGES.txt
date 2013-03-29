@@ -1,3 +1,10 @@
+MODELER-346
+===========
+
+- Remove incorrect regexp validation for IP addresses
+  in TCP and Telnet protocols
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
