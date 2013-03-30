@@ -22,7 +22,7 @@
   ##-----------------------------------------------------------------panels---------------------------------------------------------------------------
   <panels>
   #foreach ($panel in $panels)
-  	<panel id="${panel.getOid()}" name="${stringUtils.escapeXml($panel.getName())}">
+  	<panel id="${panel.getOid()}" name="${panel.getName()}">
   		##<-------tabbar---------->##
 		#if($panel.getTabbar())
 	  		#getTabbarXML($panel.getTabbar())
@@ -43,7 +43,7 @@
   ##-----------------------------------------------------------------screens---------------------------------------------------------------------------
   <screens>
   	#foreach($screen in $screens)
-  		<screen id="${screen.getOid()}" name="${stringUtils.escapeXml($screen.getName())}"
+  		<screen id="${screen.getOid()}" name="${screen.getName()}"
   		#if($screen.isLandscape())
   		  landscape="true"
   		#end
@@ -92,7 +92,7 @@
   ##-----------------------------------------------------------------groups---------------------------------------------------------------------------
   	<groups>
   		#foreach($group in $groups)
-  			<group id="${group.getOid()}" name="${stringUtils.escapeXml($group.getName())}">
+  			<group id="${group.getOid()}" name="${group.getName()}">
   				##<-------tabbar---------->##
 				#if($group.getTabbar())
 					#getTabbarXML($group.getTabbar())
