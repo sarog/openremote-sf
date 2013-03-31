@@ -17,15 +17,6 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  Fixes:
 
-   - MODELER-346: regexp validation for IP fields in TCP
-     and Telnet protocols were wrong. Validations have
-     been disabled (Juha Lindfors)
-   - MODELER-360: Encoding of restricted characters in XML
-     is now done properly for user entered names for 
-     commands, switches, sensors, etc. (Eric Bariaux)
-   - MODELER-348: Prevent caching of GWT Javascript files
-     on client browser to avoid Javascript conflicts when
-     upgrading to a newer Designer version (Eric Bariaux)
    - Fixes to image asset manager (Eric Bariaux, related 
      to MODELER-292)
    - MODELER-302, MODELER-385: List of widgets does not 
@@ -41,10 +32,30 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  Internal:
 
-  - Dev Mode target in GWT build (Eric Bariaux, MODELER-344)
   - Upgrade to GXT3:
      * Image Asset Picker converted (Eric Bariaux, MODELER-330)
   
+
+Designer 2.13.9 (2013-03-30 Rosemary)
+=====================================
+
+Bug fix release:
+
+  - MODELER-346: regexp validation for IP fields in TCP
+    and Telnet protocols were wrong. Validations have
+    been disabled (Juha Lindfors)
+  - MODELER-348: Prevent caching of GWT Javascript files
+    on client browser to avoid Javascript conflicts when
+    upgrading to a newer Designer version (Eric Bariaux)
+  - MODELER-360: Encoding of restricted characters in XML
+    is now done properly for user entered names for 
+    commands, switches, sensors, etc. (Eric Bariaux)
+
+
+Internal:
+
+  - Dev Mode target in GWT build (Eric Bariaux, MODELER-344)
+
 
 Designer 2.13.8 (2013-03-13 Rosemary)
 =====================================
