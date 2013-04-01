@@ -1,3 +1,10 @@
+Designer MODELER-396
+====================
+
+ - org.springframework.orm.hibernate3.HibernateSystemException
+   when saving UI design (depends on MODELER-389)
+
+
 Designer MODELER-389
 ====================
 
