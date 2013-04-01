@@ -32,8 +32,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  Internal:
 
-  - Upgrade to GXT3:
-     * Image Asset Picker converted (Eric Bariaux, MODELER-330)
+  - Image Asset Picker converted to GXT3 (Eric Bariaux, MODELER-330)
+  - Hibernate lazy initialization errors on device attributes
+    (Eric Bariaux, MODELER-389)
   
 
 Designer 2.13.9 (2013-03-30 Rosemary)
