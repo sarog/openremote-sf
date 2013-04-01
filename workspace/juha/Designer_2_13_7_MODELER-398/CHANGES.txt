@@ -1,3 +1,9 @@
+Designer MODELER-248
+====================
+
+ - Add web view widget
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
