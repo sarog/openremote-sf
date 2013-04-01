@@ -892,11 +892,41 @@ public class ResourceServiceImpl implements ResourceService
        dbSensors.removeAll(duplicateDBSensors);
       // PATCH R3181 END --->8-------
 
+       // MODELER-396
+       
+       // Validate there are no duplicate ids
+       Set<Long> ids = new HashSet<Long>();
+       
+       // First in sensors from UI
+       for (Sensor s : sensorWithoutDuplicate) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != sensorWithoutDuplicate.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       // Then in sensors from DB
+       ids.clear();
+       for (Sensor s : dbSensors) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != dbSensors.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       
+       // Then combined
+       for (Sensor s : sensorWithoutDuplicate) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != sensorWithoutDuplicate.size() + dbSensors.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       
+       // MODELER-396 end
 
       /*
        * reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
        */
-
+       /* MODELER-396
       for (Sensor sensor : sensorWithoutDuplicate) {
          long currentSensorId = maxId.maxId();
          Collection<Sensor> sensorsWithSameOid = new ArrayList<Sensor>();
@@ -910,6 +940,7 @@ public class ResourceServiceImpl implements ResourceService
             s.setOid(currentSensorId);
          }
       }
+      */
       return sensorWithoutDuplicate;
    }
 
