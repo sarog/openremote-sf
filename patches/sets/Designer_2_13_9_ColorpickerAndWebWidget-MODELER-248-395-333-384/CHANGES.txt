@@ -1,9 +1,3 @@
-igner MODELER-398
-====================
-
- - Setting a sensor on a Web element does not work
-
-
 Designer MODELER-384
 ====================
 
