@@ -39,6 +39,8 @@ import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
 
 import flexjson.JSONDeserializer;
 
@@ -101,9 +103,9 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
 
   
   private Object restCallToIRService(String url, JSONDeserializer<GenericResourceResultWithErrorMessage> deserializer) throws IRServiceException {
-    User currentUser = userService.getCurrentUser();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     ClientResource cr = new ClientResource(url);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, authentication.getName(), authentication.getCredentials());
     Representation r = cr.get();
     
     String str;
