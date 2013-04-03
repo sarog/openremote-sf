@@ -40,7 +40,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.KnxGroupAddress;
-import org.openremote.modeler.domain.User;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
@@ -52,6 +51,8 @@ import org.openremote.modeler.utils.KnxImporter;
 import org.openremote.modeler.utils.MultipartFileUtil;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -158,8 +159,9 @@ public class FileUploadController extends MultiActionController implements BeanF
       HttpClient client = new HttpClient();
       
       client.getParams().setAuthenticationPreemptive(true);
-      User user = userService.getCurrentUser();
-      Credentials defaultCredentials = new UsernamePasswordCredentials(user.getUsername(), user.getPassword());
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      Object credentials = authentication.getCredentials();
+      Credentials defaultCredentials = new UsernamePasswordCredentials(authentication.getName(), (credentials != null)?credentials.toString():"");
 
       URL url = new URL(configuration.getIrServiceRESTRootUrl());
       client.getState().setCredentials(new AuthScope(url.getHost(), url.getPort(), AuthScope.ANY_REALM), defaultCredentials);

@@ -23,8 +23,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -44,14 +44,11 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
     GenerateIRCommandsResult actionResult = new GenerateIRCommandsResult();
     
-    ClientResource resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");    
+    ClientResource resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");
     
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    UserDetails userDetails = null;
-    if (principal instanceof UserDetails) {
-      userDetails = (UserDetails) principal;
-      resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userDetails.getUsername(), userDetails.getPassword());
-    }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Object credentials = authentication.getCredentials();
+    resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, authentication.getName(), (credentials != null)?credentials.toString():"");
 
     Representation r = resource.post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
     
