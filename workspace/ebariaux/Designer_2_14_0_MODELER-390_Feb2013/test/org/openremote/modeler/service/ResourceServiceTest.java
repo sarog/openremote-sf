@@ -19,12 +19,17 @@
 */
 package org.openremote.modeler.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.SpringTestContext;
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
@@ -73,23 +78,46 @@ import org.testng.annotations.Test;
 public class ResourceServiceTest {
    
    private static final Logger log = Logger.getLogger(ResourceServiceTest.class);
+   
    private Configuration configuration;
    private ResourceService resourceService;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
    private UserService userService;
+   
+   private DeviceService deviceService;
+   private ControllerConfigService controllerConfigService;
+   private VelocityEngine velocity;
+   
+   private LocalFileCache cache;
+   
    @BeforeClass
    public void setUp() {
+	      PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
+
       resourceService = (ResourceService)SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
+      
+      deviceService = (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
+      controllerConfigService = (ControllerConfigService) SpringTestContext.getInstance().getBean("controllerConfigService");
+      velocity = (VelocityEngine) SpringTestContext.getInstance().getBean("velocity");
+      
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
       userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "ResourceServiceTest");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("ResourceServiceTest", "ResourceServiceTest"));
-      /*------------xml validation-------------*/
+      
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
       
-      PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
+	  cache = new LocalFileCache(configuration, userService.getCurrentUser());
+	  cache.setDeviceService(deviceService);
+	  cache.setDeviceMacroService(deviceMacroService);
+	  cache.setDeviceCommandService(deviceCommandService);
+	  cache.setControllerConfigService(controllerConfigService);
+	  cache.setVelocity(velocity);
+	 
+	  // Make sure required folder structure exists
+	  cache.getPanelXmlFile().getParentFile().mkdirs();
    }
    
    @Test
@@ -102,7 +130,7 @@ public class ResourceServiceTest {
    public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef>();
-      List<Panel> panels = new ArrayList<Panel>();
+      Set<Panel> panels = new HashSet<Panel>();
       
       /*---------------widget-------------------*/
       UIButton absBtn = new UIButton();            //UIButton
@@ -226,7 +254,14 @@ public class ResourceServiceTest {
       
       panels.add(panel1);
       panels.add(panel2);
+      
 // EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
+      
+      // Must be called within a transaction
+      cache.replace(panels, IDUtil.nextID());
+      
+      System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
+      System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
    }
 
    @Test
