@@ -31,7 +31,6 @@ import org.openremote.ir.domain.DeviceInfo;
 import org.openremote.ir.domain.IRCommandInfo;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.rpc.IRRPCService;
-import org.openremote.modeler.domain.User;
 import org.openremote.modeler.server.BaseGWTSpringController;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.ir.IRServiceException;
@@ -103,9 +102,11 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
 
   
   private Object restCallToIRService(String url, JSONDeserializer<GenericResourceResultWithErrorMessage> deserializer) throws IRServiceException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();    
+    Object credentials = authentication.getCredentials();
+    
     ClientResource cr = new ClientResource(url);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, authentication.getName(), authentication.getCredentials());
+    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, authentication.getName(), (credentials != null)?credentials.toString():"");
     Representation r = cr.get();
     
     String str;
