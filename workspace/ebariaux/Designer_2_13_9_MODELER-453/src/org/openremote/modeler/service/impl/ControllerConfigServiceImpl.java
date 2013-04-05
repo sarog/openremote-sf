@@ -206,7 +206,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
   private void updateControllerConfigWithDTO(ControllerConfig config, ControllerConfigDTO dto) {
     config.setCategory(dto.getCategory());
     config.setName(dto.getName());
-    config.setValue(dto.getValue());
+    config.setValue((dto.getValue() != null)?dto.getValue():"");
     config.setHint(dto.getHint());
     config.setValidation(dto.getValidation());
     config.setOptions(dto.getOptions());
