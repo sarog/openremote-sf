@@ -1,3 +1,10 @@
+Controller ORCJAVA-261
+======================
+
+ - Range and Level Sensors do not parse value if there is 
+   leading/trailing spaces (Eric Bariaux)
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
