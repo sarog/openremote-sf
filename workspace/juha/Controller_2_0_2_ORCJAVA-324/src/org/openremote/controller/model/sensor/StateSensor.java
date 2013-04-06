@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -224,8 +224,14 @@ public class StateSensor extends Sensor
    *          {@link #setStrictStateMapping} is true and a state value is returned from the
    *          event producer that has not been declared as a distinct state for this sensor.
    */
-  @Override public Event processEvent(String value)
+  @Override public Event processEvent(String originalValue)
   {
+    // Trim the original value from all leading and ending characters including
+    // and below '\u0020' (the space character) -- zero bytes, tab characters, line feed characters,
+    // carriage returns, etc.
+
+    String value = originalValue.trim();
+
     if (!states.hasState(value))
     {
       if (isUnknownSensorValue(value))
@@ -239,8 +245,8 @@ public class StateSensor extends Sensor
 
         log.warn(
             "Event producer bound to sensor (ID = {0}) returned a value that is not " +
-            "consistent with sensor''s datatype : {1}  setting sensor value to ''{2}''",
-            super.getSensorID(), value, evt.getValue()
+            "consistent with sensor''s datatype : ''{1}''  setting sensor value to ''{2}''",
+            super.getSensorID(), originalValue, evt.getValue()
         );
 
         return new UnknownEvent(this);
