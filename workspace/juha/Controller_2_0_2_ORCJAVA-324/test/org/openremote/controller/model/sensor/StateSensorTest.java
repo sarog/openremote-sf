@@ -535,7 +535,7 @@ public class StateSensorTest
    */
   @Test public void testProcessEventValueTrimmingZeroByte_ORCJAVA_324() throws Exception
   {
-    final int SENSOR_ID = 324;
+    final int SENSOR_ID = 3241;
 
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("on");
