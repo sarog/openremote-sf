@@ -4,8 +4,8 @@ Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 
 New Features:
 
-  - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
-  - Lagarto server (panStamps) integration, Daniel Berenguer
+  - Added DSC-IT 100 Security System integration - IP to serial (Greg Rapp)
+  - Lagarto server (panStamps) integration (Daniel Berenguer)
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
   - KNX: added distinct levels for 'DIM' and 'SCALE' commands that allow
     set values to be configured for buttons, e.g. 'DIM 50' to dim directly
@@ -43,11 +43,11 @@ New Features:
     (Tomcat server logging) and /logs/container/appcontext.log (Controller
     web application logging) files, and output directed to standard output
     and error streams to /logs/container/stderrout.log -- catalina.out is
-    no longer created (ORCJAVA-273)
+    no longer created (Juha Lindfors, ORCJAVA-273)
   - Adjusted 'start' and 'run' targets of openremote.sh to configure default
     standard output console logging differently -- 'run' target will still
     output logs to console where as 'start' target will redirect all logging
-    to files (ORCJAVA-273)
+    to files (Juha Lindfors, ORCJAVA-273)
 
 
 Bug Fixes:
@@ -58,13 +58,16 @@ Bug Fixes:
   - Fix for JSON REST request return values (Richard Turner, ORCJAVA-254)
   - Rework logout requests and added CORS headers (Richard Turner, ORCJAVA-255)
   - Internal API : concurrency and call control on Deployer start 
-    controller calls (ORCJAVA-179)  
+    controller calls (Juha Lindfors, ORCJAVA-179)  
   - Range and Level sensors trim the incoming values from protocol implementation
     before attempting to convert values to numbers (Eric Bariaux, ORCJAVA-261)  
   - Fix issues with installing Controller to a file system location that contained
     white spaces in path names - commonly 'Program Files' on Windows environments
-    (ORCJAVA-280, ORCJAVA-263, ORCJAVA-286, ORCJAVA-311)
-  - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
+    (Juha Lindfors ORCJAVA-280, ORCJAVA-263, ORCJAVA-286, Eric Bariaux ORCJAVA-311)
+  - Fix a false warning in ISY-99 protocol implementation 
+    (Juha Lindfors, ORCJAVA-308)
+  - State sensor is more tolerant to device input trimming non-printable 
+    characters -- CF, RF, zero bytes, etc.  (Juha Lindfors, ORCJAVA-324) 
 
 
 Controller 2.0.2 (2013-02-26)
