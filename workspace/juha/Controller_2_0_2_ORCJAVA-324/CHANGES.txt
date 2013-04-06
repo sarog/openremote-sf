@@ -1,3 +1,9 @@
+Controller ORCJAVA-324
+======================
+
+ - Make state sensor more tolerant to device input
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
