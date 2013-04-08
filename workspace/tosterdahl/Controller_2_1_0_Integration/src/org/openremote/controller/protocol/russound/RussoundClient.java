@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.log4j.Level;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
 
@@ -41,7 +42,7 @@ import org.openremote.controller.utils.Logger;
  * @author marcus
  *
  */
-public class RussoundClient extends Thread {
+public class RussoundClient {
 
    // Constants ------------------------------------------------------------------------------------
    public final static int SOCKET_CONNECT_TIMEOUT = 3000;
@@ -57,7 +58,7 @@ public class RussoundClient extends Thread {
 
    // Constructors ----------------------------------------------------------------------------------
    public RussoundClient(String ipAddress, int port, String keypadId, String serialDevice, final int statusPollingInterval) throws Exception {
-      super("Russound Client");
+      
       this.keypadId = (byte) ((Character.digit(keypadId.charAt(0), 16) << 4) + Character.digit(keypadId.charAt(1), 16));
      
       if (serialDevice == null) {
@@ -74,7 +75,9 @@ public class RussoundClient extends Thread {
          os = serialPort.getOutputStream();
       }
       
-      this.start();
+      Thread responseThread = new Thread(new ResponseDispatcher());
+      responseThread.setName("Russound response thread");
+      responseThread.start();
 
       //If a statusPollingInterval is defined in config.properties an extra thread for polling is creazed
       if (statusPollingInterval > 0) {
@@ -93,39 +96,56 @@ public class RussoundClient extends Thread {
       }
    }
 
-   // Methods ------------------------------------------------------------------------------
-   @Override
-   public void run() {
-      int avail = 0;
+   class ResponseDispatcher implements Runnable {
+      
+      byte[] buffer = new byte[1024];
       int total = 0;
-      byte[] data = new byte[1024];
-      while (true) {
-         try {
-            avail = is.available();
-            if (avail == 0) {
-               try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-               continue;
-            }
-            int readCount = is.read(data, total, avail);
-            total += readCount;
+      
+      int parseData(int i) {
+         if (buffer[i] == (byte)0xf7) {
+            // End-flag received, do some work with the data
+            // Increment i since we need to include the end-byte
+            i++;
+            // Copy the message
+            byte[] message = Arrays.copyOf(buffer, i);
+            // Copy the buffer onto itself to remove the message
+            System.arraycopy(buffer, i, buffer, 0, total - i);
+            total = total - i;
+            
+            logger.info("Received Message (hex): " + byteArrayToHex(message));
+            
+            if ((message.length==34) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x04)) {  //zone-status
+               consumeStatus(message);
+            } else if ((message.length==24) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x05) && (message[13]==(byte)0x00)) {  //turn-on-volume
+               consumeTurnonVolumeStatus(message);
+            }                  
+         }
+         return i;
+      }
 
-            if (data[total-1] == (byte)0xf7) {  //end-flag received, do some work with the data
-               byte[] trimmedData = Arrays.copyOf(data, total);
-               if ((trimmedData.length==34) && (trimmedData[0]==(byte)0xF0) && (trimmedData[9]==(byte)0x04)) {  //zone-status
-                  consumeStatus(trimmedData);
-               } else if ((trimmedData.length==24) && (trimmedData[0]==(byte)0xF0) && (trimmedData[9]==(byte)0x05) && (trimmedData[13]==(byte)0x00)) {  //turn-on-volume
-                  consumeTurnonVolumeStatus(trimmedData);
+      @Override
+      public void run() {
+         int avail = 0;
+         while (true) {
+            try {
+               avail = is.available();
+               if (avail == 0) {
+                  try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+                  continue;
                }
-               data = new byte[1024];
-               total = 0;
+               int readCount = is.read(buffer, total, avail);
+               total += readCount;
+   
+               for (int i = 0; i < total; i++) {
+                  i = parseData(i);
+               }
+            } catch (Exception e) {
+               logger.error("Could not receive Russound data", e);
             }
-         } catch (IOException e) {
-            logger.error("Could not receive Russound data", e);
-            e.printStackTrace();
          }
       }
    }
-
+      
    private void consumeTurnonVolumeStatus(byte[] data) {
       String msg = String.format("Received Russound data: Controller:%1$02X Zone:%2$02X TurnOnVolume:%3$02X", data[4]+1, data[12]+1, data[21]);
       logger.debug(msg);
@@ -194,6 +214,13 @@ public class RussoundClient extends Thread {
       return data;
    }
   
+   private String byteArrayToHex(byte[] a) {
+      StringBuilder sb = new StringBuilder();
+      for(byte b: a)
+         sb.append(String.format("%02x ", b&0xff));
+      return sb.toString();
+   }
+   
    private void sendData(int[] data) {
       for (int i = 0; i < data.length; i++) {
          try {
