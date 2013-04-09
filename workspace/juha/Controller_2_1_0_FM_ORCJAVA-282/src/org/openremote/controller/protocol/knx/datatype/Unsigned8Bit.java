@@ -125,6 +125,16 @@ public class Unsigned8Bit implements DataType
     {
       return value;
     }
+    
+    else if (dpt == DataPointType.Unsigned8BitValue.SCENE_NUMBER)
+    {
+      return value + 1;  //Scenes go from 1 - 64
+    }
+    
+    else if (dpt == DataPointType.Unsigned8BitValue.SCENE_CONTROL)
+    {
+      return value + 1;  //Scenes go from 1 - 64
+    }
 
     else
     {
