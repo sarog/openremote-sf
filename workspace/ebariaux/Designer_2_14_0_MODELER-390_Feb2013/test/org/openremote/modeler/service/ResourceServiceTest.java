@@ -355,12 +355,7 @@ public class ResourceServiceTest {
   
       Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
       Element topElement = panelXmlDocument.getRootElement();
-      Assert.assertEquals(1, topElement.elements("panels").size());
-      Element panelsElement = topElement.element("panels");
-      Assert.assertEquals(1, panelsElement.elements().size());
-      Assert.assertEquals(1, panelsElement.elements("panel").size());
-      Element panelElement = panelsElement.element("panel");
-      Assert.assertEquals(p.getName(), panelElement.attribute("name").getText());
+      Element panelElement = assertOnePanel(topElement, p);
       Assert.assertEquals(1, panelElement.elements().size());
       Assert.assertEquals(1, panelElement.elements("tabbar").size());
       Element tabbarElement = panelElement.element("tabbar");
@@ -439,26 +434,15 @@ public void testScreenHasGesture() throws DocumentException {
 
    Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
    Element topElement = panelXmlDocument.getRootElement();
-   Assert.assertEquals("Expecting 1 panels element", 1, topElement.elements("panels").size());
-   Element panelsElement = topElement.element("panels");
-   Assert.assertEquals("Expecting 1 child for panels element", 1, panelsElement.elements().size());
-   Assert.assertEquals("Expecting 1 panel element", 1, panelsElement.elements("panel").size());
-   Element panelElement = panelsElement.element("panel");
-   Assert.assertEquals(p.getName(), panelElement.attribute("name").getText());
-   Assert.assertEquals(Long.toString(p.getOid()), panelElement.attribute("id").getText());
-   Assert.assertEquals("Expecting 1 child for panel element", 1, panelElement.elements().size());
-   Assert.assertEquals("Expecting no tab bar in panel element", 0, panelElement.elements("tabbar").size());
-   Assert.assertEquals("Expecting 1 include element", 1, panelElement.elements("include").size());
-   Element includeElement = panelElement.element("include");
-   Assert.assertEquals("group", includeElement.attribute("type").getText());
-   Assert.assertEquals(Long.toString(group1.getOid()), includeElement.attribute("ref").getText());
+   
+   Element panelElement = assertOnePanel(topElement, p);
+   assertPanelHasOneGroupChild(panelElement, group1);
 
-   Assert.assertEquals("Expecting 1 screens element", 1, topElement.elements("screens").size());
-   Element screensElement = topElement.element("screens");
-   Assert.assertEquals("Expecting 1 child for screens element", 1, screensElement.elements().size());
-   Assert.assertEquals("Expecting 1 screen element",  1, screensElement.elements("screen").size());
-   Element screenElement = screensElement.element("screen");
-   Assert.assertEquals("Expectiing 1 child for screen element", 1, screenElement.elements().size());
+   Element groupElement = assertOneGroup(topElement, group1);
+   assertGroupHasOneScreenChild(groupElement, screen1);
+
+   Element screenElement  = assertOneScreen(topElement, screen1);
+   Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
    Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
    Element gestureElement = screenElement.element("gesture");
    Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
@@ -469,19 +453,6 @@ public void testScreenHasGesture() throws DocumentException {
    Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
    Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
    
-   Assert.assertEquals("Expecting 1 groups element", 1, topElement.elements("groups").size());
-   Element groupsElement = topElement.element("groups");
-   Assert.assertEquals("Expecting 1 child for groups element", 1, groupsElement.elements().size());
-   Assert.assertEquals("Expecting 1 group element", 1, groupsElement.elements("group").size());
-   Element groupElement = groupsElement.element("group");
-   Assert.assertEquals(Long.toString(group1.getOid()), groupElement.attribute("id").getText());
-   Assert.assertEquals(group1.getName(), groupElement.attribute("name").getText());
-   Assert.assertEquals("Expecting 1 child for group element", 1, groupElement.elements().size());
-   Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
-   includeElement = groupElement.element("include");
-   Assert.assertEquals("screen", includeElement.attribute("type").getText());
-   Assert.assertEquals(Long.toString(screen1.getOid()), includeElement.attribute("ref").getText());
-
    Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
    topElement = controllerXmlDocument.getRootElement();
    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
@@ -989,5 +960,58 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       
       screens.add(screen);
 //      outputControllerXML(screens);
+   }
+   
+   private Element assertOnePanel(Element topElement, Panel p) {
+     Assert.assertEquals("Expecting 1 panels element", 1, topElement.elements("panels").size());
+     Element panelsElement = topElement.element("panels");
+     Assert.assertEquals("Expecting 1 child for panels element", 1, panelsElement.elements().size());
+     Assert.assertEquals("Expecting 1 panel element", 1, panelsElement.elements("panel").size());
+     Element panelElement = panelsElement.element("panel");
+     Assert.assertEquals("Expecting panel to be named " + p.getName(), p.getName(), panelElement.attribute("name").getText());
+     Assert.assertEquals("Expecting panel to have id " + p.getOid(), Long.toString(p.getOid()), panelElement.attribute("id").getText());
+
+     return panelElement;
+   }
+
+   private void assertPanelHasOneGroupChild(Element panelElement, Group group) {
+     Assert.assertEquals("Expecting 1 child for panel element", 1, panelElement.elements().size());
+     Assert.assertEquals("Expecting no tab bar in panel element", 0, panelElement.elements("tabbar").size());
+     Assert.assertEquals("Expecting 1 include element", 1, panelElement.elements("include").size());
+     Element includeElement = panelElement.element("include");
+     Assert.assertEquals("group", includeElement.attribute("type").getText());
+     Assert.assertEquals(Long.toString(group.getOid()), includeElement.attribute("ref").getText());
+   }
+   
+   private Element assertOneGroup(Element topElement, Group group) {
+     Assert.assertEquals("Expecting 1 groups element", 1, topElement.elements("groups").size());
+     Element groupsElement = topElement.element("groups");
+     Assert.assertEquals("Expecting 1 child for groups element", 1, groupsElement.elements().size());
+     Assert.assertEquals("Expecting 1 group element", 1, groupsElement.elements("group").size());
+     Element groupElement = groupsElement.element("group");
+     Assert.assertEquals("Expecting group to have id " + group.getOid(), Long.toString(group.getOid()), groupElement.attribute("id").getText());
+     Assert.assertEquals("Expecting group to be named " + group.getName(), group.getName(), groupElement.attribute("name").getText());
+
+     return groupElement;
+   }
+
+   private void assertGroupHasOneScreenChild(Element groupElement, Screen screen) {  
+     Assert.assertEquals("Expecting 1 child for group element", 1, groupElement.elements().size());
+     Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
+     Element includeElement = groupElement.element("include");
+     Assert.assertEquals("screen", includeElement.attribute("type").getText());
+     Assert.assertEquals(Long.toString(screen.getOid()), includeElement.attribute("ref").getText());
+   }
+   
+   private Element assertOneScreen(Element topElement, Screen screen) {
+     Assert.assertEquals("Expecting 1 screens element", 1, topElement.elements("screens").size());
+     Element screensElement = topElement.element("screens");
+     Assert.assertEquals("Expecting 1 child for screens element", 1, screensElement.elements().size());
+     Assert.assertEquals("Expecting 1 screen element",  1, screensElement.elements("screen").size());
+     Element screenElement = screensElement.element("screen");
+     Assert.assertEquals("Expecting screen to have id " + screen.getOid(), Long.toString(screen.getOid()), screenElement.attribute("id").getText());
+     Assert.assertEquals("Expecting screen to be named " + screen.getName(), screen.getName(), screenElement.attribute("name").getText());
+
+     return screenElement;
    }
 }
