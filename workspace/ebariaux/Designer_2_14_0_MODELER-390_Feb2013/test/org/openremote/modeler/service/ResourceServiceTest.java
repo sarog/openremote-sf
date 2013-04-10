@@ -50,6 +50,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -108,6 +109,7 @@ public class ResourceServiceTest {
    private ControllerConfigService controllerConfigService;
    private VelocityEngine velocity;
    
+   private Account account;
    private LocalFileCache cache;
      
    private TransactionTemplate transactionTemplate;
@@ -140,7 +142,7 @@ public class ResourceServiceTest {
       transactionTemplate.execute(new TransactionCallbackWithoutResult() {
         @Override
         protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-          Account account = userService.getCurrentUser().getAccount();
+          account = userService.getCurrentUser().getAccount();
           Hibernate.initialize(account.getDevices());
           Hibernate.initialize(account.getSensors());
           Hibernate.initialize(account.getSliders());
@@ -678,6 +680,119 @@ public class ResourceServiceTest {
       screens.add(screen);
 //      outputControllerXML(screens);
    }
+
+
+  @Test
+  public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
+    
+    Device dev = new Device("Test", "Vendor", "Model");
+    dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+    dev.setAccount(account);
+    deviceService.saveDevice(dev);
+    
+    Protocol protocol = new Protocol();
+    protocol.setType(Constants.INFRARED_TYPE);
+    
+    DeviceCommand cmd = new DeviceCommand();
+    cmd.setProtocol(protocol);
+    cmd.setName("testLirc");
+    
+    cmd.setDevice(dev);
+    dev.getDeviceCommands().add(cmd);
+    
+    cmd.setOid(IDUtil.nextID());
+    deviceCommandService.save(cmd);
+    
+    Set<Panel> panels = new HashSet<Panel>();
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+        
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    final Screen screen1 = new Screen();
+    screen1.setOid(IDUtil.nextID());
+    screen1.setName("screen1");
+    ScreenPair screenPair = new ScreenPair();
+    screenPair.setOid(IDUtil.nextID());
+    screenPair.setPortraitScreen(screen1);
+    screenRefs.add(new ScreenPairRef(screenPair));
+    
+    UIButton button = new UIButton(IDUtil.nextID());
+    button.setName("Button 1");
+    button.setUiCommandDTO(cmd.getDeviceCommandDTO());
+
+    Absolute abs = new Absolute(IDUtil.nextID());
+    abs.setUiComponent(button);
+    screen1.addAbsolute(abs);
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+    group1.setScreenRefs(screenRefs);
+    
+    groupRefs.add(new GroupRef(group1));
+    p.setGroupRefs(groupRefs);
+    
+    panels.add(p);
+
+    cache.replace(panels, IDUtil.nextID());
+    
+    try {
+      System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
+      System.out.println("Content is ");
+      IOUtils.copy(new FileInputStream(cache.getControllerXmlFile()), System.out);
+      System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
+      System.out.println("Content is ");
+      IOUtils.copy(new FileInputStream(cache.getPanelXmlFile()), System.out);
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    
+    
+    SAXReader reader = new SAXReader();
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setValidating(true);
+    factory.setNamespaceAware(true);
+
+    Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    Element topElement = panelXmlDocument.getRootElement();
+    
+    Element panelElement = assertOnePanel(topElement, p);
+    assertPanelHasOneGroupChild(panelElement, group1);
+
+    Element groupElement = assertOneGroup(topElement, group1);
+    assertGroupHasOneScreenChild(groupElement, screen1);
+
+    Element screenElement  = assertOneScreen(topElement, screen1);
+
+    Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+    Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+    Element absoluteElement = screenElement.element("absolute");
+    Assert.assertEquals("Expecting 1 child for absoluate element", 1, absoluteElement.elements().size());
+    Assert.assertEquals("Expecting 1 button element", 1, absoluteElement.elements("button").size());
+    Element buttonElement = absoluteElement.element("button");
+    Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
+    Assert.assertNotNull("Expecting button to have a hasControlCommand attribute", buttonElement.attribute("hasControlCommand"));
+    Assert.assertEquals("true", buttonElement.attribute("hasControlCommand").getText());
+    Assert.assertEquals(button.getName(), buttonElement.attribute("name").getText());
+   
+    Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    topElement = controllerXmlDocument.getRootElement();
+    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+    Element componentsElement = topElement.element("components");
+    Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+    Assert.assertEquals(1, componentsElement.elements("button").size());
+    buttonElement = componentsElement.element("button");
+    Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
+  }
+
    
 @Test(enabled=false)
    public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
