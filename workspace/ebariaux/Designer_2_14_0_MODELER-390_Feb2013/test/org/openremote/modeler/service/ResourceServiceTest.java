@@ -161,8 +161,13 @@ public class ResourceServiceTest {
       });
    }
    
+   /**
+    * Tests that an empty configuration generates valid panel and controller XML files.
+    * 
+    * @throws DocumentException
+    */
    @Test
-   public void testNopanel() throws DocumentException {
+   public void testEmptyConfiguration() throws DocumentException {
       Set<Panel> emptyPanels = new HashSet<Panel>();
       
       cache.replace(emptyPanels, IDUtil.nextID());
@@ -326,6 +331,15 @@ public class ResourceServiceTest {
       
    }
 
+   /**
+    * Tests generated panel and controller.xml for a configuration 1 panel (no screens),
+    * having a panel level tab bar with 1 item doing a navigation to a specific screen.
+    * 
+    * The group and screen being navigated to do not exist in the configuration,
+    * but this is never validated by the schema, so generated XML is still valid.
+    * 
+    * @throws DocumentException
+    */
    @Test
    public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
       Set<Panel> panels = new HashSet<Panel>();
@@ -382,9 +396,19 @@ public class ResourceServiceTest {
       Element componentsElement = topElement.element("components");
       Assert.assertEquals(0, componentsElement.elements().size());
    }
-   
-@Test
-public void testScreenHasGesture() throws DocumentException {
+  
+  /**
+   * Tests generated panel and controller.xml for a configuration with
+   * 1 panel including 1 screen in 1 group.
+   * One gesture with a navigation is associated with the screen.
+   * 
+   * The group and screen being navigated to do not exist in the configuration,
+   * but this is never validated by the schema, so generated XML is still valid.
+   * 
+   * @throws DocumentException
+   */
+  @Test
+  public void testScreenHasGesture() throws DocumentException {
    Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
