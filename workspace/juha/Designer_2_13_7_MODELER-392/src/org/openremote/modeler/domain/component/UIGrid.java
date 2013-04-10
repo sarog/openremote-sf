@@ -70,12 +70,12 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
 
    public UIGrid(int left, int top, int width, int height, int rowCount, int columnCount) {
       super();
-      this.height = height;
+      this.height = Math.round(height);
       this.columnCount = columnCount;
-      this.left = left;
+      this.left = Math.round(left);
       this.rowCount = rowCount;
-      this.top = top;
-      this.width = width;
+      this.top = Math.round(top);
+      this.width = Math.round(width);
    }
 
    public int getLeft() {
@@ -83,7 +83,7 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setLeft(int left) {
-      this.left = left;
+      this.left = Math.round(left);
    }
 
    public int getTop() {
@@ -91,7 +91,7 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setTop(int top) {
-      this.top = top;
+      this.top = Math.round(top);
    }
 
    public int getWidth() {
@@ -99,7 +99,7 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setWidth(int width) {
-      this.width = width;
+      this.width = Math.round(width);
    }
 
    public int getHeight() {
@@ -107,7 +107,7 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
 
    public void setHeight(int height) {
-      this.height = height;
+      this.height = Math.round(height);
    }
 
    public int getRowCount() {

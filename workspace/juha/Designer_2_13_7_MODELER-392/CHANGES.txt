@@ -1,3 +1,11 @@
+
+Designer MODELER-392
+====================
+
+ - Fractional Widget Coordinates when Browser
+   has non-default zoom
+
+
 Designer 2.13.7 (2012-10-07 Rosemary)
 =====================================
 
