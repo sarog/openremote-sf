@@ -29,6 +29,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      when UI has been built and initialized. (Eric Bariaux)
    - MODELER-391: Add Domintell connection configuration
      (Eric Bariaux)
+   - MODELER-392: Fractional Widget Coordinates when Browser
+     has non-default zoom (Eric Bariaux)
 
 
  Internal:
