@@ -99,7 +99,7 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param left the new left
     */
    public void setLeft(int left) {
-      this.left = left;
+      this.left = Math.round(left);
    }
    
    /**
@@ -108,7 +108,7 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param top the new top
     */
    public void setTop(int top) {
-      this.top = top;
+      this.top = Math.round(top);
    }
    
    /**
@@ -117,7 +117,7 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param width the new width
     */
    public void setWidth(int width) {
-      this.width = width;
+      this.width = Math.round(width);
    }
    
    /**
@@ -126,7 +126,7 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
     * @param height the new height
     */
    public void setHeight(int height) {
-      this.height = height;
+      this.height = Math.round(height);
    }
 
    /**
@@ -148,13 +148,13 @@ public class Absolute extends BusinessEntity implements PositionableAndSizable {
    }
    
    public void setSize(int width, int height) {
-      this.width = width;
-      this.height = height;
+      this.width = Math.round(width);
+      this.height = Math.round(height);
    }
    
    public void setPosition(int left, int top) {
-      this.left = left;
-      this.top = top;
+      this.left = Math.round(left);
+      this.top = Math.round(top);
    }
 
    @JSON(include=false)
