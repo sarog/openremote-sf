@@ -189,7 +189,7 @@ public class JSONControllerConnector implements ControllerConnector {
 			
 			JSONObject jsonObj = null;
 			
-			if (response != null) {
+			if (response != null && response.getStatusCode() == 200) {
 				String str = response.getText();
 				JSONValue value = JSONParser.parseStrict(str);
 				jsonObj = (JSONObject)value;
