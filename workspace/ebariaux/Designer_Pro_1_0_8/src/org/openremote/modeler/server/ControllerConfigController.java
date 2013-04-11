@@ -62,4 +62,9 @@ public class ControllerConfigController extends BaseGWTSpringController implemen
      return createDTOsFromBeans(controllerConfigService.saveAllDTOs(configs));
    }
 
+   @Override
+   public void resetToDefaults(HashSet<Long> configIds) {
+     controllerConfigService.resetToDefaults(configIds);
+   }
+
 }
