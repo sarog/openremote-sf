@@ -1,3 +1,11 @@
+Controller ORCJAVA-326
+======================
+
+ - Telnet status read for switch sensors appears broken. A returned
+   'on' string is never correctly parsed to Java boolean value true
+   due to the extra linefeed '\n' character being added to all response
+   values in readString() implementation
+
 
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
