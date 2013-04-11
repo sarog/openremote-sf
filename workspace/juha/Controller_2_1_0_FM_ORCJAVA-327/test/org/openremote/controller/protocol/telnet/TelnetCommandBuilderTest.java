@@ -25,6 +25,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -39,6 +40,7 @@ import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.statuscache.ChangedStatusTable;
@@ -83,22 +85,68 @@ public class TelnetCommandBuilderTest
   @Test public void testSwitchOnResponse_ORCJAVA_326() throws Exception
   {
     Server server = null;
+    SwitchSensor s1 = null;
+
     final int SENSOR_ID = 1;
+    final int SERVER_PORT = 4444;
 
     try
     {
-      server = new Server(4444);
+      server = new Server(SERVER_PORT);
       Map<String, String> requestResponse = new HashMap<String, String>();
       requestResponse.put("sendtest1", "on");
 
       server.start(requestResponse);
 
-      TelnetCommand cmd = getCommand("localhost", "4444", "null|sendtest1");
+      TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "null|sendtest1");
 
-      SwitchSensor s1 = new SwitchSensor("switch on", SENSOR_ID, cache, cmd);
+      s1 = new SwitchSensor("switch on", SENSOR_ID, cache, cmd);
 
       cache.registerSensor(s1);
       s1.start();
+
+      Assert.assertTrue(
+          "Expected 'on', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
+          getSensorValueFromCache(SENSOR_ID).equals("on")
+      );
+
+    }
+
+    finally
+    {
+      stop(s1);
+      stop(server);
+    }
+  }
+
+  /**
+   * Tests a telnet command that expects an initial response *before* sending a command
+   * that is supposed to indicate an 'on' state.
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testWaitForMessage() throws Exception
+  {
+    Server server = null;
+    SwitchSensor s2 = null;
+
+    final int SENSOR_ID = 2;
+    final Integer SERVER_PORT = 4445;
+
+    try
+    {
+      server = new Server(SERVER_PORT);
+      Map<String, String> requestResponse = new HashMap<String, String>();
+      requestResponse.put("sendtest2", "on");
+
+      server.start(requestResponse, "Foo", 0);
+
+      TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "Foo|sendtest2");
+
+      s2 = new SwitchSensor("switch 2 on", SENSOR_ID, cache, cmd);
+
+      cache.registerSensor(s2);
+      s2.start();
 
       Assert.assertTrue(
           "Expected 'on', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
@@ -108,23 +156,127 @@ public class TelnetCommandBuilderTest
 
     finally
     {
-      if (server != null)
-      {
-        try
-        {
-          server.stop();
-        }
-
-        catch (Exception e)
-        {
-          System.err.println("test server failed: " + e);
-        }
-      }
+      stop(s2);
+      stop(server);
     }
   }
+
+
+  /**
+   * Tests wait for message timeout behavior.
+   *
+   * Given all the timings, the test is a bit iffy. But it does configure the initial response
+   * on the telnet server to double the default timeout configured on the telnet protocol (not
+   * setting timeout explicitly so relying on the default value). Then waits for double the
+   * telnet server's response delay value before checking if response to message has been sent
+   * back ('on).
+   *
+   * Given that the wait-for-reply timeout in telnet protocol implementation should kick in
+   * at TelnetCommand.DEFAULT_TIMEOUT, not expecting the 'on' response to ever make it back
+   * to the controller's cache.
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testWaitForMessageTimeout() throws Exception
+  {
+    Server server = null;
+    SwitchSensor s3 = null;
+
+    final int SENSOR_ID = 3;
+    final Integer SERVER_PORT = 4446;
+    final int RESPONSE_DELAY = TelnetCommand.DEFAULT_TIMEOUT * 1000 * 2;
+
+    try
+    {
+      server = new Server(SERVER_PORT);
+      Map<String, String> requestResponse = new HashMap<String, String>();
+      requestResponse.put("sendtest3", "on");
+
+      server.start(requestResponse, "Na-na", RESPONSE_DELAY);
+
+      TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "Na-na|sendtest3");
+
+      s3 = new SwitchSensor("switch 3 on", SENSOR_ID, cache, cmd);
+
+      cache.registerSensor(s3);
+      s3.start();
+
+      // give it time to come back... although we know the timeout should trigger earlire
+
+      Thread.sleep(RESPONSE_DELAY * 2);
+
+      // expecting N/A since timeout should have kicked in...
+
+      Assert.assertTrue(
+          "Expected 'N/A', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
+          getSensorValueFromCache(SENSOR_ID).equals("N/A")
+      );
+    }
+
+    finally
+    {
+      stop(s3);
+      stop(server);
+    }
+  }
+
+
+  /**
+   * TODO
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testIncreasedWaitForMessageTimeout() throws Exception
+  {
+    Server server = null;
+    SwitchSensor s4 = null;
+
+    final int SENSOR_ID = 4;
+    final Integer SERVER_PORT = 4447;
+    final int RESPONSE_DELAY = TelnetCommand.DEFAULT_TIMEOUT * 1000 * 2;
+    final int WAIT_FOR_TIME_OUT = 3;
+
+    try
+    {
+      server = new Server(SERVER_PORT);
+      Map<String, String> requestResponse = new HashMap<String, String>();
+      requestResponse.put("sendtest4", "on");
+
+      server.start(requestResponse, "LongDelay", RESPONSE_DELAY);
+
+      TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "LongDelay|sendtest4", WAIT_FOR_TIME_OUT);
+
+      s4 = new SwitchSensor("switch 4 on", SENSOR_ID, cache, cmd);
+
+      cache.registerSensor(s4);
+      s4.start();
+
+      // give it time to come back... although we know the timeout should trigger earlier
+
+      Thread.sleep(WAIT_FOR_TIME_OUT * 1000 + 1000);
+
+      // expecting N/A since timeout should have kicked in...
+
+      Assert.assertTrue(
+          "Expected 'on', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
+          getSensorValueFromCache(SENSOR_ID).equals("on")
+      );
+    }
+
+    finally
+    {
+      stop(s4);
+      stop(server);
+    }
+  }
+
+
+
+
+
    @Test public void testTelnet()
    {
-     TelnetCommand cmd = getCommand("192.168.1.1", "23", "test");
+     TelnetCommand cmd = getCommand("192.168.1.1", 23, "test");
      Assert.assertEquals("192.168.1.1", cmd.getIp());
      Assert.assertEquals(23, cmd.getPort().intValue());
      Assert.assertEquals("test", cmd.getCommand());
@@ -132,7 +284,7 @@ public class TelnetCommandBuilderTest
    
    @Test public void testTelnetWithParam()
    {
-     TelnetCommand cmd = getCommand("192.168.1.1", "23", "light1_${param}");
+     TelnetCommand cmd = getCommand("192.168.1.1", 23, "light1_${param}");
      Assert.assertEquals("192.168.1.1", cmd.getIp());
      Assert.assertEquals(23, cmd.getPort().intValue());
      Assert.assertEquals("light1_255", cmd.getCommand());
@@ -150,7 +302,31 @@ public class TelnetCommandBuilderTest
     return cache.queryStatus(sensorID);
   }
 
-  private TelnetCommand getCommand(String address, String port, String cmd)
+  private void stop(Server server)
+  {
+    if (server != null)
+    {
+      try
+      {
+        server.stop();
+      }
+
+      catch (Exception e)
+      {
+        System.err.println("test server failed: " + e);
+      }
+    }
+  }
+
+  private void stop(Sensor s)
+  {
+    if (s != null)
+    {
+      s.stop();
+    }
+  }
+
+  private TelnetCommand getCommand(String address, int port, String cmd, int timeout)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -167,7 +343,7 @@ public class TelnetCommandBuilderTest
 
     Element propPort = new Element("property");
     propPort.setAttribute("name", "port");
-    propPort.setAttribute("value", port);
+    propPort.setAttribute("value", "" + port);
 
     Element propCommand = new Element("property");
     propCommand.setAttribute("name", "command");
@@ -178,7 +354,22 @@ public class TelnetCommandBuilderTest
     ele.addContent(propPort);
     ele.addContent(propCommand);
 
+
+    if (timeout >= 0)
+    {
+      Element propTimeout = new Element("property");
+      propTimeout.setAttribute("name", "timeout");
+      propTimeout.setAttribute("value", "" + timeout);
+
+      ele.addContent(propTimeout);
+    }
+
     return (TelnetCommand) builder.build(ele);
+  }
+
+  private TelnetCommand getCommand(String address, int port, String cmd)
+  {
+    return getCommand(address, port, cmd, -1);
   }
 
 
@@ -190,6 +381,10 @@ public class TelnetCommandBuilderTest
    */
   private static class Server
   {
+    private final static Logger log =
+        Logger.getLogger(TelnetCommandBuilder.TELNET_PROTOCOL_LOG_CATEGORY);
+
+
     private int port;
     private ServerSocket server;
     private ServerThread serverListeningThread = null;
@@ -205,17 +400,30 @@ public class TelnetCommandBuilderTest
      * Starts the server on configured port.
      *
      * @param requestResponse mapping of incoming requests to responses.
+     * @param responseDelay   if it is desired to add artificial response delay to socket reader
+     *                        responses in this server for testing purposes
      *
      * @throws IOException  if things break
      */
-    private void start(final Map<String, String> requestResponse) throws IOException
+    private void start(Map<String, String> requestResponse, String welcomeMessage, int responseDelay)
+        throws IOException
     {
       server = new ServerSocket(port);
 
-      serverListeningThread = new ServerThread(server, requestResponse);
+      log.info("Telnet server at port {0} starting...", port);
+
+      serverListeningThread = new ServerThread(server, requestResponse, welcomeMessage, responseDelay);
       t = new Thread(serverListeningThread);
       t.start();
+
+      log.info("Telnet server at port {0} started.", port);
     }
+
+    private void start(Map<String, String> requestResponse) throws IOException
+    {
+      start(requestResponse, null, 0);
+    }
+
 
     /**
      * Try to do a clean stop of the server.
@@ -224,9 +432,9 @@ public class TelnetCommandBuilderTest
      */
     private void stop() throws Exception
     {
-      Logger log = Logger.getLogger("Telnet");
+      Logger log = Logger.getLogger(TelnetCommandBuilder.TELNET_PROTOCOL_LOG_CATEGORY);
 
-      log.info("Telnet server closing.");
+      log.info("Telnet server at port {0} closing.", port);
 
       serverListeningThread.stop();
 
@@ -259,11 +467,16 @@ public class TelnetCommandBuilderTest
     private Map<String, String> requestResponse = null;
     private Map<SocketReader, Thread> socketThreads = new HashMap<SocketReader, Thread>();
     private Set<Socket> socketReaders = new HashSet<Socket>();
+    private int responseDelay;
+    private String welcomeMessage;
 
-    ServerThread(ServerSocket server, Map<String, String> requestResponse)
+    ServerThread(ServerSocket server, Map<String, String> requestResponse, String welcomeMessage,
+                 int socketResponseDelay)
     {
       this.server = server;
       this.requestResponse = requestResponse;
+      this.responseDelay = socketResponseDelay;
+      this.welcomeMessage = welcomeMessage;
     }
 
     /**
@@ -277,7 +490,10 @@ public class TelnetCommandBuilderTest
         {
           Socket socket = server.accept();
 
-          SocketReader socketReader = new SocketReader(this, socket, requestResponse);
+          SocketReader socketReader = new SocketReader(
+              this, socket, requestResponse, welcomeMessage, responseDelay
+          );
+
           Thread t = new Thread(socketReader);
           t.start();
 
@@ -288,7 +504,7 @@ public class TelnetCommandBuilderTest
 
       catch (Exception e)
       {
-        System.err.println("Server failed: " + e.getMessage());
+        System.err.println("Server at port " + server.getLocalPort() + " failed: " + e.getMessage());
       }
     }
 
@@ -353,23 +569,37 @@ public class TelnetCommandBuilderTest
    */
   private static class SocketReader implements Runnable
   {
+    private final static Logger log = Logger.getLogger(TelnetCommandBuilder.TELNET_PROTOCOL_LOG_CATEGORY);
+
     volatile boolean socketReading = true;
     private Socket socket = null;
     private ServerThread server = null;
     private Map<String, String> requestResponse = null;
+    private int responseDelay = 0;
+    private String welcomeMessage = null;
 
-    SocketReader(ServerThread server, Socket socket, Map<String, String> requestResponse)
+    SocketReader(ServerThread server, Socket socket, Map<String, String> requestResponse,
+                 String welcomeMessage, int responseDelay)
     {
       this.socket = socket;
       this.server = server;
       this.requestResponse = requestResponse;
+      this.responseDelay = responseDelay;
+      this.welcomeMessage = welcomeMessage;
     }
+
 
     @Override public void run()
     {
       try
       {
+        BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
         BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
+
+        if (hasWelcomeMessage())
+        {
+          send(out, welcomeMessage);
+        }
 
         while (socketReading)
         {
@@ -382,10 +612,17 @@ public class TelnetCommandBuilderTest
             break;
           }
 
-          System.out.println("Telnet server received: '" + cmd + "'");
+          System.out.println(
+              "Telnet server at port " + server.server.getLocalPort() + " received: '" + cmd + "'"
+          );
 
-          respond(socket, cmd);
+          respond(out, cmd);
         }
+      }
+
+      catch (InterruptedException e)
+      {
+        System.out.println("Socket reader has been interrupted. Shutting down...");
       }
 
       catch (Exception e)
@@ -404,25 +641,62 @@ public class TelnetCommandBuilderTest
       socketReading = false;
     }
 
-    public void respond(Socket socket, String cmd) throws Exception
+    public void send(OutputStream out, String msg) throws InterruptedException, IOException
+    {
+      if (msg == null || msg.equals(""))
+      {
+        System.err.println("Telnet server attempted to send an empty message.");
+
+        return;
+      }
+
+      if (hasResponseDelay())
+      {
+        Thread.sleep(responseDelay);
+      }
+
+      PrintStream print = new PrintStream(new BufferedOutputStream(out));
+
+      print.write(msg.getBytes());
+      print.flush();
+
+      System.out.println(
+          "Telnet server at port " + server.server.getLocalPort() + " sent: '" + msg + "'"
+      );
+    }
+
+    public void respond(OutputStream out, String cmd) throws InterruptedException
     {
       String response = requestResponse.get(cmd.trim());
 
-      PrintStream print = new PrintStream(new BufferedOutputStream(socket.getOutputStream()));
 
       if (response != null)
       {
-        print.write(response.getBytes());
+        try
+        {
+          send(out, response);
+        }
+
+        catch (IOException e)
+        {
+          System.err.println("Socket reader response I/O failed: " + e.getMessage());
+        }
       }
 
       else
       {
         System.err.println("\n\n*** Telnet server did not find a matching response to : '" + cmd + "'\n");
       }
+    }
 
-      print.flush();
+    private boolean hasWelcomeMessage()
+    {
+      return welcomeMessage != null && !welcomeMessage.equals("");
+    }
 
-      System.out.println("Telnet server sent: '" + response + "'");
+    private boolean hasResponseDelay()
+    {
+      return responseDelay > 0;
     }
   }
 
