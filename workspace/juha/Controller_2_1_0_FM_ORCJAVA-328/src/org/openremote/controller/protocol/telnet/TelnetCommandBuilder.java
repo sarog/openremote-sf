@@ -32,7 +32,7 @@ import org.openremote.controller.utils.Strings;
 
 
 /**
- * The Class TelnetCommandBuilder.
+ * TODO
  *
  * @author Marcus 2009-4-26
  */
@@ -40,7 +40,8 @@ public class TelnetCommandBuilder implements CommandBuilder {
 
    // Constants ------------------------------------------------------------------------------------
 
-   public final static String TELNET_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "TELNET";
+   public final static String TELNET_PROTOCOL_LOG_CATEGORY =
+       Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "telnet";
 
    private final static String STR_ATTRIBUTE_NAME_PORT = "port";
    private final static String STR_ATTRIBUTE_NAME_IP_ADDRESS = "ipAddress";
