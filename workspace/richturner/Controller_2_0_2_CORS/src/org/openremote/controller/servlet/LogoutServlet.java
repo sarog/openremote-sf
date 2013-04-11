@@ -37,10 +37,14 @@ import org.openremote.controller.Constants;
  * 'logout' resource which will always return "401 Unauthorized", after that the panels will reset the user's credentials
  * and therefore stop sending them.
  * 
+ * @deprecated
+ * Replaced with REST Servlet {@link org.openremote.controller.rest.LogoutServlet}
+ * 
  * @author Javen, Handy
  * 
  */
 @SuppressWarnings("serial")
+@Deprecated
 public class LogoutServlet extends HttpServlet {
    public static final int LOGOUT_ERROR_CODE = 401;
 	
