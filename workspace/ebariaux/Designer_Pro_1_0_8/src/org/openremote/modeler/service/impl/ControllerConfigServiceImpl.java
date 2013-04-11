@@ -202,11 +202,22 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
      initializeConfigs(configs);
      return configs;
    }
+   
+   @Override
+   @Transactional
+   public void resetToDefaults(HashSet<Long> configIds) {
+     for (Long id : configIds) {
+       ControllerConfig cfg = genericDAO.getById(ControllerConfig.class, id);
+       if (cfg != null) {
+         genericDAO.delete(cfg);
+       }
+     }
+   }
 
   private void updateControllerConfigWithDTO(ControllerConfig config, ControllerConfigDTO dto) {
     config.setCategory(dto.getCategory());
     config.setName(dto.getName());
-    config.setValue(dto.getValue());
+    config.setValue((dto.getValue() != null)?dto.getValue():"");
     config.setHint(dto.getHint());
     config.setValidation(dto.getValidation());
     config.setOptions(dto.getOptions());

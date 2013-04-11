@@ -4,6 +4,7 @@ Pro 1.0.8
 Fixes:
  - MODELER-460: In Controller Management window, remove id column
  - MODELER-474: Have default values for Z-wave comm layer and port properties
+ - MODELER-453: An error 500 occurs when trying to set a previously defined controller property to <empty>
 
 New features:
  - Support new features in Marantz AVR protocol (MODELER-461)
