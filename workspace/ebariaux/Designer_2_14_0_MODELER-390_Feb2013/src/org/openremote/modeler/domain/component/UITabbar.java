@@ -36,8 +36,10 @@ public class UITabbar extends UIComponent {
    private Scope scope = Scope.GROUP;
    
    public UITabbar() {}
+   
    public UITabbar(UITabbar uiComponent) {
-//      ui
+     this.setScope(uiComponent.getScope());
+     this.tabbarItems.addAll(uiComponent.getTabbarItems());
    }
 
    @Override
