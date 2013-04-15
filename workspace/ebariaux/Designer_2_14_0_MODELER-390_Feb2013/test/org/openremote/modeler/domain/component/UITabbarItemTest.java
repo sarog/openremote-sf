@@ -86,13 +86,13 @@ public class UITabbarItemTest {
 
     UITabbarItem item1 = new UITabbarItem();
     item1.setOid(IDUtil.nextID());
-    item1.setName("Item");
+    item1.setName("Item 1");
     item1.setImage(imageSource1);
     item1.setNavigate(navigate);
     
     UITabbarItem item2 = new UITabbarItem();
     item2.setOid(item1.getOid());
-    item2.setName("Item");
+    item2.setName("Item 1");
     item2.setImage(imageSource1);
     item2.setNavigate(navigate);
 
@@ -101,10 +101,10 @@ public class UITabbarItemTest {
     item2.setName(null);
     Assert.assertFalse(item1.equals(item2), "Expected the TabbarItems to be different, name not set on second item");
     
-    item2.setName("Name 2");
+    item2.setName("Item 2");
     Assert.assertFalse(item1.equals(item2), "Expected the TabbarItems to be different, name is different");
     
-    item2.setName("Name");
+    item2.setName("Item 1");
     Assert.assertEquals(item1, item2, "Expected the TabbarItems to be equal");
 
     item2.setImage(null);
