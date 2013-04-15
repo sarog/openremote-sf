@@ -33,17 +33,23 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.openremote.controller.utils.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * TODO : missing class description
+ *
+ * @author Kevin Purney
+ */
 public class Isy99StatusReader
 {
   // Constants -----------------------------------------------------------------------------------
@@ -104,7 +110,7 @@ public class Isy99StatusReader
     // Constructors ----------------------------------------------------------------
 
     /**
-      * @param hostname   hostname or IP address for the ISY-99
+      * @param host       hostname or IP address for the ISY-99
       * @param username   username for authentication to the ISY-99
       * @param password   password for authentication to the ISY-99
       */
@@ -162,17 +168,22 @@ public class Isy99StatusReader
       {
         log.error("IOException while reading data from ISY-99", ioe);
       }
-      catch (JDOMException jdomex) {
+      catch (JDOMException jdomex) 
+      {
         log.error("JDOMException while parsing response from ISY-99", jdomex);
       }
       finally
       {
         try
         {
-          content.close();
+          if (content != null)
+          {
+            content.close();
+          }
         }
         catch (Exception e)
         {
+          log.warn("Error on closing HTML entity content stream : {0}", e.getMessage());
         }
       }
     }
@@ -181,7 +192,7 @@ public class Isy99StatusReader
   // Constructors --------------------------------------------------------------------------------
 
   /**
-    * @param hostname   hostname or IP address for the ISY-99
+    * @param host       hostname or IP address for the ISY-99
     * @param username   username for authentication to the ISY-99
     * @param password   password for authentication to the ISY-99
     */
@@ -201,7 +212,7 @@ public class Isy99StatusReader
    *
    * @param address    node address for the ISY-99
    */
-  public String GetStatus(String address)
+  public String getStatus(String address)
   {
     String value = "";
       
@@ -235,7 +246,7 @@ public class Isy99StatusReader
    * @param command         command for the ISY-99
    * @param commandParam    command parameter for the ISY-99, i.e. dim level
    */
-  public void SetLocalStatus(String address, String command, String commandParam)
+  public void setLocalStatus(String address, String command, String commandParam)
   {
     if (nodesRootElement != null)
     {

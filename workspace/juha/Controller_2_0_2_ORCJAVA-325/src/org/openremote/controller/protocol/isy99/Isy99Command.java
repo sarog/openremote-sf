@@ -169,7 +169,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       }
       else
       {
-        StatusReader.SetLocalStatus(address, command, commandParam);
+        StatusReader.setLocalStatus(address, command, commandParam);
       }
     }
     catch (IOException e)
@@ -184,7 +184,7 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
   @Override
   public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
-    String value = StatusReader.GetStatus(address);
+    String value = StatusReader.getStatus(address);
     
     if (value == null || value.equals(""))
     {
