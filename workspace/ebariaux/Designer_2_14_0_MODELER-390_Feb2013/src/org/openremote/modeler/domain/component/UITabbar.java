@@ -83,4 +83,33 @@ public class UITabbar extends UIComponent {
    public void removeAll() {
       tabbarItems.removeAll(this.tabbarItems);
    }
+   
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((scope == null) ? 0 : scope.hashCode());
+    result = prime * result + ((tabbarItems == null) ? 0 : tabbarItems.hashCode());
+    return result;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UITabbar other = (UITabbar) obj;
+    if (scope != other.scope)
+      return false;
+    if (tabbarItems == null) {
+      if (other.tabbarItems != null)
+        return false;
+    } else if (!tabbarItems.equals(other.tabbarItems))
+      return false;
+    return true;
+  }
+   
 }
