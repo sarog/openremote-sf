@@ -2,7 +2,7 @@
 
 <!--
   OpenRemote, the Home of the Digital Home.
-  Copyright 2008-2012, OpenRemote Inc.
+  Copyright 2008-2013, OpenRemote Inc.
 
   See the contributors.txt file in the distribution for a
   full listing of individual contributors.
@@ -76,6 +76,14 @@
    |    the test container and junit test resource files.
    +-->
   <property name = "junit.vm.work.dir" value = "${testcontainer.vm.work.dir}"/>
+
+
+  <!--
+   |    Set explicit character encoding for javac - this avoids issues with some build
+   |    environments which have different system default character encodings. Defaulting
+   |    all compiled source files to UTF-8.
+   +-->
+  <property name = "default.javac.encoding" value = "utf-8"/>
 
 
   <property name = "javadoc.locale" value = "en_US"/>
@@ -266,7 +274,8 @@
 			</fileset>
  		</copy>
     
-    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}">
+    <javac destdir = "${classes.dir}" classpathref = "compile.path.id"
+           debug = "${build.debug}" encoding = "${default.javac.encoding}">
       <src path = "${src.dir}"/>
     </javac>
   </target>
@@ -294,7 +303,8 @@
       </fileset>
     </copy>
 
-    <javac srcdir = "${test.dir}" destdir = "${classes.dir}" classpathref = "test.path.id" debug = "true" />
+    <javac srcdir = "${test.dir}" destdir = "${classes.dir}"
+           classpathref = "test.path.id" debug = "true" encoding = "${default.javac.encoding}"/>
   </target>
 
 
@@ -629,7 +639,8 @@
       </fileset>
     </copy>
 
-    <javac srcdir = "${test.dir}" destdir = "${classes.dir}" classpathref = "test.path.id" debug = "true" />
+    <javac srcdir = "${test.dir}" destdir = "${classes.dir}" classpathref = "test.path.id"
+           debug = "true" encoding = "${default.javac.encoding}"/>
   </target>
 
 
@@ -656,7 +667,8 @@
 		</copy>
 
     
-    <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}">
+    <javac destdir = "${classes.dir}" classpathref = "compile.path.id"
+           debug = "${build.debug}" encoding = "${default.javac.encoding}">
       <src path = "${src.dir}"/>
     </javac>
 
