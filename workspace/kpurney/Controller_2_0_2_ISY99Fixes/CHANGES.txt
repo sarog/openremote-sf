@@ -1,3 +1,10 @@
+Controller ORCJAVA-325
+======================
+
+ - ISY-99 implementation does not scale to high number of
+   sensors (Kevin Purney)
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
