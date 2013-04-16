@@ -31,6 +31,7 @@ import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.utils.Logger;
@@ -217,6 +218,13 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       if (dpt instanceof DataPointType.Unsigned8BitValue)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString(valueDPT.resolve());
+      }
+
+      if (dpt instanceof DataPointType.Signed8BitValue)
+      {
+        Signed8Bit valueDPT = (Signed8Bit)responseAPDU.getDataType();
 
         return Integer.toString(valueDPT.resolve());
       }
