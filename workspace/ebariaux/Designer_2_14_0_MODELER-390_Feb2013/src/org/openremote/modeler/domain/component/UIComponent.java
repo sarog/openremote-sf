@@ -156,11 +156,19 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
       UIComponent other = (UIComponent) obj;
       
       // TODO : with no context, this is anyway not leading to correct results + some getPanelXml calls might fail 
-      return other.getPanelXml(null).equals(getPanelXml(null));
+//      return other.getPanelXml(null).equals(getPanelXml(null));
+      if (getName() == null) {
+        if (other.getName() != null)
+          return false;
+      } else if (!getName().equals(other.getName())) {
+        return false;
+      }
+      return true;
    }
 
    @Override
    public int hashCode() {
+     // TODO: this does not match with equals implementation
       return (int) getOid();
    }
    

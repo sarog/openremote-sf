@@ -200,4 +200,42 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       }
       return imageSources;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((offImage == null) ? 0 : offImage.hashCode());
+    result = prime * result + ((onImage == null) ? 0 : onImage.hashCode());
+    result = prime * result + ((switchDTO == null) ? 0 : switchDTO.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UISwitch other = (UISwitch) obj;
+    if (offImage == null) {
+      if (other.offImage != null)
+        return false;
+    } else if (!offImage.equals(other.offImage))
+      return false;
+    if (onImage == null) {
+      if (other.onImage != null)
+        return false;
+    } else if (!onImage.equals(other.onImage))
+      return false;
+    if (switchDTO == null) {
+      if (other.switchDTO != null)
+        return false;
+    } else if (!switchDTO.equals(other.switchDTO))
+      return false;
+    return true;
+  }
+
 }
