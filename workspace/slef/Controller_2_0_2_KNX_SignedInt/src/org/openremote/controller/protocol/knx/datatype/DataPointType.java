@@ -115,6 +115,9 @@ public abstract class DataPointType
   public final static Unsigned8BitValue RELPOS_VALVE = new Unsigned8BitValue(5, 4);
   public final static Unsigned8BitValue VALUE_1_UCOUNT = new Unsigned8BitValue(5, 10);
 
+  public final static Signed8BitValue PERCENT_V8 = new Signed8BitValue(6, 1);
+  public final static Signed8BitValue VALUE_1_COUNT = new Signed8BitValue(6, 10);
+
   public final static TwoOctetFloat VALUE_TEMP = new TwoOctetFloat(9, 1);
   public final static TwoOctetFloat VALUE_TEMPD = new TwoOctetFloat(9, 2);
   public final static TwoOctetFloat VALUE_TEMPA = new TwoOctetFloat(9, 3);
@@ -289,6 +292,15 @@ public abstract class DataPointType
   {
 
     private Unsigned8BitValue(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class Signed8BitValue extends DataPointType
+  {
+
+    private Signed8BitValue(int main, int sub)
     {
       super(main, sub, false);
     }

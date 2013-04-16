@@ -28,6 +28,7 @@ import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.exception.ConversionException;
@@ -298,6 +299,40 @@ class ApplicationProtocolDataUnit
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new Unsigned8Bit(
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
+          value)
+    );
+  }
+
+
+  /**
+  * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+  * 8-bit signed counter or percentage value (DPT 6.001 or DPT 6.010).
+  * <p>
+  *
+  * Valid parameter value range is [-128..127].
+  *
+  * @param parameter
+  *           counter value for range
+  *
+  * @return APDU instance for a 8-bit signed counter value
+  *
+  * @throws ConversionException
+  *            if the value is not in a given range
+  */
+  static ApplicationProtocolDataUnit createSignedRange(CommandParameter parameter) 
+      throws ConversionException
+  {
+    int value = parameter.getValue().intValue();
+
+    if (value < -128 || value > 127)
+    {
+      throw new ConversionException("Expected value is in range [-128..127] , received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Signed8Bit(
+          DataPointType.Signed8BitValue.VALUE_1_COUNT,
           value)
     );
   }
@@ -803,6 +838,16 @@ class ApplicationProtocolDataUnit
         );
       }
 
+      else if (dpt instanceof DataPointType.Signed8BitValue)
+      {
+        DataPointType.Signed8BitValue value = (DataPointType.Signed8BitValue)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToSigned8BitValue(value, getDataType().getData() [0])
+        );
+      }
+
       else if (dpt instanceof DataPointType.TwoOctetFloat)
       {
         DataPointType.TwoOctetFloat value = (DataPointType.TwoOctetFloat)dpt;
@@ -839,6 +884,19 @@ class ApplicationProtocolDataUnit
     private Unsigned8Bit resolveTo8BitValue(DataPointType.Unsigned8BitValue dpt, int value)
     {
       return new Unsigned8Bit(dpt, value);
+    }
+
+
+    /**
+     * TODO
+     * 
+     * @param dpt
+     * @param value
+     * @return
+     */
+    private Signed8Bit resolveToSigned8BitValue(DataPointType.Signed8BitValue dpt, int value)
+    {
+      return new Signed8Bit(dpt, value);
     }
 
 
