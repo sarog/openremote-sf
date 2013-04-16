@@ -105,10 +105,10 @@
     <fileset dir = "${lib.dir}/apache/commons-net" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/apache/commons-lang" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
-  	<fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
 
   </path>
 
@@ -136,7 +136,7 @@
     <path location = "${config.dir}"/>
     <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
   </path>
-  
+
 
   <path id = "cobertura.path.id">
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
@@ -163,7 +163,7 @@
        ======================================================================================= -->
 
 
-  
+
   <!--
     | CLEAN:
     |
@@ -207,7 +207,7 @@
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/json">
-    	  <include name = "*.jar"/>
+        <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/onewire">
         <include name = "*.jar"/>
@@ -258,22 +258,22 @@
       </fileset>
     </copy>
 
-		<copy todir = "${webapp.classes.dir}">
-			<fileset dir = "${classes.dir}">
-				<include name = "**.*" />
-			</fileset>
-		</copy>
+    <copy todir = "${webapp.classes.dir}">
+      <fileset dir = "${classes.dir}">
+        <include name = "**.*" />
+      </fileset>
+    </copy>
 
-		<copy todir = "${classes.dir}">
-			<fileset dir = "${test.dir}">
-				<include name = "**/*.xml" />
-				<include name = "**/*.properties" />
-			</fileset>
-			<fileset dir = "${test.dir}">
-				<include name = "**/*.xml" />
-			</fileset>
- 		</copy>
-    
+    <copy todir = "${classes.dir}">
+      <fileset dir = "${test.dir}">
+        <include name = "**/*.xml" />
+        <include name = "**/*.properties" />
+      </fileset>
+      <fileset dir = "${test.dir}">
+        <include name = "**/*.xml" />
+      </fileset>
+    </copy>
+
     <javac destdir = "${classes.dir}" classpathref = "compile.path.id"
            debug = "${build.debug}" encoding = "${default.javac.encoding}">
       <src path = "${src.dir}"/>
@@ -362,7 +362,7 @@
 
   </target>
 
-  
+
   <!--
     | WAR:
     |
@@ -408,7 +408,7 @@
         <include name = "**/*"/>
       </fileset>
     </copy>
-    
+
 
     <parallel>
 
@@ -423,7 +423,7 @@
             fork = "true">
       </java>
 
-      
+
 
       <sequential>
 
@@ -453,7 +453,7 @@
     </parallel>
 
     <antcall  target = "-generate-junit-report"/>
-    
+
   </target>
 
 
@@ -486,7 +486,7 @@
           .">
 
     <property name = "test" value = "org.openremote.controller.suite.RESTTests"/>
-    
+
     <!-- Call the JUnit task with 'junit.single.test' property set. -->
     <antcall target = "run-test">
       <param name = "junit.single.test" value = "true"/>
@@ -660,13 +660,13 @@
       </fileset>
     </copy>
 
-		<copy todir = "${webapp.classes.dir}">
-			<fileset dir = "${classes.dir}">
-				<include name = "**.*" />
-			</fileset>
-		</copy>
+    <copy todir = "${webapp.classes.dir}">
+      <fileset dir = "${classes.dir}">
+        <include name = "**.*" />
+      </fileset>
+    </copy>
 
-    
+
     <javac destdir = "${classes.dir}" classpathref = "compile.path.id"
            debug = "${build.debug}" encoding = "${default.javac.encoding}">
       <src path = "${src.dir}"/>
@@ -817,7 +817,7 @@
     <cobertura-instrument todir = "${instrumented.dir}" datafile = "${cobertura.datafile}">
       <ignore regex = "org.apache.log4j.*"/>
       <ignore regex="org.openremote.controller.jetty.*"/>
-			<ignore regex="org.openremote.controller.suite.*"/>
+      <ignore regex="org.openremote.controller.suite.*"/>
       <fileset dir = "${classes.dir}">
         <include name = "**/*.class"/>
         <exclude name="**/Jetty*.class"/>
@@ -836,15 +836,15 @@
     <property name = "test.targetclasspath" value = "${instrumented.dir}"/>
     <antcall target = "test-cov"/>
     <delete includeemptydirs = "true" dir = "${cobertura.report.dir}"/>
- 		<cobertura-report format = "html" destdir = "${cobertura.report.dir}"
+    <cobertura-report format = "html" destdir = "${cobertura.report.dir}"
                       srcdir = "${src.dir}" datafile = "${cobertura.datafile}" />
-		<cobertura-report format = "xml" destdir = "${cobertura.report.dir}"
+    <cobertura-report format = "xml" destdir = "${cobertura.report.dir}"
                       srcdir = "${src.dir}" datafile = "${cobertura.datafile}"/>
     <delete file = "operation.log" failonerror = "false"/>
     <delete file = "exception.log" failonerror = "false"/>
   </target>
 
-  
+
   <!--
     | REPORT-CHECKSTYLE:
     |
