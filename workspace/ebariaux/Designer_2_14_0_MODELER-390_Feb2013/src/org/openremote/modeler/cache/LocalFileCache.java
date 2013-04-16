@@ -84,6 +84,7 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.component.ColorPicker;
@@ -108,13 +109,18 @@ import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
+import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
+import org.openremote.modeler.utils.dtoconverter.SwitchDTOConverter;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thoughtworks.xstream.XStream;
@@ -218,13 +224,15 @@ public class LocalFileCache implements ResourceCache<File>
 
   // Dependency introduced as part of MODELER-390
   private DeviceService deviceService;
-  
+  private SwitchService switchService;
+  private SensorService sensorService;
+
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
   private ControllerConfigService controllerConfigService;
   private VelocityEngine velocity;
-  
+
   // Constructors ---------------------------------------------------------------------------------
 
 
@@ -2192,8 +2200,19 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("screens", screens);
     
     ConfigurationFilesGenerationContext generationContext = new ConfigurationFilesGenerationContext();
-    context.put("generationContext", generationContext);
     
+    List<Switch> dbSwitches = switchService.loadAll();
+    for (Switch sw : dbSwitches) {
+      generationContext.putSwitch(sw.getOid(), SwitchDTOConverter.createSwitchDetailsDTO(sw));
+    }
+    
+    List<Sensor> dbSensors = sensorService.loadAll(account);
+    for (Sensor sensor : dbSensors) {
+      generationContext.putSensor(sensor.getOid(), sensor.getSensorDetailsDTO());
+    }
+
+    context.put("generationContext", generationContext);
+
     try {
       return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
     } catch (Exception e) {
@@ -2599,6 +2618,14 @@ public class LocalFileCache implements ResourceCache<File>
 	this.deviceService = deviceService;
   }
 
+  public void setSwitchService(SwitchService switchService) {
+    this.switchService = switchService;
+  }
+  
+  public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+  
   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
     this.deviceMacroService = deviceMacroService;
   }
