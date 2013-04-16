@@ -22,6 +22,7 @@ package org.openremote.modeler.domain;
 
 import java.util.HashMap;
 
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 /**
@@ -35,5 +36,22 @@ import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
  */
 public class ConfigurationFilesGenerationContext {
 
-  public HashMap<Long, SwitchDetailsDTO> switches;
+  private HashMap<Long, SwitchDetailsDTO> switches = new HashMap<Long, SwitchDetailsDTO>();
+  private HashMap<Long, SensorDetailsDTO> sensors = new HashMap<Long, SensorDetailsDTO>();
+  
+  public void putSwitch(Long id, SwitchDetailsDTO aSwitch) {
+    switches.put(id, aSwitch);
+  }
+  
+  public SwitchDetailsDTO getSwitch(Long id) {
+    return switches.get(id);
+  }
+  
+  public void putSensor(Long id, SensorDetailsDTO sensor) {
+    sensors.put(id, sensor);
+  }
+  
+  public SensorDetailsDTO getSensor(Long id) {
+    return sensors.get(id);
+  }
 }
