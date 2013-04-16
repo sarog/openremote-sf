@@ -54,9 +54,9 @@
   ##<------------------------------------------------------------------------UIButton------------------------------------------------------------------
   #foreach($button in $buttons)
 	  <button id="${button.getOid()}">
-		#if(${button.getUiCommand()})
-			#set($uiCmd=${button.getUiCommand()})
-			#foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+		#if(${button.getUiCommandDTO()})
+			#set($uiCmd=${button.getUiCommandDTO()})
+			#foreach($cmd in ${localFileCache.getCommandOwnerByUICommandDTO($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
 					<include type="command" ref="${cmd.getId()}"/>
 				#else
