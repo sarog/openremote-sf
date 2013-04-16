@@ -64,6 +64,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       this.onImage = swh.onImage;
       this.offImage = swh.offImage;
       this.switchCommand = swh.switchCommand;
+      this.switchDTO = swh.switchDTO;
    }
 
    public UISwitch(long id) {
