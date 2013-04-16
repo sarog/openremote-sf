@@ -71,7 +71,7 @@
   			<grid left="${grid.getLeft()}" top="${grid.getTop()}" width="${grid.getWidth()}" height="${grid.getHeight()}" rows="${grid.getRowCount()}" cols="${grid.getColumnCount()}">
   				#foreach($cell in $grid.getCells())
   					<cell x="${cell.getPosX()}" y="${cell.getPosY()}" rowspan="${cell.getRowspan()}" colspan="${cell.getColspan()}">
-  						${cell.getUiComponent().getPanelXml()}
+  						${cell.getUiComponent().getPanelXml($generationContext)}
   					</cell>
   				#end
   			</grid>
@@ -79,12 +79,12 @@
   		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
   		#foreach($absolute in $screen.getAbsolutes())
   			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
-  				${absolute.getUiComponent().getPanelXml()}
+  				${absolute.getUiComponent().getPanelXml($generationContext)}
   			</absolute>
   		#end
   		##-----------------------------------------------------------------gesture---------------------------------------------------------------------------
   		#foreach($gesture in $screen.getGestures())
-  			${gesture.getPanelXml()}
+  			${gesture.getPanelXml($generationContext)}
   		#end
   		</screen>
   	#end
@@ -102,7 +102,7 @@
 				##<-----include screens--->##
 				#if($group.getScreenRefs().size()>0)
 					#foreach($screenRef in $group.getScreenRefs())
-					 ${screenRef.getScreen().getPanelXml()}
+					 ${screenRef.getScreen().getPanelXml($generationContext)}
 					#end
 				#end
 				##<-----include screens--->##

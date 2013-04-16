@@ -69,6 +69,7 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -2189,6 +2190,10 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("panels", panels);
     context.put("groups", groups);
     context.put("screens", screens);
+    
+    ConfigurationFilesGenerationContext generationContext = new ConfigurationFilesGenerationContext();
+    context.put("generationContext", generationContext);
+    
     try {
       return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
     } catch (Exception e) {
@@ -2578,7 +2583,7 @@ public class LocalFileCache implements ResourceCache<File>
      public Object referenceInsert(String reference, Object value) {
        int lastDot = reference.lastIndexOf(".");
        if (lastDot != -1) {
-         if (".getPanelXml()}".equals(reference.substring(lastDot))) {
+         if (".getPanelXml($generationContext)}".equals(reference.substring(lastDot))) {
            return value;
          }
        }
