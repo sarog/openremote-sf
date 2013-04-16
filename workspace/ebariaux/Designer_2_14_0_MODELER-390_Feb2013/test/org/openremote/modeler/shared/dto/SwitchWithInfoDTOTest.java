@@ -140,7 +140,7 @@ public class SwitchWithInfoDTOTest {
   public void testConstructor() {
     SwitchWithInfoDTO switchDTO1 = new SwitchWithInfoDTO();
     switchDTO1.setOid(IDUtil.nextID());
-    switchDTO1.setDeviceName("Name");
+    switchDTO1.setDisplayName("Name");
     switchDTO1.setOnCommandName("On command");
     switchDTO1.setOffCommandName("Off command");
     switchDTO1.setSensorName("Sensor");
