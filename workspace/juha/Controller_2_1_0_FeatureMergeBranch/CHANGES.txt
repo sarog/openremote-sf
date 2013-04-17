@@ -70,6 +70,14 @@ Bug Fixes:
     characters -- CF, RF, zero bytes, etc.  (Juha Lindfors, ORCJAVA-324) 
 
 
+Internal:
+
+  - Enforce UTF-8 encoding on Java source files with javac to prevent build issues
+    on systems with differing default character encoding configurations
+    (Juha Lindfors, ORCJAVA-329)
+
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
