@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.ControllerConfigBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -69,7 +68,7 @@ public class ControllerConfigTabItem extends TabItem {
    private Text hintContent = new Text();
    
    /** The config container includes all config infos. */
-   private FormPanel configContainer = new FormPanel();
+   private FormPanel configContainer;
    
    /** The hint field set show the selected field's hint message. */
    private FieldSet hintFieldSet = new FieldSet();
@@ -89,30 +88,8 @@ public class ControllerConfigTabItem extends TabItem {
       setClosable(true);
       setLayout(new FitLayout());  
       
-      FormLayout layout = new FormLayout();
-      layout.setLabelWidth(200);
-      layout.setDefaultWidth(400);
-      
-      configContainer.setLayout(layout);
-      configContainer.setAutoHeight(true);
-      configContainer.setScrollMode(Scroll.AUTOY);
-      configContainer.setButtonAlign(HorizontalAlignment.RIGHT);
-      configContainer.setBorders(false);
-      configContainer.setBodyBorder(false);
-      configContainer.setLabelWidth(55);
-      configContainer.setPadding(5);
-      configContainer.setHeaderVisible(false);
-      configContainer.setWidth(500);
-      configContainer.setHeight(300);
-      Button submitBtn =   new Button("Submit");
-      submitBtn.addSelectionListener(new SaveListener());
-      
-      configContainer.addButton(submitBtn);
-      add(configContainer);
-      
       hintFieldSet.setLayout(new FitLayout());
       hintFieldSet.setHeading("Hint");
-      
       
       hintContent.setText(category.getDescription());
       hintContent.setWidth("100%");
@@ -120,9 +97,46 @@ public class ControllerConfigTabItem extends TabItem {
       hintContent.setStyleAttribute("fontSize", "11px");
       hintContent.setStyleAttribute("fontFamily", Constants.DEFAULT_FONT_FAMILY);
       setStyleAttribute("overflowY", "auto");
-      initForm();
+      
+      initFormPanel();
    }
    
+   private void initFormPanel() {
+     if (configContainer != null) {
+       configContainer.removeFromParent();
+     }
+     
+     configContainer = new FormPanel();
+     
+     FormLayout layout = new FormLayout();
+     layout.setLabelWidth(200);
+     layout.setDefaultWidth(400);
+
+     configContainer.setLayout(layout);
+     configContainer.setAutoHeight(true);
+     configContainer.setScrollMode(Scroll.AUTOY);
+     configContainer.setButtonAlign(HorizontalAlignment.RIGHT);
+     configContainer.setBorders(false);
+     configContainer.setBodyBorder(false);
+     configContainer.setLabelWidth(55);
+     configContainer.setPadding(5);
+     configContainer.setHeaderVisible(false);
+     configContainer.setWidth(500);
+     configContainer.setHeight(300);
+     
+     configContainer.getButtonBar().setSpacing(10);
+
+     Button submitBtn =   new Button("Submit");
+     submitBtn.addSelectionListener(new SaveListener());
+     
+     configContainer.addButton(submitBtn);
+     add(configContainer);
+     
+     // Required here so that buttons are aligned identically on first and subsequent display
+     layout();
+     
+     initForm();
+   }
    
    /**
     * Gets current account's controller configurations and initializes the form. 
@@ -138,6 +152,30 @@ public class ControllerConfigTabItem extends TabItem {
                for (ControllerConfigDTO config : configs) {
                   createProperty(config,false);
                }
+               if (configs.size() > 0) {
+                 Button resetButton = new Button("Reset to defaults");
+                 resetButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+                   @Override
+                   public void componentSelected(ButtonEvent ce) {
+                     HashSet<Long> configIds = new HashSet<Long>();
+                     for (ControllerConfigDTO cfg : configs) {
+                       configIds.add(cfg.getOid());
+                     }
+                     ControllerConfigBeanModelProxy.resetToDefaults(configIds, new AsyncSuccessCallback<Void>() {
+                       @Override
+                       public void onSuccess(Void result) {
+                         Info.display("Reset", "Properties have been reset to their default values");
+                         // Setting the collections to null to force reload of config DTOs
+                         configs = null;
+                         newConfigs = null;
+                         initFormPanel();
+                       }         
+                     });
+                   }
+                 });
+                 configContainer.getButtonBar().insert(resetButton, 0);
+               }
+               layout();
 
                if (newConfigs == null) {
                   ControllerConfigBeanModelProxy.listAllMissingConfigDTOs(category.getName(),
@@ -172,7 +210,6 @@ public class ControllerConfigTabItem extends TabItem {
 
                         });
                }
-               layout();
             }
          });
       }
@@ -323,8 +360,10 @@ public class ControllerConfigTabItem extends TabItem {
         @Override
         public void onSuccess(HashSet<ControllerConfigDTO> result) {
           Info.display("save", "Property saved successfully");
-          fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(this)); // This will trigger refresh of the current selection, no need to do it here
-        }         
+          configs = null;
+          newConfigs = null;
+          initFormPanel();
+        }
       });
    }
     
