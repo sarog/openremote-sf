@@ -14,6 +14,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      Marcus Redeker)
    - Add IP address to Samsung SmartTV protocol, enabling
      use of multiple devices (MODELER-465, Ivan Martinez)
+   - Controller configuration sections have a "reset to
+     default values" button (MODELER-453, Eric Bariaux)
 
 
  Fixes:
@@ -31,6 +33,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      (Eric Bariaux)
    - MODELER-392: Fractional Widget Coordinates when Browser
      has non-default zoom (Eric Bariaux)
+   - MODELER-453: Error when attempting to set a controller
+     configuration property to an empty value (Eric Bariaux)
 
 
  Internal:
