@@ -206,10 +206,10 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
         try
         {
-          if (dpt instanceof DataPointType.Unsigned8BitValue)
-	      return ApplicationProtocolDataUnit.createRange(parameter);
-	  else
+          if (dpt instanceof DataPointType.Signed8BitValue)
 	      return ApplicationProtocolDataUnit.createSignedRange(parameter);
+	  else
+	      return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {
