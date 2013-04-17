@@ -37,4 +37,5 @@ public interface ControllerConfigRPCServiceAsync {
    
    void saveAllDTOs(HashSet<ControllerConfigDTO> configs, AsyncCallback<HashSet<ControllerConfigDTO>>callback);
 
+   void resetToDefaults(HashSet<Long> configIds, AsyncCallback<Void> callback);
 }
