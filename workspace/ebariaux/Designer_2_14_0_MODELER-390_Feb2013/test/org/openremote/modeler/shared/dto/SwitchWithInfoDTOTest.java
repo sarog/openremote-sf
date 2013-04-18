@@ -34,37 +34,37 @@ public class SwitchWithInfoDTOTest {
     SwitchWithInfoDTO switchDTO1 = new SwitchWithInfoDTO();
     SwitchWithInfoDTO switchDTO2 = new SwitchWithInfoDTO();
     
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO1.setOid(IDUtil.nextID());
     switchDTO2.setOid(switchDTO1.getOid());
     
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
 
     switchDTO1.setDisplayName("Name");
     switchDTO2.setDisplayName("Name");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
 
     switchDTO1.setOnCommandName("On command");
     switchDTO2.setOnCommandName("On command");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
 
     switchDTO1.setOffCommandName("Off command");
     switchDTO2.setOffCommandName("Off command");
     
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
 
     switchDTO1.setSensorName("Sensor");
     switchDTO2.setSensorName("Sensor");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO1.setDeviceName("Device name");
     switchDTO2.setDeviceName("Device name");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
   }
   
   @Test
@@ -85,55 +85,55 @@ public class SwitchWithInfoDTOTest {
     switchDTO2.setSensorName("Sensor");
     switchDTO2.setDeviceName("Device name");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO2.setOid(IDUtil.nextID());
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, id is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, id is different");
 
     switchDTO2.setOid(switchDTO1.getOid());
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
 
     switchDTO2.setDisplayName(null);
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, second displayName is not set");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second displayName is not set");
 
     switchDTO2.setDisplayName("Name 2");
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, displayName is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, displayName is different");
 
     switchDTO2.setDisplayName("Name");
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO2.setOnCommandName(null);
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, second onCommand is not set");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second onCommand is not set");
 
     switchDTO2.setOnCommandName("On command 2");
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, onCommand is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, onCommand is different");
 
     switchDTO2.setOnCommandName("On command");
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO2.setOffCommandName(null);
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, second offCommand is not set");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second offCommand is not set");
 
     switchDTO2.setOffCommandName("Off command 2");
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, offCommand is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, offCommand is different");
 
     switchDTO2.setOffCommandName("Off command");
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO2.setSensorName(null);
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, second sensorName is not set");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second sensorName is not set");
 
     switchDTO2.setSensorName("Sensor 2");
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, sensorName is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, sensorName is different");
 
     switchDTO2.setSensorName("Sensor");
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
     switchDTO2.setDeviceName(null);
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, second deviceName is not set");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second deviceName is not set");
     
     switchDTO2.setDeviceName("Device name 2");
-    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithDTOInfo to be different, deviceName is different");
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, deviceName is different");
   }
   
   @Test
@@ -148,7 +148,7 @@ public class SwitchWithInfoDTOTest {
 
     SwitchWithInfoDTO switchDTO2 = new SwitchWithInfoDTO(switchDTO1.getOid(), "Name", "On command", "Off command", "Sensor", "Device name");
 
-    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithDTOInfo to be equal");
+    Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
   }
 
 }
