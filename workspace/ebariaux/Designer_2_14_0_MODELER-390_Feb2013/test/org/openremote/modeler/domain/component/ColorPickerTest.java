@@ -68,11 +68,13 @@ public class ColorPickerTest {
     device.setOid(IDUtil.nextID());
       
     DeviceCommand deviceCommand1 = new DeviceCommand();
+    deviceCommand1.setOid(IDUtil.nextID());
     deviceCommand1.createProtocol("http");
     deviceCommand1.setDevice(device);
     device.getDeviceCommands().add(deviceCommand1);
     
     DeviceCommand deviceCommand2 = new DeviceCommand();
+    deviceCommand2.setOid(IDUtil.nextID());
     deviceCommand2.createProtocol("http");
     deviceCommand2.setDevice(device);
     device.getDeviceCommands().add(deviceCommand2);
@@ -107,7 +109,6 @@ public class ColorPickerTest {
     colorPicker2.setImage(imageSource1);
     Assert.assertEquals(colorPicker1, colorPicker2, "Expected the ColorPickers to be equal");
     
-    // TODO: test fails for now, as DTO is not used in compare, only command itself
     colorPicker2.setUiCommandDTO(deviceCommand2.getDeviceCommandDTO());
     Assert.assertFalse(colorPicker1.equals(colorPicker2), "Expected the ColorPickers to be different, command is different");
   }

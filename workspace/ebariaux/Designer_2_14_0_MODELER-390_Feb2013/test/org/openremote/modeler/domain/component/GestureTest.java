@@ -94,11 +94,13 @@ public class GestureTest {
     device.setOid(IDUtil.nextID());
       
     DeviceCommand deviceCommand1 = new DeviceCommand();
+    deviceCommand1.setOid(IDUtil.nextID());
     deviceCommand1.createProtocol("http");
     deviceCommand1.setDevice(device);
     device.getDeviceCommands().add(deviceCommand1);
     
     DeviceCommand deviceCommand2 = new DeviceCommand();
+    deviceCommand2.setOid(IDUtil.nextID());
     deviceCommand2.createProtocol("http");
     deviceCommand2.setDevice(device);
     device.getDeviceCommands().add(deviceCommand2);
@@ -146,7 +148,6 @@ public class GestureTest {
     gesture2.setUiCommandDTO(deviceCommand1.getDeviceCommandDTO());
     Assert.assertEquals(gesture1, gesture2, "Expected the Gestures to be equal");
     
-    // TODO: test fails for now, as DTO is not used in compare, only command itself
     gesture2.setUiCommandDTO(deviceCommand2.getDeviceCommandDTO());
     Assert.assertFalse(gesture1.equals(gesture2), "Expected the Gestures to be different, command is different");
   }

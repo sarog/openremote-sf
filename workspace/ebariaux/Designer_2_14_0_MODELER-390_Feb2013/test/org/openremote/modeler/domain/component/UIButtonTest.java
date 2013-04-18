@@ -110,11 +110,13 @@ public class UIButtonTest {
   	device.setOid(IDUtil.nextID());
   	  
   	DeviceCommand deviceCommand1 = new DeviceCommand();
+  	deviceCommand1.setOid(IDUtil.nextID());
   	deviceCommand1.createProtocol("http");
   	deviceCommand1.setDevice(device);
   	device.getDeviceCommands().add(deviceCommand1);
   	
   	DeviceCommand deviceCommand2 = new DeviceCommand();
+    deviceCommand2.setOid(IDUtil.nextID());
   	deviceCommand2.createProtocol("http");
   	deviceCommand2.setDevice(device);
   	device.getDeviceCommands().add(deviceCommand2);
@@ -177,7 +179,6 @@ public class UIButtonTest {
   	button2.setPressImage(imageSource2);
   	Assert.assertEquals(button1, button2, "Expected the buttons to be equal");
   	
-  	// TODO: test fails for now, as DTO is not used in compare, only command itself
   	button2.setUiCommandDTO(deviceCommand2.getDeviceCommandDTO());
   	Assert.assertFalse(button1.equals(button2), "Expected the buttons to be different, command is different");
   }
