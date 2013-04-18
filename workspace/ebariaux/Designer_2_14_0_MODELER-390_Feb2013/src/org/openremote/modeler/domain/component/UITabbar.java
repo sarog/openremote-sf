@@ -40,6 +40,7 @@ public class UITabbar extends UIComponent {
    public UITabbar() {}
    
    public UITabbar(UITabbar uiComponent) {
+     this.setOid(uiComponent.getOid());
      this.setScope(uiComponent.getScope());
      this.tabbarItems.addAll(uiComponent.getTabbarItems());
    }
