@@ -1,3 +1,11 @@
+
+Designer MODELER-413
+====================
+
+ - XML export must ensure all elements ids are unique across 
+   whole XML file - Quick fix to issue introduce in MODELER-396
+
+
 Designer MODELER-396
 ====================
 
