@@ -314,7 +314,36 @@ If it's true, controller will auto-detect its groupmembers with multicast.
         </hint>
     </config>
   </category>
-  
+
+  <category name="enocean">
+      <description>
+          <![CDATA[
+            Configuration for the EnOcean protocol
+          ]]>
+      </description>
+      <config name="enocean.commLayer" value="" options="PAD,RXTX">
+          <hint>
+              <![CDATA[
+                Choose either PAD or RXTX depending on your communication layer to use.
+              ]]>
+          </hint>
+      </config>
+      <config name="enocean.comPort" value="" >
+          <hint>
+              <![CDATA[
+                Serial port the EnOcean interface is found on.
+              ]]>
+          </hint>
+      </config>
+      <config name="enocean.serialProtocol" value="ESP3" options="ESP2,ESP3">
+          <hint>
+              <![CDATA[
+                EnOcean serial protocol version supported by the EnOcean interface.
+              ]]>
+          </hint>
+      </config>
+  </category>
+
   <!--
    |
    |  TODO : TEMPORARY
