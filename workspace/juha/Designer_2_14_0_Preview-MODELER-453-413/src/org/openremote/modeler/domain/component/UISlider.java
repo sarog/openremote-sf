@@ -177,7 +177,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       if (getSensor() != null) {
          Sensor sensor = getSensor();
          if (sensor.getType() == SensorType.RANGE || sensor.getType() == SensorType.LEVEL) {
-            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\" />\n");
+            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOffsetId() + "\" />\n");
             if (sensor.getType() == SensorType.RANGE) {
                RangeSensor rangeSensor = (RangeSensor) getSensor();
                min = rangeSensor.getMin();

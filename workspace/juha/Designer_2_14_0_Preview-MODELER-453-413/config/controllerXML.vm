@@ -47,7 +47,7 @@
 			<off />
 		#end
 		#if(${swh.getSensor()})
-			<include type="sensor" ref="${swh.getSensor().getOid()}"/>
+			<include type="sensor" ref="${swh.getSensor().getOffsetId()}"/>
 		#end
 		</switch>
   	#end
@@ -95,7 +95,7 @@
          #end
       #end
       #if(${uiSlider.getSensor()})
-         <include type="sensor" ref="${uiSlider.getSensor().getOid()}"/>
+         <include type="sensor" ref="${uiSlider.getSensor().getOffsetId()}"/>
       #end
       </slider>
     #end
@@ -104,7 +104,7 @@
   #foreach($image in $images)
    <image id="${image.getOid()}">
       #if($image.getSensor())
-         <include type="sensor" ref="${image.getSensor().getOid()}"/>
+         <include type="sensor" ref="${image.getSensor().getOffsetId()}"/>
       #end
     </image>
   #end
@@ -112,7 +112,7 @@
   #foreach($label in $labels)
    <label id="${label.getOid()}">
       #if($label.getSensor())
-         <include type="sensor" ref="${label.getSensor().getOid()}"/>
+         <include type="sensor" ref="${label.getSensor().getOffsetId()}"/>
       #end
     </label>
   #end
@@ -131,7 +131,7 @@
   ##<------------------------------------------------------------------------Sensors------------------------------------------------------------------
   <sensors>
   	#foreach($sensor in $sensors)
-  		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">
+  		<sensor id="${sensor.getOffsetId()}" name="${sensor.getName()}" type="${sensor.getType()}">
   			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
   				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
   				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer,$maxId)})
@@ -156,7 +156,7 @@
   		</sensor>
   	#end
   	#foreach($sensor in $dbSensors)
-  		<sensor id="${sensor.getOid()}" name="${sensor.getName()}" type="${sensor.getType()}">
+  		<sensor id="${sensor.getOffsetId()}" name="${sensor.getName()}" type="${sensor.getType()}">
   			#if(${sensor.getSensorCommandRef()}&&${sensor.getSensorCommandRef().getDeviceCommand()})
   				#set($deviceCmd=${sensor.getSensorCommandRef().getDeviceCommand()})
   				#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($deviceCmd.getDeviceCommandRef(),$eventContainer,$maxId)})
