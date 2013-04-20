@@ -41,8 +41,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
   - Image Asset Picker converted to GXT3 (Eric Bariaux, MODELER-330)
   - Hibernate lazy initialization errors on device attributes, 
-    correct handling of sensor ID assignments in transactions
-    (Eric Bariaux, MODELER-389, MODELER-396)
+    correct handling of sensor ID assignments in transactions,
+    changes to XML id generation
+    (Eric Bariaux, MODELER-389, MODELER-396, MODELER-413)
   
 
 Designer 2.13.9 (2013-03-30 Rosemary)
