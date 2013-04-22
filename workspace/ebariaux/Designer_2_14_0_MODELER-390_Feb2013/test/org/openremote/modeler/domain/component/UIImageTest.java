@@ -151,7 +151,7 @@ public class UIImageTest {
 
     Assert.assertEquals(image1, image2, "Expected the Images to be equal");
     
-    image2.setSensor(null);
+    image2.setSensorDTOAndInitSensorLink(null);
     Assert.assertFalse(image1.equals(image2), "Expected the Images to be different, sensor is different");
 
     Sensor sensor2 = new Sensor(SensorType.SWITCH);
@@ -164,7 +164,6 @@ public class UIImageTest {
     sensorCommandRef2.setDeviceCommand(deviceCommand);
     sensor2.setSensorCommandRef(sensorCommandRef2);
 
-    // TODO: test fails for now, as DTO is not used in compare, only sensor itself
     image2.setSensorDTOAndInitSensorLink(sensor2.getSensorWithInfoDTO());
     Assert.assertFalse(image1.equals(image2), "Expected the Images to be different, sensor is different");
   }
