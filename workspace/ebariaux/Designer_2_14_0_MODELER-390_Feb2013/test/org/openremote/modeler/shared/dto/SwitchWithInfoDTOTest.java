@@ -87,6 +87,9 @@ public class SwitchWithInfoDTOTest {
 
     Assert.assertEquals(switchDTO1, switchDTO2, "Expected the SwitchWithInfoDTO to be equal");
     
+    switchDTO2.setOid(null);
+    Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, second id is not set");
+    
     switchDTO2.setOid(IDUtil.nextID());
     Assert.assertFalse(switchDTO1.equals(switchDTO2), "Expected the SwitchWithInfoDTO to be different, id is different");
 
