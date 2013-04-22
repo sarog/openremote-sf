@@ -149,7 +149,7 @@ public class UIWebViewTest {
     webView2.setSensorDTOAndInitSensorLink(sensor.getSensorWithInfoDTO());
     Assert.assertEquals(webView1, webView2, "Expected the WebViews to be equal");
 
-    webView2.setSensor(null);
+    webView2.setSensorDTOAndInitSensorLink(null);
     Assert.assertFalse(webView1.equals(webView2), "Expected the WebViews to be different, sensor is different");
 
     Sensor sensor2 = new Sensor(SensorType.SWITCH);
@@ -162,7 +162,6 @@ public class UIWebViewTest {
     sensorCommandRef2.setDeviceCommand(deviceCommand);
     sensor2.setSensorCommandRef(sensorCommandRef2);
 
-    // TODO: test fails for now, as DTO is not used in compare, only sensor itself
     webView2.setSensorDTOAndInitSensorLink(sensor2.getSensorWithInfoDTO());
     Assert.assertFalse(webView1.equals(webView2), "Expected the WebViews to be different, sensor is different");
   }
