@@ -141,7 +141,7 @@ public class UILabelTest {
 
     Assert.assertEquals(label1, label2, "Expected the Labels to be equal");
     
-    label2.setSensor(null);
+    label2.setSensorDTOAndInitSensorLink(null);
     Assert.assertFalse(label1.equals(label2), "Expected the Labels to be different, sensor is different");
 
     Sensor sensor2 = new Sensor(SensorType.SWITCH);
@@ -154,8 +154,8 @@ public class UILabelTest {
     sensorCommandRef2.setDeviceCommand(deviceCommand);
     sensor2.setSensorCommandRef(sensorCommandRef2);
 
-    // TODO: test fails for now, as DTO is not used in compare, only sensor itself
     label2.setSensorDTOAndInitSensorLink(sensor2.getSensorWithInfoDTO());
+    
     Assert.assertFalse(label1.equals(label2), "Expected the Labels to be different, sensor is different");
   }
   
