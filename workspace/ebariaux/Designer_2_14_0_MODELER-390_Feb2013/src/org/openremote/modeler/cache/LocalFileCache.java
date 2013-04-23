@@ -2232,8 +2232,6 @@ public class LocalFileCache implements ResourceCache<File>
     List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
 
     for (Device device : allDevices) {
-      
-      System.out.println("will load commands for device with id " + device.getOid());
       allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
     }
     // PATCH R3181 END ---->8-----
