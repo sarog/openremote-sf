@@ -77,7 +77,7 @@ public class UITabbarTest {
     tabbar1.addTabbarItem(item1);
     
     UITabbar tabbar2 = new UITabbar();
-    tabbar2.setOid(tabbar2.getOid());
+    tabbar2.setOid(tabbar1.getOid());
     tabbar2.setScope(Scope.PANEL);
     tabbar2.addTabbarItem(item1);
 
