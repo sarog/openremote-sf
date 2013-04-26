@@ -24,32 +24,38 @@
   ##<------------------------------------------------------------------------UISwitch------------------------------------------------------------------
   	#foreach($swh in $switchs)
   		<switch id="${swh.getOid()}">
-		#if(${swh.getSwitchCommand()})
-			#set($switchCmd=${swh.getSwitchCommand()})
-			<on>
-				#if(${switchCmd.getSwitchCommandOnRef()})
-	  				#set($uiCmd=${switchCmd.getSwitchCommandOnRef()})
-	  				#foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
-	  					<include type="command" ref="${cmd.getId()}"/>
-					#end
-				#end
+  		#if(${swh.getSwitchDTO()})
+	      #if(${generationContext.getSwitch(${swh.getSwitchDTO().getOid()})})
+	        #set($switchDTO = ${generationContext.getSwitch(${swh.getSwitchDTO().getOid()})})
+		#if(${switchDTO.getOnCommand()})
+          <on>
+			  ## This is simplified quite a bit compared to the original but do not support macros
+			  ## Original code kept here for further reference if required later
+              ## #if(${switchCmd.getSwitchCommandOnRef()})
+	  		  ##		#set($uiCmd=${switchCmd.getSwitchCommandOnRef()})
+	  		  #foreach($cmd in ${localFileCache.getCommandOwnerById(${switchDTO.getOnCommand().getId()},$eventContainer,$maxId)})
+	  		  	<include type="command" ref="${cmd.getId()}"/>
+			  #end
+			  ##	#end
+			  
+			  ## This does not work as getCommandOwnerByUiCommand did return a command POJO with a different id assigned
+			  
+			  ##<include type="command" ref="${switchDTO.getOnCommand().getId()}"/>
 			</on>
-			<off>
-				#if(${switchCmd.getSwitchCommandOffRef()})
-	  				#set($uiCmd=${switchCmd.getSwitchCommandOffRef()})
-	  				#foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
-	  					<include type="command" ref="${cmd.getId()}"/>
-					#end
-				#end
-			</off>
 		#else
 			<on />
+	    #end
+		#if(${switchDTO.getOffCommand()})
+			<off>
+	  		  #foreach($cmd in ${localFileCache.getCommandOwnerById(${switchDTO.getOffCommand().getId()},$eventContainer,$maxId)})
+	  		  	<include type="command" ref="${cmd.getId()}"/>
+			  #end
+			</off>
+		#else
 			<off />
 		#end
-		#if(${swh.getSwitchDTO()})
-	      #if(${generationContext.getSwitch(${swh.getSwitchDTO().getOid()})})
-		    #if(${generationContext.getSwitch(${swh.getSwitchDTO().getOid()}).getSensor()})
-		      #set( $offsetId = ${generationContext.getSwitch(${swh.getSwitchDTO().getOid()}).getSensor().getId()} + 100000 )
+		    #if(${switchDTO.getSensor()})
+		      #set( $offsetId = ${switchDTO.getSensor().getId()} + 100000 )
   			  <include type="sensor" ref="$offsetId"/>
   			#end
   	      #end

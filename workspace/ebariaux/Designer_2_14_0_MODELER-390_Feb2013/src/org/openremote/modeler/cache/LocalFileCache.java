@@ -2335,6 +2335,18 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
 
+  
+  
+  // EBR : this only works for commands and will throw exception if id of macro is passed
+  public List<Command> getCommandOwnerById(Long id, ProtocolCommandContainer protocolEventContainer,
+      MaxId maxId) {
+    List<Command> oneUIButtonEventList = new ArrayList<Command>();
+    DeviceCommand deviceCommand = deviceCommandService.loadById(id);
+    protocolEventContainer.removeDeviceCommand(deviceCommand);
+    addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+    return oneUIButtonEventList;
+  }
+
   /**
    * TODO
    * 
