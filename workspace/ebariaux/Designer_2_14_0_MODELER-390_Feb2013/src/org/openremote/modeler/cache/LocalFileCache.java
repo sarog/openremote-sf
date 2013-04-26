@@ -84,6 +84,7 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
@@ -110,6 +111,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
@@ -226,6 +228,7 @@ public class LocalFileCache implements ResourceCache<File>
   private DeviceService deviceService;
   private SwitchService switchService;
   private SensorService sensorService;
+  private SliderService sliderService;
 
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
@@ -1998,6 +2001,11 @@ public class LocalFileCache implements ResourceCache<File>
       generationContext.putSwitch(sw.getOid(), SwitchDTOConverter.createSwitchDetailsDTO(sw));
     }
     
+    List<Slider> dbSliders = sliderService.loadAll();
+    for (Slider slider : dbSliders) {
+      generationContext.putSlider(slider.getOid(), slider.getSliderDetailsDTO());
+    }
+    
     List<Sensor> dbSensors = sensorService.loadAll(account);
     for (Sensor sensor : dbSensors) {
       generationContext.putSensor(sensor.getOid(), sensor.getSensorDetailsDTO());
@@ -2645,6 +2653,10 @@ public class LocalFileCache implements ResourceCache<File>
 
   public void setSwitchService(SwitchService switchService) {
     this.switchService = switchService;
+  }
+  
+  public void setSliderService(SliderService sliderService) {
+    this.sliderService = sliderService;
   }
   
   public void setSensorService(SensorService sensorService) {
