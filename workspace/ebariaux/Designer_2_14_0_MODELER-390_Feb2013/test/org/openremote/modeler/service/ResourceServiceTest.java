@@ -885,259 +885,244 @@ public class ResourceServiceTest {
       @SuppressWarnings("unchecked")
       @Override
       protected void doInTransactionWithoutResult(TransactionStatus status) {
-    Device dev = new Device("Test", "Vendor", "Model");
-    dev.setDeviceCommands(new ArrayList<DeviceCommand>());
-    dev.setAccount(account);   
-    account.addDevice(dev);
-    deviceService.saveDevice(dev);
-
-    Protocol protocol = new Protocol();
-    protocol.setType(Constants.INFRARED_TYPE);
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);   
+        account.addDevice(dev);
+        deviceService.saveDevice(dev);
     
-    DeviceCommand readCommand = new DeviceCommand();
-    readCommand.setProtocol(protocol);
-    readCommand.setName("readCommand");
-    
-    readCommand.setDevice(dev);
-    dev.getDeviceCommands().add(readCommand);
-    
-    readCommand.setOid(IDUtil.nextID());
-    deviceCommandService.save(readCommand);
-    
-    Sensor sensor = new Sensor(SensorType.SWITCH);
-    sensor.setOid(IDUtil.nextID());
-    sensor.setName("Sensor");
-    sensor.setDevice(dev);
-    sensor.setAccount(account);
-    account.getSensors().add(sensor);
-
-    SensorCommandRef sensorCommandRef = new SensorCommandRef();
-    sensorCommandRef.setSensor(sensor);
-    sensorCommandRef.setDeviceCommand(readCommand);
-    sensor.setSensorCommandRef(sensorCommandRef);
-    
-    sensorService.saveSensor(sensor);
-    
-    DeviceCommand onCommand = new DeviceCommand();
-    onCommand.setProtocol(protocol);
-    onCommand.setName("onCommand");
-    
-    onCommand.setDevice(dev);
-    dev.getDeviceCommands().add(onCommand);
-    
-    onCommand.setOid(IDUtil.nextID());
-    deviceCommandService.save(onCommand);
-    
-    DeviceCommand offCommand = new DeviceCommand();
-    offCommand.setProtocol(protocol);
-    offCommand.setName("offCommand");
-    
-    offCommand.setDevice(dev);
-    dev.getDeviceCommands().add(offCommand);
-    
-    offCommand.setOid(IDUtil.nextID());
-    deviceCommandService.save(offCommand);
-
-    Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
-    buildingSwitch.setOid(IDUtil.nextID());
-    buildingSwitch.setAccount(account);    
-    account.getSwitches().add(buildingSwitch);
-    buildingSwitch.setDevice(dev);
-    dev.getSwitchs().add(buildingSwitch);
-    switchService.save(buildingSwitch);
-    
-    Set<Panel> panels = new HashSet<Panel>();
-    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
-    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
         
-    Panel p = new Panel();
-    p.setOid(IDUtil.nextID());
-    p.setName("panel");
+        DeviceCommand readCommand = new DeviceCommand();
+        readCommand.setProtocol(protocol);
+        readCommand.setName("readCommand");
+        
+        readCommand.setDevice(dev);
+        dev.getDeviceCommands().add(readCommand);
+        
+        readCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(readCommand);
+        
+        Sensor sensor = new Sensor(SensorType.SWITCH);
+        sensor.setOid(IDUtil.nextID());
+        sensor.setName("Sensor");
+        sensor.setDevice(dev);
+        sensor.setAccount(account);
+        account.getSensors().add(sensor);
     
-    final Screen screen1 = new Screen();
-    screen1.setOid(IDUtil.nextID());
-    screen1.setName("screen1");
-    ScreenPair screenPair = new ScreenPair();
-    screenPair.setOid(IDUtil.nextID());
-    screenPair.setPortraitScreen(screen1);
-    screenRefs.add(new ScreenPairRef(screenPair));
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setSensor(sensor);
+        sensorCommandRef.setDeviceCommand(readCommand);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        
+        sensorService.saveSensor(sensor);
+        
+        DeviceCommand onCommand = new DeviceCommand();
+        onCommand.setProtocol(protocol);
+        onCommand.setName("onCommand");
+        
+        onCommand.setDevice(dev);
+        dev.getDeviceCommands().add(onCommand);
+        
+        onCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(onCommand);
+        
+        DeviceCommand offCommand = new DeviceCommand();
+        offCommand.setProtocol(protocol);
+        offCommand.setName("offCommand");
+        
+        offCommand.setDevice(dev);
+        dev.getDeviceCommands().add(offCommand);
+        
+        offCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(offCommand);
     
-    ImageSource onImageSource = new ImageSource("On image");
-    ImageSource offImageSource = new ImageSource("Off image");
+        Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
+        buildingSwitch.setOid(IDUtil.nextID());
+        buildingSwitch.setAccount(account);    
+        account.getSwitches().add(buildingSwitch);
+        buildingSwitch.setDevice(dev);
+        dev.getSwitchs().add(buildingSwitch);
+        switchService.save(buildingSwitch);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        ImageSource onImageSource = new ImageSource("On image");
+        ImageSource offImageSource = new ImageSource("Off image");
+        
+        UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+        aSwitch.setOnImage(onImageSource);
+        aSwitch.setOffImage(offImageSource);
+        aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
     
-    UISwitch aSwitch = new UISwitch(IDUtil.nextID());
-    aSwitch.setOnImage(onImageSource);
-    aSwitch.setOffImage(offImageSource);
-    aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
-
-    Absolute abs = new Absolute(IDUtil.nextID());
-    abs.setUiComponent(aSwitch);
-    screen1.addAbsolute(abs);
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(aSwitch);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
     
-    Group group1 = new Group();
-    group1.setOid(IDUtil.nextID());
-    group1.setName("group1");
-    group1.setScreenRefs(screenRefs);
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
     
-    groupRefs.add(new GroupRef(group1));
-    p.setGroupRefs(groupRefs);
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
     
-    panels.add(p);
-
-    cache.replace(panels, IDUtil.nextID());
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
     
-    try {
-      System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
-      System.out.println("Content is ");
-      IOUtils.copy(new FileInputStream(cache.getControllerXmlFile()), System.out);
-      System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
-      System.out.println("Content is ");
-      IOUtils.copy(new FileInputStream(cache.getPanelXmlFile()), System.out);
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+        Element screenElement  = assertOneScreen(topElement, screen1);
     
-    SAXReader reader = new SAXReader();
-    SAXParserFactory factory = SAXParserFactory.newInstance();
-    factory.setValidating(true);
-    factory.setNamespaceAware(true);
-
-    Document panelXmlDocument = null;
-    try {
-      panelXmlDocument = reader.read(cache.getPanelXmlFile());
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    Element topElement = panelXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
+        Element switchElement = absoluteElement.element("switch");
+        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        
+        Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
+        Element linkElement = switchElement.element("link");
+        
+        String referencedSensorId = assertLinkElement(linkElement, "sensor");
+        
+        Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
+        Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
+        Element onStateElement = (Element) linkElement.elements("state").get(0);
+        Assert.assertNotNull("Expecting on state to have a name attribute", onStateElement.attribute("name"));
+        Assert.assertEquals("Expectinf on state to be named on", "on", onStateElement.attribute("name").getText());
+        Assert.assertNotNull("Expecting on state to have a value attribute", onStateElement.attribute("value"));
+        Assert.assertEquals("Expecting on state to have image name as value", "On image", onStateElement.attribute("value").getText());
+        Element offStateElement = (Element) linkElement.elements("state").get(1);
+        Assert.assertNotNull("Expecting off state to have a name attribute", offStateElement.attribute("name"));
+        Assert.assertEquals("Expectinf off state to be named off", "off", offStateElement.attribute("name").getText());
+        Assert.assertNotNull("Expecting off state to have a value attribute", offStateElement.attribute("value"));
+        Assert.assertEquals("Expecting off state to have image name as value", "Off image", offStateElement.attribute("value").getText());
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("switch").size());
+        switchElement = componentsElement.element("switch");
+        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        Assert.assertEquals("Expecting 3 children for switch element", 3, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
+        Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
+        Assert.assertEquals("Expecting 1 include child for switch element", 1, switchElement.elements("include").size());
+        Element onElement = switchElement.element("on");
+        Assert.assertEquals("Expecting 1 child for on element",  1, onElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for on element", 1, onElement.elements("include").size());
+        Element includeElement = onElement.element("include");
+        String referencedOnCommandId = assertIncludeElement(includeElement, "command");
+        
+        Element offElement = switchElement.element("off");
+        Assert.assertEquals("Expecting 1 child for off element",  1, offElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for off element", 1, offElement.elements("include").size());
+        includeElement = offElement.element("include");
+        String referencedOffCommandId = assertIncludeElement(includeElement, "command");
     
-    Element panelElement = assertOnePanel(topElement, p);
-    assertPanelHasOneGroupChild(panelElement, group1);
-
-    Element groupElement = assertOneGroup(topElement, group1);
-    assertGroupHasOneScreenChild(groupElement, screen1);
-
-    Element screenElement  = assertOneScreen(topElement, screen1);
-
-    Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
-    Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
-    Element absoluteElement = screenElement.element("absolute");
-    Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
-    Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
-    Element switchElement = absoluteElement.element("switch");
-    Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        includeElement = switchElement.element("include");
+        Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement, "sensor"));
     
-    Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
-    Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
-    Element linkElement = switchElement.element("link");
+        Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+        Element sensorsElement = topElement.element("sensors");
+        Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
+        Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
+        Element sensorElement = sensorsElement.element("sensor");
+        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
+        Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
+        Assert.assertEquals("Expecting sensor type to be switch", "switch", sensorElement.attribute("type").getText());
+        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
+        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
     
-    String referencedSensorId = assertLinkElement(linkElement, "sensor");
+        Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
+        Assert.assertEquals("Expecting 2 states children for sensorElement", 2, sensorElement.elements("state").size());
+        includeElement = sensorElement.element("include");
+        String referencedReadCommandId = assertIncludeElement(includeElement, "command");
+        Element stateElement = (Element) sensorElement.elements("state").get(0);
+        Assert.assertNotNull("Expecting on state element to have name attribute", stateElement.attribute("name"));
+        Assert.assertEquals("Expecting on state element to be named on", "on", stateElement.attribute("name").getText());
+        stateElement = (Element) sensorElement.elements("state").get(1);
+        Assert.assertNotNull("Expecting off state element to have name attribute", stateElement.attribute("name"));
+        Assert.assertEquals("Expecting off state element to be named off", "off", stateElement.attribute("name").getText());
+        
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting 3 children for commands element", 3, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 3 command children for commands element", 3, commandsElement.elements("command").size());
     
-    Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
-    Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
-    Element onStateElement = (Element) linkElement.elements("state").get(0);
-    Assert.assertNotNull("Expecting on state to have a name attribute", onStateElement.attribute("name"));
-    Assert.assertEquals("Expectinf on state to be named on", "on", onStateElement.attribute("name").getText());
-    Assert.assertNotNull("Expecting on state to have a value attribute", onStateElement.attribute("value"));
-    Assert.assertEquals("Expecting on state to have image name as value", "On image", onStateElement.attribute("value").getText());
-    Element offStateElement = (Element) linkElement.elements("state").get(1);
-    Assert.assertNotNull("Expecting off state to have a name attribute", offStateElement.attribute("name"));
-    Assert.assertEquals("Expectinf off state to be named off", "off", offStateElement.attribute("name").getText());
-    Assert.assertNotNull("Expecting off state to have a value attribute", offStateElement.attribute("value"));
-    Assert.assertEquals("Expecting off state to have image name as value", "Off image", offStateElement.attribute("value").getText());
+        for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
+          Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
+          Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
+          Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+          Element propertyElement = commandElement.element("property");
+          Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
+          Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
     
-    Document controllerXmlDocument = null;
-    try {
-      controllerXmlDocument = reader.read(cache.getControllerXmlFile());
-    } catch (DocumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    topElement = controllerXmlDocument.getRootElement();
+          if (commandElement.attribute("id").getText().equals(referencedOnCommandId)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "onCommand", propertyElement.attribute("value").getText());        
+          } else if (commandElement.attribute("id").getText().equals(referencedOffCommandId)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "offCommand", propertyElement.attribute("value").getText());        
+          } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
+          } else {
+            Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
+          }
+        }
     
-    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
-    Element componentsElement = topElement.element("components");
-    Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
-    Assert.assertEquals(1, componentsElement.elements("switch").size());
-    switchElement = componentsElement.element("switch");
-    Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
-    Assert.assertEquals("Expecting 3 children for switch element", 3, switchElement.elements().size());
-    Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
-    Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
-    Assert.assertEquals("Expecting 1 include child for switch element", 1, switchElement.elements("include").size());
-    Element onElement = switchElement.element("on");
-    Assert.assertEquals("Expecting 1 child for on element",  1, onElement.elements().size());
-    Assert.assertEquals("Expecting 1 include child for on element", 1, onElement.elements("include").size());
-    Element includeElement = onElement.element("include");
-    String referencedOnCommandId = assertIncludeElement(includeElement, "command");
-    
-    Element offElement = switchElement.element("off");
-    Assert.assertEquals("Expecting 1 child for off element",  1, offElement.elements().size());
-    Assert.assertEquals("Expecting 1 include child for off element", 1, offElement.elements("include").size());
-    includeElement = offElement.element("include");
-    String referencedOffCommandId = assertIncludeElement(includeElement, "command");
-
-    includeElement = switchElement.element("include");
-    Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement, "sensor"));
-
-    Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
-    Element sensorsElement = topElement.element("sensors");
-    Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
-    Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
-    Element sensorElement = sensorsElement.element("sensor");
-    Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
-    Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
-    Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
-    Assert.assertEquals("Expecting sensor type to be switch", "switch", sensorElement.attribute("type").getText());
-    Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
-    Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
-
-    Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
-    Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
-    Assert.assertEquals("Expecting 2 states children for sensorElement", 2, sensorElement.elements("state").size());
-    includeElement = sensorElement.element("include");
-    String referencedReadCommandId = assertIncludeElement(includeElement, "command");
-    Element stateElement = (Element) sensorElement.elements("state").get(0);
-    Assert.assertNotNull("Expecting on state element to have name attribute", stateElement.attribute("name"));
-    Assert.assertEquals("Expecting on state element to be named on", "on", stateElement.attribute("name").getText());
-    stateElement = (Element) sensorElement.elements("state").get(1);
-    Assert.assertNotNull("Expecting off state element to have name attribute", stateElement.attribute("name"));
-    Assert.assertEquals("Expecting off state element to be named off", "off", stateElement.attribute("name").getText());
-    
-    Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
-    Element commandsElement = topElement.element("commands");
-    Assert.assertEquals("Expecting 3 children for commands element", 3, commandsElement.elements().size());
-    Assert.assertEquals("Expecting 3 command children for commands element", 3, commandsElement.elements("command").size());
-
-    for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
-      Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
-      Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
-      Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
-      Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-      Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-      Element propertyElement = commandElement.element("property");
-      Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
-      Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
-      Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
-
-      if (commandElement.attribute("id").getText().equals(referencedOnCommandId)) {
-        Assert.assertEquals("Expecting property value to be onCommand", "onCommand", propertyElement.attribute("value").getText());        
-      } else if (commandElement.attribute("id").getText().equals(referencedOffCommandId)) {
-        Assert.assertEquals("Expecting property value to be onCommand", "offCommand", propertyElement.attribute("value").getText());        
-      } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
-        Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
-      } else {
-        Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
-      }
-    }
-
-    // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-    account.getDevices().remove(dev);    
-    status.setRollbackOnly();
+        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+        account.getDevices().remove(dev);    
+        status.setRollbackOnly();
       }
     });
   }
