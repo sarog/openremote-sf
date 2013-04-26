@@ -62,12 +62,14 @@ import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
+import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
@@ -81,6 +83,7 @@ import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
@@ -160,6 +163,7 @@ public class ResourceServiceTest {
 
           cache.setDeviceService(deviceService);
           cache.setSwitchService(switchService);
+          cache.setSliderService(sliderService);
           cache.setSensorService(sensorService);
           cache.setDeviceMacroService(deviceMacroService);
           cache.setDeviceCommandService(deviceCommandService);
@@ -1121,12 +1125,265 @@ public class ResourceServiceTest {
         }
     
         // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);    
+        account.getDevices().remove(dev);
+        account.getSwitches().remove(buildingSwitch);
+        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
   }
-  
+
+  @Test
+  public void testOneScreenWithOneSlider() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);   
+        account.addDevice(dev);
+        deviceService.saveDevice(dev);
+    
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand readCommand = new DeviceCommand();
+        readCommand.setProtocol(protocol);
+        readCommand.setName("readCommand");
+        
+        readCommand.setDevice(dev);
+        dev.getDeviceCommands().add(readCommand);
+        
+        readCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(readCommand);
+        
+        RangeSensor sensor = new RangeSensor(-2,  10);
+        sensor.setOid(IDUtil.nextID());
+        sensor.setName("Sensor");
+        sensor.setDevice(dev);
+        sensor.setAccount(account);
+        account.getSensors().add(sensor);
+    
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setSensor(sensor);
+        sensorCommandRef.setDeviceCommand(readCommand);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        
+        sensorService.saveSensor(sensor);
+        
+        DeviceCommand setCommand = new DeviceCommand();
+        setCommand.setProtocol(protocol);
+        setCommand.setName("setCommand");
+        
+        setCommand.setDevice(dev);
+        dev.getDeviceCommands().add(setCommand);
+        
+        setCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(setCommand);
+        
+        Slider buildingSlider = new Slider("Slider", setCommand, sensor);
+        buildingSlider.setOid(IDUtil.nextID());
+        buildingSlider.setAccount(account);    
+        account.getSliders().add(buildingSlider);
+        buildingSlider.setDevice(dev);
+        dev.getSliders().add(buildingSlider);
+        sliderService.save(buildingSlider);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        ImageSource minImageSource = new ImageSource("Min image");
+        ImageSource minTrackImageSource = new ImageSource("Min track image");
+        ImageSource thumbImageSource = new ImageSource("Thumb image");
+        ImageSource maxTrackImageSource = new ImageSource("Max track image");
+        ImageSource maxImageSource = new ImageSource("Max image");
+       
+        UISlider slider = new UISlider(IDUtil.nextID());
+        slider.setMinImage(minImageSource);
+        slider.setMinTrackImage(minTrackImageSource);
+        slider.setThumbImage(thumbImageSource);
+        slider.setMaxTrackImage(maxTrackImageSource);
+        slider.setMaxImage(maxImageSource);
+        slider.setVertical(true);
+        slider.setSliderDTO(buildingSlider.getSliderWithInfoDTO());
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(slider);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 slider element", 1, absoluteElement.elements("slider").size());
+        Element sliderElement = absoluteElement.element("slider");
+        Assert.assertNotNull("Expecting id attribute on slider", sliderElement.attribute("id"));
+        Assert.assertEquals(Long.toString(slider.getOid()), sliderElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting thumbImage attribute on slider", sliderElement.attribute("thumbImage"));
+        Assert.assertEquals("Expecting thumbImage attribute to be 'Thumb image'", "Thumb image", sliderElement.attribute("thumbImage").getText());
+        Assert.assertNotNull("Expecting vertial attribute on slider", sliderElement.attribute("vertical"));
+        Assert.assertEquals("Expecting vertical attribute to be true", "true", sliderElement.attribute("vertical").getText());
+        if (sliderElement.attribute("passive") != null) {
+          Assert.assertEquals("Expecting passive attribute, if present, to be false", "false", sliderElement.attribute("passive").getText());
+        }
+        
+        Assert.assertEquals("Expecting 3 children for slider element", 3, sliderElement.elements().size());
+        Assert.assertEquals("Expecting 1 link element", 1, sliderElement.elements("link").size());
+        Element linkElement = sliderElement.element("link");        
+        String referencedSensorId = assertLinkElement(linkElement, "sensor");
+        Assert.assertEquals("Expecting no child for link element", 0, linkElement.elements().size());
+        
+        Assert.assertEquals("Expecting 1 min element", 1, sliderElement.elements("min").size());
+        Element minElement = sliderElement.element("min");
+        Assert.assertNotNull("Expecting min element to have value attribute", minElement.attribute("value"));
+        Assert.assertEquals("Expecting min value to be -2", "-2", minElement.attribute("value").getText());
+        Assert.assertNotNull("Expecting min element to have image attribute", minElement.attribute("image"));
+        Assert.assertEquals("Expecting min image to be 'Min image'", "Min image", minElement.attribute("image").getText());
+        Assert.assertNotNull("Expecting min element to have trackImage attribute", minElement.attribute("trackImage"));
+        Assert.assertEquals("Expecting min track image to be 'Min track image'", "Min track image", minElement.attribute("trackImage").getText());
+        Assert.assertEquals("Expecting 1 max element", 1, sliderElement.elements("max").size());
+        Element maxElement = sliderElement.element("max");
+        Assert.assertNotNull("Expecting max element to have value attribute", maxElement.attribute("value"));
+        Assert.assertEquals("Expecting max value to be 10", "10", maxElement.attribute("value").getText());
+        Assert.assertNotNull("Expecting max element to have image attribute", maxElement.attribute("image"));
+        Assert.assertEquals("Expecting max image to be 'Max image'", "Max image", maxElement.attribute("image").getText());
+        Assert.assertNotNull("Expecting max element to have trackImage attribute", maxElement.attribute("trackImage"));
+        Assert.assertEquals("Expecting max track image to be 'Max track image'", "Max track image", maxElement.attribute("trackImage").getText());
+
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("slider").size());
+        sliderElement = componentsElement.element("slider");
+        Assert.assertEquals(Long.toString(slider.getOid()), sliderElement.attribute("id").getText());
+        Assert.assertEquals("Expecting 2 children for slider element", 2, sliderElement.elements().size());
+        Assert.assertEquals("Expecting 1 setValue child for switch element", 1, sliderElement.elements("setValue").size());
+        Assert.assertEquals("Expecting 1 include child for switch element", 1, sliderElement.elements("include").size());
+        Element setValueElement = sliderElement.element("setValue");
+        Assert.assertEquals("Expecting 1 child for setValue element",  1, setValueElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for setValue element", 1, setValueElement.elements("include").size());
+        Element includeElement = setValueElement.element("include");
+        String referencedSetCommandId = assertIncludeElement(includeElement, "command");
+        
+        includeElement = sliderElement.element("include");
+        Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement, "sensor"));
+    
+        Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+        Element sensorsElement = topElement.element("sensors");
+        Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
+        Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
+        Element sensorElement = sensorsElement.element("sensor");
+        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
+        Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
+        Assert.assertEquals("Expecting sensor type to be range", "range", sensorElement.attribute("type").getText());
+        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
+        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+    
+        Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
+        Assert.assertEquals("Expecting 1 min child for sensorElement", 1, sensorElement.elements("min").size());
+        Assert.assertEquals("Expecting 1 max child for sensorElement", 1, sensorElement.elements("max").size());
+        includeElement = sensorElement.element("include");
+        String referencedReadCommandId = assertIncludeElement(includeElement, "command");
+        minElement = sensorElement.element("min");
+        Assert.assertNotNull("Expecting min element to have value attribute", minElement.attribute("value"));
+        Assert.assertEquals("Expecting min value to be -2", "-2", minElement.attribute("value").getText());
+        maxElement = sensorElement.element("max");
+        Assert.assertNotNull("Expecting max element to have value attribute", maxElement.attribute("value"));
+        Assert.assertEquals("Expecting max value to be 10", "10", maxElement.attribute("value").getText());
+        
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting 2 children for commands element", 2, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 2 command children for commands element", 2, commandsElement.elements("command").size());
+    
+        for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
+          Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
+          Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
+          Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+          Element propertyElement = commandElement.element("property");
+          Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
+          Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+    
+          if (commandElement.attribute("id").getText().equals(referencedSetCommandId)) {
+            Assert.assertEquals("Expecting property value to be setCommand", "setCommand", propertyElement.attribute("value").getText());        
+          } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
+          } else {
+            Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
+          }
+        }
+    
+        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+        account.getDevices().remove(dev);
+        account.getSliders().remove(buildingSlider);
+        account.getSensors().remove(sensor);
+        status.setRollbackOnly();
+      }
+    });
+  }
   @Test(enabled=false)
    public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
       
