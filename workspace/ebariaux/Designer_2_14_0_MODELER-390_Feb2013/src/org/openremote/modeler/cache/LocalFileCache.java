@@ -2335,9 +2335,21 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
 
-  
-  
-  // EBR : this only works for commands and will throw exception if id of macro is passed
+  /**
+   * EBR - 20130426
+   * This version of the getCommandOwner takes an id to lookup the command.
+   * In this implementation, it is expected that the id is a DeviceCommand id.
+   * This is a limitation compared to the other implementations,
+   * as the id might have been a DeviceMacro id.
+   * 
+   * This is currently used in the controllerXML.vm template.
+   * Added as part of fix of controller XML generation, initially caused by the MODELER-390 reworks.
+   *
+   * @param id
+   * @param protocolEventContainer
+   * @param maxId
+   * @return
+   */
   public List<Command> getCommandOwnerById(Long id, ProtocolCommandContainer protocolEventContainer,
       MaxId maxId) {
     List<Command> oneUIButtonEventList = new ArrayList<Command>();
