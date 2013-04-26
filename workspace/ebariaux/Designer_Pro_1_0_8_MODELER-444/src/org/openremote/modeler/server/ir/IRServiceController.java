@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2013, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -103,23 +103,30 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
 
   public void unregisterFile(String prontoHandle) {
     User currentUser = userService.getCurrentUser();
-    ClientResource cr = new ClientResource(configuration.getIrServiceRESTRootUrl() + "ProntoFile/" + prontoHandle);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    cr.delete();
-    cr.release();
+    ClientResource cr = null;
+    try {
+    	cr = new ClientResource(configuration.getIrServiceRESTRootUrl() + "ProntoFile/" + prontoHandle);
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+        cr.delete();
+    } finally {
+      if (cr != null) {
+        cr.release();
+      }
+    }
   }
 
   private Object restCallToIRService(String url, JSONDeserializer<GenericResourceResultWithErrorMessage> deserializer) throws IRServiceException {
     User currentUser = userService.getCurrentUser();
-    ClientResource cr = new ClientResource(url);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation r = cr.get();
-    
-    String str;
-    try { 
-      str = r.getText();
+    ClientResource cr = null;
+    String str = "";
+
+    try {
+      cr = new ClientResource(url);
+	  cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+	  Representation r = cr.get();
+	  str = r.getText();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new IRServiceException(e.getMessage());
     } finally {
       cr.release();
     }

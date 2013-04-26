@@ -89,18 +89,24 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     if (onlyNew) {
       url += "?used=false";
     }
-    ClientResource cr = new ClientResource(url);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation r = cr.get();
-    cr.release();
-    String str;
-    try
-    {
-      str = r.getText();
-    } catch (IOException e) 
-    {
-      log.error("Error calling DeviceDiscovery rest service while loading discovered devices", e);
-      throw new DeviceDiscoveryException(e.getMessage());
+    ClientResource cr = null;
+    String str = "";
+    try {
+      cr = new ClientResource(url);
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      Representation r = cr.get();
+      try
+      {
+        str = r.getText();
+      } catch (IOException e) 
+      {
+        log.error("Error calling DeviceDiscovery rest service while loading discovered devices", e);
+        throw new DeviceDiscoveryException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+        cr.release();
+      }
     }
     GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DiscoveredDeviceDTO.class).deserialize(str); 
     ArrayList<DiscoveredDeviceDTO> result = (ArrayList<DiscoveredDeviceDTO>)res.getResult(); 
@@ -118,19 +124,26 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     for (DiscoveredDeviceDTO device: devicesToDelete)
     {
       String url = configuration.getDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices/" + device.getOid();
-      ClientResource cr = new ClientResource(url);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-      Representation result = cr.delete();
-      String str;
-      try
-      {
-        str = result.getText();
-      } catch (IOException e)
-      {
-        log.error("Error calling DeviceDiscovery rest service while deleting discovered devices", e);
-        throw new DeviceDiscoveryException(e.getMessage());
+      ClientResource cr = null;
+      String str = "";
+      try {
+        cr = new ClientResource(url);
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+        Representation result = cr.delete();
+        try
+        {
+          str = result.getText();
+        } catch (IOException e)
+        {
+          log.error("Error calling DeviceDiscovery rest service while deleting discovered devices", e);
+          throw new DeviceDiscoveryException(e.getMessage());
+        }
+      } finally {
+    	if (cr != null) {
+    	  cr.release();
+    	}
       }
-      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str); 
+      GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str); 
       if (res.getErrorMessage() != null) {
         log.error("Error calling DeviceDiscovery rest service while deleting discovered devices " + res.getErrorMessage() );
         throw new DeviceDiscoveryException(res.getErrorMessage());
@@ -180,19 +193,26 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
   {
     User currentUser = userService.getCurrentUser();
     String url = configuration.getDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices/" + deviceToUpdate.getOid();
-    ClientResource cr = new ClientResource(url);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    deviceToUpdate.setUsed(true);
-    Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(deviceToUpdate));
-    Representation result = cr.put(rep);
-    String str;
-    try
-    {
-      str = result.getText();
-    } catch (IOException e)
-    {
-      log.error("Error calling DeviceDiscovery rest service while marking discovered device as used", e);
-      throw new DeviceDiscoveryException(e.getMessage());
+    ClientResource cr = null;
+    String str = "";
+    try {
+      cr = new ClientResource(url);
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      deviceToUpdate.setUsed(true);
+      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(deviceToUpdate));
+      Representation result = cr.put(rep);
+      try
+      {
+        str = result.getText();
+      } catch (IOException e)
+      {
+        log.error("Error calling DeviceDiscovery rest service while marking discovered device as used", e);
+        throw new DeviceDiscoveryException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+    	cr.release();
+      }
     }
     GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", DiscoveredDeviceDTO.class).deserialize(str); 
     if (res.getErrorMessage() != null) {

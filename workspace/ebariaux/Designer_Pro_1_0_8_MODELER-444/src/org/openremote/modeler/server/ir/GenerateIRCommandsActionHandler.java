@@ -44,24 +44,32 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   public GenerateIRCommandsResult execute(GenerateIRCommandsAction action, ExecutionContext context) throws DispatchException {
     GenerateIRCommandsResult actionResult = new GenerateIRCommandsResult();
     
-    ClientResource resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");    
-    
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    UserDetails userDetails = null;
-    if (principal instanceof UserDetails) {
-      userDetails = (UserDetails) principal;
-      resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userDetails.getUsername(), userDetails.getPassword());
-    }
-
-    Representation r = resource.post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
-    
+    ClientResource resource = null;
     GenericResourceResultWithErrorMessage result = null;
+    
     try {
-      result = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
-    } catch (IOException e) {
-      log.error("Communication error with IRService", e);
-      actionResult.setErrorMessage("Communication error with IRService");
-    };
+      resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");
+	    
+	  Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	  UserDetails userDetails = null;
+	  if (principal instanceof UserDetails) {
+	    userDetails = (UserDetails) principal;
+	    resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userDetails.getUsername(), userDetails.getPassword());
+	  }
+	
+	  Representation r = resource.post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
+	
+	  try {
+	    result = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", DeviceCommandDetailsDTO.class).deserialize(r.getText());
+	  } catch (IOException e) {
+	    log.error("Communication error with IRService", e);
+	    actionResult.setErrorMessage("Communication error with IRService");
+      }
+    } finally {
+    	if (resource != null) {
+    		resource.release();
+    	}
+    }
     
     if (result.getErrorMessage() != null) {
       actionResult.setErrorMessage(result.getErrorMessage());

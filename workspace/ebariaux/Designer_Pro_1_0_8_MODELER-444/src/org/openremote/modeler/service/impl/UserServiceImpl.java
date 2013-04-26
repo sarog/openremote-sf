@@ -82,16 +82,22 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     }
    
    public UserDTO getUserDTOById(long id) {
-     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + id);
-     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-     Representation r = cr.get();
-     cr.release();
-     String str;
-     try { 
-       str = r.getText();
-     } catch (IOException e)
-     {
-       throw new RuntimeException(e);
+     ClientResource cr = null;
+     String str = "";
+     try {
+       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + id);
+       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+       Representation r = cr.get();
+       try { 
+         str = r.getText();
+       } catch (IOException e)
+       {
+         throw new RuntimeException(e);
+       }
+     } finally {
+       if (cr != null) {
+	     cr.release();
+       }
      }
      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
      if (res.getErrorMessage() != null) {
@@ -142,18 +148,24 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     * {@inheritDoc}
     */
     private void saveUserDTO(UserDTO user) {
-      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
-      Representation r = cr.post(rep);
-      cr.release();
-      String str;
-      try
-      {
-        str = r.getText();
-      } catch (IOException e)
-      {
-        throw new RuntimeException(e);
+      ClientResource cr = null;
+      String str = "";
+      try {
+        cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+        Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(user));
+        Representation r = cr.post(rep);
+        try
+        {
+          str = r.getText();
+        } catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      } finally {
+    	if (cr != null) {
+    	  cr.release();
+        }
       }
       GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", Long.class).deserialize(str); 
       if (res.getErrorMessage() != null) {
@@ -167,18 +179,24 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      * {@inheritDoc}
      */
     public void updateUser(UserDTO user) {
-      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class", "registerTimeAsString").deepSerialize(user));
-      Representation r = cr.put(rep);
-      cr.release();
-      String str = null;
-      try
-      {
-        str = r.getText();
-      } catch (IOException e)
-      {
-        e.printStackTrace();
+      ClientResource cr = null;
+      String str = "";
+      try {
+        cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user");
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+        Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class", "registerTimeAsString").deepSerialize(user));
+        Representation r = cr.put(rep);
+        try
+        {
+          str = r.getText();
+        } catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+      } finally {
+    	if (cr != null) {
+          cr.release();
+    	}
       }
       GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str); 
       if (res.getErrorMessage() != null) {
@@ -243,16 +261,22 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
      StringBuffer url = new StringBuffer("user/" + currentUser.getOid() + "/inviteUser");
      url.append("?inviteeEmail=" + email);
      url.append("&inviteeRoles=" + convertRoleDisplayStringToRoleString(roleDisplayName));
-     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + url.toString());
-     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-     Representation r = cr.post(null);
-     cr.release();
-     String str;
-     try { 
-       str = r.getText();
-     } catch (IOException e)
-     {
-       throw new RuntimeException(e);
+     ClientResource cr = null;
+     String str = "";
+     try {
+       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + url.toString());
+       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+       Representation r = cr.post(null);
+       try { 
+         str = r.getText();
+       } catch (IOException e)
+       {
+         throw new RuntimeException(e);
+       }
+     } finally {
+       if (cr != null) {
+    	 cr.release();
+       }
      }
      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
      if (res.getErrorMessage() != null) {
@@ -359,17 +383,23 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   }
 
    public void deleteUser(long uid) {
-      ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + uid);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-      Representation result = cr.delete();
-      cr.release();
-      String str;
-      try
-      {
-        str = result.getText();
-      } catch (IOException e)
-      {
-        throw new RuntimeException(e);
+      ClientResource cr = null;
+      String str = "";
+      try {
+    	cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + uid);
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+        Representation result = cr.delete();
+        try
+        {
+          str = result.getText();
+        } catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      } finally {
+    	if (cr != null) {
+  	      cr.release();
+    	}
       }
       GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str);
       if (res.getErrorMessage() != null) {
@@ -396,16 +426,22 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    @Override
    public UserDTO forgotPassword(String username)
    {
-     ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + username + "/forgotPassword");
-     cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
-     Representation r = cr.get();
-     cr.release();
-     String str;
-     try { 
-       str = r.getText();
-     } catch (IOException e)
-     {
-       throw new RuntimeException(e);
+     ClientResource cr = null;
+     String str = "";
+     try {
+       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "user/" + username + "/forgotPassword");
+       cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, configuration.getUserAccountServiceRESTUsername(), configuration.getUserAccountServiceRESTPassword());
+       Representation r = cr.get();
+       try { 
+         str = r.getText();
+       } catch (IOException e)
+       {
+         throw new RuntimeException(e);
+       }
+     } finally {
+       if (cr != null) {
+         cr.release();
+       }
      }
      GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", UserDTO.class).deserialize(str);
      if (res.getErrorMessage() != null) {
