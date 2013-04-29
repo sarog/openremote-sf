@@ -19,20 +19,14 @@
 */
 package org.openremote.modeler.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.transaction.TransactionManager;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.digester.SetRootRule;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
@@ -62,7 +56,6 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
@@ -73,8 +66,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchCommandOffRef;
-import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
@@ -91,7 +82,6 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UIWebView;
-import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -560,8 +550,8 @@ public class ResourceServiceTest {
     });
   }
    
-   @Test
-   public void testPanelTabbarWithNavigateToLogical() {
+  @Test
+  public void testPanelTabbarWithNavigateToLogical() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
