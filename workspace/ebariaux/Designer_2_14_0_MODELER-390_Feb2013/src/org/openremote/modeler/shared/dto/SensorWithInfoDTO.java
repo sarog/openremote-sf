@@ -22,7 +22,11 @@ package org.openremote.modeler.shared.dto;
 
 import java.util.ArrayList;
 
+import javax.persistence.Transient;
+
 import org.openremote.modeler.domain.SensorType;
+
+import flexjson.JSON;
 
 public class SensorWithInfoDTO implements DTO {
 
@@ -175,6 +179,20 @@ public class SensorWithInfoDTO implements DTO {
     if (type != other.type)
       return false;
     return true;
+  }
+
+  /**
+   * Returns the sensor id offset by a predefined value.
+   * This is used to partition the id space between commands and sensor,
+   * and avoid having id collision.
+   * This is a temporary solution, see MODELER-413 for more details. 
+   * 
+   * @return int sensor id offset by predefine value.
+   */
+  @Transient
+  @JSON(include = false)
+  public long getOffsetId() {
+    return 100000 + getOid();
   }
 
 }

@@ -51,6 +51,7 @@ import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -70,6 +71,7 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
@@ -1384,6 +1386,302 @@ public class ResourceServiceTest {
       }
     });
   }
+  
+  @Test
+  public void testOneScreenWithOneLabel() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+
+        UILabel label = new UILabel(IDUtil.nextID());
+        label.setText("Label");
+        label.setColor("ff0000");
+        label.setFontSize(12);
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(label);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 label element", 1, absoluteElement.elements("label").size());
+        Element labelElement = absoluteElement.element("label");
+        Assert.assertNotNull("Expecting id attribute on label", labelElement.attribute("id"));
+        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting text attribute on label", labelElement.attribute("text"));
+        Assert.assertEquals("Expecting text attribute to be 'Label'", "Label", labelElement.attribute("text").getText());
+        Assert.assertNotNull("Expecting fontSize attribute on label", labelElement.attribute("fontSize"));
+        Assert.assertEquals("Expecting fontSize attribute to be '12'", "12", labelElement.attribute("fontSize").getText());
+        Assert.assertNotNull("Expecting color attribute on label", labelElement.attribute("color"));
+        Assert.assertEquals("Expecting color attribute to be '#ff0000'", "#ff0000", labelElement.attribute("color").getText());
+        
+        Assert.assertEquals("Expecting no child for label element", 0, labelElement.elements().size());
+
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("label").size());
+        labelElement = componentsElement.element("label");
+        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        Assert.assertEquals("Expecting no child for label element", 0, labelElement.elements().size());
+
+        status.setRollbackOnly();
+      }
+    });
+  }
+  
+  @Test
+  public void testOneScreenWithLabelWithSensor() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);   
+        account.addDevice(dev);
+        deviceService.saveDevice(dev);
+    
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand readCommand = new DeviceCommand();
+        readCommand.setProtocol(protocol);
+        readCommand.setName("readCommand");
+        
+        readCommand.setDevice(dev);
+        dev.getDeviceCommands().add(readCommand);
+        
+        readCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(readCommand);
+        
+        CustomSensor sensor = new CustomSensor();
+        sensor.setOid(IDUtil.nextID());
+        sensor.setName("Sensor");
+        sensor.addState(new State("state name",  "state value"));
+        sensor.setDevice(dev);
+        sensor.setAccount(account);
+        account.getSensors().add(sensor);
+    
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setSensor(sensor);
+        sensorCommandRef.setDeviceCommand(readCommand);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        
+        sensorService.saveSensor(sensor);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+
+        UILabel label = new UILabel(IDUtil.nextID());
+        label.setText("Label with sensor");
+        label.setColor("ff0000");
+        label.setFontSize(12);
+        label.setSensorDTOAndInitSensorLink(sensor.getSensorWithInfoDTO());
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(label);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 label element", 1, absoluteElement.elements("label").size());
+        Element labelElement = absoluteElement.element("label");
+        Assert.assertNotNull("Expecting id attribute on label", labelElement.attribute("id"));
+        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting text attribute on label", labelElement.attribute("text"));
+        Assert.assertEquals("Expecting text attribute to be 'Label with sensor'", "Label with sensor", labelElement.attribute("text").getText());
+        Assert.assertNotNull("Expecting fontSize attribute on label", labelElement.attribute("fontSize"));
+        Assert.assertEquals("Expecting fontSize attribute to be '12'", "12", labelElement.attribute("fontSize").getText());
+        Assert.assertNotNull("Expecting color attribute on label", labelElement.attribute("color"));
+        Assert.assertEquals("Expecting color attribute to be '#ff0000'", "#ff0000", labelElement.attribute("color").getText());
+        
+        Assert.assertEquals("Expecting 1 child for label element", 1, labelElement.elements().size());
+        Assert.assertEquals("Expecting 1 link child for label element", 1, labelElement.elements("link").size());
+        Element linkElement = labelElement.element("link");
+        String referencedSensorId = assertLinkElement(linkElement, "sensor");
+
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("label").size());
+        labelElement = componentsElement.element("label");
+        Assert.assertNotNull("Expecting id attribute for label", labelElement.attribute("id"));
+        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        Assert.assertEquals("Expecting 1 child for label element", 1, labelElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for switch element", 1, labelElement.elements("include").size());
+        Element includeElement = labelElement.element("include");
+        Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement, "sensor"));
+
+        Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+        Element sensorsElement = topElement.element("sensors");
+        Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
+        Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
+        Element sensorElement = sensorsElement.element("sensor");
+        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
+        Assert.assertEquals("Expecting sensor id to be one referenced by label", referencedSensorId, sensorElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
+        Assert.assertEquals("Expecting sensor type to be custom", "custom", sensorElement.attribute("type").getText());
+        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
+        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+    
+        Assert.assertEquals("Expecting 2 children for sensor element", 2, sensorElement.elements().size());
+        Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
+        Assert.assertEquals("Expecting 1 state child for sensorElement", 1, sensorElement.elements("state").size());
+        includeElement = sensorElement.element("include");
+        String referencedReadCommandId = assertIncludeElement(includeElement, "command");
+        Element stateElement = sensorElement.element("state");
+        Assert.assertNotNull("Expecting state element to have name attribute", stateElement.attribute("name"));
+        Assert.assertEquals("Expecting state name to be 'state name'", "state name", stateElement.attribute("name").getText());
+        Assert.assertNotNull("Expecting state element to have value attribute", stateElement.attribute("value"));
+        Assert.assertEquals("Expecting state value to be 'state value'", "state value", stateElement.attribute("value").getText());
+        
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting 1 child for commands element", 1, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 1 command child for commands element", 1, commandsElement.elements("command").size());
+    
+        Element commandElement = commandsElement.element("command");
+        Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
+        Assert.assertEquals("Expecting command to be the one referenced by sensor", referencedReadCommandId, commandElement.attribute("id").getText());
+        Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
+        Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+        Element propertyElement = commandElement.element("property");
+        Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
+        Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+
+        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+        account.getDevices().remove(dev);
+        account.getSensors().remove(sensor);
+        status.setRollbackOnly();
+      }
+    });
+  }
+
   @Test(enabled=false)
    public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
       

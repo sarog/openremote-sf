@@ -124,8 +124,8 @@
   ##<------------------------------------------------------------------------Label------------------------------------------------------------------
   #foreach($label in $labels)
    <label id="${label.getOid()}">
-      #if($label.getSensor())
-         <include type="sensor" ref="${label.getSensor().getOffsetId()}"/>
+      #if($label.getSensorDTO())
+         <include type="sensor" ref="${label.getSensorDTO().getOffsetId()}"/>
       #end
     </label>
   #end
