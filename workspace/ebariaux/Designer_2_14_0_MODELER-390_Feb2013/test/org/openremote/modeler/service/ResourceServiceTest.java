@@ -1073,9 +1073,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        assertAttribute(sensorElement, "id", referencedSensorId);
-        assertAttribute(sensorElement, "type", "switch");
-        assertAttribute(sensorElement, "name", "Sensor");
+        assertSensorElement(sensorElement, referencedSensorId, "switch", "Sensor");
     
         Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1310,9 +1308,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        assertAttribute(sensorElement, "id", referencedSensorId);
-        assertAttribute(sensorElement, "type", "range");
-        assertAttribute(sensorElement, "name", "Sensor");
+        assertSensorElement(sensorElement, referencedSensorId, "range", "Sensor");
     
         Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1599,9 +1595,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        assertAttribute(sensorElement, "id", referencedSensorId);
-        assertAttribute(sensorElement, "type", "custom");
-        assertAttribute(sensorElement, "name", "Sensor");
+        assertSensorElement(sensorElement, referencedSensorId, "custom", "Sensor");
     
         Assert.assertEquals("Expecting 2 children for sensor element", 2, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1869,6 +1863,12 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      Assert.assertEquals("Expecting include type to be " + expectedType, expectedType, includeElement.attribute("type").getText());
      Assert.assertNotNull("Expecting include to have a ref attribute", includeElement.attribute("ref"));
      return includeElement.attribute("ref").getText();
+   }
+   
+   private void assertSensorElement(Element sensorElement, String sensorId, String sensorType, String sensorName) {
+     assertAttribute(sensorElement, "id", sensorId);
+     assertAttribute(sensorElement, "type", sensorType);
+     assertAttribute(sensorElement, "name", sensorName);
    }
 
 }
