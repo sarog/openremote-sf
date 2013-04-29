@@ -1900,27 +1900,4 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      return includeElement.attribute("ref").getText();
    }
 
-   private void clearDatabase() {
-     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-       @Override
-       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
-         List<Device> devices = deviceService.loadAll();
-         for (Device dev : devices) {
-           /*
-           List<Sensor> sensors = dev.getSensors();
-           for (Sensor s : sensors) {
-             sensorService.deleteSensor(s.getOid());
-           }
-           List<Switch> switches = dev.getSwitchs();
-           for (Switch s : switches) {
-             switchService.delete(s.getOid());
-           }
-           dev.getSensors().clear();
-           dev.getSwitchs().clear();
-           deviceService.saveDevice(dev);*/
-           deviceService.deleteDevice(dev.getOid());
-         }
-       }
-     });
-   }
 }
