@@ -132,11 +132,15 @@
   ##<------------------------------------------------------------------------Color Picker------------------------------------------------------------------
   #foreach($colorPicker in $colorPickers)
    <colorpicker id="${colorPicker.getOid()}">
-      #if(${colorPicker.getUiCommand()})
-         #set($uiCmd=${colorPicker.getUiCommand()})
-         #foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
-            <include type="command" ref="${cmd.getId()}"/>
-         #end
+      #if(${colorPicker.getUiCommandDTO()})
+		#set($uiCmd=${colorPicker.getUiCommandDTO()})
+		#foreach($cmd in ${localFileCache.getCommandOwnerByUICommandDTO($uiCmd,$eventContainer,$maxId)})
+			#if($cmd.getDelay().equals(""))
+				<include type="command" ref="${cmd.getId()}"/>
+			#else
+				<delay>${cmd.getDelay()}</delay>
+			#end
+		#end
       #end
     </colorpicker>
   #end
