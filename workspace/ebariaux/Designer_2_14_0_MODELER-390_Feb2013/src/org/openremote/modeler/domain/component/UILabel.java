@@ -157,8 +157,8 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
       StringBuilder sb = new StringBuilder();
       sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
-      if (sensor != null) {
-         sb.append(sensorLink.getXMLString());
+      if (getSensorDTO() != null) {
+         sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
       }
       sb.append("</label>");
       return sb.toString();
