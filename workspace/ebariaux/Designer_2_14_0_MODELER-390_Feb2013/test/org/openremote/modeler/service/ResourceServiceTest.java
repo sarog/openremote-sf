@@ -844,7 +844,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 button element", 1, absoluteElement.elements("button").size());
         Element buttonElement = absoluteElement.element("button");
-        Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
+        assertAttribute(buttonElement, "id", Long.toString(button.getOid()));
         assertAttribute(buttonElement, "hasControlCommand", "true");
         assertAttribute(buttonElement, "name", button.getName());
        
@@ -861,12 +861,12 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals("Expecting 1 button element as child of components", 1, componentsElement.elements("button").size());
         buttonElement = componentsElement.element("button");
-        Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
+        assertAttribute(buttonElement, "id", Long.toString(button.getOid()));
         Assert.assertEquals("Expecting 1 child for button element", 1, buttonElement.elements().size());
         Assert.assertEquals("Expecting 1 include element", 1, buttonElement.elements("include").size());
         Element includeElement = buttonElement.element("include");
         assertAttribute(includeElement, "type", "command");
-        Assert.assertNotNull("Expeting include to have a ref attribute", includeElement.attribute("ref"));
+        Assert.assertNotNull("Expecting include to have a ref attribute", includeElement.attribute("ref"));
         
         // Reference is to the command, id is not the id in the database, but should cross reference a command element defined below
         String referencedCommandId = includeElement.attribute("ref").getText();
@@ -877,6 +877,12 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 command element as child of components", 1, commandsElement.elements("command").size());
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedCommandId);
+        assertAttribute(commandElement, "protocol", "ir");
+        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+        Element propertyElement = commandElement.element("property");
+        assertAttribute(propertyElement, "name", "name");
+        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
         status.setRollbackOnly();
       }
