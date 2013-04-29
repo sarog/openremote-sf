@@ -843,9 +843,8 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 button element", 1, absoluteElement.elements("button").size());
         Element buttonElement = absoluteElement.element("button");
         Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting button to have a hasControlCommand attribute", buttonElement.attribute("hasControlCommand"));
-        Assert.assertEquals("true", buttonElement.attribute("hasControlCommand").getText());
-        Assert.assertEquals(button.getName(), buttonElement.attribute("name").getText());
+        assertAttribute(buttonElement, "hasControlCommand", "true");
+        assertAttribute(buttonElement, "name", button.getName());
        
         Document controllerXmlDocument = null;
         try {
@@ -864,8 +863,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for button element", 1, buttonElement.elements().size());
         Assert.assertEquals("Expecting 1 include element", 1, buttonElement.elements("include").size());
         Element includeElement = buttonElement.element("include");
-        Assert.assertNotNull("Expecting include to have a type attribute", includeElement.attribute("type"));
-        Assert.assertEquals("Expecting include type to be command", "command", includeElement.attribute("type").getText());
+        assertAttribute(includeElement, "type", "command");
         Assert.assertNotNull("Expeting include to have a ref attribute", includeElement.attribute("ref"));
         
         // Reference is to the command, id is not the id in the database, but should cross reference a command element defined below
@@ -876,8 +874,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for commands element", 1, commandsElement.elements().size());
         Assert.assertEquals("Expecting 1 command element as child of components", 1, commandsElement.elements("command").size());
         Element commandElement = commandsElement.element("command");
-        Assert.assertNotNull("Expecting command to have an id attribute");
-        Assert.assertEquals("Expecting command to have same id as one referenced on button", referencedCommandId, commandElement.attribute("id").getText());
+        assertAttribute(commandElement, "id", referencedCommandId);
 
         status.setRollbackOnly();
       }
@@ -1031,15 +1028,11 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
         Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
         Element onStateElement = (Element) linkElement.elements("state").get(0);
-        Assert.assertNotNull("Expecting on state to have a name attribute", onStateElement.attribute("name"));
-        Assert.assertEquals("Expectinf on state to be named on", "on", onStateElement.attribute("name").getText());
-        Assert.assertNotNull("Expecting on state to have a value attribute", onStateElement.attribute("value"));
-        Assert.assertEquals("Expecting on state to have image name as value", "On image", onStateElement.attribute("value").getText());
+        assertAttribute(onStateElement, "name", "on");
+        assertAttribute(onStateElement, "value", "On image");
         Element offStateElement = (Element) linkElement.elements("state").get(1);
-        Assert.assertNotNull("Expecting off state to have a name attribute", offStateElement.attribute("name"));
-        Assert.assertEquals("Expectinf off state to be named off", "off", offStateElement.attribute("name").getText());
-        Assert.assertNotNull("Expecting off state to have a value attribute", offStateElement.attribute("value"));
-        Assert.assertEquals("Expecting off state to have image name as value", "Off image", offStateElement.attribute("value").getText());
+        assertAttribute(offStateElement, "name", "off");
+        assertAttribute(offStateElement, "value", "Off image");
         
         Document controllerXmlDocument = null;
         try {
@@ -1080,12 +1073,9 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
-        Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
-        Assert.assertEquals("Expecting sensor type to be switch", "switch", sensorElement.attribute("type").getText());
-        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
-        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+        assertAttribute(sensorElement, "id", referencedSensorId);
+        assertAttribute(sensorElement, "type", "switch");
+        assertAttribute(sensorElement, "name", "Sensor");
     
         Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1093,11 +1083,9 @@ public class ResourceServiceTest {
         includeElement = sensorElement.element("include");
         String referencedReadCommandId = assertIncludeElement(includeElement, "command");
         Element stateElement = (Element) sensorElement.elements("state").get(0);
-        Assert.assertNotNull("Expecting on state element to have name attribute", stateElement.attribute("name"));
-        Assert.assertEquals("Expecting on state element to be named on", "on", stateElement.attribute("name").getText());
+        assertAttribute(stateElement, "name", "on");
         stateElement = (Element) sensorElement.elements("state").get(1);
-        Assert.assertNotNull("Expecting off state element to have name attribute", stateElement.attribute("name"));
-        Assert.assertEquals("Expecting off state element to be named off", "off", stateElement.attribute("name").getText());
+        assertAttribute(stateElement, "name", "off");
         
         Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
         Element commandsElement = topElement.element("commands");
@@ -1106,13 +1094,11 @@ public class ResourceServiceTest {
     
         for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
           Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
-          Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
-          Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+          assertAttribute(commandElement, "protocol", "ir");
           Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
           Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
           Element propertyElement = commandElement.element("property");
-          Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
-          Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+          assertAttribute(propertyElement, "name", "name");
           Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
     
           if (commandElement.attribute("id").getText().equals(referencedOnCommandId)) {
@@ -1268,12 +1254,9 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 slider element", 1, absoluteElement.elements("slider").size());
         Element sliderElement = absoluteElement.element("slider");
-        Assert.assertNotNull("Expecting id attribute on slider", sliderElement.attribute("id"));
-        Assert.assertEquals(Long.toString(slider.getOid()), sliderElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting thumbImage attribute on slider", sliderElement.attribute("thumbImage"));
-        Assert.assertEquals("Expecting thumbImage attribute to be 'Thumb image'", "Thumb image", sliderElement.attribute("thumbImage").getText());
-        Assert.assertNotNull("Expecting vertial attribute on slider", sliderElement.attribute("vertical"));
-        Assert.assertEquals("Expecting vertical attribute to be true", "true", sliderElement.attribute("vertical").getText());
+        assertAttribute(sliderElement, "id",Long.toString(slider.getOid()));
+        assertAttribute(sliderElement, "thumbImage", "Thumb image");
+        assertAttribute(sliderElement, "vertical", "true");
         if (sliderElement.attribute("passive") != null) {
           Assert.assertEquals("Expecting passive attribute, if present, to be false", "false", sliderElement.attribute("passive").getText());
         }
@@ -1286,20 +1269,14 @@ public class ResourceServiceTest {
         
         Assert.assertEquals("Expecting 1 min element", 1, sliderElement.elements("min").size());
         Element minElement = sliderElement.element("min");
-        Assert.assertNotNull("Expecting min element to have value attribute", minElement.attribute("value"));
-        Assert.assertEquals("Expecting min value to be -2", "-2", minElement.attribute("value").getText());
-        Assert.assertNotNull("Expecting min element to have image attribute", minElement.attribute("image"));
-        Assert.assertEquals("Expecting min image to be 'Min image'", "Min image", minElement.attribute("image").getText());
-        Assert.assertNotNull("Expecting min element to have trackImage attribute", minElement.attribute("trackImage"));
-        Assert.assertEquals("Expecting min track image to be 'Min track image'", "Min track image", minElement.attribute("trackImage").getText());
+        assertAttribute(minElement, "value", "-2");
+        assertAttribute(minElement, "image", "Min image");
+        assertAttribute(minElement, "trackImage", "Min track image");
         Assert.assertEquals("Expecting 1 max element", 1, sliderElement.elements("max").size());
         Element maxElement = sliderElement.element("max");
-        Assert.assertNotNull("Expecting max element to have value attribute", maxElement.attribute("value"));
-        Assert.assertEquals("Expecting max value to be 10", "10", maxElement.attribute("value").getText());
-        Assert.assertNotNull("Expecting max element to have image attribute", maxElement.attribute("image"));
-        Assert.assertEquals("Expecting max image to be 'Max image'", "Max image", maxElement.attribute("image").getText());
-        Assert.assertNotNull("Expecting max element to have trackImage attribute", maxElement.attribute("trackImage"));
-        Assert.assertEquals("Expecting max track image to be 'Max track image'", "Max track image", maxElement.attribute("trackImage").getText());
+        assertAttribute(maxElement, "value", "10");
+        assertAttribute(maxElement, "image", "Max image");
+        assertAttribute(maxElement, "trackImage", "Max track image");
 
         Document controllerXmlDocument = null;
         try {
@@ -1333,12 +1310,9 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
-        Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
-        Assert.assertEquals("Expecting sensor type to be range", "range", sensorElement.attribute("type").getText());
-        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
-        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+        assertAttribute(sensorElement, "id", referencedSensorId);
+        assertAttribute(sensorElement, "type", "range");
+        assertAttribute(sensorElement, "name", "Sensor");
     
         Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1347,11 +1321,9 @@ public class ResourceServiceTest {
         includeElement = sensorElement.element("include");
         String referencedReadCommandId = assertIncludeElement(includeElement, "command");
         minElement = sensorElement.element("min");
-        Assert.assertNotNull("Expecting min element to have value attribute", minElement.attribute("value"));
-        Assert.assertEquals("Expecting min value to be -2", "-2", minElement.attribute("value").getText());
+        assertAttribute(minElement, "value", "-2");
         maxElement = sensorElement.element("max");
-        Assert.assertNotNull("Expecting max element to have value attribute", maxElement.attribute("value"));
-        Assert.assertEquals("Expecting max value to be 10", "10", maxElement.attribute("value").getText());
+        assertAttribute(maxElement, "value", "10");
         
         Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
         Element commandsElement = topElement.element("commands");
@@ -1360,13 +1332,11 @@ public class ResourceServiceTest {
     
         for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
           Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
-          Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
-          Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+          assertAttribute(commandElement, "protocol", "ir");
           Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
           Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
           Element propertyElement = commandElement.element("property");
-          Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
-          Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+          assertAttribute(propertyElement, "name", "name");
           Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
     
           if (commandElement.attribute("id").getText().equals(referencedSetCommandId)) {
@@ -1459,15 +1429,10 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 label element", 1, absoluteElement.elements("label").size());
         Element labelElement = absoluteElement.element("label");
-        Assert.assertNotNull("Expecting id attribute on label", labelElement.attribute("id"));
-        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting text attribute on label", labelElement.attribute("text"));
-        Assert.assertEquals("Expecting text attribute to be 'Label'", "Label", labelElement.attribute("text").getText());
-        Assert.assertNotNull("Expecting fontSize attribute on label", labelElement.attribute("fontSize"));
-        Assert.assertEquals("Expecting fontSize attribute to be '12'", "12", labelElement.attribute("fontSize").getText());
-        Assert.assertNotNull("Expecting color attribute on label", labelElement.attribute("color"));
-        Assert.assertEquals("Expecting color attribute to be '#ff0000'", "#ff0000", labelElement.attribute("color").getText());
-        
+        assertAttribute(labelElement, "id", Long.toString(label.getOid()));
+        assertAttribute(labelElement, "text", "Label");
+        assertAttribute(labelElement, "fontSize", "12");
+        assertAttribute(labelElement, "color", "#ff0000");       
         Assert.assertEquals("Expecting no child for label element", 0, labelElement.elements().size());
 
         Document controllerXmlDocument = null;
@@ -1484,7 +1449,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("label").size());
         labelElement = componentsElement.element("label");
-        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        assertAttribute(labelElement, "id", Long.toString(label.getOid()));
         Assert.assertEquals("Expecting no child for label element", 0, labelElement.elements().size());
 
         status.setRollbackOnly();
@@ -1599,14 +1564,10 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 label element", 1, absoluteElement.elements("label").size());
         Element labelElement = absoluteElement.element("label");
-        Assert.assertNotNull("Expecting id attribute on label", labelElement.attribute("id"));
-        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting text attribute on label", labelElement.attribute("text"));
-        Assert.assertEquals("Expecting text attribute to be 'Label with sensor'", "Label with sensor", labelElement.attribute("text").getText());
-        Assert.assertNotNull("Expecting fontSize attribute on label", labelElement.attribute("fontSize"));
-        Assert.assertEquals("Expecting fontSize attribute to be '12'", "12", labelElement.attribute("fontSize").getText());
-        Assert.assertNotNull("Expecting color attribute on label", labelElement.attribute("color"));
-        Assert.assertEquals("Expecting color attribute to be '#ff0000'", "#ff0000", labelElement.attribute("color").getText());
+        assertAttribute(labelElement, "id", Long.toString(label.getOid()));
+        assertAttribute(labelElement, "text" , "Label with sensor");
+        assertAttribute(labelElement, "fontSize", "12");
+        assertAttribute(labelElement, "color", "#ff0000");
         
         Assert.assertEquals("Expecting 1 child for label element", 1, labelElement.elements().size());
         Assert.assertEquals("Expecting 1 link child for label element", 1, labelElement.elements("link").size());
@@ -1627,8 +1588,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("label").size());
         labelElement = componentsElement.element("label");
-        Assert.assertNotNull("Expecting id attribute for label", labelElement.attribute("id"));
-        Assert.assertEquals(Long.toString(label.getOid()), labelElement.attribute("id").getText());
+        assertAttribute(labelElement, "id", Long.toString(label.getOid()));
         Assert.assertEquals("Expecting 1 child for label element", 1, labelElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for switch element", 1, labelElement.elements("include").size());
         Element includeElement = labelElement.element("include");
@@ -1639,12 +1599,9 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
         Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
         Element sensorElement = sensorsElement.element("sensor");
-        Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
-        Assert.assertEquals("Expecting sensor id to be one referenced by label", referencedSensorId, sensorElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
-        Assert.assertEquals("Expecting sensor type to be custom", "custom", sensorElement.attribute("type").getText());
-        Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
-        Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+        assertAttribute(sensorElement, "id", referencedSensorId);
+        assertAttribute(sensorElement, "type", "custom");
+        assertAttribute(sensorElement, "name", "Sensor");
     
         Assert.assertEquals("Expecting 2 children for sensor element", 2, sensorElement.elements().size());
         Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
@@ -1652,10 +1609,8 @@ public class ResourceServiceTest {
         includeElement = sensorElement.element("include");
         String referencedReadCommandId = assertIncludeElement(includeElement, "command");
         Element stateElement = sensorElement.element("state");
-        Assert.assertNotNull("Expecting state element to have name attribute", stateElement.attribute("name"));
-        Assert.assertEquals("Expecting state name to be 'state name'", "state name", stateElement.attribute("name").getText());
-        Assert.assertNotNull("Expecting state element to have value attribute", stateElement.attribute("value"));
-        Assert.assertEquals("Expecting state value to be 'state value'", "state value", stateElement.attribute("value").getText());
+        assertAttribute(stateElement, "name", "state name");
+        assertAttribute(stateElement, "value", "state value");
         
         Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
         Element commandsElement = topElement.element("commands");
@@ -1663,15 +1618,12 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 command child for commands element", 1, commandsElement.elements("command").size());
     
         Element commandElement = commandsElement.element("command");
-        Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
-        Assert.assertEquals("Expecting command to be the one referenced by sensor", referencedReadCommandId, commandElement.attribute("id").getText());
-        Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
-        Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+        assertAttribute(commandElement, "id", referencedReadCommandId);
+        assertAttribute(commandElement, "protocol", "ir");
         Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
         Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
         Element propertyElement = commandElement.element("property");
-        Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
-        Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+        assertAttribute(propertyElement, "name", "name");
         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
         // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
@@ -1833,6 +1785,25 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
 //      outputControllerXML(screens);
    }
    
+   /**
+    * Validates that the element has the given attribute and that it has the given value.
+    * 
+    * @param element
+    * @param attributeName
+    * @param attributeValue
+    */
+   private void assertAttribute(Element element, String attributeName, String attributeValue) {
+     Assert.assertNotNull("Expecting " + attributeName + " attribute on " + element.getName(), element.attribute(attributeName));
+     Assert.assertEquals("Expecting " + attributeName + " attribute to be '" + attributeValue + "'", attributeValue, element.attribute(attributeName).getText());
+   }
+   
+   /**
+    * Validates that the element does reference one panel and that it matches the given panel model object.
+    * 
+    * @param topElement
+    * @param p
+    * @return
+    */
    private Element assertOnePanel(Element topElement, Panel p) {
      Assert.assertEquals("Expecting 1 panels element", 1, topElement.elements("panels").size());
      Element panelsElement = topElement.element("panels");
