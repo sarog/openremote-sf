@@ -1227,6 +1227,144 @@ public class ResourceServiceTest {
     });
   }
 
+  /**
+   * Tests generated panel and controller.xml for a configuration with
+   * 1 panel including 1 screen in 1 group.
+   * One gesture with a device command is associated with the screen.
+   * 
+   * @throws DocumentException
+   */
+  @Test
+  public void testScreenHasGestureWithCommand() throws DocumentException {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);
+        deviceService.saveDevice(dev);
+        
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand cmd = new DeviceCommand();
+        cmd.setProtocol(protocol);
+        cmd.setName("testLirc");
+        
+        cmd.setDevice(dev);
+        dev.getDeviceCommands().add(cmd);
+        
+        cmd.setOid(IDUtil.nextID());
+        deviceCommandService.save(cmd);
+        
+        Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+         
+        List<Gesture> gestures = new ArrayList<Gesture>();
+         
+        Gesture gesture = new Gesture();
+        gesture.setUiCommandDTO(cmd.getDeviceCommandDTO());
+        gesture.setOid(IDUtil.nextID());
+        gesture.setType(GestureType.swipe_bottom_to_top);
+         
+        gestures.add(gesture);
+         
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel has a navigate");
+         
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        screen1.setGestures(gestures);
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+         
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+         
+        panelWithJustOneNavigate.add(p);
+        
+        cache.replace(panelWithJustOneNavigate, IDUtil.nextID());
+         
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+         
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+        
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+        
+        Element screenElement  = assertOneScreen(topElement, screen1);
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
+        Element gestureElement = screenElement.element("gesture");
+        assertAttribute(gestureElement, "id", Long.toString(gesture.getOid()));
+        assertAttribute(gestureElement, "type", gesture.getType().toString());
+        assertAttribute(gestureElement, "hasControlCommand", "true");
+        Assert.assertEquals("Expecting no child for gesture element", 0, gestureElement.elements().size());
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals("Exepcting 1 gesture child for components element", 1, componentsElement.elements("gesture").size());
+        gestureElement = componentsElement.element("gesture");
+        assertAttribute(gestureElement, "id", Long.toString(gesture.getOid()));
+        Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
+        Assert.assertEquals("Expecting 1 include element", 1, gestureElement.elements("include").size());
+        Element includeElement = gestureElement.element("include");
+        assertAttribute(includeElement, "type", "command");
+        Assert.assertNotNull("Expecting include to have a ref attribute", includeElement.attribute("ref"));
+        
+        // Reference is to the command, id is not the id in the database, but should cross reference a command element defined below
+        String referencedCommandId = includeElement.attribute("ref").getText();
+        
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting 1 child for commands element", 1, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 1 command element as child of components", 1, commandsElement.elements("command").size());
+        Element commandElement = commandsElement.element("command");
+        assertAttribute(commandElement, "id", referencedCommandId);
+        assertAttribute(commandElement, "protocol", "ir");
+        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+        Element propertyElement = commandElement.element("property");
+        assertAttribute(propertyElement, "name", "name");
+        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+
+        status.setRollbackOnly();
+      }
+    });
+  }
+
   @Test
   public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
     // Test does require database access, must include in transaction
@@ -2963,32 +3101,6 @@ public class ResourceServiceTest {
       }
     });
   }
-
-  
-@Test(enabled=false)
-public void testGetControllerXMLWithGestureHaveDeviceCommand() {
-   
-   Protocol protocol = new Protocol();
-   protocol.setType(Constants.INFRARED_TYPE);
-   
-   DeviceCommand cmd = new DeviceCommand();
-   cmd.setProtocol(protocol);
-   cmd.setName("testLirc");
-   deviceCommandService.save(cmd);
-   DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
-   List<Screen> screens = new ArrayList<Screen>();
-   Screen screen = new Screen();
-   screen.setOid(IDUtil.nextID());
-   screen.setName("screenWithButtonAndSwitch");
-   List<Gesture> gestures = new ArrayList<Gesture>();
-   Gesture gesture = new Gesture();
-   gesture.setOid(IDUtil.nextID());
-   gesture.setUiCommand(cmdRef);
-   gestures.add(gesture);
-   screen.setGestures(gestures);
-   screens.add(screen);
-//   outputControllerXML(screens);
-}
 
    /*
     * The case has some problem because of LazyInitializationException 
