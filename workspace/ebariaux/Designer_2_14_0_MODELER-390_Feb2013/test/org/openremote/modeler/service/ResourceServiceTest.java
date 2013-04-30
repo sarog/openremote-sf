@@ -19,9 +19,6 @@
 */
 package org.openremote.modeler.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,7 +27,6 @@ import java.util.Set;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
@@ -48,6 +44,7 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Background;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CustomSensor;
@@ -56,7 +53,6 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
-import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -71,8 +67,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchSensorRef;
-import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
@@ -888,12 +882,12 @@ public class ResourceServiceTest {
         Assert.assertEquals(1, tabbarElement.elements().size());
         Assert.assertEquals(1, tabbarElement.elements("item").size());
         Element itemElement = tabbarElement.element("item");
-        Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
+        assertAttribute(itemElement, "name", item.getName());
         Assert.assertEquals(1, itemElement.elements().size());
         Assert.assertEquals(1, itemElement.elements("navigate").size());
         Element navigateElement = itemElement.element("navigate");
-        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+        assertAttribute(navigateElement, "toGroup", Long.toString(nav.getToGroup()));
+        assertAttribute(navigateElement, "toScreen", Long.toString(nav.getToScreen()));
   
         Assert.assertEquals(1, topElement.elements("screens").size());
         Element screensElement = topElement.element("screens");
@@ -1081,8 +1075,8 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 2 children for group element", 2, groupElement.elements().size());
         Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
         Element includeElement = groupElement.element("include");
-        Assert.assertEquals("screen", includeElement.attribute("type").getText());
-        Assert.assertEquals(Long.toString(screen1.getOid()), includeElement.attribute("ref").getText());
+        assertAttribute(includeElement, "type", "screen");
+        assertAttribute(includeElement, "ref", Long.toString(screen1.getOid()));
         
         Assert.assertEquals("Expecting 1 tabbar element", 1, groupElement.elements("tabbar").size());
         Element tabbarElement = groupElement.element("tabbar");
@@ -1202,13 +1196,13 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
         Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
         Element gestureElement = screenElement.element("gesture");
-        Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
-        Assert.assertEquals(gesture.getType().toString(), gestureElement.attribute("type").getText());
+        assertAttribute(gestureElement, "id", Long.toString(gesture.getOid()));
+        assertAttribute(gestureElement, "type", gesture.getType().toString());
         Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
         Assert.assertEquals("Expexting 1 navigate element", 1, gestureElement.elements("navigate").size());
         Element navigateElement = gestureElement.element("navigate");
-        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+        assertAttribute(navigateElement, "toGroup", Long.toString(nav.getToGroup()));
+        assertAttribute(navigateElement, "toScreen", Long.toString(nav.getToScreen()));
         
         Document controllerXmlDocument = null;
         try {
@@ -1827,7 +1821,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
         Element switchElement = absoluteElement.element("switch");
-        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
         
         Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
         Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
@@ -1858,7 +1852,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("switch").size());
         switchElement = componentsElement.element("switch");
-        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
         Assert.assertEquals("Expecting 3 children for switch element", 3, switchElement.elements().size());
         Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
         Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
@@ -2100,7 +2094,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("slider").size());
         sliderElement = componentsElement.element("slider");
-        Assert.assertEquals(Long.toString(slider.getOid()), sliderElement.attribute("id").getText());
+        assertAttribute(sliderElement, "id", Long.toString(slider.getOid()));
         Assert.assertEquals("Expecting 2 children for slider element", 2, sliderElement.elements().size());
         Assert.assertEquals("Expecting 1 setValue child for switch element", 1, sliderElement.elements("setValue").size());
         Assert.assertEquals("Expecting 1 include child for switch element", 1, sliderElement.elements("include").size());
@@ -3320,8 +3314,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for panels element", 1, panelsElement.elements().size());
      Assert.assertEquals("Expecting 1 panel element", 1, panelsElement.elements("panel").size());
      Element panelElement = panelsElement.element("panel");
-     Assert.assertEquals("Expecting panel to be named " + p.getName(), p.getName(), panelElement.attribute("name").getText());
-     Assert.assertEquals("Expecting panel to have id " + p.getOid(), Long.toString(p.getOid()), panelElement.attribute("id").getText());
+     assertAttribute(panelElement, "id", Long.toString(p.getOid()));
+     assertAttribute(panelElement, "name", p.getName());
 
      return panelElement;
    }
@@ -3331,8 +3325,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting no tab bar in panel element", 0, panelElement.elements("tabbar").size());
      Assert.assertEquals("Expecting 1 include element", 1, panelElement.elements("include").size());
      Element includeElement = panelElement.element("include");
-     Assert.assertEquals("group", includeElement.attribute("type").getText());
-     Assert.assertEquals(Long.toString(group.getOid()), includeElement.attribute("ref").getText());
+     assertAttribute(includeElement, "ref", Long.toString(group.getOid()));
+     assertAttribute(includeElement, "type", "group");
    }
    
    private Element assertOneGroup(Element topElement, Group group) {
@@ -3341,8 +3335,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for groups element", 1, groupsElement.elements().size());
      Assert.assertEquals("Expecting 1 group element", 1, groupsElement.elements("group").size());
      Element groupElement = groupsElement.element("group");
-     Assert.assertEquals("Expecting group to have id " + group.getOid(), Long.toString(group.getOid()), groupElement.attribute("id").getText());
-     Assert.assertEquals("Expecting group to be named " + group.getName(), group.getName(), groupElement.attribute("name").getText());
+     assertAttribute(groupElement, "id", Long.toString(group.getOid()));
+     assertAttribute(groupElement, "name", group.getName());
 
      return groupElement;
    }
@@ -3351,8 +3345,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for group element", 1, groupElement.elements().size());
      Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
      Element includeElement = groupElement.element("include");
-     Assert.assertEquals("screen", includeElement.attribute("type").getText());
-     Assert.assertEquals(Long.toString(screen.getOid()), includeElement.attribute("ref").getText());
+     assertAttribute(includeElement, "ref", Long.toString(screen.getOid()));
+     assertAttribute(includeElement, "type", "screen");
    }
    
    private Element assertOneScreen(Element topElement, Screen screen) {
