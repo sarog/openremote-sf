@@ -74,6 +74,7 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
 import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
@@ -298,6 +299,219 @@ public class ResourceServiceTest {
     });
   }
 
+  @Test
+  public void testAbsoluteWidgets() {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);   
+        account.addDevice(dev);
+        deviceService.saveDevice(dev);
+    
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand readCommand = new DeviceCommand();
+        readCommand.setProtocol(protocol);
+        readCommand.setName("readCommand");
+        
+        readCommand.setDevice(dev);
+        dev.getDeviceCommands().add(readCommand);
+        
+        readCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(readCommand);
+        
+        Sensor sensor = new Sensor(SensorType.SWITCH);
+        sensor.setOid(IDUtil.nextID());
+        sensor.setName("Sensor");
+        sensor.setDevice(dev);
+        sensor.setAccount(account);
+        account.getSensors().add(sensor);
+    
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setSensor(sensor);
+        sensorCommandRef.setDeviceCommand(readCommand);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        
+        sensorService.saveSensor(sensor);
+        
+        DeviceCommand onCommand = new DeviceCommand();
+        onCommand.setProtocol(protocol);
+        onCommand.setName("onCommand");
+        
+        onCommand.setDevice(dev);
+        dev.getDeviceCommands().add(onCommand);
+        
+        onCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(onCommand);
+        
+        DeviceCommand offCommand = new DeviceCommand();
+        offCommand.setProtocol(protocol);
+        offCommand.setName("offCommand");
+        
+        offCommand.setDevice(dev);
+        dev.getDeviceCommands().add(offCommand);
+        
+        offCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(offCommand);
+    
+        Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
+        buildingSwitch.setOid(IDUtil.nextID());
+        buildingSwitch.setAccount(account);    
+        account.getSwitches().add(buildingSwitch);
+        buildingSwitch.setDevice(dev);
+        dev.getSwitchs().add(buildingSwitch);
+        switchService.save(buildingSwitch);
+        
+        Slider buildingSlider = new Slider("Slider", onCommand, sensor);
+        buildingSlider.setOid(IDUtil.nextID());
+        buildingSlider.setAccount(account);    
+        account.getSliders().add(buildingSlider);
+        buildingSlider.setDevice(dev);
+        dev.getSliders().add(buildingSlider);
+        sliderService.save(buildingSlider);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+
+        UIButton button = new UIButton(IDUtil.nextID());
+        button.setName("Button 1");
+    
+        Absolute buttonAbsolute = createAbsolute(10,  button);
+        screen1.addAbsolute(buttonAbsolute);
+        
+        UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+        aSwitch.setOnImage(new ImageSource("On image"));
+        aSwitch.setOffImage(new ImageSource("Off image"));
+        aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
+        
+        Absolute switchAbsolute = createAbsolute(20,  aSwitch);
+        screen1.addAbsolute(switchAbsolute);
+        
+        UISlider slider = new UISlider(IDUtil.nextID());
+        slider.setVertical(true);
+        slider.setSliderDTO(buildingSlider.getSliderWithInfoDTO());
+        
+        Absolute sliderAbsolute = createAbsolute(30, slider);
+        screen1.addAbsolute(sliderAbsolute);
+        
+        UILabel label = new UILabel(IDUtil.nextID());
+        label.setText("Label");
+        
+        Absolute labelAbsolute = createAbsolute(40, label);
+        screen1.addAbsolute(labelAbsolute);
+        
+        UIImage image = new UIImage(IDUtil.nextID());
+        image.setImageSource(new ImageSource("Image"));
+        
+        Absolute imageAbsolute = createAbsolute(50, image);
+        screen1.addAbsolute(imageAbsolute);
+        
+        UIWebView webView = new UIWebView(IDUtil.nextID());
+        webView.setURL("http://www.openremote.org");
+        
+        Absolute webAbsolute = createAbsolute(60, webView);
+        screen1.addAbsolute(webAbsolute);
+        
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setOid(IDUtil.nextID());
+        
+        Absolute colorPickerAbsolute = createAbsolute(70, colorPicker);
+        screen1.addAbsolute(colorPickerAbsolute);
+        
+        cache.replace(panels, IDUtil.nextID());
+
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+         
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+        
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+        
+        Element screenElement  = assertOneScreen(topElement, screen1);
+        Assert.assertEquals("Expecting 7 children for screen element", 7, screenElement.elements().size());
+        Assert.assertEquals("Expecting 7 absolute children for screen element", 7, screenElement.elements("absolute").size());
+
+        for (Element absoluteElement : (Collection<Element>)screenElement.elements("absolute")) {
+          String childName = assertAbsoluteElementWithOneChild(absoluteElement);
+          if ("button".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "button", "10", "11", "12", "13");
+          } else if ("switch".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "switch", "20", "21", "22", "23");
+          } else if ("slider".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "slider", "30", "31", "32", "33");
+          } else if ("label".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "label", "40", "41", "42", "43");
+          } else if ("image".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "image", "50", "51", "52", "53");
+          } else if ("web".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "web", "60", "61", "62", "63");
+          } else if ("colorpicker".equals(childName)) {
+            assertAbsoluteElementChild(absoluteElement, "colorpicker", "70", "71", "72", "73");
+          } else {
+            Assert.fail("Unknown child element for absolute");
+          }
+        }
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 6 children for components element", 6, componentsElement.elements().size());
+        
+        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+        account.getDevices().remove(dev);
+        account.getSwitches().remove(buildingSwitch);
+        account.getSliders().remove(buildingSlider);
+        account.getSensors().remove(sensor);
+        status.setRollbackOnly();
+      }
+    });
+  }
   
   
   @Test
@@ -2772,5 +2986,27 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      assertAttribute(sensorElement, "type", sensorType);
      assertAttribute(sensorElement, "name", sensorName);
    }
+   
+   private String assertAbsoluteElementWithOneChild(Element absoluteElement) {
+     Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+     return ((Element)absoluteElement.elements().get(0)).getName();
+   }
 
+   private Element assertAbsoluteElementChild(Element absoluteElement, String childName, String left, String top, String width, String height) {
+     Assert.assertEquals("Expecting 1 " + childName + " child for absolute element", 1, absoluteElement.elements(childName).size());
+     Element element = absoluteElement.element(childName);
+     assertAttribute(absoluteElement, "left", left);
+     assertAttribute(absoluteElement, "top", top);
+     assertAttribute(absoluteElement, "width", width);
+     assertAttribute(absoluteElement, "height", height);
+     return element;
+   }
+
+   private Absolute createAbsolute(int baseValue, UIComponent uiComponent) {
+     Absolute abs = new Absolute(IDUtil.nextID());
+     abs.setPosition(baseValue, baseValue + 1);
+     abs.setSize(baseValue + 2, baseValue + 3);
+     abs.setUiComponent(uiComponent);
+     return abs;
+   }
 }
