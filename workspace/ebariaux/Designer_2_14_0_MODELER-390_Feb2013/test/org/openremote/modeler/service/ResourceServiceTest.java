@@ -1035,69 +1035,6 @@ public class ResourceServiceTest {
 // EBR TEMP      resourceService.initResources(panel, IDUtil.nextID());
    }
  
-   
-@Test(enabled=false)
-   public void testGetControllerXMLWithButtonAndSwitchButNoCmd() {
-      List<Screen> screens = new ArrayList<Screen>();
-      Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
-      screen.setName("screenWithButtonAndSwitch");
-      
-      UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
-      absBtn.setName("abs_btn1");
-      
-      UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
-      gridBtn.setName("grid_btn1");
-      
-      
-      Switch switchToggle = new Switch();
-      switchToggle.setOid(IDUtil.nextID());
-      Sensor sensor = new Sensor();
-      sensor.setType(SensorType.SWITCH);
-      sensor.setOid(IDUtil.nextID());
-      sensor.setName("testSensro");
-      SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
-      sensorRef.setOid(IDUtil.nextID());
-      sensorRef.setSensor(sensor);
-      switchToggle.setSwitchSensorRef(sensorRef);
-      
-      UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
-      absSwitch.setSwitchCommand(switchToggle);
-      
-      UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
-      gridSwitch.setSwitchCommand(switchToggle);
-      Absolute abs1 = new Absolute();
-      abs1.setOid(IDUtil.nextID());
-      abs1.setUiComponent(absBtn);
-      Absolute abs2 = new Absolute();
-      abs2.setOid(IDUtil.nextID());
-      abs2.setUiComponent(absSwitch);
-      
-      UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
-      grid1.setOid(IDUtil.nextID());
-      Cell c1 = new Cell();
-      c1.setUiComponent(gridBtn);
-      grid1.addCell(c1);
-      UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
-      grid2.setOid(IDUtil.nextID());
-      Cell c2 = new Cell();
-      c2.setUiComponent(gridSwitch);
-      grid2.addCell(c2);
-      
-      screen.addAbsolute(abs1);
-      screen.addAbsolute(abs2);
-      screen.addGrid(grid1);
-      screen.addGrid(grid2);
-      
-      screens.add(screen);
-//      outputControllerXML(screens);
-   }
-
-
   @Test
   public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
     // Test does require database access, must include in transaction
