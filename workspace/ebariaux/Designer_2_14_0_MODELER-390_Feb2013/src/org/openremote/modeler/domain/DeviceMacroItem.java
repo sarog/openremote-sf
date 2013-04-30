@@ -102,6 +102,8 @@ public class DeviceMacroItem extends UICommand {
 
    @Transient
    public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     // Subclasses re-implement as appropriate
+     // EBR : why not abstract ?
      return null;
    }
 
