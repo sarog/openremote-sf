@@ -304,10 +304,6 @@ public class ResourceServiceTest {
       }
     });
   }
-
-  
-  
-  
   
   @Test
   public void testOneScreenWithBackgroundImage() {
@@ -395,14 +391,6 @@ public class ResourceServiceTest {
       }
     });
   }
-
-
-  
-  
-  
-  
-  
-  
   
   @Test
   public void testAbsoluteWidgets() {
@@ -932,6 +920,98 @@ public class ResourceServiceTest {
   }
   
   /**
+   * Tests generated panel and controller.xml for a configuration 1 panel (no screens),
+   * having a panel level tab bar with 1 item doing a navigation using a logical action.
+   * Tab bar item is also associated an image.
+   * 
+   * The group and screen being navigated to do not exist in the configuration,
+   * but this is never validated by the schema, so generated XML is still valid.
+   * 
+   * @throws DocumentException
+   */
+  @Test
+  public void testPanelTabbarWithLogicalNavigateAndImage() throws DocumentException {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        Navigate nav = new Navigate();
+        nav.setOid(IDUtil.nextID());
+        nav.setToLogical(ToLogicalType.login);
+        ImageSource imageSource = new ImageSource("Image");
+        UITabbarItem item = new UITabbarItem();
+        item.setNavigate(nav);
+        item.setImage(imageSource);
+        item.setName("navigate name");
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel has a navigate");
+        List<UITabbarItem> items = new ArrayList<UITabbarItem>();
+        items.add(item);
+        UITabbar tabbar = new UITabbar();
+        tabbar.setTabbarItems(items);
+        p.setTabbar(tabbar);
+        panels.add(p);
+  
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        Element panelElement = assertOnePanel(topElement, p);
+        Assert.assertEquals(1, panelElement.elements().size());
+        Assert.assertEquals(1, panelElement.elements("tabbar").size());
+        Element tabbarElement = panelElement.element("tabbar");
+        Assert.assertEquals(1, tabbarElement.elements().size());
+        Assert.assertEquals(1, tabbarElement.elements("item").size());
+        Element itemElement = tabbarElement.element("item");
+        assertAttribute(itemElement, "name", item.getName());
+        Assert.assertEquals("Expecting 2 children on item element", 2, itemElement.elements().size());
+        Assert.assertEquals("Expecting 1 navigate child on item element", 1, itemElement.elements("navigate").size());
+        Element navigateElement = itemElement.element("navigate");
+        assertAttribute(navigateElement,  "to",  "login");
+        Assert.assertNull("Not expecting a toGroup attribute on navigate", navigateElement.attribute("toGroup"));
+        Assert.assertNull("Not expecting a toScreen attribute on navigate", navigateElement.attribute("toScreen"));
+        
+        Assert.assertEquals("Expecting 1 image child on item element", 1, itemElement.elements("image").size());
+        Element imageElement = itemElement.element("image");
+        assertAttribute(imageElement, "src", "Image");
+        
+        Assert.assertEquals(1, topElement.elements("screens").size());
+        Element screensElement = topElement.element("screens");
+        Assert.assertEquals(0, screensElement.elements().size());
+        Assert.assertEquals(1, topElement.elements("groups").size());
+        Element groupsElement = topElement.element("groups");
+        Assert.assertEquals(0, groupsElement.elements().size());
+  
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals(0, componentsElement.elements().size());
+        
+        status.setRollbackOnly();
+      }
+    });
+  }
+  
+  /**
    * Tests generated panel and controller.xml for a configuration with
    * 1 panel including 1 screen in 1 group.
    * One gesture with a navigation is associated with the screen.
@@ -1037,51 +1117,15 @@ public class ResourceServiceTest {
     });
   }
    
-  @Test
-  public void testPanelTabbarWithNavigateToLogical() {
-      Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
-      Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
-      nav.setToLogical(ToLogicalType.back);
-      UITabbarItem item = new UITabbarItem();
-      item.setNavigate(nav);
-      item.setName("navigate name");
-      Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
-      p.setName("panel has a navigate");
-      List<UITabbarItem> items = new ArrayList<UITabbarItem>();
-      items.add(item);
-      UITabbar tabbar = new UITabbar();
-      tabbar.setTabbarItems(items);
-      p.setTabbar(tabbar);
-      panelWithJustOneNavigate.add(p);
-// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
-   }
-   
-@Test
-   public void testPanelNavigateHasImage() {
-      Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
-      Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
-      nav.setToLogical(ToLogicalType.back);
-      
-      ImageSource image = new ImageSource();
-      image.setSrc("http://finalist.cn/logo.ico");
-      
-      UITabbarItem item = new UITabbarItem();
-      item.setImage(image);
-      
-      item.setNavigate(nav);
-      item.setName("navigate name");
-      Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
-      p.setName("panel has a navigate");
-      List<UITabbarItem> items = new ArrayList<UITabbarItem>();
-      items.add(item);
-      p.setTabbarItems(items);
-      panelWithJustOneNavigate.add(p);
-// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
-   }
+
+  
+  
+  
+  
+  
+  
+  
+  
    
 @Test
    public void testGroupNavigateHasImage() {
