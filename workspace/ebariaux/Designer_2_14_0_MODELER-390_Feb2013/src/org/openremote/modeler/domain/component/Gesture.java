@@ -83,7 +83,7 @@ public class Gesture extends UIControl {
    public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder XMLContent = new StringBuilder();
       XMLContent.append("<gesture id=\""+getOid()+"\" ");
-      if (uiCommand != null) {
+      if (getUiCommandDTO() != null) {
          XMLContent.append("hasControlCommand=\"true\" ");
       }
       XMLContent.append("type=\""+type.toString()+"\">");

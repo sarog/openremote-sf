@@ -80,9 +80,9 @@
   ##<------------------------------------------------------------------------Gesture------------------------------------------------------------------
   #foreach($gesture in $gestures)
 	  <gesture id="${gesture.getOid()}">
-		#if(${gesture.getUiCommand()})
-			#set($uiCmd=${gesture.getUiCommand()})
-			#foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+		#if(${gesture.getUiCommandDTO()})
+			#set($uiCmd=${gesture.getUiCommandDTO()})
+			#foreach($cmd in ${localFileCache.getCommandOwnerByUICommandDTO($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
 					<include type="command" ref="${cmd.getId()}"/>
 				#else
