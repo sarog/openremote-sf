@@ -1,3 +1,21 @@
+
+ORCJAVA-332
+===========
+
+ - Updates the core controller classes (excluding protocol 
+   implementations, these are updated in separate tasks) to use 
+   locale independent string conversions
+
+
+ORCJAVA-329
+===========
+
+ - The controller build script does not mandate an explicit character
+   encoding for all Java compiler tasks. This causes issues on some
+   systems with incompatible default character set/locale. This patch
+   enforces UTF-8 encoding on all compiled source files.
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
