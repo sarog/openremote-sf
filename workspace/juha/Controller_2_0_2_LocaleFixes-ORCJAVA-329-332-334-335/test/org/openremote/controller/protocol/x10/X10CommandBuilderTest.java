@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.protocol.x10;
 
+
 import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.x10.X10CommandBuilder;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Basic unit tests for parsing XML elements in
@@ -436,7 +438,7 @@ public class X10CommandBuilderTest
         String address = housecode + "" + deviceCode;
         getCommand("ON", address);
 
-        address = housecode.toString().toLowerCase() + deviceCode;
+        address = Strings.toLowerCase(housecode.toString()) + deviceCode;
         getCommand("ON", address);
       }
     }
