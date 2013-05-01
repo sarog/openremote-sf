@@ -1,3 +1,11 @@
+ORCJAVA-332
+===========
+
+ - Updates the core controller classes (excluding protocol 
+   implementations, these are updated in separate tasks) to use 
+   locale independent string conversions
+
+
 ORCJAVA-329
 ===========
 

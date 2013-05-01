@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -32,6 +32,7 @@ import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.utils.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.openremote.controller.utils.Strings;
 
 /**
  * This is a command model that represents the command properties as an in-memory model for
@@ -183,7 +184,7 @@ public class Command
    */
   public String getProperty(String name)
   {
-    String value = properties.get(name.toLowerCase());
+    String value = properties.get(Strings.toLowerCase(name.trim()));
 
     return (value == null) ? "" : value;
   }
