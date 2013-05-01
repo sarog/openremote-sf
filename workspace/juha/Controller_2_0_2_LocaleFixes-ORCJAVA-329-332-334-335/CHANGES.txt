@@ -1,3 +1,10 @@
+ORCJAVA-334
+===========
+
+ - Update KNX implementation to use locale independent string
+   case conversions
+
+
 ORCJAVA-332
 ===========
 
