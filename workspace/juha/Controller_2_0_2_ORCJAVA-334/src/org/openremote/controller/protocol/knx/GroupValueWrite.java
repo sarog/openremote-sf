@@ -29,6 +29,7 @@ import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Write command representing KNX Group Value Write service. This class implements the
@@ -68,7 +69,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
   static GroupValueWrite createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
-    name = name.trim().toUpperCase();
+    name = Strings.toUpperCase(name.trim());
 
     ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter);
 
@@ -146,7 +147,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *        parameterization so can have pre-fixed values (use additional command property?)
        *        (ORCJAVA-71)
        */
-      name = name.toUpperCase().trim();
+      name = Strings.toUpperCase(name.trim());
 
       if (name.equals("ON") ||
           name.equals("SWITCH ON"))
