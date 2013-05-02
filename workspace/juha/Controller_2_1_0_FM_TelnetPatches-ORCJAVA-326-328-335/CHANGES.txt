@@ -1,3 +1,9 @@
+Controller ORCJAVA-328
+======================
+
+- Telnet log configuration
+
+
 Controller ORCJAVA-326
 ======================
 
