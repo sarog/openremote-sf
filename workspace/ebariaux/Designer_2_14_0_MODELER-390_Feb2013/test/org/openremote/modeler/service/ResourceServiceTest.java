@@ -1924,6 +1924,133 @@ public class ResourceServiceTest {
   }
 
   @Test
+  public void testOneScreenWithOneSwitchNoBuildingSwitch() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        ImageSource onImageSource = new ImageSource("On image");
+        ImageSource offImageSource = new ImageSource("Off image");
+        
+        UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+        aSwitch.setOnImage(onImageSource);
+        aSwitch.setOffImage(offImageSource);
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(aSwitch);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
+        Element switchElement = absoluteElement.element("switch");
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
+        
+        Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
+        Element linkElement = switchElement.element("link");
+        
+        String referencedSensorId = assertLinkElement(linkElement, "sensor");
+        
+        Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
+        Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
+        Element onStateElement = (Element) linkElement.elements("state").get(0);
+        assertAttribute(onStateElement, "name", "on");
+        assertAttribute(onStateElement, "value", "On image");
+        Element offStateElement = (Element) linkElement.elements("state").get(1);
+        assertAttribute(offStateElement, "name", "off");
+        assertAttribute(offStateElement, "value", "Off image");
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("switch").size());
+        switchElement = componentsElement.element("switch");
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
+        Assert.assertEquals("Expecting 2 children for switch element", 2, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
+        Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
+        Element onElement = switchElement.element("on");
+        Assert.assertEquals("Expecting no child for on element",  0, onElement.elements().size());
+        Element offElement = switchElement.element("off");
+        Assert.assertEquals("Expecting no child for off element",  0, offElement.elements().size());
+    
+        Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+        Element sensorsElement = topElement.element("sensors");
+        Assert.assertEquals("Expecting no child for sensors element", 0, sensorsElement.elements().size());
+
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting no child for commands element", 0, commandsElement.elements().size());
+
+        status.setRollbackOnly();
+      }
+    });
+  }
+  
+  @Test
   public void testOneScreenWithOneSlider() throws DocumentException {
     // Test does require database access, must include in transaction
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
