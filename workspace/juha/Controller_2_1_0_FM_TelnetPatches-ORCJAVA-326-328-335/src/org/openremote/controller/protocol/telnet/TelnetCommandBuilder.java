@@ -118,22 +118,32 @@ public class TelnetCommandBuilder implements CommandBuilder {
 
       try
       {
-        if (null != interval) {
+        if (null != interval)
+        {
           intervalInMillis = Integer.valueOf(Strings.convertPollingIntervalString(interval));
           logger.debug("Telnet Command: pollingIntervalInMillis = " + intervalInMillis);
         }
-      } catch (Exception e1)
+      }
+
+      catch (Exception e1)
       {
+        // TODO : ORCJAVA-336 - can fallback to default value instead of failing with error
+
         throw new NoSuchCommandException("Unable to create Telnet command, pollingInterval could not be converted into milliseconds");
       }
       
       try
       {
-        if (null != timeoutStr) {
+        if (null != timeoutStr)
+        {
           timeout = Integer.valueOf(timeoutStr.trim());
         }
-      } catch (Exception e1)
+      }
+      
+      catch (Exception e1)
       {
+        // TODO : ORCJAVA-336 - can fallback to default value instead of failing with error
+
         throw new NoSuchCommandException("Unable to create Telnet command, timeout could not be converted into integer");
       }
       
