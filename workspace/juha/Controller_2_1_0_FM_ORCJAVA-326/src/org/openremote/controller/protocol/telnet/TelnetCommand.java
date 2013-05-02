@@ -41,7 +41,7 @@ import org.openremote.controller.utils.Logger;
  * TODO
  * 
  * @author Marcus 2009-4-26
- * @modified by Rich Turner 2011-2-5
+ * @author Rich Turner 2011-2-5
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class TelnetCommand implements ExecutableCommand, EventListener, Runnable {
@@ -151,12 +151,24 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
                if (!"null".equals(cmd)) {
                   waitForString(cmd, tc);
                }
-            } else {
-               sendString(cmd, tc);
-               if (readResponse) {
-                  readString(waitFor, tc);
-               }
             }
+
+            else
+            {
+              sendString(cmd, tc);
+
+              if (readResponse)
+              {
+                // TODO :
+                //   ORCJAVA-327 - should always wait for 'null' string in readString() ?
+                //   It's an arbitrary state response, we never know the value in advance.
+                //   It's unclear if this change will impact existing users, should only
+                //   be added with a configurable 'backwards-compatibility' flag.
+
+                readString(waitFor, tc);
+              }
+            }
+
             count++;
          }
       } catch (Exception e) {
@@ -184,6 +196,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
       StringBuffer sb = new StringBuffer();
       Calendar endTime = Calendar.getInstance();
       endTime.add(Calendar.SECOND, timeOut);
+
       while (sb.toString().indexOf(s) == -1) {
          while (Calendar.getInstance().before(endTime) && is.available() == 0) {
             Thread.sleep(250);
@@ -194,6 +207,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
          }
          sb.append((char) is.read());
       }
+
       logger.info("WaitForString received: " + sb.toString());
    }
 
