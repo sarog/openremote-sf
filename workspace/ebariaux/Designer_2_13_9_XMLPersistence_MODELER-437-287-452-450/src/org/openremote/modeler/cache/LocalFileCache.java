@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +41,7 @@ import java.util.zip.ZipInputStream;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.configuration.PathConfig;
@@ -1624,7 +1627,108 @@ public class LocalFileCache implements ResourceCache<File>
     }
   }
 
+  /**
+   * @return File for binary panels.obj designer UI state serialization file.
+   */
+  public File getLegacyPanelObjFile() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      return new File(pathConfig.userFolder(account) + "panels.obj"); // TODO : should go through ResourceCache interface : EBR -> JPL : why ?
+  }
+  
+  /**
+   * @return File for panel XML description (panel.xml)
+   */
+   public File getPanelXmlFile() {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      return new File(pathConfig.userFolder(account) + "panel.xml");
+   }
 
+   
+   
+   /**
+    * @return File for controller XML description (controller.xml)
+    */
+    public File getControllerXmlFile() {
+       PathConfig pathConfig = PathConfig.getInstance(configuration);
+       return new File(pathConfig.userFolder(account) + "controller.xml");
+    }
+
+    /**
+     * @return File for LIRC daemon configuration (lircd.conf)
+     */
+     public File getLircdFile() {
+        PathConfig pathConfig = PathConfig.getInstance(configuration);
+        return new File(pathConfig.userFolder(account) + "lircd.conf");
+     }
+  
+  /**
+   * Detects the presence of legacy binary panels.obj designer UI state serialization file.
+   *
+   * @param pathConfig      Designer path configuration
+   * @param panelsObjFile   file path to the legacy binary panels.objs UI state serialization file
+   *
+   * @return      true if the panels.obj file is present in local beehive archive cache folder,
+   *              false otherwise
+   *
+   * @throws ConfigurationException
+   *              if read access to the file system is denied for any reason
+   */
+  public boolean hasLegacyDesignerUIState()
+      throws ConfigurationException
+  {
+	  File panelsObjFile = getLegacyPanelObjFile();
+    try
+    {
+      return panelsObjFile.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      // convert the potential security exception to a checked exception...
+
+      throw new ConfigurationException(
+          "Security manager denied access to " + panelsObjFile.getAbsoluteFile() +
+          ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
+      );
+    }
+  }
+  
+  /**
+   * Persists the given UI information in legacy binary panels.obj format.
+   * 
+   * @param panels
+   * @param maxOid
+   */
+  public void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
+     File panelsObjFile = getLegacyPanelObjFile();
+     ObjectOutputStream oos = null;
+     try {
+        FileUtilsExt.deleteQuietly(panelsObjFile);
+        if (panels == null || panels.size() < 1) {
+           return;
+        }
+        oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
+        oos.writeObject(panels);
+        oos.writeLong(maxOid);
+     } catch (FileNotFoundException e) {
+        cacheLog.error(e.getMessage(), e);
+     } catch (IOException e) {
+    	 cacheLog.error(e.getMessage(), e);
+     } finally {
+        try {
+           if (oos != null) {
+              oos.close();
+           }
+        } catch (IOException e) {
+        	cacheLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
+        }
+     }
+  }
+
+
+  
+  
   /**
    * Helper for logging user information.
    *
