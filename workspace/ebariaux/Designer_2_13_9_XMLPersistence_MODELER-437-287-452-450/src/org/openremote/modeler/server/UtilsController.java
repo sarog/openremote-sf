@@ -320,11 +320,6 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
       }
       return result;
    }
-
-   @Override
-   public boolean canRestore() {
-      return resourceService.canRestore();
-   }
    
    public ScreenFromTemplate buildScreenFromTemplate(Template template){
       return screenTemplateService.buildFromTemplate(template);

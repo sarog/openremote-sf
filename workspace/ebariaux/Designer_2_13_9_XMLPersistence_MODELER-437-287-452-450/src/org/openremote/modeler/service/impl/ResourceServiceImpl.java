@@ -1177,7 +1177,9 @@ public class ResourceServiceImpl implements ResourceService
       // component with same sensor (like we did last time), the two
       // sensors will have different oid, if so, when we export controller.xml we my find that there are two (or more
       // sensors) with all the same property except oid.
-      serializePanelsAndMaxOid(panels, maxOid);
+      LocalFileCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+      cache.serializePanelsAndMaxOid(panels, maxOid);
+      
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
       /*
@@ -1212,9 +1214,9 @@ public class ResourceServiceImpl implements ResourceService
       File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
       FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
 
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      File panelXMLFile = cache.getPanelXmlFile();
+      File controllerXMLFile = cache.getControllerXmlFile();
+      File lircdFile = cache.getLircdFile();
 
       File rulesDir = new File(pathConfig.userFolder(userService.getAccount()), "rules");
       File rulesFile = new File(rulesDir, "modeler_rules.drl");
@@ -1256,40 +1258,6 @@ public class ResourceServiceImpl implements ResourceService
          throw new FileOperationException("Failed to write resource: " + e.getMessage(), e);
       }
    }
-
-
-   //
-   //   TODO :
-   //
-   //     - should be internalized as part of resource cache implementation, see MODELER-287
-   //
-   private void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
-      PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-      ObjectOutputStream oos = null;
-      try {
-         FileUtilsExt.deleteQuietly(panelsObjFile);
-         if (panels == null || panels.size() < 1) {
-            return;
-         }
-         oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
-         oos.writeObject(panels);
-         oos.writeLong(maxOid);
-      } catch (FileNotFoundException e) {
-         serviceLog.error(e.getMessage(), e);
-      } catch (IOException e) {
-         serviceLog.error(e.getMessage(), e);
-      } finally {
-         try {
-            if (oos != null) {
-               oos.close();
-            }
-         } catch (IOException e) {
-            serviceLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
-         }
-      }
-   }
-
 
   /**
    * This implementation has been moved and delegates to {@link DesignerState#restore}.
@@ -1431,20 +1399,6 @@ public class ResourceServiceImpl implements ResourceService
          throw new IllegalRestUrlException("Invalid Rest URL: " + url + " to save template resource to beehive! ", e);
       }
    }
-
-
-  //
-  // TODO :
-  //
-  //   - should migrate to ResourceCache interface
-  //
-  @Override public boolean canRestore()
-  {
-    PathConfig pathConfig = PathConfig.getInstance(configuration);
-    File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-
-    return panelsObjFile.exists();
-  }
 
    //
    // TODO :
