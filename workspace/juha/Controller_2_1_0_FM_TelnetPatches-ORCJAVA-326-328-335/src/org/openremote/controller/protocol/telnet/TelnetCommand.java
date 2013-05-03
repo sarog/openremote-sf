@@ -36,6 +36,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * TODO
@@ -321,7 +322,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
          {
            if (sensor instanceof SwitchSensor)
            {
-             filteredResponse = filteredResponse.toLowerCase().trim().replaceAll("1|on", "true");
+             filteredResponse = Strings.toLowerCase(filteredResponse).trim().replaceAll("1|on", "true");
 
              Boolean bool = Boolean.parseBoolean(filteredResponse);
 
