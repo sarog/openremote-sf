@@ -98,13 +98,10 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     resourceService.resolveDTOReferences(panelList);
 
-    // TODO : this call should be internalized, see MODELER-287
-    resourceService.initResources(panelList, maxId);
-
-    resourceService.saveResourcesToBeehive(panelList);
-
-    // TODO : should be injected
-    ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+    // Saving the resources provides us with a valid local cache that can be used to produce the export file.
+    // This is a depency to make sure all files that are part of the export are correctly generated.
+    // Will go away with MODELER-288
+    LocalFileCache cache = resourceService.saveResourcesToBeehive(panelList, maxId);
 
     try
     {
@@ -148,7 +145,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
     }
 
     // TODO : should never come from cache in the first place but from Beehive
-    return resourceService.downloadZipResource(maxId, getThreadLocalRequest().getSession().getId(), panelList);
+    return resourceService.downloadZipResource(cache, panelList, maxId);
   }
 
 
@@ -229,8 +226,8 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
                autoSaveResponse.setUpdated(true);
-               resourceService.initResources(panels, maxID);
-               resourceService.saveResourcesToBeehive(panels);
+
+               resourceService.saveResourcesToBeehive(panels, maxID);
             }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
@@ -250,8 +247,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
             
             resourceService.resolveDTOReferences(panels);
             
-            resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive(panels);
+            resourceService.saveResourcesToBeehive(panels, maxID);
          }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
