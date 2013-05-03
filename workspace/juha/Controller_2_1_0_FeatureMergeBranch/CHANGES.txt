@@ -1,4 +1,3 @@
-
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
 
@@ -26,7 +25,8 @@ New Features:
     filtering on return values supported, including regexp groups to 
     read in multiple sensor values at once. Support for using shell
     commands with sliders added (Marcus Redeker, Ivan Martinez)
-  - Telnet: polling interval property added (Marcus Redeker)
+  - Telnet: polling interval property added (Marcus Redeker), dedicated
+    telnet log directory and telnet debug logs added (Juha Lindfors, ORCJAVA-328)
   - Date/Time : values updated once per minute instead of once per second
     (Marcus Redeker)
   - UDP : send hex values by prefixing command data with '0x' string.
@@ -68,6 +68,10 @@ Bug Fixes:
     (Juha Lindfors, ORCJAVA-308)
   - State sensor is more tolerant to device input trimming non-printable 
     characters -- CF, RF, zero bytes, etc.  (Juha Lindfors, ORCJAVA-324) 
+  - Use locale independent string case conversions in the controller, KNX and telnet
+    protocols (Juha Lindfors, ORCJAVA-332, ORCJAVA-334, ORCJAVA-335)
+  - Fix a bug in telnet switch sensor handling where untrimmed return value was
+    never correctly parsed to 'on' state (Juha Lindfors, ORCJAVA-326)
 
 
 Internal:
@@ -75,7 +79,6 @@ Internal:
   - Enforce UTF-8 encoding on Java source files with javac to prevent build issues
     on systems with differing default character encoding configurations
     (Juha Lindfors, ORCJAVA-329)
-
 
 
 Controller 2.0.2 (2013-02-26)

@@ -34,6 +34,7 @@ import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 
 /**
@@ -88,7 +89,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
   static GroupValueRead createCommand(String name, KNXIpConnectionManager mgr,
                                       GroupAddress address, DataPointType dpt)
   {
-    name = name.trim().toUpperCase();
+    name = Strings.toUpperCase(name.trim());
 
     ApplicationProtocolDataUnit apdu = booleanCommandLookup.get(name);
 
