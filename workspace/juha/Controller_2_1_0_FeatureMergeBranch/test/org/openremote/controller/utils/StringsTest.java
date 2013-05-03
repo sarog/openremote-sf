@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -19,6 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.utils;
+
+import java.util.Locale;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -155,11 +157,100 @@ public class StringsTest
 
     Assert.assertTrue(Strings.byteToUnsignedHexString(zero).equals("0x00"));
   }
-  
+
   /**
-   * 
+   * Regression tests for issue ORCJAVA-332 (http://jira.openremote.org/browse/ORCJAVA-332)  <p>
+   *
+   * The tested utility method provides a locale independent (defaulting to ENGLISH locale)
+   * implementation for string to upper case conversions.
    */
-  @Test public void testPollingIntervalConvertion() 
+  @Test public void testUpperCase()
+  {
+    String s1 = "abc123-321BgC";
+
+    Assert.assertTrue(Strings.toUpperCase(s1).equals("ABC123-321BGC"));
+
+    String s2 = "switch";
+
+    Assert.assertTrue(
+        "Expected 'SWITCH', got '" + Strings.toUpperCase(s2) + "'",
+        Strings.toUpperCase(s2).equals("SWITCH")
+    );
+
+    Locale defaultLocale = Locale.getDefault();
+
+    try
+    {
+      Locale.setDefault(new Locale("tr"));    // turkmen language ISO-639 two letter code
+
+      Assert.assertTrue(
+          "Expected 'SWITCH', got '" + Strings.toUpperCase(s2) + "'",
+          Strings.toUpperCase(s2).equals("SWITCH")
+      );
+
+      // funky turkish 'İ' -- expecting this with String.toUpperCase, but not with our
+      // utility method above
+
+      Assert.assertTrue(
+          "Expected 'SWİTCH', got '" + s2.toUpperCase() + "'",
+          s2.toUpperCase().equals("SWİTCH")
+      );
+    }
+
+    finally
+    {
+      Locale.setDefault(defaultLocale);
+    }
+  }
+
+  /**
+   * Regression tests for issue ORCJAVA-332 (http://jira.openremote.org/browse/ORCJAVA-332)  <p>
+   *
+   * The tested utility method provides a locale independent (defaulting to ENGLISH locale)
+   * implementation for string to lower case conversions.
+   */
+  @Test public void testLowerCase()
+  {
+    String s1 = "abc123-321BgC";
+
+    Assert.assertTrue(Strings.toLowerCase(s1).equals("abc123-321bgc"));
+
+    String s2 = "SWITCH";
+
+    Assert.assertTrue(
+        "Expected 'switch', got '" + Strings.toLowerCase(s2) + "'",
+        Strings.toLowerCase(s2).equals("switch")
+    );
+
+    Locale defaultLocale = Locale.getDefault();
+
+    try
+    {
+      Locale.setDefault(new Locale("tr"));    // turkmen language ISO-639 two letter code
+
+      Assert.assertTrue(
+          "Expected 'switch', got '" + Strings.toLowerCase(s2) + "'",
+          Strings.toLowerCase(s2).equals("switch")
+      );
+
+      // funky turkish 'ı' -- expecting this with String.toLowerCase, but not with our
+      // utility method above
+
+      Assert.assertTrue(
+          "Expected 'swıtch', got '" + s2.toLowerCase() + "'",
+          s2.toLowerCase().equals("swıtch")
+      );
+    }
+
+    finally
+    {
+      Locale.setDefault(defaultLocale);
+    }
+  }
+
+
+
+  @Test public void testPollingIntervalConversion()
   {
     String _empty = "";
     String _empty2 = " ";

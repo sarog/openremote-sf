@@ -25,6 +25,7 @@ import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,7 +183,7 @@ abstract class KNXCommand implements Command
   static KNXCommand createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                   GroupAddress address, CommandParameter parameter)
   {
-    name = name.trim().toUpperCase();
+    name = Strings.toUpperCase(name.trim());
     
     IpInterfaceMonitor monitorCmd = IpInterfaceMonitor.createCommand(name, mgr, address, dpt);
     if(monitorCmd != null)

@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -42,6 +42,7 @@ import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * XML Binding from XML document to sensor object model. TODO
@@ -366,7 +367,7 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
 
     try
     {
-      return SensorType.valueOf(typeValue.toUpperCase());
+      return SensorType.valueOf(Strings.toUpperCase(typeValue.trim()));
     }
     catch (IllegalArgumentException e)
     {

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Strings;
 
 /**
  * TODO
@@ -136,7 +137,7 @@ public abstract class DataPointType
 
   public static DataPointType lookup(String dptID)
   {
-    dptID = dptID.toUpperCase().trim();
+    dptID = Strings.toUpperCase(dptID.trim());
 
     if (dptID.startsWith("DPT"))
     {
