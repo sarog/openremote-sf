@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -25,6 +25,7 @@ import org.openremote.controller.protocol.Event;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.model.event.Switch;
+import org.openremote.controller.utils.Strings;
 
 
 /**
@@ -145,7 +146,9 @@ public class SwitchSensor extends StateSensor
   {
     try
     {
-      return new Switch(getSensorID(), getName(), value, Switch.State.valueOf(value.toUpperCase()));
+      return new Switch(
+          getSensorID(), getName(), value, Switch.State.valueOf(Strings.toUpperCase(value.trim()))
+      );
     }
 
     catch (IllegalArgumentException e)
@@ -180,7 +183,9 @@ public class SwitchSensor extends StateSensor
   {
     try
     {
-      return new Switch(getSensorID(), getName(), value, Switch.State.valueOf(originalValue.toUpperCase()));
+      return new Switch(
+          getSensorID(), getName(), value, Switch.State.valueOf(Strings.toUpperCase(originalValue.trim()))
+      );
     }
 
     catch (IllegalArgumentException e)
