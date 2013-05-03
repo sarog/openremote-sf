@@ -44,6 +44,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
@@ -52,6 +53,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.domain.component.UIWebView;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
@@ -169,9 +171,10 @@ public class TreePanelBuilder {
     * Builds a device command tree.
     * It list all devices on top level and when expanded, each device lists its commands.
     * 
+    * @param includeMacros indicate if macros should also be available in the tree or only commands
     * @return the a new device command tree
     */
-   public static TreePanel<BeanModel> buildCommandAndMacroTree() {
+   public static TreePanel<BeanModel> buildCommandAndMacroTree(boolean includeMacros) {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
@@ -219,11 +222,13 @@ public class TreePanelBuilder {
       TreeFolderBean devicesBean = new TreeFolderBean();
       devicesBean.setDisplayName("Devices");
       devicesBean.setType(Constants.DEVICES);
-      TreeFolderBean macrosBean = new TreeFolderBean();
-      macrosBean.setDisplayName("Macros");
-      macrosBean.setType(Constants.MACROS);
       commandsAndMacrosTreeStore.add(devicesBean.getBeanModel(), true);
-      commandsAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+      if (includeMacros) {
+        TreeFolderBean macrosBean = new TreeFolderBean();
+        macrosBean.setDisplayName("Macros");
+        macrosBean.setType(Constants.MACROS);
+        commandsAndMacrosTreeStore.add(macrosBean.getBeanModel(), true);
+      }
       
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandsAndMacrosTreeStore);
       tree.setBorders(false);
@@ -470,8 +475,10 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
+      widgetTreeStore.add(new ColorPicker().getBeanModel(), true);
       widgetTreeStore.add(new UITabbar().getBeanModel(), true);
       widgetTreeStore.add(new UITabbarItem().getBeanModel(), true);
+      widgetTreeStore.add(new UIWebView().getBeanModel(), true);
 
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -485,13 +492,17 @@ public class TreePanelBuilder {
                return ICON.imageIcon();
             } else if (thisModel.getBean() instanceof UISlider) {
                return ICON.sliderIcon();
+            } else if (thisModel.getBean() instanceof ColorPicker) {
+               return ICON.colorpickerIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
             } else if (thisModel.getBean() instanceof UITabbar) {
                return ICON.tabbarConfigIcon();
             } else if (thisModel.getBean() instanceof UITabbarItem) {
                return ICON.tabbarItemIcon();
-            } else {
+            } else if (thisModel.getBean() instanceof UIWebView) {           
+            	return ICON.webviewIcon();
+            }else {
                return ICON.buttonIcon();
             }
          }

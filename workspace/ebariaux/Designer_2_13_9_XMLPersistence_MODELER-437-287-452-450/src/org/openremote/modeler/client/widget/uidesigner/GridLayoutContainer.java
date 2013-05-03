@@ -32,6 +32,7 @@ import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.component.ScreenImage;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
+import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -240,7 +241,9 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenLabel)screenComponent).onStateChange();
                } else if (screenComponent instanceof ScreenImage) {
                   ((ScreenImage)screenComponent).onStateChange();
-               }
+               }else if (screenComponent instanceof ScreenWebView) {
+                  ((ScreenWebView)screenComponent).onStateChange();
+               } 
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenComponent instanceof ScreenButton) {
                   ((ScreenButton)screenComponent).setDefaultImage();
@@ -307,6 +310,8 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenLabel)screenComponent).onStateChange();
                } else if (screenComponent instanceof ScreenImage) {
                   ((ScreenImage)screenComponent).onStateChange();
+               } else if (screenComponent instanceof ScreenWebView) {
+                  ((ScreenWebView)screenComponent).onStateChange();
                } 
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenComponent instanceof ScreenButton) {

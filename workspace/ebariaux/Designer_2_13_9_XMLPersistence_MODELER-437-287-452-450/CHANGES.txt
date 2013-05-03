@@ -1,3 +1,35 @@
+Designer MODELER-398
+====================
+
+ - Setting a sensor on a Web element does not work
+
+
+Designer MODELER-384
+====================
+
+ - Property form title is wrong for webview and 
+   color picker components
+
+
+Designer MODELER-333
+====================
+
+ - Colorpicker widget
+
+
+Designer MODELER-395
+====================
+
+ - Incorrect password field generated
+   in panel.xml for Web element
+
+
+Designer MODELER-248
+====================
+
+ - Add web view widget
+
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
