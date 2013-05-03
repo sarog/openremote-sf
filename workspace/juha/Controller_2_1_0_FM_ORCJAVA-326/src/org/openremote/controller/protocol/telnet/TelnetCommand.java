@@ -334,7 +334,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
 
              else
              {
-               logger.info("Parsed telnet response '" + filteredResponse + "' to 'off' and updating switch sensor.");
+               logger.debug("Parsed telnet response '" + filteredResponse + "' to 'off' and updating switch sensor.");
 
                sensor.update("off");
              }
@@ -342,7 +342,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
 
            else
            {
-             logger.debug("" +
+             logger.debug(
                  "Telnet status command updating sensor '" + sensor.getName() + "' (ID: " +
                  sensor.getSensorID() + ")  with value '" + filteredResponse + "'"
              );
