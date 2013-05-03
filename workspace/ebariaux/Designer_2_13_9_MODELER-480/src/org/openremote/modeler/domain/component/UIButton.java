@@ -65,6 +65,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    public UIButton() {
       super();
    }
+   
    public UIButton(UIButton btn) {
       this.setOid(btn.getOid());
       this.name = btn.name;
@@ -73,7 +74,9 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       this.navigate = btn.navigate;
       this.pressImage = btn.pressImage;
       this.uiCommand = btn.uiCommand;
+      this.uiCommandDTO = btn.uiCommandDTO;
    }
+
    /**
     * Instantiates a new uI button.
     * 
@@ -166,7 +169,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
-      if (uiCommand != null) {
+      if (uiCommandDTO != null) {
          xmlContent.append(" hasControlCommand=\"true\"");
       }
       if (repeate) {
