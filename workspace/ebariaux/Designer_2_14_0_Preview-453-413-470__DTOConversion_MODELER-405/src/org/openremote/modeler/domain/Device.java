@@ -30,6 +30,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
+import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
+import org.openremote.modeler.shared.dto.SensorDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.utils.dtoconverter.SwitchDTOConverter;
+
 import flexjson.JSON;
 
 
@@ -300,4 +313,50 @@ public class Device extends BusinessEntity {
       }
       return sensorRefItems;
    }
+   
+   @Transient
+   @JSON(include = false)
+   public DeviceDetailsDTO getDeviceDetailsDTO() {
+     return new DeviceDetailsDTO(getOid(), getName(), getVendor(), getModel());     
+   }
+   
+   @Transient
+   @JSON(include = false)
+   public DeviceWithChildrenDTO getDeviceWithChildrenDTO() {
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(getOid(), getDisplayName());
+      deviceDTO.setDeviceCommands(createDeviceCommandDTOs(getDeviceCommands()));
+      ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+      for (Sensor sensor : getSensors()) {
+        sensorDTOs.add(sensor.getSensorDTO());
+      }
+      deviceDTO.setSensors(sensorDTOs);
+      ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+      for (Switch s : getSwitchs()) {
+        switchDTOs.add(s.getSwitchDTO());
+      }
+      deviceDTO.setSwitches(switchDTOs);
+      ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+      for (Slider s : getSliders()) {
+        sliderDTOs.add(s.getSliderDTO());
+      }
+      deviceDTO.setSliders(sliderDTOs);
+      return deviceDTO;
+   }
+
+   @Transient
+   @JSON(include = false)
+   public DeviceWithChildrenDTO getDeviceWithCommandChildrenDTO() {
+     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(getOid(), getDisplayName());
+     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(getDeviceCommands()));
+     return deviceDTO;
+   }
+
+   private ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
+     ArrayList<DeviceCommandDTO> dcDTOs = new ArrayList<DeviceCommandDTO>();
+      for (DeviceCommand dc : deviceCommands) {
+        dcDTOs.add(dc.getDeviceCommandDTO());
+      }
+     return dcDTOs;
+   }
+
 }
