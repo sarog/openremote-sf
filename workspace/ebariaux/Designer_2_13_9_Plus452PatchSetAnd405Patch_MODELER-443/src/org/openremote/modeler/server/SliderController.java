@@ -70,34 +70,19 @@ public class SliderController extends BaseGWTSpringController implements SliderR
 
   @Override
   public SliderDetailsDTO loadSliderDetails(long id) {
-     Slider slider = sliderService.loadById(id);
-     DeviceCommand command = slider.getSetValueCmd().getDeviceCommand();
-     return new SliderDetailsDTO(slider.getOid(), slider.getName(), new DTOReference(slider.getSliderSensorRef().getSensor().getOid()), new DTOReference(command.getOid()), command.getDisplayName());
-   }
+    Slider slider = sliderService.loadById(id);
+    return (slider != null)?slider.getSliderDetailsDTO():null;
+  }
 
   @Override
   public ArrayList<SliderWithInfoDTO> loadAllSliderWithInfosDTO() {
     ArrayList<SliderWithInfoDTO> dtos = new ArrayList<SliderWithInfoDTO>();
     for (Slider slider : sliderService.loadAll()) {
-      dtos.add(createSliderWithInfoDTO(slider));
+      dtos.add(slider.getSliderWithInfoDTO());
     }
     return dtos;    
   }
 
-  public static SliderWithInfoDTO createSliderWithInfoDTO(Slider slider) {
-    return new SliderWithInfoDTO(slider.getOid(), slider.getDisplayName(),
-            (slider.getSetValueCmd() != null)?slider.getSetValueCmd().getDisplayName():null,
-            (slider.getSliderSensorRef() != null)?slider.getSliderSensorRef().getDisplayName():null,
-            slider.getDevice().getDisplayName());
-  }
-
-  public static SliderDTO createSliderDTO(Slider slider) {
-    SliderDTO sliderDTO = new SliderDTO(slider.getOid(), slider.getDisplayName());
-    DeviceCommand dc = slider.getSetValueCmd().getDeviceCommand();
-    sliderDTO.setCommand(new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()));
-    return sliderDTO;
-  }
-  
   @Override
    public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
      Slider slider = sliderService.loadById(sliderDTO.getOid());

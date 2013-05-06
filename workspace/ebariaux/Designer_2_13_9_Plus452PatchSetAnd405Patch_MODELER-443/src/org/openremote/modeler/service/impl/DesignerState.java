@@ -81,7 +81,9 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
+import org.openremote.modeler.utils.dtoconverter.SwitchDTOConverter;
 
 
 /**
@@ -606,7 +608,7 @@ class DesignerState
 
             if (sensor != null)
             {
-              owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+              owner.setSensorDTO(sensor.getSensorWithInfoDTO());
             }
 
             owner.setSensor(null);
@@ -623,7 +625,7 @@ class DesignerState
             // We must load slider because referenced sensor / command are not serialized, this reloads from DB
             Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
             if (slider != null) { // Just in case we have a dangling pointer
-              uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+              uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
             }
             uiSlider.setSlider(null);
           }
@@ -633,7 +635,7 @@ class DesignerState
           if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
             Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
             if (switchBean != null) { // Just in case we have a dangling pointer
-              uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+              uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
             }
             uiSwitch.setSwitchCommand(null);
           }
