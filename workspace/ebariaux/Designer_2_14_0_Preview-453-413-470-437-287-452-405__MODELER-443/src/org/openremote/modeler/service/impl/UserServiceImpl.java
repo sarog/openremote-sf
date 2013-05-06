@@ -78,6 +78,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    /**
     * {@inheritDoc}
     */
+   @Override
    public void initRoles() {
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
@@ -113,6 +114,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    /**
     * {@inheritDoc}
     */
+   @Override
    public User getUserById(long id) {
       return genericDAO.getById(User.class, id);
    }
@@ -120,6 +122,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    /**
     * {@inheritDoc}
     */
+    @Override
     public Account getAccount() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
@@ -128,6 +131,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+    @Override
     @Transactional public boolean createUserAccount(String username, String password, String email) {
       if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -149,6 +153,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
     * {@inheritDoc}
     */
+    @Override
     @Transactional public void saveUser(User user) {
         genericDAO.save(user.getAccount());
         genericDAO.save(user);
@@ -156,6 +161,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+    @Override
     @Transactional public void updateUser(User user) {
        genericDAO.update(user);
     }
@@ -174,6 +180,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   /**
    * TODO
    */
+  @Override
   public boolean sendRegisterActivationEmail(final User user)
   {
     // TODO : use common log facade
@@ -284,6 +291,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
    
+   @Override
    public boolean isUsernameAvailable(String username) {
       return genericDAO.getByNonIdField(User.class, "username", username) == null;
    }
@@ -300,11 +308,13 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       this.configuration = configuration;
    }
 
+   @Override
    public User getCurrentUser() {
       String username = SecurityContextHolder.getContext().getAuthentication().getName();
       return genericDAO.getByNonIdField(User.class, "username", username);
    }
 
+   @Override
    @Transactional public User inviteUser(String email, String role, User currentUser) {
       User invitee = null;
       if (isUsernameAvailable(email)) {
@@ -330,6 +340,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
   /**
    * TODO
    */
+  @Override
   public boolean sendInvitation(final User invitee, final User currentUser)
   {
     if (invitee == null || invitee.getOid() == 0 ||
@@ -389,7 +400,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     }
   }
 
-
+   @Override
    public boolean checkInvitation(String userOid, String hostOid, String aid) {
       long uid = 0;
       long hid = 0;
@@ -413,6 +424,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
 
+   @Override
    @Transactional public boolean createInviteeAccount(String userOid, String username, String password, String email) {
       if (StringUtils.isEmpty(userOid) || StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -437,6 +449,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Override
    public List<User> getPendingInviteesByAccount(User currentUser) {
       List<User> invitees = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
@@ -450,6 +463,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return invitees;
    }
 
+   @Override
    @Transactional public User updateUserRoles(long uid, String roles) {
       User user = getUserById(uid);
       user.getRoles().clear();
@@ -470,11 +484,13 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Override
    @Transactional public void deleteUser(long uid) {
       User user = getUserById(uid);
       genericDAO.delete(user);
    }
 
+   @Override
    public List<User> getAccountAccessUsers(User currentUser) {
       List<User> accessUsers = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
@@ -490,6 +506,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return accessUsers;
    }
 
+   @Override
    @Transactional public User forgetPassword(String username) {
       final User user = genericDAO.getByNonIdField(User.class, "username", username);
       final String passwordToken = UUID.randomUUID().toString();
@@ -523,6 +540,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Override
    public User checkPasswordToken(long uid, String passwordToken) {
       User user = getUserById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
@@ -531,6 +549,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return null;
    }
 
+   @Override
    @Transactional public boolean resetPassword(long uid, String password, String passwordToken) {
       User user = getUserById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
