@@ -87,26 +87,10 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    public ArrayList<MacroDTO> loadAllDTOs() {
      ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
      for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
-       dtos.add(createMacroDTO(dm));
+       dtos.add(dm.getMacroDTO());
      }
      return dtos;
    }
-
-  protected MacroDTO createMacroDTO(DeviceMacro dm) {
-    MacroDTO dto = new MacroDTO(dm.getOid(), dm.getDisplayName());
-     ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
-     for (DeviceMacroItem dmi : dm.getDeviceMacroItems()) {
-       if (dmi instanceof DeviceMacroRef) {
-         itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
-       } else if (dmi instanceof DeviceCommandRef) {
-         itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
-       } else if (dmi instanceof CommandDelay) {
-         itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
-       }
-     }
-     dto.setItems(itemDTOs);
-    return dto;
-  }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
      DeviceMacro macroBean = deviceMacroService.loadById(id);
@@ -121,7 +105,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
      
      macroBean.setDeviceMacroItems(macroItemBeans);
-     return createMacroDTO(deviceMacroService.saveDeviceMacro(macroBean));
+     return deviceMacroService.saveDeviceMacro(macroBean).getMacroDTO();
    }
 
    public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
@@ -129,7 +113,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      macroBean.setName(macro.getName());
 
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
-     return createMacroDTO(deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans));
+     return deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans).getMacroDTO();
    }
 
    protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
