@@ -31,7 +31,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public UIWebView() {
 	   }
 
-	   public UIWebView(String url, String userid,String password, String color, int fontSize, Sensor sensor) {
+	   public UIWebView(String url, String userid, String password, Sensor sensor) {
 	      this.url = url;
 	      this.userid=userid;
 	      this.password=password;
