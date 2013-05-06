@@ -33,8 +33,11 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
 
 import flexjson.JSON;
@@ -206,4 +209,21 @@ public class DeviceMacro extends BusinessEntity {
      return dto;
    }
 
+   @JSON(include=false)
+   @Transient
+   public MacroDetailsDTO getMacroDetailsDTO() {
+     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
+     for (DeviceMacroItem dmi : getDeviceMacroItems()) {
+       if (dmi instanceof DeviceMacroRef) {
+         DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
+         items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
+       } else if (dmi instanceof DeviceCommandRef) {
+         DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
+         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
+       } else if (dmi instanceof CommandDelay) {
+         items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
+       }
+     }
+     return new MacroDetailsDTO(getOid(), getName(), items);
+   }
 }
