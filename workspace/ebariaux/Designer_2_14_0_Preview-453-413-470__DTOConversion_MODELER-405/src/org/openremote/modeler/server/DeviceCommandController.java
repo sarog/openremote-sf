@@ -77,13 +77,7 @@ public class DeviceCommandController extends BaseGWTSpringController implements
    @Override
    public DeviceCommandDetailsDTO loadCommandDetailsDTO(long id) {
      DeviceCommand dc = deviceCommandService.loadById(id);
-     DeviceCommandDetailsDTO dto = new DeviceCommandDetailsDTO(dc.getOid(), dc.getName(), dc.getProtocol().getType());
-     HashMap<String, String> attributes = new HashMap<String, String>();
-     for (ProtocolAttr attr : dc.getProtocol().getAttributes()) {
-       attributes.put(attr.getName(), attr.getValue());
-     }
-     dto.setProtocolAttributes(attributes);
-     return dto;
+     return (dc != null)?dc.getDeviceCommandDetailsDTO():null;
    }
 
    @Override
