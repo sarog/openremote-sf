@@ -78,6 +78,7 @@ import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
@@ -981,42 +982,18 @@ public class ResourceServiceImpl implements ResourceService
     * @param panels All panels in which to process the buttons
     */
    private void replaceNullNamesWithEmptyString(Collection<Panel> panels) {
-     for (Panel panel : panels) {
-       for (GroupRef groupRef : panel.getGroupRefs()) {
-         Group group = groupRef.getGroup();
-         for (ScreenPairRef screenRef : group.getScreenRefs()) {
-           ScreenPair screenPair = screenRef.getScreen();
-           Screen screen = screenPair.getPortraitScreen();
-           if (screen != null) {
-             replaceNullNamesWithEmptyString(screen);
-           }
-           screen = screenPair.getLandscapeScreen();
-           if (screen != null) {
-             replaceNullNamesWithEmptyString(screen);
-           }
-         }
-       }
-     }
-   }
+  	 Panel.walkAllUIComponents(panels, new UIComponentOperation() {
 
-   private void replaceNullNamesWithEmptyString(Screen screen) {
-     for (Absolute absolute : screen.getAbsolutes()) {
-       replaceNullNamesWithEmptyString(absolute.getUiComponent());
-     }
-     for (UIGrid grid : screen.getGrids()) {
-       for (Cell cell : grid.getCells()) {
-         replaceNullNamesWithEmptyString(cell.getUiComponent());
-       }
-     }
-   }
-
-   private void replaceNullNamesWithEmptyString(UIComponent component) {
-     if (component instanceof UIButton) {
-       UIButton uiButton = (UIButton)component;
-       if (uiButton.getName() == null) {
-         uiButton.setName("");
-       }
-     }
+			@Override
+      public void execute(UIComponent component) {
+				if (component instanceof UIButton) {
+					UIButton uiButton = (UIButton) component;
+					if (uiButton.getName() == null) {
+						uiButton.setName("");
+					}
+				}
+      }
+  	 });
    }
 
   /**
@@ -1026,246 +1003,198 @@ public class ResourceServiceImpl implements ResourceService
    * @param panels
    */
   private void populateDTOReferences(Collection<Panel> panels) {
-    for (Panel panel : panels) {
-      for (GroupRef groupRef : panel.getGroupRefs()) {
-        Group group = groupRef.getGroup();
-        for (ScreenPairRef screenRef : group.getScreenRefs()) {
-          ScreenPair screenPair = screenRef.getScreen();
-          Screen screen = screenPair.getPortraitScreen();
-          if (screen != null) {
-            populateDTOReferences(screen);
-          }
-          screen = screenPair.getLandscapeScreen();
-          if (screen != null) {
-            populateDTOReferences(screen);
-          }
-        }
-      }
-    }
+  	Panel.walkAllUIComponents(panels, new UIComponentOperation() {
+
+  		@Override
+      public void execute(UIComponent component) {
+		    if (component instanceof SensorOwner) {
+		      SensorOwner owner = (SensorOwner) component;
+		      if (owner.getSensorDTO() == null && owner.getSensor() != null) {
+		        Sensor sensor = sensorService.loadById(owner.getSensor().getOid());
+
+		        if (sensor != null)
+		        {
+		          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+		        }
+
+		        owner.setSensor(null);
+
+		        if (owner instanceof SensorLinkOwner) {
+		          ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
+		          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
+		        }
+		      }
+		    }
+		    if (component instanceof UISlider) {
+		      UISlider uiSlider = (UISlider)component;
+		      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
+		        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+		        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
+		        if (slider != null) { // Just in case we have a dangling pointer
+		          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+		        }
+		        uiSlider.setSlider(null);
+		      }
+		    }
+		    if (component instanceof UISwitch) {
+		      UISwitch uiSwitch = (UISwitch)component;
+		      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
+		        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
+		        if (switchBean != null) { // Just in case we have a dangling pointer
+		          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+		        }
+		        uiSwitch.setSwitchCommand(null);
+		      }
+		    }
+		    if (component instanceof UIButton) {
+		      UIButton uiButton = (UIButton)component;
+		      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
+		        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
+		        uiButton.setUiCommand(null);
+		      }
+		    }
+		    if (component instanceof ColorPicker) {
+		      ColorPicker colorPicker = (ColorPicker)component;
+		      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
+		        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
+		        colorPicker.setUiCommand(null);
+		      }
+		    }
+		    if (component instanceof Gesture) {
+		    	Gesture gesture = (Gesture)component;
+		      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
+		        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
+		        gesture.setUiCommand(null);
+		      }
+		    }
+		  }
+
+		  private UICommandDTO createUiCommandDTO(UICommand uiCommand)
+		  {
+		    if (uiCommand instanceof DeviceCommandRef)
+		    {
+		      try
+		      {
+		        DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
+		        return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+		      }
+
+		      catch (ObjectNotFoundException e)
+		      {
+		        serviceLog.warn("Button is referencing inexistent command with id " + ((DeviceCommandRef)uiCommand).getDeviceCommand().getOid(), e);
+		        return null;
+		      }
+		    }
+
+		    else if (uiCommand instanceof DeviceMacroRef)
+		    {
+		      try
+		      {
+		        DeviceMacro targetMacro = ((DeviceMacroRef)uiCommand).getTargetDeviceMacro();
+
+		        if (targetMacro != null)
+		        {
+		          long oid = targetMacro.getOid();
+
+		          DeviceMacro dm = deviceMacroService.loadById(oid);
+
+		          return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
+		        }
+
+		        else
+		        {
+		          serviceLog.error("DeviceMacroRef had a null target device macro reference");
+
+		          return null;
+		        }
+		      }
+
+		      catch (ObjectNotFoundException e)
+		      {
+		        serviceLog.warn("Button is referencing inexistent macro with id " + ((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid(), e);
+		        return null;
+		      }
+		    }
+
+		    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+		  }
+
+  	});
   }
-
-  private void populateDTOReferences(Screen screen) {
-    for (Absolute absolute : screen.getAbsolutes()) {
-      populateDTOReferences(absolute.getUiComponent());
-    }
-    for (UIGrid grid : screen.getGrids()) {
-      for (Cell cell : grid.getCells()) {
-        populateDTOReferences(cell.getUiComponent());
-      }
-    }
-    for (Gesture gesture : screen.getGestures()) {
-      if (gesture.getUiCommandDTO() == null && gesture.getUiCommand() != null) {
-        gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommand()));
-        gesture.setUiCommand(null);
-      }
-    }
-  }
-
-  private void populateDTOReferences(UIComponent component) {
-    if (component instanceof SensorOwner) {
-      SensorOwner owner = (SensorOwner) component;
-      if (owner.getSensorDTO() == null && owner.getSensor() != null) {
-        Sensor sensor = sensorService.loadById(owner.getSensor().getOid());
-
-        if (sensor != null)
-        {
-          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
-        }
-
-        owner.setSensor(null);
-
-        if (owner instanceof SensorLinkOwner) {
-          ((SensorLinkOwner) owner).getSensorLink().setSensor(null);
-          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
-        }
-      }
-    }
-    if (component instanceof UISlider) {
-      UISlider uiSlider = (UISlider)component;
-      if (uiSlider.getSliderDTO() == null && uiSlider.getSlider() != null) {
-        // We must load slider because referenced sensor / command are not serialized, this reloads from DB
-        Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
-        if (slider != null) { // Just in case we have a dangling pointer
-          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
-        }
-        uiSlider.setSlider(null);
-      }
-    }
-    if (component instanceof UISwitch) {
-      UISwitch uiSwitch = (UISwitch)component;
-      if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
-        Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
-        if (switchBean != null) { // Just in case we have a dangling pointer
-          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
-        }
-        uiSwitch.setSwitchCommand(null);
-      }
-    }
-    if (component instanceof UIButton) {
-      UIButton uiButton = (UIButton)component;
-      if (uiButton.getUiCommandDTO() == null && uiButton.getUiCommand() != null) {
-        uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommand()));
-        uiButton.setUiCommand(null);
-      }
-    }
-    if (component instanceof ColorPicker) {
-      ColorPicker colorPicker = (ColorPicker)component;
-      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
-        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
-        colorPicker.setUiCommand(null);
-      }
-    }
-  }
-
-  private UICommandDTO createUiCommandDTO(UICommand uiCommand)
-  {
-    if (uiCommand instanceof DeviceCommandRef)
-    {
-      try
-      {
-        DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
-        return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
-      }
-
-      catch (ObjectNotFoundException e)
-      {
-        serviceLog.warn("Button is referencing inexistent command with id " + ((DeviceCommandRef)uiCommand).getDeviceCommand().getOid(), e);
-        return null;
-      }
-    }
-
-    else if (uiCommand instanceof DeviceMacroRef)
-    {
-      try
-      {
-        DeviceMacro targetMacro = ((DeviceMacroRef)uiCommand).getTargetDeviceMacro();
-
-        if (targetMacro != null)
-        {
-          long oid = targetMacro.getOid();
-
-          DeviceMacro dm = deviceMacroService.loadById(oid);
-
-          return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
-        }
-
-        else
-        {
-          serviceLog.error("DeviceMacroRef had a null target device macro reference");
-
-          return null;
-        }
-      }
-
-      catch (ObjectNotFoundException e)
-      {
-        serviceLog.warn("Button is referencing inexistent macro with id " + ((DeviceMacroRef)uiCommand).getTargetDeviceMacro().getOid(), e);
-        return null;
-      }
-    }
-
-    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
-  }
-
   
   /**
    * {@inheritDoc}
    */
   @Override @Transactional
   public void resolveDTOReferences(Collection<Panel> panels) {
-    for (Panel panel : panels) {
-      for (GroupRef groupRef : panel.getGroupRefs()) {
-        Group group = groupRef.getGroup();
-        for (ScreenPairRef screenRef : group.getScreenRefs()) {
-          ScreenPair screenPair = screenRef.getScreen();
-          Screen screen = screenPair.getPortraitScreen();
-          if (screen != null) {
-            resolveDTOReferences(screen);
-          }
-          screen = screenPair.getLandscapeScreen();
-          if (screen != null) {
-            resolveDTOReferences(screen);
-          }
-        }
+  	Panel.walkAllUIComponents(panels, new UIComponentOperation() {
+
+			@Override
+      public void execute(UIComponent component) {
+		    if (component instanceof SensorOwner) {
+		      SensorOwner owner = (SensorOwner) component;
+		      if (owner.getSensor() == null && owner.getSensorDTO() != null) {
+		        Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
+		        owner.setSensor(sensor);
+		        owner.setSensorDTO(null);
+		        if (owner instanceof SensorLinkOwner) {
+		          ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
+		          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
+		        }
+		      }
+		    }
+		    if (component instanceof UISlider) {
+		      UISlider uiSlider = (UISlider)component;
+		      if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
+		        Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+		        uiSlider.setSlider(slider);
+		        uiSlider.setSliderDTO(null);
+		      }
+		    }
+		    if (component instanceof UISwitch) {
+		      UISwitch uiSwitch = (UISwitch)component;
+		      if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
+		        Switch sw = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
+		        uiSwitch.setSwitchCommand(sw);
+		        uiSwitch.setSwitchDTO(null);
+		      }
+		    }
+		    if (component instanceof UIButton) {
+		      UIButton uiButton = (UIButton)component;
+		      if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
+		        uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
+		        uiButton.setUiCommandDTO(null);
+		      }
+		    }
+		    if (component instanceof ColorPicker) {
+		      ColorPicker colorPicker = (ColorPicker)component;
+		      if (colorPicker.getUiCommand() == null && colorPicker.getUiCommandDTO() != null) {
+		        colorPicker.setUiCommand(lookupUiCommandFromDTO(colorPicker.getUiCommandDTO()));
+		        colorPicker.setUiCommandDTO(null);
+		      }
+		    }
+		    if (component instanceof Gesture) {
+		    	Gesture gesture = (Gesture)component;
+			    if (gesture.getUiCommand() == null && gesture.getUiCommandDTO() != null) {        
+			      gesture.setUiCommand(lookupUiCommandFromDTO(gesture.getUiCommandDTO()));
+			      gesture.setUiCommandDTO(null);
+			    }
+		    }
       }
-    }
+
+		  private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
+		    if (uiCommandDTO instanceof DeviceCommandDTO) {
+		      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid(), true); // Load device and its relationships eagerly
+		      return  (dc != null)?new DeviceCommandRef(dc):null;
+		    } else if (uiCommandDTO instanceof MacroDTO) {
+		      DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
+		      return (dm != null)?new DeviceMacroRef(dm):null;
+		    }
+		    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
+		  }
+
+  	});
   }
-
-  private void resolveDTOReferences(Screen screen) {
-    for (Absolute absolute : screen.getAbsolutes()) {
-      resolvedDTOReferences(absolute.getUiComponent());
-    }
-    for (UIGrid grid : screen.getGrids()) {
-      for (Cell cell : grid.getCells()) {
-        resolvedDTOReferences(cell.getUiComponent());
-      }
-    }
-    for (Gesture gesture : screen.getGestures()) {
-      if (gesture.getUiCommand() == null && gesture.getUiCommandDTO() != null) {        
-        gesture.setUiCommand(lookupUiCommandFromDTO(gesture.getUiCommandDTO()));
-        gesture.setUiCommandDTO(null);
-      }
-    }
-  }
-
-
-  protected void resolvedDTOReferences(UIComponent component) {
-    if (component instanceof SensorOwner) {
-      SensorOwner owner = (SensorOwner) component;
-      if (owner.getSensor() == null && owner.getSensorDTO() != null) {
-        Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
-        owner.setSensor(sensor);
-        owner.setSensorDTO(null);
-        if (owner instanceof SensorLinkOwner) {
-          ((SensorLinkOwner) owner).getSensorLink().setSensor(sensor);
-          ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(null);
-        }
-      }
-    }
-    if (component instanceof UISlider) {
-      UISlider uiSlider = (UISlider)component;
-      if (uiSlider.getSlider() == null && uiSlider.getSliderDTO() != null) {
-        Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
-        uiSlider.setSlider(slider);
-        uiSlider.setSliderDTO(null);
-      }
-    }
-    if (component instanceof UISwitch) {
-      UISwitch uiSwitch = (UISwitch)component;
-      if (uiSwitch.getSwitchCommand() == null && uiSwitch.getSwitchDTO() != null) {
-        Switch sw = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
-        uiSwitch.setSwitchCommand(sw);
-        uiSwitch.setSwitchDTO(null);
-      }
-    }
-    if (component instanceof UIButton) {
-      UIButton uiButton = (UIButton)component;
-      if (uiButton.getUiCommand() == null && uiButton.getUiCommandDTO() != null) {
-        uiButton.setUiCommand(lookupUiCommandFromDTO(uiButton.getUiCommandDTO()));
-        uiButton.setUiCommandDTO(null);
-      }
-    }
-    if (component instanceof ColorPicker) {
-      ColorPicker colorPicker = (ColorPicker)component;
-      if (colorPicker.getUiCommand() == null && colorPicker.getUiCommandDTO() != null) {
-        colorPicker.setUiCommand(lookupUiCommandFromDTO(colorPicker.getUiCommandDTO()));
-        colorPicker.setUiCommandDTO(null);
-      }
-    }
-  }
-
-  private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
-    if (uiCommandDTO instanceof DeviceCommandDTO) {
-      DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid(), true); // Load device and its relationships eagerly
-      return  (dc != null)?new DeviceCommandRef(dc):null;
-    } else if (uiCommandDTO instanceof MacroDTO) {
-      DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
-      return (dm != null)?new DeviceMacroRef(dm):null;
-    }
-    throw new RuntimeException("We don't expect any other type of UICommand"); // TODO : review that exception type
-  }
-
-  
 
    //
    // TODO :
