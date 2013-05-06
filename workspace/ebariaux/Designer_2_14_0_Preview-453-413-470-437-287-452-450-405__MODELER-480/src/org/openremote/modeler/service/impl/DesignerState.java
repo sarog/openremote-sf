@@ -633,7 +633,7 @@ class DesignerState
 
             if (sensor != null)
             {
-              owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+              owner.setSensorDTO(sensor.getSensorWithInfoDTO());
             }
 
             owner.setSensor(null);
@@ -650,7 +650,7 @@ class DesignerState
             // We must load slider because referenced sensor / command are not serialized, this reloads from DB
             Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
             if (slider != null) { // Just in case we have a dangling pointer
-              uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+              uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
             }
             uiSlider.setSlider(null);
           }
@@ -660,7 +660,7 @@ class DesignerState
           if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
             Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
             if (switchBean != null) { // Just in case we have a dangling pointer
-              uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+              uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
             }
             uiSwitch.setSwitchCommand(null);
           }
@@ -758,7 +758,7 @@ class DesignerState
             Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
 
             if (sensor != null) {
-              owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+              owner.setSensorDTO(sensor.getSensorWithInfoDTO());
             }
 
             if (owner instanceof SensorLinkOwner) {
@@ -772,7 +772,7 @@ class DesignerState
             // We must load slider because referenced sensor / command are not serialized, this reloads from DB
             Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
             if (slider != null) { // Just in case we have a dangling pointer
-              uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+              uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
             }
           }
         }
@@ -781,7 +781,7 @@ class DesignerState
           if (uiSwitch.getSwitchDTO() != null && uiSwitch.getSwitchDTO().getOid() != null) {
             Switch switchBean = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
             if (switchBean != null) { // Just in case we have a dangling pointer
-              uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+              uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
             }
           }
         }

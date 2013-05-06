@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.shared.dto.UserDTO;
 
 
 
@@ -242,5 +243,10 @@ public class User extends BusinessEntity {
   @Override public String toString()
   {
     return getUsername() + " - " + getEmail() + " (oid = " + getOid() + ")";
+  }
+  
+  @Transient
+  public UserDTO getUserDTO() {
+    return new UserDTO(getOid(), getUsername(), getEmail(), getRole());
   }
 }
