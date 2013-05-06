@@ -80,7 +80,8 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
      for (Sensor s : sensorService.loadByDeviceId(id)) {
-       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName(), s.getType()));
+       // EBR - MODELER-405 : initial implementation did not include sensor command in returned DTOs
+       dtos.add(s.getSensorDTO());
      }
      return dtos;
    }
@@ -100,33 +101,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
      return dtos;    
   }
 
-  public static SensorWithInfoDTO createSensorWithInfoDTO(Sensor sensor) {
-    if (sensor.getType() == SensorType.RANGE) {
-       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(),
-               Integer.toString(((RangeSensor)sensor).getMin()),
-               Integer.toString(((RangeSensor)sensor).getMax()), null);
-    } else if (sensor.getType() == SensorType.CUSTOM) {
-       CustomSensor customSensor = (CustomSensor)sensor;
-       ArrayList<String> states = new ArrayList<String>();
-       for (State state : customSensor.getStates()) {
-         states.add(state.getName());
-       }
-       return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states);
-    } else {
-      return new SensorWithInfoDTO(sensor.getOid(), sensor.getDisplayName(),
-              sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null);
-    }
-  }
-   
-  public static SensorDTO createSensorDTO(Sensor sensor) {
-    SensorDTO sensorDTO = new SensorDTO(sensor.getOid(), sensor.getDisplayName(), sensor.getType());
-    DeviceCommand dc = sensor.getSensorCommandRef().getDeviceCommand();
-    sensorDTO.setCommand(dc.getDeviceCommandDTO());
-    return sensorDTO;
-  }
-  
    @Override
   public void updateSensorWithDTO(SensorDetailsDTO sensor) {
      sensorService.updateSensorWithDTO(sensor);

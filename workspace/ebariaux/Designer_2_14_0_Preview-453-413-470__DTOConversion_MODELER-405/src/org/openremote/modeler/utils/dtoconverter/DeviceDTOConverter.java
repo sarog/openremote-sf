@@ -34,11 +34,14 @@ public class DeviceDTOConverter {
     for (Switch s : device.getSwitchs()) {
       switchDTOs.add(SwitchDTOConverter.createSwitchDetailsDTO(s));
     }
+    deviceDTO.setSwitches(switchDTOs);
 
     ArrayList<SliderDetailsDTO> sliderDTOs = new ArrayList<SliderDetailsDTO>();
     for (Slider s : device.getSliders()) {
       sliderDTOs.add(s.getSliderDetailsDTO());
     }
+    deviceDTO.setSliders(sliderDTOs);
+
     return deviceDTO;
   }
 }
