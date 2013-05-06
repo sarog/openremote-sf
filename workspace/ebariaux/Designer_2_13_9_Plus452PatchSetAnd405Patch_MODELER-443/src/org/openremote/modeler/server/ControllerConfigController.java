@@ -52,7 +52,7 @@ public class ControllerConfigController extends BaseGWTSpringController implemen
    private HashSet<ControllerConfigDTO> createDTOsFromBeans(Set<ControllerConfig> configs) {
      HashSet<ControllerConfigDTO> dtos = new HashSet<ControllerConfigDTO>();
      for (ControllerConfig cc : configs) {
-       dtos.add(new ControllerConfigDTO(cc.getOid(), cc.getCategory(), cc.getName(), cc.getValue(), cc.getHint(), cc.getValidation(), cc.getOptions()));
+       dtos.add(cc.getControllerConfigDTO());
      }
      return dtos;
    }
