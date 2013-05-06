@@ -1062,7 +1062,7 @@ public class ResourceServiceImpl implements ResourceService
       if (uiSwitch.getSwitchDTO() == null && uiSwitch.getSwitchCommand() != null) {
         Switch switchBean = switchService.loadById(uiSwitch.getSwitchCommand().getOid());
         if (switchBean != null) { // Just in case we have a dangling pointer
-          uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+          uiSwitch.setSwitchDTO(switchBean.getSwitchWithInfoDTO());
         }
         uiSwitch.setSwitchCommand(null);
       }
