@@ -1052,7 +1052,7 @@ public class ResourceServiceImpl implements ResourceService
         // We must load slider because referenced sensor / command are not serialized, this reloads from DB
         Slider slider = sliderService.loadById(uiSlider.getSlider().getOid());
         if (slider != null) { // Just in case we have a dangling pointer
-          uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+          uiSlider.setSliderDTO(slider.getSliderWithInfoDTO());
         }
         uiSlider.setSlider(null);
       }
