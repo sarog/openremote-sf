@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -60,6 +61,7 @@ import org.openremote.modeler.beehive.BeehiveService;
 import org.openremote.modeler.beehive.BeehiveServiceException;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.Command;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
@@ -74,9 +76,11 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
@@ -106,6 +110,9 @@ import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * Resource cache based on local file system access. This class provides an API for handling
@@ -551,7 +558,10 @@ public class LocalFileCache implements ResourceCache<File>
    *   <li>panel.xml</li>
    *   <li>controller.xml</li>
    *   <li>panels.obj</li>
+   *   <li>ui_state.xml</li>
+   *   <li>building_modeler.xml</li> // EBR this is not yet part of this branch
    *   <li>lircd.conf</li>
+   *   <li>rules</li>
    *   <li>image resources</li>
    * </ul>
    *
@@ -568,25 +578,24 @@ public class LocalFileCache implements ResourceCache<File>
   public File createExportArchive() throws CacheOperationException, ConfigurationException
   {
 
-    // File paths to add to export/upload archive...
-    //   - panel.xml
-    //   - controller.xml
-    //   - panels.obj
-    //   - lircd.conf
-    //   - image resources
-    //   - rules
-
     File panelXMLFile = new File("panel.xml");
     File controllerXMLFile = new File("controller.xml");
     File panelsObjFile = new File("panels.obj");
     File lircdFile = new File("lircd.conf");
     File rulesFile = new File("rules", "modeler_rules.drl");
 
+    File uiXMLFile = new File("ui_state.xml");
+//    File buildingXMLFile = new File("building_modeler.xml");
 
     // Collect all the files going into the archive...
 
     Set<File> exportFiles = new HashSet<File>();
     exportFiles.addAll(this.imageFiles);
+    
+    exportFiles.add(uiXMLFile);
+//    exportFiles.add(buildingXMLFile);
+    
+    
     exportFiles.add(panelXMLFile);
     exportFiles.add(controllerXMLFile);
 
@@ -1702,6 +1711,14 @@ public class LocalFileCache implements ResourceCache<File>
   }
   
   /**
+   * @return File for storing UI elements state in XML format.
+   */
+  public File getXMLUIFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "ui_state.xml");
+  }
+
+  /**
    * @return File for panel XML description (panel.xml)
    */
   public File getPanelXmlFile() {
@@ -1727,9 +1744,6 @@ public class LocalFileCache implements ResourceCache<File>
   
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
-   *
-   * @param pathConfig      Designer path configuration
-   * @param panelsObjFile   file path to the legacy binary panels.objs UI state serialization file
    *
    * @return      true if the panels.obj file is present in local beehive archive cache folder,
    *              false otherwise
@@ -1759,39 +1773,66 @@ public class LocalFileCache implements ResourceCache<File>
   }
   
   /**
-   * Persists the given UI information in legacy binary panels.obj format.
-   * 
-   * @param panels
-   * @param maxOid
+   * Detects the presence of XML designer UI state serialization file.
+   *
+   * @return      true if the ui_state.xml file is present in local beehive archive cache folder,
+   *              false otherwise
+   *
+   * @throws ConfigurationException
+   *              if read access to the file system is denied for any reason
    */
-  public void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
-     File panelsObjFile = getLegacyPanelObjFile();
-     ObjectOutputStream oos = null;
-     try {
-        FileUtilsExt.deleteQuietly(panelsObjFile);
-        if (panels == null || panels.size() < 1) {
-           return;
+  public boolean hasXMLUIState() throws ConfigurationException
+  {
+    File xmlUIStateFile = getXMLUIFile();
+    try
+    {
+      return xmlUIStateFile.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      // convert the potential security exception to a checked exception...
+
+      throw new ConfigurationException(
+          "Security manager denied access to " + xmlUIStateFile.getAbsoluteFile() +
+          ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
+      );
+    }
+  }
+  
+  private void persistUIState(Collection<Panel> panels, long maxOid) {
+    File xmlUIFile = getXMLUIFile();
+    
+    XStream xstream = new XStream(new StaxDriver());
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    
+    FileWriter fw = null;
+    try {
+      fw = new FileWriter(xmlUIFile);
+      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), fw);
+    } catch (IOException e) {
+      // TODO: better error handling, don't swallow issue
+      cacheLog.error(e.getMessage() ,e);
+    } finally {
+      try {
+        if (fw != null) {
+          fw.close();
         }
-        oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
-        oos.writeObject(panels);
-        oos.writeLong(maxOid);
-     } catch (FileNotFoundException e) {
-        cacheLog.error(e.getMessage(), e);
-     } catch (IOException e) {
-    	 cacheLog.error(e.getMessage(), e);
-     } finally {
-        try {
-           if (oos != null) {
-              oos.close();
-           }
-        } catch (IOException e) {
-        	cacheLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
-        }
-     }
+      } catch (IOException e) {
+        cacheLog.warn("Unable to close writer to '" + xmlUIFile + "'.");
+      }
+    }
   }
   
   @Transactional
   private void initResources(Collection<Panel> panels, long maxOid) {
+    // EBR - 20130213 - Left this old comment dating when persistence was done to 
+    // Java serialization format.
+    // 
     // 1, we must serialize panels at first, otherwise after integrating panel's
     // ui component and commands(such as
     // device command, sensor ...)
@@ -1801,7 +1842,9 @@ public class LocalFileCache implements ResourceCache<File>
     // sensors will have different oid, if so, when we export controller.xml we
     // my find that there are two (or more
     // sensors) with all the same property except oid.
-    serializePanelsAndMaxOid(panels, maxOid);
+    
+    
+    persistUIState(panels, maxOid);
 
     Set<Group> groups = new LinkedHashSet<Group>();
     Set<Screen> screens = new LinkedHashSet<Screen>();
