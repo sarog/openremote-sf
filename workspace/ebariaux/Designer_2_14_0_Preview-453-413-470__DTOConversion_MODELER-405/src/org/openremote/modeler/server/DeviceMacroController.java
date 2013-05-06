@@ -110,22 +110,8 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    
    public MacroDetailsDTO loadMacroDetails(long id) {
      DeviceMacro macroBean = deviceMacroService.loadById(id);
-     
-     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
-     for (DeviceMacroItem dmi : macroBean.getDeviceMacroItems()) {
-       if (dmi instanceof DeviceMacroRef) {
-         DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
-         items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
-       } else if (dmi instanceof DeviceCommandRef) {
-         DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
-         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
-       } else if (dmi instanceof CommandDelay) {
-         items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
-       }
-     }
-     return new MacroDetailsDTO(macroBean.getOid(), macroBean.getName(), items);
+     return macroBean.getMacroDetailsDTO();
    }
-
    
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
