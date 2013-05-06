@@ -1035,7 +1035,7 @@ public class ResourceServiceImpl implements ResourceService
 
         if (sensor != null)
         {
-          owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+          owner.setSensorDTO(sensor.getSensorWithInfoDTO());
         }
 
         owner.setSensor(null);
