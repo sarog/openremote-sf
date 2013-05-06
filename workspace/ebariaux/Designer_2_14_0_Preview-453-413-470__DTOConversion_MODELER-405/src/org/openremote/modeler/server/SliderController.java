@@ -83,20 +83,6 @@ public class SliderController extends BaseGWTSpringController implements SliderR
     return dtos;
   }
 
-  public static SliderWithInfoDTO createSliderWithInfoDTO(Slider slider) {
-    return new SliderWithInfoDTO(slider.getOid(), slider.getDisplayName(), (slider.getSetValueCmd() != null) ? slider.getSetValueCmd().getDisplayName() : null, (slider.getSliderSensorRef() != null) ? slider.getSliderSensorRef().getDisplayName() : null,
-            slider.getDevice().getDisplayName());
-  }
-
-  public static SliderDTO createSliderDTO(Slider slider) {
-    SliderDTO sliderDTO = new SliderDTO(slider.getOid(), slider.getDisplayName());
-    if (slider.getSetValueCmd() != null) {
-      DeviceCommand dc = slider.getSetValueCmd().getDeviceCommand();
-      sliderDTO.setCommand(dc.getDeviceCommandDTO());
-    }
-    return sliderDTO;
-  }
-
   @Override
   public void updateSliderWithDTO(SliderDetailsDTO sliderDTO) {
     sliderService.updateSliderWithDTO(sliderDTO);
