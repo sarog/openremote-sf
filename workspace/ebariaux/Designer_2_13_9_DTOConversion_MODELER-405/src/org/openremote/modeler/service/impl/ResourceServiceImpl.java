@@ -1083,7 +1083,7 @@ public class ResourceServiceImpl implements ResourceService
       try
       {
         DeviceCommand dc = deviceCommandService.loadById(((DeviceCommandRef)uiCommand).getDeviceCommand().getOid());
-        return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getProtocol().getType()):null;
+        return (dc != null)?dc.getDeviceCommandDTO():null;
       }
 
       catch (ObjectNotFoundException e)
