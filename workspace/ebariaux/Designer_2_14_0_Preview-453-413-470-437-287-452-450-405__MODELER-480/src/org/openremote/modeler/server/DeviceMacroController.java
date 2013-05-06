@@ -87,45 +87,15 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
    public ArrayList<MacroDTO> loadAllDTOs() {
      ArrayList<MacroDTO> dtos = new ArrayList<MacroDTO>();
      for (DeviceMacro dm : deviceMacroService.loadAll(userService.getAccount())) {
-       dtos.add(createMacroDTO(dm));
+       dtos.add(dm.getMacroDTO());
      }
      return dtos;
    }
-
-  protected MacroDTO createMacroDTO(DeviceMacro dm) {
-    MacroDTO dto = new MacroDTO(dm.getOid(), dm.getDisplayName());
-     ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
-     for (DeviceMacroItem dmi : dm.getDeviceMacroItems()) {
-       if (dmi instanceof DeviceMacroRef) {
-         itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
-       } else if (dmi instanceof DeviceCommandRef) {
-         itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
-       } else if (dmi instanceof CommandDelay) {
-         itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
-       }
-     }
-     dto.setItems(itemDTOs);
-    return dto;
-  }
    
    public MacroDetailsDTO loadMacroDetails(long id) {
      DeviceMacro macroBean = deviceMacroService.loadById(id);
-     
-     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
-     for (DeviceMacroItem dmi : macroBean.getDeviceMacroItems()) {
-       if (dmi instanceof DeviceMacroRef) {
-         DeviceMacroRef macroRef = ((DeviceMacroRef)dmi);
-         items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
-       } else if (dmi instanceof DeviceCommandRef) {
-         DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
-         items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
-       } else if (dmi instanceof CommandDelay) {
-         items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
-       }
-     }
-     return new MacroDetailsDTO(macroBean.getOid(), macroBean.getName(), items);
+     return macroBean.getMacroDetailsDTO();
    }
-
    
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
@@ -135,7 +105,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);
      
      macroBean.setDeviceMacroItems(macroItemBeans);
-     return createMacroDTO(deviceMacroService.saveDeviceMacro(macroBean));
+     return deviceMacroService.saveDeviceMacro(macroBean).getMacroDTO();
    }
 
    public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
@@ -143,7 +113,7 @@ public class DeviceMacroController extends BaseGWTSpringController implements De
      macroBean.setName(macro.getName());
 
      List<DeviceMacroItem> macroItemBeans = createDeviceMacroItems(macro, macroBean);     
-     return createMacroDTO(deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans));
+     return deviceMacroService.updateDeviceMacro(macroBean, macroItemBeans).getMacroDTO();
    }
 
    protected List<DeviceMacroItem> createDeviceMacroItems(MacroDetailsDTO macro, DeviceMacro macroBean) {
