@@ -32,6 +32,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
@@ -343,6 +344,12 @@ public class Device extends BusinessEntity {
       return deviceDTO;
    }
 
+   @Transient
+   @JSON(include = false)
+   public DeviceDTO getDeviceDTO() {
+     return new DeviceDTO(getOid(), getDisplayName());
+   }
+   
    @Transient
    @JSON(include = false)
    public DeviceWithChildrenDTO getDeviceWithCommandChildrenDTO() {
