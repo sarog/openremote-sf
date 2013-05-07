@@ -52,6 +52,7 @@ public class ColorPicker extends UIControl implements ImageSourceOwner {
       this.setOid(colorPicker.getOid());
       this.image = colorPicker.image;
       this.uiCommand = colorPicker.uiCommand;
+      this.uiCommandDTO = colorPicker.uiCommandDTO;
    }
    
    public ImageSource getImage() {
