@@ -85,7 +85,9 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       this.minTrackImage = uiSlider.getMinTrackImage();
       this.maxImage = uiSlider.getMaxImage();
       this.maxTrackImage = uiSlider.getMaxTrackImage();
+      this.sliderDTO = uiSlider.getSliderDTO();
    }
+   
    public boolean isVertical() {
       return vertical;
    }
@@ -348,4 +350,63 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       }
       return false;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((maxImage == null) ? 0 : maxImage.hashCode());
+    result = prime * result + ((maxTrackImage == null) ? 0 : maxTrackImage.hashCode());
+    result = prime * result + ((minImage == null) ? 0 : minImage.hashCode());
+    result = prime * result + ((minTrackImage == null) ? 0 : minTrackImage.hashCode());
+    result = prime * result + ((sliderDTO == null) ? 0 : sliderDTO.hashCode());
+    result = prime * result + ((thumbImage == null) ? 0 : thumbImage.hashCode());
+    result = prime * result + (vertical ? 1231 : 1237);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UISlider other = (UISlider) obj;
+    if (maxImage == null) {
+      if (other.maxImage != null)
+        return false;
+    } else if (!maxImage.equals(other.maxImage))
+      return false;
+    if (maxTrackImage == null) {
+      if (other.maxTrackImage != null)
+        return false;
+    } else if (!maxTrackImage.equals(other.maxTrackImage))
+      return false;
+    if (minImage == null) {
+      if (other.minImage != null)
+        return false;
+    } else if (!minImage.equals(other.minImage))
+      return false;
+    if (minTrackImage == null) {
+      if (other.minTrackImage != null)
+        return false;
+    } else if (!minTrackImage.equals(other.minTrackImage))
+      return false;
+    if (sliderDTO == null) {
+      if (other.sliderDTO != null)
+        return false;
+    } else if (!sliderDTO.equals(other.sliderDTO))
+      return false;
+    if (thumbImage == null) {
+      if (other.thumbImage != null)
+        return false;
+    } else if (!thumbImage.equals(other.thumbImage))
+      return false;
+    if (vertical != other.vertical)
+      return false;
+    return true;
+  }
+
 }
