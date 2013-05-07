@@ -734,6 +734,7 @@ public class ResourceServiceImpl implements ResourceService
 	  LocalFileCache cache = new LocalFileCache(configuration, user);
 	  
 	  cache.setSwitchService(switchService);
+	  cache.setSliderService(sliderService);
 	  cache.setSensorService(sensorService);
 	  cache.setDeviceMacroService(deviceMacroService);
 	  cache.setDeviceCommandService(deviceCommandService);

@@ -29,8 +29,11 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import flexjson.JSON;
 
@@ -163,7 +166,12 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
 
    @Override
    public String getPanelXml(ConfigurationFilesGenerationContext context) {
-      StringBuffer xmlContent = new StringBuffer();
+     SliderDetailsDTO sliderDetailsDTO = null;
+     if (getSliderDTO() != null) {
+       sliderDetailsDTO = context.getSlider(getSliderDTO().getOid());
+     }
+
+     StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <slider id=\"" + getOid() + "\" ");
       if (isThumbUploaded()) {
          xmlContent.append("thumbImage=\"" + thumbImage.getImageFileName() + "\" ");
@@ -171,22 +179,23 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       if (vertical) {
          xmlContent.append("vertical=\"true\" ");
       }
-      if (slider == null || slider.getSetValueCmd() == null) {
+      if (sliderDetailsDTO == null || sliderDetailsDTO.getCommand() == null) {
          xmlContent.append("passive=\"true\" ");
       }
       xmlContent.append(">\n");
       int min = 0;
       int max = 100;
-      if (getSensor() != null) {
-         Sensor sensor = getSensor();
-         if (sensor.getType() == SensorType.RANGE || sensor.getType() == SensorType.LEVEL) {
-            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOffsetId() + "\" />\n");
-            if (sensor.getType() == SensorType.RANGE) {
-               RangeSensor rangeSensor = (RangeSensor) getSensor();
-               min = rangeSensor.getMin();
-               max = rangeSensor.getMax();
+      if (sliderDetailsDTO != null && sliderDetailsDTO.getSensor() != null) {
+        SensorDetailsDTO sensorDetailsDTO = context.getSensor(sliderDetailsDTO.getSensor().getId());
+        if (sensorDetailsDTO != null) {
+          if (sensorDetailsDTO.getType() == SensorType.RANGE || sensorDetailsDTO.getType() == SensorType.LEVEL) {
+            xmlContent.append("<link type=\"sensor\" ref=\"" + sensorDetailsDTO.getOffsetId() + "\" />\n");
+            if (sensorDetailsDTO.getType() == SensorType.RANGE) {
+               min = sensorDetailsDTO.getMinValue();
+               max = sensorDetailsDTO.getMaxValue();
             }
-         }
+          }
+        }
       }
       xmlContent.append("<min value=\"" + min + "\"");
       if (isMinImageUploaded()) {

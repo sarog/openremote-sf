@@ -94,21 +94,23 @@
   #end
   ##<------------------------------------------------------------------------Slider------------------------------------------------------------------
   #foreach($uiSlider in $uiSliders)
-   #if($uiSlider.getSlider())
-      #set($slider=$uiSlider.getSlider())
+   #if($uiSlider.getSliderDTO())
+     #if(${generationContext.getSlider(${uiSlider.getSliderDTO().getOid()})})
+       #set($slider=${generationContext.getSlider(${uiSlider.getSliderDTO().getOid()})})
       <slider id="${uiSlider.getOid()}">
-      #if(${slider.getSetValueCmd()})
-         #set($uiCmd=${slider.getSetValueCmd()})
-         #foreach($cmd in ${localFileCache.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+      #if(${slider.getCommand()})
+         #foreach($cmd in ${localFileCache.getCommandOwnerById(${slider.getCommand().getId()},$eventContainer,$maxId)})
          	<setValue>
             	<include type="command" ref="${cmd.getId()}"/>
             </setValue>
          #end
       #end
-      #if(${uiSlider.getSensor()})
-         <include type="sensor" ref="${uiSlider.getSensor().getOffsetId()}"/>
+      #if(${slider.getSensor()})
+        #set( $offsetId = ${slider.getSensor().getId()} + 100000 )
+        <include type="sensor" ref="$offsetId"/>
       #end
       </slider>
+      #end
     #end
   #end
   ##<------------------------------------------------------------------------Image------------------------------------------------------------------
