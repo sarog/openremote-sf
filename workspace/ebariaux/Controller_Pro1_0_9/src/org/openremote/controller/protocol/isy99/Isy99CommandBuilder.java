@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,12 +22,12 @@ package org.openremote.controller.protocol.isy99;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Command builder for the ISY-99 protocol, which communicates with the Universal Devices
@@ -60,6 +60,7 @@ public class Isy99CommandBuilder implements CommandBuilder
   private String hostname;
   private String username;
   private String password;
+  private Isy99StatusReader StatusReader;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -73,6 +74,7 @@ public class Isy99CommandBuilder implements CommandBuilder
     this.hostname = hostname;
     this.username = username;
     this.password = password;
+    this.StatusReader = new Isy99StatusReader(hostname, username, password);
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -161,11 +163,11 @@ public class Isy99CommandBuilder implements CommandBuilder
 
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command(hostname, username, password, address, command);
+      cmd = new Isy99Command(hostname, username, password, address, command, StatusReader);
     }
     else
     {
-      cmd = new Isy99Command(hostname, username, password, address, command, commandParam);
+      cmd = new Isy99Command(hostname, username, password, address, command, commandParam, StatusReader);
     }
 
     return cmd; 

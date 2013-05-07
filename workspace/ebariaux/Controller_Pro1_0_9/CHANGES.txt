@@ -1,3 +1,12 @@
+Controller Pro 1.0.9
+====================
+
+Bug Fixes:
+
+  - ISY-99 implementation does not scale to high number of
+    sensors (Kevin Purney) (ORCJAVA-325)
+
+
 Controller Pro 1.0.8
 ====================
 
