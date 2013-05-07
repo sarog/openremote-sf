@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -21,8 +21,6 @@
 package org.openremote.controller.protocol.isy99;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.CredentialsProvider;
@@ -30,18 +28,12 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.openremote.controller.utils.Logger;
 
 /**
  * OpenRemote protocol implementation for the Universal Devices ISY-99 HTTP-to-Insteon Bridge
@@ -88,21 +80,23 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
   private String address;
   private String command;
   private String commandParam;
+  private Isy99StatusReader StatusReader;
 
   // Constructors ---------------------------------------------------------------------------------
 
-  public Isy99Command(String host, String username, String password, String address, String command)
+  public Isy99Command(String host, String username, String password, String address, String command, Isy99StatusReader StatusReader)
   {
     this.host = host;
     this.username = username;
     this.password = password;
     this.address = address;
     this.command = command;
+    this.StatusReader = StatusReader;
   }
 
-  public Isy99Command(String host, String username, String password, String address, String command, String commandParam)
+  public Isy99Command(String host, String username, String password, String address, String command, String commandParam, Isy99StatusReader StatusReader)
   {
-    this(host, username, password, address, command);
+    this(host, username, password, address, command, StatusReader);
     this.commandParam = commandParam;
   }
 
@@ -173,6 +167,10 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
       {
         log.error("send(): response status code was " + responseStatusCode);
       }
+      else
+      {
+        StatusReader.setLocalStatus(address, command, commandParam);
+      }
     }
     catch (IOException e)
     {
@@ -183,86 +181,10 @@ public class Isy99Command implements ExecutableCommand, StatusCommand
 
   // Implements StatusCommand ---------------------------------------------------------------------
 
-  private String formReadCommandUrl()
-  {
-    StringBuilder url = new StringBuilder();
-
-    url.append("http://");
-    url.append(host);
-    url.append("/rest/nodes/");
-    url.append(address.replaceAll(" ", "%20"));
-
-    return url.toString();
-  }
-
   @Override
   public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
-    String url = formReadCommandUrl();
-    log.debug("read(): URL is " + url);
-
-    DefaultHttpClient client = new DefaultHttpClient();
-
-    if (username != null && !username.equals(""))
-    {
-      CredentialsProvider cred = new BasicCredentialsProvider();
-
-      cred.setCredentials(AuthScope.ANY,
-          new UsernamePasswordCredentials(username, password));
-
-      client.setCredentialsProvider(cred);
-    }
-
-    HttpGet req = new HttpGet(url);
-
-    String value = null;
-    InputStream content = null;
-    try
-    {
-      HttpResponse response = client.execute(req);
-      HttpEntity entity = response.getEntity();
-
-      if (response.getStatusLine().getStatusCode() != 200)
-      {
-        log.debug("status line " + response.getStatusLine());
-        if (entity != null)
-        {
-          log.debug("Response content length: " + entity.getContentLength());
-        }
-      }
-
-      SAXBuilder builder = new SAXBuilder();
-
-      content = response.getEntity().getContent();
-
-      Document document = builder.build(content);
-      Element rootNode = document.getRootElement();
-
-      @SuppressWarnings("unchecked")
-      List<Element> list = rootNode.getChildren("node");
-
-      for (Element node : list)
-      {
-        value = node.getChild("property").getAttributeValue("value");
-        log.debug("node->property->value = " + value);
-      }
-    }
-    catch (IOException ioe)
-    {
-      log.error("IOException while reading data from ISY-99", ioe);
-    }
-    catch (JDOMException jdomex)
-    {
-      log.error("error while parsing response from ISY-99", jdomex);
-    }
-    finally
-    {
-      try
-      {
-        content.close();
-      }
-      catch (Exception e) {}
-    }
+    String value = StatusReader.getStatus(address);
     
     if (value == null || value.equals(""))
     {
