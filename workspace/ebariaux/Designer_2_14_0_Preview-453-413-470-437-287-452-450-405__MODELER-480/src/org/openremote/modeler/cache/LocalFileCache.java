@@ -1866,8 +1866,20 @@ public class LocalFileCache implements ResourceCache<File>
      */
     Panel.initGroupsAndScreens(panels, groups, screens);
 
-    String controllerXmlContent = getControllerXML(screens, maxOid);
-    String panelXmlContent = getPanelXML(panels);
+    ConfigurationFilesGenerationContext generationContext = new ConfigurationFilesGenerationContext();
+    
+    List<Switch> dbSwitches = switchService.loadAll();
+    for (Switch sw : dbSwitches) {
+      generationContext.putSwitch(sw.getOid(), SwitchDTOConverter.createSwitchDetailsDTO(sw));
+    }
+    
+    List<Sensor> dbSensors = sensorService.loadAll(account);
+    for (Sensor sensor : dbSensors) {
+      generationContext.putSensor(sensor.getOid(), sensor.getSensorDetailsDTO());
+    }
+
+    String controllerXmlContent = getControllerXML(screens, maxOid, generationContext);
+    String panelXmlContent = getPanelXML(panels, generationContext);
     String sectionIds = getSectionIds(screens);
     String rulesFileContent = getRulesFileContent();
 
@@ -2037,7 +2049,7 @@ public class LocalFileCache implements ResourceCache<File>
     return deviceMacroRefSectionIds;
   }
   
-  private String getPanelXML(Collection<Panel> panels) {
+  private String getPanelXML(Collection<Panel> panels, ConfigurationFilesGenerationContext generationContext) {
     /*
      * init groups and screens.
      */
@@ -2049,18 +2061,6 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("panels", panels);
     context.put("groups", groups);
     context.put("screens", screens);
-    
-    ConfigurationFilesGenerationContext generationContext = new ConfigurationFilesGenerationContext();
-    
-    List<Switch> dbSwitches = switchService.loadAll();
-    for (Switch sw : dbSwitches) {
-      generationContext.putSwitch(sw.getOid(), SwitchDTOConverter.createSwitchDetailsDTO(sw));
-    }
-    
-    List<Sensor> dbSensors = sensorService.loadAll(account);
-    for (Sensor sensor : dbSensors) {
-      generationContext.putSensor(sensor.getOid(), sensor.getSensorDetailsDTO());
-    }
 
     context.put("generationContext", generationContext);
 
@@ -2072,7 +2072,7 @@ public class LocalFileCache implements ResourceCache<File>
   }
 
   @SuppressWarnings("unchecked")
-  private String getControllerXML(Collection<Screen> screens, long maxOid) {
+  private String getControllerXML(Collection<Screen> screens, long maxOid, ConfigurationFilesGenerationContext generationContext) {
 
     // PATCH R3181 BEGIN ---8<-----
     /*
@@ -2151,6 +2151,7 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("colorPickers", colorPickers);
     context.put("maxId", maxId);
     context.put("configs", configs);
+    context.put("generationContext", generationContext);
 
     try {
       return mergeXMLTemplateIntoString(CONTROLLER_XML_TEMPLATE, context);
