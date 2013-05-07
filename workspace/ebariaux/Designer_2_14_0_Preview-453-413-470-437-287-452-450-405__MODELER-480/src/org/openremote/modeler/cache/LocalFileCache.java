@@ -105,6 +105,9 @@ import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
@@ -2205,6 +2208,29 @@ public class LocalFileCache implements ResourceCache<File>
      return oneUIButtonEventList;
   }
 
+  public List<Command> getCommandOwnerByUICommandDTO(UICommandDTO command, ProtocolCommandContainer protocolEventContainer,
+      MaxId maxId) {
+   List<Command> oneUIButtonEventList = new ArrayList<Command>();
+   
+   try {
+      if (command instanceof DeviceCommandDTO) {
+        DeviceCommand deviceCommand = deviceCommandService.loadById(command.getOid());
+        addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+      } else if (command instanceof MacroDTO) {
+        DeviceMacro deviceMacro = deviceMacroService.loadById(command.getOid());
+        for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+           oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer, maxId));
+        }
+      } else {
+         return new ArrayList<Command>();
+      }
+   } catch (Exception e) {
+      cacheLog.warn("Some components referenced a removed object:  " + e.getMessage());
+      return new ArrayList<Command>();
+   }
+   return oneUIButtonEventList;
+  }
+  
   private void addDeviceCommandEvent(ProtocolCommandContainer protocolEventContainer,
         List<Command> oneUIButtonEventList, DeviceCommand deviceCommand, MaxId maxId) {
      String protocolType = deviceCommand.getProtocol().getType();
@@ -2217,7 +2243,11 @@ public class LocalFileCache implements ResourceCache<File>
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
      }
      uiButtonEvent.setLabel(deviceCommand.getName());
+     
+     // EBR - 20130416 : This has the side effect of changing the id of the uiButtonEvent parameter
+     // To an already set id, if that uiButtonEvent is already contained by protocolEventContainer
      protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+
      oneUIButtonEventList.add(uiButtonEvent);
   }
 
