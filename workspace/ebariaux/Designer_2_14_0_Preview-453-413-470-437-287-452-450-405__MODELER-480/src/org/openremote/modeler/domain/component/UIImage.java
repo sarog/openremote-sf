@@ -146,9 +146,9 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
    public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder sb = new StringBuilder();
       sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
-      if (sensor != null) {
-         sb.append(sensorLink.getXMLString());
-      }
+      if (getSensorDTO() != null) {
+        sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
+     }
       if (label != null && label.isRemoved()==false) {
          sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
       }
