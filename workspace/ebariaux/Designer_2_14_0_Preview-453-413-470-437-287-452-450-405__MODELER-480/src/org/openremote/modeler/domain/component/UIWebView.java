@@ -128,8 +128,8 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	      sb.append("<web id=\"" + getOid() + "\" src=\"" + StringUtils.escapeXml(url)
 	            + "\" username=\"" + StringUtils.escapeXml(userid) + "\" password=\"" + StringUtils.escapeXml(password)	            
 	            + "\">\n");
-	      if (sensor != null) {
-	         sb.append(sensorLink.getXMLString());
+	      if (getSensorDTO() != null) {
+	         sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
 	      }
 	      sb.append("</web>");
 	      return sb.toString();
