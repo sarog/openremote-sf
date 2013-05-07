@@ -3,6 +3,7 @@ package org.openremote.modeler.domain.component;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.utils.StringUtils;
@@ -121,7 +122,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 
 	   @Transient
 	   @Override
-	   public String getPanelXml() {
+	   public String getPanelXml(ConfigurationFilesGenerationContext context) {
 	      StringBuilder sb = new StringBuilder();
 	      sb.append("<web id=\"" + getOid() + "\" src=\"" + StringUtils.escapeXml(url)
 	            + "\" username=\"" + StringUtils.escapeXml(userid) + "\" password=\"" + StringUtils.escapeXml(password)	            

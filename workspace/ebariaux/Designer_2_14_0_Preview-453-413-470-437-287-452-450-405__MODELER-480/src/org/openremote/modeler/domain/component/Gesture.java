@@ -22,6 +22,7 @@ package org.openremote.modeler.domain.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 
@@ -79,7 +80,7 @@ public class Gesture extends UIControl {
    
    @JSON(include=false)
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder XMLContent = new StringBuilder();
       XMLContent.append("<gesture id=\""+getOid()+"\" ");
       if (uiCommand != null) {

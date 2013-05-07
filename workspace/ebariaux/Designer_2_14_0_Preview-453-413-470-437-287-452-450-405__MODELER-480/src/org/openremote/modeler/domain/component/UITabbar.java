@@ -22,6 +22,8 @@ package org.openremote.modeler.domain.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
+
 /**
  * UITabbar has two scope(group and panel), the default scope is group.
  * It has some tabbar items.
@@ -43,7 +45,7 @@ public class UITabbar extends UIComponent {
    }
 
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       return "";
    }
 

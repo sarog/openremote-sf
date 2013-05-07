@@ -21,6 +21,8 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
+
 /**
  * UITabbarItem defines a image, a name and a navigation.
  * It can navigates to screen or logical targets.
@@ -63,7 +65,7 @@ public class UITabbarItem extends UIComponent {
    }
    
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       return null;
    }
    

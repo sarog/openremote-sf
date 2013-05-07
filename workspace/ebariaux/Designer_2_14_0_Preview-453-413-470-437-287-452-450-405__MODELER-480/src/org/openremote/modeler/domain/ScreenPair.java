@@ -142,7 +142,7 @@ public class ScreenPair extends RefedEntity implements BeanModelTag {
    
    @Transient
    @JSON(include = false)
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuffer xmlContent = new StringBuffer();
       if(orientation.equals(OrientationType.PORTRAIT)) {
          xmlContent.append("<include type=\"screen\" ref=\"" + portraitScreen.getOid() + "\"/>");

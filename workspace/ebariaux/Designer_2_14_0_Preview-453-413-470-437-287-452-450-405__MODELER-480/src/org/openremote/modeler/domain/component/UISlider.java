@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
@@ -159,7 +160,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    }
 
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <slider id=\"" + getOid() + "\" ");
       if (isThumbUploaded()) {
