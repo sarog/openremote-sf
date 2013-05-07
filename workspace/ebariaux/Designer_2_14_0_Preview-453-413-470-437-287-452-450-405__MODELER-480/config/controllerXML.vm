@@ -60,7 +60,13 @@
 		      #set( $offsetId = ${switchDTO.getSensor().getId()} + 100000 )
   			  <include type="sensor" ref="$offsetId"/>
   			#end
+  		  #else
+  		    <on/>
+  		    <off/>
   	      #end
+  	    #else
+  	      <on/>
+  	      <off/>
 		#end
       </switch>
   	#end
