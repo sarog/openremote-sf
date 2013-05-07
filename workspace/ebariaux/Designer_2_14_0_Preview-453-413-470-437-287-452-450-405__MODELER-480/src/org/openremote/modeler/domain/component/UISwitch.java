@@ -25,10 +25,13 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import flexjson.JSON;
@@ -127,18 +130,22 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
    @Transient
    @Override
    @JSON(include=false)
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
-      if (getSensor() != null) {
-         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getOffsetId() + "\">");
-         if (onImage != null && onImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
-         }
-         if (offImage != null && offImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"off\" value=\"" + offImage.getImageFileName() + "\"/>\n");
-         }
-         xmlContent.append("</link>");
+      if (getSwitchDTO() != null) {
+        SwitchDetailsDTO switchDetailsDTO = context.getSwitch(getSwitchDTO().getOid());
+        if (switchDetailsDTO != null && switchDetailsDTO.getSensor() != null) {
+          SensorDetailsDTO sensorDetailsDTO = context.getSensor(switchDetailsDTO.getSensor().getId());
+          xmlContent.append("<link type=\"sensor\" ref=\"" + sensorDetailsDTO.getOffsetId() + "\">");
+           if (onImage != null && onImage.getSrc() != null) {
+              xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
+           }
+           if (offImage != null && offImage.getSrc() != null) {
+              xmlContent.append("          <state name=\"off\" value=\"" + offImage.getImageFileName() + "\"/>\n");
+           }
+           xmlContent.append("</link>");
+        }
       }
       xmlContent.append("        </switch>\n");
       return xmlContent.toString();

@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.SensorLink.LinkerChild;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
@@ -141,7 +142,7 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
 
    @Transient
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder sb = new StringBuilder();
       sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
       if (sensor != null) {

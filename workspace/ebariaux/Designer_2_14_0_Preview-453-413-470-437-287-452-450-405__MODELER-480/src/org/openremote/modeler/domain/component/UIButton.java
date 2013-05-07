@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.StringUtils;
@@ -166,7 +167,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    @Transient
    @JSON(include = false)
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
       if (uiCommandDTO != null) {

@@ -733,6 +733,8 @@ public class ResourceServiceImpl implements ResourceService
   private LocalFileCache createLocalFileCache(User user) {
 	  LocalFileCache cache = new LocalFileCache(configuration, user);
 	  
+	  cache.setSwitchService(switchService);
+	  cache.setSensorService(sensorService);
 	  cache.setDeviceMacroService(deviceMacroService);
 	  cache.setDeviceCommandService(deviceCommandService);
 	  cache.setControllerConfigService(controllerConfigService);
