@@ -129,4 +129,39 @@ public class Gesture extends UIControl {
       }
       
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((navigate == null) ? 0 : navigate.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Gesture other = (Gesture) obj;
+    if (navigate == null) {
+      if (other.navigate != null)
+        return false;
+    } else if (!navigate.equals(other.navigate))
+      return false;
+    if (type != other.type)
+      return false;
+    if (uiCommandDTO == null) {
+      if (other.uiCommandDTO != null)
+        return false;
+    } else if (!uiCommandDTO.equals(other.uiCommandDTO))
+      return false;
+    return true;
+  }
+   
 }
