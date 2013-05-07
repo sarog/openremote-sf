@@ -153,11 +153,10 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
       if (getClass() != obj.getClass()) {
          return false;
       }
-      UIComponent other = (UIComponent) obj;
-      
-      // TODO : with no context, this is anyway not leading to correct results + some getPanelXml calls might fail 
-//      return other.getPanelXml(null).equals(getPanelXml(null));
-      if (getName() == null) {
+      UIComponent other = (UIComponent) obj;      
+      if (getOid() != other.getOid()) {
+        return false;
+      } else if (getName() == null) {
         if (other.getName() != null)
           return false;
       } else if (!getName().equals(other.getName())) {
@@ -168,11 +167,12 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
 
    @Override
    public int hashCode() {
-     // TODO: this does not match with equals implementation
-      return (int) getOid();
+     final int prime = 31;
+     int result = 1;
+     result = prime * result + (int) (getOid() ^ (getOid() >>> 32));
+     result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+     return result;
    }
-   
-   
    
    /**
     * Gets the bean model.
