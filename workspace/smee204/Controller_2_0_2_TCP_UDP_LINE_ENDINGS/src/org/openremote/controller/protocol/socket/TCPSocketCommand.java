@@ -41,6 +41,7 @@ import org.openremote.controller.model.sensor.Sensor;
  * @author Marcus Redeker 2009-4-26
  * @author Phillip Lavender
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Simon Vincent 2013-05-07
  */
 public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
 
@@ -58,8 +59,29 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
 
    /** The port that is opened */
    private String port;
+   
+   /** The line ending */
+   private String lineEnding;
 
 
+   /**
+    * Gets the line ending.
+    *
+    * @return the line ending
+    */
+   public String getLineEnding() {
+      return lineEnding;
+   }
+
+   /**
+    * Sets the line ending.
+    *
+    * @param lineEnding the new line ending
+    */
+   public void setLineEnding(String lineEnding) {
+      this.lineEnding = lineEnding;
+   }
+   
    /**
     * Gets the command.
     *
@@ -146,7 +168,15 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
          StringTokenizer st = new StringTokenizer(getCommand(), "|");
          while (st.hasMoreElements()) {
             String cmd = (String) st.nextElement();
-            out.write((cmd + "\r").getBytes());
+			switch (lineEnding) {
+			    case "LF": cmd = cmd + "\n";
+			               break;
+			    case "CR": cmd = cmd + "\r";
+			               break;
+		        case "CRLF": cmd = cmd + "\r\n";
+                           break;				
+			}
+            out.write(cmd.getBytes());
          }
 
          String result = readReply(socket);
