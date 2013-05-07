@@ -21,6 +21,7 @@
 package org.openremote.controller.deployer;
 
 
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.service.Deployer;
 import org.jdom.Namespace;
@@ -173,5 +174,12 @@ public interface ModelBuilder
    * @param deployer
    */
   public void setDeployer(Deployer deployer);
-  
+ 
+  /**
+   * Return the commandFactory associated with this model builder. This is used 
+   * for test to access commandFactories which are created at runtime (Z-Wave and Vera)
+   * 
+   * @return the CommandFactory
+   */
+  public CommandFactory getCommandFactory();
 }
