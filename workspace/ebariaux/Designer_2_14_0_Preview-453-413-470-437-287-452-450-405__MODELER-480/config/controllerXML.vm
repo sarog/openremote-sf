@@ -116,8 +116,8 @@
   ##<------------------------------------------------------------------------Image------------------------------------------------------------------
   #foreach($image in $images)
    <image id="${image.getOid()}">
-      #if($image.getSensor())
-         <include type="sensor" ref="${image.getSensor().getOffsetId()}"/>
+      #if($image.getSensorDTO())
+         <include type="sensor" ref="${image.getSensorDTO().getOffsetId()}"/>
       #end
     </image>
   #end
