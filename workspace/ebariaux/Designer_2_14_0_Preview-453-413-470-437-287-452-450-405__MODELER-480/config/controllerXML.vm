@@ -46,8 +46,13 @@
 			<on />
 			<off />
 		#end
-		#if(${swh.getSensor()})
-			<include type="sensor" ref="${swh.getSensor().getOffsetId()}"/>
+		#if(${swh.getSwitchDTO()})
+	      #if(${generationContext.getSwitch(${swh.getSwitchDTO().getOid()})})
+		    #if(${generationContext.getSwitch(${swh.getSwitchDTO().getOid()}).getSensor()})
+		      #set( $offsetId = ${generationContext.getSwitch(${swh.getSwitchDTO().getOid()}).getSensor().getId()} + 100000 )
+  			  <include type="sensor" ref="$offsetId"/>
+  			#end
+  	      #end
 		#end
 		</switch>
   	#end
