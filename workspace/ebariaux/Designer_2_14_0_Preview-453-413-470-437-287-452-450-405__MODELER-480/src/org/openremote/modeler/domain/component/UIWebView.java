@@ -51,6 +51,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	      this.password=webview.password;
 	      this.sensor = webview.sensor;
 	      this.sensorLink = webview.sensorLink;
+	      this.sensorDTO = webview.sensorDTO;
 	   }
 
 	   public String getURL() {
@@ -157,4 +158,48 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public int getPreferredHeight() {
 	      return 50;
 	   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((password == null) ? 0 : password.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.hashCode());
+    result = prime * result + ((url == null) ? 0 : url.hashCode());
+    result = prime * result + ((userid == null) ? 0 : userid.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UIWebView other = (UIWebView) obj;
+    if (password == null) {
+      if (other.password != null)
+        return false;
+    } else if (!password.equals(other.password))
+      return false;
+    if (sensorDTO == null) {
+      if (other.sensorDTO != null)
+        return false;
+    } else if (!sensorDTO.equals(other.sensorDTO))
+      return false;
+    if (url == null) {
+      if (other.url != null)
+        return false;
+    } else if (!url.equals(other.url))
+      return false;
+    if (userid == null) {
+      if (other.userid != null)
+        return false;
+    } else if (!userid.equals(other.userid))
+      return false;
+    return true;
+  }
+
 }
