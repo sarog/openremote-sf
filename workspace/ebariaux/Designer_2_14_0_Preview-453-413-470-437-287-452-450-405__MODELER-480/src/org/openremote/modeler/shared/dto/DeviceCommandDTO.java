@@ -63,4 +63,41 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
     this.protocolType = protocolType;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((oid == null) ? 0 : oid.hashCode());
+    result = prime * result + ((protocolType == null) ? 0 : protocolType.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    DeviceCommandDTO other = (DeviceCommandDTO) obj;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (oid == null) {
+      if (other.oid != null)
+        return false;
+    } else if (!oid.equals(other.oid))
+      return false;
+    if (protocolType == null) {
+      if (other.protocolType != null)
+        return false;
+    } else if (!protocolType.equals(other.protocolType))
+      return false;
+    return true;
+  }
+  
 }
