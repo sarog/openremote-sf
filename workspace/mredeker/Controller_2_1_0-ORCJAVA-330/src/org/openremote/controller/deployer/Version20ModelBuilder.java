@@ -25,25 +25,26 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.Command;
-import org.openremote.controller.exception.InitializationException;
-import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
-import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.utils.PathUtil;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.XMLOutputter;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.model.Command;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.PathUtil;
 
 
 /**
@@ -329,6 +330,10 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   private DeviceProtocolBuilder deviceProtocolBuilder;
 
 
+  /**
+   * The commandFactory should update it's commandBuilder with the new configuration before building the model
+   */
+  private CommandFactory commandFactory;
   
   // Constructors -------------------------------------------------------------------------------
 
@@ -351,13 +356,17 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    *            Reference to a delegate object that handles the details of parsing the
    *            {@code <commands>} segment of the controller definition schema.
    *
+   * @param commandFactory
+   *            Reference to the commandFactory
+   *            
    * @throws InitializationException
    *            if the XML document containing this controller's definition cannot be read
    *            for any reason
    */
   public Version20ModelBuilder(StatusCache cache, ControllerConfiguration config,
                                SensorBuilder<Version20ModelBuilder> sensorBuilder,
-                               DeviceProtocolBuilder deviceProtocolBuilder)
+                               DeviceProtocolBuilder deviceProtocolBuilder,
+                               CommandFactory commandFactory)
       throws InitializationException
   {
     if (cache == null)
@@ -387,7 +396,14 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     this.deviceProtocolBuilder = deviceProtocolBuilder;
 
+    
+    if (commandFactory == null)
+    {
+      throw new IllegalArgumentException("Must include a reference to a command factory.");
+    }
 
+    this.commandFactory = commandFactory;
+    
 
     // TODO : see ORCJAVA-183
 
@@ -471,11 +487,18 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   }
   
 
+  /**
+   * Return the commandFactory associated with this model builder. This is used 
+   * for test to access commandFactories which are created at runtime (Z-Wave and Vera)
+   * @return
+   */
+  public CommandFactory getCommandFactory() {
+    return commandFactory;
+  }
 
   // Implements ModelBuilder --------------------------------------------------------------------
 
-
-  /**
+/**
    * Attempts to determine whether the controller.xml 'last modified' timestamp has changed,
    * or if the file has been removed altogether, or if the file was not present earlier but
    * has been added since last check. <p>
@@ -533,6 +556,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    */
   @Override protected void build()
   {
+     commandFactory.updateCommandBuilders(getConfigurationProperties(), deployer);
+     
     // TODO : at the moment only contains sensor model and partial command model
 
     buildCommandModel();
