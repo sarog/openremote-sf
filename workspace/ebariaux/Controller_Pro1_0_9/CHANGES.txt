@@ -14,6 +14,9 @@ Bug Fixes:
     encoding for all Java compiler tasks. This causes issues on some
     systems with incompatible default character set/locale. This patch
     enforces UTF-8 encoding on all compiled source files. (ORCJAVA-329)
+  - Updates the core controller classes (excluding protocol 
+    implementations, these are updated in separate tasks) to use 
+    locale independent string conversions (ORCJAVA-332)
 
 Controller Pro 1.0.8
 ====================
