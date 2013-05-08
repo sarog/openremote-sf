@@ -5,7 +5,10 @@ Bug Fixes:
 
   - ISY-99 implementation does not scale to high number of
     sensors (Kevin Purney) (ORCJAVA-325)
-
+  - Telnet status read for switch sensors appears broken. A returned
+    'on' string is never correctly parsed to Java boolean value true
+    due to the extra linefeed '\n' character being added to all response
+    values in readString() implementation (ORCJAVA-326)
 
 Controller Pro 1.0.8
 ====================
