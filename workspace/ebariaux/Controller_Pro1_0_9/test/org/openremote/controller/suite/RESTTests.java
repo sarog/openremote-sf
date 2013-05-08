@@ -41,6 +41,7 @@ import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.utils.Strings;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -133,11 +134,11 @@ public class RESTTests
 
     // Assert HTTP response content MIME type...
 
-    String contentTypeHeader = connection.getContentType().toLowerCase();
+    String contentTypeHeader = Strings.toLowerCase(connection.getContentType());
 
     Assert.assertTrue(
         "Expected " + contentType + ", got '" + contentTypeHeader + "'.",
-        contentTypeHeader.contains(contentType.toLowerCase())
+        contentTypeHeader.contains(Strings.toLowerCase(contentType))
     );
 
 
@@ -145,7 +146,7 @@ public class RESTTests
 
     Assert.assertTrue(
         "Expected charset=" + charset + " in content-type header but got " + contentTypeHeader,
-        contentTypeHeader.toLowerCase().contains("charset=" + charset.toLowerCase())
+        Strings.toLowerCase(contentTypeHeader).contains("charset=" + Strings.toLowerCase(charset))
     );
   }
 
