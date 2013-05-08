@@ -22,6 +22,7 @@ package org.openremote.controller.deployer;
 
 import java.util.List;
 
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.XMLParsingException;
@@ -89,6 +90,11 @@ public abstract class AbstractModelBuilder implements ModelBuilder
    * Stores a JDOM Document reference to an in-memory node-tree of the controller's XML definition.
    */
   protected Document controllerXMLDefinition;
+  
+  /**
+   * Reference to the deployer can be used by subclasses, if needed
+   */
+  protected Deployer deployer;
 
 
 
@@ -233,8 +239,19 @@ public abstract class AbstractModelBuilder implements ModelBuilder
     }
   }
 
-
+  
   /**
+   * When the ModelBuilder is updating the commandFactory based on new config properties, the
+   * deployer is needed in case the commandBuilder is using it.
+   * @param deployer
+   */
+  public void setDeployer(Deployer deployer) {
+    this.deployer = deployer;
+  }
+
+
+
+/**
    * Subclasses should implement this to include additional logic in addition to the default
    * implementation in {@link #buildModel()} method.
    */
