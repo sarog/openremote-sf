@@ -17,6 +17,9 @@ Bug Fixes:
   - Updates the core controller classes (excluding protocol 
     implementations, these are updated in separate tasks) to use 
     locale independent string conversions (ORCJAVA-332)
+  - Restlet ClientResource was released too soon (before resource
+    content was consumed), causing a NPE.
+    Fixed by moving release call in finally block after processing. (ORCJAVA-295)
 
 Controller Pro 1.0.8
 ====================
@@ -54,7 +57,7 @@ Bug Fixes:
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
-
+    
 Controller 2.1.0 (2012-XX-XX Twin Galaxies)
 ===========================================
 
