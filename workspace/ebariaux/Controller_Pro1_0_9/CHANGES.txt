@@ -10,7 +10,10 @@ Bug Fixes:
     due to the extra linefeed '\n' character being added to all response
     values in readString() implementation (ORCJAVA-326)
   - Telnet log configuration (ORCJAVA-328)
-		  
+  - The controller build script does not mandate an explicit character
+    encoding for all Java compiler tasks. This causes issues on some
+    systems with incompatible default character set/locale. This patch
+    enforces UTF-8 encoding on all compiled source files. (ORCJAVA-329)
 
 Controller Pro 1.0.8
 ====================
