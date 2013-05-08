@@ -1,3 +1,9 @@
+Controller ORCJAVA-345
+======================
+
+ - Upgrade WebConsole to tag 2.1.1 (Richard Turner)
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
