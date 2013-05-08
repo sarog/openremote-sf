@@ -9,6 +9,8 @@ Bug Fixes:
     'on' string is never correctly parsed to Java boolean value true
     due to the extra linefeed '\n' character being added to all response
     values in readString() implementation (ORCJAVA-326)
+  - Telnet log configuration (ORCJAVA-328)
+		  
 
 Controller Pro 1.0.8
 ====================
