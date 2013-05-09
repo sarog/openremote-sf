@@ -126,6 +126,13 @@ public class LagartoCommand implements ExecutableCommand, EventListener
   */
   private String httpRequest() throws LagartoException
   {
+    if (lagartoClient == null)
+    {
+      logger.debug("Ignoring send. Lagarto client not yet initialized.");
+
+      return null;
+    }
+    
     LagartoNetwork network = lagartoClient.getNetwork(networkName);
 
     if (network == null)
