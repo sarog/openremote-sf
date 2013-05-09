@@ -1,8 +1,10 @@
-Controller 2.1.0 (2012-XX-XX Twin Galaxies)
+Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
 New Features:
 
+  - WebConsole upgraded to version 2.1.1, fixes issues with stuck
+    loading screen (Richard Turner, ORCJAVA-345)
   - Added DSC-IT 100 Security System integration - IP to serial (Greg Rapp)
   - Lagarto server (panStamps) integration (Daniel Berenguer)
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
