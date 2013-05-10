@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:DialogBox autoHide="false" modal="true">
+		<g:caption>
+			<b>Download Pro resources</b>
+		</g:caption>
+		<g:HTMLPanel>
+		    <div>Some explanation and EULA</div>
+			<ul>
+			  <li><a href="download/OpenRemote_Controller.zip">Controller xxx</a></li>
+			  <li><a href="download/OpenRemote_Controller.zip">eBox image</a></li>
+			  <li><a href="download/OpenRemote_Controller.zip">Images</a></li>
+			</ul>
+			<div>
+				<g:Button ui:field="okButton">OK</g:Button>
+			</div>
+		</g:HTMLPanel>
+   </g:DialogBox>
+</ui:UiBinder>
