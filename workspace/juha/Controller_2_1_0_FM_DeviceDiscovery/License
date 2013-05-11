@@ -1,5 +1,5 @@
 OpenRemote, the Home of the Digital Home.
-Copyright 2008-2011, OpenRemote Inc.
+Copyright 2008-2013, OpenRemote Inc.
 
 OpenRemote is trademark of OpenRemote, Inc.
 
@@ -715,6 +715,8 @@ OpenRemote Sub-components:
   below.
 * JSON Path 0.8.0 and JSON Smart 1.1 parser libraries are licensed under
   Apache License Version 2.0, see license below.
+* Flex JSON 2.1 is licensed under Apache License Version 2.0, see license
+  below.
 * Spring Core framework and Spring Security framework are licensed under
   Apache License Version 2.0, see license below.
 * Apache Tomcat is licensed under Apache License Version 2.0, see license 
