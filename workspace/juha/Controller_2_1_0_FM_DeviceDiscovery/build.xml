@@ -111,6 +111,8 @@
     <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
   </path>
 
   <!--
@@ -226,9 +228,15 @@
       <fileset dir = "${lib.dir}/drools-5.1.1">
         <include name = "*.jar"/>
       </fileset>
+<<<<<<< .working
       <fileset dir = "${lib.dir}/jzmq">
         <include name = "**/*.jar"/>
       </fileset>
+=======
+      <fileset dir = "${lib.dir}/flexjson-2.1">
+        <include name = "*.jar"/>
+      </fileset>
+>>>>>>> .merge-right.r6524
     </copy>
 
 
