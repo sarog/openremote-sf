@@ -128,11 +128,27 @@ $(document).ready(function() {
 	});
 
 	$("#version").append(getVersionLabel());
+
+	getControllerLinkedStatus();
 });
 
 
 
 // Functions ------------------------------------------------------------------
+
+function getControllerLinkedStatus() {
+    $.get("config.htm?method=getControllerLinkedStatus",
+    	function(msg) {
+    		if (msg.substring(0, 1) == "-") {
+    			showNotLinked();
+    			$("#macAddress").append(msg.substring(1,msg.length));
+    		} else {
+    			$("#accountId").append(msg);
+    			showLinked();
+    		}
+		}
+    );
+}
 
 function showOnline() {
 	$('#online-cont').show();
@@ -146,6 +162,15 @@ function showOffline() {
 	clearMessage();
 }
 
+function showLinked() {
+	$('#linked').show();
+	$('#not-linked').hide();
+}
+
+function showNotLinked() {
+	$('#not-linked').show();
+	$('#linked').hide();
+}
 
 function message(msg) {
 
