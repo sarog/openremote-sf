@@ -153,7 +153,7 @@ public class Version20ModelBuilderTest
         config,
         new Version20SensorBuilder(),
         new Version20CommandBuilder(DeployerTest.createCommandFactory()),
-        DeployerTest.createCommandFactory()
+        DeployerTest.createCommandFactory()    // TODO : redundant command factory creation in Version20ModelBuilder constructor
     );
 
     Document doc = builder.readControllerXMLDocument();
@@ -187,7 +187,7 @@ public class Version20ModelBuilderTest
         config,
         new Version20SensorBuilder(),
         new Version20CommandBuilder(DeployerTest.createCommandFactory()),
-        DeployerTest.createCommandFactory()
+        DeployerTest.createCommandFactory()    // TODO : redundant command factory creation in Version20ModelBuilder constructor
     );
 
     try
@@ -222,7 +222,7 @@ public class Version20ModelBuilderTest
         config,
         new Version20SensorBuilder(),
         new Version20CommandBuilder(DeployerTest.createCommandFactory()),
-        DeployerTest.createCommandFactory()
+        DeployerTest.createCommandFactory()    // TODO : redundant command factory creation in Version20ModelBuilder constructor
     );
 
       Document doc = builder.readControllerXMLDocument();
@@ -260,7 +260,7 @@ public class Version20ModelBuilderTest
         config,
         new Version20SensorBuilder(),
         new Version20CommandBuilder(DeployerTest.createCommandFactory()),
-        DeployerTest.createCommandFactory()
+        DeployerTest.createCommandFactory()    // TODO : redundant command factory creation in Version20ModelBuilder constructor
     );
 
     Document doc = builder.readControllerXMLDocument();
@@ -297,7 +297,7 @@ public class Version20ModelBuilderTest
         config,
         new Version20SensorBuilder(),
         new Version20CommandBuilder(DeployerTest.createCommandFactory()),
-        DeployerTest.createCommandFactory()
+        DeployerTest.createCommandFactory()    // TODO : redundant command factory creation in Version20ModelBuilder constructor
     );
 
     try
