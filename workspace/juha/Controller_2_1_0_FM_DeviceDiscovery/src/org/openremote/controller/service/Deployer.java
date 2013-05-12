@@ -318,13 +318,18 @@ public class Deployer
       return;
     }
 
-    //Start controller announcement thread
-    controllerAnnouncement = new ControllerAnnouncement();
-    controllerAnnouncement.start();
+    // TODO : should move to startup() and add clear start/stop lifecycles for these threads...
+
+    if (controllerConfig.getBeehiveSyncing()) 
+    {
+       //Start controller announcement thread
+       controllerAnnouncement = new ControllerAnnouncement();
+       controllerAnnouncement.start();
    
-    //Start discovered devices announcement thread
-    discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
-    discoveredDevicesAnnouncement.start();
+       //Start discovered devices announcement thread
+       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
+       discoveredDevicesAnnouncement.start();
+    }
     
     try
     {
@@ -703,10 +708,14 @@ public class Deployer
    * @return a String with the linked account Id or the MAC address with a leading '-'
    */
   public String getLinkedAccountId() throws Exception {
-     if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
-        return controllerDTO.getAccount().getOid().toString();
+     if (controllerConfig.getBeehiveSyncing()) {
+        if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
+           return controllerDTO.getAccount().getOid().toString();
+        } else {
+           return "-"+NetworkUtil.getMACAddresses();
+        }
      } else {
-        return "-"+NetworkUtil.getMACAddresses();
+        return "no";
      }
   }
 
