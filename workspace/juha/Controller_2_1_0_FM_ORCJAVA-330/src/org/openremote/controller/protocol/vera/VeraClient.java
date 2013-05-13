@@ -40,6 +40,7 @@ import org.openremote.controller.protocol.vera.model.SecuritySensor;
 import org.openremote.controller.protocol.vera.model.Switch;
 import org.openremote.controller.protocol.vera.model.TemperatureSensor;
 import org.openremote.controller.protocol.vera.model.Thermostat;
+import org.openremote.controller.protocol.vera.model.GenericDevice;
 import org.openremote.controller.protocol.vera.model.VeraCategory;
 import org.openremote.controller.protocol.vera.model.VeraDevice;
 import org.openremote.controller.utils.Logger;
@@ -138,27 +139,29 @@ public class VeraClient extends Thread {
          int id = Integer.parseInt(element.getAttributeValue("id"));
          VeraCategory category = VeraCategory.fromInt(Integer.parseInt(element.getAttributeValue("category")));
          switch (category) {
-         case Switch:
-            this.devices.put(id, new Switch(category, id, name, this));
-            break;
-         case DimmableLight:
-            this.devices.put(id, new Dimmer(category, id, name, this));
-            break;
-         case Thermostat:
-            this.devices.put(id, new Thermostat(category, id, name, this));
-            break;
-         case SecuritySensor:
-            this.devices.put(id, new SecuritySensor(category, id, name, this));
-            break;
-         case TemperatureSensor:
-            this.devices.put(id, new TemperatureSensor(category, id, name, this));
-            break;
-         case HumiditySensor:
-            this.devices.put(id, new HumiditySensor(category, id, name, this));
-            break;
-         case PowerMeter:
-            this.devices.put(id, new PowerMeter(category, id, name, this));
-            break;
+            case Switch:
+               this.devices.put(id, new Switch(category, id, name, this));
+               break;
+            case DimmableLight:
+               this.devices.put(id, new Dimmer(category, id, name, this));
+               break;
+            case Thermostat:
+               this.devices.put(id, new Thermostat(category, id, name, this));
+               break;
+            case SecuritySensor:
+               this.devices.put(id, new SecuritySensor(category, id, name, this));
+               break;
+            case TemperatureSensor:
+               this.devices.put(id, new TemperatureSensor(category, id, name, this));
+               break;
+            case HumiditySensor:
+               this.devices.put(id, new HumiditySensor(category, id, name, this));
+               break;
+            case PowerMeter:
+               this.devices.put(id, new PowerMeter(category, id, name, this));
+               break;
+            default:
+               this.devices.put(id, new GenericDevice(category, id, name, this));
          }
       }
    }

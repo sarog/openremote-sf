@@ -16,7 +16,7 @@ public class HumiditySensor extends VeraDevice {
    @Override
    protected void updateDeviceSpecificSensors() {
       if ((attachedSensors.get(VeraCmd.GET_HUMIDITY) != null) && (humidity != null)) {
-         attachedSensors.get(VeraCmd.GET_HUMIDITY).update(""+humidity.intValue()); //TODO the sensor should actually take the float
+         attachedSensors.get(VeraCmd.GET_HUMIDITY).update(humidity.toString());
       }
    }
 

@@ -26,7 +26,7 @@ public class Thermostat extends VeraDevice {
    @Override
    protected void updateDeviceSpecificSensors() {
       if ((attachedSensors.get(VeraCmd.GET_HEAT_SETPOINT) != null) && (heatSetpoint != null)) {
-         attachedSensors.get(VeraCmd.GET_HEAT_SETPOINT).update(""+heatSetpoint.intValue()); //TODO the sensor should actually take the float
+         attachedSensors.get(VeraCmd.GET_HEAT_SETPOINT).update(heatSetpoint.toString());
       }
    }
 
