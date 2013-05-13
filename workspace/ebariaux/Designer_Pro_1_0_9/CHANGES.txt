@@ -3,6 +3,7 @@ Pro 1.0.9
 
 New features:
  - EnOcean configuration (Rainer Hitz) (MODELER-479)
+ - Have default values for EnOcean comm layer and port properties (MODELER-475)
 
 Pro 1.0.8
 =========

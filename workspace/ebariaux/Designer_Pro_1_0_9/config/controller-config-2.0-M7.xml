@@ -398,14 +398,14 @@ If it's true, controller will auto-detect its groupmembers with multicast.
             Configuration for the EnOcean protocol
           ]]>
       </description>
-      <config name="enocean.commLayer" value="" options="PAD,RXTX">
+      <config name="enocean.commLayer" value="RXTX" options="PAD,RXTX">
           <hint>
               <![CDATA[
                 Choose either PAD or RXTX depending on your communication layer to use.
               ]]>
           </hint>
       </config>
-      <config name="enocean.comPort" value="" >
+      <config name="enocean.comPort" value="/dev/ttyUSB0" >
           <hint>
               <![CDATA[
                 Serial port the EnOcean interface is found on.
