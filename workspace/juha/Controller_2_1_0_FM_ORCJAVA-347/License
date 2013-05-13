@@ -1,5 +1,5 @@
 OpenRemote, the Home of the Digital Home.
-Copyright 2008-2011, OpenRemote Inc.
+Copyright 2008-2013, OpenRemote Inc.
 
 OpenRemote is trademark of OpenRemote, Inc.
 
@@ -695,6 +695,8 @@ OpenRemote Sub-components:
   Version 2.1 or any later version. For the purpose of this distribution, RXTX
   library is re-licensed under GNU Lesser General Public License (LGPL) Version
   3.0.
+* Restlet JSE 2.0.11 library is licensed under GNU Lesser General Public (LGPL)
+  Version 3.0 or any later version.
 * ZeroMQ library is licensed under GNU Lesser General Public License (LGPL)
   Version 3.0 or any later version.
 * JDOM library is licensed under the terms included below.
@@ -715,6 +717,8 @@ OpenRemote Sub-components:
   below.
 * JSON Path 0.8.0 and JSON Smart 1.1 parser libraries are licensed under
   Apache License Version 2.0, see license below.
+* Flex JSON 2.1 is licensed under Apache License Version 2.0, see license
+  below.
 * Spring Core framework and Spring Security framework are licensed under
   Apache License Version 2.0, see license below.
 * Apache Tomcat is licensed under Apache License Version 2.0, see license 

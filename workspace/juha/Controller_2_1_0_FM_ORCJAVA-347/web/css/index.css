@@ -66,6 +66,14 @@ BODY {
 	width:230px;
 }
 
+#linked {
+	display: none;
+}
+
+#not-linked {
+	display: none;
+}
+
 #tip {
 	height:20px;
 }
