@@ -20,12 +20,17 @@
  */
 package org.openremote.controller.command;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.utils.Logger;
 
 
 /**
@@ -41,8 +46,16 @@ import org.openremote.controller.exception.ConfigurationException;
 public class CommandFactory
 {
 
-  private Map<String, CommandBuilder> commandBuilders = new HashMap<String, CommandBuilder>();
+  public static String COMMANDBUILDER_CONFIG_KEY_PREFIX = "protocol.";
+  public static String COMMANDBUILDER_CONFIG_KEY_SUFFIX = ".classname";
+  
+  /**
+   * Common log category for startup logging, with a specific sub-category for deployer.
+   */
+  protected final static Logger log = Logger.getLogger(Constants.DEPLOYER_LOG_CATEGORY);
 
+  
+  private Map<String, CommandBuilder> commandBuilders = new HashMap<String, CommandBuilder>();
 
   public CommandFactory(Map<String, CommandBuilder> commandBuilders)
   {
@@ -54,7 +67,56 @@ public class CommandFactory
    this.commandBuilders = commandBuilders;
   }
 
+  
+  /**
+   * This method is called from the ModelBuilder before the model is builded.<br>
+   * Based on the given properties map, the command factory will update it's commandBuilder map<br>
+   * and created any new commandBuilders that were configured inside controller.xml file.<p>
+   * If the commandBuilder has a ctor which takes a deployer, the deployer reference is passed<br>
+   * into the commandBuilder.<p>
+   * The config in controller.xml must look like this:
+   * <pre>
+   * {@code
+   *  <property name="protocol.zwave.classname" value="org.openremote.controller.protocol.zwave.ZWaveCommandBuilder" />
+   * }</pre>
+   * The property name has to begin with "protocol." and end with ".classname". Text text between is taken as protocol name.
+   * <p>
+   * @param map - the maps contains properties coming from controller.xml
+   * @param deployer - a reference to the deployer 
+   */
+  @SuppressWarnings("unchecked")
+  public void updateCommandBuilders(Map<String, String> map, Deployer deployer) {
+     for (Entry<String, String> configEntry : map.entrySet()) {
+        if (configEntry.getKey().startsWith(COMMANDBUILDER_CONFIG_KEY_PREFIX) && configEntry.getKey().endsWith(COMMANDBUILDER_CONFIG_KEY_SUFFIX)) {
+           String protocolName = configEntry.getKey().substring(COMMANDBUILDER_CONFIG_KEY_PREFIX.length(), configEntry.getKey().length()-COMMANDBUILDER_CONFIG_KEY_SUFFIX.length());
+           String protocolCommandBuilderClass = configEntry.getValue();
+           if (!commandBuilders.containsKey(protocolName)) {
+               Class<CommandBuilder> cmdBuilderClass = null;
+               try {
+                  cmdBuilderClass = (Class<CommandBuilder>) Class.forName(protocolCommandBuilderClass);
+               } catch (ClassNotFoundException e) {
+                  log.error("Could not load commandBuilder class: " + protocolCommandBuilderClass, e);
+                  continue;
+               }
+               Constructor<CommandBuilder> ctor = null; 
+               try {
+                  ctor = cmdBuilderClass.getDeclaredConstructor(Deployer.class);
+                  commandBuilders.put(protocolName, ctor.newInstance(deployer));
+                  continue;
+               } catch (Exception e) {
+                  log.info("No constructor(deployer) found for class: " + protocolCommandBuilderClass);
+               }
 
+               try {
+                  commandBuilders.put(protocolName, cmdBuilderClass.newInstance());
+                } catch (Exception e) {
+                   log.error("Could not instantiate commandBuilder: " + protocolCommandBuilderClass, e);
+                }
+           }
+        }
+     }
+  }
+  
   /**
    *
    * @deprecated    Additional use of this method should be avoided -- implementations should
