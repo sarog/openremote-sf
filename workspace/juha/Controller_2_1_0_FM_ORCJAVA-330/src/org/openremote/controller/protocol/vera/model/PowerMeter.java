@@ -17,10 +17,10 @@ public class PowerMeter extends VeraDevice {
    @Override
    protected void updateDeviceSpecificSensors() {
       if ((attachedSensors.get(VeraCmd.GET_WATTS) != null) && (watts != null)) {
-         attachedSensors.get(VeraCmd.GET_WATTS).update(""+watts.intValue()); //TODO the sensor should actually take the float
+         attachedSensors.get(VeraCmd.GET_WATTS).update(watts.toString());
       }
       if ((attachedSensors.get(VeraCmd.GET_CONSUMPTION) != null) && (kwh != null)) {
-         attachedSensors.get(VeraCmd.GET_CONSUMPTION).update(""+kwh.intValue()); //TODO the sensor should actually take the float
+         attachedSensors.get(VeraCmd.GET_CONSUMPTION).update(kwh.toString());
       }
    }
 

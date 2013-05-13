@@ -32,6 +32,9 @@ public abstract class VeraDevice {
    private VeraCategory category;
    private String comment;
    private Integer batteryLevel;
+   private String genericStatus;
+   private String statusAttributeName;
+   
    protected Map<VeraCmd, Sensor> attachedSensors = new HashMap<VeraCmd, Sensor>();
    
    public VeraDevice(VeraCategory category, int id, String name, VeraClient client) {
@@ -94,16 +97,31 @@ public abstract class VeraDevice {
 
    public void removeSensor(Sensor sensor)
    {
-     //TODO
+     for (Map.Entry<VeraCmd, Sensor> mapEntry : this.attachedSensors.entrySet()) {
+        if (mapEntry.getValue().equals(sensor)) {
+           this.attachedSensors.remove(mapEntry.getKey());
+        }
+     }
    }
    
    protected VeraClient getClient() {
       return this.client;
    }
    
+   public String getStatusAttributeName() {
+      return statusAttributeName;
+   }
+
+   public void setStatusAttributeName(String statusAttributeName) {
+      this.statusAttributeName = statusAttributeName;
+   }
+
    private void updateSensors() {
       if ((attachedSensors.get(VeraCmd.GET_BATTERY_LEVEL) != null) && (batteryLevel != null)) {
          attachedSensors.get(VeraCmd.GET_BATTERY_LEVEL).update(batteryLevel.toString());
+      }
+      if ((attachedSensors.get(VeraCmd.GENERIC_STATUS) != null) && (genericStatus != null)) {
+         attachedSensors.get(VeraCmd.GENERIC_STATUS).update(genericStatus.toString());
       }
       updateDeviceSpecificSensors();
    }
@@ -117,9 +135,25 @@ public abstract class VeraDevice {
       }
       if (element.getAttributeValue("batterylevel") != null) {
          this.batteryLevel = Integer.parseInt(element.getAttributeValue("batterylevel"));
+      }
+      if (element.getAttributeValue(statusAttributeName) != null) {
+         this.genericStatus = element.getAttributeValue(statusAttributeName);
       } 
       updateDeviceSpecificStatus(element);
       updateSensors();
+   }
+
+   public void executeGenericAction(String serviceId, String action, String variable, String paramValue) {
+      StringBuffer cmdUrl = new StringBuffer();
+      cmdUrl.append("http://");
+      cmdUrl.append(client.getAddress());
+      cmdUrl.append(":3480/data_request?id=lu_action&output_format=xml&DeviceNum=");
+      cmdUrl.append(id);
+      cmdUrl.append("&serviceId=" + serviceId + "&action=" + action);
+      if ((variable != null) && (paramValue !=null)) {
+         cmdUrl.append("&" + variable + "=" + paramValue);
+      }
+      getClient().sendCommand(cmdUrl.toString());
    }
    
 }

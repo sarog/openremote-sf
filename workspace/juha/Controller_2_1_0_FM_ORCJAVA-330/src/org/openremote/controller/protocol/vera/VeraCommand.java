@@ -39,13 +39,21 @@ public class VeraCommand implements EventListener, ExecutableCommand {
    private VeraCmd command;
    private String paramValue;
    private VeraClient client;
+   private String serviceId = null;
+   private String action = null;
+   private String variable = null;
+   private String statusAttribute = null;
 
    // Constructor ---------------------------------------------------------------------
-   public VeraCommand(int deviceId, VeraCmd command, String paramValue, VeraClient client) {
+   public VeraCommand(int deviceId, VeraCmd command, String paramValue, VeraClient client, String serviceId, String action, String variable, String statusAttribute) {
       this.client = client;
       this.deviceId = deviceId;
       this.command = command;
       this.paramValue = paramValue;
+      this.serviceId = serviceId;
+      this.action = action;
+      this.variable = variable;
+      this.statusAttribute = statusAttribute;
    }
 
    @Override
@@ -63,6 +71,9 @@ public class VeraCommand implements EventListener, ExecutableCommand {
          case SET_HEAT_SETPOINT:
             ((Thermostat)client.getDevice(deviceId)).setHeatSetpoint(paramValue);
             break;
+         case GENERIC_ACTION:
+            client.getDevice(deviceId).executeGenericAction(serviceId, action, variable, paramValue);
+            break;
       }
    }
 
@@ -70,6 +81,9 @@ public class VeraCommand implements EventListener, ExecutableCommand {
    public void setSensor(Sensor sensor) {
       logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
       VeraDevice device = client.getDevice(deviceId);
+      if ((command == VeraCmd.GENERIC_STATUS) && (statusAttribute != null)) {
+         device.setStatusAttributeName(statusAttribute);
+      }
       device.addSensor(command, sensor);
    }
 
