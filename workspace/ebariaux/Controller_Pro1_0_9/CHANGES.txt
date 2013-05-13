@@ -1,6 +1,10 @@
 Controller Pro 1.0.9
 ====================
 
+New Features:
+
+  - Include Web Console 2.1.0, r7746 (ORCJAVA-333)
+  
 Bug Fixes:
 
   - ISY-99 implementation does not scale to high number of
