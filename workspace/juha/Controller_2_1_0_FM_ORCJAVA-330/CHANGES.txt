@@ -1,3 +1,10 @@
+Controller ORCJAVA-347
+======================
+
+ - Controller side of Beehive device discovery and account 
+   linking functionality (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
