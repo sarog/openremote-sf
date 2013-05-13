@@ -76,7 +76,7 @@ public class VeraClient extends Thread {
 
    // Methods ------------------------------------------------------------------------------
    public Map<Integer, VeraDevice> startVeraClient() {
-      String initialStatus = requestStatus();
+      String initialStatus = requestStatus(true);
       if (initialStatus == null) {
          log.error("Could not get initial Vera status. Vera protocol is not started");
          return null;
@@ -97,7 +97,7 @@ public class VeraClient extends Thread {
    @Override
    public void run() {
       while(this.running) {
-         String result = requestStatus();
+         String result = requestStatus(false);
          log.debug("Received Vera result:\n"+result);
          try {
             parseChangedStatus(result);
@@ -223,10 +223,10 @@ public class VeraClient extends Thread {
     * 
     * @return a String with the status XML or NULL
     */
-   private String requestStatus() {
+   private String requestStatus(boolean fullStatus) {
       DefaultHttpClient client = new DefaultHttpClient();
       HttpUriRequest request = null;
-      if (lastLoadtime == null) {
+      if (lastLoadtime == null || fullStatus) {
          //Full request
          request = new HttpGet("http://" + this.address + ":3480/data_request?id=lu_sdata&output_format=xml");   
       } else {
@@ -250,6 +250,15 @@ public class VeraClient extends Thread {
       log.debug("received message: " + resp);
       return resp;
    }
+   
+   public synchronized void requestFullStatus() {
+      String result = requestStatus(true);
+      try {
+         parseChangedStatus(result);
+      } catch (Exception e) {
+         log.error("Could not parse full status", e);
+      }
+   }
 
    public boolean isRunning() {
       return this.running;
@@ -258,6 +267,7 @@ public class VeraClient extends Thread {
    public void sendCommand(String url) {
       DefaultHttpClient client = new DefaultHttpClient();
       try {
+         log.debug("Sending Vera command: " + url);
          ResponseHandler<String> responseHandler = new BasicResponseHandler();
          String result = client.execute(new HttpGet(url), responseHandler);
          log.debug("Received: " + result);
@@ -269,4 +279,6 @@ public class VeraClient extends Thread {
    public String getAddress() {
       return this.address;
    }
+
+
 }
