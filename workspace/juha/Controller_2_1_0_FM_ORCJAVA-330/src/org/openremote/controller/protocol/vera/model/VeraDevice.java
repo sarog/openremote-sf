@@ -23,27 +23,35 @@ import org.jdom.Element;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.vera.VeraClient;
 import org.openremote.controller.protocol.vera.VeraCmd;
+import org.openremote.controller.protocol.vera.VeraCommandBuilder;
+import org.openremote.controller.utils.Logger;
 
 public abstract class VeraDevice {
 
+   // Class Members --------------------------------------------------------------------------------
+   private final static Logger log = Logger.getLogger(VeraCommandBuilder.VERA_PROTOCOL_LOG_CATEGORY);
+   
+   // Instance Fields ------------------------------------------------------------------------------
    protected VeraClient client;
    private String name;
    protected int id;
    private VeraCategory category;
    private String comment;
    private Integer batteryLevel;
-   private String genericStatus;
-   private String statusAttributeName;
-   
+      
    protected Map<VeraCmd, Sensor> attachedSensors = new HashMap<VeraCmd, Sensor>();
+   protected Map<String, Sensor> attachedGenericSensors = new HashMap<String, Sensor>();
    
+   // Constructors ----------------------------------------------------------------------------------
    public VeraDevice(VeraCategory category, int id, String name, VeraClient client) {
       this.category = category;
       this.id = id;
       this.name = name;
       this.client = client;
+      log.debug("Vera device - " + getClass().getSimpleName() + "- with id: " + id + " and category: " + category  + " created.");
    }
 
+   // Methods ------------------------------------------------------------------------------
    public String getName() {
       return name;
    }
@@ -87,13 +95,15 @@ public abstract class VeraDevice {
    public void addSensor(VeraCmd cmd, Sensor sensor)
    {
      this.attachedSensors.put(cmd, sensor);
-     updateSensors();
+     this.client.requestFullStatus();
    }
    
-   public Sensor getSensor(VeraCmd cmd)
+   public void addGenericSensor(String statusAttribute, Sensor sensor)
    {
-     return this.attachedSensors.get(cmd);
+     this.attachedGenericSensors.put(statusAttribute, sensor);
+     this.client.requestFullStatus();
    }
+   
 
    public void removeSensor(Sensor sensor)
    {
@@ -102,26 +112,20 @@ public abstract class VeraDevice {
            this.attachedSensors.remove(mapEntry.getKey());
         }
      }
+     for (Map.Entry<String, Sensor> mapEntry : this.attachedGenericSensors.entrySet()) {
+        if (mapEntry.getValue().equals(sensor)) {
+           this.attachedGenericSensors.remove(mapEntry.getKey());
+        }
+     }
    }
    
    protected VeraClient getClient() {
       return this.client;
    }
    
-   public String getStatusAttributeName() {
-      return statusAttributeName;
-   }
-
-   public void setStatusAttributeName(String statusAttributeName) {
-      this.statusAttributeName = statusAttributeName;
-   }
-
    private void updateSensors() {
       if ((attachedSensors.get(VeraCmd.GET_BATTERY_LEVEL) != null) && (batteryLevel != null)) {
          attachedSensors.get(VeraCmd.GET_BATTERY_LEVEL).update(batteryLevel.toString());
-      }
-      if ((attachedSensors.get(VeraCmd.GENERIC_STATUS) != null) && (genericStatus != null)) {
-         attachedSensors.get(VeraCmd.GENERIC_STATUS).update(genericStatus.toString());
       }
       updateDeviceSpecificSensors();
    }
@@ -136,9 +140,15 @@ public abstract class VeraDevice {
       if (element.getAttributeValue("batterylevel") != null) {
          this.batteryLevel = Integer.parseInt(element.getAttributeValue("batterylevel"));
       }
-      if (element.getAttributeValue(statusAttributeName) != null) {
-         this.genericStatus = element.getAttributeValue(statusAttributeName);
-      } 
+      
+      for (String statusAttributeName : attachedGenericSensors.keySet()) {
+         if (element.getAttributeValue(statusAttributeName) != null) {
+            String value = element.getAttributeValue(statusAttributeName);
+            log.debug("Updated generic sensor field '" + statusAttributeName + "' with value: " + value);
+            attachedGenericSensors.get(statusAttributeName).update(value);
+         } 
+      }
+      
       updateDeviceSpecificStatus(element);
       updateSensors();
    }
