@@ -57,7 +57,11 @@ public class VeraCommandBuilder implements CommandBuilder {
       Map<String, String> properties = this.deployer.getConfigurationProperties();
       String address = properties.get("vera.address");
       this.client = new VeraClient(address);
-      startVeraClient();
+      try {
+         startVeraClient();
+      } catch (Exception e) {
+         logger.error("Could not start VeraClient: ", e);
+      }
    }
 
    // Implements CommandBuilder --------------------------------------------------------------------
