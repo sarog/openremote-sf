@@ -1,3 +1,9 @@
+Controller ORCJAVA-330
+======================
+
+ - Mi Casa Verde Vera Integration (Marcus Redeker)
+
+
 Controller ORCJAVA-347
 ======================
 
