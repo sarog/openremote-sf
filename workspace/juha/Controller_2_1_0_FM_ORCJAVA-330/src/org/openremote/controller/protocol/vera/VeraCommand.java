@@ -21,6 +21,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.vera.model.Dimmer;
 import org.openremote.controller.protocol.vera.model.Switch;
+import org.openremote.controller.protocol.vera.model.Thermostat;
 import org.openremote.controller.protocol.vera.model.VeraDevice;
 import org.openremote.controller.utils.Logger;
 
@@ -58,6 +59,9 @@ public class VeraCommand implements EventListener, ExecutableCommand {
             break;
          case SET_LEVEL:
             ((Dimmer)client.getDevice(deviceId)).setLevel(paramValue);
+            break;
+         case SET_HEAT_SETPOINT:
+            ((Thermostat)client.getDevice(deviceId)).setHeatSetpoint(paramValue);
             break;
       }
    }

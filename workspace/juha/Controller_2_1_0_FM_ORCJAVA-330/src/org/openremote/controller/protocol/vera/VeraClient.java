@@ -34,7 +34,12 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.protocol.vera.model.Dimmer;
+import org.openremote.controller.protocol.vera.model.HumiditySensor;
+import org.openremote.controller.protocol.vera.model.PowerMeter;
+import org.openremote.controller.protocol.vera.model.SecuritySensor;
 import org.openremote.controller.protocol.vera.model.Switch;
+import org.openremote.controller.protocol.vera.model.TemperatureSensor;
+import org.openremote.controller.protocol.vera.model.Thermostat;
 import org.openremote.controller.protocol.vera.model.VeraCategory;
 import org.openremote.controller.protocol.vera.model.VeraDevice;
 import org.openremote.controller.utils.Logger;
@@ -139,6 +144,21 @@ public class VeraClient extends Thread {
          case DimmableLight:
             this.devices.put(id, new Dimmer(category, id, name, this));
             break;
+         case Thermostat:
+            this.devices.put(id, new Thermostat(category, id, name, this));
+            break;
+         case SecuritySensor:
+            this.devices.put(id, new SecuritySensor(category, id, name, this));
+            break;
+         case TemperatureSensor:
+            this.devices.put(id, new TemperatureSensor(category, id, name, this));
+            break;
+         case HumiditySensor:
+            this.devices.put(id, new HumiditySensor(category, id, name, this));
+            break;
+         case PowerMeter:
+            this.devices.put(id, new PowerMeter(category, id, name, this));
+            break;
          }
       }
    }
@@ -168,7 +188,9 @@ public class VeraClient extends Thread {
       for (Element element : xresult) {
          int id = Integer.parseInt(element.getAttributeValue("id"));
          VeraDevice device = devices.get(id);
-         device.updateStatus(element);
+         if (device != null) {
+            device.updateStatus(element);
+         }
       }
    }
 
@@ -233,7 +255,9 @@ public class VeraClient extends Thread {
    public void sendCommand(String url) {
       DefaultHttpClient client = new DefaultHttpClient();
       try {
-         client.execute(new HttpGet(url));
+         ResponseHandler<String> responseHandler = new BasicResponseHandler();
+         String result = client.execute(new HttpGet(url), responseHandler);
+         log.debug("Received: " + result);
       } catch (Exception e) {
          log.error("Could not send URL", e);
       }
