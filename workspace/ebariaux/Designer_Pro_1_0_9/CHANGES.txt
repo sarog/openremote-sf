@@ -1,6 +1,9 @@
 Pro 1.0.9
 =========
 
+Fixes:
+ - Ensure that Restlet ClientResource is not released too soon (MODELER-444)
+
 New features:
  - EnOcean configuration (Rainer Hitz) (MODELER-479)
  - Have default values for EnOcean comm layer and port properties (MODELER-475)
