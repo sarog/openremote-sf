@@ -286,11 +286,12 @@ public class ApplicationView implements View {
 
    private Component createDownloadControllerButton()
   {
-     Button downloadButton = new Button("Download Controller");
+     Button downloadButton = new Button("Download Resources");
      downloadButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-          Window.open(GWT.getHostPageBaseURL() + "download/OpenRemote_Controller.zip", "_blank", "");
+          DownloadResourcesWindow downloadWindow = new DownloadResourcesWindow();
+          downloadWindow.show();
         }
      });
      return downloadButton;
