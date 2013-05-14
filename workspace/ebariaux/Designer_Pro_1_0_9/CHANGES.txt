@@ -7,6 +7,7 @@ Fixes:
 New features:
  - EnOcean configuration (Rainer Hitz) (MODELER-479)
  - Have default values for EnOcean comm layer and port properties (MODELER-475)
+ - Have a download window with link to download controller and eBox image (MODELER-482)
 
 Pro 1.0.8
 =========
