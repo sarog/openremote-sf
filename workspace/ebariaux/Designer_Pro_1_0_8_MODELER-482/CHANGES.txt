@@ -1,3 +1,8 @@
+MODELER-482
+===========
+
+ - Have a download window with link to download controller and eBox image 
+
 Pro 1.0.8
 =========
 
