@@ -24,45 +24,72 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * The abstraction of a physical bus.
- * <p>
- * This interface describes the entry points of all the physical buses OpenRemote controller uses.
- * </p>
+ * The abstraction of a physical port (bus). <p>
+ *
+ * This interface describes the entry points of all the physical ports OpenRemote controller uses.
+ *
+ * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface Port {
-   /**
-    * @param configuration
-    */
-   void configure(Map<String, Object> configuration) throws IOException, PortException;
+public interface Port
+{
+
+  /**
+   * Allows for configuring the concrete port implementation. Configuration is provided via
+   * simple string to object map.
+   *
+   * @param configuration     a configuration map of named properties mapped to Java object
+   *                          instances
+   *
+   * @throws IOException      if an I/O error communicating through the port occurred
+   * @throws PortException    if an error related to port life-cycle or state occurred (port
+   *                          open/closed, port locked, etc.)
+   */
+  void configure(Map<String, Object> configuration) throws IOException, PortException;
    
-   /**
-    * Start the physical bus.
-    * 
-    */
-   void start() throws IOException, PortException;
+  /**
+   * Starts the communication to the physical port.
+   *
+   * @throws IOException      if an I/O error communicating through the port occurred
+   * @throws PortException    if an error related to port life-cycle or state occurred (port
+   *                          open/closed, port locked, etc.)
+   */
+  void start() throws IOException, PortException;
 
-   /**
-    * Stop the physical bus.
-    * 
-    * @throws InterruptedException
-    */
-   void stop() throws IOException, PortException;
+  /**
+   * Stops the physical port.
+   *
+   * @throws IOException      if an I/O error communicating through the port occurred
+   * @throws PortException    if an error related to port life-cycle or state occurred (port
+   *                          open/closed, port locked, etc.)
+   */
+  void stop() throws IOException, PortException;
 
-   /**
-    * Send a message to device(s) through the physical bus.
-    * 
-    * @param message
-    *           The message to send.
-    * @throws IOException
-    */
-   void send(Message message) throws IOException, PortException;
+  /**
+   * Send a message to device(s) through the physical port.
+   *
+   * @param message
+   *           The message to send.
+   *
+   * @throws IOException      if an I/O error communicating through the port occurred
+   * @throws PortException    if an error related to port life-cycle or state occurred (port
+   *                          open/closed, port locked, etc.)
+   */
+  void send(Message message) throws IOException, PortException;
 
-   /**
-    * Receive a message from the physical bus. This method blocks until a message is received.
-    * 
-    * @return Expected message.
-    * @throws IOException
-    *            Message could not be received.
-    */
-   Message receive() throws IOException;
+  /**
+   * Receive a message from the physical port. This method blocks until a message is received.
+   *
+   * @return Expected message.
+   *
+   * @throws IOException
+   *            Message could not be received.
+   */
+  Message receive() throws IOException;
+
+  // TODO :
+  //        the method signature of receive() above is inconsistent with the other methods
+  //        of the interface which allow separate port exception type to be communicated in
+  //        case of port related errors       [JPL] 
+
 }
