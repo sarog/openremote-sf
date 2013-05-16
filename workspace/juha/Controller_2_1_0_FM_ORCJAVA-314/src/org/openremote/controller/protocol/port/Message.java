@@ -21,28 +21,34 @@
 package org.openremote.controller.protocol.port;
 
 /**
- * A message to send or receive over a physical bus.
+ * A message to send or receive over a physical port (bus).
+ *
+ * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class Message {
+public class Message
+{
 
    private byte[] content;
 
    /**
-    * Constructor.
+    * Constructs a new message with given byte content.
     * 
     * @param content
-    *           Message content.
+    *           message content
     */
-   public Message(byte[] content) {
+   public Message(byte[] content)
+   {
       this.content = content;
    }
 
    /**
-    * Get message content.
+    * Returns message content as byte array.
     * 
-    * @return An array of byte representing message content.
+    * @return An array of bytes representing message content
     */
-   public byte[] getContent() {
+   public byte[] getContent()
+   {
       return this.content;
    }
 }
