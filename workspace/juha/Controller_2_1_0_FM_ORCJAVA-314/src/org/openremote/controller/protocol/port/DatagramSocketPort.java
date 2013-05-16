@@ -27,9 +27,11 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 
 /**
- * A physical bus using datagram sockets to send and receive messages.
+ * A physical port (bus) using datagram sockets to send and receive messages.
  * 
  * @see Port
+ *
+ * @author Olivier Gandit
  */
 public class DatagramSocketPort implements Port {
    private DatagramSocket inSocket, outSocket;
