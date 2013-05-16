@@ -29,26 +29,27 @@ package org.openremote.controller.protocol.port;
 public class Message
 {
 
-   private byte[] content;
+  private byte[] content;
 
-   /**
-    * Constructs a new message with given byte content.
-    * 
-    * @param content
-    *           message content
-    */
-   public Message(byte[] content)
-   {
-      this.content = content;
-   }
+  /**
+   * Constructs a new message with given byte content.
+   *
+   * @param content
+   *           message content
+   */
+  public Message(byte[] content)
+  {
+    this.content = content;
+  }
 
-   /**
-    * Returns message content as byte array.
-    * 
-    * @return An array of bytes representing message content
-    */
-   public byte[] getContent()
-   {
-      return this.content;
-   }
+  /**
+   * Returns message content as byte array.
+   *
+   * @return An array of bytes representing message content
+   */
+  public byte[] getContent()
+  {
+    return this.content;
+  }
+
 }

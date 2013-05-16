@@ -23,33 +23,38 @@ package org.openremote.controller.protocol.port;
 import java.net.InetSocketAddress;
 
 /**
- * A message used by <code>DatagramSocketPhysicalBus</code>.
+ * A message used by <code>DatagramSocketPort</code>.
  * 
  * @see DatagramSocketPort
  * @see Message
+ *
+ * @author Olivier Gandit
  */
-public class DatagramSocketMessage extends Message {
-   private InetSocketAddress destAddr;
+public class DatagramSocketMessage extends Message
+{
+  private InetSocketAddress destAddr;
 
-   /**
-    * Constructor.
-    * 
-    * @param destAddr
-    *           Destination address.
-    * @param content
-    *           Message content.
-    */
-   public DatagramSocketMessage(InetSocketAddress destAddr, byte[] content) {
-      super(content);
-      this.destAddr = destAddr;
-   }
+  /**
+   * Constructs a new UDP message.
+   *
+   * @param destAddr
+   *           destination address
+   * @param content
+   *           message content
+   */
+  public DatagramSocketMessage(InetSocketAddress destAddr, byte[] content)
+  {
+    super(content);
+    this.destAddr = destAddr;
+  }
 
-   /**
-    * Get message destination address
-    * 
-    * @return Destination address as a <code>InetSocketAddress</code>.
-    */
-   public InetSocketAddress getDestAddr() {
-      return this.destAddr;
-   }
+  /**
+   * Returns message destination address
+   *
+   * @return Destination address as a <code>InetSocketAddress</code>.
+   */
+  public InetSocketAddress getDestAddr()
+  {
+    return this.destAddr;
+  }
 }
