@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -284,7 +284,7 @@
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
 		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
 		<constructor-arg index="1" value="${knx.ip.interface.port}" type="int" />
-		<constructor-arg index="2" value="org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus"/>
+		<constructor-arg index="2" value="org.openremote.controller.protocol.port.DatagramSocketPort"/>
 	</bean>
 
 	<!-- TCP Socket Command Builder for IP enabled devices -->
