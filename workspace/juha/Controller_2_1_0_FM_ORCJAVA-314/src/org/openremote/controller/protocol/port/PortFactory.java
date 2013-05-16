@@ -24,15 +24,20 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
 
 /**
- * A factory for <code>PhysicalBus</code> instances.
+ * A factory for <code>Port</code> instances.
+ *
+ * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class PortFactory {
-   /**
-    * A common log category name intended to be used across all classes related to Physical Bus implementation.
-    */
-   public final static String PHYSICALBUS_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx.ip";
+public class PortFactory
+{
 
-   private final static Logger log = Logger.getLogger(PHYSICALBUS_LOG_CATEGORY);
+   /**
+    * A common log category name intended to be used across all classes related to Port implementation.
+    */
+   public final static String PORT_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "port";
+
+   private final static Logger log = Logger.getLogger(PORT_LOG_CATEGORY);
 
    public static Port createPhysicalBus(String clazz) {
       try {
@@ -40,6 +45,13 @@ public class PortFactory {
          if (Port.class.isAssignableFrom(c)) {
             return (Port) c.newInstance();
          } else {
+
+           // TODO :
+           //         returning null pointer doesn't really make sense here -- if the loaded class
+           //         is not assignable to Port then that's an error and should be indicated as
+           //         such with an exception that is more precise than the inevitable null pointer
+           //         exception that will follow   [JPL]
+
             return null;
          }
       } catch (Exception e) {
