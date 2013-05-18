@@ -84,6 +84,9 @@ Internal:
     (Juha Lindfors, ORCJAVA-329)
   - Controller side of Beehive device discovery and account linking functionality 
     (Marcus Redeker, ORCJAVA-347)
+  - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit, 
+    ORCJAVA-314)
+
 
 
 Controller 2.0.2 (2013-02-26)
