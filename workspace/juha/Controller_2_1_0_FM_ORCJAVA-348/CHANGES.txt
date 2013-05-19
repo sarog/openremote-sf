@@ -1,3 +1,9 @@
+Controller ORCJAVA-348
+======================
+
+ - EnOcean Implementation (Rainer Hitz)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
