@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -21,6 +21,7 @@
 package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.EnOceanConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.OpenRemoteRuntime;
@@ -93,7 +94,8 @@ public abstract class ServiceContext
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
-    DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"); // TODO : To be removed, see ORCJAVA-183
+    DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
+    ENOCEAN_CONFIGURATION("enoceanConfig");                   // TODO : To be removed, see ORCJAVA-183
 
     private String springBeanName;
 
@@ -223,6 +225,23 @@ public abstract class ServiceContext
     }
   }
 
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static EnOceanConfiguration getEnOceanConfiguration()
+  {
+    try
+    {
+      return (EnOceanConfiguration)getInstance().getService(ServiceName.ENOCEAN_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error("EnOcean Configuration service has had an incompatible change.", e);
+    }
+  }
 
   /**
    * TODO : See ORCJAVA-197 -- http://jira.openremote.org/browse/ORCJAVA-197
