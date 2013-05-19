@@ -3,6 +3,7 @@ Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 
 New Features:
 
+  - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
   - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330)
   - WebConsole upgraded to version 2.1.1, fixes issues with stuck
     loading screen (Richard Turner, ORCJAVA-345)
@@ -84,8 +85,14 @@ Internal:
     (Juha Lindfors, ORCJAVA-329)
   - Controller side of Beehive device discovery and account linking functionality 
     (Marcus Redeker, ORCJAVA-347)
+<<<<<<< .working
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
     ORCJAVA-314)
+=======
+  - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit, 
+    ORCJAVA-314)
+>>>>>>> .merge-right.r8534
+
 
 
 Controller 2.0.2 (2013-02-26)

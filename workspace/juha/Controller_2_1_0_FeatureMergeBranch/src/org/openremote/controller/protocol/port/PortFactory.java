@@ -41,7 +41,10 @@ public class PortFactory
 
    public static Port createPhysicalBus(String clazz) {
       try {
-         Class<?> c = Class.forName(clazz);
+         //Class<?> c = Class.forName(clazz);
+
+         Class<?> c = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+
          if (Port.class.isAssignableFrom(c)) {
             return (Port) c.newInstance();
          } else {
@@ -55,7 +58,7 @@ public class PortFactory
             return null;
          }
       } catch (Exception e) {
-         log.error("Could not instantiate PhysicalBus", e);
+         log.error("Could not instantiate PhysicalBus : {0}", e, e.getMessage());
          return null;
       }
    }

@@ -65,6 +65,7 @@ import org.jdom.input.DOMBuilder;
     
    RESTTests.class,
    KNXTests.class,
+   EnOceanTests.class,
    VirtualProtocolTests.class,
    PanelTest.class,
    AsyncEventTests.class,
