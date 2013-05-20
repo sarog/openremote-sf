@@ -102,13 +102,9 @@ public class VeraCommandBuilderTest {
       httpServer.start();
       deployer = createDeployer();
       deployer.softRestart();
-      veraCommandBuilder = (VeraCommandBuilder) deployer.getCommandFactory().getCommandBuilder("vera");
+      veraCommandBuilder = new VeraCommandBuilder(deployer);
    }
 
-   @AfterClass
-   public static void tearDownAfterClass() throws Exception {
-      httpServer.stop();
-   }
 
    // Tests ----------------------------------------------------------------------------
 
@@ -117,7 +113,7 @@ public class VeraCommandBuilderTest {
     */
    @Test
    public void testDeviceDiscovery() throws MalformedURLException {
-      List<DiscoveredDeviceDTO> devices = deployer.getDiscoveredDevicesToAnnounce();
+      List<DiscoveredDeviceDTO> devices = ((TestDeployer)deployer).getDiscoveredDevicesToAnnounce();
       Assert.assertEquals(4, devices.size());
    }
    
@@ -220,7 +216,7 @@ public class VeraCommandBuilderTest {
       modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
 
       BeehiveCommandCheckService ccs = new BeehiveCommandCheckService(config);
-      Deployer deployer = new Deployer("test", cache, config, ccs, modelBuilders);
+      Deployer deployer = new TestDeployer("test", cache, config, ccs, modelBuilders);
       return deployer;
    }
 

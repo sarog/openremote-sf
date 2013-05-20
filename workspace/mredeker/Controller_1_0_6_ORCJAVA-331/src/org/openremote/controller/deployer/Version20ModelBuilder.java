@@ -487,18 +487,11 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   }
   
 
-  /**
-   * Return the commandFactory associated with this model builder. This is used 
-   * for test to access commandFactories which are created at runtime (Z-Wave and Vera)
-   * @return
-   */
-  public CommandFactory getCommandFactory() {
-    return commandFactory;
-  }
 
   // Implements ModelBuilder --------------------------------------------------------------------
 
-/**
+
+  /**
    * Attempts to determine whether the controller.xml 'last modified' timestamp has changed,
    * or if the file has been removed altogether, or if the file was not present earlier but
    * has been added since last check. <p>

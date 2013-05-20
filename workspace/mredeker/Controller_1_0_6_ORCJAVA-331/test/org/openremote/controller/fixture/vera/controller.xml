@@ -27,6 +27,6 @@
     <property name="controller.applicationname" value="controller" />
     
     <property name="vera.address" value="127.0.0.1" />
-    <property name="protocol.vera.classname" value="org.openremote.controller.protocol.vera.VeraCommandBuilder"/>
+<!--     <property name="protocol.vera.classname" value="org.openremote.controller.protocol.vera.VeraCommandBuilder"/>  -->
   </config>
 </openremote>
