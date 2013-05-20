@@ -48,7 +48,6 @@ import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
-import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.deployer.ModelBuilder;
 import org.openremote.controller.deployer.Version20ModelBuilder;
 import org.openremote.controller.deployer.Version30ModelBuilder;
@@ -234,7 +233,7 @@ public class Deployer
   /**
    * This list holds all discovered devices which are not announced to beehive yet 
    */
-  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -727,27 +726,9 @@ public class Deployer
      }
   }
 
-
-  /**
-   * Used by the tests to verify of the CommandBuilder announced discovered devices
-   * @return
-   */
-  public List<DiscoveredDeviceDTO> getDiscoveredDevicesToAnnounce() {
-     return discoveredDevicesToAnnounce;
-  }
-  
-  /**
-   * Return the commandFactory associated with the model builder. This is used 
-   * for test to access commandFactories which are created at runtime (Z-Wave and Vera)
-   * @return
-   */
-  public CommandFactory getCommandFactory() {
-     return modelBuilder.getCommandFactory();
-  }
-  
   // Protected Instance Methods -------------------------------------------------------------------
 
-/**
+  /**
    * Returns a registered sensor instance. Sensor instances are shared across threads.
    * Retrieving a sensor with the same ID will yield a same instance. <p>
    *

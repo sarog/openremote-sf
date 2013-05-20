@@ -26,7 +26,6 @@ import java.security.PrivilegedAction;
 
 import org.jdom.Document;
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.exception.InitializationException;
 
 
@@ -118,13 +117,6 @@ public class Version30ModelBuilder extends AbstractModelBuilder
 
   @Override protected Document readControllerXMLDocument()
   {
-    return null;
-  }
-
-
-  @Override
-  public CommandFactory getCommandFactory() {
-    // TODO Auto-generated method stub
     return null;
   }
 
