@@ -149,8 +149,14 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
             String cmd = (String) st.nextElement();
             if (count % 2 == 0) {
                waitFor = cmd;
-               if (!"null".equals(cmd)) {
-                  waitForString(cmd, tc);
+               if(st.hasMoreElements()){
+                  if (!"null".equals(cmd)) {
+                    waitForString(cmd, tc);
+                  }
+               }
+               else                            
+               {
+                  readString(waitFor, tc);
                }
             }
 
@@ -158,7 +164,7 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
             {
               sendString(cmd, tc);
 
-              if (readResponse)
+              if (readResponse && !st.hasMoreElements())
               {
                 // TODO :
                 //   ORCJAVA-327 - should always wait for 'null' string in readString() ?
@@ -166,7 +172,8 @@ public class TelnetCommand implements ExecutableCommand, EventListener, Runnable
                 //   It's unclear if this change will impact existing users, should only
                 //   be added with a configurable 'backwards-compatibility' flag.
 
-                readString(waitFor, tc);
+                // readString(waitFor, tc); if 'backwards-compatibility' flag?
+                readString("null", tc);              
               }
             }
 
