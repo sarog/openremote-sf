@@ -1,3 +1,12 @@
+Controller ORCJAVA-327
+======================
+
+ - Proposed patch to change telnet piped command behavior
+   described in ORCJAVA-327 -- still missing the
+   backwards compatibility mode that will be required
+   before accepting this to mainline release branches
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
