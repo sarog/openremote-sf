@@ -49,5 +49,11 @@
 	<classpathentry kind="lib" path="lib/json-path/json-smart-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-exec-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/cmu_us_kal.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/cmulex.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/en_us.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/freetts-jsapi10.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/freetts.jar"/>
+	<classpathentry kind="lib" path="lib/freetts/jsapi.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
