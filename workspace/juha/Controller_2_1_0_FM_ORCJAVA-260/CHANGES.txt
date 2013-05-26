@@ -1,3 +1,9 @@
+Controller ORCJAVA-260
+======================
+
+ - Add content-type attribute to HTTP protocol (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
