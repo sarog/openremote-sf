@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -25,7 +25,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.exception.NoSuchCommandException;
-import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Logger;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -100,6 +100,13 @@ public class X10CommandBuilder implements CommandBuilder
    */
   public final static String X10_XMLPROPERTY_COMMAND = "command";
 
+  /**
+   * Implicit name property for all commands that were introduced in Designer 2.13.x and later.
+   * This property should be eventually provided by the API, at which point this constant can
+   * be replaced.
+   */
+  public final static String COMMAND_XMLPROPERTY_NAME = "name";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -149,6 +156,7 @@ public class X10CommandBuilder implements CommandBuilder
 
     String address = null;
     String commandAsString = null;
+    String commandName = null;  // Currently unused but useful for logging [JPL]
 
     // Properties come in as child elements...
 
@@ -164,10 +172,17 @@ public class X10CommandBuilder implements CommandBuilder
       {
         address = x10CommandPropertyValue;
       }
+
       else if (X10_XMLPROPERTY_COMMAND.equalsIgnoreCase(x10CommandPropertyName))
       {
         commandAsString = x10CommandPropertyValue;
       }
+
+      else if (COMMAND_XMLPROPERTY_NAME.equalsIgnoreCase(x10CommandPropertyName))
+      {
+        commandName = x10CommandPropertyValue;
+      }
+
       else
       {
         log.warn(
