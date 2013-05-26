@@ -1,3 +1,10 @@
+Controller ORCJAVA-343
+======================
+
+  - Round robin database (RRD) integration for storing
+    sensor data (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
