@@ -1,3 +1,9 @@
+Designer 2.13.9 MODELER-416
+===========================
+
+ - contentType attribute for HTTP protocol (Marcus Redeker)
+
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
