@@ -126,26 +126,33 @@ class IpProcessor {
       this.physicalBusClazz = physicalBusClazz;
    }
 
-   void start(String src, InetAddress srcAddr, DatagramSocket outSocket) throws KnxIpException, IOException, PortException,
-         InterruptedException {
-      this.port = PortFactory.createPhysicalBus(this.physicalBusClazz);
+  void start(String src, InetAddress srcAddr, DatagramSocket outSocket) throws KnxIpException,
+                                                                               IOException,
+                                                                               PortException,
+                                                                               InterruptedException
+  {
+    log.debug("Creating KNX bus with " + this.physicalBusClazz);
 
-      // Start bus
-      Map<String, Object> cfg = new HashMap<String, Object>();
-      cfg.put("inSocket", this.inSocket);
-      cfg.put("outSocket", outSocket == null ? this.inSocket : outSocket);
-      this.port.configure(cfg);
-      this.inSocket = new DatagramSocket(new InetSocketAddress(srcAddr, 0));
-      this.port.start();
+    this.port = PortFactory.createPhysicalBus(this.physicalBusClazz);
+    this.inSocket = new DatagramSocket(new InetSocketAddress(srcAddr, 0));
+
+    // Start bus
+    Map<String, Object> cfg = new HashMap<String, Object>();
+    cfg.put("inSocket", this.inSocket);
+    cfg.put("outSocket", outSocket == null ? this.inSocket : outSocket);
+
+    this.port.configure(cfg);
+    this.port.start();
       
-      // Start bus listener
-      this.busListener = new PhysicalBusListener(src);
-      PortFactory.createPhysicalBus(this.physicalBusClazz);
-      synchronized (this.busListener) {
+    // Start bus listener
+    this.busListener = new PhysicalBusListener(src);
+
+     //PortFactory.createPhysicalBus(this.physicalBusClazz);
+    synchronized (this.busListener) {
          this.busListener.start();
          this.busListener.wait();
-      }
-   }
+    }
+  }
 
    InetSocketAddress getSrcSocketAddr() {
       return (InetSocketAddress) this.inSocket.getLocalSocketAddress();
