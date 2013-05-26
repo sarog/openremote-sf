@@ -317,6 +317,12 @@
     <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>graphServlet</servlet-name>
+    <servlet-class>org.openremote.controller.servlet.RrdGraphServlet</servlet-class>
+  </servlet>
+
+
   <!--
    | Servlet for 'rest/panels' implementation.
    +-->
@@ -387,12 +393,6 @@
   </servlet-mapping>
 
 
-  <servlet>
-    <servlet-name>graphServlet</servlet-name>
-    <servlet-class>org.openremote.controller.servlet.RrdGraphServlet</servlet-class>
-  </servlet>
-
-  
 
   <!--
    | Map Controller REST API servlet which returns all panel definition IDs to
