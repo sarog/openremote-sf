@@ -14,6 +14,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      Marcus Redeker)
    - Add IP address to Samsung SmartTV protocol, enabling
      use of multiple devices (MODELER-465, Ivan Martinez)
+   - Add content type header field to HTTP protocol
+     (MODELER-416, Marcus Redeker)
    - Controller configuration sections have a "reset to
      default values" button (MODELER-453, Eric Bariaux)
 
