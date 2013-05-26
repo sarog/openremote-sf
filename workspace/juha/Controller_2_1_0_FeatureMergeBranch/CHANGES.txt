@@ -5,6 +5,8 @@ New Features:
 
   - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
   - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330)
+  - Round robind database (RRD) integration for storing sensor
+    data (Marcus Redeker, ORCJAVA-343)
   - WebConsole upgraded to version 2.1.1, fixes issues with stuck
     loading screen (Richard Turner, ORCJAVA-345)
   - Added DSC-IT 100 Security System integration - IP to serial (Greg Rapp)
