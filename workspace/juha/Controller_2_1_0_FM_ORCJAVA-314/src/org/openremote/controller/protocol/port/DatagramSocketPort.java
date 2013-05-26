@@ -67,15 +67,13 @@ public class DatagramSocketPort implements Port
 
   @Override public Message receive() throws IOException
   {
-    byte[] buffer = new byte[1024];
-    DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-
     if (inSocket == null)
     {
-      log.error("Configuration error, listening socket is null and cannot receive!");
-
-      return null;
+      throw new IOException("Configuration error, listening socket is null and cannot receive!");
     }
+
+    byte[] buffer = new byte[1024];
+    DatagramPacket p = new DatagramPacket(buffer, buffer.length);
 
     this.inSocket.receive(p);
 
