@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,35 +20,57 @@
  */
 package org.openremote.controller.protocol.knx.ip;
 
-public class KnxIpException extends Exception {
-   private static final long serialVersionUID = 1L;
-   
-   public static enum Code {
-      alreadyConnected,
-      notConnected,
-      unknownHost,
-      noResponseFromInterface,
-      responseError,
-      wrongSequenceCounterValue,
-      wrongChannelId,
-      wrongResponseType,
-      invalidHeader,
-      unexpectedServiceType;
-   }
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
+public class KnxIpException extends Exception
+{
 
-   private Code code;
+  // Serialization ID -----------------------------------------------------------------------------
 
-   public KnxIpException(Code code, String msg) {
-      super(msg);
-      this.code = code;
-   }
+  private static final long serialVersionUID = 1L;
 
-   public Code getCode() {
-      return code;
-   }
 
-   @Override
-   public String getMessage() {
-      return super.getMessage();
-   }
+  // Enums ----------------------------------------------------------------------------------------
+
+  public static enum Code
+  {
+    ALREADY_CONNECTED,
+    NOT_CONNECTED,
+    UNKNOWN_HOST,
+    NO_RESPONSE_FROM_INTERFACE,
+    RESPONSE_ERROR,
+    WRONG_SEQUENCE_COUNTER_VALUE,
+    WRONG_CHANNEL_ID,
+    WRONG_RESPONSE_TYPE,
+    INVALID_HEADER,
+    UNEXPECTED_SERVICE_TYPE
+  }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Code code;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public KnxIpException(Code code, String msg)
+  {
+    super(msg);
+    this.code = code;
+  }
+
+
+  // Instance Methods -----------------------------------------------------------------------------
+
+  public Code getCode()
+  {
+    return code;
+  }
+
+
 }
