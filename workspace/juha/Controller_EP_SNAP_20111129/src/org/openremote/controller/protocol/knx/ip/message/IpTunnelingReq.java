@@ -31,14 +31,27 @@ import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
  * TODO
  *
  * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class IpTunnelingReq extends IpMessage
 {
   
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * KNXnet/IP TUNNELING_REQUEST service type identifier : {@value}  <p>
+   *
+   * This integer value is stored as a two byte value in the KNXnet/IP frame header.
+   * The high byte value (0x04) indicates 'Tunneling' service family, and low byte (0x20)
+   * indicates tunneling request service.
+   */
   public final static int STI = ServiceTypeIdentifier.TUNNELING_REQUEST.getValue();
 
+  /**
+   * Timeout used by this tunneling request to wait for {@link ServiceTypeIdentifier#TUNNELING_ACK}
+   * frame to be sent back from the KNXnet/IP gateway/router (in milliseconds) : {@value}
+   */
+  public final static int KNXNET_IP_10_TUNNELING_REQUEST_TIMEOUT = 10000; // TODO
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -62,13 +75,32 @@ public class IpTunnelingReq extends IpMessage
   
   // Instance Fields ------------------------------------------------------------------------------
 
+
+  /**
+   * Connection channel identifier this request is associated with.
+   */
   private int channelId;
+
+  /**
+   * TODO
+   */
   private int seqCounter;
+
+  /**
+   * TODO
+   */
   private byte[] cEmiFrame;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * TODO
+   *
+   * @param channelId
+   * @param seqCounter
+   * @param cEmiFrame
+   */
   public IpTunnelingReq(int channelId, int seqCounter, byte[] cEmiFrame)
   {
     super(STI, 4 + cEmiFrame.length);
@@ -78,36 +110,99 @@ public class IpTunnelingReq extends IpMessage
     this.cEmiFrame = cEmiFrame;
   }
 
-  public IpTunnelingReq(InputStream is, int length) throws IOException
+  /**
+   * TODO
+   *
+   * @param is
+   * @param length
+   * @throws IOException
+   */
+  public IpTunnelingReq(InputStream is, int ipBodyLength) throws IOException
   {
-    super(STI, length);
+    super(STI, ipBodyLength);
 
-    // TODO check structure length
-    is.skip(1);
+    if (ipBodyLength < 4 + 9)
+    {
+      throw new IOException(
+          "Incorrect body length " + ipBodyLength +
+          " -- the minimum size must include connection header (4 bytes) and mandatory CEMI " +
+          "fields (9 bytes)."
+      );
+    }
+
+    int structureSize = is.read();
+
+    if (structureSize != 4)
+    {
+      throw new IOException(
+          "Corrupt KXNnet/IP TUNNELING_REQUEST frame or incorrect KNXnet/IP version -- " +
+          "tunneling request connection header size must be 4, got " + structureSize
+      );
+    }
+    
     this.channelId = is.read();
     this.seqCounter = is.read();
-    is.skip(1);
 
-    this.cEmiFrame = new byte[length - 4];
-    is.read(this.cEmiFrame);
+    int reserved = is.read();
+    
+
+    this.cEmiFrame = new byte[ipBodyLength - 4];
+
+    int bytecount = is.read(this.cEmiFrame);
+
+    if (bytecount != ipBodyLength - 4)
+    {
+      throw new IOException(
+          "Unable to parse CEMI content -- expected to read " + (ipBodyLength - 4) + " bytes, got " + bytecount
+      );
+    }
+//
+//    if (structureSize != 4 + 9 + cEmiFrame[8])
+//    {
+//      throw new IOException(
+//          "Corrupt frame or incorrect KNXnet/IP version -- was expecting IP body size " +
+//          (4 + 9 + cEmiFrame[8]) + ", got " + structureSize
+//      );
+//    }
   }
 
 
   // IpMessage Override ---------------------------------------------------------------------------
 
+  /**
+   * Indicates that this frame is a request type.
+   *
+   * @return  {@link IpMessage.Primitive#REQ}
+   */
   @Override public Primitive getPrimitive()
   {
     return Primitive.REQ;
   }
 
+
+  /**
+   * The timeout used by client to wait for a {@link ServiceTypeIdentifier#TUNNELING_ACK}
+   * frame to be sent back from KNXnet/IP gateway/router after sending this tunneling
+   * request.
+   *
+   * @return    {@link #KNXNET_IP_10_TUNNELING_REQUEST_TIMEOUT}
+   */
   @Override public int getSyncSendTimeout()
   {
-    return 10000;
+    return KNXNET_IP_10_TUNNELING_REQUEST_TIMEOUT;
   }
 
+  /**
+   * TODO
+   *
+   * @param os      output stream to write the KNXnet/IP header to
+   *
+   * @throws IOException
+   */
   @Override public void write(OutputStream os) throws IOException
   {
     super.write(os);
+
     os.write(4);
     os.write(this.channelId);
     os.write(this.seqCounter);
@@ -119,6 +214,11 @@ public class IpTunnelingReq extends IpMessage
 
   // Instance Methods -----------------------------------------------------------------------------
 
+  /**
+   * Returns the connection channel id this request is associated with.
+   *
+   * @return    channel identifier of this tunneling request
+   */
   public int getChannelId()
   {
     return channelId;
