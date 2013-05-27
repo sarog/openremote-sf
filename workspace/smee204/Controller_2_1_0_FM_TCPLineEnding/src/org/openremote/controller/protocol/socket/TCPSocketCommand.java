@@ -41,6 +41,7 @@ import org.openremote.controller.protocol.EventListener;
  * @author Phillip Lavender
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Ivan Martinez
+ * @author Simon Vincent 2013-05-07
  */
 public class TCPSocketCommand implements ExecutableCommand, EventListener, Runnable {
 
@@ -60,6 +61,9 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
 
    /** The port that is opened */
    private String port;
+   
+   /** The line ending */
+   private String lineEnding;
 
    /** The regex which is used to extract sensor data from received result */
    private String regex;
@@ -77,16 +81,35 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
    boolean doPoll = false;
   
    // Constructors  ----------------------------------------------------------------
-   public TCPSocketCommand(String ipAddress, String port, String command, String regex, Integer intervalInMillis) {
+   public TCPSocketCommand(String ipAddress, String port, String command, String regex, Integer intervalInMillis, String ending) {
       this.ip = ipAddress;
       this.port = port;
       this.command = command;
       this.regex = regex;
       this.pollingInterval = intervalInMillis;
+      this.lineEnding = ending;
    }
 
    
    // Public Instance Methods ----------------------------------------------------------------------
+   /**
+    * Gets the line ending.
+    *
+    * @return the line ending
+    */
+   public String getLineEnding() {
+      return lineEnding;
+   }
+
+   /**
+    * Sets the line ending.
+    *
+    * @param lineEnding the new line ending
+    */
+   public void setLineEnding(String lineEnding) {
+      this.lineEnding = lineEnding;
+   }
+   
    /**
     * Gets the command.
     *
@@ -170,8 +193,18 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
                String tmp = getCommand().substring(2);
                bytes = hexStringToByteArray(tmp.replaceAll(" ", "").toLowerCase());
             } else {
-               bytes = (cmd + "\r").getBytes();
+              switch (lineEnding) {
+                case "LF": cmd = cmd + "\n";
+			   break;
+                case "CR": cmd = cmd + "\r";
+			   break;
+                case "CRLF": cmd = cmd + "\r\n";
+                           break;				
+              }
+
+              bytes = cmd.getBytes();
             }
+            
             out.write(bytes);
          }
 
