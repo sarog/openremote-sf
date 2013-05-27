@@ -49,41 +49,87 @@ public class PhysicalBusMock implements PhysicalBus {
    public void send(Message message) throws IOException {
       byte[] req = message.getContent();
       int sti = (req[2] << 8) + req[3];
-      switch (sti) {
-      case IpDiscoverReq.STI:
-         this.notifyTelegram(DISCOVER_RESP);
-         break;
-      case IpConnectReq.STI:
-         this.notifyTelegram(CONNECT_RESP);
-         break;
-      case IpDisconnectReq.STI:
-         this.notifyTelegram(DISCONNECT_RESP);
-         break;
-      case IpConnectionStateReq.STI:
-         this.notifyTelegram(CONNECTIONSTATE_RESP);
-         break;
-      case IpTunnelingAck.STI:
-         this.seq++;
-         break;
-      case IpTunnelingReq.STI:
-         byte[] resp = TUNNELING_ACK;
-         resp[8] = req[8];
-         this.notifyTelegram(TUNNELING_ACK);
 
-         // Notify a con telegram for GroupValue_Write.req and GroupValue_Read.req
-         if ((((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x80))
-               || (((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x00))) {
-            
-            // Prepare confirmation telegram
-            byte[] con = Arrays.copyOfRange(req, 10, req.length);
-            con[0] = 0x2E;
-            IpTunnelingReq r = new IpTunnelingReq(req[7], this.seq, con);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            r.write(os);
-            this.notifyTelegram(os.toByteArray());
-         }
-         break;
-      }
+     if (sti == IpDiscoverReq.STI)
+     {
+       notifyTelegram(DISCOVER_RESP);
+     }
+
+     else if (sti == IpConnectReq.STI)
+     {
+       notifyTelegram(CONNECT_RESP);
+     }
+
+     else if (sti == IpDisconnectReq.STI)
+     {
+       notifyTelegram(DISCONNECT_RESP);
+     }
+
+     else if (sti == IpConnectionStateReq.STI)
+     {
+       notifyTelegram(CONNECTIONSTATE_RESP);
+     }
+
+     else if (sti == IpTunnelingAck.STI)
+     {
+       seq++;
+     }
+
+     else if (sti == IpTunnelingReq.STI)
+     {
+       byte[] resp = TUNNELING_ACK;
+       resp[8] = req[8];
+       notifyTelegram(TUNNELING_ACK);
+
+       // Notify a con telegram for GroupValue_Write.req and GroupValue_Read.req
+       if ((((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x80))
+             || (((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x00))) {
+
+          // Prepare confirmation telegram
+          byte[] con = Arrays.copyOfRange(req, 10, req.length);
+          con[0] = 0x2E;
+          IpTunnelingReq r = new IpTunnelingReq(req[7], this.seq, con);
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          r.write(os);
+          this.notifyTelegram(os.toByteArray());
+       }
+
+     }
+//      switch (sti) {
+//      case IpDiscoverReq.STI:
+//         this.notifyTelegram(DISCOVER_RESP);
+//         break;
+//      case IpConnectReq.STI:
+//         this.notifyTelegram(CONNECT_RESP);
+//         break;
+//      case IpDisconnectReq.STI:
+//         this.notifyTelegram(DISCONNECT_RESP);
+//         break;
+//      case IpConnectionStateReq.STI:
+//         this.notifyTelegram(CONNECTIONSTATE_RESP);
+//         break;
+//      case IpTunnelingAck.STI:
+//         this.seq++;
+//         break;
+//      case IpTunnelingReq.STI:
+//         byte[] resp = TUNNELING_ACK;
+//         resp[8] = req[8];
+//         this.notifyTelegram(TUNNELING_ACK);
+//
+//         // Notify a con telegram for GroupValue_Write.req and GroupValue_Read.req
+//         if ((((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x80))
+//               || (((req[19] & 0x3) == 0) && ((req[20] & 0xC0) == 0x00))) {
+//
+//            // Prepare confirmation telegram
+//            byte[] con = Arrays.copyOfRange(req, 10, req.length);
+//            con[0] = 0x2E;
+//            IpTunnelingReq r = new IpTunnelingReq(req[7], this.seq, con);
+//            ByteArrayOutputStream os = new ByteArrayOutputStream();
+//            r.write(os);
+//            this.notifyTelegram(os.toByteArray());
+//         }
+//         break;
+//      }
    }
 
    private void notifyTelegram(byte[] message) {
