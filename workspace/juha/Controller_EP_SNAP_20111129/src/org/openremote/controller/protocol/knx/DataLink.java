@@ -146,7 +146,7 @@ class DataLink
 
     private static Map<Byte, MessageCode> lookup = new ConcurrentHashMap<Byte, MessageCode>(25);
 
-    private static MessageCode lookup(byte b)
+    static MessageCode lookup(byte b)
     {
       return lookup.get(b);
     }
@@ -163,7 +163,7 @@ class DataLink
       lookup.put((byte)messageCode, this);
     }
 
-    private byte getByteValue()
+    byte getByteValue()
     {
       return (byte)messageCode;
     }
