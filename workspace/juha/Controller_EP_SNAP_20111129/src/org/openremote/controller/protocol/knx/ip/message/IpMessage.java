@@ -51,7 +51,7 @@ import java.io.OutputStream;
  *
  * Service type identifiers are defined as follows:
  *
- *   TODO
+ *     TODO
  *
  * <p>
  *
@@ -249,6 +249,19 @@ public abstract class IpMessage
     return 0;
   }
 
+
+  /**
+   * Indicates whether this frame is a request or a response frame.
+   *
+   * @see IpMessage.Primitive
+   *
+   * @return    this frame's type
+   */
+  public abstract Primitive getPrimitive();
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
   /**
    * Returns the service type identifier of this frame.
    *
@@ -272,14 +285,5 @@ public abstract class IpMessage
 
     return this.variableLength;
   }
-
-  /**
-   * Indicates whether this frame is a request or a response frame.
-   *
-   * @see IpMessage.Primitive
-   *
-   * @return    this frame's type
-   */
-  public abstract Primitive getPrimitive();
 
 }
