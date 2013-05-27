@@ -37,8 +37,9 @@ New Features:
     (Marcus Redeker)
   - UDP : send hex values by prefixing command data with '0x' string.
     Receiving of UDP packets added (Marcus Redeker)
-  - TCP : send hex values by prefixing command data with '0x' string
-    (Marcus Redeker)
+  - TCP : send hex values by prefixing command data with '0x' string,
+    add polling interval and regular expression support for TCP payloads
+    (Marcus Redeker, ORCJAVA-298)
   - Samsung SmartTV : support control of multiple Samsung devices in single
     installation (Ivan Martinez)
   - Touch panel gestures can now be bound to macros in addition to individual
@@ -78,6 +79,7 @@ Bug Fixes:
     protocols (Juha Lindfors, ORCJAVA-332, ORCJAVA-334, ORCJAVA-335)
   - Fix a bug in telnet switch sensor handling where untrimmed return value was
     never correctly parsed to 'on' state (Juha Lindfors, ORCJAVA-326)
+  - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
 
 
 Internal:
