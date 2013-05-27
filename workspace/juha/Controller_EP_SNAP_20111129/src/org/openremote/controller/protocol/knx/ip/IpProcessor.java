@@ -47,6 +47,9 @@ import org.openremote.controller.utils.Logger;
  * <li>synchronize requests and responses,</li>
  * <li>handle incoming requests.</li>
  * </ul>
+ *
+ * @author Olivier Gandit
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 class IpProcessor {
    /**
@@ -181,7 +184,7 @@ class IpProcessor {
       IpMessage out = null;
 
       // Check header is 0x06 0x10
-      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException(Code.invalidHeader,
+      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException(Code.INVALID_HEADER,
             "Create message failed");
 
       // Extract Service Type Identifier
@@ -191,28 +194,64 @@ class IpProcessor {
       int l = ((is.read() << 8) + is.read()) - 6;
 
       // Instantiate message
-      switch (sti) {
-      case IpConnectResp.STI:
-         out = new IpConnectResp(is, l);
-         break;
-      case IpDisconnectResp.STI:
-         out = new IpDisconnectResp(is, l);
-         break;
-      case IpDiscoverResp.STI:
-         out = new IpDiscoverResp(is, l);
-         break;
-      case IpTunnelingAck.STI:
-         out = new IpTunnelingAck(is, l);
-         break;
-      case IpTunnelingReq.STI:
-         out = new IpTunnelingReq(is, l);
-         break;
-      case IpConnectionStateResp.STI:
-         out = new IpConnectionStateResp(is, l);
-         break;
-      default:
-         throw new KnxIpException(Code.unexpectedServiceType, "Could not create message");
+//      switch (sti) {
+//      case IpConnectResp.STI:
+//         out = new IpConnectResp(is, l);
+//         break;
+//      case IpDisconnectResp.STI:
+//         out = new IpDisconnectResp(is, l);
+//         break;
+//      case IpDiscoverResp.STI:
+//         out = new IpDiscoverResp(is, l);
+//         break;
+//      case IpTunnelingAck.STI:
+//         out = new IpTunnelingAck(is, l);
+//         break;
+//      case IpTunnelingReq.STI:
+//         out = new IpTunnelingReq(is, l);
+//         break;
+//      case IpConnectionStateResp.STI:
+//         out = new IpConnectionStateResp(is, l);
+//         break;
+//      default:
+//         throw new KnxIpException(Code.UNEXPECTED_SERVICE_TYPE, "Could not create message");
+//      }
+
+      if (sti == IpConnectResp.STI)
+      {
+        out = new IpConnectResp(is, l);
       }
+
+      else if (sti == IpDisconnectResp.STI)
+      {
+        out = new IpDisconnectResp(is, l);
+      }
+
+      else if (sti == IpDiscoverResp.STI)
+      {
+        out = new IpDiscoverResp(is, l);
+      }
+
+      else if (sti == IpTunnelingAck.STI)
+      {
+        out = new IpTunnelingAck(is, l);
+      }
+
+      else if (sti == IpTunnelingReq.STI)
+      {
+        out = new IpTunnelingReq(is, l);
+      }
+
+      else if (sti == IpConnectionStateResp.STI)
+      {
+        out = new IpConnectionStateResp(is, l);
+      }
+
+      else
+      {
+        throw new KnxIpException(Code.UNEXPECTED_SERVICE_TYPE, "Could not create message");
+      }
+     
       return out;
    }
 }
