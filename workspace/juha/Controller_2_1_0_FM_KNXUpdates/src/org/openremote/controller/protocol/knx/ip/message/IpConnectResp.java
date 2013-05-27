@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2012, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,14 +23,32 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class IpConnectResp extends IpMessage {
-  public static final int STI = 0x206;
-  private int             channelId;
-  private int             status;
-  private Hpai            dataEndpoint;
+/**
+ * TODO
+ *
+ * @author Olivier Gandit
+ */
+public class IpConnectResp extends IpMessage
+{
 
-  public IpConnectResp(InputStream is, int length) throws IOException {
+  // Constants ------------------------------------------------------------------------------------
+
+  public static final int STI = 0x206;
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private int channelId;
+  private int status;
+  private Hpai dataEndpoint;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public IpConnectResp(InputStream is, int length) throws IOException
+  {
     super(STI, length);
+
     this.channelId = is.read();
     this.status = is.read();
     this.dataEndpoint = new Hpai(is);
@@ -39,20 +57,29 @@ public class IpConnectResp extends IpMessage {
     is.skip(4);
   }
 
-  @Override
-  public Primitive getPrimitive() {
+
+  // IpMessage Overrides --------------------------------------------------------------------------
+
+  @Override public Primitive getPrimitive()
+  {
     return Primitive.RESP;
   }
 
-  public int getChannelId() {
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  public int getChannelId()
+  {
     return this.channelId;
   }
 
-  public int getStatus() {
+  public int getStatus()
+  {
     return this.status;
   }
 
-  public Hpai getDataEndpoint() {
+  public Hpai getDataEndpoint()
+  {
     return this.dataEndpoint;
   }
 }
