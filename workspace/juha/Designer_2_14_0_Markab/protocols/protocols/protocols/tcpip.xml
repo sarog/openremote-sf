@@ -3,7 +3,7 @@
 <!--
 
  OpenRemote, the Home of the Digital Home.
- Copyright 2008-2013, OpenRemote Inc.
+ Copyright 2008-2012, OpenRemote Inc.
 
  See the contributors.txt file in the distribution for a
  full listing of individual contributors.
@@ -28,48 +28,30 @@
  |
  |  TCP/IP protocol configuration for OpenRemote Designer.
  |
- |  Author: Marcus Redeker
  +-->
-<openremote xmlns="http://www.openremote.org" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	    xsi:schemaLocation="http://www.openremote.org protocol.xsd">
-	
-  <protocol displayName="TCP/IP" tagName="socket">
-    <attr name="ipAddress" label="IP Address">
-      <validations>
-        <allowBlank>false</allowBlank>
-        <!-- message is option -->
-        <regex message="Must be a valid IPv4 or IPv6 address or a fully qualified domain name">.*</regex>
-      </validations>
-    </attr>
-
-    <attr name="port" label="Port">
-      <validations>
-        <allowBlank>false</allowBlank>
-        <maxLength>5</maxLength>
-        <regex message="Port must be an integer number. ">\d+</regex>
-      </validations>
-    </attr>
-
-    <attr name="command" label="Command">
-      <validations>
-        <allowBlank>false</allowBlank>
-        <maxLength>4000</maxLength>
-        <regex message="Command is necessary. ">.*\w+.*</regex>
-      </validations>
-    </attr>
-
-    <attr name="regex" label="RegularExpression" tooltipMessage = "RegularExpression to parse value out of result" > 
-      <validations> 
-        <allowBlank>true</allowBlank> 
-      </validations> 
-    </attr> 
-         
-    <attr name="pollingInterval" label="Polling interval" tooltipMessage = "Polling interval in form of (1s, 1m, 1h) or just milliseconds"> 
-      <validations> 
-        <allowBlank>true</allowBlank> 
-      </validations> 
-    </attr>
-
-    </protocol>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="TCP/IP" tagName="socket">
+		<attr name="ipAddress" label="IP Address">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<!-- message is option -->
+                        <regex message="Must be a valid IPv4 or IPv6 address or a fully qualified domain name">.*</regex>
+			</validations>
+		</attr>
+		<attr name="port" label="Port">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<maxLength>5</maxLength>
+				<regex message="Port must be an integer number. ">\d+</regex>
+			</validations>
+		</attr>
+		<attr name="command" label="Command">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<maxLength>4000</maxLength>
+				<regex message="Command is necessary. ">.*\w+.*</regex>
+			</validations>
+		</attr>
+	</protocol>
 </openremote>
