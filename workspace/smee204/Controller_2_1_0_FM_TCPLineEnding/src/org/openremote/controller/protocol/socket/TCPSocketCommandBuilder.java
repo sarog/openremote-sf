@@ -35,6 +35,7 @@ import org.openremote.controller.utils.Strings;
  * The Class TCPSocketCommandBuilder.
  *
  * @author Marcus 2009-4-26
+ * @author Simon Vincent 2013-05-07
  */
 public class TCPSocketCommandBuilder implements CommandBuilder {
 
@@ -51,6 +52,8 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
    private final static String STR_ATTRIBUTE_NAME_COMMAND = "command";
    private final static String STR_ATTRIBUTE_NAME_REGEX = "regex";
    private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
+   private final static String STR_ATTRIBUTE_NAME_LINE_ENDING = "ending";
+
    
    // Class Members
    // --------------------------------------------------------------------------------
@@ -67,12 +70,14 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
    public Command build(Element element) {
       logger.debug("Building HttGetCommand");
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
+
       String port = null;
       String ipAddress = null;
       String command = null;
       String regex = null;
       String interval = null;
       Integer intervalInMillis = null;
+      String ending = null;
 
       // read values from config xml
 
@@ -102,6 +107,13 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
           regex = elementValue;
           logger.debug("TCPSocketCommand: regex = " + regex);
         }
+
+        else if (STR_ATTRIBUTE_NAME_LINE_ENDING.equalsIgnoreCase(elementName))
+        {
+          ending = elementValue;
+          logger.debug("TCPSocketCommand: line ending = " + ending);
+        }
+
       }
       try
       {
@@ -113,7 +125,7 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
         throw new NoSuchCommandException("Unable to create TCPSocketCommand, pollingInterval could not be converted into milliseconds");
       }
 
-      return new TCPSocketCommand(ipAddress, port, command, regex, intervalInMillis);
+      return new TCPSocketCommand(ipAddress, port, command, regex, intervalInMillis, ending);
    }
 
 }
