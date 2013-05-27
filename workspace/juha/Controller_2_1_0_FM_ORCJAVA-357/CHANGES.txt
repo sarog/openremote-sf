@@ -1,3 +1,9 @@
+Controller ORCJAVA-357
+======================
+
+ - Add EmonCMS DataLogger as EventProcessor (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
