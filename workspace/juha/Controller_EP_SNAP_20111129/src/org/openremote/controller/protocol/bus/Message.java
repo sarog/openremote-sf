@@ -29,10 +29,9 @@ public class Message
   private byte[] content;
 
   /**
-   * Constructor.
+   * Constructs a new message content with a given byte buffer.
    *
-   * @param content
-   *           Message content.
+   * @param content   message content as an array of bytes
    */
   public Message(byte[] content)
   {
