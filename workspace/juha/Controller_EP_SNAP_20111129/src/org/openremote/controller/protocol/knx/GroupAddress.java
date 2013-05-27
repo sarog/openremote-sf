@@ -83,7 +83,7 @@ class GroupAddress
 
   /**
    * Formats a two byte group address into a common convention of main/middle/sub string
-   * (5/3/8 bits, respectively.
+   * (5/3/8 bits, respectively).
    *
    * @param address two byte array representing a KNX group address.
    *
@@ -164,6 +164,31 @@ class GroupAddress
     this.loByte = lobyte;
   }
 
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  /**
+   * TODO
+   *
+   * @return
+   */
+  public int getSubGroup()
+  {
+    return loByte & 0xFF;
+  }
+
+  public int getMiddleGroup()
+  {
+    return hiByte & 0x07;
+  }
+
+  public int getMainGroup()
+  {
+    int value = hiByte;
+
+    return (value & 0xFF) >> 3;
+  }
+  
 
   // Object Overrides -----------------------------------------------------------------------------
 
