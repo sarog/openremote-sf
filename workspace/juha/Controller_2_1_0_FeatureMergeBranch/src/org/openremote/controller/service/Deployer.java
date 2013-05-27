@@ -232,7 +232,7 @@ public class Deployer
   /**
    * This list holds all discovered devices which are not announced to beehive yet 
    */
-  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
