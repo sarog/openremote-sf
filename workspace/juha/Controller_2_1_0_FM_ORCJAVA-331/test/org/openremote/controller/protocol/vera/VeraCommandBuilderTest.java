@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2013, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -49,7 +49,6 @@ import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.xml.Version20SensorBuilder;
 import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
-import org.openremote.controller.service.BeehiveCommandCheckService;
 import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.suite.AllTests;
@@ -215,8 +214,7 @@ public class VeraCommandBuilderTest {
       Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
       modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
 
-      BeehiveCommandCheckService ccs = new BeehiveCommandCheckService(config);
-      Deployer deployer = new TestDeployer("test", cache, config, ccs, modelBuilders);
+      Deployer deployer = new TestDeployer("test", cache, config, modelBuilders);
       return deployer;
    }
 
