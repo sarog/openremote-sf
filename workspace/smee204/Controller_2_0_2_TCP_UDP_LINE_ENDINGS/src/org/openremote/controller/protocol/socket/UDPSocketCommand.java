@@ -39,6 +39,7 @@ import org.openremote.controller.component.EnumSensorType;
  * The Socket Event.
  *
  * @author Rich Turner 2011-04-15
+ * @author Simon Vincent 2013-05-07
  */
 public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
 
@@ -74,6 +75,28 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
    
    /** The wait timeout period in seconds */
    private Integer timeOut = DEFAULT_TIMEOUT;   
+   
+   /** The line ending */
+   private String lineEnding;
+
+
+   /**
+    * Gets the line ending.
+    *
+    * @return the line ending
+    */
+   public String getLineEnding() {
+      return lineEnding;
+   }
+
+   /**
+    * Sets the line ending.
+    *
+    * @param lineEnding the new line ending
+    */
+   public void setLineEnding(String lineEnding) {
+      this.lineEnding = lineEnding;
+   }
    
    /**
     * Gets the command.
@@ -257,7 +280,16 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
       	// Create packet
       	InetAddress address = InetAddress.getByName(getIp());
          int port = Integer.parseInt(getPort());
-      	byte[] bytes = getCommand().getBytes();
+		 String cmd = getCommand();
+		 switch (lineEnding) {
+			    case "LF": cmd = cmd + "\n";
+			               break;
+			    case "CR": cmd = cmd + "\r";
+			               break;
+		        case "CRLF": cmd = cmd + "\r\n";
+                           break;				
+			}
+      	byte[] bytes = cmd.getBytes();
       	DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
       	
       	// Send the packet
