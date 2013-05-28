@@ -1,3 +1,9 @@
+Controller ORCJAVA-267
+======================
+
+ - Fix NPE when owserver is not reachable (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
