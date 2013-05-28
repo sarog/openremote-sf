@@ -140,8 +140,6 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for RANGE (ORJAVA-69)
-       *
        * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.) (ORCJAVA-70)
        * 
        * TODO :

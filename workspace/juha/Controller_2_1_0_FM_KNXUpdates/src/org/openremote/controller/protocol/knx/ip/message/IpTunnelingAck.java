@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+
 
 /**
  * TODO
@@ -35,7 +37,7 @@ public class IpTunnelingAck extends IpMessage
 
   // Constants ------------------------------------------------------------------------------------
 
-  public static final int STI = 0x421;
+  public static final int STI = ServiceTypeIdentifier.TUNNELING_ACK.getValue();
 
 
   // Instance Fields ------------------------------------------------------------------------------
