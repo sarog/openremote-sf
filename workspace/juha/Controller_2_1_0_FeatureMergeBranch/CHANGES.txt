@@ -46,7 +46,7 @@ New Features:
   - Touch panel gestures can now be bound to macros in addition to individual
     commands (Eric Bariaux, ORCJAVA-231)
   - Color selection widget is now supported by the controller (Eric Bariaux,
-    ORCJAVA-235)
+    Marcus Redeker, ORCJAVA-235, ORCJAVA-290)
   - Direct Tomcat container logging to /logs/container/tomcat-server.log 
     (Tomcat server logging) and /logs/container/appcontext.log (Controller
     web application logging) files, and output directed to standard output
