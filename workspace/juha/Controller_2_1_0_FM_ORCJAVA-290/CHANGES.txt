@@ -1,3 +1,10 @@
+Controller ORCJAVA-290
+======================
+
+ - Color picker should use correct variable name to access
+   dynamic parameter (Marcus Redeker)
+
+
 Controller ORCJAVA-235
 ======================
 

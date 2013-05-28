@@ -22,6 +22,7 @@ package org.openremote.controller.component.control.colorpicker;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
@@ -47,7 +48,7 @@ public class ColorPickerBuilder extends ComponentBuilder {
          for (Element commandRefElement : commandRefElements) {
              String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
              Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
-             commandElement.setAttribute("value", commandParam);
+             commandElement.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, commandParam);
              ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
              cp.addExecutableCommand(command);
          }
