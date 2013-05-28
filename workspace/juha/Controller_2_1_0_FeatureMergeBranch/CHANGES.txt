@@ -81,6 +81,8 @@ Bug Fixes:
   - Fix a bug in telnet switch sensor handling where untrimmed return value was
     never correctly parsed to 'on' state (Juha Lindfors, ORCJAVA-326)
   - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
+  - 1-wire: Fix NPE when owserver is not reachable (Marcus Redeker, ORCJAVA-267)
+
 
 
 Internal:
@@ -90,13 +92,8 @@ Internal:
     (Juha Lindfors, ORCJAVA-329)
   - Controller side of Beehive device discovery and account linking functionality 
     (Marcus Redeker, ORCJAVA-347)
-<<<<<<< .working
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
     ORCJAVA-314)
-=======
-  - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit, 
-    ORCJAVA-314)
->>>>>>> .merge-right.r8534
 
 
 
