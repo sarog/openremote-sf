@@ -1,3 +1,9 @@
+Controller ORCJAVA-235
+======================
+
+ - Color picker implementation
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
