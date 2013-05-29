@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -31,6 +31,7 @@ import org.openremote.controller.utils.Strings;
  * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Kenneth Stridh
  */
 public abstract class DataPointType
 {
@@ -130,6 +131,12 @@ public abstract class DataPointType
   public final static TwoOctetFloat VALUE_VOLT = new TwoOctetFloat(9, 20);
   public final static TwoOctetFloat VALUE_CURR = new TwoOctetFloat(9, 21);
   
+  public final static Time VALUE_TIME = new Time(10, 1);
+  public final static Date VALUE_DATE = new Date(11, 1);
+
+  public final static FourOctetSigned VALUE_ENERGY = new FourOctetSigned(13, 1);
+  public final static FourOctetFloat VALUE_POWER = new FourOctetFloat(14, 1);
+
 
   // Scene management
   public final static Unsigned8BitValue SCENE_NUMBER = new Unsigned8BitValue(17, 1);
@@ -315,6 +322,44 @@ public abstract class DataPointType
       super(main, sub, false);
     }
   }
+
+    public static class Time extends DataPointType
+  {
+
+    private Time(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class Date extends DataPointType
+  {
+
+    private Date(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class FourOctetSigned extends DataPointType
+  {
+
+    private FourOctetSigned(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+
+  public static class FourOctetFloat extends DataPointType
+    {
+
+      private FourOctetFloat(int main, int sub)
+      {
+        super(main, sub, false);
+      }
+    }
+
 
   public static class Float2ByteValue extends DataPointType
   {
