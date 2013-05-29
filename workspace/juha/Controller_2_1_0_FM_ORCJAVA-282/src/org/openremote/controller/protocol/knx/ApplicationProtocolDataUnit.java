@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -344,7 +344,7 @@ class ApplicationProtocolDataUnit
     //   as the javadoc mentions this should be a unsigned 6-bit value where most significant
     //   bits are reserved -- since we limit the values to low 6 bits the Unsigned8Bit works but
     //   should add a proper 6-bit datatype to the implementation which enforces the valid value
-    //   range.
+    //   range. See ORCJAVA-360 (http://jira.openremote.org/browse/ORCJAVA-360)
   }
 
   /**
