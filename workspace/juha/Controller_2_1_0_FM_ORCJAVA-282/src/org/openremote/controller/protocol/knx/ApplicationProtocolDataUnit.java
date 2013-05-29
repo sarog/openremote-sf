@@ -305,10 +305,9 @@ class ApplicationProtocolDataUnit
 
   /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
-   * 6-bit unsigned scene number value (DPT 17.001).
-   * <p>
+   * 6-bit unsigned scene number value (DPT 17.001). <p>
    *
-   * Valid parameter value range is [0-63].
+   * Valid parameter value range is [1-64].
    *
    * @param parameter
    *           scene number value
@@ -329,6 +328,9 @@ class ApplicationProtocolDataUnit
     {
       throw new ConversionException("Expected value is in range [1-64] , received " + value);
     }
+
+    // adjust value down by one for the KNX frame (zero-base)...
+
     value = value - 1;
     
     return new ApplicationProtocolDataUnit(
@@ -337,6 +339,12 @@ class ApplicationProtocolDataUnit
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
           learn ? 0x80 | value : value)
     );
+
+    // TODO :
+    //   as the javadoc mentions this should be a unsigned 6-bit value where most significant
+    //   bits are reserved -- since we limit the values to low 6 bits the Unsigned8Bit works but
+    //   should add a proper 6-bit datatype to the implementation which enforces the valid value
+    //   range.
   }
 
   /**
