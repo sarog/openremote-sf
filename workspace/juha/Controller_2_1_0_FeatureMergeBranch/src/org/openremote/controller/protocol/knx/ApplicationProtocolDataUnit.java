@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -106,7 +106,7 @@ class ApplicationProtocolDataUnit
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * Represents the full APDU (APCI + data) for Group Value Write service request with DPT 1.001
+   * Represents the full APDU   (APCI + data) for Group Value Write service request with DPT 1.001
    * (Switch) to state 'ON'.
    *
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
@@ -305,10 +305,9 @@ class ApplicationProtocolDataUnit
 
   /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
-   * 6-bit unsigned scene number value (DPT 17.001).
-   * <p>
+   * 6-bit unsigned scene number value (DPT 17.001). <p>
    *
-   * Valid parameter value range is [0-63].
+   * Valid parameter value range is [1-64].
    *
    * @param parameter
    *           scene number value
@@ -325,17 +324,27 @@ class ApplicationProtocolDataUnit
   {
     int value = parameter.getValue().intValue();
 
-    if (value < 0 || value > 63)
+    if (value < 1 || value > 64)
     {
-      throw new ConversionException("Expected value is in range [0-63] , received " + value);
+      throw new ConversionException("Expected value is in range [1-64] , received " + value);
     }
 
+    // adjust value down by one for the KNX frame (zero-base)...
+
+    value = value - 1;
+    
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new Unsigned8Bit(
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
-          learn ? value : 0x80 | value)
+          learn ? 0x80 | value : value)
     );
+
+    // TODO :
+    //   as the javadoc mentions this should be a unsigned 6-bit value where most significant
+    //   bits are reserved -- since we limit the values to low 6 bits the Unsigned8Bit works but
+    //   should add a proper 6-bit datatype to the implementation which enforces the valid value
+    //   range. See ORCJAVA-360 (http://jira.openremote.org/browse/ORCJAVA-360)
   }
 
   /**
