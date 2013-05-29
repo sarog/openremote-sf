@@ -15,7 +15,8 @@ New Features:
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
   - KNX: added distinct levels for 'DIM' and 'SCALE' commands that allow
     set values to be configured for buttons, e.g. 'DIM 50' to dim directly
-    to 50% (Eric Bariaux, ORCJAVA-71).
+    to 50% (Eric Bariaux, ORCJAVA-71). Add DPT 6.001 and DPT 6.010 
+    (Stefan Langerman, ORCJAVA-361)
   - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
     For HTTP/JSON return documents, a JSON Path expression is supported.
     HTTP content-type headers are supported. For outgoing HTTP request, 
