@@ -34,6 +34,11 @@ import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
+import org.openremote.controller.protocol.knx.datatype.Time;
+import org.openremote.controller.protocol.knx.datatype.Date;
+import org.openremote.controller.protocol.knx.datatype.FourOctetSigned;
+import org.openremote.controller.protocol.knx.datatype.FourOctetFloat;
+
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -43,6 +48,8 @@ import org.openremote.controller.utils.Strings;
  * {@link StatusCommand} interface and therefore acts as an entry point in controller/protocol SPI.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Kenneth Stridh
+ * @author Stefan Langerman
  */
 class GroupValueRead extends KNXCommand implements StatusCommand
 {
@@ -290,6 +297,71 @@ class GroupValueRead extends KNXCommand implements StatusCommand
         }
 
         return valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+      }
+
+      else if (dpt instanceof DataPointType.Time)
+      {
+        Time valueDPT = (Time)responseAPDU.getDataType();
+
+        return valueDPT.resolve();
+      }
+
+      else if (dpt instanceof DataPointType.Date)
+      {
+        Date valueDPT = (Date)responseAPDU.getDataType();
+
+        return valueDPT.resolve();
+      }
+
+      else if (dpt instanceof DataPointType.FourOctetSigned)
+      {
+        FourOctetSigned valueDPT = (FourOctetSigned)responseAPDU.getDataType();
+
+        if (statusMap.containsKey("precision"))
+        {
+          String precision = statusMap.get("precision");
+
+          if (precision.equals("1") || precision.equals("0.1"))
+          {
+            return valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+          }
+
+          else if (precision.equals("2") || precision.equals("0.01"))
+          {
+            return valueDPT.resolve().setScale(2, RoundingMode.HALF_UP).toString();
+          }
+        }
+        
+        return valueDPT.resolve().setScale(0, RoundingMode.HALF_UP).toString();
+      }
+
+      else if (dpt instanceof DataPointType.FourOctetFloat)
+      {
+        FourOctetFloat valueDPT = (FourOctetFloat)responseAPDU.getDataType();
+
+        if (statusMap.containsKey("precision"))
+        {
+          String precision = statusMap.get("precision");
+
+          if (precision.equals("1") || precision.equals("0.1"))
+          {
+            return valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+          }
+          else if (precision.equals("2") || precision.equals("0.01"))
+          {
+            return valueDPT.resolve().setScale(2, RoundingMode.HALF_UP).toString();
+          }
+          else if (precision.equals("3") || precision.equals("0.001"))
+          {
+            return valueDPT.resolve().setScale(3, RoundingMode.HALF_UP).toString();
+          }
+          else if (precision.equals("4") || precision.equals("0.0001"))
+          {
+            return valueDPT.resolve().setScale(4, RoundingMode.HALF_UP).toString();
+          }
+        }
+ 
+        return valueDPT.resolve().toString();      
       }
 
       else
