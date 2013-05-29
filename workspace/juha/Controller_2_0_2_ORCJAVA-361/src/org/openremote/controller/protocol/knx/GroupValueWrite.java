@@ -70,7 +70,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
   {
     name = name.trim().toUpperCase();
 
-    ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter);
+    ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter, dpt);
 
     if (apdu == null)
       return null;
@@ -125,11 +125,12 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
      *
      * @param   name        lookup name
      * @param   parameter   command parameter, or <tt>null</tt> if not available
+     * @param   dpt         DPT of the parameter
      *
      * @return  complete application protocol data unit with control information (APCI) and data,
      *          or <tt>null</tt> if command was not found by name
      */
-    private static ApplicationProtocolDataUnit get(String name, CommandParameter parameter)
+    private static ApplicationProtocolDataUnit get(String name, CommandParameter parameter, DataPointType dpt)
     {
       /*
        * IMPLEMENTATION NOTE:
@@ -205,7 +206,10 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
         try
         {
-          return ApplicationProtocolDataUnit.createRange(parameter);
+          if (dpt instanceof DataPointType.Signed8BitValue)
+	      return ApplicationProtocolDataUnit.createSignedRange(parameter);
+	  else
+	      return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {
