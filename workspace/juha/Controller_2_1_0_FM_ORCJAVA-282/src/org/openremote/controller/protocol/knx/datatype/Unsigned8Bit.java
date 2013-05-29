@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -125,7 +125,13 @@ public class Unsigned8Bit implements DataType
     {
       return value;
     }
-    
+
+    // TODO :
+    //   As the javadoc for the class mentions, the unsigned 8-bit datatype
+    //   is used by DPT 5.xxx data types. The scenes are and should be using
+    //   a 6-bit datatype where they would correctly belong. For creating
+    //   a 6-bit datatypes, see ORCJAVA-360 (http://jira.openremote.org/browse/ORCJAVA-360)
+
     else if (dpt == DataPointType.Unsigned8BitValue.SCENE_NUMBER)
     {
       return value + 1;  //Scenes go from 1 - 64
