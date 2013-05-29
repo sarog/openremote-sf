@@ -1,3 +1,10 @@
+
+Controller ORCJAVA-361
+======================
+
+ - Add KNX DTP 6.001 and DPT 6.010 implementation (Stefan Langerman)
+
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
