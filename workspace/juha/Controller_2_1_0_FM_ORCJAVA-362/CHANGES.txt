@@ -1,3 +1,11 @@
+Controller ORCJAVA-362
+======================
+
+ - Add support for DPT 10.001, 11.001, 12.001 and 13.001
+   with commands 'DATE', 'TIME', 'ENERGY' and 'POWER'
+   (Kenneth Stridh)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
