@@ -15,7 +15,11 @@ New Features:
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
   - KNX: added distinct levels for 'DIM' and 'SCALE' commands that allow
     set values to be configured for buttons, e.g. 'DIM 50' to dim directly
-    to 50% (Eric Bariaux, ORCJAVA-71).
+    to 50% (Eric Bariaux, ORCJAVA-71). Add DPT 6.001 and DPT 6.010 
+    (Stefan Langerman, ORCJAVA-361). Add support for data datatype (DPT 10.xxx),
+    time datatype (DPT 11.xxx), four-octet signed values (DPT 13.xxx) and
+    four octet float values (DPT 14.xxx). Corresponding commands that have been
+    added are 'DATE', 'TIME', 'ENERGY' and 'POWER' (Kenneth Stridh, ORCJAVA-362)
   - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
     For HTTP/JSON return documents, a JSON Path expression is supported.
     HTTP content-type headers are supported. For outgoing HTTP request, 
@@ -46,7 +50,7 @@ New Features:
   - Touch panel gestures can now be bound to macros in addition to individual
     commands (Eric Bariaux, ORCJAVA-231)
   - Color selection widget is now supported by the controller (Eric Bariaux,
-    ORCJAVA-235)
+    Marcus Redeker, ORCJAVA-235, ORCJAVA-290)
   - Direct Tomcat container logging to /logs/container/tomcat-server.log 
     (Tomcat server logging) and /logs/container/appcontext.log (Controller
     web application logging) files, and output directed to standard output
@@ -81,6 +85,9 @@ Bug Fixes:
   - Fix a bug in telnet switch sensor handling where untrimmed return value was
     never correctly parsed to 'on' state (Juha Lindfors, ORCJAVA-326)
   - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
+  - 1-wire: Fix NPE when owserver is not reachable (Marcus Redeker, ORCJAVA-267)
+  - KNX SCENE and LEARN_SCENE commands were mixed up. Enable scene number
+    to be used with level sensors (Marcus Redeker, ORCJAVA-282)
 
 
 Internal:
@@ -90,13 +97,8 @@ Internal:
     (Juha Lindfors, ORCJAVA-329)
   - Controller side of Beehive device discovery and account linking functionality 
     (Marcus Redeker, ORCJAVA-347)
-<<<<<<< .working
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
     ORCJAVA-314)
-=======
-  - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit, 
-    ORCJAVA-314)
->>>>>>> .merge-right.r8534
 
 
 
