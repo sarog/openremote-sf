@@ -3,6 +3,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
 
  New Features:
 
+   - Micasaverde Vera protocol and configuration (Marcus Redeker,
+     MODELER-456)
    - EnOcean configuration (Rainer Hitz, MODELER-470)
    - Round-robin database (RRD) configuration (MODELER-394)
    - Add web view widget (MODELER-248, MODELER-384, MODELER-395,
