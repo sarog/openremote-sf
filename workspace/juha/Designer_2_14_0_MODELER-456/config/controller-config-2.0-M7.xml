@@ -368,6 +368,31 @@ If it's true, controller will auto-detect its groupmembers with multicast.
       </config>
   </category>
 
+
+  <category name="vera">
+    <description>
+        <![CDATA[
+          Configuration for the Vera protocol
+        ]]>
+      </description>
+    <config name="protocol.vera.classname" value="org.openremote.controller.protocol.vera.VeraCommandBuilder">
+      <hint>
+          <![CDATA[
+           Vera CommandBuilder class. This entry should not be changed.
+          ]]>
+        </hint>
+    </config>
+    <config name="vera.address" value="">
+      <hint>
+          <![CDATA[
+            The IP address of your Vera box.
+          ]]>
+        </hint>
+    </config>
+  </category>
+
+  
+
   <!--
    |
    |  TODO : TEMPORARY
