@@ -1,3 +1,10 @@
+MODELER-456
+===========
+
+  - Add Micasaverde Vera protocol definition and controller
+    configuration section to OpenRemote Designer (Marcus Redeker)
+
+
 Designer 2.14.0 (2013-XX-XX Markab)
 ===================================
 
