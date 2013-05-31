@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -24,33 +24,27 @@ package org.openremote.controller.protocol.knx.datatype;
  * Unsigned 8-bit datatype as defined in KNX 1.1 Volume 3: System specifications Part 7:
  * Interworking, Chapter 2, Datapoint Types. <p>
  *
- * KNX Unsigned 8-bit datatype is a 8-bit value in the range of [0..255]. <p>
+ * KNX Signed 8-bit datatype is a signed 8-bit value in the range of [-128..127],
+ * encoded in 2's complement notation. <p>
  *
- * There are 4 datapoint types that use unsigned 8-bit datatype:
+ * There are 2 datapoint types that use unsigned 8-bit datatype:
  *
  * <ol>
- * <li>DPT 5.001 - DPT_Scaling</li>
- * <li>DPT 5.003 - DPT_Angle</li>
- * <li>DPT 5.004 - DPT_RelPos_Valve</li>
- * <li>DPT 5.010 - DPT_Value_1_Ucount</li>
+ * <li>DPT 6.001 - DPT_Percent_V8</li>
+ * <li>DPT 6.010 - DPT_Value_1_Count</li>
  * </ol>
  *
- * For DPT 5.001 scaling, the range value is interpreted as a percentage between [0%..100%]
- * giving the setting an approximately 0.4% granularity. Value zero is interpreted as 0%,
- * value 1 as "low" value and value 255 as maximum in the range (100%).  <p>
+ * For DPT 6.001 Percent V8, the range value is interpreted as a percentage between [-128%..127%]
+ * giving the setting a 1% granularity.  <p>
  *
- * For DPT 5.003 angle, the range value is interpreted as a degree between [0'..360'] giving
- * the setting an approximately 1.4 degree granularity. <p>
+ * For DPT 6.010 counter value, the 8-bit signed value is interpreted as a counter value in
+ * range of [-128..127].
  *
- * For DPT 5.004 relative position valve, the range value is interpreted as a percentage value
- * between [0%..255%] giving the setting a 1% granularity. <p>
- *
- * For DPT 5.010 counter value, the 8-bit unsigned value is interpreted as a counter value in
- * range of [0-255].
- *
+ * @author <a href="mailto:domo@slef.org">Stefan Langerman</a>
+ * nearly identical to Unsigned8Bit.java by
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class Unsigned8Bit implements DataType
+public class Signed8Bit implements DataType
 {
 
   // Private Instance Fields --------------------------------------------------------------------
@@ -61,14 +55,14 @@ public class Unsigned8Bit implements DataType
 
   // Constructors -------------------------------------------------------------------------------
 
-  public Unsigned8Bit(DataPointType.Unsigned8BitValue dpt, int value)
+  public Signed8Bit(DataPointType.Signed8BitValue dpt, int value)
   {
     // We are getting the value as a signed integer... this is java, after all.
     // Thus, the range we are ready to accept as representable within a byte is as follows.
 	  
-    if (value < -128 || value > 255) 
+    if (value < -128 || value > 127) 
     {
-      throw new Error("Unsigned 8-bit value range is [0-255], got " + value);
+      throw new Error("Signed 8-bit value range is [-128..127], got " + value);
     }
 	  
     // Given that we passed the above test, we undo the 2-s complement interpretation
@@ -106,40 +100,16 @@ public class Unsigned8Bit implements DataType
 
   public int resolve()
   {
-    if (dpt == DataPointType.Unsigned8BitValue.SCALING)
+    int val = (value < 128)? value : (value - 256);
+
+    if (dpt == DataPointType.Signed8BitValue.PERCENT_V8)
     {
-      return (int)(Math.round(value / 2.55));
+      return val;
     }
 
-    else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
+    else if (dpt == DataPointType.Signed8BitValue.VALUE_1_COUNT)
     {
-      return (int)(Math.round(value * 1.411764705882352));
-    }
-
-    else if (dpt == DataPointType.Unsigned8BitValue.RELPOS_VALVE)
-    {
-      return value;
-    }
-
-    else if (dpt == DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT)
-    {
-      return value;
-    }
-
-    // TODO :
-    //   As the javadoc for the class mentions, the unsigned 8-bit datatype
-    //   is used by DPT 5.xxx data types. The scenes are and should be using
-    //   a 6-bit datatype where they would correctly belong. For creating
-    //   a 6-bit datatypes, see ORCJAVA-360 (http://jira.openremote.org/browse/ORCJAVA-360)
-
-    else if (dpt == DataPointType.Unsigned8BitValue.SCENE_NUMBER)
-    {
-      return value + 1;  //Scenes go from 1 - 64
-    }
-    
-    else if (dpt == DataPointType.Unsigned8BitValue.SCENE_CONTROL)
-    {
-      return value + 1;  //Scenes go from 1 - 64
+      return val;
     }
 
     else
