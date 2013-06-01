@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,11 @@ import org.w3c.dom.NodeList;
  * @author marcus
  *
  */
-public class Rrd4jDataLogger extends EventProcessor {
+public class Rrd4jDataLogger extends EventProcessor
+{
 
-   private List<RrdDb> rrdDbList;
+   private List<RrdDb> rrdDbList = Collections.emptyList();
+
    private Map<String,String> graphDefMap;
    
    @Override
