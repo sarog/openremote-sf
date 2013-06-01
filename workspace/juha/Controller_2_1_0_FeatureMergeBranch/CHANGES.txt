@@ -6,7 +6,7 @@ New Features:
   - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
   - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330, ORCJAVA-331)
   - Round robind database (RRD) integration for storing sensor
-    data (Marcus Redeker, ORCJAVA-343)
+    data (Marcus Redeker, ORCJAVA-343, ORCJAVA-356)
   - EmonCMS integration for storing sensor data (Marcus Redeker, ORCJAVA-357)
   - WebConsole upgraded to version 2.1.1, fixes issues with stuck
     loading screen (Richard Turner, ORCJAVA-345)
