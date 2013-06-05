@@ -265,6 +265,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "freeTTS"          value-ref = "freeTTSCommandBuilder"/>
+        <entry key = "email"          	value-ref = "emailCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -408,6 +409,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
    <!-- FreeTTS Command Builder -->
   <bean id = "freeTTSCommandBuilder" 
      class = "org.openremote.controller.protocol.freetts.FreeTTSCommandBuilder"/>
+  
+  <!-- Email Command Builder -->
+  <bean id = "emailCommandBuilder" 
+     class = "org.openremote.controller.protocol.email.EmailCommandBuilder"/>
 
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
