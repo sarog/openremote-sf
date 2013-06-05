@@ -55,5 +55,6 @@
 	<classpathentry kind="lib" path="lib/freetts/freetts-jsapi10.jar"/>
 	<classpathentry kind="lib" path="lib/freetts/freetts.jar"/>
 	<classpathentry kind="lib" path="lib/freetts/jsapi.jar"/>
+	<classpathentry kind="lib" path="lib/email/mail.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
