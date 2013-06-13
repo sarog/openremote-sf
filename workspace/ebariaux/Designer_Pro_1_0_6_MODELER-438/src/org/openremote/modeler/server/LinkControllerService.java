@@ -66,18 +66,24 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   public void deleteController(long oid) throws ControllerManagementException
   {
     User currentUser = userService.getCurrentUser();
-    ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/"+oid);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation result = cr.delete();
-    cr.release();
-    String str;
-    try
-    {
-      str = result.getText();
-    } catch (IOException e)
-    {
-      log.error("Error calling UserAccount rest service while deleting controller", e);
-      throw new ControllerManagementException(e.getMessage());
+    ClientResource cr = null;
+    String str = "";
+    try {
+      cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/"+oid);
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      Representation result = cr.delete();
+      try
+      {
+        str = result.getText();
+      } catch (IOException e)
+      {
+        log.error("Error calling UserAccount rest service while deleting controller", e);
+        throw new ControllerManagementException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+        cr.release();
+      }
     }
     GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", String.class).deserialize(str);
     if (res.getErrorMessage() != null) {
@@ -92,18 +98,24 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   public ArrayList<ControllerDTO> getLinkedControllerDTOs() throws ControllerManagementException
   {
     User currentUser = userService.getCurrentUser();
-    ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find");
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation r = cr.get();
-    cr.release();
-    String str;
-    try
-    {
-      str = r.getText();
-    } catch (IOException e) 
-    {
-      log.error("Error calling UserAccount rest service while loading linked controller", e);
-      throw new ControllerManagementException(e.getMessage());
+    ClientResource cr = null;
+    String str = "";
+    try {
+      cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find");
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      Representation r = cr.get();
+      try
+      {
+        str = r.getText();
+      } catch (IOException e) 
+      {
+        log.error("Error calling UserAccount rest service while loading linked controller", e);
+        throw new ControllerManagementException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+   	    cr.release();
+      }
     }
     GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", ControllerDTO.class).deserialize(str); 
     if (res.getErrorMessage() != null) {
@@ -119,18 +131,24 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   public ControllerDTO linkController(String macAddress) throws ControllerManagementException
   {
     User currentUser = userService.getCurrentUser();
-    ClientResource cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find/" + macAddress);
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation r = cr.get();
-    cr.release();
-    String str;
-    try
-    {
-      str = r.getText();
-    } catch (IOException e)
-    {
-      log.error("Error calling UserAccount rest service while linking controller", e);
-      throw new ControllerManagementException(e.getMessage());
+    ClientResource cr = null;
+    String str = "";
+    try {
+      cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find/" + macAddress);
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      Representation r = cr.get();
+      try
+      {
+        str = r.getText();
+      } catch (IOException e)
+      {
+        log.error("Error calling UserAccount rest service while linking controller", e);
+        throw new ControllerManagementException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+        cr.release();
+      }
     }
     GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", ControllerDTO.class).deserialize(str); 
     if (res.getErrorMessage() != null) {
@@ -146,18 +164,25 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
     controllerToLink.setLinked(true);
     controllerToLink.setAccount(new AccountDTO(currentUser.getAccount().getOid()));
     
-    cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller");
-    cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
-    Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(controllerToLink));
-    r = cr.put(rep);
-    cr.release();
-    try
-    {
-      str = r.getText();
-    } catch (IOException e)
-    {
-      log.error("Error calling UserAccount rest service while linking controller", e);
-      throw new ControllerManagementException(e.getMessage());
+    cr = null;
+    str = "";
+    try {
+      cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller");
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(controllerToLink));
+      Representation r = cr.put(rep);
+      try
+      {
+        str = r.getText();
+      } catch (IOException e)
+      {
+        log.error("Error calling UserAccount rest service while linking controller", e);
+        throw new ControllerManagementException(e.getMessage());
+      }
+    } finally {
+      if (cr != null) {
+  	    cr.release();
+      }
     }
     res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
     if (res.getErrorMessage() != null) {
