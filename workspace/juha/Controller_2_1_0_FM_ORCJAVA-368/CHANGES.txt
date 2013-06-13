@@ -1,3 +1,10 @@
+Controller ORCJAVA-368
+======================
+
+  - Direct HTTP related logging into its own file in /logs/http/http.log
+    (Juha Lindfors)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
