@@ -1,3 +1,10 @@
+Controller ORCJAVA-264
+======================
+
+  - Fix lagarto configuration to read its settings from controller.xml
+    in addition to the config.properties file (Juha Lindfors)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
