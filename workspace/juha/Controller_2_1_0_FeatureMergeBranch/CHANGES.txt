@@ -28,7 +28,9 @@ New Features:
     originating from the controller. Internally, the implementation has 
     been converted to use URIs instead of URLs which resolves an issue with 
     lack of encoding of HTTP parameters  which contain which contain white 
-    spaces or other special characters (Marcus Redeker, ORCJAVA-260)
+    spaces or other special characters. HTTP related logs now appear in their
+    own file under /logs/http/http.log (Marcus Redeker, Juha Lindfors, 
+    ORCJAVA-260, ORCJAVA-368)
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
     property added for sending values to switches (Marcus Redeker)
