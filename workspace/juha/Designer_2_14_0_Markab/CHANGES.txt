@@ -22,6 +22,8 @@ Designer 2.14.0 (2013-XX-XX Markab)
      (MODELER-416, Marcus Redeker)
    - Controller configuration sections have a "reset to
      default values" button (MODELER-453, Eric Bariaux)
+   - Add data field to 1-wire protocol (MODELER-435, Marcus
+     Redeker)
 
 
  Fixes:
