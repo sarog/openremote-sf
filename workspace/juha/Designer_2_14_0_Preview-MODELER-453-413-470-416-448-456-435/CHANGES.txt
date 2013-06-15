@@ -1,3 +1,9 @@
+MODELER-435
+===========
+
+ - Add 'data' field to 1-wire protocol
+
+
 MODELER-456
 ===========
 
