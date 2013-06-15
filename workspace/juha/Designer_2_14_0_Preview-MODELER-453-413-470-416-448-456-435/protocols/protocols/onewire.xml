@@ -78,6 +78,12 @@
                 <allowBlank>false</allowBlank>
             </validations>
         </attr>
+
+        <attr name="data" label="Data to send" tooltipMessage="Data to be sent to a device, eg. '1' or '0' to turn switch on or off">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
         
     </protocol>
 </openremote>
