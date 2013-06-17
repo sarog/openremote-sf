@@ -62,7 +62,9 @@ New Features:
     standard output console logging differently -- 'run' target will still
     output logs to console where as 'start' target will redirect all logging
     to files (Juha Lindfors, ORCJAVA-273)
-
+  - Support for externally packaged and distributed protocol implementations, 
+    such as Z-wave (Marcus Redeker, Juha Lindfors, ORCJAVA-347, ORCJAVA-366)
+    
 
 Bug Fixes:
 
@@ -97,8 +99,6 @@ Internal:
   - Enforce UTF-8 encoding on Java source files with javac to prevent build issues
     on systems with differing default character encoding configurations
     (Juha Lindfors, ORCJAVA-329)
-  - Controller side of Beehive device discovery and account linking functionality 
-    (Marcus Redeker, ORCJAVA-347)
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
     ORCJAVA-314)
 

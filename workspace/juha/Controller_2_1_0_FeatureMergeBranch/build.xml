@@ -365,8 +365,19 @@
      | Copy compiled classes into the controller web app...
      +-->
     <copy todir = "${output.controller.dir}/WEB-INF/classes">
-      <fileset dir = "${classes.dir}"/>
+      <fileset dir = "${classes.dir}">
+
+        <!-- Package z-wave separately... -->
+        <exclude name = "org/openremote/controller/protocol/zwave/**"/>
+
+      </fileset>
     </copy>
+
+    <!-- Include a placeholder archive for z-wave implementation (to avoid startup errors)... -->
+    <zip basedir = "${classes.dir}"
+         destfile = "${output.controller.dir}/WEB-INF/lib/zwave.jar">
+      <include name = "org/openremote/controller/protocol/zwave/**"/>
+    </zip>
 
     <!--
      | Copy libs into controller web app...
