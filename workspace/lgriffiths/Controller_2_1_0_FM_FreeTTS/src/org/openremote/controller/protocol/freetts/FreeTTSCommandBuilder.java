@@ -17,13 +17,13 @@
 package org.openremote.controller.protocol.freetts;
 
 import java.util.List;
-import java.util.Locale;
 
-import javax.speech.Central;
+import javax.speech.EngineManager;
 import javax.speech.synthesis.Synthesizer;
-import javax.speech.synthesis.SynthesizerModeDesc;
+import javax.speech.synthesis.SynthesizerMode;
 
 import org.jdom.Element;
+import org.jvoicexml.jsapi2.jse.synthesis.freetts.FreeTTSEngineListFactory;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -63,13 +63,16 @@ public class FreeTTSCommandBuilder implements CommandBuilder {
       
       // Create a speech synthesizer and start it
       try {
-         // Create a synthesizer for English
-         System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-         synth = Central.createSynthesizer(new SynthesizerModeDesc(Locale.ENGLISH));
+         // Create a synthesizer
+         //System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+         EngineManager.registerEngineListFactory(FreeTTSEngineListFactory.class.getName());
+         synth = (Synthesizer) EngineManager.createEngine(SynthesizerMode.DEFAULT);
          synth.allocate();
          synth.resume();
+         synth.waitEngineState(Synthesizer.RESUMED);
       } catch (Exception e) {
-         logger.error("Failed to create speak synthesizer");
+         logger.error("FreeTTS: Failed to create speech synthesizer");
+         e.printStackTrace();
       }
       
       String text = null;
