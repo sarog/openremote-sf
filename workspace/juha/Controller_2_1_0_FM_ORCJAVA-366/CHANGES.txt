@@ -1,3 +1,9 @@
+Controller ORCJAVA-366
+======================
+
+  - Include a placeholder jar for ZWave (Juha Lindfors)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
