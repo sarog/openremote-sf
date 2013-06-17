@@ -60,8 +60,7 @@ public class FreeTTSCommand implements ExecutableCommand {
          try {
             // Speak the message
             logger.debug("FreeTTS: Saying '" + text + "'");
-            synth.speakPlainText(text, null);
-
+            synth.speak(text, null);
             // Wait till speaking is done
             synth.waitEngineState(Synthesizer.QUEUE_EMPTY);
          } catch (Exception e) {
