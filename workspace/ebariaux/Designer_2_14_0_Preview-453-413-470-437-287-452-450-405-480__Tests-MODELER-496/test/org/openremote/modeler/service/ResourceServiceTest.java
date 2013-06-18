@@ -103,6 +103,9 @@ public class ResourceServiceTest {
    private ResourceService resourceService;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
+   private SensorService sensorService;
+   private SwitchService switchService;
+   private SliderService sliderService;
    private UserService userService;
    
    private DeviceService deviceService;
@@ -125,6 +128,9 @@ public class ResourceServiceTest {
       resourceService = (ResourceService)SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
+      sensorService = (SensorService) SpringTestContext.getInstance().getBean("sensorService");
+      switchService = (SwitchService) SpringTestContext.getInstance().getBean("switchService");
+      sliderService = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
       
       deviceService = (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
       controllerConfigService = (ControllerConfigService) SpringTestContext.getInstance().getBean("controllerConfigService");
@@ -684,7 +690,6 @@ public class ResourceServiceTest {
 
   @Test
   public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
-    
     Device dev = new Device("Test", "Vendor", "Model");
     dev.setDeviceCommands(new ArrayList<DeviceCommand>());
     dev.setAccount(account);
@@ -775,7 +780,7 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
     Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
     Element absoluteElement = screenElement.element("absolute");
-    Assert.assertEquals("Expecting 1 child for absoluate element", 1, absoluteElement.elements().size());
+    Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
     Assert.assertEquals("Expecting 1 button element", 1, absoluteElement.elements("button").size());
     Element buttonElement = absoluteElement.element("button");
     Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
@@ -794,7 +799,150 @@ public class ResourceServiceTest {
   }
 
    
-@Test(enabled=false)
+  @Test
+  public void testOneScreenWithOneSwitch() throws DocumentException {
+    Device dev = new Device("Test", "Vendor", "Model");
+    dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+    dev.setAccount(account);
+    deviceService.saveDevice(dev);
+    
+    Protocol protocol = new Protocol();
+    protocol.setType(Constants.INFRARED_TYPE);
+    
+    DeviceCommand readCommand = new DeviceCommand();
+    readCommand.setProtocol(protocol);
+    readCommand.setName("testLirc");
+    
+    readCommand.setDevice(dev);
+    dev.getDeviceCommands().add(readCommand);
+    
+    readCommand.setOid(IDUtil.nextID());
+    deviceCommandService.save(readCommand);
+    
+    Sensor sensor = new Sensor(SensorType.SWITCH);
+    sensor.setOid(IDUtil.nextID());
+    sensor.setName("Sensor");
+    sensor.setDevice(dev);
+    sensor.setAccount(account);
+
+    SensorCommandRef sensorCommandRef = new SensorCommandRef();
+    sensorCommandRef.setSensor(sensor);
+    sensorCommandRef.setDeviceCommand(readCommand);
+    sensor.setSensorCommandRef(sensorCommandRef);
+    
+    sensorService.saveSensor(sensor);
+    
+    DeviceCommand onCommand = new DeviceCommand();
+    onCommand.setProtocol(protocol);
+    onCommand.setName("testLirc");
+    
+    onCommand.setDevice(dev);
+    dev.getDeviceCommands().add(onCommand);
+    
+    onCommand.setOid(IDUtil.nextID());
+    deviceCommandService.save(onCommand);
+    
+    DeviceCommand offCommand = new DeviceCommand();
+    offCommand.setProtocol(protocol);
+    offCommand.setName("testLirc");
+    
+    offCommand.setDevice(dev);
+    dev.getDeviceCommands().add(offCommand);
+    
+    offCommand.setOid(IDUtil.nextID());
+    deviceCommandService.save(offCommand);
+
+    Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
+    buildingSwitch.setOid(IDUtil.nextID());
+    switchService.save(buildingSwitch);
+    
+    Set<Panel> panels = new HashSet<Panel>();
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+        
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    final Screen screen1 = new Screen();
+    screen1.setOid(IDUtil.nextID());
+    screen1.setName("screen1");
+    ScreenPair screenPair = new ScreenPair();
+    screenPair.setOid(IDUtil.nextID());
+    screenPair.setPortraitScreen(screen1);
+    screenRefs.add(new ScreenPairRef(screenPair));
+    
+    UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+    aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
+
+    Absolute abs = new Absolute(IDUtil.nextID());
+    abs.setUiComponent(aSwitch);
+    screen1.addAbsolute(abs);
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+    group1.setScreenRefs(screenRefs);
+    
+    groupRefs.add(new GroupRef(group1));
+    p.setGroupRefs(groupRefs);
+    
+    panels.add(p);
+
+    cache.replace(panels, IDUtil.nextID());
+    
+    try {
+      System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
+      System.out.println("Content is ");
+      IOUtils.copy(new FileInputStream(cache.getControllerXmlFile()), System.out);
+      System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
+      System.out.println("Content is ");
+      IOUtils.copy(new FileInputStream(cache.getPanelXmlFile()), System.out);
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    SAXReader reader = new SAXReader();
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setValidating(true);
+    factory.setNamespaceAware(true);
+
+    Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    Element topElement = panelXmlDocument.getRootElement();
+    
+    Element panelElement = assertOnePanel(topElement, p);
+    assertPanelHasOneGroupChild(panelElement, group1);
+
+    Element groupElement = assertOneGroup(topElement, group1);
+    assertGroupHasOneScreenChild(groupElement, screen1);
+
+    Element screenElement  = assertOneScreen(topElement, screen1);
+
+    Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+    Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+    Element absoluteElement = screenElement.element("absolute");
+    Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+    Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
+    Element switchElement = absoluteElement.element("switch");
+    Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+    Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
+    Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
+   
+    Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    topElement = controllerXmlDocument.getRootElement();
+    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+    Element componentsElement = topElement.element("components");
+    Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+    Assert.assertEquals(1, componentsElement.elements("switch").size());
+    switchElement = componentsElement.element("switch");
+    Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+  }
+  
+  @Test(enabled=false)
    public void testGetControllerXMLWithButtonAndSwitchJustHaveDeviceCommand() {
       
       Protocol protocol = new Protocol();
