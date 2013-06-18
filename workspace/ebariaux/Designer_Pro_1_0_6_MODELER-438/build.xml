@@ -313,11 +313,14 @@
 		</testng>
 	</target>
 
-<!--    <target name="run-test" depends="compile-test" description="Run all unit tests"> -->
-        <target name="run-test" description="Run all unit tests">
+    <target name="run-test" depends="compile-test" description="Run all unit tests">
 			<delete dir="hsqldb" failonerror="no"/>
 			
             <antcall target="dbup"/>
+
+			<!-- Give a bit of time for the database to startup.
+			     TODO: Better solution would be to check DB is up. -->
+			<sleep seconds="5"/>
 
             <sql driver="org.hsqldb.jdbcDriver"
 				classpath="${hjar}"
@@ -337,19 +340,9 @@
 		               classpathref = "test.path.id"
 		               fork = "true">
 		         </java>
-				 
-				 <!--
-		 		<java jar="${jetty.home}/start.jar" fork="true" dir="${jetty.home}">
-		 			<sysproperty key="file.encoding" value="UTF-8" />
-		 			<sysproperty key="STOP.PORT" value="@{kill-port}" />
-		 			<sysproperty key="STOP.KEY" value="secret" />
-		 			<arg value="@{host-port}"/>
-		 			<arg value="@{host-dir}"/>
-		 		</java>
--->
 
                  <sequential>
-
+		 
                      <!--
                       |   Wait for the test container to be available
                       +-->
