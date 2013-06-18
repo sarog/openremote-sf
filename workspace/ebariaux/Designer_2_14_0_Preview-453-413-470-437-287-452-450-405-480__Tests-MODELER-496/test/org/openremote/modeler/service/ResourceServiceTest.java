@@ -690,6 +690,10 @@ public class ResourceServiceTest {
 
   @Test
   public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
     Device dev = new Device("Test", "Vendor", "Model");
     dev.setDeviceCommands(new ArrayList<DeviceCommand>());
     dev.setAccount(account);
@@ -766,7 +770,13 @@ public class ResourceServiceTest {
     factory.setValidating(true);
     factory.setNamespaceAware(true);
 
-    Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    Document panelXmlDocument = null;
+    try {
+      panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    } catch (DocumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     Element topElement = panelXmlDocument.getRootElement();
     
     Element panelElement = assertOnePanel(topElement, p);
@@ -788,7 +798,13 @@ public class ResourceServiceTest {
     Assert.assertEquals("true", buttonElement.attribute("hasControlCommand").getText());
     Assert.assertEquals(button.getName(), buttonElement.attribute("name").getText());
    
-    Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    Document controllerXmlDocument = null;
+    try {
+      controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    } catch (DocumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     topElement = controllerXmlDocument.getRootElement();
     Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
     Element componentsElement = topElement.element("components");
@@ -800,9 +816,21 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 include element", 1, buttonElement.elements("include").size());
     Element includeElement = buttonElement.element("include");
     Assert.assertNotNull("Expecting include to have a type attribute", includeElement.attribute("type"));
-    Assert.assertEquals("Expecting include type to be button", "button", includeElement.attribute("type").getText());
+    Assert.assertEquals("Expecting include type to be command", "command", includeElement.attribute("type").getText());
     Assert.assertNotNull("Expeting include to have a ref attribute", includeElement.attribute("ref"));
-    Assert.assertEquals("Expecting include to reference the right button", Long.toString(button.getOid()), includeElement.attribute("ref").getText());
+    
+    // Reference is to the command, id is not the id in the database, but should cross reference a command element defined below
+    String referencedCommandId = includeElement.attribute("ref").getText();
+    
+    Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+    Element commandsElement = topElement.element("commands");
+    Assert.assertEquals("Expecting 1 child for commands element", 1, commandsElement.elements().size());
+    Assert.assertEquals("Expecting 1 command element as child of components", 1, commandsElement.elements("command").size());
+    Element commandElement = commandsElement.element("command");
+    Assert.assertNotNull("Expecting command to have an id attribute");
+    Assert.assertEquals("Expecting command to have same id as one referenced on button", referencedCommandId, commandElement.attribute("id").getText());
+      }
+    });
   }
    
   @Test
@@ -897,6 +925,7 @@ public class ResourceServiceTest {
 
     cache.replace(panels, IDUtil.nextID());
     
+    /*
     try {
       System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
       System.out.println("Content is ");
@@ -911,7 +940,8 @@ public class ResourceServiceTest {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
+    */
+    
     SAXReader reader = new SAXReader();
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setValidating(true);
