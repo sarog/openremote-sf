@@ -19,20 +19,14 @@
 */
 package org.openremote.modeler.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.transaction.TransactionManager;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.digester.SetRootRule;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
@@ -62,7 +56,6 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
-import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
@@ -73,8 +66,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchCommandOffRef;
-import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
@@ -91,7 +82,6 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UIWebView;
-import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -180,62 +170,62 @@ public class ResourceServiceTest {
       });
    }
    
-   /**
-    * Tests that an empty configuration generates valid panel and controller XML files.
-    * 
-    * @throws DocumentException
-    */
-   @Test
-   public void testEmptyConfiguration() throws DocumentException {
-     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-       @Override
-       protected void doInTransactionWithoutResult(TransactionStatus status) {
-      Set<Panel> emptyPanels = new HashSet<Panel>();
+  /**
+   * Tests that an empty configuration generates valid panel and controller XML files.
+   * 
+   * @throws DocumentException
+   */
+  @Test
+  public void testEmptyConfiguration() throws DocumentException {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> emptyPanels = new HashSet<Panel>();
       
-      cache.replace(emptyPanels, IDUtil.nextID());
+        cache.replace(emptyPanels, IDUtil.nextID());
   
-      SAXReader reader = new SAXReader();
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setValidating(true);
-      factory.setNamespaceAware(true);
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
   
-      Document panelXmlDocument = null;
-      try {
-        panelXmlDocument = reader.read(cache.getPanelXmlFile());
-      } catch (DocumentException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("panels").size());
+        Element panelsElement = topElement.element("panels");
+        Assert.assertEquals(0, panelsElement.elements().size());
+        Assert.assertEquals(1, topElement.elements("screens").size());
+        Element screensElement = topElement.element("screens");
+        Assert.assertEquals(0, screensElement.elements().size());
+        Assert.assertEquals(1, topElement.elements("groups").size());
+        Element groupsElement = topElement.element("groups");
+        Assert.assertEquals(0, groupsElement.elements().size());
+  
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals(0, componentsElement.elements().size());
+        
+        status.setRollbackOnly();
       }
-      Element topElement = panelXmlDocument.getRootElement();
-      Assert.assertEquals(1, topElement.elements("panels").size());
-      Element panelsElement = topElement.element("panels");
-      Assert.assertEquals(0, panelsElement.elements().size());
-      Assert.assertEquals(1, topElement.elements("screens").size());
-      Element screensElement = topElement.element("screens");
-      Assert.assertEquals(0, screensElement.elements().size());
-      Assert.assertEquals(1, topElement.elements("groups").size());
-      Element groupsElement = topElement.element("groups");
-      Assert.assertEquals(0, groupsElement.elements().size());
-
-      Document controllerXmlDocument = null;
-      try {
-        controllerXmlDocument = reader.read(cache.getControllerXmlFile());
-      } catch (DocumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      topElement = controllerXmlDocument.getRootElement();
-      Assert.assertEquals(1, topElement.elements("components").size());
-      Element componentsElement = topElement.element("components");
-      Assert.assertEquals(0, componentsElement.elements().size());
-      
-      status.setRollbackOnly();
-       }
-     });
+    });
   }
    
-   @Test
-   public void testPanelHasGroupScreenControl()throws Exception {
+  @Test
+  public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef>();
       Set<Panel> panels = new HashSet<Panel>();
@@ -369,90 +359,90 @@ public class ResourceServiceTest {
       
    }
 
-   /**
-    * Tests generated panel and controller.xml for a configuration 1 panel (no screens),
-    * having a panel level tab bar with 1 item doing a navigation to a specific screen.
-    * 
-    * The group and screen being navigated to do not exist in the configuration,
-    * but this is never validated by the schema, so generated XML is still valid.
-    * 
-    * @throws DocumentException
-    */
-   @Test
-   public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
-     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-       @Override
-       protected void doInTransactionWithoutResult(TransactionStatus status) {
-      Set<Panel> panels = new HashSet<Panel>();
-      Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
-      nav.setToGroup(1L);
-      nav.setToScreen(2L);
-      UITabbarItem item = new UITabbarItem();
-      item.setNavigate(nav);
-      item.setName("navigate name");
-      Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
-      p.setName("panel has a navigate");
-      List<UITabbarItem> items = new ArrayList<UITabbarItem>();
-      items.add(item);
-      UITabbar tabbar = new UITabbar();
-      tabbar.setTabbarItems(items);
-      p.setTabbar(tabbar);
-      panels.add(p);
-
-      cache.replace(panels, IDUtil.nextID());
-      
-      SAXReader reader = new SAXReader();
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setValidating(true);
-      factory.setNamespaceAware(true);
+  /**
+   * Tests generated panel and controller.xml for a configuration 1 panel (no screens),
+   * having a panel level tab bar with 1 item doing a navigation to a specific screen.
+   * 
+   * The group and screen being navigated to do not exist in the configuration,
+   * but this is never validated by the schema, so generated XML is still valid.
+   * 
+   * @throws DocumentException
+   */
+  @Test
+  public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        Navigate nav = new Navigate();
+        nav.setOid(IDUtil.nextID());
+        nav.setToGroup(1L);
+        nav.setToScreen(2L);
+        UITabbarItem item = new UITabbarItem();
+        item.setNavigate(nav);
+        item.setName("navigate name");
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel has a navigate");
+        List<UITabbarItem> items = new ArrayList<UITabbarItem>();
+        items.add(item);
+        UITabbar tabbar = new UITabbar();
+        tabbar.setTabbarItems(items);
+        p.setTabbar(tabbar);
+        panels.add(p);
   
-      Document panelXmlDocument = null;
-      try {
-        panelXmlDocument = reader.read(cache.getPanelXmlFile());
-      } catch (DocumentException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        Element panelElement = assertOnePanel(topElement, p);
+        Assert.assertEquals(1, panelElement.elements().size());
+        Assert.assertEquals(1, panelElement.elements("tabbar").size());
+        Element tabbarElement = panelElement.element("tabbar");
+        Assert.assertEquals(1, tabbarElement.elements().size());
+        Assert.assertEquals(1, tabbarElement.elements("item").size());
+        Element itemElement = tabbarElement.element("item");
+        Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
+        Assert.assertEquals(1, itemElement.elements().size());
+        Assert.assertEquals(1, itemElement.elements("navigate").size());
+        Element navigateElement = itemElement.element("navigate");
+        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
+        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+  
+        Assert.assertEquals(1, topElement.elements("screens").size());
+        Element screensElement = topElement.element("screens");
+        Assert.assertEquals(0, screensElement.elements().size());
+        Assert.assertEquals(1, topElement.elements("groups").size());
+        Element groupsElement = topElement.element("groups");
+        Assert.assertEquals(0, groupsElement.elements().size());
+  
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals(0, componentsElement.elements().size());
+        
+        status.setRollbackOnly();
       }
-      Element topElement = panelXmlDocument.getRootElement();
-      Element panelElement = assertOnePanel(topElement, p);
-      Assert.assertEquals(1, panelElement.elements().size());
-      Assert.assertEquals(1, panelElement.elements("tabbar").size());
-      Element tabbarElement = panelElement.element("tabbar");
-      Assert.assertEquals(1, tabbarElement.elements().size());
-      Assert.assertEquals(1, tabbarElement.elements("item").size());
-      Element itemElement = tabbarElement.element("item");
-      Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
-      Assert.assertEquals(1, itemElement.elements().size());
-      Assert.assertEquals(1, itemElement.elements("navigate").size());
-      Element navigateElement = itemElement.element("navigate");
-      Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-      Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
-
-      Assert.assertEquals(1, topElement.elements("screens").size());
-      Element screensElement = topElement.element("screens");
-      Assert.assertEquals(0, screensElement.elements().size());
-      Assert.assertEquals(1, topElement.elements("groups").size());
-      Element groupsElement = topElement.element("groups");
-      Assert.assertEquals(0, groupsElement.elements().size());
-
-      Document controllerXmlDocument = null;
-      try {
-        controllerXmlDocument = reader.read(cache.getControllerXmlFile());
-      } catch (DocumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      topElement = controllerXmlDocument.getRootElement();
-      Assert.assertEquals(1, topElement.elements("components").size());
-      Element componentsElement = topElement.element("components");
-      Assert.assertEquals(0, componentsElement.elements().size());
-      
-      status.setRollbackOnly();
-       }
-     });
-   }
+    });
+  }
   
   /**
    * Tests generated panel and controller.xml for a configuration with
@@ -469,99 +459,99 @@ public class ResourceServiceTest {
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
       @Override
       protected void doInTransactionWithoutResult(TransactionStatus status) {
-   Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
-   List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
-   List<GroupRef> groupRefs = new ArrayList<GroupRef>();
-   
-   List<Gesture> gestures = new ArrayList<Gesture>();
-   
-   Navigate nav = new Navigate();
-   nav.setOid(IDUtil.nextID());
-   nav.setToGroup(1L);
-   nav.setToScreen(2L);
-   Gesture gesture = new Gesture();
-   gesture.setNavigate(nav);
-   gesture.setOid(IDUtil.nextID());
-   gesture.setType(GestureType.swipe_bottom_to_top);
-   
-   gestures.add(gesture);
-   
-   Panel p = new Panel();
-   p.setOid(IDUtil.nextID());
-   p.setName("panel has a navigate");
-   
-   final Screen screen1 = new Screen();
-   screen1.setOid(IDUtil.nextID());
-   screen1.setName("screen1");
-   screen1.setGestures(gestures);
-   ScreenPair screenPair = new ScreenPair();
-   screenPair.setOid(IDUtil.nextID());
-   screenPair.setPortraitScreen(screen1);
-   screenRefs.add(new ScreenPairRef(screenPair));
-   
-   Group group1 = new Group();
-   group1.setOid(IDUtil.nextID());
-   group1.setName("group1");
-   group1.setScreenRefs(screenRefs);
-   
-   groupRefs.add(new GroupRef(group1));
-   p.setGroupRefs(groupRefs);
-   
-   panelWithJustOneNavigate.add(p);
-
-   cache.replace(panelWithJustOneNavigate, IDUtil.nextID());
-   
-   SAXReader reader = new SAXReader();
-   SAXParserFactory factory = SAXParserFactory.newInstance();
-   factory.setValidating(true);
-   factory.setNamespaceAware(true);
-
-   Document panelXmlDocument = null;
-  try {
-    panelXmlDocument = reader.read(cache.getPanelXmlFile());
-  } catch (DocumentException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-  }
-   Element topElement = panelXmlDocument.getRootElement();
-   
-   Element panelElement = assertOnePanel(topElement, p);
-   assertPanelHasOneGroupChild(panelElement, group1);
-
-   Element groupElement = assertOneGroup(topElement, group1);
-   assertGroupHasOneScreenChild(groupElement, screen1);
-
-   Element screenElement  = assertOneScreen(topElement, screen1);
-   Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
-   Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
-   Element gestureElement = screenElement.element("gesture");
-   Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
-   Assert.assertEquals(gesture.getType().toString(), gestureElement.attribute("type").getText());
-   Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
-   Assert.assertEquals("Expexting 1 navigate element", 1, gestureElement.elements("navigate").size());
-   Element navigateElement = gestureElement.element("navigate");
-   Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-   Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
-   
-   Document controllerXmlDocument = null;
-  try {
-    controllerXmlDocument = reader.read(cache.getControllerXmlFile());
-  } catch (DocumentException e) {
-    // TODO Auto-generated catch block
-    e.printStackTrace();
-  }
-   topElement = controllerXmlDocument.getRootElement();
-   Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
-   Element componentsElement = topElement.element("components");
-   Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size()); // Gesture is included in component
-
-   status.setRollbackOnly();
+        Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+         
+        List<Gesture> gestures = new ArrayList<Gesture>();
+         
+        Navigate nav = new Navigate();
+        nav.setOid(IDUtil.nextID());
+        nav.setToGroup(1L);
+        nav.setToScreen(2L);
+        Gesture gesture = new Gesture();
+        gesture.setNavigate(nav);
+        gesture.setOid(IDUtil.nextID());
+        gesture.setType(GestureType.swipe_bottom_to_top);
+         
+        gestures.add(gesture);
+         
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel has a navigate");
+         
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        screen1.setGestures(gestures);
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+         
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+         
+        panelWithJustOneNavigate.add(p);
+        
+        cache.replace(panelWithJustOneNavigate, IDUtil.nextID());
+         
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+         
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+        
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+        
+        Element screenElement  = assertOneScreen(topElement, screen1);
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
+        Element gestureElement = screenElement.element("gesture");
+        Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
+        Assert.assertEquals(gesture.getType().toString(), gestureElement.attribute("type").getText());
+        Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
+        Assert.assertEquals("Expexting 1 navigate element", 1, gestureElement.elements("navigate").size());
+        Element navigateElement = gestureElement.element("navigate");
+        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
+        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size()); // Gesture is included in component
+        
+        status.setRollbackOnly();
       }
     });
- }
+  }
    
-   @Test
-   public void testPanelTabbarWithNavigateToLogical() {
+  @Test
+  public void testPanelTabbarWithNavigateToLogical() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
