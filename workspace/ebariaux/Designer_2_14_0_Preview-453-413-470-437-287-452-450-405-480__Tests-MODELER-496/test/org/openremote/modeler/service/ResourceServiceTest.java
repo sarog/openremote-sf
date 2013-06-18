@@ -225,6 +225,82 @@ public class ResourceServiceTest {
   }
    
   @Test
+  public void testEmptyScreen() {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+        Set<Panel> panels = new HashSet<Panel>();
+        
+        /*---------------group-------------------*/
+        Group group = new Group();
+        group.setOid(IDUtil.nextID());
+        group.setName("group1");
+        group.setScreenRefs(screenRefs);    
+        groupRefs.add(new GroupRef(group));
+        
+        Panel panel = new Panel();
+        panel.setOid(IDUtil.nextID());
+        panel.setGroupRefs(groupRefs);
+        panel.setGroupRefs(groupRefs);
+        panel.setName("panel1");
+        panels.add(panel);
+        
+        Screen screen = new Screen();
+        screen.setOid(IDUtil.nextID());
+        screen.setName("EmptyScreen");
+         
+        ScreenPair screenPair1 = new ScreenPair();
+        screenPair1.setOid(IDUtil.nextID());
+        screenPair1.setPortraitScreen(screen);      
+        screenRefs.add(new ScreenPairRef(screenPair1));
+     
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+  
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, panel);
+        assertPanelHasOneGroupChild(panelElement, group);
+        
+        Element groupElement = assertOneGroup(topElement, group);
+        assertGroupHasOneScreenChild(groupElement, screen);
+        
+        Element screenElement  = assertOneScreen(topElement, screen);
+        Assert.assertEquals("Expecting no child for screen element", 0, screenElement.elements().size());
+  
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals(0, componentsElement.elements().size());
+        
+        status.setRollbackOnly();
+      }
+    });
+  }
+
+  
+  
+  @Test
   public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef>();
@@ -653,37 +729,6 @@ public class ResourceServiceTest {
       resourceService.initResources(panel, IDUtil.nextID());
    }
  
-   @Test
-   public void testEmptyScreen() {
-    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
-    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
-    List<Panel> panels = new ArrayList<Panel>();
-
-    /*---------------group-------------------*/
-    Group group1 = new Group();
-    group1.setOid(IDUtil.nextID());
-    group1.setName("group1");
-    group1.setScreenRefs(screenRefs);    
-    groupRefs.add(new GroupRef(group1));
-
-    Panel panel1 = new Panel();
-    panel1.setOid(IDUtil.nextID());
-    panel1.setGroupRefs(groupRefs);
-    panel1.setGroupRefs(groupRefs);
-    panel1.setName("panel1");
-
-      Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
-      screen.setName("EmptyScreen");
-      
-      ScreenPair screenPair1 = new ScreenPair();
-      screenPair1.setOid(IDUtil.nextID());
-      screenPair1.setPortraitScreen(screen);      
-      screenRefs.add(new ScreenPairRef(screenPair1));
-      
-      resourceService.initResources(panels, IDUtil.nextID());
-   }
-   
 @Test(enabled=false)
    public void testGetControllerXMLWithButtonAndSwitchButNoCmd() {
       List<Screen> screens = new ArrayList<Screen>();
