@@ -38,14 +38,10 @@ public class UITabbarTest {
     Assert.assertEquals(tabbar1, tabbar2, "Expected the Tabbars to be equal");
     
     tabbar1.setOid(IDUtil.nextID());
-    tabbar2.setOid(tabbar2.getOid());
+    tabbar2.setOid(tabbar1.getOid());
     
     Assert.assertEquals(tabbar1, tabbar2, "Expected the Tabbars to be equal");
     
-    // id not taken into account for equality test
-    tabbar2.setOid(IDUtil.nextID());
-    Assert.assertEquals(tabbar1, tabbar2, "Expected the Tabbars to be equal");
-
     tabbar1.setScope(Scope.PANEL);
     tabbar2.setScope(Scope.PANEL);
     
@@ -87,6 +83,12 @@ public class UITabbarTest {
 
     Assert.assertEquals(tabbar1, tabbar2, "Expected the Tabbars to be equal");
 
+    tabbar2.setOid(IDUtil.nextID());
+    Assert.assertFalse(tabbar1.equals(tabbar2), "Expected the Tabbars to be different, id is different");
+
+    tabbar2.setOid(tabbar1.getOid());
+    Assert.assertEquals(tabbar1, tabbar2, "Expected the Tabbars to be equal");
+    
     tabbar2.setScope(null);
     Assert.assertFalse(tabbar1.equals(tabbar2), "Expected the Tabbars to be different, second scope is not set");
 
