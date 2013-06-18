@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.transaction.TransactionManager;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.digester.SetRootRule;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
@@ -180,7 +181,7 @@ public class ResourceServiceTest {
    public void testEmptyConfiguration() throws DocumentException {
      transactionTemplate.execute(new TransactionCallbackWithoutResult() {
        @Override
-       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+       protected void doInTransactionWithoutResult(TransactionStatus status) {
       Set<Panel> emptyPanels = new HashSet<Panel>();
       
       cache.replace(emptyPanels, IDUtil.nextID());
@@ -219,6 +220,8 @@ public class ResourceServiceTest {
       Assert.assertEquals(1, topElement.elements("components").size());
       Element componentsElement = topElement.element("components");
       Assert.assertEquals(0, componentsElement.elements().size());
+      
+      status.setRollbackOnly();
        }
      });
   }
@@ -371,7 +374,7 @@ public class ResourceServiceTest {
    public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
      transactionTemplate.execute(new TransactionCallbackWithoutResult() {
        @Override
-       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+       protected void doInTransactionWithoutResult(TransactionStatus status) {
       Set<Panel> panels = new HashSet<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -437,6 +440,8 @@ public class ResourceServiceTest {
       Assert.assertEquals(1, topElement.elements("components").size());
       Element componentsElement = topElement.element("components");
       Assert.assertEquals(0, componentsElement.elements().size());
+      
+      status.setRollbackOnly();
        }
      });
    }
@@ -455,7 +460,7 @@ public class ResourceServiceTest {
   public void testScreenHasGesture() throws DocumentException {
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
       @Override
-      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
    Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
@@ -541,6 +546,8 @@ public class ResourceServiceTest {
    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
    Element componentsElement = topElement.element("components");
    Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size()); // Gesture is included in component
+
+   status.setRollbackOnly();
       }
     });
  }
@@ -746,7 +753,7 @@ public class ResourceServiceTest {
     // Test does require database access, must include in transaction
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
       @Override
-      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
         Device dev = new Device("Test", "Vendor", "Model");
         dev.setDeviceCommands(new ArrayList<DeviceCommand>());
         dev.setAccount(account);
@@ -865,6 +872,8 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         Assert.assertNotNull("Expecting command to have an id attribute");
         Assert.assertEquals("Expecting command to have same id as one referenced on button", referencedCommandId, commandElement.attribute("id").getText());
+
+        status.setRollbackOnly();
       }
     });
   }
@@ -874,19 +883,19 @@ public class ResourceServiceTest {
     // Test does require database access, must include in transaction
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
       @Override
-      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
     Device dev = new Device("Test", "Vendor", "Model");
     dev.setDeviceCommands(new ArrayList<DeviceCommand>());
-    dev.setAccount(account);
+    dev.setAccount(account);   
     account.addDevice(dev);
     deviceService.saveDevice(dev);
-    
+
     Protocol protocol = new Protocol();
     protocol.setType(Constants.INFRARED_TYPE);
     
     DeviceCommand readCommand = new DeviceCommand();
     readCommand.setProtocol(protocol);
-    readCommand.setName("testLirc");
+    readCommand.setName("readCommand");
     
     readCommand.setDevice(dev);
     dev.getDeviceCommands().add(readCommand);
@@ -910,7 +919,7 @@ public class ResourceServiceTest {
     
     DeviceCommand onCommand = new DeviceCommand();
     onCommand.setProtocol(protocol);
-    onCommand.setName("testLirc");
+    onCommand.setName("onCommand");
     
     onCommand.setDevice(dev);
     dev.getDeviceCommands().add(onCommand);
@@ -920,7 +929,7 @@ public class ResourceServiceTest {
     
     DeviceCommand offCommand = new DeviceCommand();
     offCommand.setProtocol(protocol);
-    offCommand.setName("testLirc");
+    offCommand.setName("offCommand");
     
     offCommand.setDevice(dev);
     dev.getDeviceCommands().add(offCommand);
@@ -952,7 +961,12 @@ public class ResourceServiceTest {
     screenPair.setPortraitScreen(screen1);
     screenRefs.add(new ScreenPairRef(screenPair));
     
+    ImageSource onImageSource = new ImageSource("On image");
+    ImageSource offImageSource = new ImageSource("Off image");
+    
     UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+    aSwitch.setOnImage(onImageSource);
+    aSwitch.setOffImage(offImageSource);
     aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
 
     Absolute abs = new Absolute(IDUtil.nextID());
@@ -1015,9 +1029,26 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
     Element switchElement = absoluteElement.element("switch");
     Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+    
     Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
     Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
-   
+    Element linkElement = switchElement.element("link");
+    
+    String referencedSensorId = assertLinkElement(linkElement, "sensor");
+    
+    Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
+    Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
+    Element onStateElement = (Element) linkElement.elements("state").get(0);
+    Assert.assertNotNull("Expecting on state to have a name attribute", onStateElement.attribute("name"));
+    Assert.assertEquals("Expectinf on state to be named on", "on", onStateElement.attribute("name").getText());
+    Assert.assertNotNull("Expecting on state to have a value attribute", onStateElement.attribute("value"));
+    Assert.assertEquals("Expecting on state to have image name as value", "On image", onStateElement.attribute("value").getText());
+    Element offStateElement = (Element) linkElement.elements("state").get(1);
+    Assert.assertNotNull("Expecting off state to have a name attribute", offStateElement.attribute("name"));
+    Assert.assertEquals("Expectinf off state to be named off", "off", offStateElement.attribute("name").getText());
+    Assert.assertNotNull("Expecting off state to have a value attribute", offStateElement.attribute("value"));
+    Assert.assertEquals("Expecting off state to have image name as value", "Off image", offStateElement.attribute("value").getText());
+    
     Document controllerXmlDocument = null;
     try {
       controllerXmlDocument = reader.read(cache.getControllerXmlFile());
@@ -1026,12 +1057,51 @@ public class ResourceServiceTest {
       e.printStackTrace();
     }
     topElement = controllerXmlDocument.getRootElement();
+    
     Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
     Element componentsElement = topElement.element("components");
     Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
     Assert.assertEquals(1, componentsElement.elements("switch").size());
     switchElement = componentsElement.element("switch");
     Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+    Assert.assertEquals("Expecting 3 children for switch element", 3, switchElement.elements().size());
+    Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
+    Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
+    Assert.assertEquals("Expecting 1 include child for switch element", 1, switchElement.elements("include").size());
+    Element onElement = switchElement.element("on");
+    Element offElement = switchElement.element("off");
+    Element includeElement = switchElement.element("include");
+    Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement,  "sensor"));
+
+    Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+    Element sensorsElement = topElement.element("sensors");
+    Assert.assertEquals("Expecting 1 child for sensors element", 1, sensorsElement.elements().size());
+    Assert.assertEquals("Expecting 1 sensor child for sensors element", 1, sensorsElement.elements("sensor").size());
+    Element sensorElement = sensorsElement.element("sensor");
+    Assert.assertNotNull("Expecting sensor element to have an id attribute", sensorElement.attribute("id"));
+    Assert.assertEquals("Expecting sensor id to be one referenced by switch", referencedSensorId, sensorElement.attribute("id").getText());
+    Assert.assertNotNull("Expecting sensor element to have a type attribute", sensorElement.attribute("type"));
+    Assert.assertEquals("Expecting sensor type to be switch", "switch", sensorElement.attribute("type").getText());
+    Assert.assertNotNull("Expecting sensor element to have a name attribute", sensorElement.attribute("name"));
+    Assert.assertEquals("Expecting sensor name to be Sensor", "Sensor", sensorElement.attribute("name").getText());
+
+    Assert.assertEquals("Expecting 3 children for sensor element", 3, sensorElement.elements().size());
+    Assert.assertEquals("Expecting 1 include child for sensorElement", 1, sensorElement.elements("include").size());
+    Assert.assertEquals("Expecting 2 states children for sensorElement", 2, sensorElement.elements("state").size());
+    includeElement = sensorElement.element("include");
+    String referencedReadCommandId = assertIncludeElement(includeElement, "command");
+    
+    // TODO: on and off
+    
+    Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+    Element commandsElement = topElement.element("commands");
+    Assert.assertEquals("Expecting 3 children for commands element", 3, commandsElement.elements().size());
+    Assert.assertEquals("Expecting 3 command children for commands element", 3, commandsElement.elements("command").size());
+    
+    
+    // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+    account.getDevices().remove(dev);    
+    status.setRollbackOnly();
       }
     });
   }
@@ -1394,5 +1464,43 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      Assert.assertEquals("Expecting screen to be named " + screen.getName(), screen.getName(), screenElement.attribute("name").getText());
 
      return screenElement;
+   }
+   
+   private String assertLinkElement(Element linkElement, String expectedType) {
+     Assert.assertNotNull("Expecting link to have a type attribute", linkElement.attribute("type"));
+     Assert.assertEquals("Expecting link type to be " + expectedType, expectedType, linkElement.attribute("type").getText());
+     Assert.assertNotNull("Expecting link to have a ref attribute", linkElement.attribute("ref"));
+     return linkElement.attribute("ref").getText();
+   }
+   
+   private String assertIncludeElement(Element includeElement, String expectedType) {
+     Assert.assertNotNull("Expecting include to have a type attribute", includeElement.attribute("type"));
+     Assert.assertEquals("Expecting include type to be " + expectedType, expectedType, includeElement.attribute("type").getText());
+     Assert.assertNotNull("Expecting include to have a ref attribute", includeElement.attribute("ref"));
+     return includeElement.attribute("ref").getText();
+   }
+
+   private void clearDatabase() {
+     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+       @Override
+       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+         List<Device> devices = deviceService.loadAll();
+         for (Device dev : devices) {
+           /*
+           List<Sensor> sensors = dev.getSensors();
+           for (Sensor s : sensors) {
+             sensorService.deleteSensor(s.getOid());
+           }
+           List<Switch> switches = dev.getSwitchs();
+           for (Switch s : switches) {
+             switchService.delete(s.getOid());
+           }
+           dev.getSensors().clear();
+           dev.getSwitchs().clear();
+           deviceService.saveDevice(dev);*/
+           deviceService.deleteDevice(dev.getOid());
+         }
+       }
+     });
    }
 }
