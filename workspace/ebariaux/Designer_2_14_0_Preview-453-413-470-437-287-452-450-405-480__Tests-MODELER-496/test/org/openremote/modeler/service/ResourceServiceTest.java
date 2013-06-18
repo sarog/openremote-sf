@@ -158,6 +158,8 @@ public class ResourceServiceTest {
           cache = new LocalFileCache(configuration, userService.getCurrentUser());
 
           cache.setDeviceService(deviceService);
+          cache.setSwitchService(switchService);
+          cache.setSensorService(sensorService);
           cache.setDeviceMacroService(deviceMacroService);
           cache.setDeviceCommandService(deviceCommandService);
           cache.setControllerConfigService(controllerConfigService);
@@ -176,6 +178,9 @@ public class ResourceServiceTest {
     */
    @Test
    public void testEmptyConfiguration() throws DocumentException {
+     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+       @Override
+       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
       Set<Panel> emptyPanels = new HashSet<Panel>();
       
       cache.replace(emptyPanels, IDUtil.nextID());
@@ -185,7 +190,13 @@ public class ResourceServiceTest {
       factory.setValidating(true);
       factory.setNamespaceAware(true);
   
-      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Document panelXmlDocument = null;
+      try {
+        panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      } catch (DocumentException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
       Element topElement = panelXmlDocument.getRootElement();
       Assert.assertEquals(1, topElement.elements("panels").size());
       Element panelsElement = topElement.element("panels");
@@ -197,11 +208,19 @@ public class ResourceServiceTest {
       Element groupsElement = topElement.element("groups");
       Assert.assertEquals(0, groupsElement.elements().size());
 
-      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      Document controllerXmlDocument = null;
+      try {
+        controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      } catch (DocumentException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       topElement = controllerXmlDocument.getRootElement();
       Assert.assertEquals(1, topElement.elements("components").size());
       Element componentsElement = topElement.element("components");
       Assert.assertEquals(0, componentsElement.elements().size());
+       }
+     });
   }
    
    @Test
@@ -335,7 +354,7 @@ public class ResourceServiceTest {
       
 // EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
       
-          cache.replace(panels, IDUtil.nextID());
+//          cache.replace(panels, IDUtil.nextID());
       
    }
 
@@ -350,6 +369,9 @@ public class ResourceServiceTest {
     */
    @Test
    public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
+     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+       @Override
+       protected void doInTransactionWithoutResult(TransactionStatus arg0) {
       Set<Panel> panels = new HashSet<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
@@ -375,7 +397,13 @@ public class ResourceServiceTest {
       factory.setValidating(true);
       factory.setNamespaceAware(true);
   
-      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Document panelXmlDocument = null;
+      try {
+        panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      } catch (DocumentException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
       Element topElement = panelXmlDocument.getRootElement();
       Element panelElement = assertOnePanel(topElement, p);
       Assert.assertEquals(1, panelElement.elements().size());
@@ -398,11 +426,19 @@ public class ResourceServiceTest {
       Element groupsElement = topElement.element("groups");
       Assert.assertEquals(0, groupsElement.elements().size());
 
-      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      Document controllerXmlDocument = null;
+      try {
+        controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      } catch (DocumentException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       topElement = controllerXmlDocument.getRootElement();
       Assert.assertEquals(1, topElement.elements("components").size());
       Element componentsElement = topElement.element("components");
       Assert.assertEquals(0, componentsElement.elements().size());
+       }
+     });
    }
   
   /**
@@ -417,6 +453,9 @@ public class ResourceServiceTest {
    */
   @Test
   public void testScreenHasGesture() throws DocumentException {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
    Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
@@ -464,7 +503,13 @@ public class ResourceServiceTest {
    factory.setValidating(true);
    factory.setNamespaceAware(true);
 
-   Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+   Document panelXmlDocument = null;
+  try {
+    panelXmlDocument = reader.read(cache.getPanelXmlFile());
+  } catch (DocumentException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
    Element topElement = panelXmlDocument.getRootElement();
    
    Element panelElement = assertOnePanel(topElement, p);
@@ -485,11 +530,19 @@ public class ResourceServiceTest {
    Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
    Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
    
-   Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+   Document controllerXmlDocument = null;
+  try {
+    controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+  } catch (DocumentException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
    topElement = controllerXmlDocument.getRootElement();
    Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
    Element componentsElement = topElement.element("components");
    Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size()); // Gesture is included in component
+      }
+    });
  }
    
    @Test
@@ -818,9 +871,14 @@ public class ResourceServiceTest {
    
   @Test
   public void testOneScreenWithOneSwitch() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus arg0) {
     Device dev = new Device("Test", "Vendor", "Model");
     dev.setDeviceCommands(new ArrayList<DeviceCommand>());
     dev.setAccount(account);
+    account.addDevice(dev);
     deviceService.saveDevice(dev);
     
     Protocol protocol = new Protocol();
@@ -841,6 +899,7 @@ public class ResourceServiceTest {
     sensor.setName("Sensor");
     sensor.setDevice(dev);
     sensor.setAccount(account);
+    account.getSensors().add(sensor);
 
     SensorCommandRef sensorCommandRef = new SensorCommandRef();
     sensorCommandRef.setSensor(sensor);
@@ -871,6 +930,10 @@ public class ResourceServiceTest {
 
     Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
     buildingSwitch.setOid(IDUtil.nextID());
+    buildingSwitch.setAccount(account);    
+    account.getSwitches().add(buildingSwitch);
+    buildingSwitch.setDevice(dev);
+    dev.getSwitchs().add(buildingSwitch);
     switchService.save(buildingSwitch);
     
     Set<Panel> panels = new HashSet<Panel>();
@@ -908,7 +971,6 @@ public class ResourceServiceTest {
 
     cache.replace(panels, IDUtil.nextID());
     
-    /*
     try {
       System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
       System.out.println("Content is ");
@@ -923,14 +985,19 @@ public class ResourceServiceTest {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    */
     
     SAXReader reader = new SAXReader();
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setValidating(true);
     factory.setNamespaceAware(true);
 
-    Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    Document panelXmlDocument = null;
+    try {
+      panelXmlDocument = reader.read(cache.getPanelXmlFile());
+    } catch (DocumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     Element topElement = panelXmlDocument.getRootElement();
     
     Element panelElement = assertOnePanel(topElement, p);
@@ -951,7 +1018,13 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
     Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
    
-    Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    Document controllerXmlDocument = null;
+    try {
+      controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+    } catch (DocumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     topElement = controllerXmlDocument.getRootElement();
     Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
     Element componentsElement = topElement.element("components");
@@ -959,6 +1032,8 @@ public class ResourceServiceTest {
     Assert.assertEquals(1, componentsElement.elements("switch").size());
     switchElement = componentsElement.element("switch");
     Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+      }
+    });
   }
   
   @Test(enabled=false)
