@@ -471,7 +471,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 7 absolute children for screen element", 7, screenElement.elements("absolute").size());
 
         for (Element absoluteElement : (Collection<Element>)screenElement.elements("absolute")) {
-          String childName = assertAbsoluteElementWithOneChild(absoluteElement);
+          String childName = assertElementWithOneChild(absoluteElement);
           if ("button".equals(childName)) {
             assertAbsoluteElementChild(absoluteElement, "button", "10", "11", "12", "13");
           } else if ("switch".equals(childName)) {
@@ -513,6 +513,233 @@ public class ResourceServiceTest {
     });
   }
   
+  @Test
+  public void testInGridWidgets() {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);   
+        account.addDevice(dev);
+        deviceService.saveDevice(dev);
+    
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand readCommand = new DeviceCommand();
+        readCommand.setProtocol(protocol);
+        readCommand.setName("readCommand");
+        
+        readCommand.setDevice(dev);
+        dev.getDeviceCommands().add(readCommand);
+        
+        readCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(readCommand);
+        
+        Sensor sensor = new Sensor(SensorType.SWITCH);
+        sensor.setOid(IDUtil.nextID());
+        sensor.setName("Sensor");
+        sensor.setDevice(dev);
+        sensor.setAccount(account);
+        account.getSensors().add(sensor);
+    
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setSensor(sensor);
+        sensorCommandRef.setDeviceCommand(readCommand);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        
+        sensorService.saveSensor(sensor);
+        
+        DeviceCommand onCommand = new DeviceCommand();
+        onCommand.setProtocol(protocol);
+        onCommand.setName("onCommand");
+        
+        onCommand.setDevice(dev);
+        dev.getDeviceCommands().add(onCommand);
+        
+        onCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(onCommand);
+        
+        DeviceCommand offCommand = new DeviceCommand();
+        offCommand.setProtocol(protocol);
+        offCommand.setName("offCommand");
+        
+        offCommand.setDevice(dev);
+        dev.getDeviceCommands().add(offCommand);
+        
+        offCommand.setOid(IDUtil.nextID());
+        deviceCommandService.save(offCommand);
+    
+        Switch buildingSwitch = new Switch(onCommand, offCommand, sensor);
+        buildingSwitch.setOid(IDUtil.nextID());
+        buildingSwitch.setAccount(account);    
+        account.getSwitches().add(buildingSwitch);
+        buildingSwitch.setDevice(dev);
+        dev.getSwitchs().add(buildingSwitch);
+        switchService.save(buildingSwitch);
+        
+        Slider buildingSlider = new Slider("Slider", onCommand, sensor);
+        buildingSlider.setOid(IDUtil.nextID());
+        buildingSlider.setAccount(account);    
+        account.getSliders().add(buildingSlider);
+        buildingSlider.setDevice(dev);
+        dev.getSliders().add(buildingSlider);
+        sliderService.save(buildingSlider);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+
+        UIGrid grid = new UIGrid(10, 11, 12, 13, 4, 2);
+        screen1.addGrid(grid);
+        
+        UIButton button = new UIButton(IDUtil.nextID());
+        button.setName("Button 1");
+    
+        Cell buttonCell = createCell(0,  0, button);
+        grid.addCell(buttonCell);
+        
+        UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+        aSwitch.setOnImage(new ImageSource("On image"));
+        aSwitch.setOffImage(new ImageSource("Off image"));
+        aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
+
+        Cell switchCell = createCell(1, 0, aSwitch);
+        grid.addCell(switchCell);
+        
+        UISlider slider = new UISlider(IDUtil.nextID());
+        slider.setVertical(true);
+        slider.setSliderDTO(buildingSlider.getSliderWithInfoDTO());
+        
+        Cell sliderCell = createCell(2, 0, slider);
+        grid.addCell(sliderCell);
+        
+        UILabel label = new UILabel(IDUtil.nextID());
+        label.setText("Label");
+        
+        Cell labelCell = createCell(3, 0, label);
+        grid.addCell(labelCell);
+        
+        UIImage image = new UIImage(IDUtil.nextID());
+        image.setImageSource(new ImageSource("Image"));
+        
+        Cell imageCell = createCell(0, 1, image);
+        grid.addCell(imageCell);
+        
+        UIWebView webView = new UIWebView(IDUtil.nextID());
+        webView.setURL("http://www.openremote.org");
+
+        Cell webCell = createCell(1, 1, webView);
+        grid.addCell(webCell);
+        
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setOid(IDUtil.nextID());
+        
+        Cell colorPickerCell = createCell(2, 1, colorPicker);
+        grid.addCell(colorPickerCell);
+        
+        cache.replace(panels, IDUtil.nextID());
+
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+        
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+         
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+        
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+        
+        Element screenElement  = assertOneScreen(topElement, screen1);
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 grid children for screen element", 1, screenElement.elements("grid").size());
+        
+        Element gridElement = screenElement.element("grid");
+        assertAttribute(gridElement, "left", "10");
+        assertAttribute(gridElement, "top", "11");
+        assertAttribute(gridElement, "width", "12");
+        assertAttribute(gridElement, "height", "13");
+        assertAttribute(gridElement, "rows", "4");
+        assertAttribute(gridElement, "cols", "2");
+        
+        Assert.assertEquals("Expecting 7 children for grid element", 7, gridElement.elements().size());
+        Assert.assertEquals("Expecting 7 cell children for grid element", 7, gridElement.elements("cell").size());
+
+        for (Element cellElement : (Collection<Element>)gridElement.elements("cell")) {
+          String childName = assertElementWithOneChild(cellElement);
+          if ("button".equals(childName)) {
+            assertCellElementChild(cellElement, "button", "0", "0");
+          } else if ("switch".equals(childName)) {
+            assertCellElementChild(cellElement, "switch", "1", "0");
+          } else if ("slider".equals(childName)) {
+            assertCellElementChild(cellElement, "slider", "2", "0");
+          } else if ("label".equals(childName)) {
+            assertCellElementChild(cellElement, "label", "3", "0");
+          } else if ("image".equals(childName)) {
+            assertCellElementChild(cellElement, "image", "0", "1");
+          } else if ("web".equals(childName)) {
+            assertCellElementChild(cellElement, "web", "1", "1");
+          } else if ("colorpicker".equals(childName)) {
+            assertCellElementChild(cellElement, "colorpicker", "2", "1");
+          } else {
+            Assert.fail("Unknown child element for absolute");
+          }
+        }
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 6 children for components element", 6, componentsElement.elements().size());
+        
+        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
+        account.getDevices().remove(dev);
+        account.getSwitches().remove(buildingSwitch);
+        account.getSliders().remove(buildingSlider);
+        account.getSensors().remove(sensor);
+        status.setRollbackOnly();
+      }
+    });
+  }
   
   @Test
   public void testPanelHasGroupScreenControl()throws Exception {
@@ -2986,9 +3213,9 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      assertAttribute(sensorElement, "name", sensorName);
    }
    
-   private String assertAbsoluteElementWithOneChild(Element absoluteElement) {
-     Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
-     return ((Element)absoluteElement.elements().get(0)).getName();
+   private String assertElementWithOneChild(Element element) {
+     Assert.assertEquals("Expecting 1 child for " + element.getName() + " element", 1, element.elements().size());
+     return ((Element)element.elements().get(0)).getName();
    }
 
    private Element assertAbsoluteElementChild(Element absoluteElement, String childName, String left, String top, String width, String height) {
@@ -3000,6 +3227,16 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      assertAttribute(absoluteElement, "height", height);
      return element;
    }
+   
+   private Element assertCellElementChild(Element cellElement, String childName, String x, String y) {
+     Assert.assertEquals("Expecting 1 " + childName + " child for cell element", 1, cellElement.elements(childName).size());
+     Element element = cellElement.element(childName);
+     assertAttribute(cellElement, "x", x);
+     assertAttribute(cellElement, "y", y);
+     assertAttribute(cellElement, "rowspan", "1");
+     assertAttribute(cellElement, "colspan", "1");
+     return element;
+   }
 
    private Absolute createAbsolute(int baseValue, UIComponent uiComponent) {
      Absolute abs = new Absolute(IDUtil.nextID());
@@ -3007,5 +3244,15 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
      abs.setSize(baseValue + 2, baseValue + 3);
      abs.setUiComponent(uiComponent);
      return abs;
+   }
+   
+   private Cell createCell(int left, int right, UIComponent uiComponent) {
+     Cell cell = new Cell();
+     cell.setPosX(left);
+     cell.setPosY(right);
+     cell.setColspan(1);
+     cell.setRowspan(1);
+     cell.setUiComponent(uiComponent);
+     return cell;
    }
 }
