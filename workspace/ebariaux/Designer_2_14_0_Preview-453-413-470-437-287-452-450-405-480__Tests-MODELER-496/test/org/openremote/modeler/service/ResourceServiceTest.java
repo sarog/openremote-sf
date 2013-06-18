@@ -162,7 +162,7 @@ public class ResourceServiceTest {
    }
    
    @Test
-   public void testNopanel() throws FileNotFoundException, IOException, DocumentException {
+   public void testNopanel() throws DocumentException {
       Set<Panel> emptyPanels = new HashSet<Panel>();
       
       cache.replace(emptyPanels, IDUtil.nextID());
@@ -324,17 +324,11 @@ public class ResourceServiceTest {
       
           cache.replace(panels, IDUtil.nextID());
       
-          System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
-          System.out.println("Content is ");
-          IOUtils.copy(new FileInputStream(cache.getControllerXmlFile()), System.out);
-          System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
-          System.out.println("Content is ");
-          IOUtils.copy(new FileInputStream(cache.getPanelXmlFile()), System.out);
    }
 
    @Test
-   public void testPanelTabbarWithNavigateToGroupAndScreen() {
-      Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
+   public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
+      Set<Panel> panels = new HashSet<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
       nav.setToGroup(1L);
@@ -350,9 +344,50 @@ public class ResourceServiceTest {
       UITabbar tabbar = new UITabbar();
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
-      panelWithJustOneNavigate.add(p);
-      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      panels.add(p);
+
+      cache.replace(panels, IDUtil.nextID());
+      
+      SAXReader reader = new SAXReader();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setValidating(true);
+      factory.setNamespaceAware(true);
+  
+      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Element topElement = panelXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("panels").size());
+      Element panelsElement = topElement.element("panels");
+      Assert.assertEquals(1, panelsElement.elements().size());
+      Assert.assertEquals(1, panelsElement.elements("panel").size());
+      Element panelElement = panelsElement.element("panel");
+      Assert.assertEquals(p.getName(), panelElement.attribute("name").getText());
+      Assert.assertEquals(1, panelElement.elements().size());
+      Assert.assertEquals(1, panelElement.elements("tabbar").size());
+      Element tabbarElement = panelElement.element("tabbar");
+      Assert.assertEquals(1, tabbarElement.elements().size());
+      Assert.assertEquals(1, tabbarElement.elements("item").size());
+      Element itemElement = tabbarElement.element("item");
+      Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
+      Assert.assertEquals(1, itemElement.elements().size());
+      Assert.assertEquals(1, itemElement.elements("navigate").size());
+      Element navigateElement = itemElement.element("navigate");
+      Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
+      Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+
+      Assert.assertEquals(1, topElement.elements("screens").size());
+      Element screensElement = topElement.element("screens");
+      Assert.assertEquals(0, screensElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("groups").size());
+      Element groupsElement = topElement.element("groups");
+      Assert.assertEquals(0, groupsElement.elements().size());
+
+      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      topElement = controllerXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("components").size());
+      Element componentsElement = topElement.element("components");
+      Assert.assertEquals(0, componentsElement.elements().size());
    }
+   
 @Test
 public void testScreenHasGesture() {
    Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
