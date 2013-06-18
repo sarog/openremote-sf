@@ -793,11 +793,17 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
     Element componentsElement = topElement.element("components");
     Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
-    Assert.assertEquals(1, componentsElement.elements("button").size());
+    Assert.assertEquals("Expecting 1 button element as child of components", 1, componentsElement.elements("button").size());
     buttonElement = componentsElement.element("button");
     Assert.assertEquals(Long.toString(button.getOid()), buttonElement.attribute("id").getText());
+    Assert.assertEquals("Expecting 1 child for button element", 1, buttonElement.elements().size());
+    Assert.assertEquals("Expecting 1 include element", 1, buttonElement.elements("include").size());
+    Element includeElement = buttonElement.element("include");
+    Assert.assertNotNull("Expecting include to have a type attribute", includeElement.attribute("type"));
+    Assert.assertEquals("Expecting include type to be button", "button", includeElement.attribute("type").getText());
+    Assert.assertNotNull("Expeting include to have a ref attribute", includeElement.attribute("ref"));
+    Assert.assertEquals("Expecting include to reference the right button", Long.toString(button.getOid()), includeElement.attribute("ref").getText());
   }
-
    
   @Test
   public void testOneScreenWithOneSwitch() throws DocumentException {
