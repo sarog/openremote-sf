@@ -19,9 +19,6 @@
 */
 package org.openremote.modeler.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,7 +27,6 @@ import java.util.Set;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
@@ -48,6 +44,7 @@ import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Background;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CustomSensor;
@@ -56,7 +53,6 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
-import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
@@ -71,8 +67,6 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
-import org.openremote.modeler.domain.SwitchSensorRef;
-import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
@@ -888,12 +882,12 @@ public class ResourceServiceTest {
         Assert.assertEquals(1, tabbarElement.elements().size());
         Assert.assertEquals(1, tabbarElement.elements("item").size());
         Element itemElement = tabbarElement.element("item");
-        Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
+        assertAttribute(itemElement, "name", item.getName());
         Assert.assertEquals(1, itemElement.elements().size());
         Assert.assertEquals(1, itemElement.elements("navigate").size());
         Element navigateElement = itemElement.element("navigate");
-        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+        assertAttribute(navigateElement, "toGroup", Long.toString(nav.getToGroup()));
+        assertAttribute(navigateElement, "toScreen", Long.toString(nav.getToScreen()));
   
         Assert.assertEquals(1, topElement.elements("screens").size());
         Element screensElement = topElement.element("screens");
@@ -1081,8 +1075,8 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 2 children for group element", 2, groupElement.elements().size());
         Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
         Element includeElement = groupElement.element("include");
-        Assert.assertEquals("screen", includeElement.attribute("type").getText());
-        Assert.assertEquals(Long.toString(screen1.getOid()), includeElement.attribute("ref").getText());
+        assertAttribute(includeElement, "type", "screen");
+        assertAttribute(includeElement, "ref", Long.toString(screen1.getOid()));
         
         Assert.assertEquals("Expecting 1 tabbar element", 1, groupElement.elements("tabbar").size());
         Element tabbarElement = groupElement.element("tabbar");
@@ -1202,13 +1196,13 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
         Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
         Element gestureElement = screenElement.element("gesture");
-        Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
-        Assert.assertEquals(gesture.getType().toString(), gestureElement.attribute("type").getText());
+        assertAttribute(gestureElement, "id", Long.toString(gesture.getOid()));
+        assertAttribute(gestureElement, "type", gesture.getType().toString());
         Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
         Assert.assertEquals("Expexting 1 navigate element", 1, gestureElement.elements("navigate").size());
         Element navigateElement = gestureElement.element("navigate");
-        Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
-        Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+        assertAttribute(navigateElement, "toGroup", Long.toString(nav.getToGroup()));
+        assertAttribute(navigateElement, "toScreen", Long.toString(nav.getToScreen()));
         
         Document controllerXmlDocument = null;
         try {
@@ -1497,7 +1491,200 @@ public class ResourceServiceTest {
       }
     });
   }
-   
+  
+  @Test
+  public void testOneScreenWithOneButtonHavingOneMacro() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);
+        deviceService.saveDevice(dev);
+        
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand command1 = new DeviceCommand();
+        command1.setProtocol(protocol);
+        command1.setName("Command one");
+        
+        command1.setDevice(dev);
+        dev.getDeviceCommands().add(command1);
+        
+        command1.setOid(IDUtil.nextID());
+        deviceCommandService.save(command1);
+
+        DeviceCommand command2 = new DeviceCommand();
+        command2.setProtocol(protocol);
+        command2.setName("Command two");
+        
+        command2.setDevice(dev);
+        dev.getDeviceCommands().add(command2);
+        
+        command2.setOid(IDUtil.nextID());
+        deviceCommandService.save(command2);
+        
+        DeviceMacro deviceMacro = new DeviceMacro();
+        deviceMacro.setName("Macro");
+        deviceMacro.setOid(IDUtil.nextID());
+        
+        deviceMacro.setAccount(account);
+        account.getDeviceMacros().add(deviceMacro);
+        
+        DeviceMacroItem item1 = new DeviceCommandRef(command1);
+        item1.setOid(IDUtil.nextID());
+        item1.setParentDeviceMacro(deviceMacro);
+        
+        DeviceMacroItem item2 = new CommandDelay("1000");
+        item2.setOid(IDUtil.nextID());
+        item1.setParentDeviceMacro(deviceMacro);
+
+        DeviceMacroItem item3 = new DeviceCommandRef(command2);
+        item3.setOid(IDUtil.nextID());
+        item3.setParentDeviceMacro(deviceMacro);
+        
+        List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
+        deviceMacroItems.add(item1);
+        deviceMacroItems.add(item2);
+        deviceMacroItems.add(item3);
+        deviceMacro.setDeviceMacroItems(deviceMacroItems);
+        
+        deviceMacroService.saveDeviceMacro(deviceMacro);
+
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        UIButton button = new UIButton(IDUtil.nextID());
+        button.setName("Button 1");
+        button.setUiCommandDTO(deviceMacro.getMacroDTO());
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(button);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 button element", 1, absoluteElement.elements("button").size());
+        Element buttonElement = absoluteElement.element("button");
+        assertAttribute(buttonElement, "id", Long.toString(button.getOid()));
+        assertAttribute(buttonElement, "hasControlCommand", "true");
+        assertAttribute(buttonElement, "name", button.getName());
+       
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals("Expecting 1 button element as child of components", 1, componentsElement.elements("button").size());
+        buttonElement = componentsElement.element("button");
+        assertAttribute(buttonElement, "id", Long.toString(button.getOid()));
+        Assert.assertEquals("Expecting 3 children for button element", 3, buttonElement.elements().size());
+        Assert.assertEquals("Expecting 2 include elements", 2, buttonElement.elements("include").size());
+        Assert.assertEquals("Expecting 1 delay element", 1, buttonElement.elements("delay").size());
+        
+        Element element = (Element) buttonElement.elements().get(0);
+        Assert.assertEquals("Expecting first child to be include", "include", element.getName());
+        assertAttribute(element, "type", "command");
+        Assert.assertNotNull("Expecting include to have a ref attribute", element.attribute("ref"));
+        String referencedCommandId1 = element.attribute("ref").getText();
+
+        element = (Element)buttonElement.elements().get(1);
+        Assert.assertEquals("Expecting second child to be delay", "delay", element.getName());
+        Assert.assertEquals("Expecting delay value to be 1000", "1000", element.getText());
+
+        element = (Element) buttonElement.elements().get(2);
+        Assert.assertEquals("Expecting third child to be include", "include", element.getName());
+        assertAttribute(element, "type", "command");
+        Assert.assertNotNull("Expecting include to have a ref attribute", element.attribute("ref"));
+        String referencedCommandId2 = element.attribute("ref").getText();
+
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+
+        Assert.assertEquals("Expecting 2 children for commands element", 2, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 2 command elements as child of components", 2, commandsElement.elements("command").size());
+        
+        for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
+          Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
+          assertAttribute(commandElement, "protocol", "ir");
+          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+          Element propertyElement = commandElement.element("property");
+          assertAttribute(propertyElement, "name", "name");
+          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+    
+          if (commandElement.attribute("id").getText().equals(referencedCommandId1)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "Command one", propertyElement.attribute("value").getText());        
+          } else if (commandElement.attribute("id").getText().equals(referencedCommandId2)) {
+            Assert.assertEquals("Expecting property value to be onCommand", "Command two", propertyElement.attribute("value").getText());        
+          } else {
+            Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
+          }
+        }
+
+        account.getDeviceMacros().remove(deviceMacro);
+        status.setRollbackOnly();
+      }
+    });
+  }  
+  
   @Test
   public void testOneScreenWithOneSwitch() throws DocumentException {
     // Test does require database access, must include in transaction
@@ -1634,7 +1821,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
         Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
         Element switchElement = absoluteElement.element("switch");
-        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
         
         Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
         Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
@@ -1665,7 +1852,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("switch").size());
         switchElement = componentsElement.element("switch");
-        Assert.assertEquals(Long.toString(aSwitch.getOid()), switchElement.attribute("id").getText());
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
         Assert.assertEquals("Expecting 3 children for switch element", 3, switchElement.elements().size());
         Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
         Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
@@ -1736,6 +1923,133 @@ public class ResourceServiceTest {
     });
   }
 
+  @Test
+  public void testOneScreenWithOneSwitchNoBuildingSwitch() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        ImageSource onImageSource = new ImageSource("On image");
+        ImageSource offImageSource = new ImageSource("Off image");
+        
+        UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+        aSwitch.setOnImage(onImageSource);
+        aSwitch.setOffImage(offImageSource);
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(aSwitch);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+        
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 switch element", 1, absoluteElement.elements("switch").size());
+        Element switchElement = absoluteElement.element("switch");
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
+        
+        Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
+        Element linkElement = switchElement.element("link");
+        
+        String referencedSensorId = assertLinkElement(linkElement, "sensor");
+        
+        Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
+        Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
+        Element onStateElement = (Element) linkElement.elements("state").get(0);
+        assertAttribute(onStateElement, "name", "on");
+        assertAttribute(onStateElement, "value", "On image");
+        Element offStateElement = (Element) linkElement.elements("state").get(1);
+        assertAttribute(offStateElement, "name", "off");
+        assertAttribute(offStateElement, "value", "Off image");
+        
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals(1, componentsElement.elements("switch").size());
+        switchElement = componentsElement.element("switch");
+        assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
+        Assert.assertEquals("Expecting 2 children for switch element", 2, switchElement.elements().size());
+        Assert.assertEquals("Expecting 1 on child for switch element", 1, switchElement.elements("on").size());
+        Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
+        Element onElement = switchElement.element("on");
+        Assert.assertEquals("Expecting no child for on element",  0, onElement.elements().size());
+        Element offElement = switchElement.element("off");
+        Assert.assertEquals("Expecting no child for off element",  0, offElement.elements().size());
+    
+        Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
+        Element sensorsElement = topElement.element("sensors");
+        Assert.assertEquals("Expecting no child for sensors element", 0, sensorsElement.elements().size());
+
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting no child for commands element", 0, commandsElement.elements().size());
+
+        status.setRollbackOnly();
+      }
+    });
+  }
+  
   @Test
   public void testOneScreenWithOneSlider() throws DocumentException {
     // Test does require database access, must include in transaction
@@ -1907,7 +2221,7 @@ public class ResourceServiceTest {
         Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
         Assert.assertEquals(1, componentsElement.elements("slider").size());
         sliderElement = componentsElement.element("slider");
-        Assert.assertEquals(Long.toString(slider.getOid()), sliderElement.attribute("id").getText());
+        assertAttribute(sliderElement, "id", Long.toString(slider.getOid()));
         Assert.assertEquals("Expecting 2 children for slider element", 2, sliderElement.elements().size());
         Assert.assertEquals("Expecting 1 setValue child for switch element", 1, sliderElement.elements("setValue").size());
         Assert.assertEquals("Expecting 1 include child for switch element", 1, sliderElement.elements("include").size());
@@ -3102,132 +3416,6 @@ public class ResourceServiceTest {
     });
   }
 
-   /*
-    * The case has some problem because of LazyInitializationException 
-    */
-// @Test(enabled=false)
-   public void testGetControllerXMLWithButtonAndSwitchHaveMacro() {
-/*      
-      Account account = new Account();
-      account.setOid(5);
-      
-      User u = new User();
-      u.setAccount(account);
-      u.setPassword("");
-      u.setUsername("sa");
-      List<Role> roles = new ArrayList<Role>();
-      roles.add(Role.ROLE_DESIGNER);
-      roles.add(Role.ROLE_MODELER);
-      u.setRoles(Role.ROLE_MODELER);
-//      u.setOid(4);
-      userService.saveUser(u);*/
-      
-      userService.createUserAccount("testMacro", "testMacro", "test");
-      
-      DeviceMacro deviceMacro = new DeviceMacro();
-      deviceMacro.setName("testMacro");
-//      deviceMacro.setOid(6);
-//      deviceMacro.setAccount(account);
-      
-      DeviceMacroItem item1 = new CommandDelay("1000");
-//      item1.setOid(7);
-      item1.setParentDeviceMacro(deviceMacro);
-      
-      Protocol protocol = new Protocol();
-      protocol.setType(Constants.INFRARED_TYPE);
-      
-      DeviceCommand cmd = new DeviceCommand();
-      cmd.setProtocol(protocol);
-      cmd.setName("testLirc");
-//      cmd.setOid(4);
-      deviceCommandService.save(cmd);
-      
-      DeviceMacroItem item2 = new DeviceCommandRef(cmd);
-//      item2.setOid(8);
-      item2.setParentDeviceMacro(deviceMacro);
-      
-      List<DeviceMacroItem> items = new ArrayList<DeviceMacroItem>();
-      items.add(item1);
-      items.add(item2);
-      
-      deviceMacro.setDeviceMacroItems(items);
-      
-      DeviceMacroRef macroRef = new DeviceMacroRef(deviceMacro);
-//      macroRef.setOid(9);
-      
-      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("testMacro", "testMacro"));
-      deviceMacroService.saveDeviceMacro(deviceMacro);
-      
-     /* Protocol protocol = new Protocol();
-      protocol.setType(Constants.INFRARED_TYPE);
-      
-      DeviceCommand cmd1 = new DeviceCommand();
-      cmd1.setProtocol(protocol);
-      cmd1.setName("testLirc");
-      cmd1.setOid(4);
-      
-      DeviceCommand cmd2 = new DeviceCommand();
-      cmd2.setProtocol(protocol);
-      cmd2.setName("testLirc");
-      cmd2.setOid(5);
-      
-      deviceCommandService.save(cmd1);
-      deviceCommandService.save(cmd2);*/
-      
-      
-      
-//      DeviceCommandRef cmdRef = new DeviceCommandRef(cmd1);
-      
-      List<Screen> screens = new ArrayList<Screen>();
-      Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
-      screen.setName("screenWithButtonAndSwitch");
-      
-      UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
-      absBtn.setName("abs_btn1");
-      absBtn.setUiCommand(macroRef);
-      
-      UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
-      gridBtn.setName("grid_btn1");
-      gridBtn.setUiCommand(macroRef);
-      
-      UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
-//      absSwitch.setOnCommand(macroRef);
-//      absSwitch.setOffCommand(macroRef);
-//      absSwitch.setStatusCommand(macroRef);
-      
-      UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
-//      gridSwitch.setOnCommand(macroRef);
-//      gridSwitch.setOffCommand(macroRef);
-//      gridSwitch.setStatusCommand(macroRef);
-      
-      Absolute abs1 = new Absolute();
-      abs1.setUiComponent(absBtn);
-      Absolute abs2 = new Absolute();
-      abs2.setUiComponent(absSwitch);
-      
-      UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
-      Cell c1 = new Cell();
-      c1.setUiComponent(gridBtn);
-      grid1.addCell(c1);
-      UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
-      Cell c2 = new Cell();
-      c2.setUiComponent(gridSwitch);
-      grid2.addCell(c2);
-      
-      screen.addAbsolute(abs1);
-      screen.addAbsolute(abs2);
-      screen.addGrid(grid1);
-      screen.addGrid(grid2);
-      
-      screens.add(screen);
-//      outputControllerXML(screens);
-   }
-   
    /**
     * Validates that the element has the given attribute and that it has the given value.
     * 
@@ -3253,8 +3441,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for panels element", 1, panelsElement.elements().size());
      Assert.assertEquals("Expecting 1 panel element", 1, panelsElement.elements("panel").size());
      Element panelElement = panelsElement.element("panel");
-     Assert.assertEquals("Expecting panel to be named " + p.getName(), p.getName(), panelElement.attribute("name").getText());
-     Assert.assertEquals("Expecting panel to have id " + p.getOid(), Long.toString(p.getOid()), panelElement.attribute("id").getText());
+     assertAttribute(panelElement, "id", Long.toString(p.getOid()));
+     assertAttribute(panelElement, "name", p.getName());
 
      return panelElement;
    }
@@ -3264,8 +3452,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting no tab bar in panel element", 0, panelElement.elements("tabbar").size());
      Assert.assertEquals("Expecting 1 include element", 1, panelElement.elements("include").size());
      Element includeElement = panelElement.element("include");
-     Assert.assertEquals("group", includeElement.attribute("type").getText());
-     Assert.assertEquals(Long.toString(group.getOid()), includeElement.attribute("ref").getText());
+     assertAttribute(includeElement, "ref", Long.toString(group.getOid()));
+     assertAttribute(includeElement, "type", "group");
    }
    
    private Element assertOneGroup(Element topElement, Group group) {
@@ -3274,8 +3462,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for groups element", 1, groupsElement.elements().size());
      Assert.assertEquals("Expecting 1 group element", 1, groupsElement.elements("group").size());
      Element groupElement = groupsElement.element("group");
-     Assert.assertEquals("Expecting group to have id " + group.getOid(), Long.toString(group.getOid()), groupElement.attribute("id").getText());
-     Assert.assertEquals("Expecting group to be named " + group.getName(), group.getName(), groupElement.attribute("name").getText());
+     assertAttribute(groupElement, "id", Long.toString(group.getOid()));
+     assertAttribute(groupElement, "name", group.getName());
 
      return groupElement;
    }
@@ -3284,8 +3472,8 @@ public class ResourceServiceTest {
      Assert.assertEquals("Expecting 1 child for group element", 1, groupElement.elements().size());
      Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
      Element includeElement = groupElement.element("include");
-     Assert.assertEquals("screen", includeElement.attribute("type").getText());
-     Assert.assertEquals(Long.toString(screen.getOid()), includeElement.attribute("ref").getText());
+     assertAttribute(includeElement, "ref", Long.toString(screen.getOid()));
+     assertAttribute(includeElement, "type", "screen");
    }
    
    private Element assertOneScreen(Element topElement, Screen screen) {
