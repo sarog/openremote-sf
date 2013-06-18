@@ -130,6 +130,7 @@ public class UISwitchTest {
     device.getDeviceCommands().add(deviceCommand3);
     
     Switch buildingSwitch1 = new Switch(deviceCommand2, deviceCommand3, sensor);
+    buildingSwitch1.setOid(IDUtil.nextID());
 
     UISwitch switch1 = new UISwitch();
     switch1.setOid(IDUtil.nextID());
@@ -176,6 +177,7 @@ public class UISwitchTest {
     
     Switch buildingSwitch2 = new Switch(deviceCommand2, deviceCommand4, sensor);
     switch2.setSwitchDTO(buildingSwitch2.getSwitchWithInfoDTO());
+    switch2.setOid(IDUtil.nextID());
     
     Assert.assertFalse(switch1.equals(switch2), "Expected the Switches to be different, building switch is different");   
   }
