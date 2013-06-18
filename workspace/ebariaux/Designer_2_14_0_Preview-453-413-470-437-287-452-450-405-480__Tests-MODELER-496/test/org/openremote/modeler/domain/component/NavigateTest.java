@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
  */
 public class NavigateTest {
 
-  @Test(enabled=false)
+  @Test
   public void testNavigatesEqual() {
     Navigate navigate1 = new Navigate();
     navigate1.setOid(IDUtil.nextID());
@@ -51,9 +51,13 @@ public class NavigateTest {
     navigate2.setToScreen(2L);
 
     Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
+    
+    // id not taken into account for equality test
+    navigate2.setOid(IDUtil.nextID());
+    Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
   }
 
-  @Test(enabled=false)
+  @Test
   public void testLogicalNavigatesEqual() {
     Navigate navigate1 = new Navigate();
     navigate1.setOid(IDUtil.nextID());
@@ -66,7 +70,7 @@ public class NavigateTest {
     Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
   }
 
-  @Test(enabled=false)
+  @Test
   public void testNavigatesNotEqual() {
     Navigate navigate1 = new Navigate();
     navigate1.setOid(IDUtil.nextID());
@@ -78,12 +82,6 @@ public class NavigateTest {
     navigate2.setToGroup(1L);
     navigate2.setToScreen(2L);
 
-    Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
-
-    navigate2.setOid(IDUtil.nextID());
-    Assert.assertFalse(navigate1.equals(navigate2), "Expected the Navigates to be different, id is different");
-
-    navigate2.setOid(navigate1.getOid());
     Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
 
     navigate2.setToGroup(2L);
@@ -105,7 +103,7 @@ public class NavigateTest {
     Assert.assertFalse(navigate1.equals(logicalNavigate), "Expected the Navigates to be different, second navigate is logical");    
   }
   
-  @Test(enabled=false)
+  @Test
   public void testLogicalNavigatesNotEqual() {
     Navigate navigate1 = new Navigate();
     navigate1.setOid(IDUtil.nextID());
@@ -116,13 +114,7 @@ public class NavigateTest {
     navigate2.setToLogical(ToLogicalType.login);
 
     Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
-    
-    navigate2.setOid(IDUtil.nextID());
-    Assert.assertFalse(navigate1.equals(navigate2), "Expected the Navigates to be different, id is different");
-
-    navigate2.setOid(navigate1.getOid());
-    Assert.assertEquals(navigate1, navigate2, "Expected the Navigates to be equal");
-    
+  
     navigate2.setToLogical(ToLogicalType.nextScreen);
     Assert.assertFalse(navigate1.equals(navigate2), "Expected the Navigates to be different, toLogical is different");
     
