@@ -882,6 +882,7 @@ public class ResourceServiceTest {
   public void testOneScreenWithOneSwitch() throws DocumentException {
     // Test does require database access, must include in transaction
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @SuppressWarnings("unchecked")
       @Override
       protected void doInTransactionWithoutResult(TransactionStatus status) {
     Device dev = new Device("Test", "Vendor", "Model");
@@ -1069,9 +1070,19 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 1 off child for switch element", 1, switchElement.elements("off").size());
     Assert.assertEquals("Expecting 1 include child for switch element", 1, switchElement.elements("include").size());
     Element onElement = switchElement.element("on");
+    Assert.assertEquals("Expecting 1 child for on element",  1, onElement.elements().size());
+    Assert.assertEquals("Expecting 1 include child for on element", 1, onElement.elements("include").size());
+    Element includeElement = onElement.element("include");
+    String referencedOnCommandId = assertIncludeElement(includeElement, "command");
+    
     Element offElement = switchElement.element("off");
-    Element includeElement = switchElement.element("include");
-    Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement,  "sensor"));
+    Assert.assertEquals("Expecting 1 child for off element",  1, offElement.elements().size());
+    Assert.assertEquals("Expecting 1 include child for off element", 1, offElement.elements("include").size());
+    includeElement = offElement.element("include");
+    String referencedOffCommandId = assertIncludeElement(includeElement, "command");
+
+    includeElement = switchElement.element("include");
+    Assert.assertEquals("Expecting include element to reference appropriate sensor", referencedSensorId, assertIncludeElement(includeElement, "sensor"));
 
     Assert.assertEquals("Expecting 1 sensors element", 1, topElement.elements("sensors").size());
     Element sensorsElement = topElement.element("sensors");
@@ -1090,15 +1101,40 @@ public class ResourceServiceTest {
     Assert.assertEquals("Expecting 2 states children for sensorElement", 2, sensorElement.elements("state").size());
     includeElement = sensorElement.element("include");
     String referencedReadCommandId = assertIncludeElement(includeElement, "command");
-    
-    // TODO: on and off
+    Element stateElement = (Element) sensorElement.elements("state").get(0);
+    Assert.assertNotNull("Expecting on state element to have name attribute", stateElement.attribute("name"));
+    Assert.assertEquals("Expecting on state element to be named on", "on", stateElement.attribute("name").getText());
+    stateElement = (Element) sensorElement.elements("state").get(1);
+    Assert.assertNotNull("Expecting off state element to have name attribute", stateElement.attribute("name"));
+    Assert.assertEquals("Expecting off state element to be named off", "off", stateElement.attribute("name").getText());
     
     Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
     Element commandsElement = topElement.element("commands");
     Assert.assertEquals("Expecting 3 children for commands element", 3, commandsElement.elements().size());
     Assert.assertEquals("Expecting 3 command children for commands element", 3, commandsElement.elements("command").size());
-    
-    
+
+    for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
+      Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
+      Assert.assertNotNull("Expecting command element to have protocol attribute", commandElement.attribute("protocol"));
+      Assert.assertEquals("Expecting command protocol to be ir", "ir", commandElement.attribute("protocol").getText());
+      Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+      Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+      Element propertyElement = commandElement.element("property");
+      Assert.assertNotNull("Expecting property to have name attribute", propertyElement.attribute("name"));
+      Assert.assertEquals("Expecting property name to be name", "name", propertyElement.attribute("name").getText());
+      Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+
+      if (commandElement.attribute("id").getText().equals(referencedOnCommandId)) {
+        Assert.assertEquals("Expecting property value to be onCommand", "onCommand", propertyElement.attribute("value").getText());        
+      } else if (commandElement.attribute("id").getText().equals(referencedOffCommandId)) {
+        Assert.assertEquals("Expecting property value to be onCommand", "offCommand", propertyElement.attribute("value").getText());        
+      } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
+        Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
+      } else {
+        Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
+      }
+    }
+
     // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
     account.getDevices().remove(dev);    
     status.setRollbackOnly();
