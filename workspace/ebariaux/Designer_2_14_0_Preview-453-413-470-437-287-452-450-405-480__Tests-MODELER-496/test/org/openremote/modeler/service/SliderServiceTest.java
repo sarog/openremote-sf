@@ -85,8 +85,9 @@ public class SliderServiceTest {
       Assert.assertEquals(switchs.size(), 2);
    }
 
-   @Test(dependsOnMethods = "testUpdate")
-   public void testDelte() {
+   @Test(dependsOnMethods = "testLoadAll") // was depending on testUpdate but is currently commented off
+   public void testDelete() {
+     
       Slider slider = new Slider();
       slider.setOid(1);
       sliderService.delete(1);
