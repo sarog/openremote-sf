@@ -19,15 +19,27 @@
 */
 package org.openremote.modeler.service;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.TransactionManager;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.hibernate.Hibernate;
+import org.junit.Assert;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
@@ -35,6 +47,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -69,8 +82,14 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.server.lutron.importmodel.Project;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -90,11 +109,17 @@ public class ResourceServiceTest {
    private VelocityEngine velocity;
    
    private LocalFileCache cache;
+     
+   private TransactionTemplate transactionTemplate;
    
    @BeforeClass
    public void setUp() {
-	      PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
+	    PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
 
+	    PlatformTransactionManager transactionManager = (HibernateTransactionManager)SpringTestContext.getInstance().getBean("transactionManager");
+	    System.out.println("Transaction manager is " + transactionManager);
+	    transactionTemplate = new TransactionTemplate(transactionManager);
+	    
       resourceService = (ResourceService)SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
@@ -108,23 +133,63 @@ public class ResourceServiceTest {
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("ResourceServiceTest", "ResourceServiceTest"));
       
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
-      
-	  cache = new LocalFileCache(configuration, userService.getCurrentUser());
-	  cache.setDeviceService(deviceService);
-	  cache.setDeviceMacroService(deviceMacroService);
-	  cache.setDeviceCommandService(deviceCommandService);
-	  cache.setControllerConfigService(controllerConfigService);
-	  cache.setVelocity(velocity);
-	 
-	  // Make sure required folder structure exists
-	  cache.getPanelXmlFile().getParentFile().mkdirs();
+
+      // This must execute in a transaction to get access to DB
+      // As we're not using a JUnit test integrated with Spring,
+      // there is no default transaction provided and we need to manage it ourself.
+      transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+        @Override
+        protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+          Account account = userService.getCurrentUser().getAccount();
+          Hibernate.initialize(account.getDevices());
+          Hibernate.initialize(account.getSensors());
+          Hibernate.initialize(account.getSliders());
+          Hibernate.initialize(account.getSwitches());
+          Hibernate.initialize(account.getDeviceMacros());
+
+          cache = new LocalFileCache(configuration, userService.getCurrentUser());
+
+          cache.setDeviceService(deviceService);
+          cache.setDeviceMacroService(deviceMacroService);
+          cache.setDeviceCommandService(deviceCommandService);
+          cache.setControllerConfigService(controllerConfigService);
+          cache.setVelocity(velocity);
+         
+          // Make sure required folder structure exists
+          cache.getPanelXmlFile().getParentFile().mkdirs();
+        }
+      });
    }
    
    @Test
-   public void testNopanel() {
-      Collection<Panel> emptyPanel = new ArrayList<Panel>();
-      resourceService.initResources(emptyPanel, IDUtil.nextID());
-   }
+   public void testNopanel() throws FileNotFoundException, IOException, DocumentException {
+      Set<Panel> emptyPanels = new HashSet<Panel>();
+      
+      cache.replace(emptyPanels, IDUtil.nextID());
+  
+      SAXReader reader = new SAXReader();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setValidating(true);
+      factory.setNamespaceAware(true);
+  
+      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Element topElement = panelXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("panels").size());
+      Element panelsElement = topElement.element("panels");
+      Assert.assertEquals(0, panelsElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("screens").size());
+      Element screensElement = topElement.element("screens");
+      Assert.assertEquals(0, screensElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("groups").size());
+      Element groupsElement = topElement.element("groups");
+      Assert.assertEquals(0, groupsElement.elements().size());
+
+      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      topElement = controllerXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("components").size());
+      Element componentsElement = topElement.element("components");
+      Assert.assertEquals(0, componentsElement.elements().size());
+  }
    
    @Test
    public void testPanelHasGroupScreenControl()throws Exception {
@@ -257,11 +322,14 @@ public class ResourceServiceTest {
       
 // EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
       
-      // Must be called within a transaction
-      cache.replace(panels, IDUtil.nextID());
+          cache.replace(panels, IDUtil.nextID());
       
-      System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
-      System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
+          System.out.println("Controller file has been written to " + cache.getControllerXmlFile());
+          System.out.println("Content is ");
+          IOUtils.copy(new FileInputStream(cache.getControllerXmlFile()), System.out);
+          System.out.println("Panel file has been written to " + cache.getPanelXmlFile());
+          System.out.println("Content is ");
+          IOUtils.copy(new FileInputStream(cache.getPanelXmlFile()), System.out);
    }
 
    @Test
