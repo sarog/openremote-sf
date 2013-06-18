@@ -76,6 +76,7 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -1896,6 +1897,145 @@ public class ResourceServiceTest {
       }
     });
   }
+  
+  @Test
+  public void testOneScreenWithOneColorPicker() throws DocumentException {
+    // Test does require database access, must include in transaction
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Device dev = new Device("Test", "Vendor", "Model");
+        dev.setDeviceCommands(new ArrayList<DeviceCommand>());
+        dev.setAccount(account);
+        deviceService.saveDevice(dev);
+        
+        Protocol protocol = new Protocol();
+        protocol.setType(Constants.INFRARED_TYPE);
+        
+        DeviceCommand cmd = new DeviceCommand();
+        cmd.setProtocol(protocol);
+        cmd.setName("testLirc");
+        
+        cmd.setDevice(dev);
+        dev.getDeviceCommands().add(cmd);
+        
+        cmd.setOid(IDUtil.nextID());
+        deviceCommandService.save(cmd);
+        
+        Set<Panel> panels = new HashSet<Panel>();
+        List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+        List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+            
+        Panel p = new Panel();
+        p.setOid(IDUtil.nextID());
+        p.setName("panel");
+        
+        final Screen screen1 = new Screen();
+        screen1.setOid(IDUtil.nextID());
+        screen1.setName("screen1");
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen1);
+        screenRefs.add(new ScreenPairRef(screenPair));
+        
+        ImageSource imageSource = new ImageSource("Image");
+        
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setOid(IDUtil.nextID());
+        colorPicker.setImage(imageSource);
+        colorPicker.setUiCommandDTO(cmd.getDeviceCommandDTO());
+    
+        Absolute abs = new Absolute(IDUtil.nextID());
+        abs.setUiComponent(colorPicker);
+        screen1.addAbsolute(abs);
+        
+        Group group1 = new Group();
+        group1.setOid(IDUtil.nextID());
+        group1.setName("group1");
+        group1.setScreenRefs(screenRefs);
+        
+        groupRefs.add(new GroupRef(group1));
+        p.setGroupRefs(groupRefs);
+        
+        panels.add(p);
+    
+        cache.replace(panels, IDUtil.nextID());
+
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+    
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, p);
+        assertPanelHasOneGroupChild(panelElement, group1);
+    
+        Element groupElement = assertOneGroup(topElement, group1);
+        assertGroupHasOneScreenChild(groupElement, screen1);
+    
+        Element screenElement  = assertOneScreen(topElement, screen1);
+    
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 absolute element", 1, screenElement.elements("absolute").size());
+        Element absoluteElement = screenElement.element("absolute");
+        Assert.assertEquals("Expecting 1 child for absolute element", 1, absoluteElement.elements().size());
+        Assert.assertEquals("Expecting 1 colorpicker element", 1, absoluteElement.elements("colorpicker").size());
+        Element colorPickerElement = absoluteElement.element("colorpicker");
+        assertAttribute(colorPickerElement, "id", Long.toString(colorPicker.getOid()));
+        Assert.assertEquals("Expecting 1 child for colorpicker element", 1, colorPickerElement.elements().size());
+        Assert.assertEquals("Expecting 1 image child for colorpicker element", 1, colorPickerElement.elements("image").size());
+        Element imageElement = colorPickerElement.element("image");
+        assertAttribute(imageElement, "src", imageSource.getSrc());
+       
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size());
+        Assert.assertEquals("Expecting 1 colorpicker element as child of components", 1, componentsElement.elements("colorpicker").size());
+        colorPickerElement = componentsElement.element("colorpicker");
+        assertAttribute(colorPickerElement, "id", Long.toString(colorPicker.getOid()));
+        Assert.assertEquals("Expecting 1 child for colorpicker element", 1, colorPickerElement.elements().size());
+        Assert.assertEquals("Expecting 1 include element", 1, colorPickerElement.elements("include").size());
+        Element includeElement = colorPickerElement.element("include");
+        assertAttribute(includeElement, "type", "command");
+        Assert.assertNotNull("Expecting include to have a ref attribute", includeElement.attribute("ref"));
+        
+        // Reference is to the command, id is not the id in the database, but should cross reference a command element defined below
+        String referencedCommandId = includeElement.attribute("ref").getText();
+        
+        Assert.assertEquals("Expecting 1 commands element", 1, topElement.elements("commands").size());
+        Element commandsElement = topElement.element("commands");
+        Assert.assertEquals("Expecting 1 child for commands element", 1, commandsElement.elements().size());
+        Assert.assertEquals("Expecting 1 command element as child of components", 1, commandsElement.elements("command").size());
+        Element commandElement = commandsElement.element("command");
+        assertAttribute(commandElement, "id", referencedCommandId);
+        assertAttribute(commandElement, "protocol", "ir");
+        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
+        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
+        Element propertyElement = commandElement.element("property");
+        assertAttribute(propertyElement, "name", "name");
+        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+
+        status.setRollbackOnly();
+      }
+    });
+  }
+
   
 @Test(enabled=false)
 public void testGetControllerXMLWithGestureHaveDeviceCommand() {
