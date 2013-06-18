@@ -1999,20 +1999,7 @@ public class ResourceServiceTest {
         Element switchElement = absoluteElement.element("switch");
         assertAttribute(switchElement, "id", Long.toString(aSwitch.getOid()));
         
-        Assert.assertEquals("Expecting 1 child for switch element", 1, switchElement.elements().size());
-        Assert.assertEquals("Expecting 1 link element", 1, switchElement.elements("link").size());
-        Element linkElement = switchElement.element("link");
-        
-        String referencedSensorId = assertLinkElement(linkElement, "sensor");
-        
-        Assert.assertEquals("Expecting 2 children for link element", 2, linkElement.elements().size());
-        Assert.assertEquals("Expected link element children to be state elements", 2, linkElement.elements("state").size());
-        Element onStateElement = (Element) linkElement.elements("state").get(0);
-        assertAttribute(onStateElement, "name", "on");
-        assertAttribute(onStateElement, "value", "On image");
-        Element offStateElement = (Element) linkElement.elements("state").get(1);
-        assertAttribute(offStateElement, "name", "off");
-        assertAttribute(offStateElement, "value", "Off image");
+        Assert.assertEquals("Expecting no child for switch element", 0, switchElement.elements().size());
         
         Document controllerXmlDocument = null;
         try {
