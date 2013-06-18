@@ -19,6 +19,9 @@
 */
 package org.openremote.modeler.service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,6 +30,7 @@ import java.util.Set;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
@@ -43,6 +47,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CustomSensor;
@@ -67,6 +72,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
@@ -299,6 +305,105 @@ public class ResourceServiceTest {
     });
   }
 
+  
+  
+  
+  
+  @Test
+  public void testOneScreenWithBackgroundImage() {
+    transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+      @Override
+      protected void doInTransactionWithoutResult(TransactionStatus status) {
+        Set<Panel> panels = new HashSet<Panel>();
+        Screen screen = new Screen();
+        screen.setOid(IDUtil.nextID());
+        screen.setName("Screen");
+     
+        Background background = screen.getBackground();
+        background.setImageSource(new ImageSource("Image"));
+        background.setAbsolute(false);
+        background.setFillScreen(false);
+        background.setRelatedType(RelativeType.TOP_RIGHT);
+     
+        Panel panel = new Panel();
+        panel.setOid(IDUtil.nextID());
+        panel.setName("Panel");
+       
+        Group group = new Group();
+        group.setName("Group");
+        group.setOid(IDUtil.nextID());
+        ScreenPair screenPair = new ScreenPair();
+        screenPair.setOid(IDUtil.nextID());
+        screenPair.setPortraitScreen(screen);
+       
+        group.addScreenRef(new ScreenPairRef(screenPair));
+       
+        panel.addGroupRef(new GroupRef(group));
+        panels.add(panel);
+     
+        cache.replace(panels, IDUtil.nextID());
+  
+        SAXReader reader = new SAXReader();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(true);
+        factory.setNamespaceAware(true);
+  
+        Document panelXmlDocument = null;
+        try {
+          panelXmlDocument = reader.read(cache.getPanelXmlFile());
+        } catch (DocumentException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        Element topElement = panelXmlDocument.getRootElement();
+        
+        Element panelElement = assertOnePanel(topElement, panel);
+        assertPanelHasOneGroupChild(panelElement, group);
+        
+        Element groupElement = assertOneGroup(topElement, group);
+        assertGroupHasOneScreenChild(groupElement, screen);
+        
+        Element screenElement  = assertOneScreen(topElement, screen);
+        Assert.assertEquals("Expecting 1 child for screen element", 1, screenElement.elements().size());
+        Assert.assertEquals("Expecting 1 background child for screen element", 1, screenElement.elements("background").size());
+        
+        Element backgroundElement = screenElement.element("background");
+  
+        Assert.assertNull("Not expecting a fillScreen attribute on screen element", screenElement.attribute("fillScreen"));
+        Assert.assertNull("Not expecting a absolute attribute on screen element", screenElement.attribute("absolute"));
+        assertAttribute(backgroundElement, "relative", "TOP_RIGHT");
+
+        Assert.assertEquals("Expecting 1 child for background element", 1, backgroundElement.elements().size());
+        Assert.assertEquals("Expecting 1 image child for background element", 1, backgroundElement.elements("image").size());
+        
+        Element imageElement = backgroundElement.element("image");
+        assertAttribute(imageElement, "src", "Image");
+  
+        Document controllerXmlDocument = null;
+        try {
+          controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+        } catch (DocumentException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        topElement = controllerXmlDocument.getRootElement();
+        Assert.assertEquals(1, topElement.elements("components").size());
+        Element componentsElement = topElement.element("components");
+        Assert.assertEquals(0, componentsElement.elements().size());
+        
+        status.setRollbackOnly();
+      }
+    });
+  }
+
+
+  
+  
+  
+  
+  
+  
+  
   @Test
   public void testAbsoluteWidgets() {
     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -1009,32 +1114,6 @@ public class ResourceServiceTest {
       resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
    }
    
- @Test
-   public void testScreenHasBackgrouond() {
-      Collection<Panel> panel = new ArrayList<Panel>();
-      Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
-      
-      screen.getBackground().setImageSource(new ImageSource("http://finalist.cn/logo.jpg"));
-      
-      Panel p = new Panel();
-      p.setOid(IDUtil.nextID());
-      p.setName("panel has a navigate");
-      
-      Group group = new Group();
-      group.setName("groupName");
-      group.setOid(IDUtil.nextID());
-      ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
-      screenPair.setPortraitScreen(screen);
-      
-      group.addScreenRef(new ScreenPairRef(screenPair));
-      
-      p.addGroupRef(new GroupRef(group));
-      panel.add(p);
-      resourceService.initResources(panel, IDUtil.nextID());
-   }
- 
   @Test
   public void testOneScreenWithOneButtonHavingOneDeviceCommand() throws DocumentException {
     // Test does require database access, must include in transaction
