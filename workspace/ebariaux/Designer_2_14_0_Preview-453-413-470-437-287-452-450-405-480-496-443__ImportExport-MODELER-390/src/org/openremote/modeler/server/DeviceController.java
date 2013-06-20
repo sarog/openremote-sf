@@ -118,7 +118,8 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    @Override
    public DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO device, ArrayList<DeviceCommandDetailsDTO> commands, ArrayList<SensorDetailsDTO> sensors,
                                          ArrayList<SwitchDetailsDTO> switches, ArrayList<SliderDetailsDTO> sliders) {
-	 return deviceService.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders);
+     Device deviceBean = deviceService.saveNewDeviceWithChildren(device, commands, sensors, switches, sliders);
+     return deviceBean.getDeviceDTO();
    }
 
    public void updateDeviceWithDTO(DeviceDetailsDTO device) {
