@@ -23,7 +23,9 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 
 public interface SensorService {
 
@@ -44,5 +46,13 @@ public interface SensorService {
    List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account);
    
    void updateSensorWithDTO(SensorDetailsDTO sensor);
+   
+   List<SensorDTO> loadSensorDTOsByDeviceId(long id);
+   
+   SensorDetailsDTO loadSensorDetailsDTO(long id);
+
+   List<SensorWithInfoDTO> loadAllSensorWithInfosDTO();
+
+   void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId);
 
 }
