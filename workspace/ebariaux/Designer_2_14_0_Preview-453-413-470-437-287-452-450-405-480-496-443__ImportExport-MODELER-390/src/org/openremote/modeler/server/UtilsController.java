@@ -211,9 +211,9 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
    public AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
-      List<Panel> oldPanels = new ArrayList<Panel>();
+      Collection<Panel> oldPanels = new ArrayList<Panel>();
       if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
-         oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+         oldPanels = (Collection<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
       if (panels != null && panels.size() > 0) {
         

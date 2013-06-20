@@ -156,6 +156,7 @@ public class ResourceServiceTest {
 
           cache = new LocalFileCache(configuration, userService.getCurrentUser());
 
+	  cache.setDeviceService(deviceService);
           cache.setSwitchService(switchService);
           cache.setSliderService(sliderService);
           cache.setSensorService(sensorService);
