@@ -77,15 +77,7 @@ public class UserController extends BaseGWTSpringController implements UserRPCSe
    private ArrayList<UserDTO> createUserDTOsFromUsers(List<User> users) {
      ArrayList<UserDTO> dtos = new ArrayList<UserDTO>();
      for (User u : users) {
-       UserDTO uDTO = new UserDTO();
-       uDTO.setOid(u.getOid());
-       uDTO.setEmail(u.getEmail());
-       uDTO.setUsername(u.getUsername());
-       for (Role role : u.getRoles())
-       {
-         uDTO.addRole(new RoleDTO(role.getName(), role.getOid()));
-       }
-       dtos.add(uDTO);
+       dtos.add(u.getUserDTO());
      }
      return dtos;
    }
