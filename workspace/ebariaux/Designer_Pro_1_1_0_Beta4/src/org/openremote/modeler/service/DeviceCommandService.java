@@ -90,5 +90,9 @@ public interface DeviceCommandService {
    List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand);
    
    ArrayList<DeviceCommandDTO> loadCommandsDTOByDevice(long id);
-   
+ 
+   DeviceCommandDetailsDTO loadCommandDetailsDTO(long id);
+
+   void saveNewDeviceCommand(DeviceCommandDetailsDTO dto, long deviceId);
+
 }
