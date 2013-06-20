@@ -19,14 +19,19 @@ public class SliderServiceTest {
    private SliderService sliderService = null;
    private DeviceCommandService deviceCommandService = null;
    private UserService userService = null;
+   
+   private long createdSliderId;
+   private int numberOfExistingSliders = 0;
+
    @BeforeClass
    public void setUp() {
       userService = (UserService)SpringTestContext.getInstance().getBean("userService");
       sliderService = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
-      
       userService.createUserAccount("test", "test", "test@email.com");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
+      
+      numberOfExistingSliders = sliderService.loadAll().size();
    }
 
    @Test
@@ -54,12 +59,15 @@ public class SliderServiceTest {
       sliderService.save(slider);
       sliderService.save(slider2);
 
-      Assert.assertEquals(slider.getOid(), 1);
-      Assert.assertEquals(slider2.getOid(), 2);
-      Slider sliderFromTable = sliderService.loadAll().get(0);
+      Assert.assertTrue(slider.getOid() != 0);
+      Assert.assertTrue(slider2.getOid() != 0);
+      createdSliderId = slider.getOid();
+      
+      Slider sliderFromTable = sliderService.loadById(createdSliderId);
       Assert.assertEquals(sliderFromTable.getSetValueCmd().getDeviceCommand().getName(), "testLirc");
    }
 
+   /*
    @Test(dependsOnMethods = "testSaveSlider")
    public void testUpdate() {
       List<Slider> sliders = sliderService.loadAll();
@@ -76,6 +84,7 @@ public class SliderServiceTest {
          }
       }
    }
+   */
 
    @Test(dependsOnMethods = "testSaveSlider")
    public void testLoadAll() {
@@ -85,10 +94,8 @@ public class SliderServiceTest {
 
    @Test(dependsOnMethods = "testUpdate")
    public void testDelte() {
-      Slider slider = new Slider();
-      slider.setOid(1);
-      sliderService.delete(1);
-      Collection<Slider> switchs = sliderService.loadAll();
-      Assert.assertEquals(switchs.size(), 1);
+      sliderService.delete(createdSliderId);
+      Collection<Slider> sliders = sliderService.loadAll();
+      Assert.assertEquals(sliders.size(), numberOfExistingSliders + 1);
    }
 }

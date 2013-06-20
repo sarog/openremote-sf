@@ -53,8 +53,8 @@ public class DeviceServiceTest {
       device.setName("tv");
       device.setModel("tv");
       device.setVendor("sony");
-      deviceService.saveDevice(device);
-      Device deviceInDB = deviceService.loadById(1L);
+      Device savedDevice = deviceService.saveDevice(device);
+      Device deviceInDB = deviceService.loadById(savedDevice.getOid());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
       
    }
