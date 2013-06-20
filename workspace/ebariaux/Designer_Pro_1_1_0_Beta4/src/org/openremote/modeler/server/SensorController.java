@@ -20,24 +20,15 @@
 package org.openremote.modeler.server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.openremote.modeler.client.rpc.SensorRPCService;
 import org.openremote.modeler.domain.CustomSensor;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
-import org.openremote.modeler.service.DeviceCommandService;
-import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
-import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
@@ -51,10 +42,6 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    private static final long serialVersionUID = 7122839354773238989L;
 
    private SensorService sensorService;
-   private DeviceService deviceService;
-   private DeviceCommandService deviceCommandService;
-   
-   private UserService userService;
    
    public Boolean deleteSensor(long id) {
       return sensorService.deleteSensor(id);
@@ -63,42 +50,20 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public void setSensorService(SensorService sensorService) {
       this.sensorService = sensorService;
    }
-   
-   public void setUserService(UserService userService) {
-      this.userService = userService;
-   }
-   
-   public void setDeviceService(DeviceService deviceService) {
-    this.deviceService = deviceService;
-  }
-
-  public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
-    this.deviceCommandService = deviceCommandService;
-  }
 
    @Override   
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
-     ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
-     for (Sensor s : sensorService.loadByDeviceId(id)) {
-       // EBR - MODELER-405 : initial implementation did not include sensor command in returned DTOs
-       dtos.add(s.getSensorDTO());
-     }
-     return dtos;
+      return new ArrayList<SensorDTO>(sensorService.loadSensorDTOsByDeviceId(id));
    }
    
    @Override
    public SensorDetailsDTO loadSensorDetails(long id) {
-     Sensor sensor = sensorService.loadById(id);
-     return (sensor != null)?sensor.getSensorDetailsDTO():null;
+	   return sensorService.loadSensorDetailsDTO(id);
   }
    
    @Override
   public ArrayList<SensorWithInfoDTO> loadAllSensorWithInfosDTO() {
-     ArrayList<SensorWithInfoDTO> dtos = new ArrayList<SensorWithInfoDTO>();
-     for (Sensor sensor : sensorService.loadAll(userService.getAccount())) {
-       dtos.add(sensor.getSensorWithInfoDTO());
-     }
-     return dtos;    
+	   return new ArrayList<SensorWithInfoDTO>(sensorService.loadAllSensorWithInfosDTO());
   }
 
   public static SensorWithInfoDTO createSensorWithInfoDTO(Sensor sensor) {
@@ -134,32 +99,7 @@ public class SensorController extends BaseGWTSpringController implements SensorR
   }
 
   public void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId) {
-    Sensor sensor = null;
-    if (sensorDTO.getType() == SensorType.RANGE) {
-      sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
-   } else if (sensorDTO.getType() == SensorType.CUSTOM) {
-     CustomSensor customSensor = new CustomSensor();
-     for (Map.Entry<String,String> e : sensorDTO.getStates().entrySet()) {
-       customSensor.addState(new State(e.getKey(), e.getValue()));
-     }
-     sensor = customSensor;
-
-   } else {
-     sensor = new Sensor(sensorDTO.getType());
-   }
-    
-    Device device = deviceService.loadById(deviceId);
-    sensor.setDevice(device);
-    sensor.setName(sensorDTO.getName());
-    sensor.setAccount(userService.getAccount());
-
-    DeviceCommand deviceCommand = deviceCommandService.loadById(sensorDTO.getCommand().getId());
-    SensorCommandRef commandRef = new SensorCommandRef();
-    commandRef.setSensor(sensor);
-    commandRef.setDeviceCommand(deviceCommand);
-    sensor.setSensorCommandRef(commandRef);
-    
-    sensorService.saveSensor(sensor);
+    sensorService.saveNewSensor(sensorDTO, deviceId);
   }
 
 }
