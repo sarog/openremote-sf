@@ -68,6 +68,7 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -82,6 +83,8 @@ import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.component.ColorPicker;
@@ -105,10 +108,19 @@ import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.SliderService;
+import org.openremote.modeler.service.SwitchService;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
+import org.openremote.modeler.utils.dtoconverter.SwitchDTOConverter;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thoughtworks.xstream.XStream;
@@ -210,13 +222,17 @@ public class LocalFileCache implements ResourceCache<File>
    */
   private File cacheFolder;
 
+  // Dependency introduced as part of MODELER-390
+  private SwitchService switchService;
+  private SensorService sensorService;
+  private SliderService sliderService;
 
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
   private ControllerConfigService controllerConfigService;
   private VelocityEngine velocity;
-  
+
   // Constructors ---------------------------------------------------------------------------------
 
 
@@ -1853,8 +1869,25 @@ public class LocalFileCache implements ResourceCache<File>
      */
     Panel.initGroupsAndScreens(panels, groups, screens);
 
-    String controllerXmlContent = getControllerXML(screens, maxOid);
-    String panelXmlContent = getPanelXML(panels);
+    ConfigurationFilesGenerationContext generationContext = new ConfigurationFilesGenerationContext();
+    
+    List<Switch> dbSwitches = switchService.loadAll();
+    for (Switch sw : dbSwitches) {
+      generationContext.putSwitch(sw.getOid(), SwitchDTOConverter.createSwitchDetailsDTO(sw));
+    }
+    
+    List<Slider> dbSliders = sliderService.loadAll();
+    for (Slider slider : dbSliders) {
+      generationContext.putSlider(slider.getOid(), slider.getSliderDetailsDTO());
+    }
+    
+    List<Sensor> dbSensors = sensorService.loadAll(account);
+    for (Sensor sensor : dbSensors) {
+      generationContext.putSensor(sensor.getOid(), sensor.getSensorDetailsDTO());
+    }
+
+    String controllerXmlContent = getControllerXML(screens, maxOid, generationContext);
+    String panelXmlContent = getPanelXML(panels, generationContext);
     String sectionIds = getSectionIds(screens);
     String rulesFileContent = getRulesFileContent();
 
@@ -2024,7 +2057,7 @@ public class LocalFileCache implements ResourceCache<File>
     return deviceMacroRefSectionIds;
   }
   
-  private String getPanelXML(Collection<Panel> panels) {
+  private String getPanelXML(Collection<Panel> panels, ConfigurationFilesGenerationContext generationContext) {
     /*
      * init groups and screens.
      */
@@ -2036,6 +2069,9 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("panels", panels);
     context.put("groups", groups);
     context.put("screens", screens);
+
+    context.put("generationContext", generationContext);
+
     try {
       return mergeXMLTemplateIntoString(PANEL_XML_TEMPLATE, context);
     } catch (Exception e) {
@@ -2044,7 +2080,7 @@ public class LocalFileCache implements ResourceCache<File>
   }
 
   @SuppressWarnings("unchecked")
-  private String getControllerXML(Collection<Screen> screens, long maxOid) {
+  private String getControllerXML(Collection<Screen> screens, long maxOid, ConfigurationFilesGenerationContext generationContext) {
 
     // PATCH R3181 BEGIN ---8<-----
     /*
@@ -2123,6 +2159,7 @@ public class LocalFileCache implements ResourceCache<File>
     context.put("colorPickers", colorPickers);
     context.put("maxId", maxId);
     context.put("configs", configs);
+    context.put("generationContext", generationContext);
 
     try {
       return mergeXMLTemplateIntoString(CONTROLLER_XML_TEMPLATE, context);
@@ -2155,6 +2192,30 @@ public class LocalFileCache implements ResourceCache<File>
       uiButtonEvent.setLabel(deviceCommand.getName());
       protocolEventContainer.addUIButtonEvent(uiButtonEvent);
     }
+  }
+
+  /**
+   * EBR - 20130426
+   * This version of the getCommandOwner takes an id to lookup the command.
+   * In this implementation, it is expected that the id is a DeviceCommand id.
+   * This is a limitation compared to the other implementations,
+   * as the id might have been a DeviceMacro id.
+   * 
+   * This is currently used in the controllerXML.vm template.
+   * Added as part of fix of controller XML generation, initially caused by the MODELER-390 reworks.
+   *
+   * @param id
+   * @param protocolEventContainer
+   * @param maxId
+   * @return
+   */
+  public List<Command> getCommandOwnerById(Long id, ProtocolCommandContainer protocolEventContainer,
+      MaxId maxId) {
+    List<Command> oneUIButtonEventList = new ArrayList<Command>();
+    DeviceCommand deviceCommand = deviceCommandService.loadById(id);
+    protocolEventContainer.removeDeviceCommand(deviceCommand);
+    addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+    return oneUIButtonEventList;
   }
 
   /**
@@ -2205,6 +2266,29 @@ public class LocalFileCache implements ResourceCache<File>
      return oneUIButtonEventList;
   }
 
+  public List<Command> getCommandOwnerByUICommandDTO(UICommandDTO command, ProtocolCommandContainer protocolEventContainer,
+      MaxId maxId) {
+   List<Command> oneUIButtonEventList = new ArrayList<Command>();
+   
+   try {
+      if (command instanceof DeviceCommandDTO) {
+        DeviceCommand deviceCommand = deviceCommandService.loadById(command.getOid());
+        addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
+      } else if (command instanceof MacroDTO) {
+        DeviceMacro deviceMacro = deviceMacroService.loadById(command.getOid());
+        for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+           oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer, maxId));
+        }
+      } else {
+         return new ArrayList<Command>();
+      }
+   } catch (Exception e) {
+      cacheLog.warn("Some components referenced a removed object:  " + e.getMessage());
+      return new ArrayList<Command>();
+   }
+   return oneUIButtonEventList;
+  }
+  
   private void addDeviceCommandEvent(ProtocolCommandContainer protocolEventContainer,
         List<Command> oneUIButtonEventList, DeviceCommand deviceCommand, MaxId maxId) {
      String protocolType = deviceCommand.getProtocol().getType();
@@ -2217,7 +2301,11 @@ public class LocalFileCache implements ResourceCache<File>
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
      }
      uiButtonEvent.setLabel(deviceCommand.getName());
+     
+     // EBR - 20130416 : This has the side effect of changing the id of the uiButtonEvent parameter
+     // To an already set id, if that uiButtonEvent is already contained by protocolEventContainer
      protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+
      oneUIButtonEventList.add(uiButtonEvent);
   }
 
@@ -2398,7 +2486,7 @@ public class LocalFileCache implements ResourceCache<File>
      public Object referenceInsert(String reference, Object value) {
        int lastDot = reference.lastIndexOf(".");
        if (lastDot != -1) {
-         if (".getPanelXml()}".equals(reference.substring(lastDot))) {
+         if (".getPanelXml($generationContext)}".equals(reference.substring(lastDot))) {
            return value;
          }
        }
@@ -2410,6 +2498,18 @@ public class LocalFileCache implements ResourceCache<File>
    return result.toString();
  }
 
+  public void setSwitchService(SwitchService switchService) {
+    this.switchService = switchService;
+  }
+  
+  public void setSliderService(SliderService sliderService) {
+    this.sliderService = sliderService;
+  }
+  
+  public void setSensorService(SensorService sensorService) {
+    this.sensorService = sensorService;
+  }
+  
   public void setDeviceMacroService(DeviceMacroService deviceMacroService) {
     this.deviceMacroService = deviceMacroService;
   }

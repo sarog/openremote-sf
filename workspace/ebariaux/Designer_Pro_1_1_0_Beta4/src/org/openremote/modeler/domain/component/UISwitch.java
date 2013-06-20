@@ -25,10 +25,13 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 
 import flexjson.JSON;
@@ -61,6 +64,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       this.onImage = swh.onImage;
       this.offImage = swh.offImage;
       this.switchCommand = swh.switchCommand;
+      this.switchDTO = swh.switchDTO;
    }
 
    public UISwitch(long id) {
@@ -127,18 +131,22 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
    @Transient
    @Override
    @JSON(include=false)
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
-      if (getSensor() != null) {
-         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getOffsetId() + "\">");
-         if (onImage != null && onImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
-         }
-         if (offImage != null && offImage.getSrc() != null) {
-            xmlContent.append("          <state name=\"off\" value=\"" + offImage.getImageFileName() + "\"/>\n");
-         }
-         xmlContent.append("</link>");
+      if (getSwitchDTO() != null) {
+        SwitchDetailsDTO switchDetailsDTO = context.getSwitch(getSwitchDTO().getOid());
+        if (switchDetailsDTO != null && switchDetailsDTO.getSensor() != null) {
+          SensorDetailsDTO sensorDetailsDTO = context.getSensor(switchDetailsDTO.getSensor().getId());
+          xmlContent.append("<link type=\"sensor\" ref=\"" + sensorDetailsDTO.getOffsetId() + "\">");
+           if (onImage != null && onImage.getSrc() != null) {
+              xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
+           }
+           if (offImage != null && offImage.getSrc() != null) {
+              xmlContent.append("          <state name=\"off\" value=\"" + offImage.getImageFileName() + "\"/>\n");
+           }
+           xmlContent.append("</link>");
+        }
       }
       xmlContent.append("        </switch>\n");
       return xmlContent.toString();
@@ -193,4 +201,42 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       }
       return imageSources;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((offImage == null) ? 0 : offImage.hashCode());
+    result = prime * result + ((onImage == null) ? 0 : onImage.hashCode());
+    result = prime * result + ((switchDTO == null) ? 0 : switchDTO.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UISwitch other = (UISwitch) obj;
+    if (offImage == null) {
+      if (other.offImage != null)
+        return false;
+    } else if (!offImage.equals(other.offImage))
+      return false;
+    if (onImage == null) {
+      if (other.onImage != null)
+        return false;
+    } else if (!onImage.equals(other.onImage))
+      return false;
+    if (switchDTO == null) {
+      if (other.switchDTO != null)
+        return false;
+    } else if (!switchDTO.equals(other.switchDTO))
+      return false;
+    return true;
+  }
+
 }

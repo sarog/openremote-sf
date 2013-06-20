@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.domain.Cell;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.PositionableAndSizable;
 /**
  * used to store grid's information. 
@@ -143,7 +144,7 @@ public class UIGrid extends UIComponent implements PositionableAndSizable {
    }
    
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       // TODO Auto-generated method stub
       return null;
    }
