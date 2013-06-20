@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Template;
@@ -44,7 +45,7 @@ public interface ResourceService
    * account resources from Beehive, not from Designer Cache. See
    * http://jira.openremote.org/browse/MODELER-288
    */
-  @Deprecated String downloadZipResource(long maxId, String sessionId, List<Panel> panels/*, List<Group> groups, List<Screen> screens*/);
+  @Deprecated String downloadZipResource(LocalFileCache cache, List<Panel> panels, long maxOid);
 
   /**
    * @deprecated unused
@@ -72,35 +73,16 @@ public interface ResourceService
   String getPanelsJson(Collection<Panel> panels);
 
   /**
-   * Goes over the whole object graph, replacing all DTO references with pointer to the real BusinessEntity object.
-   * This is for all "building modeler" objects, because we don't want any Hibernate entities to go over the wire.
-   * 
-   * @param panels
-   */
-  void resolveDTOReferences(Collection<Panel> panels);  
-  
-  /**
-   * @deprecated Should be internalized as part of Resource Cache implementation,
-   *             see MODELER-287
-   */
-  @Deprecated void initResources(Collection<Panel> panels,long maxOid);
-
-  /**
    * @deprecated Can be replaced with direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#restore()}
    */
   @Deprecated PanelsAndMaxOid restore();
 
   /**
-   * @deprecated Should be part of Resource Cache API
-   */
-  @Deprecated boolean canRestore();
-
-  /**
    * @deprecated Can be replaced with a direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#save(java.util.Set)}.
    */
-  @Deprecated void saveResourcesToBeehive(Collection<Panel> panels);
+  @Deprecated LocalFileCache saveResourcesToBeehive(Collection<Panel> panels, long maxOid);
 
   void saveTemplateResourcesToBeehive(Template Template);
   void downloadResourcesForTemplate(long templateOid);
