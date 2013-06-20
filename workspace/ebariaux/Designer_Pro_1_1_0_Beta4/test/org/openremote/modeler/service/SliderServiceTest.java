@@ -92,8 +92,9 @@ public class SliderServiceTest {
       Assert.assertEquals(switchs.size(), 2);
    }
 
-   @Test(dependsOnMethods = "testUpdate")
-   public void testDelte() {
+   @Test(dependsOnMethods = "testLoadAll") // was depending on testUpdate but is currently commented off
+   public void testDelete() {
+     
       sliderService.delete(createdSliderId);
       Collection<Slider> sliders = sliderService.loadAll();
       Assert.assertEquals(sliders.size(), numberOfExistingSliders + 1);
