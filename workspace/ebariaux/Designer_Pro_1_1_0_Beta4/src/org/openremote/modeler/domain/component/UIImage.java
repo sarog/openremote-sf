@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.SensorLink.LinkerChild;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
@@ -73,6 +74,7 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;
       this.sensorLink = uiImage.sensorLink;
+      this.sensorDTO = uiImage.sensorDTO;
    }
 
    public ImageSource getImageSource() {
@@ -141,12 +143,12 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
 
    @Transient
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder sb = new StringBuilder();
       sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
-      if (sensor != null) {
-         sb.append(sensorLink.getXMLString());
-      }
+      if (getSensorDTO() != null) {
+        sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
+     }
       if (label != null && label.isRemoved()==false) {
          sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
       }
@@ -188,4 +190,42 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
       }
       return imageSources;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((imageSource == null) ? 0 : imageSource.hashCode());
+    result = prime * result + ((label == null) ? 0 : label.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UIImage other = (UIImage) obj;
+    if (imageSource == null) {
+      if (other.imageSource != null)
+        return false;
+    } else if (!imageSource.equals(other.imageSource))
+      return false;
+    if (label == null) {
+      if (other.label != null)
+        return false;
+    } else if (!label.equals(other.label))
+      return false;
+    if (sensorDTO == null) {
+      if (other.sensorDTO != null)
+        return false;
+    } else if (!sensorDTO.equals(other.sensorDTO))
+      return false;
+    return true;
+  }
+
 }
