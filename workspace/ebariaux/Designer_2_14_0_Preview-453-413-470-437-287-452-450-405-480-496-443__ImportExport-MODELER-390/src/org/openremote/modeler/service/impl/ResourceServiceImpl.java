@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
@@ -46,11 +47,13 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.velocity.app.VelocityEngine;
+import org.openremote.modeler.cache.CacheOperationException;
 import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.ScreenPair;
@@ -60,6 +63,7 @@ import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
 import org.openremote.modeler.exception.NetworkException;
@@ -69,12 +73,14 @@ import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.GraphicalAssetDTO;
+import org.openremote.modeler.shared.dto.DTO;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ZipUtils;
@@ -92,7 +98,6 @@ public class ResourceServiceImpl implements ResourceService
   private final static LogFacade serviceLog =
       LogFacade.getInstance(LogFacade.Category.RESOURCE_SERVICE);
 
-
   private Configuration configuration;
 
   private UserService userService;
@@ -100,6 +105,9 @@ public class ResourceServiceImpl implements ResourceService
   // Those services are not directly used by this class but injected in LocalFileCache or DesignerState when they get built
   private DeviceCommandService deviceCommandService;
   private DeviceMacroService deviceMacroService;
+  private DeviceService deviceService;
+
+  private GenericDAO genericDAO;
 
   private SensorService sensorService;
   private SliderService sliderService;
@@ -150,63 +158,43 @@ public class ResourceServiceImpl implements ResourceService
     }
   }
 
-   @Deprecated @Override public String getDotImportFileForRender(String sessionId, InputStream inputStream) {
-//      File tmpDir = new File(PathConfig.getInstance(configuration).userFolder(sessionId));
-//      if (tmpDir.exists() && tmpDir.isDirectory()) {
-//         try {
-//            FileUtils.deleteDirectory(tmpDir);
-//         } catch (IOException e) {
-//            throw new FileOperationException("Error in deleting temp dir", e);
-//         }
-//      }
-//      new File(PathConfig.getInstance(configuration).userFolder(sessionId)).mkdirs();
-//      String dotImportFileContent = "";
-//      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-//      ZipEntry zipEntry;
-//      FileOutputStream fileOutputStream = null;
-//      try {
-//         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-//            if (!zipEntry.isDirectory()) {
-//               if (Constants.PANEL_DESC_FILE.equalsIgnoreCase(StringUtils.getFileExt(zipEntry.getName()))) {
-//                  dotImportFileContent = IOUtils.toString(zipInputStream);
-//               }
-//               if (!checkXML(zipInputStream, zipEntry, "iphone")) {
-//                  throw new XmlParserException("The iphone.xml schema validation failed, please check it");
-//               } else if (!checkXML(zipInputStream, zipEntry, "controller")) {
-//                  throw new XmlParserException("The controller.xml schema validation failed, please check it");
-//               }
-//
-//               if (!FilenameUtils.getExtension(zipEntry.getName()).matches("(xml|import|conf)")) {
-//                  File file = new File(PathConfig.getInstance(configuration).userFolder(sessionId) + zipEntry.getName());
-//                  FileUtils.touch(file);
-//
-//                  fileOutputStream = new FileOutputStream(file);
-//                  int b;
-//                  while ((b = zipInputStream.read()) != -1) {
-//                     fileOutputStream.write(b);
-//                  }
-//                  fileOutputStream.close();
-//               }
-//            }
-//
-//         }
-//      } catch (IOException e) {
-//         throw new FileOperationException("Error in reading import file from zip", e);
-//      } finally {
-//         try {
-//            zipInputStream.closeEntry();
-//            if (fileOutputStream != null) {
-//               fileOutputStream.close();
-//            }
-//         } catch (IOException e) {
-//            LOGGER.warn("Failed to close import file resources", e);
-//         }
-//
-//      }
-//      return dotImportFileContent;
-     return "";
-   }
+  private File storeAsLocalTemporaryFile(InputStream inputStream) {
+    File temporaryFile = null;
+    FileOutputStream fileOutputStream = null;
+	  try {
+	    temporaryFile = File.createTempFile("import_", ".zip", new File(PathConfig.getInstance(configuration).tempFolder()));
+      fileOutputStream = new FileOutputStream(temporaryFile);
+	    IOUtils.copy(inputStream, fileOutputStream);
+    } catch (IOException e) {
+    	throw new FileOperationException("Error in storing zip import file", e);
+	  } finally {
+	    if (fileOutputStream != null) {
+        try {
+		      fileOutputStream.close();
+		    } catch (IOException e) {
+          serviceLog.warn("Failed to close import file resources", e);
+		    }
+	    }
+  	}
+	
+	  return temporaryFile;
+  }
 
+  @Deprecated @Override @Transactional public Map<String, Collection<? extends DTO>> getDotImportFileForRender(String sessionId, InputStream inputStream) throws NetworkException, ConfigurationException, CacheOperationException {
+	  // Store the upload zip file locally before processing
+	  File importFile = storeAsLocalTemporaryFile(inputStream);
+	  
+    LocalFileCache cache = createLocalFileCache(userService.getCurrentUser());
+    DesignerState state = createDesignerState(userService.getCurrentUser(), cache);
+
+    ConfigurationFileImporter importer = new ConfigurationFileImporter(userService.getAccount(), cache, state, importFile);
+    importer.setControllerConfigService(controllerConfigService);
+    importer.setDeviceMacroService(deviceMacroService);
+    importer.setDeviceService(deviceService);
+    importer.setGenericDAO(genericDAO);
+    
+    return importer.importConfiguration();
+  }
 
   /**
    * TODO
@@ -350,7 +338,11 @@ public class ResourceServiceImpl implements ResourceService
     this.deviceMacroService = deviceMacroService;
   }
 
-   public void setSensorService(SensorService sensorService) {
+   public void setDeviceService(DeviceService deviceService) {
+    this.deviceService = deviceService;
+  }
+
+  public void setSensorService(SensorService sensorService) {
     this.sensorService = sensorService;
    }
 
@@ -449,7 +441,7 @@ public class ResourceServiceImpl implements ResourceService
       LocalFileCache cache = createLocalFileCache(currentUser);
     	
       DesignerState state = createDesignerState(currentUser, cache);
-      state.restore();
+      state.restore(true, true);
 
       PanelsAndMaxOid result = state.transformToPanelsAndMaxOid();
 
@@ -732,7 +724,8 @@ public class ResourceServiceImpl implements ResourceService
    */
   private LocalFileCache createLocalFileCache(User user) {
 	  LocalFileCache cache = new LocalFileCache(configuration, user);
-	  
+
+	  cache.setDeviceService(deviceService);
 	  cache.setSwitchService(switchService);
 	  cache.setSliderService(sliderService);
 	  cache.setSensorService(sensorService);
@@ -761,4 +754,8 @@ public class ResourceServiceImpl implements ResourceService
     return state;
   }
   
+  public void setGenericDAO(GenericDAO genericDAO) {
+     this.genericDAO = genericDAO;
+  }
+
 }
