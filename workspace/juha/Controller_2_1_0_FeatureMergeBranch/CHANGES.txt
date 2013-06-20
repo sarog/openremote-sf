@@ -68,6 +68,8 @@ New Features:
 
 Bug Fixes:
 
+  - X10: patch for potential race condition between thread deallocating 
+    gateway and thread processing serial port input (Juha Lindfors, ORCJAVA-359)
   - Performance fix to sensor state cache queries (Marcus Redeker)
   - Runtime performance optimization to avoid unnecessary XML 
     parsing/XPath use (ORCJAVA-190)
@@ -101,7 +103,6 @@ Internal:
     (Juha Lindfors, ORCJAVA-329)
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
     ORCJAVA-314)
-
 
 
 Controller 2.0.2 (2013-02-26)
