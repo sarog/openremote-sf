@@ -153,15 +153,11 @@ public class MessageQueueWithPriorityAndTTL<E> {
    * 
    * @return Entry at the head of the queue
    */
-  public E blockingPoll() {
+  public E blockingPoll() throws InterruptedException {
     synchronized (queue) {
       while (queue.isEmpty()) {
         // Queue is empty, wait
-        try {
-          queue.wait();
-        } catch (InterruptedException e) {
-          // Just let it go through, we'll return null if queue is empty
-        }
+       queue.wait();
       }
     }
     return poll();
