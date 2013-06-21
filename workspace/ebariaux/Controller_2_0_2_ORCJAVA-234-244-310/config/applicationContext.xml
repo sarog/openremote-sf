@@ -44,6 +44,7 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:marantz_avr.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
           </list>
       </property>
@@ -97,6 +98,12 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
+    <property name="address" value="${marantz_avr.address}" />
+  </bean>
+  
+  <bean id="marantzAVRGateway" class="org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway"/>
 
   <!-- TODO -->
   <bean id = "controlCommandService"
@@ -256,6 +263,7 @@
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
@@ -361,6 +369,9 @@
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+  <bean id="marantzAVRCommandBuilder" class = "org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder">
+    <property name="gateway" ref="marantzAVRGateway"/>
+  </bean>
 
   <!-- DateTime Command Builder -->
   <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
