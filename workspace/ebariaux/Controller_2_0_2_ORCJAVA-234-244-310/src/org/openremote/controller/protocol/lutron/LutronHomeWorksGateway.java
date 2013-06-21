@@ -34,7 +34,8 @@ import java.util.HashMap;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.openremote.controller.LutronHomeWorksConfig;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL.Coalescable;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
 import org.openremote.controller.protocol.lutron.model.GrafikEye;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;

@@ -1,9 +1,10 @@
-package org.openremote.controller.protocol.lutron;
+package org.openremote.controller.protocol;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL.Coalescable;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL.Coalescable;
 
 /**
  * 
