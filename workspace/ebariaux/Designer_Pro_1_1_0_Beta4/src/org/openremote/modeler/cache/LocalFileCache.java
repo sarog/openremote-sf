@@ -30,6 +30,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -122,6 +123,7 @@ import org.openremote.modeler.shared.dto.UICommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
@@ -232,7 +234,8 @@ public class LocalFileCache implements ResourceCache<File>
   private SwitchService switchService;
   private SensorService sensorService;
   private SliderService sliderService;
-
+  private DeviceService deviceService;
+  
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
@@ -474,6 +477,85 @@ public class LocalFileCache implements ResourceCache<File>
   public void replace(Set<Panel> panels, long maxOid) {
     initResources(panels, maxOid);
   }
+  
+  /**
+   * Replaces the local cached Beehive archive with the provided file. If there are
+   * existing previous cached copies of the Beehive archive on the local system, those are backed
+   * up first. After the Beehive archive has been downloaded, it is extracted in the given
+   * account's cache folder.
+   * 
+   * @param configurationArchive File the configuration file to use as the local cached copy of Beehive archive
+   *
+   * @throws NetworkException
+   *            If any errors occur with the network connection to Beehive server -- the basic
+   *            assumption here is that network exceptions are recoverable (within a certain
+   *            time period) and the method call can optionally be re-attempted at later time.
+   *            Do note that the exception class provides a severity level which can be used
+   *            to indicate the likelihood that the network error can be recovered from.
+   *
+   * @throws ConfigurationException
+   *            If any of the cache operations cannot be performed due to security restrictions
+   *            on the local file system.
+   *
+   * @throws CacheOperationException
+   *            If any runtime I/O errors occur during the sync.
+   */
+  public void replace(File configurationArchive) throws NetworkException, ConfigurationException, CacheOperationException
+  {
+	  // TODO - EBR: should do some basic validation on provided file: zip file, contains OR file, ...
+	  
+	  
+    // Backup existing cached archives.
+    //
+    // TODO: MODELER-285
+    //
+    //   - We are over-cautious with cached copies here (which should be throw-away copies under
+    //     normal circumstances) because of the issues with state synchronization between
+    //     Designer and Beehive that currently exists -- these issues are commented on the
+    //     DesignerState class in more detail. Once the implementations have been reviewed on
+    //     both sides, the backup functionality can be made less aggressive (sparser) or disabled
+    //     altogeher.
+
+    try
+    {
+      backup();
+    }
+
+    // Handle errors from local cache operations (File I/O) explicitly here, and do not propagate
+    // them higher up in the call stack. Errors in backups do not prevent normal operation but
+    // does mean we've lost the usual recovery mechanisms so admins should be notified and act
+    // to correct the problem as soon as possible.
+
+    catch (CacheOperationException e)
+    {
+      haltAccountBackups.add(account.getOid());
+
+      admin.alert("Local cache operation error : {0}", e, e.getMessage());
+    }
+
+
+    cacheLog.info("Replacing account cache for {0}.", printUserAccountLog(currentUser));
+
+
+    // We want to be sure we don't have any leftovers in the cache
+    // Delete cache folder if it exists
+    if (hasCacheFolder()) {
+      removeCacheFolder();      
+    }
+    
+    createCacheFolder();      
+
+    configurationArchive.renameTo(getCachedArchive());
+
+    // If we made through all the error checking, we're ready to go. Unzip the archive and finish.
+
+    extract(getCachedArchive(), cacheFolder);
+
+    cacheLog.info(
+        "Extracted ''{0}'' to ''{1}''.",
+        getCachedArchive().getAbsolutePath(), cacheFolder.getAbsolutePath()
+    );
+  }
 
   /**
    * Indicates if we've found any resource artifacts in the cache that would imply an existing,
@@ -607,7 +689,7 @@ public class LocalFileCache implements ResourceCache<File>
     File rulesFile = new File("rules", "modeler_rules.drl");
 
     File uiXMLFile = new File("ui_state.xml");
-//    File buildingXMLFile = new File("building_modeler.xml");
+    File buildingXMLFile = new File("building_modeler.xml");
 
     // Collect all the files going into the archive...
 
@@ -615,7 +697,7 @@ public class LocalFileCache implements ResourceCache<File>
     exportFiles.addAll(this.imageFiles);
     
     exportFiles.add(uiXMLFile);
-//    exportFiles.add(buildingXMLFile);
+    exportFiles.add(buildingXMLFile);
     
     
     exportFiles.add(panelXMLFile);
@@ -780,7 +862,42 @@ public class LocalFileCache implements ResourceCache<File>
       createBackupFolder();
     }
   }
+  
+  /**
+   * Removes the local filesystem directory structure to store a cached
+   * Beehive archive associated with a given account. <p>
+   *
+   * @see #createCacheFolder
+   * @see #hasCacheFolder
+   *
+   * @throws ConfigurationException
+   *            if the deletion of the directories fail for any reason
+   */
+  private void removeCacheFolder() throws ConfigurationException
+  {
+    try
+    {
+      FileUtils.deleteDirectory(cacheFolder);
+      cacheLog.info(
+          "Deleted account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
+      );
+    }
 
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager has denied read/write access to local user cache in ''{0}'' : {1}",
+          e, cacheFolder.getAbsolutePath(), e.getMessage()
+      );
+    }
+    
+    catch (IOException e)
+    {
+    	throw new ConfigurationException(
+            "Unable to delete cache directory for ''{0}''.", cacheFolder.getAbsolutePath()
+        );
+    }	
+  }
 
   /**
    * Checks for the existence of local cache folder this cache implementation uses for its
@@ -1739,6 +1856,14 @@ public class LocalFileCache implements ResourceCache<File>
     PathConfig pathConfig = PathConfig.getInstance(configuration);
     return new File(pathConfig.userFolder(account) + "ui_state.xml");
   }
+  
+  /**
+   * @return File for storing building configuration elements in XML format.
+   */
+  public File getBuildingModelerXmlFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "building_modeler.xml");
+  }
 
   /**
    * @return File for panel XML description (panel.xml)
@@ -1832,17 +1957,17 @@ public class LocalFileCache implements ResourceCache<File>
     xstream.alias("screenPair", ScreenPairRef.class);
     xstream.alias("absolute", Absolute.class);
     
-    FileWriter fw = null;
+    OutputStreamWriter osw = null;
     try {
-      fw = new FileWriter(xmlUIFile);
-      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), fw);
+      // Going through a StreamWriter to enforce UTF-8 encoding
+      osw = new OutputStreamWriter(new FileOutputStream(xmlUIFile), "UTF-8");
+      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), osw);
     } catch (IOException e) {
-      // TODO: better error handling, don't swallow issue
-      cacheLog.error(e.getMessage() ,e);
+      throw new FileOperationException("Failed to write UI state to file " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
     } finally {
       try {
-        if (fw != null) {
-          fw.close();
+        if (osw != null) {
+          osw.close();
         }
       } catch (IOException e) {
         cacheLog.warn("Unable to close writer to '" + xmlUIFile + "'.");
@@ -1935,7 +2060,31 @@ public class LocalFileCache implements ResourceCache<File>
      * validate and output controller.xml
      */
     try {
-      FileUtilsExt.deleteQuietly(panelXMLFile);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
+        map.put("macros", deviceMacroService.loadAllMacroDetailsDTOs(account));
+        map.put("configuration", controllerConfigService.listAllConfigDTOs());
+        
+        XStream xstream = new XStream(new StaxDriver());
+        
+        OutputStreamWriter osw = null;
+        try {
+          // Going through a StreamWriter to enforce UTF-8 encoding
+          osw = new OutputStreamWriter(new FileOutputStream(getBuildingModelerXmlFile()), "UTF-8");
+          xstream.toXML(map, osw);
+        } catch (IOException e) {
+          throw new FileOperationException("Failed to write building modeler state to file " + getBuildingModelerXmlFile().getAbsolutePath() + " : " + e.getMessage(), e);
+        } finally {
+          try {
+            if (osw != null) {
+              osw.close();
+            }
+          } catch (IOException e) {
+            cacheLog.warn("Unable to close writer to '" + getBuildingModelerXmlFile() + "'.");
+          }
+        }
+
+        FileUtilsExt.deleteQuietly(panelXMLFile);
       FileUtilsExt.deleteQuietly(controllerXMLFile);
       FileUtilsExt.deleteQuietly(lircdFile);
       FileUtilsExt.deleteQuietly(rulesFile);
@@ -2503,6 +2652,10 @@ public class LocalFileCache implements ResourceCache<File>
    velocity.mergeTemplate(templateLocation, "UTF8", velocityContext, result);
    return result.toString();
  }
+ 
+  public void setDeviceService(DeviceService deviceService) {
+	this.deviceService = deviceService;
+  }
 
   public void setSwitchService(SwitchService switchService) {
     this.switchService = switchService;

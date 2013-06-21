@@ -53,6 +53,8 @@ import flexjson.JSON;
 @Table(name = "device_macro")
 public class DeviceMacro extends BusinessEntity {
    
+  private static final long serialVersionUID = 718309862039722950L;
+
    /** The device macro items. */
    private List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
    
@@ -218,4 +220,25 @@ public class DeviceMacro extends BusinessEntity {
      }
      return new MacroDetailsDTO(getOid(), getName(), items);
    }
+   
+   /**
+    * Checks if this macro has references to another macro in the provided list.
+    * If list is empty, this basically checks that a macro does reference another macro.
+    * 
+    * @param otherMacros List of macros that this macro can "safely depend on"
+    * @return boolean true if this macro references a macro that is not in the provided list
+    */
+   @JSON(include=false)
+   @Transient
+   public boolean dependsOnMacrosNotInList(List<DeviceMacro> otherMacros) {
+     for (DeviceMacroItem dmi : getDeviceMacroItems()) {
+       if (dmi instanceof DeviceMacroRef) {
+         if (!otherMacros.contains(((DeviceMacroRef) dmi).getTargetDeviceMacro())) {
+           return true;
+         }
+       }
+     }
+     return false;
+   }
+   
 }
