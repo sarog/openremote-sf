@@ -53,6 +53,7 @@ import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
@@ -60,6 +61,7 @@ import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.utils.dtoconverter.DeviceDTOConverter;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.exception.PersistenceException;
@@ -235,11 +237,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * {@inheritDoc}
     */
    @Override   
-   public ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account) {
+   public ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account) {
      List<Device> devices = loadAll(account);
-     ArrayList<DeviceWithChildrenDTO> dtos = new ArrayList<DeviceWithChildrenDTO>();
+     ArrayList<DeviceDetailsWithChildrenDTO> dtos = new ArrayList<DeviceDetailsWithChildrenDTO>();
      for (Device d : devices) {
-       dtos.add(createDeviceWithChildrenDTO(d));
+       dtos.add(DeviceDTOConverter.createDeviceDetailsWithChildrenDTO(d));
      }
      return dtos;
    }
@@ -250,7 +252,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override   
    public DeviceDetailsDTO loadDeviceDetailsDTOById(long id) {
      Device device = loadById(id);
-     return device.getDeviceDetailsDTO();
+     return (device != null)?device.getDeviceDetailsDTO():null;
    }
 
    /**
@@ -259,7 +261,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = loadById(oid);
-     return createDeviceWithChildrenDTO(device);
+     return (device != null)?createDeviceWithChildrenDTO(device):null;
    }
 
    /**
@@ -313,87 +315,104 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    
    @Transactional
    @Override
-   public DeviceDTO saveNewDeviceWithChildren(DeviceDetailsDTO deviceDTO, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
+   public Device saveNewDeviceWithChildren(DeviceDetailsDTO deviceDTO, List<DeviceCommandDetailsDTO> commands, List<SensorDetailsDTO> sensors,
            List<SwitchDetailsDTO> switches, List<SliderDetailsDTO> sliders) {
 		Account account = userService.getAccount();
 
 		Device device = new Device(deviceDTO.getName(), deviceDTO.getVendor(), deviceDTO.getModel());
 		device.setAccount(account);
+		account.getDevices().add(device);
+		device.storeTransient(ORIGINAL_OID_KEY, deviceDTO.getOid());
 
 		Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
-		for (DeviceCommandDetailsDTO command : commands) {
-			DeviceCommand dc = new DeviceCommand();
-			dc.setDevice(device);
-
-			dc.setName(command.getName());
-			Protocol protocol = new Protocol();
-			protocol.setDeviceCommand(dc);
-			dc.setProtocol(protocol);
-			protocol.setType(command.getProtocolType());
-			for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
-				protocol.addProtocolAttribute(e.getKey(), e.getValue());
+		if (commands != null) {
+			for (DeviceCommandDetailsDTO command : commands) {
+				DeviceCommand dc = new DeviceCommand();
+				dc.setDevice(device);
+	
+				dc.setName(command.getName());
+				Protocol protocol = new Protocol();
+				protocol.setDeviceCommand(dc);
+				dc.setProtocol(protocol);
+				protocol.setType(command.getProtocolType());
+				dc.storeTransient(ORIGINAL_OID_KEY, command.getOid());
+				for (Map.Entry<String, String> e : command.getProtocolAttributes().entrySet()) {
+					protocol.addProtocolAttribute(e.getKey(), e.getValue());
+				}
+				commandBeans.put(command, dc);
 			}
-			commandBeans.put(command, dc);
 		}
 		device.setDeviceCommands(new ArrayList<DeviceCommand>(commandBeans.values()));
 
 		Map<SensorDetailsDTO, Sensor> sensorBeans = new HashMap<SensorDetailsDTO, Sensor>();
-		for (SensorDetailsDTO sensorDTO : sensors) {
-			Sensor sensor = null;
-			if (sensorDTO.getType() == SensorType.RANGE) {
-				sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
-			} else if (sensorDTO.getType() == SensorType.CUSTOM) {
-				CustomSensor customSensor = new CustomSensor();
-				for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
-					customSensor.addState(new State(e.getKey(), e.getValue()));
+		if (sensors != null) {
+			for (SensorDetailsDTO sensorDTO : sensors) {
+				Sensor sensor = null;
+				if (sensorDTO.getType() == SensorType.RANGE) {
+					sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+				} else if (sensorDTO.getType() == SensorType.CUSTOM) {
+					CustomSensor customSensor = new CustomSensor();
+					for (Map.Entry<String, String> e : sensorDTO.getStates().entrySet()) {
+						customSensor.addState(new State(e.getKey(), e.getValue()));
+					}
+					sensor = customSensor;
+				} else {
+					sensor = new Sensor(sensorDTO.getType());
 				}
-				sensor = customSensor;
-			} else {
-				sensor = new Sensor(sensorDTO.getType());
+	
+				sensor.setDevice(device);
+				sensor.setName(sensorDTO.getName());
+				sensor.setAccount(account);
+				account.getSensors().add(sensor);
+				sensor.storeTransient(ORIGINAL_OID_KEY, sensorDTO.getOid());
+	
+				DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
+				SensorCommandRef commandRef = new SensorCommandRef();
+				commandRef.setSensor(sensor);
+				commandRef.setDeviceCommand(deviceCommand);
+				sensor.setSensorCommandRef(commandRef);
+				sensorBeans.put(sensorDTO, sensor);
 			}
-
-			sensor.setDevice(device);
-			sensor.setName(sensorDTO.getName());
-			sensor.setAccount(account);
-
-			DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
-			SensorCommandRef commandRef = new SensorCommandRef();
-			commandRef.setSensor(sensor);
-			commandRef.setDeviceCommand(deviceCommand);
-			sensor.setSensorCommandRef(commandRef);
-			sensorBeans.put(sensorDTO, sensor);
 		}
 		device.setSensors(new ArrayList<Sensor>(sensorBeans.values()));
 
 		List<Switch> switchBeans = new ArrayList<Switch>();
-		for (SwitchDetailsDTO switchDTO : switches) {
-			Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
-			DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
-			DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
-
-			Switch sw = new Switch(onCommand, offCommand, sensor);
-			sw.setName(switchDTO.getName());
-			sw.setAccount(account);
-			switchBeans.add(sw);
+		if (switches != null) {
+			for (SwitchDetailsDTO switchDTO : switches) {
+				Sensor sensor = sensorBeans.get(switchDTO.getSensor().getDto());
+				DeviceCommand onCommand = commandBeans.get(switchDTO.getOnCommand().getDto());
+				DeviceCommand offCommand = commandBeans.get(switchDTO.getOffCommand().getDto());
+	
+				Switch sw = new Switch(onCommand, offCommand, sensor);
+				sw.setName(switchDTO.getName());
+				sw.setAccount(account);
+				account.getSwitches().add(sw);
+				sw.storeTransient(ORIGINAL_OID_KEY, switchDTO.getOid());
+				switchBeans.add(sw);
+			}
 		}
 		device.setSwitchs(switchBeans);
 
 		List<Slider> sliderBeans = new ArrayList<Slider>();
-		for (SliderDetailsDTO sliderDTO : sliders) {
-			Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
-      DeviceCommand command = null;
-      if (sliderDTO.getCommand() != null) { // Passive sliders don't have a command
-        command = commandBeans.get(sliderDTO.getCommand().getDto());
-      }
-
-			Slider slider = new Slider(sliderDTO.getName(), command, sensor);
-			slider.setAccount(account);
-			sliderBeans.add(slider);
+		if (sliders != null) {
+			for (SliderDetailsDTO sliderDTO : sliders) {
+				Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
+				DeviceCommand command = null;
+				if (sliderDTO.getCommand() != null) { // Passive sliders don't have a command
+				    command = commandBeans.get(sliderDTO.getCommand().getDto());
+				}
+	
+				Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+				slider.setAccount(account);
+				account.getSliders().add(slider);
+				slider.storeTransient(ORIGINAL_OID_KEY, sliderDTO.getOid());
+				sliderBeans.add(slider);
+			}
 		}
 		device.setSliders(sliderBeans);
 
 		saveDevice(device);
-		return device.getDeviceDTO();
+		return device;
 	}
 
    @Transactional

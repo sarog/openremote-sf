@@ -28,11 +28,14 @@ import java.util.Set;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.ResponseJSONEvent;
+import org.openremote.modeler.client.event.DevicesCreatedEvent;
+import org.openremote.modeler.client.event.DevicesDeletedEvent;
+import org.openremote.modeler.client.event.ImportConfigurationDoneEvent;
+import org.openremote.modeler.client.event.MacrosCreatedEvent;
+import org.openremote.modeler.client.event.MacrosDeletedEvent;
 import org.openremote.modeler.client.event.ScreenTableLoadedEvent;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ResponseJSONListener;
-import org.openremote.modeler.client.presenter.ProfilePanelPresenter;
+import org.openremote.modeler.client.listener.ImportConfigurationDoneEventListener;
 import org.openremote.modeler.client.presenter.UIDesignerPresenter;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
@@ -57,7 +60,6 @@ import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -80,7 +82,6 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
@@ -153,60 +154,7 @@ public class ApplicationView implements View {
             if (authority != null) {
                that.authority = authority;
                
-               UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
-                 @Override
-                 public void onSuccess(Collection<Panel> panels) {                   
-                    if (panels.size() > 0) {
-                       initModelDataBase(panels);
-                       eventBus.fireEvent(new ScreenTableLoadedEvent());
-                    }
-                    UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
-                       @Override
-                       public void onSuccess(Long maxID) {
-                          if (maxID > 0) {              // set the layout component's max id after refresh page.
-                             IDUtil.setCurrentID(maxID.longValue());
-                          }
-                          createNorth();
-                          createCenter(authority);
-                          show();
-                          uiDesignerView.getProfilePanel().setInitialized(true);
-                       }                       
-                    });
-                 }
-                 
-                 @Override
-                 public void onFailure(Throwable caught) {
-                    if (caught instanceof UIRestoreException) {
-                      uiDesignerView.getProfilePanel().setInitialized(true);
-                    }
-                    super.onFailure(caught);
-                    super.checkTimeout(caught);
-                 }
-
-                 private void initModelDataBase(Collection<Panel> panels) {
-                    BeanModelDataBase.panelTable.clear();
-                    BeanModelDataBase.groupTable.clear();
-                    BeanModelDataBase.screenTable.clear();
-                    Set<Group> groups = new LinkedHashSet<Group>();
-                    Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
-                    for (Panel panel : panels) {
-                       List<GroupRef> groupRefs = panel.getGroupRefs();
-                       for (GroupRef groupRef : groupRefs) {
-                          groups.add(groupRef.getGroup());
-                       }
-                       BeanModelDataBase.panelTable.insert(panel.getBeanModel());
-                    }
-                    
-                    for (Group group : groups) {
-                       List<ScreenPairRef> screenRefs = group.getScreenRefs();
-                       for (ScreenPairRef screenRef : screenRefs) {
-                          screens.add(screenRef.getScreen());
-                          BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
-                       }
-                       BeanModelDataBase.groupTable.insert(group.getBeanModel());
-                    }
-                 }
-              });
+               loadPanelsFromSession(authority, true);
                
                
               final DeviceDiscoveryRPCServiceAsync auth = (DeviceDiscoveryRPCServiceAsync) GWT.create(DeviceDiscoveryRPCService.class);
@@ -233,10 +181,73 @@ public class ApplicationView implements View {
                Window.open("login.jsp", "_self", null);
             }
          }
-
       });
    }
 
+    protected void loadPanelsFromSession(final Authority authority, final boolean createUI) {
+      UtilsProxy.loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
+         @Override
+         public void onSuccess(Collection<Panel> panels) {                   
+            if (panels.size() > 0) {
+               initModelDataBase(panels);
+
+               if (uiDesignerPresenter != null) {
+                 uiDesignerPresenter.refreshPanelDisplay();
+               }
+
+               eventBus.fireEvent(new ScreenTableLoadedEvent());
+            }
+            UtilsProxy.loadMaxID(new AsyncSuccessCallback<Long>() {
+               @Override
+               public void onSuccess(Long maxID) {
+                  if (maxID > 0) {              // set the layout component's max id after refresh page.
+                     IDUtil.setCurrentID(maxID.longValue());
+                  }
+                  if (createUI) {
+                    createNorth();
+                    createCenter(authority);
+                    show();
+                    uiDesignerView.getProfilePanel().setInitialized(true);
+                  }
+               }                       
+            });
+         }
+         
+         @Override
+         public void onFailure(Throwable caught) {
+            if (caught instanceof UIRestoreException) {
+              uiDesignerView.getProfilePanel().setInitialized(true);
+            }
+            super.onFailure(caught);
+            super.checkTimeout(caught);
+         }
+
+         private void initModelDataBase(Collection<Panel> panels) {
+            BeanModelDataBase.panelTable.clear();
+            BeanModelDataBase.groupTable.clear();
+            BeanModelDataBase.screenTable.clear();
+            Set<Group> groups = new LinkedHashSet<Group>();
+            Set<ScreenPair> screens = new LinkedHashSet<ScreenPair>();
+            for (Panel panel : panels) {
+               List<GroupRef> groupRefs = panel.getGroupRefs();
+               for (GroupRef groupRef : groupRefs) {
+                  groups.add(groupRef.getGroup());
+               }
+               BeanModelDataBase.panelTable.insert(panel.getBeanModel());
+            }
+            
+            for (Group group : groups) {
+               List<ScreenPairRef> screenRefs = group.getScreenRefs();
+               for (ScreenPairRef screenRef : screenRefs) {
+                  screens.add(screenRef.getScreen());
+                  BeanModelDataBase.screenTable.insert(screenRef.getScreen().getBeanModel());
+               }
+               BeanModelDataBase.groupTable.insert(group.getBeanModel());
+            }
+         }
+      });
+    }
+    
    /**
     * Add the viewport into rootPanel and show it.
     */
@@ -267,6 +278,9 @@ public class ApplicationView implements View {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
+         
+         applicationToolBar.add(createImportButton());
+         
          applicationToolBar.add(createOnLineTestBtn());
       } else if (roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
          initSaveAndExportButtons();
@@ -457,25 +471,39 @@ public class ApplicationView implements View {
     * @return the menu item
     */
    @SuppressWarnings("unused")
-   private MenuItem createImportMenuItem() {
-      MenuItem importMenuItem = new MenuItem("Import");
-      importMenuItem.ensureDebugId(DebugId.IMPORT);
-      //importMenuItem.setIcon(icons.importIcon());
-      final ApplicationView that = this;
-      importMenuItem.addSelectionListener(new SelectionListener<MenuEvent>() {
-         @Override
-         public void componentSelected(MenuEvent ce) {
-            final ImportZipWindow importWindow = new ImportZipWindow();
-            importWindow.addListener(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONListener() {
-               @Override
-               public void afterSubmit(ResponseJSONEvent be) {
-                  // that.activityPanel.reRenderTree(be.getData().toString(), screenTab);
-                  importWindow.hide();
-               }
-            });
-         }
-      });
-      return importMenuItem;
+   private Button createImportButton() {
+     
+     Button importButton = new Button();
+     importButton.setIcon(icons.saveIcon());
+     importButton.setToolTip("Import");
+     importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+      @Override
+      public void componentSelected(ButtonEvent ce) {
+        final ImportZipWindow importWindow = new ImportZipWindow();
+        importWindow.addListener(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEventListener() {
+          
+          @Override
+          public void configurationImported(ImportConfigurationDoneEvent event) {
+             // All existing devices and macros have been deleted as part of import, notify UI displaying those to refresh
+             eventBus.fireEvent(new DevicesDeletedEvent());
+             eventBus.fireEvent(new MacrosDeletedEvent());
+
+             eventBus.fireEvent(new DevicesCreatedEvent(event.getImportedDevices()));
+             eventBus.fireEvent(new MacrosCreatedEvent(event.getImportedMacros()));
+
+             if (uiDesignerPresenter != null) {
+               uiDesignerPresenter.clearPanelTree();
+             }
+
+             loadPanelsFromSession(authority, false);
+           
+             importWindow.hide();
+           }
+        });
+      }
+     });
+      return importButton;
    }
 
 

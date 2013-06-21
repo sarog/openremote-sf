@@ -77,4 +77,8 @@ public interface ControllerConfigService {
 
    void resetToDefaults(HashSet<Long> configIds);
 
+   void deleteAllConfigs();
+
+   Set<ControllerConfigDTO> listAllConfigDTOs();
+
 }
