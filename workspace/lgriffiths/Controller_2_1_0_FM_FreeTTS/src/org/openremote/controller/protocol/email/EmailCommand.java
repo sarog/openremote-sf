@@ -37,8 +37,6 @@ public class EmailCommand implements ExecutableCommand  {
    // Constants ------------------------------------------------------------------------------------
    
    public final static String EMAIL_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "email";
-   
-   private final static String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -50,48 +48,73 @@ public class EmailCommand implements ExecutableCommand  {
    private String recipient;
    private String subject;
    private String message;
+   private String username;
+   private String password;
+   private String domain;
+   private String protocol;
+   private String charset;
+   private String host;
+   private String factoryClass;
+   private String fallback;
+   private String port;
+   private String factoryPort;
+   private String auth;
+   private String quitwait;
    
 // Implements ExecutableCommand ---------------------------------------------------------------------
    
-   public EmailCommand(String recipient, String subject, String message) {
+   public EmailCommand(String recipient, String subject, String message, String username, String password,
+                       String domain, String protocol, String charset,
+                       String host, String factoryClass, String fallback, String port, String factoryPort,
+                       String auth, String quitwait) {
       this.recipient = recipient;;
       this.subject = subject;
       this.message = message;
+      this.username = username;
+      this.password = password;
+      this.domain = domain;
+      this.protocol = protocol;
+      this.charset = charset;
+      this.host = host;
+      this.factoryClass = factoryClass;
+      this.fallback = fallback;
+      this.port = port;
+      this.factoryPort = factoryPort;
+      this.auth = auth;
+      this.quitwait = quitwait;
    }
    
    @Override
    public void send() {
-      String username = "lawrie.griffiths";
-      String password = "password";
 
       Properties props = System.getProperties();
-      props.setProperty("mail.smtps.host", "smtp.gmail.com");
-      props.setProperty("mail.smtp.socketFactory.class", SSL_FACTORY);
-      props.setProperty("mail.smtp.socketFactory.fallback", "false");
-      props.setProperty("mail.smtp.port", "465");
-      props.setProperty("mail.smtp.socketFactory.port", "465");
-      props.setProperty("mail.smtps.auth", "true");
-      props.setProperty("mail.smtps.quitwait", "false");
+      props.setProperty("mail.smtps.host", host);
+      props.setProperty("mail.smtp.socketFactory.class", factoryClass);
+      props.setProperty("mail.smtp.socketFactory.fallback", fallback);
+      props.setProperty("mail.smtp.port", port);
+      props.setProperty("mail.smtp.socketFactory.port", factoryPort);
+      props.setProperty("mail.smtps.auth", auth);
+      props.setProperty("mail.smtps.quitwait", quitwait);
 
       Session session = Session.getInstance(props, null);
       MimeMessage msg = new MimeMessage(session);
 
       try {
-         msg.setFrom(new InternetAddress(username + "@gmail.com"));
+         msg.setFrom(new InternetAddress(username + "@" + domain));
          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
          msg.setSubject(subject);
-         msg.setText(message, "utf-8");
+         msg.setText(message, charset);
          msg.setSentDate(new Date());
 
-         SMTPTransport tr = (SMTPTransport)session.getTransport("smtps");
+         SMTPTransport tr = (SMTPTransport)session.getTransport(protocol);
 
          tr.connect("smtp.gmail.com", username, password);
          tr.sendMessage(msg, msg.getAllRecipients());      
          tr.close();
       } catch (AddressException e) {
-         logger.error("Email: Invalid address");
+         logger.error("Email: Invalid address: " + e);
       } catch (MessagingException e) {
-         logger.error("Email: Messaging exception");
+         logger.error("Email: Messaging exception: " + e);
       }
    }  
 }

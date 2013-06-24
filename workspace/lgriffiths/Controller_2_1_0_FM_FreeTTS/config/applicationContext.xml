@@ -412,8 +412,21 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   
   <!-- Email Command Builder -->
   <bean id = "emailCommandBuilder" 
-     class = "org.openremote.controller.protocol.email.EmailCommandBuilder"/>
-
+     class = "org.openremote.controller.protocol.email.EmailCommandBuilder">
+    <constructor-arg index="0" value="${email.username}" />
+    <constructor-arg index="1" value="${email.password}" />
+    <constructor-arg index="2" value="${email.domain}" />
+    <constructor-arg index="3" value="${email.protocol}" />
+    <constructor-arg index="4" value="${email.charset}" />
+    <constructor-arg index="5" value="${mail.smtps.host}" />
+    <constructor-arg index="6" value="${mail.smtp.socketFactory.class}" />
+    <constructor-arg index="7" value="${mail.smtp.socketFactory.fallback}" />
+    <constructor-arg index="8" value="${mail.smtp.port}" />
+    <constructor-arg index="9" value="${mail.smtp.socketFactory.port}" />
+    <constructor-arg index="10" value="${mail.smtps.auth}" />
+    <constructor-arg index="11" value="${mail.smtps.quitwait}" />
+  </bean>
+  
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
     <property name = "componentBuilders">
