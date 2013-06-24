@@ -43,6 +43,41 @@ public class EmailCommandBuilder implements CommandBuilder {
    // Class Members --------------------------------------------------------------------------------
 
    private final static Logger logger = Logger.getLogger(EMAIL_PROTOCOL_LOG_CATEGORY);
+   
+   // Instance Fields ------------------------------------------------------------------------------
+   
+   private String username;
+   private String password;
+   private String domain;
+   private String protocol;
+   private String charset;
+   private String host;
+   private String factoryClass;
+   private String fallback;
+   private String port;
+   private String factoryPort;
+   private String auth;
+   private String quitwait;
+   
+   
+   // Constructors ---------------------------------------------------------------------------------
+   
+   public EmailCommandBuilder(String username, String password, String domain, String protocol, String charset,
+                              String host, String factoryClass, String fallback, String port, String factoryPort,
+                              String auth, String quitwait) {
+      this.username = username;
+      this.password = password;
+      this.domain = domain;
+      this.protocol = protocol;
+      this.charset = charset;
+      this.host = host;
+      this.factoryClass = factoryClass;
+      this.fallback = fallback;
+      this.port = port;
+      this.factoryPort = factoryPort;
+      this.auth = auth;
+      this.quitwait = quitwait;
+   }
 
    // Implements CommandBuilder --------------------------------------------------------------------
 
@@ -77,7 +112,8 @@ public class EmailCommandBuilder implements CommandBuilder {
        }
       
       logger.debug("Email command created successfully");
-      return new EmailCommand(recipient, subject, message);
+      return new EmailCommand(recipient, subject, message, username, password, domain, protocol, charset,
+                              host, factoryClass, fallback, port, factoryPort, auth, quitwait);
    }
 
 }
