@@ -155,7 +155,7 @@ class GroupValueRead extends KNXCommand implements EventListener
 
     if (response == null)
     {
-        result = Sensor.UNKNOWN_STATUS;      
+        result = Sensor.UNKNOWN_STATUS;
     }
 
 
