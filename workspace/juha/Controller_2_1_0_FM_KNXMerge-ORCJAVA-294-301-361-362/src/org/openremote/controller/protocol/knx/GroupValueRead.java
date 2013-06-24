@@ -30,6 +30,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.protocol.knx.datatype.KNXString;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
@@ -248,6 +249,12 @@ class GroupValueRead extends KNXCommand implements EventListener
       {
         result = valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
       }
+    }
+
+    else if (dpt instanceof DataPointType.KNXString)
+    {
+      KNXString valueDPT = (KNXString)responseAPDU.getDataType();
+      result = valueDPT.resolve();
     }
 
     else
