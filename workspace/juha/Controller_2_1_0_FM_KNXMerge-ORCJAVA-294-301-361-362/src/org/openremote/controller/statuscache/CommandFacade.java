@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -30,7 +30,6 @@ import org.openremote.controller.model.Command;
  * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
- * @author Kenneth Stridh
  */
 public class CommandFacade
 {
@@ -89,11 +88,6 @@ public class CommandFacade
   public void command(String name, int value)
   {
     command(name, Integer.toString(value));
-  }
-
-  public void command(String name, double value)
-  {
-    command(name, Double.toString(value));
   }
 
 }
