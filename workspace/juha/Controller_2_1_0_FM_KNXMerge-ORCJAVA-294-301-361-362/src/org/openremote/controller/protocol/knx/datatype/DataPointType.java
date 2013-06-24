@@ -133,6 +133,10 @@ public abstract class DataPointType
   public final static Unsigned8BitValue SCENE_CONTROL = new Unsigned8BitValue(18, 1);
 
 
+  // String
+  public final static KNXString STRING_ASCII = new KNXString(16, 0);
+  public final static KNXString STRING_8859_1 = new KNXString(16, 1);
+  
   //public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
 
   public static DataPointType lookup(String dptID)
@@ -314,4 +318,13 @@ public abstract class DataPointType
     }
   }
 
+  
+  public static class KNXString extends DataPointType
+  {
+     
+    private KNXString(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
 }
