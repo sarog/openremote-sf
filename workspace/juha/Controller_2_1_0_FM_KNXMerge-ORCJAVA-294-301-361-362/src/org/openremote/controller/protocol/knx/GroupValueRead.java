@@ -32,6 +32,7 @@ import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.KNXString;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
 import org.openremote.controller.utils.Logger;
@@ -222,6 +223,22 @@ class GroupValueRead extends KNXCommand implements EventListener
     {
       Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
       int resolution = (int)valueDPT.resolve();
+      result = Integer.toString(resolution);
+    }
+
+    else if (dpt instanceof DataPointType.Signed8BitValue)
+    {
+      Signed8Bit valueDPT = (Signed8Bit)responseAPDU.getDataType();
+
+      result =  Integer.toString(valueDPT.resolve());
+    }
+
+    else if (dpt instanceof DataPointType.Float2ByteValue)
+    {
+      Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+
+      int resolution = (int)valueDPT.resolve();
+
       result = Integer.toString(resolution);
     }
 
