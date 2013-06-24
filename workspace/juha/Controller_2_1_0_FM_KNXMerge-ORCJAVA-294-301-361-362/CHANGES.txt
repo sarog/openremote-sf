@@ -1,3 +1,10 @@
+Controller ORCJAVA-294
+======================
+
+  - Update KNX implementation to EventListener API (Marcus Redeker)
+
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
