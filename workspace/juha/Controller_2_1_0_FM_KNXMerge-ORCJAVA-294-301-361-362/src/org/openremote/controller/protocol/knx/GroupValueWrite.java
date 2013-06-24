@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -37,6 +37,8 @@ import org.openremote.controller.utils.Strings;
  * controller/protocol SPI.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
  */
 class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
@@ -304,6 +306,25 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         {
           throw new NoSuchCommandException(e.getMessage(), e);
         }
+      }
+
+      
+      else if (name.startsWith("TEXT"))
+      {
+        if ((parameter == null) && (name.length()>6))
+        {
+           String param = name.substring(5);
+           if (param.isEmpty()) {
+              throw new NoSuchCommandException("Missing value parameter for TEXT command.");
+           }
+           try {
+             parameter = new CommandParameter(param);
+           } catch (ConversionException e) {
+             throw new NoSuchCommandException(e.getMessage(), e);
+           }
+        }
+   
+       return ApplicationProtocolDataUnit.createText(parameter);
       }
 
       else
