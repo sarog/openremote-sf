@@ -420,7 +420,7 @@ public class ApplicationView implements View {
    private Button createImportButton() {
      
      Button importButton = new Button();
-     importButton.setIcon(icons.saveIcon());
+     importButton.setIcon(icons.importIcon());
      importButton.setToolTip("Import");
      importButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
