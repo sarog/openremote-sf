@@ -55,6 +55,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
+import org.openremote.modeler.domain.ModelerDomainTestHelper;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.RangeSensor;
@@ -488,7 +489,7 @@ public class ResourceServiceTest {
         UIButton button = new UIButton(IDUtil.nextID());
         button.setName("Button 1");
     
-        Absolute buttonAbsolute = createAbsolute(10,  button);
+        Absolute buttonAbsolute = ModelerDomainTestHelper.createAbsolute(10,  button);
         screen1.addAbsolute(buttonAbsolute);
         
         UISwitch aSwitch = new UISwitch(IDUtil.nextID());
@@ -496,38 +497,38 @@ public class ResourceServiceTest {
         aSwitch.setOffImage(new ImageSource("Off image"));
         aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
         
-        Absolute switchAbsolute = createAbsolute(20,  aSwitch);
+        Absolute switchAbsolute = ModelerDomainTestHelper.createAbsolute(20,  aSwitch);
         screen1.addAbsolute(switchAbsolute);
         
         UISlider slider = new UISlider(IDUtil.nextID());
         slider.setVertical(true);
         slider.setSliderDTO(buildingSlider.getSliderWithInfoDTO());
         
-        Absolute sliderAbsolute = createAbsolute(30, slider);
+        Absolute sliderAbsolute = ModelerDomainTestHelper.createAbsolute(30, slider);
         screen1.addAbsolute(sliderAbsolute);
         
         UILabel label = new UILabel(IDUtil.nextID());
         label.setText("Label");
         
-        Absolute labelAbsolute = createAbsolute(40, label);
+        Absolute labelAbsolute = ModelerDomainTestHelper.createAbsolute(40, label);
         screen1.addAbsolute(labelAbsolute);
         
         UIImage image = new UIImage(IDUtil.nextID());
         image.setImageSource(new ImageSource("Image"));
         
-        Absolute imageAbsolute = createAbsolute(50, image);
+        Absolute imageAbsolute = ModelerDomainTestHelper.createAbsolute(50, image);
         screen1.addAbsolute(imageAbsolute);
         
         UIWebView webView = new UIWebView(IDUtil.nextID());
         webView.setURL("http://www.openremote.org");
         
-        Absolute webAbsolute = createAbsolute(60, webView);
+        Absolute webAbsolute = ModelerDomainTestHelper.createAbsolute(60, webView);
         screen1.addAbsolute(webAbsolute);
         
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setOid(IDUtil.nextID());
         
-        Absolute colorPickerAbsolute = createAbsolute(70, colorPicker);
+        Absolute colorPickerAbsolute = ModelerDomainTestHelper.createAbsolute(70, colorPicker);
         screen1.addAbsolute(colorPickerAbsolute);
         
         cache.replace(panels, IDUtil.nextID());
@@ -3519,14 +3520,6 @@ public class ResourceServiceTest {
      return element;
    }
 
-   private Absolute createAbsolute(int baseValue, UIComponent uiComponent) {
-     Absolute abs = new Absolute(IDUtil.nextID());
-     abs.setPosition(baseValue, baseValue + 1);
-     abs.setSize(baseValue + 2, baseValue + 3);
-     abs.setUiComponent(uiComponent);
-     return abs;
-   }
-   
    private Cell createCell(int left, int right, UIComponent uiComponent) {
      Cell cell = new Cell();
      cell.setPosX(left);
