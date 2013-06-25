@@ -39,6 +39,8 @@ import org.openremote.controller.utils.Strings;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ * @author Olivier Gandit
+ * @author Kenneth Stridh
  */
 class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
@@ -220,9 +222,9 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         try
         {
           if (dpt instanceof DataPointType.Signed8BitValue)
-	      return ApplicationProtocolDataUnit.createSignedRange(parameter);
-	  else
-	      return ApplicationProtocolDataUnit.createRange(parameter);
+	          return ApplicationProtocolDataUnit.createSignedRange(parameter);
+	        else
+	          return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {
@@ -311,7 +313,6 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
           throw new NoSuchCommandException(e.getMessage(), e);
         }
       }
-      
       else if (name.startsWith("TEXT"))
       {
         if ((parameter == null) && (name.length()>6))
@@ -328,6 +329,104 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         }
    
        return ApplicationProtocolDataUnit.createText(parameter);
+      }
+
+      else if (name.equals("TIME"))
+      {
+        if (parameter == null)
+        {
+          try
+          {
+            parameter = new CommandParameter("0");
+          }
+   
+          catch (ConversionException e)
+          {
+            throw new NoSuchCommandException(e.getMessage(), e);
+          }
+        }
+
+//        if (parameter == null)
+//        {
+//          throw new NoSuchCommandException("Missing time value for TIME command.");
+//        }
+  
+        try
+        {
+          return ApplicationProtocolDataUnit.createTime(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("DATE"))
+      {
+        if (parameter == null)
+        {
+          try
+          {
+            parameter = new CommandParameter("0");
+          }
+   
+          catch (ConversionException e)
+          {
+            throw new NoSuchCommandException(e.getMessage(), e);
+          }
+        }
+
+//         if (parameter == null)
+//         {
+//           throw new NoSuchCommandException("Missing date value for DATE command.");
+//         }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createDate(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+  
+      else if (name.equals("POWER"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing power value for POWER command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createPower(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("ENERGY"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing power value for ENERGY command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createEnergy(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
       }
 
       else if (name.equals("RGB"))
