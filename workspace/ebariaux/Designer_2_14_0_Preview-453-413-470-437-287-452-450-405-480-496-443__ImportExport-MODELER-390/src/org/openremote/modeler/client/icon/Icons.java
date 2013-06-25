@@ -128,7 +128,10 @@ public interface Icons extends ImageBundle {
 
    @Resource("export_zip.png")
    AbstractImagePrototype exportAsZipIcon();
-   
+
+   @Resource("import.png")
+   AbstractImagePrototype importIcon();
+
    @Resource("screen_link.png")
    AbstractImagePrototype screenLinkIcon();
    
