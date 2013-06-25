@@ -39,6 +39,7 @@ public class CommandParameter
    * Command parameter value.
    */
   private BigDecimal value;
+  private String rawValue;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -54,18 +55,18 @@ public class CommandParameter
    */
   public CommandParameter(String number) throws ConversionException
   {
+    this.rawValue = number;
     try
     {
       value = new BigDecimal(number);
     }
     catch (NumberFormatException exception)
     {
-      throw new ConversionException(
-          "Failed to parse " + number + " to integer : " + exception.getMessage(), exception
-      );
+//      throw new ConversionException(
+//          "Failed to parse " + number + " to integer : " + exception.getMessage(), exception
+//      );
     }
   }
-
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -77,6 +78,10 @@ public class CommandParameter
   public BigDecimal getValue()
   {
     return value;
+  }
+  
+  public String getRawValue() {
+     return rawValue;
   }
 
 }

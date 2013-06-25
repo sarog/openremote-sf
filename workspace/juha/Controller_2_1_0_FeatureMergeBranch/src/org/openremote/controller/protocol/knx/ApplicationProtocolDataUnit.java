@@ -27,6 +27,7 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
+import org.openremote.controller.protocol.knx.datatype.ThreeByteValue;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
@@ -35,6 +36,7 @@ import org.openremote.controller.protocol.knx.datatype.Time;
 import org.openremote.controller.protocol.knx.datatype.Date;
 import org.openremote.controller.protocol.knx.datatype.FourOctetSigned;
 import org.openremote.controller.protocol.knx.datatype.FourOctetFloat;
+import org.openremote.controller.protocol.knx.datatype.KNXString;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
@@ -613,6 +615,35 @@ class ApplicationProtocolDataUnit
 
 
 
+  static ApplicationProtocolDataUnit createThreeByteRGBValue(CommandParameter rgbValue)
+      throws ConversionException
+  {
+    String s = rgbValue.getRawValue();
+    int len = s.length();
+    byte[] data = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+      try {
+          data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+      } catch (Throwable ignore) {}
+    }
+
+    return new ApplicationProtocolDataUnit(
+       ApplicationLayer.Service.GROUPVALUE_WRITE,
+       new ThreeByteValue(DataPointType.RGB_VALUE, data)
+    );
+  }
+
+
+
+
+  public static ApplicationProtocolDataUnit createText(CommandParameter parameter)
+  {
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new KNXString(DataPointType.STRING_ASCII, parameter.getRawValue())
+    );
+  }
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -945,15 +976,10 @@ class ApplicationProtocolDataUnit
      */
     static ResponseAPDU createStringResponse(final byte[] apdu)
     {
-      int len = apdu.length;
-      byte[] stringData = new byte[len - 2];
-
-      System.arraycopy(apdu, 2, stringData, 0, stringData.length);
-
       return new ResponseAPDU(
           ApplicationLayer.Service.GROUPVALUE_RESPONSE,
-          stringData.length + 1, /* Data length */
-          stringData
+          15, /* Data length */
+          apdu
       );
     }
 
@@ -1081,7 +1107,15 @@ class ApplicationProtocolDataUnit
             getApplicationLayerService(),
             resolveToFloat2ByteValue(value, getDataType().getData()));
       }
+      
+      else if (dpt instanceof DataPointType.KNXString)
+      {
+        DataPointType.KNXString value = (DataPointType.KNXString) dpt;
 
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToKNXString(value, getDataType().getData()));
+      }
 
       else
       {
@@ -1131,6 +1165,11 @@ class ApplicationProtocolDataUnit
     private TwoOctetFloat resolveToTwoOctetFloat(DataPointType.TwoOctetFloat dpt, byte[] value)
     {
       return new TwoOctetFloat(dpt, value);
+    }
+    
+    private KNXString resolveToKNXString(DataPointType.KNXString dpt, byte[] value)
+    {
+      return new KNXString(dpt, value);
     }
 
     /**
