@@ -329,6 +329,9 @@ public class Panel extends BusinessEntity implements BeanModelTag
    */
   public static void walkAllUIComponents(Collection<Panel> panels, UIComponentOperation operation)
   {
+    if (operation == null) {
+      return;
+    }
     IdentityHashMap<UIComponent, Void> visitedComponents = new IdentityHashMap<UIComponent, Void>();
     for (Panel panel : panels) {
       for (GroupRef groupRef : panel.getGroupRefs()) {
