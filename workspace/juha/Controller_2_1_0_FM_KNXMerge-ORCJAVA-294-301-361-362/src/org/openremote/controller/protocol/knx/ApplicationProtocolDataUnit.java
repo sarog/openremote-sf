@@ -27,6 +27,7 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
+import org.openremote.controller.protocol.knx.datatype.ThreeByteValue;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
@@ -448,16 +449,35 @@ class ApplicationProtocolDataUnit
     );
   }
 
+  static ApplicationProtocolDataUnit createThreeByteRGBValue(CommandParameter rgbValue)
+      throws ConversionException
+  {
+    String s = rgbValue.getRawValue();
+    int len = s.length();
+    byte[] data = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+      try {
+          data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+      } catch (Throwable ignore) {}
+    }
 
-  public static ApplicationProtocolDataUnit createText(CommandParameter parameter) 
+    return new ApplicationProtocolDataUnit(
+       ApplicationLayer.Service.GROUPVALUE_WRITE,
+       new ThreeByteValue(DataPointType.RGB_VALUE, data)
+    );
+  }
+
+
+  public static ApplicationProtocolDataUnit createText(CommandParameter parameter)
   {
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new KNXString(DataPointType.STRING_ASCII, parameter.getRawValue())
     );
   }
-  
 
+
+  
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
