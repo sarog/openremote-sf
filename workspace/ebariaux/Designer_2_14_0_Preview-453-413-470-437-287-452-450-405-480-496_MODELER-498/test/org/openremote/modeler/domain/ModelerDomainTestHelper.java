@@ -39,6 +39,15 @@ public class ModelerDomainTestHelper {
     abs.setUiComponent(uiComponent);
     return abs;
   }
-
+  
+  public static Cell createCell(int left, int right, UIComponent uiComponent) {
+    Cell cell = new Cell();
+    cell.setPosX(left);
+    cell.setPosY(right);
+    cell.setColspan(1);
+    cell.setRowspan(1);
+    cell.setUiComponent(uiComponent);
+    return cell;
+  }
 
 }

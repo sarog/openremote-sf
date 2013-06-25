@@ -706,7 +706,7 @@ public class ResourceServiceTest {
         UIButton button = new UIButton(IDUtil.nextID());
         button.setName("Button 1");
     
-        Cell buttonCell = createCell(0,  0, button);
+        Cell buttonCell = ModelerDomainTestHelper.createCell(0,  0, button);
         grid.addCell(buttonCell);
         
         UISwitch aSwitch = new UISwitch(IDUtil.nextID());
@@ -714,38 +714,38 @@ public class ResourceServiceTest {
         aSwitch.setOffImage(new ImageSource("Off image"));
         aSwitch.setSwitchDTO(buildingSwitch.getSwitchWithInfoDTO());
 
-        Cell switchCell = createCell(1, 0, aSwitch);
+        Cell switchCell = ModelerDomainTestHelper.createCell(1, 0, aSwitch);
         grid.addCell(switchCell);
         
         UISlider slider = new UISlider(IDUtil.nextID());
         slider.setVertical(true);
         slider.setSliderDTO(buildingSlider.getSliderWithInfoDTO());
         
-        Cell sliderCell = createCell(2, 0, slider);
+        Cell sliderCell = ModelerDomainTestHelper.createCell(2, 0, slider);
         grid.addCell(sliderCell);
         
         UILabel label = new UILabel(IDUtil.nextID());
         label.setText("Label");
         
-        Cell labelCell = createCell(3, 0, label);
+        Cell labelCell = ModelerDomainTestHelper.createCell(3, 0, label);
         grid.addCell(labelCell);
         
         UIImage image = new UIImage(IDUtil.nextID());
         image.setImageSource(new ImageSource("Image"));
         
-        Cell imageCell = createCell(0, 1, image);
+        Cell imageCell = ModelerDomainTestHelper.createCell(0, 1, image);
         grid.addCell(imageCell);
         
         UIWebView webView = new UIWebView(IDUtil.nextID());
         webView.setURL("http://www.openremote.org");
 
-        Cell webCell = createCell(1, 1, webView);
+        Cell webCell = ModelerDomainTestHelper.createCell(1, 1, webView);
         grid.addCell(webCell);
         
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setOid(IDUtil.nextID());
         
-        Cell colorPickerCell = createCell(2, 1, colorPicker);
+        Cell colorPickerCell = ModelerDomainTestHelper.createCell(2, 1, colorPicker);
         grid.addCell(colorPickerCell);
         
         cache.replace(panels, IDUtil.nextID());
@@ -3520,13 +3520,4 @@ public class ResourceServiceTest {
      return element;
    }
 
-   private Cell createCell(int left, int right, UIComponent uiComponent) {
-     Cell cell = new Cell();
-     cell.setPosX(left);
-     cell.setPosY(right);
-     cell.setColspan(1);
-     cell.setRowspan(1);
-     cell.setUiComponent(uiComponent);
-     return cell;
-   }
 }
