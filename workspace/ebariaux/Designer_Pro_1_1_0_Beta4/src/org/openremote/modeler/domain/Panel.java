@@ -23,6 +23,7 @@ package org.openremote.modeler.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -328,23 +329,27 @@ public class Panel extends BusinessEntity implements BeanModelTag
    */
   public static void walkAllUIComponents(Collection<Panel> panels, UIComponentOperation operation)
   {
-		for (Panel panel : panels) {
-			for (GroupRef groupRef : panel.getGroupRefs()) {
-				Group group = groupRef.getGroup();
-				for (ScreenPairRef screenRef : group.getScreenRefs()) {
-					ScreenPair screenPair = screenRef.getScreen();
-					Screen screen = screenPair.getPortraitScreen();
-					if (screen != null) {
-						walkAllUIComponents(screen, operation);
-					}
-					screen = screenPair.getLandscapeScreen();
-					if (screen != null) {
-						walkAllUIComponents(screen, operation);
-					}
-				}
-			}
-		}
-	}
+    if (operation == null) {
+      return;
+    }
+    IdentityHashMap<UIComponent, Void> visitedComponents = new IdentityHashMap<UIComponent, Void>();
+    for (Panel panel : panels) {
+      for (GroupRef groupRef : panel.getGroupRefs()) {
+        Group group = groupRef.getGroup();
+        for (ScreenPairRef screenRef : group.getScreenRefs()) {
+          ScreenPair screenPair = screenRef.getScreen();
+          Screen screen = screenPair.getPortraitScreen();
+          if (screen != null) {
+            walkAllUIComponents(screen, operation, visitedComponents);
+          }
+          screen = screenPair.getLandscapeScreen();
+          if (screen != null) {
+            walkAllUIComponents(screen, operation, visitedComponents);
+          }
+        }
+      }
+    }
+  }
   
   /**
    * Walk all the UIComponents in the given screen and apply the operation to it.
@@ -354,20 +359,32 @@ public class Panel extends BusinessEntity implements BeanModelTag
    * @param screen Screen containing UIComponents to apply operation to
    * @param operation Operation to apply to all UIComponents
    */
-  private static void walkAllUIComponents(Screen screen, UIComponentOperation operation)
+  private static void walkAllUIComponents(Screen screen, UIComponentOperation operation, IdentityHashMap<UIComponent, Void> visitedComponents)
   {
-		for (Absolute absolute : screen.getAbsolutes()) {
-			operation.execute(absolute.getUiComponent());
-		}
-		for (UIGrid grid : screen.getGrids()) {
-			for (Cell cell : grid.getCells()) {
-				operation.execute(cell.getUiComponent());
-			}
-		}
-		for (Gesture gesture : screen.getGestures()) {
-  		operation.execute(gesture);
-		}
+    for (Absolute absolute : screen.getAbsolutes()) {
+      UIComponent component = absolute.getUiComponent();
+      if (!visitedComponents.containsKey(component)) {
+        operation.execute(component);
+        visitedComponents.put(component, null);
+      }
+    }
+    for (UIGrid grid : screen.getGrids()) {
+      for (Cell cell : grid.getCells()) {
+        UIComponent component = cell.getUiComponent();
+        if (!visitedComponents.containsKey(component)) {
+          operation.execute(component);
+          visitedComponents.put(component, null);
+        }
+      }
+    }
+    for (Gesture gesture : screen.getGestures()) {
+      if (!visitedComponents.containsKey(gesture)) {
+        operation.execute(gesture);
+        visitedComponents.put(gesture, null);
+      }
+    }
   }
+
 
   /**
    * Collects all groups and screens that are part of the given panels.
