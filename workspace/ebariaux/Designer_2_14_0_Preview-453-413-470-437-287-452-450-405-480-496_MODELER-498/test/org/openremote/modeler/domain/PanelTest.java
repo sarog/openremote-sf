@@ -1,25 +1,3 @@
-package org.openremote.modeler.domain;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.List;
-
-import junit.framework.Assert;
-
-import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.domain.component.ColorPicker;
-import org.openremote.modeler.domain.component.ImageSource;
-import org.openremote.modeler.domain.component.UIButton;
-import org.openremote.modeler.domain.component.UIComponent;
-import org.openremote.modeler.domain.component.UIImage;
-import org.openremote.modeler.domain.component.UILabel;
-import org.openremote.modeler.domain.component.UISlider;
-import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.domain.component.UIWebView;
-import org.testng.annotations.Test;
-
-
 /*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2013, OpenRemote Inc.
@@ -40,6 +18,27 @@ import org.testng.annotations.Test;
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package org.openremote.modeler.domain;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.openremote.modeler.client.utils.IDUtil;
+import org.openremote.modeler.domain.component.ColorPicker;
+import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.domain.component.UISwitch;
+import org.openremote.modeler.domain.component.UIWebView;
+import org.testng.annotations.Test;
 
 /**
  * @author <a href = "mailto:eric@openremote.org">Eric Bariaux</a>
