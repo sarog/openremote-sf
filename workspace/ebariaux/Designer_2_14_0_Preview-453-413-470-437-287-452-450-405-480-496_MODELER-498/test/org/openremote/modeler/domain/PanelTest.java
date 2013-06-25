@@ -30,9 +30,12 @@ import junit.framework.Assert;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.component.ColorPicker;
+import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.Gesture.GestureType;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
@@ -47,7 +50,7 @@ public class PanelTest {
 
   @Test void testNullOperation() {
     List<Panel> panels = new ArrayList<Panel>();
-    panels.add(buildPanel());
+    panels.add(buildPanelWithAbsoluteComponents());
     Panel.walkAllUIComponents(panels, null); 
   }
   
@@ -60,9 +63,9 @@ public class PanelTest {
   }
   
   @Test
-  public void testWalkOnePanel() {
+  public void testWalkOnePanelWithAbsoluteComponents() {
     List<Panel> panels = new ArrayList<Panel>();
-    panels.add(buildPanel());
+    panels.add(buildPanelWithAbsoluteComponents());
     CountingOperation op = new CountingOperation();
     Panel.walkAllUIComponents(panels, op);
     Assert.assertEquals("Panels contains 7 components", 7, op.getTotal());
@@ -73,7 +76,33 @@ public class PanelTest {
   }
   
   @Test
-  public void testWalkTwoGroupsReferencingSameScreen() {
+  public void testWalkOnePanelWithCellComponents() {
+    List<Panel> panels = new ArrayList<Panel>();
+    panels.add(buildPanelWithCellComponents());
+    CountingOperation op = new CountingOperation();
+    Panel.walkAllUIComponents(panels, op);
+    Assert.assertEquals("Panels contains 7 components", 7, op.getTotal());
+    Collection<UIComponent> visitedComponents = op.getVisitedComponents();
+    for (UIComponent component : visitedComponents) {
+      Assert.assertEquals("Component should only be visited once", 1, op.getTotal(component));
+    }
+  }
+
+  @Test
+  public void testWalkOnePanelWithGesture() {
+    List<Panel> panels = new ArrayList<Panel>();
+    panels.add(buildPanelWithGesture());
+    CountingOperation op = new CountingOperation();
+    Panel.walkAllUIComponents(panels, op);
+    Assert.assertEquals("Panels contains 1 gesture", 1, op.getTotal());
+    Collection<UIComponent> visitedComponents = op.getVisitedComponents();
+    for (UIComponent component : visitedComponents) {
+      Assert.assertEquals("Component should only be visited once", 1, op.getTotal(component));
+    }
+  }
+
+  @Test
+  public void testWalkTwoGroupsReferencingSameScreenWithAbsoluteComponents() {
     List<Panel> panels = new ArrayList<Panel>();
 
     Panel p = new Panel();
@@ -120,7 +149,109 @@ public class PanelTest {
     }
   }
 
-  private Panel buildPanel() {
+  @Test
+  public void testWalkTwoGroupsReferencingSameScreenWithCellComponents() {
+    List<Panel> panels = new ArrayList<Panel>();
+
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    Screen screen1 = buildScreenWithCellComponents();
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+
+    ScreenPair screenPair1 = new ScreenPair();
+    screenPair1.setOid(IDUtil.nextID());
+    screenPair1.setPortraitScreen(screen1);
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    screenRefs.add(new ScreenPairRef(screenPair1));
+    group1.setScreenRefs(screenRefs);
+    
+    Group group2 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group2.setName("group2");
+    
+    ScreenPair screenPair2 = new ScreenPair();
+    screenPair2.setOid(IDUtil.nextID());
+    screenPair2.setPortraitScreen(screen1);
+    List<ScreenPairRef> screenRefs2 = new ArrayList<ScreenPairRef>();
+    screenRefs2.add(new ScreenPairRef(screenPair2));
+    group2.setScreenRefs(screenRefs2);
+    
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+    groupRefs.add(new GroupRef(group1));
+    groupRefs.add(new GroupRef(group2));
+    p.setGroupRefs(groupRefs);
+
+    panels.add(p);
+    
+    CountingOperation op = new CountingOperation();
+    Panel.walkAllUIComponents(panels, op);
+    Assert.assertEquals("Panels contains 7 components", 7, op.getTotal());
+    Collection<UIComponent> visitedComponents = op.getVisitedComponents();
+    for (UIComponent component : visitedComponents) {
+      Assert.assertEquals("Component should only be visited once", 1, op.getTotal(component));
+    }
+  }
+  
+  @Test
+  public void testWalkTwoGroupsReferencingSameScreenWithGesture() {
+    List<Panel> panels = new ArrayList<Panel>();
+
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    Screen screen1 = new Screen();
+    screen1.setOid(IDUtil.nextID());
+    screen1.setName("screen1");
+
+    Gesture gesture = new Gesture(GestureType.swipe_bottom_to_top);
+    gesture.setOid(IDUtil.nextID());
+    screen1.addGesture(gesture);
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+
+    ScreenPair screenPair1 = new ScreenPair();
+    screenPair1.setOid(IDUtil.nextID());
+    screenPair1.setPortraitScreen(screen1);
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    screenRefs.add(new ScreenPairRef(screenPair1));
+    group1.setScreenRefs(screenRefs);
+    
+    Group group2 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group2.setName("group2");
+    
+    ScreenPair screenPair2 = new ScreenPair();
+    screenPair2.setOid(IDUtil.nextID());
+    screenPair2.setPortraitScreen(screen1);
+    List<ScreenPairRef> screenRefs2 = new ArrayList<ScreenPairRef>();
+    screenRefs2.add(new ScreenPairRef(screenPair2));
+    group2.setScreenRefs(screenRefs2);
+    
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+    groupRefs.add(new GroupRef(group1));
+    groupRefs.add(new GroupRef(group2));
+    p.setGroupRefs(groupRefs);
+
+    panels.add(p);
+    
+    CountingOperation op = new CountingOperation();
+    Panel.walkAllUIComponents(panels, op);
+    Assert.assertEquals("Panels contains 1 gesture", 1, op.getTotal());
+    Collection<UIComponent> visitedComponents = op.getVisitedComponents();
+    for (UIComponent component : visitedComponents) {
+      Assert.assertEquals("Component should only be visited once", 1, op.getTotal(component));
+    }
+  }
+  
+  private Panel buildPanelWithAbsoluteComponents() {
     List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
     List<GroupRef> groupRefs = new ArrayList<GroupRef>();
 
@@ -196,6 +327,118 @@ public class PanelTest {
     return screen1;
   }
   
+  private Panel buildPanelWithCellComponents() {
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    Screen screen1 = buildScreenWithCellComponents();
+    
+    ScreenPair screenPair = new ScreenPair();
+    screenPair.setOid(IDUtil.nextID());
+    screenPair.setPortraitScreen(screen1);
+    screenRefs.add(new ScreenPairRef(screenPair));
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+    group1.setScreenRefs(screenRefs);
+    
+    groupRefs.add(new GroupRef(group1));
+    p.setGroupRefs(groupRefs);
+
+    return p;
+  }
+  
+  private Screen buildScreenWithCellComponents() {
+    Screen screen1 = new Screen();
+    screen1.setOid(IDUtil.nextID());
+    screen1.setName("screen1");
+    
+    UIGrid grid = new UIGrid(10, 11, 12, 13, 4, 2);
+    screen1.addGrid(grid);
+    
+    UIButton button = new UIButton(IDUtil.nextID());
+    button.setName("Button 1");
+
+    Cell buttonCell = ModelerDomainTestHelper.createCell(0,  0, button);
+    grid.addCell(buttonCell);
+    
+    UISwitch aSwitch = new UISwitch(IDUtil.nextID());
+    aSwitch.setOnImage(new ImageSource("On image"));
+    aSwitch.setOffImage(new ImageSource("Off image"));
+
+    Cell switchCell = ModelerDomainTestHelper.createCell(1, 0, aSwitch);
+    grid.addCell(switchCell);
+    
+    UISlider slider = new UISlider(IDUtil.nextID());
+    slider.setVertical(true);
+    
+    Cell sliderCell = ModelerDomainTestHelper.createCell(2, 0, slider);
+    grid.addCell(sliderCell);
+    
+    UILabel label = new UILabel(IDUtil.nextID());
+    label.setText("Label");
+    
+    Cell labelCell = ModelerDomainTestHelper.createCell(3, 0, label);
+    grid.addCell(labelCell);
+    
+    UIImage image = new UIImage(IDUtil.nextID());
+    image.setImageSource(new ImageSource("Image"));
+    
+    Cell imageCell = ModelerDomainTestHelper.createCell(0, 1, image);
+    grid.addCell(imageCell);
+    
+    UIWebView webView = new UIWebView(IDUtil.nextID());
+    webView.setURL("http://www.openremote.org");
+
+    Cell webCell = ModelerDomainTestHelper.createCell(1, 1, webView);
+    grid.addCell(webCell);
+    
+    ColorPicker colorPicker = new ColorPicker();
+    colorPicker.setOid(IDUtil.nextID());
+    
+    Cell colorPickerCell = ModelerDomainTestHelper.createCell(2, 1, colorPicker);
+    grid.addCell(colorPickerCell);
+    
+    return screen1;
+  }
+  
+  private Panel buildPanelWithGesture() {
+    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
+    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
+
+    Panel p = new Panel();
+    p.setOid(IDUtil.nextID());
+    p.setName("panel");
+    
+    Screen screen1 = new Screen();
+    screen1.setOid(IDUtil.nextID());
+    screen1.setName("screen1");
+
+    Gesture gesture = new Gesture(GestureType.swipe_bottom_to_top);
+    gesture.setOid(IDUtil.nextID());
+    screen1.addGesture(gesture);
+    
+    ScreenPair screenPair = new ScreenPair();
+    screenPair.setOid(IDUtil.nextID());
+    screenPair.setPortraitScreen(screen1);
+    screenRefs.add(new ScreenPairRef(screenPair));
+    
+    Group group1 = new Group();
+    group1.setOid(IDUtil.nextID());
+    group1.setName("group1");
+    group1.setScreenRefs(screenRefs);
+    
+    groupRefs.add(new GroupRef(group1));
+    p.setGroupRefs(groupRefs);
+
+    return p;
+  }
+
   private class CountingOperation implements Panel.UIComponentOperation {
     
     private IdentityHashMap<UIComponent, Long> counters =  new IdentityHashMap<UIComponent, Long>();
