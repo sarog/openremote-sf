@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.math.RoundingMode;
 
 
-import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.knx.datatype.Bool;
@@ -35,6 +34,11 @@ import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
+import org.openremote.controller.protocol.knx.datatype.Time;
+import org.openremote.controller.protocol.knx.datatype.Date;
+import org.openremote.controller.protocol.knx.datatype.FourOctetSigned;
+import org.openremote.controller.protocol.knx.datatype.FourOctetFloat;
+
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
@@ -45,6 +49,8 @@ import org.openremote.controller.utils.Strings;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ * @author Kenneth Stridh
+ * @author Stefan Langerman
  */
 class GroupValueRead extends KNXCommand implements EventListener
 {
@@ -219,13 +225,6 @@ class GroupValueRead extends KNXCommand implements EventListener
       result = Integer.toString(valueDPT.resolve());
     }
 
-    else if (dpt instanceof DataPointType.Float2ByteValue)
-    {
-      Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
-      int resolution = (int)valueDPT.resolve();
-      result = Integer.toString(resolution);
-    }
-
     else if (dpt instanceof DataPointType.Signed8BitValue)
     {
       Signed8Bit valueDPT = (Signed8Bit)responseAPDU.getDataType();
@@ -265,6 +264,82 @@ class GroupValueRead extends KNXCommand implements EventListener
       else
       {
         result = valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+      }
+    }
+
+
+    else if (dpt instanceof DataPointType.Time)
+    {
+      Time valueDPT = (Time)responseAPDU.getDataType();
+
+      result = valueDPT.resolve();
+    }
+
+    else if (dpt instanceof DataPointType.Date)
+    {
+      Date valueDPT = (Date)responseAPDU.getDataType();
+
+      result = valueDPT.resolve();
+    }
+
+    else if (dpt instanceof DataPointType.FourOctetSigned)
+    {
+      FourOctetSigned valueDPT = (FourOctetSigned)responseAPDU.getDataType();
+
+      Map<String, String> statusMap = sensor.getProperties();
+
+      if (statusMap.containsKey("precision"))
+      {
+        String precision = statusMap.get("precision");
+
+        if (precision.equals("1") || precision.equals("0.1"))
+        {
+          result = valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+        }
+
+        else if (precision.equals("2") || precision.equals("0.01"))
+        {
+          result = valueDPT.resolve().setScale(2, RoundingMode.HALF_UP).toString();
+        }
+      }
+
+      else
+      {
+        result = valueDPT.resolve().setScale(0, RoundingMode.HALF_UP).toString();
+      }
+    }
+
+    else if (dpt instanceof DataPointType.FourOctetFloat)
+    {
+      FourOctetFloat valueDPT = (FourOctetFloat)responseAPDU.getDataType();
+
+      Map<String, String> statusMap = sensor.getProperties();
+
+      if (statusMap.containsKey("precision"))
+      {
+        String precision = statusMap.get("precision");
+
+        if (precision.equals("1") || precision.equals("0.1"))
+        {
+          result = valueDPT.resolve().setScale(1, RoundingMode.HALF_UP).toString();
+        }
+        else if (precision.equals("2") || precision.equals("0.01"))
+        {
+          result = valueDPT.resolve().setScale(2, RoundingMode.HALF_UP).toString();
+        }
+        else if (precision.equals("3") || precision.equals("0.001"))
+        {
+          result = valueDPT.resolve().setScale(3, RoundingMode.HALF_UP).toString();
+        }
+        else if (precision.equals("4") || precision.equals("0.0001"))
+        {
+          result = valueDPT.resolve().setScale(4, RoundingMode.HALF_UP).toString();
+        }
+      }
+
+      else
+      {
+        result = valueDPT.resolve().toString();
       }
     }
 
