@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -41,7 +41,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openremote.controller.protocol.knx.DataLink.MessageCode;
-import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
@@ -53,6 +52,10 @@ import org.openremote.controller.utils.Logger;
 
 /**
  * KNX-IP interface connection manager.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Olivier Gandit
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
  */
 public class KNXIpConnectionManager implements DiscoveryListener
 {
@@ -102,6 +105,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private Timer connectionTimer;
   private Object connectionTimerLock;
   private String physicalBusClazz;
+  private Map<GroupAddress, GroupValueRead> registeredReadCommands = new ConcurrentHashMap<GroupAddress, GroupValueRead>(1000);
+
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -114,13 +119,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.connectionTimer = null;
     this.connectionTimerLock = new Object();
   }
-
-//  public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
-//     throws KnxIpException, IOException, InterruptedException
-//  {
-//    this();
-//    this.connection = new KNXConnectionImpl(new IpTunnelClient(srcAddr, destControlEndpointAddr));
-//  }
 
 
   // Implements DiscoveryListener -----------------------------------------------------------------
@@ -407,7 +405,19 @@ public class KNXIpConnectionManager implements DiscoveryListener
     return candidateAddresses;
   }
 
+  
+  // Public Instance Methods ------------------------------------------------------------------
 
+  public void registerReadSensor(GroupValueRead groupValueRead)
+  {
+     registeredReadCommands.put(groupValueRead.getAddress(), groupValueRead);
+  }
+  
+  public void unregisterReadSensor(GroupValueRead groupValueRead)
+  {
+     registeredReadCommands.remove(groupValueRead.getAddress());
+  }
+  
   // Bean Configuration ---------------------------------------------------------------------------
 
   protected void setKnxIpInterfaceHostname(String knxIpInterfaceHostname)
@@ -637,8 +647,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private class KNXConnectionImpl implements KNXConnection, IpTunnelClientListener
   {
     private IpTunnelClient client;
-    private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState =
-        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(1000);
     private Status interfaceStatus;
 
     /**
@@ -662,11 +670,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
        this.service(command);
     }
 
-    @Override public synchronized ApplicationProtocolDataUnit read(GroupValueRead command)
+    @Override public synchronized void read(GroupValueRead command)
     {
-      // Send a GroupValue_Read command only if the device status has not been synchronized yet.
-      if(this.internalState.get(command.getAddress()) == null)
-      {
         this.service(command);
 
         // Wait for response after having received a confirmation
@@ -675,23 +680,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
         {
           this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
         }
-
         catch (InterruptedException e)
         {
           Thread.currentThread().interrupt();
         }
-      }
-
-      ApplicationProtocolDataUnit.ResponseAPDU response = this.internalState.get(command.getAddress());
-
-      if (response == null)
-      {
-        return null;
-      }
-
-      DataPointType dpt = command.getDataPointType();
-
-      return response.resolve(dpt);
     }
     
     @Override
@@ -971,14 +963,17 @@ public class KNXIpConnectionManager implements DiscoveryListener
   
       else
       {
-        byte[] data = new byte[dataLen];
+        byte[] data = new byte[dataLen-1];
 
         System.arraycopy( cemiFrame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
 
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
       }
 
-      internalState.put(address, apdu);
+      if (registeredReadCommands.get(address) != null)
+      {
+         registeredReadCommands.get(address).updateSensor(apdu);
+      }
     }
   }
   

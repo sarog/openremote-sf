@@ -1,3 +1,39 @@
+Controller ORCJAVA-362
+======================
+
+ - Add support for date datatype (DPT 10.xxx), time datatype
+   (DPT 11.xxx), four-octet signed values (DPT 13.xxx) and
+   four octet float values (DPT 14.xxx). Corresponding commands
+   that have been added are 'DATE', 'TIME', 'ENERGY' and 'POWER'
+   (Kenneth Stridh)
+
+
+Controller ORCJAVA-361
+======================
+
+ - Add KNX DTP 6.001 and DPT 6.010 implementation (Stefan Langerman)
+
+
+Controller ORCJAVA-301
+======================
+
+  - KNX DPT 16.001 text field support (Marcus Redeker)
+
+
+Controller ORCJAVA-294
+======================
+
+  - Update KNX implementation to EventListener API (Marcus Redeker)
+
+
+Controller ORCJAVA-291
+======================
+
+  - Include DPT262.600 (RGB value) in KNX. This patch also includes
+    changes to CommandParameter class outside of the KNX package
+    which the ORCJAVA-301 patch depends on (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
