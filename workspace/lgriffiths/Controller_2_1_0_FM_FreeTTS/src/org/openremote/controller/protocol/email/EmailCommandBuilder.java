@@ -22,7 +22,7 @@ import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -101,12 +101,12 @@ public class EmailCommandBuilder implements CommandBuilder {
          }
          
          if (STR_ATTRIBUTE_NAME_SUBJECT.equals(elementName)) {
-            subject = elementValue;
+            subject = CommandUtil.parseStringWithParam(element, elementValue);
             logger.debug("Email command: recipient = " + subject);
          }
          
          if (STR_ATTRIBUTE_NAME_MESSAGE.equals(elementName)) {
-            message = elementValue;
+            message = CommandUtil.parseStringWithParam(element, elementValue);
             logger.debug("Email command: recipient = " + message);
          }
        }
