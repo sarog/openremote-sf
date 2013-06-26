@@ -27,6 +27,7 @@ import org.jvoicexml.jsapi2.jse.synthesis.freetts.FreeTTSEngineListFactory;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -82,7 +83,7 @@ public class FreeTTSCommandBuilder implements CommandBuilder {
          String elementValue = ele.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
 
          if (STR_ATTRIBUTE_NAME_TEXT.equals(elementName)) {
-            text = elementValue;
+            text = CommandUtil.parseStringWithParam(element, elementValue);
             logger.debug("FreeTTS command: text = " + text);
          }
       }
