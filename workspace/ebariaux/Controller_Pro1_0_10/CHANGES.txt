@@ -1,7 +1,7 @@
 Controller Pro 1.0.10
 =====================
 
- - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314)
+ - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314 + ORCJAVA-375)
 
 Controller Pro 1.0.9
 ====================
