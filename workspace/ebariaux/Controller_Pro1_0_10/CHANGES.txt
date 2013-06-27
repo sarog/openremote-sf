@@ -2,6 +2,7 @@ Controller Pro 1.0.10
 =====================
 
  - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314 + ORCJAVA-375)
+ - EnOcean Implementation (Rainer Hitz) (ORCJAVA-348)
 
 Controller Pro 1.0.9
 ====================
@@ -67,7 +68,7 @@ Bug Fixes:
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
     
-Controller 2.1.0 (2012-XX-XX Twin Galaxies)
+Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
 New Features:

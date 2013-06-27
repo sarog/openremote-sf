@@ -46,6 +46,7 @@
             <value>classpath:marantz_avr.properties</value>
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
+            <value>classpath:enocean.properties</value>
           </list>
       </property>
   </bean>
@@ -119,6 +120,12 @@
   
   <bean id="AMXNIGateway" class="org.openremote.controller.protocol.amx_ni.AMXNIGateway"/>
   
+  <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
+    <property name="comPort" value="${enocean.comPort}" />
+    <property name="commLayer" value="${enocean.commLayer}" />
+    <property name="serialProtocol" value="${enocean.serialProtocol}" />
+  </bean>
+
   <!-- TODO -->
   <bean id = "controlCommandService"
         class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
@@ -279,6 +286,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "amx_ni"           value-ref = "AMXNICommandBuilder"/>
+        <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -348,6 +356,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
+
+        <!-- EnOcean Command Builder -->
+        <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder"/>
+
 
   <!-- 1-wire protocol Command Builder -->
   <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
