@@ -38,6 +38,7 @@ import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.protocol.port.PortException;
 import org.openremote.controller.utils.Logger;
 
 public class IpTunnelClient implements IpProcessorListener {
@@ -74,7 +75,7 @@ public class IpTunnelClient implements IpProcessorListener {
       this.messageListener = null;
    }
 
-   public synchronized void service(byte[] message) throws KnxIpException, InterruptedException, IOException {
+   public synchronized void service(byte[] message) throws KnxIpException, InterruptedException, IOException, PortException {
       IpMessage resp = this.processor.service(new IpTunnelingReq(this.channelId, this.seqCounter, message),
             this.destDataEndpointAddr);
 
@@ -104,7 +105,7 @@ public class IpTunnelClient implements IpProcessorListener {
       this.seqCounter = (this.seqCounter + 1 & 0xFF);
    }
 
-   public synchronized void connect() throws KnxIpException, InterruptedException, IOException {
+   public synchronized void connect() throws KnxIpException, InterruptedException, IOException, PortException {
       if (this.isConnected()) throw new KnxIpException(Code.alreadyConnected, "Connect failed");
       this.processor.start("runtime", this.srcAddr, null);
       Hpai ep = new Hpai(this.processor.getSrcSocketAddr());
@@ -141,7 +142,7 @@ public class IpTunnelClient implements IpProcessorListener {
       }
    }
 
-   public synchronized void disconnect() throws KnxIpException, InterruptedException, IOException {
+   public synchronized void disconnect() throws KnxIpException, InterruptedException, IOException, PortException {
       try {
         if (!this.isConnected()) throw new KnxIpException(Code.notConnected, "Disconnect failed");
          IpMessage resp = this.processor.service(new IpDisconnectReq(this.channelId, new Hpai(
@@ -171,7 +172,7 @@ public class IpTunnelClient implements IpProcessorListener {
      }
    }
    
-   public void terminateConnection() throws InterruptedException {
+   public void terminateConnection() throws InterruptedException, PortException, IOException {
 
       try
       {
@@ -207,7 +208,7 @@ public class IpTunnelClient implements IpProcessorListener {
    }
 
    @Override
-   public void notifyMessage(IpMessage message) {
+   public void notifyMessage(IpMessage message) throws PortException {
       if (message instanceof IpTunnelingReq) {
          IpTunnelingReq req = (IpTunnelingReq) message;
          if (req.getChannelId() == this.channelId) {
@@ -248,21 +249,25 @@ public class IpTunnelClient implements IpProcessorListener {
                Thread.currentThread().interrupt();
             } catch (IOException e) {
                log.warn("KNX IP heartbeat request failed", e);
+            } catch (PortException e) {
+               log.warn("KNX IP heartbeat request failed", e);
             }
             nbErrs++;
          }
          try {
-            IpTunnelClient.this.disconnect();
+           IpTunnelClient.this.disconnect();
          } catch (KnxIpException e) {
             log.warn("KNX IP heartbeat disconnect request failed", e);
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
          } catch (IOException e) {
             log.warn("KNX IP heartbeat disconnect request failed", e);
+         } catch (PortException e) {
+            log.warn("KNX IP heartbeat disconnect request failed", e);
          }
       }
 
-      private void monitor() throws KnxIpException, InterruptedException, IOException {
+      private void monitor() throws KnxIpException, InterruptedException, IOException, PortException {
          Hpai ep = new Hpai(IpTunnelClient.this.processor.getSrcSocketAddr());
          IpMessage resp = IpTunnelClient.this.processor.service(new IpConnectionStateReq(IpTunnelClient.this.channelId,
                ep), IpTunnelClient.this.destControlEndpointAddr);
@@ -295,6 +300,8 @@ public class IpTunnelClient implements IpProcessorListener {
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
          } catch (IOException e) {
+            // Ignore
+         } catch (PortException e) {
             // Ignore
          }
       }
