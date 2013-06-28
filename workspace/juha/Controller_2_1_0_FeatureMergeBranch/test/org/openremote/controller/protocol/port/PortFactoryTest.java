@@ -10,7 +10,7 @@ public class PortFactoryTest {
    @Test
    public void testCreatePhysicalBus() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
       Port b = PortFactory
-            .createPhysicalBus("org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus");
+            .createPhysicalBus("org.openremote.controller.protocol.port.DatagramSocketPort");
       Assert.assertTrue(b instanceof Port);
    }
 }
