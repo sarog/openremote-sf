@@ -4,5 +4,8 @@ public interface UICommandDTO {
   
   Long getOid();
   String getDisplayName();
+  
+  int equalityHashCode();
+  boolean equalityEquals(Object obj);
 
 }

@@ -368,7 +368,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
     result = prime * result + ((maxTrackImage == null) ? 0 : maxTrackImage.hashCode());
     result = prime * result + ((minImage == null) ? 0 : minImage.hashCode());
     result = prime * result + ((minTrackImage == null) ? 0 : minTrackImage.hashCode());
-    result = prime * result + ((sliderDTO == null) ? 0 : sliderDTO.hashCode());
+    result = prime * result + ((sliderDTO == null) ? 0 : sliderDTO.equalityHashCode());
     result = prime * result + ((thumbImage == null) ? 0 : thumbImage.hashCode());
     result = prime * result + (vertical ? 1231 : 1237);
     return result;
@@ -406,7 +406,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
     if (sliderDTO == null) {
       if (other.sliderDTO != null)
         return false;
-    } else if (!sliderDTO.equals(other.sliderDTO))
+    } else if (!sliderDTO.equalityEquals(other.sliderDTO))
       return false;
     if (thumbImage == null) {
       if (other.thumbImage != null)
