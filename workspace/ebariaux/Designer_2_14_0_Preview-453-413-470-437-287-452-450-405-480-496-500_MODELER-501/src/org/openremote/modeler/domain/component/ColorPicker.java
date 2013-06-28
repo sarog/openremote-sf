@@ -130,7 +130,7 @@ public class ColorPicker extends UIControl implements ImageSourceOwner {
     final int prime = 31;
     int result = super.hashCode();
     result = prime * result + ((image == null) ? 0 : image.hashCode());
-    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.hashCode());
+    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.equalityHashCode());
     return result;
   }
 
@@ -151,7 +151,7 @@ public class ColorPicker extends UIControl implements ImageSourceOwner {
     if (uiCommandDTO == null) {
       if (other.uiCommandDTO != null)
         return false;
-    } else if (!uiCommandDTO.equals(other.uiCommandDTO))
+    } else if (!uiCommandDTO.equalityEquals(other.uiCommandDTO))
       return false;
     return true;
   }

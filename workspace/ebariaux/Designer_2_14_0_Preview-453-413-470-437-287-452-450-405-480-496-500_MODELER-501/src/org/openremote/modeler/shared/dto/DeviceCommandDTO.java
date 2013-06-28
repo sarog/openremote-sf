@@ -64,7 +64,7 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
   }
 
   @Override
-  public int hashCode() {
+  public int equalityHashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
@@ -74,7 +74,7 @@ public class DeviceCommandDTO implements DTO, UICommandDTO {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equalityEquals(Object obj) {
     if (this == obj)
       return true;
     if (obj == null)
