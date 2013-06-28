@@ -197,7 +197,7 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
     int result = super.hashCode();
     result = prime * result + ((imageSource == null) ? 0 : imageSource.hashCode());
     result = prime * result + ((label == null) ? 0 : label.hashCode());
-    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.equalityHashCode());
     return result;
   }
 
@@ -223,7 +223,7 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
     if (sensorDTO == null) {
       if (other.sensorDTO != null)
         return false;
-    } else if (!sensorDTO.equals(other.sensorDTO))
+    } else if (!sensorDTO.equalityEquals(other.sensorDTO))
       return false;
     return true;
   }
