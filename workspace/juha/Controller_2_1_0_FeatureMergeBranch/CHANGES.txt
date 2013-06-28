@@ -114,7 +114,7 @@ Internal:
     on systems with differing default character encoding configurations
     (Juha Lindfors, ORCJAVA-329)
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
-    ORCJAVA-314)
+    Eric Bariaux, ORCJAVA-314, ORCJAVA-375)
 
 
 Controller 2.0.2 (2013-02-26)
