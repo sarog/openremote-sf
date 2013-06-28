@@ -136,7 +136,7 @@ public class Gesture extends UIControl {
     int result = super.hashCode();
     result = prime * result + ((navigate == null) ? 0 : navigate.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.hashCode());
+    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.equalityHashCode());
     return result;
   }
 
@@ -159,7 +159,7 @@ public class Gesture extends UIControl {
     if (uiCommandDTO == null) {
       if (other.uiCommandDTO != null)
         return false;
-    } else if (!uiCommandDTO.equals(other.uiCommandDTO))
+    } else if (!uiCommandDTO.equalityEquals(other.uiCommandDTO))
       return false;
     return true;
   }
