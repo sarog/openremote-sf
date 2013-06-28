@@ -164,7 +164,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
     final int prime = 31;
     int result = super.hashCode();
     result = prime * result + ((password == null) ? 0 : password.hashCode());
-    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.equalityHashCode());
     result = prime * result + ((url == null) ? 0 : url.hashCode());
     result = prime * result + ((userid == null) ? 0 : userid.hashCode());
     return result;
@@ -187,7 +187,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
     if (sensorDTO == null) {
       if (other.sensorDTO != null)
         return false;
-    } else if (!sensorDTO.equals(other.sensorDTO))
+    } else if (!sensorDTO.equalityEquals(other.sensorDTO))
       return false;
     if (url == null) {
       if (other.url != null)
