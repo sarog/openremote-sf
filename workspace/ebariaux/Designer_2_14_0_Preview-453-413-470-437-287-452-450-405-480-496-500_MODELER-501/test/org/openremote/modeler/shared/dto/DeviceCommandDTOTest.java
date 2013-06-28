@@ -34,22 +34,22 @@ public class DeviceCommandDTOTest {
     DeviceCommandDTO deviceCommand1 = new DeviceCommandDTO();
     DeviceCommandDTO deviceCommand2 = new DeviceCommandDTO();
     
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
     
     deviceCommand1.setOid(IDUtil.nextID());
     deviceCommand2.setOid(deviceCommand1.getOid());
 
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
 
     deviceCommand1.setDisplayName("Name");
     deviceCommand2.setDisplayName("Name");
 
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
 
     deviceCommand1.setProtocolType("Protocol type");
     deviceCommand2.setProtocolType("Protocol type");
     
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
   }
 
   @Test
@@ -64,31 +64,31 @@ public class DeviceCommandDTOTest {
     deviceCommand2.setDisplayName("Name");
     deviceCommand2.setProtocolType("Protocol type");
 
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
     
     deviceCommand2.setOid(null);
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second id is not set");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second id is not set");
 
     deviceCommand2.setOid(IDUtil.nextID());
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, id is different");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, id is different");
 
     deviceCommand2.setOid(deviceCommand1.getOid());
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
     
     deviceCommand2.setDisplayName(null);
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second displayName is not set");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second displayName is not set");
     
     deviceCommand2.setDisplayName("Name 2");
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, displayName is different");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, displayName is different");
 
     deviceCommand2.setDisplayName("Name");
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
     
     deviceCommand2.setProtocolType(null);
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second protocolType is not set");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, second protocolType is not set");
     
     deviceCommand2.setProtocolType("Protocol type 2");
-    Assert.assertFalse(deviceCommand1.equals(deviceCommand2), "Expected the DeviceCommandDTO to be different, protocolType is different");
+    Assert.assertFalse(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be different, protocolType is different");
   }
   
   @Test
@@ -100,7 +100,7 @@ public class DeviceCommandDTOTest {
 
     DeviceCommandDTO deviceCommand2 = new DeviceCommandDTO(deviceCommand1.getOid(), "Name", "Protocol type");
 
-    Assert.assertEquals(deviceCommand1, deviceCommand2, "Expected the DeviceCommandDTO to be equal");
+    Assert.assertTrue(deviceCommand1.equalityEquals(deviceCommand2), "Expected the DeviceCommandDTO to be equal");
   }
   
 }

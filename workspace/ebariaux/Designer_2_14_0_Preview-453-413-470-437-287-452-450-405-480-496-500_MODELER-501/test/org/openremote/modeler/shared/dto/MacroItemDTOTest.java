@@ -33,17 +33,17 @@ public class MacroItemDTOTest {
     MacroItemDTO item1 = new MacroItemDTO();
     MacroItemDTO item2 = new MacroItemDTO();
     
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
     
     item1.setDisplayName("Name");
     item2.setDisplayName("Name");
 
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
 
     item1.setType(MacroItemType.Command);
     item2.setType(MacroItemType.Command);
 
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
   }
   
   @Test
@@ -56,22 +56,22 @@ public class MacroItemDTOTest {
     item2.setDisplayName("Name");
     item2.setType(MacroItemType.Command);
 
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
     
     item2.setDisplayName(null);
-    Assert.assertFalse(item1.equals(item2), "Expected the MacroItemDTO to be different, second displayName is not set");
+    Assert.assertFalse(item1.equalityEquals(item2), "Expected the MacroItemDTO to be different, second displayName is not set");
 
     item2.setDisplayName("Name 2");
-    Assert.assertFalse(item1.equals(item2), "Expected the MacroItemDTO to be different, displayName is different");
+    Assert.assertFalse(item1.equalityEquals(item2), "Expected the MacroItemDTO to be different, displayName is different");
    
     item2.setDisplayName("Name");
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
     
     item2.setType(null);
-    Assert.assertFalse(item1.equals(item2), "Expected the MacroItemDTO to be different, second type is not set");
+    Assert.assertFalse(item1.equalityEquals(item2), "Expected the MacroItemDTO to be different, second type is not set");
 
     item2.setType(MacroItemType.Delay);
-    Assert.assertFalse(item1.equals(item2), "Expected the MacroItemDTO to be different, type is different");
+    Assert.assertFalse(item1.equalityEquals(item2), "Expected the MacroItemDTO to be different, type is different");
   }
   
   @Test
@@ -82,7 +82,7 @@ public class MacroItemDTOTest {
 
     MacroItemDTO item2 = new MacroItemDTO("Name", MacroItemType.Command);
 
-    Assert.assertEquals(item1, item2, "Expected the MacroItemDTO to be equal");
+    Assert.assertTrue(item1.equalityEquals(item2), "Expected the MacroItemDTO to be equal");
   }
 
 }
