@@ -36,17 +36,17 @@ public class MacroDTOTest {
     MacroDTO macro1 = new MacroDTO();
     MacroDTO macro2 = new MacroDTO();
     
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
 
     macro1.setOid(IDUtil.nextID());
     macro2.setOid(macro1.getOid());
 
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
 
     macro1.setDisplayName("Name");
     macro2.setDisplayName("Name");
 
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
 
     MacroItemDTO item = new MacroItemDTO("Item", MacroItemType.Command);
     ArrayList<MacroItemDTO> items = new ArrayList<MacroItemDTO>();
@@ -55,7 +55,7 @@ public class MacroDTOTest {
     macro1.setItems(items);
     macro2.setItems(items);
     
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
   }
   
   @Test
@@ -74,43 +74,43 @@ public class MacroDTOTest {
     macro2.setDisplayName("Name");
     macro2.setItems(items);
     
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
 
     macro2.setOid(null);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, second id is not set");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, second id is not set");
 
     macro2.setOid(IDUtil.nextID());
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, id is different");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, id is different");
 
     macro2.setOid(macro1.getOid());
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
     
     macro2.setDisplayName(null);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, second displayName is not set");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, second displayName is not set");
 
     macro2.setDisplayName("Name 2");
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, displayName is different");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, displayName is different");
 
     macro2.setDisplayName("Name");
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
     
     MacroItemDTO item2 = new MacroItemDTO("Item 2", MacroItemType.Command);
     ArrayList<MacroItemDTO> items2 = new ArrayList<MacroItemDTO>();
     
     macro2.setItems(null);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, second items is not set");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, second items is not set");
 
     macro2.setItems(items2);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, items are different");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, items are different");
 
     items2.add(item2);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, items are different");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, items are different");
     
     items2.add(item);
-    Assert.assertFalse(macro1.equals(macro2), "Expected the MacroDTO to be different, items are different");
+    Assert.assertFalse(macro1.equalityEquals(macro2), "Expected the MacroDTO to be different, items are different");
 
     items2.remove(item2);
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
   }
 
   @Test
@@ -121,6 +121,6 @@ public class MacroDTOTest {
 
     MacroDTO macro2 = new MacroDTO(macro1.getOid(), "Name");
 
-    Assert.assertEquals(macro1, macro2, "Expected the MacroDTO to be equal");
+    Assert.assertTrue(macro1.equalityEquals(macro2), "Expected the MacroDTO to be equal");
   }
 }
