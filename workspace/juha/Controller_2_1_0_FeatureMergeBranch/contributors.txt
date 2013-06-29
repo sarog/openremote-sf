@@ -4,6 +4,7 @@ Marcus Redeker
 Jerome Velociter
 Mathieu Gallissot
 David Reines
+Torbjorn Osterdahl
 Phillip Lavender
 Andy Oliver
 Eric Bariaux
