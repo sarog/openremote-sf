@@ -106,6 +106,7 @@ Bug Fixes:
   - 1-wire: Fix NPE when owserver is not reachable (Marcus Redeker, ORCJAVA-267)
   - KNX SCENE and LEARN_SCENE commands were mixed up. Enable scene number
     to be used with level sensors (Marcus Redeker, ORCJAVA-282)
+  - Russound: reliability updates (Torbjorn Osterdahl, ORCJAVA-376)
 
 
 Internal:
