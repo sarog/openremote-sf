@@ -63,7 +63,7 @@
     <attr name = "setvalue" label = "Set Value">
       <validations>
         <allowBlank>true</allowBlank>
-      </valdations>
+      </validations>
     </attr>
 
     <attr name = "settype" label = "Set Value Type" 
