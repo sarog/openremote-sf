@@ -27,6 +27,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
@@ -43,8 +44,6 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
@@ -125,33 +124,45 @@ public class WebViewPropertyForm extends PropertyForm {
          }
       });
       */
-      final Button sensorSelectBtn = new Button("Select");
-      sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      
+      final ImageSelectAdapterField sensorField = new ImageSelectAdapterField("Sensor");
+      if(screenWebView.getUIWebView().getSensorDTO()!=null){
+        sensorField.setText(screenWebView.getUIWebView().getSensorDTO().getDisplayName());
+     }
+      sensorField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
+          selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+             @Override
+             public void afterSubmit(SubmitEvent be) {
+                BeanModel dataModel = be.<BeanModel> getData();
+                SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                uiWebView.setSensorDTOAndInitSensorLink(sensorDTO);
+                sensorField.setText(sensorDTO.getDisplayName());
+                if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM) {
+                   statesPanel.show();
+                   createSensorStates();
+                } else {
+                   statesPanel.hide();
+                }
+                screenWebView.clearSensorStates();
+             }
+          });
+       }
+    });
+      sensorField.addDeleteListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
-            selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  BeanModel dataModel = be.<BeanModel> getData();
-                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
-                  uiWebView.setSensorDTOAndInitSensorLink(sensorDTO);
-                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
-                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM) {
-                     statesPanel.show();
-                     createSensorStates();
-                  } else {
-                     statesPanel.hide();
-                  }
-                  screenWebView.clearSensorStates();
-               }
-            });
+           if (uiWebView.getSensorDTO() != null) {
+             uiWebView.setSensorDTOAndInitSensorLink(null);
+             sensorField.removeImageText();
+             statesPanel.hide();
+             screenWebView.clearSensorStates();
+           }
          }
       });
-      if(screenWebView.getUIWebView().getSensorDTO()!=null){
-         sensorSelectBtn.setText(screenWebView.getUIWebView().getSensorDTO().getDisplayName());
-      }
-     
+      
       /*
       final Button colorSelectBtn = new Button("Select");
       colorSelectBtn.setStyleAttribute("border", "2px solid #"+screenWebView.getUIWebView().getColor());
@@ -174,9 +185,7 @@ public class WebViewPropertyForm extends PropertyForm {
      
       add(fontSizeField);
        */   
-      AdapterField adapter = new AdapterField(sensorSelectBtn);
-      adapter.setFieldLabel("Sensor");
-      add(adapter);
+      add(sensorField);
 /*     
       AdapterField colorBtnAdapter = new AdapterField(colorSelectBtn);
       colorBtnAdapter.setFieldLabel("Color");
