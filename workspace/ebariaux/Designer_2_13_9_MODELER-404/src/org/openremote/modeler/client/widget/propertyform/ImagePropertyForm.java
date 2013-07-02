@@ -52,8 +52,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
@@ -77,40 +75,48 @@ public class ImagePropertyForm extends PropertyForm {
       this.setLabelWidth(70);
       final UIImage uiImage = screenImage.getUiImage();
       
-      final Button sensorSelectBtn = new Button("Select");
+      final ImageSelectAdapterField sensorField = new ImageSelectAdapterField("Sensor");
       if(screenImage.getUiImage().getSensorDTO()!=null){
-         sensorSelectBtn.setText(screenImage.getUiImage().getSensorDTO().getDisplayName());
-      }
-      sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        sensorField.setText(screenImage.getUiImage().getSensorDTO().getDisplayName());
+     }
+      sensorField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
+           selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                 uiImage.setSensorDTOAndInitSensorLink(sensorDTO);
+                 sensorField.setText(sensorDTO.getDisplayName());
+                 if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType()==SensorType.CUSTOM) {
+                    statesPanel.show();
+                    createSensorStates();
+                 } else {
+                    statesPanel.hide();
+                 }
+                 screenImage.clearSensorStates();
+              }
+           });
+        }
+     });
+      sensorField.addDeleteListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
-            selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  BeanModel dataModel = be.<BeanModel> getData();
-                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
-                  uiImage.setSensorDTOAndInitSensorLink(sensorDTO);
-                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
-                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType()==SensorType.CUSTOM) {
-                     statesPanel.show();
-                     createSensorStates();
-                  } else {
-                     statesPanel.hide();
-                  }
-                  screenImage.clearSensorStates();
-               }
-            });
+           if (uiImage.getSensorDTO() != null) {
+             uiImage.setSensorDTOAndInitSensorLink(null);
+             sensorField.removeImageText();
+             statesPanel.hide();
+             screenImage.clearSensorStates();
+           }
          }
       });
       
-     
       ComboBox<ModelData> labelBox = createLabelSelector();
       
       add(createImageUploader());
-      AdapterField sensorAdapter = new AdapterField(sensorSelectBtn);
-      sensorAdapter.setFieldLabel("Sensor");
-      add(sensorAdapter);
+      add(sensorField);
       
       add(labelBox);
       
