@@ -25,15 +25,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
 
 /**
  * TODO
@@ -43,14 +42,16 @@ import org.openremote.controller.model.sensor.Sensor;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Ivan Martinez
  */
-public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
+public class TCPSocketCommand implements ExecutableCommand, EventListener, Runnable {
 
-   /** The logger. */
-   private static Logger logger = Logger.getLogger(TCPSocketCommand.class.getName());
-
-   /** A name to identify event in controller.xml. */
-   private String name;
-
+   // Class Members --------------------------------------------------------------
+   /**
+    * Common logging category.
+    */
+   private static Logger logger = Logger.getLogger(TCPSocketCommandBuilder.TCP_PROTOCOL_LOG_CATEGORY);
+   
+   
+   // Instance Fields ------------------------------------------------------------
    /** A pipe separated list of command string that are sent over the socket */
    private String command;
 
@@ -60,7 +61,32 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
    /** The port that is opened */
    private String port;
 
+   /** The regex which is used to extract sensor data from received result */
+   private String regex;
 
+   /** The polling interval which is used for the sensor update thread */
+   private Integer pollingInterval;
+   
+   /** The thread that is used to peridically update the sensor */
+   private Thread pollingThread;
+   
+   /** The sensor which is updated */
+   private Sensor sensor;
+   
+   /** Boolean to indicate if polling thread should run */
+   boolean doPoll = false;
+  
+   // Constructors  ----------------------------------------------------------------
+   public TCPSocketCommand(String ipAddress, String port, String command, String regex, Integer intervalInMillis) {
+      this.ip = ipAddress;
+      this.port = port;
+      this.command = command;
+      this.regex = regex;
+      this.pollingInterval = intervalInMillis;
+   }
+
+   
+   // Public Instance Methods ----------------------------------------------------------------------
    /**
     * Gets the command.
     *
@@ -78,25 +104,6 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
    public void setCommand(String command) {
       this.command = command;
    }
-
-   /**
-    * Gets the name.
-    *
-    * @return the name
-    */
-   public String getName() {
-      return name;
-   }
-
-   /**
-    * Sets the name.
-    *
-    * @param name the new name
-    */
-   public void setName(String name) {
-      this.name = name;
-   }
-
 
    /**
     * Gets the ip
@@ -130,6 +137,17 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
       this.port = port;
    }
 
+
+   public Integer getPollingInterval() {
+      return pollingInterval;
+   }
+
+
+   public void setPollingInterval(Integer pollingInterval) {
+      this.pollingInterval = pollingInterval;
+   }
+
+
    /**
     * {@inheritDoc}
     */
@@ -158,10 +176,10 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
          }
 
          String result = readReply(socket);
-         logger.info("received message: " + result);
+         logger.debug("received message: " + result);
          return result;
       } catch (Exception e) {
-         logger.error("Socket event could not execute", e);
+         logger.error("SocketCommand could not execute", e);
       } finally {
          if (socket != null) {
             try {
@@ -196,82 +214,59 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
       return data;
    }
 
+   @Override
+   public void setSensor(Sensor sensor)
+   {
+     logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
+     if (pollingInterval == null) {
+       throw new RuntimeException("Could not set sensor because no polling interval was given");
+     }
+     this.sensor = sensor;
+     this.doPoll = true;
+     pollingThread = new Thread(this);
+     pollingThread.setName("Polling thread for sensor: " + sensor.getName());
+     pollingThread.start();
+   }
 
-  @Override public String read(EnumSensorType sensorType, Map<String, String> stateMap)
-  {
-    String regexResult = null;
-    String strState = null;
+   @Override
+   public void stop(Sensor sensor)
+   {
+     this.doPoll = false;
+   }
 
-    // Write the command to socket...
-    //
-    // TODO : rather poorly named method
-
-    String rawResult = requestSocket();
-
-    // Strip response from control characters (non-ASCII)...
-    //
-    // Patch provided by Phillip Lavender
-
-    Pattern p = Pattern.compile("\\p{Cntrl}");
-    Matcher m = p.matcher(rawResult);
-    regexResult = m.replaceAll("");
-	   
-    if ("".equals(regexResult))
-    {
-       return UNKNOWN_STATUS;
-    }
-
-    switch (sensorType)
-    {
-      case RANGE:
-         break;
-
-      case LEVEL:
-         String min = stateMap.get(Sensor.RANGE_MIN_STATE);
-         String max = stateMap.get(Sensor.RANGE_MAX_STATE);
-
-         try
-         {
-            int val = Integer.valueOf(regexResult);
-
-            if (min != null && max != null)
-            {
-               int minVal = Integer.valueOf(min);
-               int maxVal = Integer.valueOf(max);
-
-               return String.valueOf(100 * (val - minVal)/ (maxVal - minVal));
-            } 
+   @Override
+   public void run() {
+      logger.debug("Sensor thread started for sensor: " + sensor);
+      while (doPoll) {
+         // Strip response from control characters (non-ASCII)...
+         // Patch provided by Phillip Lavender
+         String rawResult = this.requestSocket();
+         Pattern p = Pattern.compile("\\p{Cntrl}");
+         Matcher m = p.matcher(rawResult);
+         String readValue = m.replaceAll("");
+         
+         if (regex != null) {
+           Pattern regexPattern = Pattern.compile(regex);
+           Matcher matcher = regexPattern.matcher(readValue);
+           if (matcher.find()) {
+             String result = matcher.group();
+             logger.info("result of regex evaluation: " + result);
+             sensor.update(result);
+           } else {
+             logger.info("regex evaluation did not find a match");
+             sensor.update("N/A");
+           }
+         } else {
+           sensor.update(readValue);
          }
-
-         catch (ArithmeticException e)
-         {
-            logger.warn("Level sensor values cannot be parsed: " + e.getMessage(), e);
+         try {
+            Thread.sleep(pollingInterval); // We wait for the given pollingInterval before reading socket again
+         } catch (InterruptedException e) {
+            doPoll = false;
+            pollingThread.interrupt();
          }
-
-         break;
-
-      default://NOTE: if sensor type is RANGE, this map only contains min/max states.
-
-        // If custom sensor type has been configured, map the 'raw' return value to configured
-        // 'wanted' return value
-        //
-        // TODO :
-        //   no reason to put this implementation burden on protocol implementations, the
-        //   calling code could do it instead
-
-        for (String state : stateMap.keySet())
-        {
-          strState = stateMap.get(state);
-
-          if (regexResult.equals(strState))
-          {
-            return state;
-          }
-        }
       }
-
-
-      return regexResult;
-  }
+      logger.debug("*** Out of run method: " + sensor);
+   }
 
 }
