@@ -1,3 +1,9 @@
+Pro 1.0.10
+==========
+
+New features:
+ - Add regex and pollingInterval attributes to TCP/IP protocol (MODELER-448)
+
 Pro 1.0.9
 =========
 
