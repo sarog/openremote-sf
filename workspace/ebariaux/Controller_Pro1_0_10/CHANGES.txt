@@ -3,6 +3,9 @@ Controller Pro 1.0.10
 
  - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314 + ORCJAVA-375)
  - EnOcean Implementation (Rainer Hitz) (ORCJAVA-348)
+ - Fix an NPE in lagarto command caused by undetermined
+   initialization order between ExecutableCommand and
+   EventListener implementations (Juha Lindfors) (ORCJAVA-346)
 
 Controller Pro 1.0.9
 ====================
