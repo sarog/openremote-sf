@@ -6,6 +6,7 @@ Controller Pro 1.0.10
  - Fix an NPE in lagarto command caused by undetermined
    initialization order between ExecutableCommand and
    EventListener implementations (Juha Lindfors) (ORCJAVA-346)
+  - Rewrite TCP for EventListener interface (Marcus Redeker) (ORCJAVA-298)
 
 Controller Pro 1.0.9
 ====================
@@ -104,6 +105,7 @@ Bug Fixes:
   - 1-Wire does not recover when owserver is not available (ORCJAVA-267)  
   - Issue with status cache if a command linked to a sensor
     has issue (ORCJAVA-268)
+  - Fix a false warning in ISY-99 protocol implementation (ORCJAVA-308)
 
 Controller 2.0.1 (2012-11-21)
 =============================
