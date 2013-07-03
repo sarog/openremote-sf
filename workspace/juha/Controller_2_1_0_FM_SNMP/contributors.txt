@@ -16,6 +16,7 @@ Richard Turner
 Yann Philippe
 Greg Rapp
 Kenneth Stridh
+David De Vits
 Daniel Berenguer
 Ivan Martinez
 Stefan Langerman
