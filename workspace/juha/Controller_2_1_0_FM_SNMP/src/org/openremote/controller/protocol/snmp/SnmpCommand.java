@@ -1,45 +1,41 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.snmp;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.utils.Logger;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.AssignableFromString;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
@@ -47,18 +43,18 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.AbstractVariable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
-import org.snmp4j.smi.*;
-import org.snmp4j.SNMP4JSettings;
 
 /**
- * The Socket Event.
+ * TODO
  *
  * @author Rde01
  */
-public class SnmpCommand implements ExecutableCommand, StatusCommand {
+public class SnmpCommand implements ExecutableCommand, StatusCommand
+{
 
    /** The logger. */
-   private static Logger logger = Logger.getLogger(SnmpCommand.class.getName());
+   private static Logger log = Logger.getLogger(SnmpCommandBuilder.SNMP_LOG_CATEGORY);
+
 
    /** The default timeout used to wait for a result */
    public static final int DEFAULT_TIMEOUT = 5000;
@@ -238,21 +234,25 @@ public class SnmpCommand implements ExecutableCommand, StatusCommand {
    public void setGetregexreplacement(String getregexreplacement) {
   	   this.getregexreplacement = getregexreplacement; 
    }
-   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void send() {
-      //requestSocket();
-	  if ("set".equals(this.getCommand())){
-		  snmpSet(this.getIp(), "private", this.getOid());
-	  } else if ("get".equals(this.getCommand())){
-	  	  snmpGet(this.getIp(), "public", this.getOid());
-	  } else {
-	  	  System.out.println(this.getCommand() + " is a wrong command use get or set");
-	  }
-   }
+
+
+  @Override public void send()
+  {
+    if ("set".equalsIgnoreCase(getCommand()))
+    {
+      snmpSet(getIp(), "private", getOid());
+    }
+
+    else if ("get".equalsIgnoreCase(getCommand()))
+    {
+      snmpGet(getIp(), "public", getOid());
+    }
+
+    else
+    {
+      log.error("Unrecognized command ''{0}''. Use ''get'' or ''set'' instead.", getCommand());
+    }
+  }
 
    @Override
    public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
@@ -428,52 +428,89 @@ public class SnmpCommand implements ExecutableCommand, StatusCommand {
 		}
 	}
    
-   /*
-	* The code is valid only SNMP version1. SnmpGet method
-	* return Response for given OID from the Device.
-	*/
-	public String snmpGet(String strAddress, String community, String strOID)
-	{
-		String str="";
-		try
-		{
-			TransportMapping transport = new DefaultUdpTransportMapping();
-			transport.listen();
-			CommunityTarget comtarget = new CommunityTarget();
-			comtarget.setCommunity(new OctetString(community));
-			comtarget.setVersion(SnmpConstants.version1);
-			comtarget.setAddress(new UdpAddress(strAddress+"/"+ this.getPort()));
-			comtarget.setRetries(2);
-			comtarget.setTimeout(DEFAULT_TIMEOUT);
-			PDU pdu = new PDU();
-			ResponseEvent response;
-			pdu.add(new VariableBinding(new OID(strOID)));
-			pdu.setType(PDU.GET);
-			Snmp snmp = new Snmp(transport);
-			response = snmp.get(pdu,comtarget);
-			if(response != null)
-			{
-				if(response.getResponse().getErrorStatusText().equalsIgnoreCase("Success"))
-				{
-					PDU pduresponse=response.getResponse();
-					str=pduresponse.getVariableBindings().firstElement().toString();
-					if(str.contains("="))
-					{
-						int len = str.indexOf("=");
-						str=str.substring(len+1, str.length());
-					}
-				}
-			}
-			else
-			{
-				System.out.println("Feeling like a TimeOut occured ");
-			}
-			snmp.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		//System.out.println("Response="+str);
-		return str;
-	}
+  /*
+   * The code is valid only SNMP version1. SnmpGet method return Response for given OID from the
+   * Device.
+   */
+  private String snmpGet(String strAddress, String community, String strOID)
+  {
+    log.debug(
+        "Executing SNMP get for address: ''{0}'' ({1}), OID: {2} (SNMP version 1, UDP transport).",
+        strAddress, community, strOID
+    );
+
+    String str="";
+    String udpAddress = strAddress + "/" + getPort();
+    final int RETRIES = 2;
+
+    try
+    {
+      TransportMapping transport = new DefaultUdpTransportMapping();
+      transport.listen();
+
+      CommunityTarget comtarget = new CommunityTarget();
+      comtarget.setCommunity(new OctetString(community));
+      comtarget.setVersion(SnmpConstants.version1);
+      comtarget.setAddress(new UdpAddress(udpAddress));
+      comtarget.setRetries(RETRIES);
+      comtarget.setTimeout(DEFAULT_TIMEOUT);
+
+      log.trace("Community: ''{0}''", community);
+      log.trace("Version: ''{0}''", SnmpConstants.version1);
+      log.trace("Address: ''{0}''", udpAddress);
+      log.trace("Retries: ''{0}''", RETRIES);
+      log.trace("Timeout: ''{0}''", DEFAULT_TIMEOUT);
+
+      PDU pdu = new PDU();
+      pdu.add(new VariableBinding(new OID(strOID)));
+      pdu.setType(PDU.GET);
+      Snmp snmp = new Snmp(transport);
+
+      ResponseEvent response = snmp.get(pdu, comtarget);
+
+      if (response != null)
+      {
+        PDU responsePDU = response.getResponse();
+
+        log.debug("Received response: ''{0}''", responsePDU.getErrorStatusText());
+        log.trace("Protocol Data Unit:\n   {0}", responsePDU.toString());
+
+
+        if (responsePDU.getErrorStatusText().equalsIgnoreCase("Success"))
+        {
+
+          str = responsePDU.getVariableBindings().firstElement().toString();
+
+          if (str.contains("="))
+          {
+            int len = str.indexOf("=");
+            str = str.substring(len+1, str.length());
+
+            log.info("Response = ''{0}''", str);
+          }
+        }
+
+        else
+        {
+          log.info("SNMP GET error response: ''{0}''", responsePDU.getErrorStatusText());
+        }
+      }
+
+      else
+      {
+        log.error("No response (Timeout?).");
+      }
+
+      snmp.close();
+    }
+
+    catch(Exception e)
+    {
+      log.error("SNMP GET request error: ''{0}''", e, e.getMessage());
+    }
+
+
+    return str;
+  }
 
 }
