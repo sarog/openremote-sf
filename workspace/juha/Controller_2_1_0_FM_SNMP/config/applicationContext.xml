@@ -264,6 +264,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
+        <entry key = "snmp"             value-ref = "snmpCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
     </constructor-arg>
@@ -407,6 +408,8 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
     <property name="configuration" ref="configuration"/>
   </bean>
+
+  <bean id = "snmpCommandBuilder" class = "org.openremote.controller.protocol.snmp.SnmpCommandBuilder" />
 
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
