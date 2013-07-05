@@ -109,7 +109,9 @@ public class IpConnection implements DSCIT100Connection
 
   @Override public boolean isConnected()
   {
-    return socket.isConnected();
+    // isConnected() will ALWAYS return true IF you have connected the socket.
+    // isClosed() will return false ONLY if YOU have disconnected the socket.
+    return socket.isConnected() & !socket.isClosed();
   }
 
   @Override public void close()
@@ -234,29 +236,36 @@ public class IpConnection implements DSCIT100Connection
 
       // Send IT100 state discovery packet to get current system state (not used for EnvisaLink)...
 
-      if (credentials == null)
+      if (credentials == null || credentials.equals(""))
       {
+      		// The First ever command seems to get lost by
+      		// my Ethernet->Serial adaptor!
+      		sendInternal(new Packet("000", ""));
       		sendInternal(new Packet("001", ""));
 
       		// Send IT100 labels request packet to get system labels...
 
       		sendInternal(new Packet("002", ""));
-	    }
+	  }
 
       boolean isConnected = true;
-
+	  String rawData;
       while (isConnected)
       {
         Packet packet = null;
 
         try
         {
-          String rawData = in.readLine();
-
+          if ((rawData = in.readLine())==null) {
+          	log.debug("Socket has disconnected");
+          	isConnected=false;
+          	break;	
+          }
+          	
           log.debug(
-              "Received data from " + socket.getInetAddress().getHostAddress() + " : " + rawData
+              "Received data from " + socket.getInetAddress().getHostAddress() + " : \"" + rawData + "\""
           );
-
+		  
           packet = new Packet(rawData);
         }
 
@@ -266,9 +275,7 @@ public class IpConnection implements DSCIT100Connection
 
           isConnected = false;
 
-          // Connection has failed, close the socket so it can be recreated later...
-
-          IpConnection.this.close();
+		  break;
         }
 
 
@@ -311,7 +318,7 @@ public class IpConnection implements DSCIT100Connection
                 log.error("EnvisaLink: connection timeout");
 
                 isConnected=false;
-                IpConnection.this.close();
+                break;
               }
             }
 
@@ -325,6 +332,7 @@ public class IpConnection implements DSCIT100Connection
               log.debug("Executing callback method for packet " + packet);
 
               packetCallback.receive(IpConnection.this, packet);
+              packetCallback=null;
             }
           }
         }
@@ -334,11 +342,13 @@ public class IpConnection implements DSCIT100Connection
 
           isConnected = false;
 
-          // Connection has failed, close the socket so it can be recreated later...
-
-          IpConnection.this.close();
         }
-      }
+      } // End of while loop
+
+      // Connection has failed, close the socket so it can be recreated later...
+
+      IpConnection.this.close();
+      
     }
   }
 }

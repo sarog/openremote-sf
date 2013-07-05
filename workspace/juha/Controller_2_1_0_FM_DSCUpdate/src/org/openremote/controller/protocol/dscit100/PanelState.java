@@ -63,7 +63,7 @@ class PanelState
 
   enum PartitionState implements State
   {
-    READY, NOTREADY, ARMED_AWAY, ARMED_STAY, ARMED_AWAY_NODELAY, ARMED_STAY_NODELAY, ALARM,
+    READY, NOTREADY, AWAYARMED, STAYARMED, AWAYARMEDND, STAYARMEDND, ALARM,
     DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
   }
 
@@ -127,7 +127,7 @@ class PanelState
       int leds = Integer.parseInt(packet.getData().substring(0, 2),16);
       int mask = 1 << 7;
 
-      for (int c = 1;c <= 8; c++)
+      for (int c = 8;c > 0; c--)
       {
         log.debug("LED Status update [LED"+String.valueOf(c)+"="+((leds&mask)==0?"OFF":"FLASH")+"]");
 
@@ -225,22 +225,22 @@ class PanelState
 
       if (mode.equals("0"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_AWAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMED);
       }
 
       else if (mode.equals("1"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_STAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMED);
       }
 
       else if (mode.equals("2"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_AWAY_NODELAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMEDND);
       }
 
       else if (mode.equals("3"))
       {
-        updateInternalState(StateType.PARTITION, partition, PartitionState.ARMED_STAY_NODELAY);
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMEDND);
       }
     }
 
@@ -302,6 +302,26 @@ class PanelState
       log.debug("Partition busy [partition=" + partition + "]");
 
       updateInternalState(StateType.PARTITION, partition, PartitionState.BUSY);
+    }
+    
+    else if (packet.getCommand().equals("903"))
+    {
+      // Annoyingly the IT-100 uses this instead of 510/511 for led status but never mind!
+
+	  String led = packet.getData().substring(0,1);
+	  int led_state=Integer.parseInt(packet.getData().substring(1,2));
+
+	  log.debug("LED Status update [LED"+led+"="+String.valueOf(led_state)+"]");
+	  
+	  if (led_state==0) {
+	    updateInternalState(StateType.LED, led, LedState.OFF);
+
+	  } else { 
+  	    updateInternalState(
+            StateType.LED, led, (led_state) == 1 ? LedState.ON : LedState.FLASH
+        );
+
+      }
     }
   }
 
