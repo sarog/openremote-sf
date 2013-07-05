@@ -266,6 +266,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "freeTTS"          value-ref = "freeTTSCommandBuilder"/>
         <entry key = "email"          	value-ref = "emailCommandBuilder"/>
+        <entry key = "serial"          	value-ref = "serialCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -426,6 +427,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <constructor-arg index="10" value="${mail.smtps.auth}" />
     <constructor-arg index="11" value="${mail.smtps.quitwait}" />
   </bean>
+  
+     <!-- Serial Command Builder -->
+  <bean id = "serialCommandBuilder" 
+     class = "org.openremote.controller.protocol.serial.SerialCommandBuilder"/>
   
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
