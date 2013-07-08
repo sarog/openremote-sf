@@ -54,9 +54,9 @@
 	<classpathentry kind="lib" path="lib/freetts/en_us.jar"/>
 	<classpathentry kind="lib" path="lib/freetts/freetts.jar"/>
 	<classpathentry kind="lib" path="lib/email/mail.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/jsr113.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/org.jvoicexml.jsapi2.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/org.jvoicexml.jsapi2.jse.freetts.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/org.jvoicexml.jsapi2.jse.jar"/>
+	<classpathentry kind="lib" path="lib/jsr113/jsr113.jar"/>
+	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jar"/>
+	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.freetts.jar"/>
+	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
