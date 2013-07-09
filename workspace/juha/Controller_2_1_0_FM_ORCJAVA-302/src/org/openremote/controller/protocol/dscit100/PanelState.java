@@ -151,6 +151,7 @@ class PanelState
 
       updateInternalState(StateType.LABEL, num, new Label(label));
     }
+
     else if (packet.getCommand().equals("601"))
     {
       // Zone Alarm
@@ -163,6 +164,7 @@ class PanelState
 
       updateInternalState(StateType.ZONE_ALARM, zone, AlarmState.ALARM);
     }
+
     else if (packet.getCommand().equals("602"))
     {
       // Zone Alarm Restore
@@ -186,6 +188,7 @@ class PanelState
 
       updateInternalState(StateType.ZONE, zone, ZoneState.OPEN);
     }
+
     else if (packet.getCommand().equals("610"))
     {
       // Zone restored
@@ -196,6 +199,7 @@ class PanelState
 
       updateInternalState(StateType.ZONE, zone, ZoneState.RESTORED);
     }
+
     else if (packet.getCommand().equals("650"))
     {
       // Partition ready
@@ -205,6 +209,7 @@ class PanelState
 
       updateInternalState(StateType.PARTITION, partition, PartitionState.READY);
     }
+
     else if (packet.getCommand().equals("651"))
     {
       // Partition not ready
@@ -303,24 +308,26 @@ class PanelState
 
       updateInternalState(StateType.PARTITION, partition, PartitionState.BUSY);
     }
-    
+
     else if (packet.getCommand().equals("903"))
     {
       // Annoyingly the IT-100 uses this instead of 510/511 for led status but never mind!
 
-	  String led = packet.getData().substring(0,1);
-	  int led_state=Integer.parseInt(packet.getData().substring(1,2));
+      String led = packet.getData().substring(0,1);
+      int led_state=Integer.parseInt(packet.getData().substring(1,2));
 
-	  log.debug("LED Status update [LED"+led+"="+String.valueOf(led_state)+"]");
-	  
-	  if (led_state==0) {
-	    updateInternalState(StateType.LED, led, LedState.OFF);
+      log.debug("LED Status update [LED"+led+"="+String.valueOf(led_state)+"]");
 
-	  } else { 
-  	    updateInternalState(
+      if (led_state==0)
+      {
+        updateInternalState(StateType.LED, led, LedState.OFF);
+      }
+
+      else
+      {
+        updateInternalState(
             StateType.LED, led, (led_state) == 1 ? LedState.ON : LedState.FLASH
         );
-
       }
     }
   }
@@ -407,11 +414,13 @@ class PanelState
       tmp = internalState.get(type);
       tmp.put(target, state);
     }
+
     else
     {
       tmp = new HashMap<String, State>();
       tmp.put(target, state);
     }
+
     internalState.put(type, tmp);
   }
 
