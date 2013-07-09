@@ -75,7 +75,7 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
       return null;
     }
 
-    name = name.trim().toUpperCase();
+    name = name.trim().toUpperCase();       // TODO: See ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
 
     StateDefinition stateDefinition = Lookup.get(name, target);
 

@@ -182,6 +182,11 @@ public class IpConnection implements DSCIT100Connection
 
       out.print(packet.toPacket());
       out.flush();
+
+      if (out.checkError())
+      {
+        log.warn("Error in the underlying DSC socket print stream.");
+      }
     }
 
     else
@@ -229,6 +234,16 @@ public class IpConnection implements DSCIT100Connection
       {
         log.error("I/O error creating reader socket for " + socket.getInetAddress().getHostAddress(), e);
 
+        try
+        {
+          socket.close();
+        }
+
+        catch (Throwable t)
+        {
+          log.debug("Cannot close socket: {0}", t, t.getMessage());
+        }
+
         return;
       }
 
@@ -259,24 +274,39 @@ public class IpConnection implements DSCIT100Connection
         {
           if ((rawData = in.readLine()) == null)
           {
-            log.debug("Socket has disconnected");
-            isConnected=false;
+            log.debug("Socket has disconnected.");
 
-            break;
+            isConnected = false;
           }
 
-          log.debug(
-              "Received data from " + socket.getInetAddress().getHostAddress() + " : \"" + rawData + "\""
-          );
+          else
+          {
+            log.debug(
+                "Received data from {0}: ''{1}''.", socket.getInetAddress().getHostAddress(), rawData
+            );
 
-          packet = new Packet(rawData);
+            packet = new Packet(rawData);
+          }
         }
 
         catch (IOException e)
         {
-          log.warn("Error parsing packet", e);
+          log.warn("Error parsing packet: {0}", e, e.getMessage());
 
           isConnected = false;
+        }
+
+        if (!isConnected)
+        {
+          try
+          {
+            socket.close();
+          }
+
+          catch (Throwable t)
+          {
+            log.debug("Unable to close socket: {0}", t, t.getMessage());
+          }
 
           break;
         }
@@ -311,7 +341,8 @@ public class IpConnection implements DSCIT100Connection
               {
                 log.error("EnvisaLink: Invalid password");
 
-                isConnected=false;
+                isConnected = false;
+
                 IpConnection.this.close();
               }
 
@@ -319,9 +350,7 @@ public class IpConnection implements DSCIT100Connection
               {
                 log.error("EnvisaLink: connection timeout");
 
-                isConnected=false;
-
-                break;
+                isConnected = false;
               }
             }
 
@@ -330,12 +359,17 @@ public class IpConnection implements DSCIT100Connection
               state.processPacket(packet);
             }
 
+            if (!isConnected)
+            {
+              break;
+            }
+
             if (packetCallback != null)
             {
               log.debug("Executing callback method for packet " + packet);
 
               packetCallback.receive(IpConnection.this, packet);
-              packetCallback=null;
+              packetCallback = null;
             }
           }
         }
@@ -351,6 +385,10 @@ public class IpConnection implements DSCIT100Connection
       // Connection has failed, close the socket so it can be recreated later...
 
       IpConnection.this.close();
+
+      log.info(
+          "Ending DSC connection listener thread for {0}", socket.getInetAddress().getHostAddress()
+      );
 
     }
   }
