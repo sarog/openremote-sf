@@ -74,7 +74,7 @@ public abstract class DSCIT100Command implements Command
   public static DSCIT100Command createCommand(String command, String address, String code,
                                               String target, DSCIT100ConnectionManager mgr)
   {
-    command = command.trim().toUpperCase();
+    command = command.trim().toUpperCase();   // TODO: see ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
 
     ExecuteCommand execCommand = ExecuteCommand.createCommand(command, address, code, target, mgr);
 
@@ -152,7 +152,13 @@ public abstract class DSCIT100Command implements Command
       {
         connection.send(command);
       }
+
+      else
+      {
+        log.error("Failed to send command ''{0}'' due to lost/non-existent connection.", command);
+      }
     }
+
     catch (Exception e)
     {
       log.error("Unable to send " + this + " : " + e.getMessage(), e);

@@ -78,10 +78,12 @@ public class ExecuteCommand extends DSCIT100Command implements ExecutableCommand
   {
     if (name == null || address == null || mgr == null)
     {
+      log.error("Implementation Error: DSC null parameter.");
+
       return null;
     }
 
-    name = name.trim().toUpperCase();
+    name = name.trim().toUpperCase();     // TODO : See ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
 
     // Pad code with zeros to make it 6 digits in length
     code = String.format("%-6s", code).replace(' ', '0');
@@ -90,6 +92,11 @@ public class ExecuteCommand extends DSCIT100Command implements ExecutableCommand
 
     if (packet == null)
     {
+      log.warn(
+          "No corresponding packet found for name: ''{0}'', address: ''{1}'', target: ''{2}''",
+          name, address, target
+      );
+
       return null;
     }
 

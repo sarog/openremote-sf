@@ -125,6 +125,8 @@ public class DSCIT100ConnectionManager
         connections.get(address) != null &&
         connections.get(address).isConnected())
     {
+      log.trace("Returning an existing connection for address: ''{0}''", address);
+
       return connections.get(address);
     }
 
@@ -150,6 +152,8 @@ public class DSCIT100ConnectionManager
       // TODO :
       //   would be better to throw an exception and not return null, would make for
       //   cleaner error handling
+
+      log.warn("Failed to find or build a valid DSC connection...");
 
       return null;
     }
