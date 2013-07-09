@@ -176,11 +176,12 @@ public class IpConnection implements DSCIT100Connection
         this.packetCallback = packet.getCallback();
       }
 
-	  /* Replace out.println() with out.print() as println appends a "platform dependant" newline
-		 character which causes the EnvisaLink to generate a 502020 (API Format) error.
-		 Also need to flush the buffer (I suspect that println does that itself) ? */
+      /* Replace out.println() with out.print() as println appends a "platform dependant" newline
+        character which causes the EnvisaLink to generate a 502020 (API Format) error.
+        Also need to flush the buffer (I suspect that println does that itself) ? */
+
       out.print(packet.toPacket());
-	  out.flush();
+      out.flush();
     }
 
     else
@@ -202,7 +203,6 @@ public class IpConnection implements DSCIT100Connection
   {
     private Thread thread;
     private Socket socket;
-
     private PanelState state;
 
     public IpListener(Socket socket)
@@ -238,34 +238,37 @@ public class IpConnection implements DSCIT100Connection
 
       if (credentials == null || credentials.equals(""))
       {
-      		// The First ever command seems to get lost by
-      		// my Ethernet->Serial adaptor!
-      		sendInternal(new Packet("000", ""));
-      		sendInternal(new Packet("001", ""));
+        // The First ever command seems to get lost by
+        // my Ethernet->Serial adaptor!
+        sendInternal(new Packet("000", ""));
+        sendInternal(new Packet("001", ""));
 
-      		// Send IT100 labels request packet to get system labels...
+        // Send IT100 labels request packet to get system labels...
 
-      		sendInternal(new Packet("002", ""));
-	  }
+        sendInternal(new Packet("002", ""));
+      }
 
       boolean isConnected = true;
-	  String rawData;
+      String rawData;
+
       while (isConnected)
       {
         Packet packet = null;
 
         try
         {
-          if ((rawData = in.readLine())==null) {
-          	log.debug("Socket has disconnected");
-          	isConnected=false;
-          	break;	
+          if ((rawData = in.readLine()) == null)
+          {
+            log.debug("Socket has disconnected");
+            isConnected=false;
+
+            break;
           }
-          	
+
           log.debug(
               "Received data from " + socket.getInetAddress().getHostAddress() + " : \"" + rawData + "\""
           );
-		  
+
           packet = new Packet(rawData);
         }
 
@@ -275,9 +278,8 @@ public class IpConnection implements DSCIT100Connection
 
           isConnected = false;
 
-		  break;
+          break;
         }
-
 
         try
         {
@@ -287,8 +289,8 @@ public class IpConnection implements DSCIT100Connection
                As this isn't relevant to the panel state, process it here */
 
             if (packet.getCommand().equals("505"))
-            { 
-            	// Login interaction
+            {
+              // Login interaction
               String num = packet.getData().substring(0, 1);
 
               if (num.equals("3"))
@@ -318,6 +320,7 @@ public class IpConnection implements DSCIT100Connection
                 log.error("EnvisaLink: connection timeout");
 
                 isConnected=false;
+
                 break;
               }
             }
@@ -341,14 +344,14 @@ public class IpConnection implements DSCIT100Connection
           log.warn("Error in packet", e);
 
           isConnected = false;
-
         }
+
       } // End of while loop
 
       // Connection has failed, close the socket so it can be recreated later...
 
       IpConnection.this.close();
-      
+
     }
   }
 }
