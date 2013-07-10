@@ -270,6 +270,7 @@ public class ScreenCanvas extends ComponentContainer {
          @SuppressWarnings("unchecked")
          @Override
          public void dragDrop(DNDEvent e) {
+           // Drop to "Absolute widgets" (screen), not to grid
             boolean canDrop = canDrop(canvas, e);
             Object data = e.getData();
             if (data instanceof GridCellContainer) {
