@@ -78,6 +78,7 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
       this.color = uiLabel.color;
       this.sensor = uiLabel.sensor;
       this.sensorLink = uiLabel.sensorLink;
+      this.sensorDTO = uiLabel.sensorDTO;
    }
 
    public String getText() {

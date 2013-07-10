@@ -84,6 +84,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       this.minTrackImage = uiSlider.getMinTrackImage();
       this.maxImage = uiSlider.getMaxImage();
       this.maxTrackImage = uiSlider.getMaxTrackImage();
+      this.sliderDTO = uiSlider.sliderDTO;
    }
    public boolean isVertical() {
       return vertical;
