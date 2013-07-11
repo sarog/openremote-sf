@@ -19,7 +19,11 @@
 */
 package org.openremote.web.console.widget;
 
+import java.util.List;
+
 import org.openremote.web.console.event.sensor.SensorChangeHandler;
+import org.openremote.web.console.panel.entity.Link;
+import org.openremote.web.console.panel.entity.StateMap;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Label;
@@ -30,6 +34,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class LabelComponent extends PassiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "labelComponent";
+	private Link sensorLink;
 	
 	public LabelComponent() {
 		super(new Label(), CLASS_NAME);
@@ -48,6 +53,14 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 	
 	public void setFontSize(int size) {
 		getElement().getStyle().setProperty("fontSize", size + "px");
+	}
+
+	public Link getSensorLink() {
+		return sensorLink;
+	}
+
+	public void setSensorLink(Link sensorLink) {
+		this.sensorLink = sensorLink;
 	}
 	
 	// ---------------------------------------------------------------------------------
@@ -72,8 +85,29 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 	
 	@Override
 	public void sensorChanged(String newValue) {
-		// TODO Auto-generated method stub
-		setText(newValue);
+		String newStr = newValue;
+		
+		// Look for state map for this new value
+		Link link = getSensorLink();
+		
+		if (link != null)
+		{
+			List<StateMap> states = link.getState();
+	
+			if (states != null)
+			{
+				for (StateMap state : states)
+				{
+					if (state.getName().equalsIgnoreCase(newValue))
+					{
+						newStr = state.getValue();
+						break;
+					}
+				}
+			}
+		}
+		
+		setText(newStr);
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -86,6 +120,7 @@ public class LabelComponent extends PassiveConsoleComponent implements SensorCha
 			return component;
 		}
 		component.setSensor(new Sensor(entity.getLink()));
+		component.setSensorLink(entity.getLink());
 		component.setId(entity.getId());
 		component.setText(entity.getText());
 		component.setColor(entity.getColor());
