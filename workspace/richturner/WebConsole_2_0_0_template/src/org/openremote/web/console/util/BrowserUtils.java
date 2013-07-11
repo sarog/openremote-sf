@@ -75,7 +75,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 	      "opera mini","blackberry","hp ipaq","iemobile",
 	      "msiemobile","windows phone","htc","lg",
 	      "mot","nokia","symbian","fennec",
-	      "maemo","tear","midori","armv",
+	      "maemo","tear","armv",
 	      "windows ce","windowsce","smartphone","240x320",
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
