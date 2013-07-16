@@ -5,6 +5,9 @@ WebConsole 2.1.2
     showing text 'on/off' instead of the text values
     configured in the label for on/off states (WEBCONSOLE-57,
     Richard Turner)
+  - Treat Midori web browser as a desktop (mouse control)
+    browser rather than mobile (touch controlled) browser
+    by default (WEBCONSOLE-59, Richard Turner)
 
 
 WebConsole 2.1.1
