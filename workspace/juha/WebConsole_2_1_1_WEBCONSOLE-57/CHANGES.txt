@@ -1,3 +1,12 @@
+WEBCONSOLE-57
+=============
+
+  - A label connected to a 'switch' type sensor was always
+    showing text 'on/off' instead of the text values
+    configured for in the label for on/off states (Richard
+    Turner)
+
+
 WebConsole 2.1.1
 ================
 
