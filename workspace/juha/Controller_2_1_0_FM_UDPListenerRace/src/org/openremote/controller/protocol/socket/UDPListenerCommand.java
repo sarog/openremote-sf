@@ -18,9 +18,9 @@ package org.openremote.controller.protocol.socket;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +41,7 @@ public class UDPListenerCommand implements EventListener {
    private static Logger logger = Logger.getLogger(UDPListenerCommandBuilder.UDPLISTENER_PROTOCOL_LOG_CATEGORY);
 
    //** A map keeping track on the listener threads for each port */
-   private static Map<String, UDPListenerThread> portListenerMap = new HashMap<String, UDPListenerThread>();
+   private static Map<String, UDPListenerThread> portListenerMap = new ConcurrentHashMap<String, UDPListenerThread>();
    
    // Instance Fields ------------------------------------------------------------------------------
    
@@ -80,7 +80,7 @@ public class UDPListenerCommand implements EventListener {
    
    private class UDPListenerThread extends Thread {
 
-      private Map<String, Sensor> regexSensorMap = new HashMap<String, Sensor>();
+      private Map<String, Sensor> regexSensorMap = new ConcurrentHashMap<String, Sensor>();
       
       private int port;
       
