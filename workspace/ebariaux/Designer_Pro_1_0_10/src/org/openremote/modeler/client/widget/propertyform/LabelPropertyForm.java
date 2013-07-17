@@ -27,10 +27,12 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
 import org.openremote.modeler.client.widget.uidesigner.SelectColorWindow;
 import org.openremote.modeler.client.widget.uidesigner.SelectSensorWindow;
+import org.openremote.modeler.client.widget.uidesigner.SelectSliderWindow;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
@@ -38,6 +40,7 @@ import org.openremote.modeler.domain.State;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -97,32 +100,45 @@ public class LabelPropertyForm extends PropertyForm {
             }
          }
       });
-      final Button sensorSelectBtn = new Button("Select");
-      sensorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      
+      final ImageSelectAdapterField sensorField = new ImageSelectAdapterField("Sensor");
+      if(screenLabel.getUiLabel().getSensorDTO() != null){
+        sensorField.setText(screenLabel.getUiLabel().getSensorDTO().getDisplayName());
+     }
+      sensorField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+          SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
+          selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+             @Override
+             public void afterSubmit(SubmitEvent be) {
+                BeanModel dataModel = be.<BeanModel> getData();
+                SensorWithInfoDTO sensorDTO = dataModel.getBean();
+                uiLabel.setSensorDTOAndInitSensorLink(sensorDTO);
+                sensorField.setText(sensorDTO.getDisplayName());
+                if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM) {
+                   statesPanel.show();
+                   createSensorStates();
+                } else {
+                   statesPanel.hide();
+                }
+                screenLabel.clearSensorStates();
+             }
+          });
+       }
+    });
+      sensorField.addDeleteListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectSensorWindow selectSensorWindow = new SelectSensorWindow();
-            selectSensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  BeanModel dataModel = be.<BeanModel> getData();
-                  SensorWithInfoDTO sensorDTO = dataModel.getBean();
-                  uiLabel.setSensorDTOAndInitSensorLink(sensorDTO);
-                  sensorSelectBtn.setText(sensorDTO.getDisplayName());
-                  if (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM) {
-                     statesPanel.show();
-                     createSensorStates();
-                  } else {
-                     statesPanel.hide();
-                  }
-                  screenLabel.clearSensorStates();
-               }
-            });
+           if (uiLabel.getSensorDTO() != null) {
+             uiLabel.setSensorDTOAndInitSensorLink(null);
+             sensorField.removeImageText();
+             statesPanel.hide();
+             screenLabel.clearSensorStates();
+           }
          }
       });
-      if(screenLabel.getUiLabel().getSensorDTO() != null){
-         sensorSelectBtn.setText(screenLabel.getUiLabel().getSensorDTO().getDisplayName());
-      }
+      
       final Button colorSelectBtn = new Button("Select");
       colorSelectBtn.setStyleAttribute("border", "2px solid #"+screenLabel.getUiLabel().getColor());
       colorSelectBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -143,13 +159,11 @@ public class LabelPropertyForm extends PropertyForm {
       
       add(textField);
       add(fontSizeField);
-      AdapterField adapter = new AdapterField(sensorSelectBtn);
-      adapter.setFieldLabel("Sensor");
       
       AdapterField colorBtnAdapter = new AdapterField(colorSelectBtn);
       colorBtnAdapter.setFieldLabel("Color");
       add(colorBtnAdapter);
-      add(adapter);
+      add(sensorField);
       
       statesPanel = new FieldSet();
       FormLayout layout = new FormLayout();
