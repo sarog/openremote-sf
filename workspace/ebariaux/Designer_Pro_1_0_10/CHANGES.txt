@@ -1,6 +1,9 @@
 Pro 1.0.10
 ==========
 
+Fixes:
+ - Fixed ConcurrentModificationException in BeanModelTable.clear (MODELER-467)
+
 New features:
  - Add regex and pollingInterval attributes to TCP/IP protocol (MODELER-448)
 
