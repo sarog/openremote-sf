@@ -1,3 +1,8 @@
+MODELER-504
+===========
+
+ - Sensor can be removed from Web widget
+
 Designer MODELER-398
 ====================
 
