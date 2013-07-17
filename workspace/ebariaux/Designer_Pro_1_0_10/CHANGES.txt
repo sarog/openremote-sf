@@ -8,6 +8,7 @@ New features:
  - Add regex and pollingInterval attributes to TCP/IP protocol (MODELER-448)
  - Sensors can be removed from Labels and Images, Commands from Buttons,
    SwitchCommands from Switches and SliderCommands from Sliders (MODELER-404)
+ - Sensor can be removed from Web widget (MODELER-503)
 
 Pro 1.0.9
 =========
