@@ -39,8 +39,6 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -94,28 +92,37 @@ public class SliderPropertyForm extends PropertyForm {
          }
          
       });
-      final Button command = new Button("Select");
-      command.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      
+      final ImageSelectAdapterField commandField = new ImageSelectAdapterField("SliderCommand");
+      if (screenSlider.getSliderDTO() != null) {
+        commandField.setText(screenSlider.getSliderDTO().getDisplayName());
+      }
+
+      commandField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectSliderWindow selectSliderWindow = new SelectSliderWindow();
+           selectSliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                BeanModel dataModel = be.<BeanModel> getData();
+                SliderWithInfoDTO sliderDTO = dataModel.getBean();
+                 screenSlider.setSliderDTO(sliderDTO);
+                 commandField.setText(sliderDTO.getDisplayName());
+              }
+           });
+        }
+     });
+      commandField.addDeleteListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectSliderWindow selectSliderWindow = new SelectSliderWindow();
-            selectSliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                 BeanModel dataModel = be.<BeanModel> getData();
-                 SliderWithInfoDTO sliderDTO = dataModel.getBean();
-                  screenSlider.setSliderDTO(sliderDTO);
-                  command.setText(sliderDTO.getDisplayName());
-               }
-            });
+            if (screenSlider.getSliderDTO() != null) {
+               commandField.removeImageText();
+               screenSlider.setSliderDTO(null);
+            }
          }
       });
-      if (screenSlider.getSliderDTO() != null) {
-         command.setText(screenSlider.getSliderDTO().getDisplayName());
-      }
-      AdapterField adapterCommand = new AdapterField(command);
-      adapterCommand.setFieldLabel("SliderCommand");
-
+      
       final ImageSelectAdapterField minImageField = new ImageSelectAdapterField("MinImage");
       if (screenSlider.isMinImageUploaded()) {
          minImageField.setText(screenSlider.getUiSlider().getMinImage().getImageFileName());
@@ -270,7 +277,7 @@ public class SliderPropertyForm extends PropertyForm {
       checkBoxGroup.setFieldLabel("Vertical");
       checkBoxGroup.add(vertical);
       add(checkBoxGroup);
-      add(adapterCommand);
+      add(commandField);
       add(minImageField);
       add(minTrackImageField);
       add(thumbImageField);

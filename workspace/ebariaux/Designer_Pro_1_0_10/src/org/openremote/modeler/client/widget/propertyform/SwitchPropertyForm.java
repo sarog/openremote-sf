@@ -36,8 +36,6 @@ import org.openremote.modeler.shared.dto.SwitchWithInfoDTO;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 
 /**
  * A panel for display screen switch properties. 
@@ -127,18 +125,24 @@ public class SwitchPropertyForm extends PropertyForm {
          }
       });
       
-      Button switchCommand = new Button("Select");
+      final ImageSelectAdapterField switchCommandField = new ImageSelectAdapterField("SwitchCommand");
       if (uiSwitch.getSwitchDTO() != null) {
-         switchCommand.setText(uiSwitch.getSwitchDTO().getDisplayName());
+        switchCommandField.setText(uiSwitch.getSwitchDTO().getDisplayName());
       }
-      switchCommand.addSelectionListener(createSelectionListener(uiSwitch, switchCommand));
-      AdapterField adapterSwitchCommand = new AdapterField(switchCommand);
-      adapterSwitchCommand.setFieldLabel("SwitchCommand");
-      adapterSwitchCommand.setAutoHeight(true);
+      switchCommandField.addSelectionListener(createSelectionListener(uiSwitch, switchCommandField));
+      switchCommandField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (uiSwitch.getSwitchDTO() != null) {
+              switchCommandField.removeImageText();
+               uiSwitch.setSwitchDTO(null);
+            }
+         }
+      });
 
       add(imageONField);
       add(imageOFFField);
-      add(adapterSwitchCommand);
+      add(switchCommandField);
    }
 
    /**
@@ -146,7 +150,7 @@ public class SwitchPropertyForm extends PropertyForm {
     * @param command
     * @return
     */
-   private SelectionListener<ButtonEvent> createSelectionListener(final UISwitch uiSwitch, final Button command) {
+   private SelectionListener<ButtonEvent> createSelectionListener(final UISwitch uiSwitch, final ImageSelectAdapterField switchField) {
       return new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
@@ -158,7 +162,7 @@ public class SwitchPropertyForm extends PropertyForm {
                   if (dataModel.getBean() instanceof SwitchWithInfoDTO) {
                     SwitchWithInfoDTO switchDTO = dataModel.getBean();
                      uiSwitch.setSwitchDTO(switchDTO);
-                     command.setText(switchDTO.getDisplayName());
+                     switchField.setText(switchDTO.getDisplayName());
                   }
                }
             });

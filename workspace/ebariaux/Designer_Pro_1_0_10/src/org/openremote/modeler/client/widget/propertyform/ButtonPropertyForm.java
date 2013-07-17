@@ -47,8 +47,6 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FieldSetEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -87,27 +85,34 @@ public class ButtonPropertyForm extends PropertyForm {
       });
       
       // initial command field.
-      final Button command = new Button("Select");
-      command.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      final ImageSelectAdapterField commandField = new ImageSelectAdapterField("Command");
+      if (uiButton.getUiCommandDTO() != null) {
+        commandField.setText(uiButton.getUiCommandDTO().getDisplayName());
+      }
+      commandField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectCommandWindow selectCommandWindow = new SelectCommandWindow(true);
+           selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 UICommandDTO dto = dataModel.getBean();
+                 uiButton.setUiCommandDTO(dto);
+                 commandField.setText(dto.getDisplayName());
+              }
+           });
+        }
+      });
+      commandField.addDeleteListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            SelectCommandWindow selectCommandWindow = new SelectCommandWindow(true);
-            selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-               @Override
-               public void afterSubmit(SubmitEvent be) {
-                  BeanModel dataModel = be.<BeanModel> getData();
-                  UICommandDTO dto = dataModel.getBean();
-                  uiButton.setUiCommandDTO(dto);
-                  command.setText(dto.getDisplayName());
-               }
-            });
+            if (uiButton.getUiCommandDTO() != null) {
+               commandField.removeImageText();
+               uiButton.setUiCommandDTO(null);
+            }
          }
       });
-      if (uiButton.getUiCommandDTO() != null) {
-         command.setText(uiButton.getUiCommandDTO().getDisplayName());
-      }
-      AdapterField adapterCommand = new AdapterField(command);
-      adapterCommand.setFieldLabel("Command");
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
@@ -232,7 +237,7 @@ public class ButtonPropertyForm extends PropertyForm {
       });
       repeatCheckBoxGroup.add(repeat); 
       add(name);
-      add(adapterCommand);
+      add(commandField);
       add(defaultImageField);
       add(pressImageField);
       add(repeatCheckBoxGroup);
