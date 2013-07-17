@@ -1,3 +1,9 @@
+MODELER-467
+===========
+
+ - Fixed ConcurrentModificationException in BeanModelTable.clear
+
+
 Designer 2.13.8 (2013-03-13 Rosemary)
 =====================================
 
