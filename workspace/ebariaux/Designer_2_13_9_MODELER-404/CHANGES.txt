@@ -1,3 +1,9 @@
+MODELER-404
+===========
+
+ - Sensors can be removed from Labels and Images, Commands from Buttons,
+   SwitchCommands from Switches and SliderCommands from Sliders
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
