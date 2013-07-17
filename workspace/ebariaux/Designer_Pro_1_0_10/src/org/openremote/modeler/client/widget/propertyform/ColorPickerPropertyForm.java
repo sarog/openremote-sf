@@ -39,8 +39,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
 
 /**
  * The Form to configure colorpicker properties, include an image field and a command field.
@@ -112,28 +110,35 @@ public class ColorPickerPropertyForm extends PropertyForm {
    }
    
    private void createCommandSelectField(final ColorPicker colorPicker) {
-     final Button command = new Button("Select");
-     command.addSelectionListener(new SelectionListener<ButtonEvent>() {
+     final ImageSelectAdapterField commandField = new ImageSelectAdapterField("Command");
+     if (colorPicker.getUiCommandDTO() != null) {
+       commandField.setText(colorPicker.getUiCommandDTO().getDisplayName());
+     }
+     commandField.addSelectionListener(new SelectionListener<ButtonEvent>() {
+       @Override
+       public void componentSelected(ButtonEvent ce) {
+         SelectCommandWindow selectCommandWindow = new SelectCommandWindow(false);
+         selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            @Override
+            public void afterSubmit(SubmitEvent be) {
+               BeanModel dataModel = be.<BeanModel> getData();
+               UICommandDTO dto = dataModel.getBean();
+               colorPicker.setUiCommandDTO(dto);
+               commandField.setText(dto.getDisplayName());
+            }
+         });
+      }
+     });
+     commandField.addDeleteListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-           SelectCommandWindow selectCommandWindow = new SelectCommandWindow(false);
-           selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-              @Override
-              public void afterSubmit(SubmitEvent be) {
-                 BeanModel dataModel = be.<BeanModel> getData();
-                 UICommandDTO dto = dataModel.getBean();
-                 colorPicker.setUiCommandDTO(dto);
-                 command.setText(dto.getDisplayName());
-              }
-           });
+           if (colorPicker.getUiCommandDTO() != null) {
+              commandField.removeImageText();
+              colorPicker.setUiCommandDTO(null);
+           }
         }
      });
-     if (colorPicker.getUiCommandDTO() != null) {
-        command.setText(colorPicker.getUiCommandDTO().getDisplayName());
-     }
-     AdapterField adapterCommand = new AdapterField(command);
-     adapterCommand.setFieldLabel("Command");
-     add(adapterCommand);
+     add(commandField);
    }
    
    private void addImageUploadListenerToForm() {
