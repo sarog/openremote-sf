@@ -1,7 +1,7 @@
 MODELER-504
 ===========
 
- - Sensor can be removed from Web widget
+ - Command can be removed from ColorPicker widget
 
 Designer MODELER-398
 ====================
