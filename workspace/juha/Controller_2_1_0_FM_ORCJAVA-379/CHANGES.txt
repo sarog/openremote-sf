@@ -8,8 +8,10 @@ New Features:
   - Round robind database (RRD) integration for storing sensor
     data (Marcus Redeker, ORCJAVA-353, ORCJAVA-356)
   - EmonCMS integration for storing sensor data (Marcus Redeker, ORCJAVA-357)
-  - WebConsole upgraded to version 2.1.1, fixes issues with stuck
-    loading screen (Richard Turner, ORCJAVA-345)
+  - WebConsole upgraded to version 2.1.2, fixes issues with stuck
+    loading screen, label on/off states with switch sensors, and tweaks for
+    Midori web browser (Richard Turner, WEBCONSOLE-57, WEBCONSOLE-59, 
+    ORCJAVA-345, ORCJAVA-379)
   - Added DSC Security System (IT-100/EnvisaLink) integration - IP to serial 
     (Greg Rapp, Phil Taylor, ORCJAVA-302)
   - Lagarto server (panStamps) integration (Daniel Berenguer)
