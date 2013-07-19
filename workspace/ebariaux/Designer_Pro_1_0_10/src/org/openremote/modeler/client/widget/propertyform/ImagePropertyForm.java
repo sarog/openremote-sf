@@ -60,7 +60,9 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
  * A panel for display screen Image properties.
  */
 public class ImagePropertyForm extends PropertyForm {
-   private ScreenImage screenImage = null;
+   private static final String NO_FALLBACK_LABEL_TEXT = "-- none --";
+
+  private ScreenImage screenImage = null;
 
    private FieldSet statesPanel; 
    
@@ -140,6 +142,7 @@ public class ImagePropertyForm extends PropertyForm {
       labelBox.setFieldLabel("FallbackLabel");
       Collection<UILabel> labelsonScreen = (Collection<UILabel>) screenImage.getScreenCanvas().getScreen().getAllUIComponentByType(UILabel.class);
       ListStore<ModelData> labelStore = new ListStore<ModelData>();
+      labelStore.add(new ComboBoxDataModel<UILabel>(NO_FALLBACK_LABEL_TEXT, null));
       for (UILabel label : labelsonScreen) {
          if (!label.isRemoved()) {
             ComboBoxDataModel<UILabel> labelModel = new ComboBoxDataModel<UILabel>(label.getDisplayName(), label);
@@ -149,6 +152,8 @@ public class ImagePropertyForm extends PropertyForm {
       //set the label for the image. 
       if(screenImage.getUiImage().getLabel()!=null && !screenImage.getUiImage().getLabel().isRemoved()){
          labelBox.setValue(new ComboBoxDataModel<UILabel>(screenImage.getUiImage().getLabel().getDisplayName(),screenImage.getUiImage().getLabel()));
+      } else {
+        labelBox.setValue(new ComboBoxDataModel<UILabel>(NO_FALLBACK_LABEL_TEXT, null));
       }
       labelBox.setStore(labelStore);
       labelBox.addSelectionChangedListener(new SelectionChangedListener<ModelData>(){

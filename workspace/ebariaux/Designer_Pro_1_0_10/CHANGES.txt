@@ -14,6 +14,7 @@ New features:
    SwitchCommands from Switches and SliderCommands from Sliders (MODELER-404)
  - Sensor can be removed from Web widget (MODELER-503)
  - Command can be removed from ColorPicker widget (MODELER-504)
+ - Added possibility to remove a fallback label from an image (MODELER-489)
 
 Pro 1.0.9
 =========
