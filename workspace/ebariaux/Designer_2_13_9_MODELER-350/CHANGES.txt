@@ -1,3 +1,8 @@
+MODELER-350
+===========
+
+ - Grid does not accept Tabbar, Tabbar item or other grid anymore
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
