@@ -37,6 +37,8 @@ import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.GridCellBounds;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UITabbar;
+import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -148,6 +150,10 @@ public class GridLayoutContainer extends ComponentContainer {
             Object data = e.getData();
             if(data instanceof ComponentContainer){
               ((ComponentContainer) data).hideBackground();
+            } else if (data instanceof List) {
+              if (!canDrop((List<ModelData>) data)) {
+                e.setCancelled(true);
+              }
             }
             super.dragEnter(e);
          }
@@ -158,18 +164,21 @@ public class GridLayoutContainer extends ComponentContainer {
             GridCellContainer cellContainer = new GridCellContainer(getScreenCanvas(), GridLayoutContainer.this, widgetSelectionUtil);
             Object data = e.getData();
             if (data instanceof AbsoluteLayoutContainer) {
+              // Drag an existing Absolute widget to the grid
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
                cellContainer = addAbsoluteWidgetToGrid(grid, cellWidth + 1, cellHeight + 1, targetCell, targetPosition,
                      container);
                container.hideBackground();
             } else if (data instanceof GridCellContainer) {
+              // Drag an existing widget from another location in the grid
                cellContainer = moveCellInGrid(grid, targetCell, targetPosition, data);
             } else if (data instanceof List) {
-               List<ModelData> models = (List<ModelData>) data;
-               if (models.size() > 0 && ((BeanModel) models.get(0).get("model")).getBean() instanceof UIGrid) {
-                  e.setCancelled(true);
-                  return;
+              // Drag a widget from the palette
+               if (!canDrop((List<ModelData>) data)) {
+                 e.setCancelled(true);
+                 return;
                }
+
                cellContainer = addNewWidget(grid, cellWidth, cellHeight, e, targetCell, targetPosition,
                      cellContainer);
             } else if (data instanceof GridLayoutContainerHandle) {
@@ -184,6 +193,20 @@ public class GridLayoutContainer extends ComponentContainer {
             layout();
             cellContainers.add(cellContainer);
             super.dragDrop(e);
+         }
+         
+         private boolean canDrop(List<ModelData> models) {          
+           if (models.size() == 0) {
+             return false;
+           }
+           
+           Object model = ((BeanModel) models.get(0).get("model")).getBean();
+           
+           if (model instanceof UIGrid || model instanceof UITabbar || model instanceof UITabbarItem) {
+             return false;
+           }
+           
+           return true;
          }
 
       };

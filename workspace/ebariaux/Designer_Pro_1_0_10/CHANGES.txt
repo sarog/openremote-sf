@@ -4,6 +4,7 @@ Pro 1.0.10
 Fixes:
  - Fixed ConcurrentModificationException in BeanModelTable.clear (MODELER-467)
  - Remove sensor "color" from list of sensor types (MODELER-472)
+ - Grid does not accept Tabbar, Tabbar item or other grid anymore (MODELER-350)
 
 New features:
  - Add regex and pollingInterval attributes to TCP/IP protocol (MODELER-448)
