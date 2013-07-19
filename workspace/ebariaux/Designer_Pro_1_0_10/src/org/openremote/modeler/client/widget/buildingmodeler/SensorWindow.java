@@ -183,8 +183,10 @@ public class SensorWindow extends FormWindow {
       typeList.setFieldLabel("Type");
       typeList.setEmptyText("--type--");
       for (int i = 0; i < sensorTypes.length; i++) {
-         ComboBoxDataModel<SensorType> typeItem = new ComboBoxDataModel<SensorType>(sensorTypes[i].toString(), sensorTypes[i]);
-         typeList.getStore().add(typeItem);
+        if (!"color".equals(sensorTypes[i].toString())) { // MODELER-472
+          ComboBoxDataModel<SensorType> typeItem = new ComboBoxDataModel<SensorType>(sensorTypes[i].toString(), sensorTypes[i]);
+          typeList.getStore().add(typeItem);
+        }
       }
       
       form.add(nameField);

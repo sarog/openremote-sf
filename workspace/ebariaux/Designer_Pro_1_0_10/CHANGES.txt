@@ -3,6 +3,7 @@ Pro 1.0.10
 
 Fixes:
  - Fixed ConcurrentModificationException in BeanModelTable.clear (MODELER-467)
+ - Remove sensor "color" from list of sensor types (MODELER-472)
 
 New features:
  - Add regex and pollingInterval attributes to TCP/IP protocol (MODELER-448)
