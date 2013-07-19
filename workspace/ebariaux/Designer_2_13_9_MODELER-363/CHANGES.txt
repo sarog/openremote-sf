@@ -1,3 +1,9 @@
+MODELER-363
+===========
+
+ - Fixed: Dragging an widget to or from grid would loose
+   its linked sensor or command
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
