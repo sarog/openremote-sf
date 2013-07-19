@@ -1,3 +1,8 @@
+MODELER-489
+===========
+
+ - Added possibility to remove a fallback label from an image
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
