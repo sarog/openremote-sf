@@ -691,6 +691,11 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 OpenRemote Sub-components:
 
+* Classes org.openremote.controller.protocol.samsungtv.SamsungTVSession and 
+  org.openremote.controller.protocol.samsungtv.Key are licensed under GNU
+  General Public License (GPL) Version 2 or any later version. For the purpose
+  of this distribution, the classes are re-licensed under GNU General Public
+  License (GPL) Version 3.0.
 * RXTX library is licensed under GNU Lesser General Public License (LGPL)
   Version 2.1 or any later version. For the purpose of this distribution, RXTX
   library is re-licensed under GNU Lesser General Public License (LGPL) Version
