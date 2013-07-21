@@ -30,7 +30,7 @@ public class ImportLIRCCommandsActionHandler implements ActionHandler<ImportLIRC
       DeviceCommand deviceCommand = new DeviceCommand();
       deviceCommand.setDevice(device);      
       Protocol protocol = deviceCommand.createProtocol(Constants.INFRARED_TYPE);
-      protocol.addProtocolAttribute("name", cmd.getRemoteName());
+      protocol.addProtocolAttribute("remotename", cmd.getRemoteName());
       protocol.addProtocolAttribute("command", cmd.getName());
       deviceCommand.setName(cmd.getName());
       deviceCommand.setSectionId(action.getSectionId());
