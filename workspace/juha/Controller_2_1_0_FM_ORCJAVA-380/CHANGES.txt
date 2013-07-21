@@ -1,3 +1,10 @@
+Controller ORCJAVA-380
+======================
+
+ - Parse 'remotename' attribute in LIRC integration instead
+   of the default command 'name' attribute (Marcus Redeker)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
