@@ -41,12 +41,14 @@ public class IRCommandBuilder implements CommandBuilder
    * {@inheritDoc}
    */
   @SuppressWarnings("unchecked")
-  public Command build(Element element)
+  @Override public Command build(Element element)
   {
     IRCommand irCommand = new IRCommand();
     String command = "";
     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
     String remotename = "";
+
+    int namesFound = 0;
 
     for(Element ele : propertyEles)
     {
@@ -58,6 +60,22 @@ public class IRCommandBuilder implements CommandBuilder
       else if ("command".equals(ele.getAttributeValue("name")))
       {
         command = ele.getAttributeValue("value");
+      }
+
+      else if ("name".equals(ele.getAttributeValue("name")))
+      {
+        namesFound++;
+
+        if (namesFound > 1)
+        {
+          System.out.println(
+              "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n" +
+              "  Your configuration contains an incompatible LIRC \n" +
+              "  command definition. Please contact us to have your\n" +
+              "  account data updated.\n" +
+              "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n"
+          );
+        }
       }
     }
 
