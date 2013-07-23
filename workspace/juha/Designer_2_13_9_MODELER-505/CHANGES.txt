@@ -1,3 +1,10 @@
+MODELER-505
+===========
+
+ - LIRC 'name' property renamed to 'remotename' and updated
+   import tool accordingly (Marcus Redeker)
+
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
