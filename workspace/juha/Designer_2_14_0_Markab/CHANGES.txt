@@ -43,7 +43,9 @@ Designer 2.14.0 (2013-XX-XX Markab)
      has non-default zoom (Eric Bariaux)
    - MODELER-453: Error when attempting to set a controller
      configuration property to an empty value (Eric Bariaux)
-
+   - MODELER-505: LIRC 'name' property renamed to 
+     'remotename' and updated import tool accordingly 
+     (Marcus Redeker)
 
  Internal:
 
