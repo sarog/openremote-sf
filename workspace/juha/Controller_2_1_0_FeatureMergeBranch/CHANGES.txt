@@ -110,6 +110,8 @@ Bug Fixes:
   - KNX SCENE and LEARN_SCENE commands were mixed up. Enable scene number
     to be used with level sensors (Marcus Redeker, ORCJAVA-282)
   - Russound: reliability updates (Torbjorn Osterdahl, ORCJAVA-376)
+  - LIRC: Parse 'remotename' attribute in LIRC integration instead
+    of the default command 'name' attribute (ORCJAVA-380, Marcus Redeker)
 
 
 Internal:
