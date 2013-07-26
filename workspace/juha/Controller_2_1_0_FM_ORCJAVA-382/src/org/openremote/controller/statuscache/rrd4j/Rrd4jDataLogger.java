@@ -33,19 +33,25 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.statuscache.EventContext;
 import org.openremote.controller.statuscache.EventProcessor;
 import org.openremote.controller.statuscache.LifeCycleEvent;
+import org.openremote.controller.utils.Logger;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.DsType;
 import org.rrd4j.core.RrdDb;
@@ -55,9 +61,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
- * This is an {@link org.openremote.controller.service.statuscache.EventProcessor} which parses
+ * This is an {@link org.openremote.controller.statuscache.EventProcessor} which parses
  * rrd4j-config.xml file and creates RRD4j datastores. Each sensor update creates a new data entry
  * within a rrd4j datasource. The rrd4j-config.xml can also be used to configure graphs which
  * later can be displayed within the console. The graphs are provided from a servlet.
@@ -68,9 +75,24 @@ import org.w3c.dom.NodeList;
 public class Rrd4jDataLogger extends EventProcessor
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   *   Runtime RRD event processor logging category
+   */
+  private final static Logger log = Logger.getLogger(
+      Constants.RUNTIME_EVENTPROCESSOR_LOG_CATEGORY + ".rrd"
+  );
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
   private List<RrdDb> rrdDbList = Collections.emptyList();
   private Map<String,String> graphDefMap;
 
+
+
+  // EventProcessor Overrides ---------------------------------------------------------------------
 
   @Override public String getName()
   {
@@ -153,12 +175,19 @@ public class Rrd4jDataLogger extends EventProcessor
       }
    }
 
-   private Map<String,String> parseConfigXMLGraphs(URI configUri, URI rddDirUri) throws InitializationException {
-      try {
-         File fXmlFile = new File(configUri);
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private Map<String,String> parseConfigXMLGraphs(URI configUri, URI rddDirUri)
+     throws InitializationException
+  {
+    File xmlFile = new File(configUri);
+
+    try
+    {
          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
          DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-         Document doc = dBuilder.parse(fXmlFile);
+         Document doc = dBuilder.parse(xmlFile);
          doc.getDocumentElement().normalize();
          Map<String,String> graphDefMap = new HashMap<String,String>();
 
@@ -179,11 +208,27 @@ public class Rrd4jDataLogger extends EventProcessor
          }
          return graphDefMap;
          
-      } catch (Exception e) {
-         e.printStackTrace();
-         throw new InitializationException("Error parsinf rrd4j-config.xml", e);
-      }
-   }
+    }
+
+    catch (ParserConfigurationException e)
+    {
+      throw new ConfigurationException("Failed to create XML parser: {0}", e, e.getMessage());
+    }
+
+    catch (SAXException e)
+    {
+      throw new InitializationException(
+          "Unable to parse file ''{0}'', error: {1}", e, xmlFile, e.getMessage()
+      );
+    }
+
+    catch (IOException e)
+    {
+      throw new InitializationException(
+          "I/O error parsing file ''{0}'', error: {1}", e, xmlFile, e.getMessage()
+      );
+    }
+  }
 
    private List<RrdDef> parseConfigXML(URI configUri) throws InitializationException {
       try {
@@ -299,15 +344,50 @@ public class Rrd4jDataLogger extends EventProcessor
     }
   }
 
-   private String nodeToString(Node node) {
-      StringWriter sw = new StringWriter();
-      try {
+  private String nodeToString(Node node) throws ConfigurationException
+  {
+    StringWriter sw = new StringWriter();
+
+    try
+    {
       Transformer t = TransformerFactory.newInstance().newTransformer();
+
       t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-      t.transform(new DOMSource(node), new StreamResult(sw));
-      } catch (TransformerException te) {
-      System.out.println("nodeToString Transformer Exception");
+
+      try
+      {
+        t.transform(new DOMSource(node), new StreamResult(sw));
       }
-      return sw.toString();
+
+      catch (TransformerException e)
+      {
+        log.error("Unable to transform node {0}, error: {1}", e, node, e.getMessage());
       }
+    }
+
+    catch (TransformerConfigurationException e)
+    {
+      // when creating the transformer fails for any reason
+
+      throw new ConfigurationException("Creating XML transformer failed: {0}", e, e.getMessage());
+    }
+
+    catch (TransformerFactoryConfigurationError e)
+    {
+      // Transformer is resolved as follows:
+      //  - check javax.xml.transform.TransformerFactory property
+      //  - from "lib/jaxp.properties" file
+      //  - check META-INF/services/javax.xml.transform.TransformerFactory
+      //  - default SDK implementation
+      //
+      //  This error is thrown if any of the above methods fails to produce a valid instance
+
+      throw new ConfigurationException(
+          "Unable to instantiate XML transform factory: {0}", e, e.getMessage()
+      );
+    }
+
+    return sw.toString();
+  }
+
 }
