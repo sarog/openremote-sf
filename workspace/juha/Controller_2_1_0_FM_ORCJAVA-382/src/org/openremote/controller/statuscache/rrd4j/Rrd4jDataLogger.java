@@ -1,18 +1,22 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2012, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.statuscache.rrd4j;
 
@@ -53,24 +57,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This is an EventProcessor which parses the rrd4j-config.xml and created RRD4j databases.
- * Each sensor update creates a new data entry within a rrd4j datasource.
- * The rrd4j-config.xml can also be used to configure graphs which later can be displayed within the console.
- * The graphs are provided from a servlet.
+ * This is an {@link org.openremote.controller.service.statuscache.EventProcessor} which parses
+ * rrd4j-config.xml file and creates RRD4j datastores. Each sensor update creates a new data entry
+ * within a rrd4j datasource. The rrd4j-config.xml can also be used to configure graphs which
+ * later can be displayed within the console. The graphs are provided from a servlet.
+ *
  * @author marcus
  *
  */
 public class Rrd4jDataLogger extends EventProcessor
 {
 
-   private List<RrdDb> rrdDbList = Collections.emptyList();
+  private List<RrdDb> rrdDbList = Collections.emptyList();
+  private Map<String,String> graphDefMap;
 
-   private Map<String,String> graphDefMap;
-   
-   @Override
-   public String getName() {
-      return "RRD4J Data Logger";
-   }
+
+  @Override public String getName()
+  {
+    return "RRD4J Data Logger";
+  }
 
    @Override
    public synchronized void push(EventContext ctx) {
@@ -267,27 +272,32 @@ public class Rrd4jDataLogger extends EventProcessor
     * @return true if we can read/write the dir, false otherwise
     * 
     * @throws InitializationException
-    *            if URI is null or security manager was installed but read access was not granted to directory pointed
-    *            by the given file URI
+    *            if URI is null or security manager was installed but write access was not granted
+    *            to directory pointed by the given file URI
     */
-   private boolean hasDirectoryReadAccess(URI uri) throws InitializationException {
+  private boolean hasDirectoryReadAccess(URI uri) throws InitializationException
+  {
+    if (uri == null)
+    {
+      throw new InitializationException("RRD resource directory resolved to 'null'");
+    }
 
-      if (uri == null) {
-         throw new InitializationException("rrd resource directory was resolved to 'null'");
-      }
+    File dir = new File(uri);
 
-      File dir = new File(uri);
+    try
+    {
+      return dir.exists() && dir.canRead() && dir.canWrite();
+    }
 
-      try {
-         return dir.exists() && dir.canRead() && dir.canWrite();
-      }
-
-      catch (SecurityException e) {
-         throw new InitializationException("Security Manager has denied read access to directory ''{0}''. "
-               + "In order to write rrd data, file write access must be explicitly "
-               + "granted to this directory. ({1})", e, uri, e.getMessage());
-      }
-   }
+    catch (SecurityException e)
+    {
+      throw new InitializationException(
+         "Security Manager has denied write access to directory ''{0}''. " +
+         "In order to write rrd data, file write access must be explicitly " +
+         "granted to this directory. ({1})", e, uri, e.getMessage()
+      );
+    }
+  }
 
    private String nodeToString(Node node) {
       StringWriter sw = new StringWriter();
