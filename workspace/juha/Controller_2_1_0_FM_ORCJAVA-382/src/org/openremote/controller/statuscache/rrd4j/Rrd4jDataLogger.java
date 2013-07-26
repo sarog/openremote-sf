@@ -99,33 +99,75 @@ public class Rrd4jDataLogger extends EventProcessor
     return "RRD4J Data Logger";
   }
 
-   @Override
-   public synchronized void push(EventContext ctx) {
-      String sensorName = ctx.getEvent().getSource();
-      for (RrdDb rrdDb : rrdDbList) {
-         try {
-            if (rrdDb.getDatasource(sensorName) != null) {
-               try {
-                  long newUpdate = System.currentTimeMillis() / 1000;
-                  long lastUpdate = rrdDb.getLastUpdateTime();
-                  if (lastUpdate<newUpdate){
-                     double value = Double.parseDouble("" + ctx.getEvent().getValue());
-                     Sample sample = rrdDb.createSample(newUpdate);
-                     sample.setValue(sensorName, value);
-                     sample.update();
-                  }
-               } catch (NumberFormatException e) {
-               }
-            }
-         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
-      }
-   }
+  @Override public synchronized void push(EventContext ctx)
+  {
+    String sensorName = ctx.getEvent().getSource();
+    Object eventValue = ctx.getEvent().getValue();
 
-   @Override
-   public void start(LifeCycleEvent ctx) throws InitializationException {
+    for (RrdDb rrdDatabase : rrdDbList)
+    {
+      try
+      {
+        if (rrdDatabase.getDatasource(sensorName) == null)
+        {
+          continue;
+        }
+      }
+
+      catch (IOException e)
+      {
+        log.error("Could not retrieve RRD datasource ''{0}'': {1}", e, sensorName, e.getMessage());
+
+        continue;
+      }
+
+      try
+      {
+        long newUpdate = System.currentTimeMillis() / 1000;
+        long lastUpdate = rrdDatabase.getLastUpdateTime();
+
+        if (lastUpdate < newUpdate)
+        {
+          // TODO:
+          //   - the implementation below is brittle as it relies on implementation details
+          //     of each event value's toString() method -- there's no specified contract at
+          //     this point that event's value has an appropriate toString() implementation.
+          //
+          //     In case of numeric events, a more robust even definition could be specified
+          //     that enforces a Number or other type that guarantees a typed number
+          //     value. An exception would still have to be made for Custom or other string
+          //     type events where parse compatibility would depend on user and device
+          //     configuration.
+          //                                                                      [JPL]
+
+          double value = Double.parseDouble(eventValue.toString());
+
+          Sample sample = rrdDatabase.createSample(newUpdate);
+          sample.setValue(sensorName, value);
+          sample.update();
+        }
+      }
+
+      catch (NumberFormatException e)
+      {
+        log.error(
+            "Attempted to store a non-number value to RRD database: ''{0}''",
+            e, ctx.getEvent().getValue()
+        );
+      }
+
+      catch (IOException e)
+      {
+        log.error(
+            "I/O error writing value ''{0}'' to RRD database ''{1}'': {2}",
+            e, eventValue, rrdDatabase, e.getMessage()
+        );
+      }
+    }
+  }
+
+   @Override public void start(LifeCycleEvent ctx) throws InitializationException
+   {
       URI rrdDirUri = getRrdDirUri();
       URI rrdConfigUri = rrdDirUri.resolve("rrd4j-config.xml");
       if (!hasDirectoryReadAccess(rrdConfigUri)) {
