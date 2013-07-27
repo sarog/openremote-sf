@@ -166,13 +166,17 @@ public class Rrd4jDataLogger extends EventProcessor
     }
   }
 
-   @Override public void start(LifeCycleEvent ctx) throws InitializationException
-   {
-      URI rrdDirUri = getRrdDirUri();
-      URI rrdConfigUri = rrdDirUri.resolve("rrd4j-config.xml");
-      if (!hasDirectoryReadAccess(rrdConfigUri)) {
-         throw new InitializationException("Directory ''{0}'' does not exist or cannot be read.", rrdConfigUri);
-      }
+  @Override public void start(LifeCycleEvent ctx) throws InitializationException
+  {
+    URI rrdDirUri = getRRDDataDirectory();
+
+    URI rrdConfigUri = rrdDirUri.resolve("rrd4j-config.xml");
+
+    if (!hasDirectoryReadAccess(rrdConfigUri))
+    {
+       throw new InitializationException(
+           "File ''{0}'' does not exist or cannot be read.", rrdConfigUri);
+    }
       
       //Parse XML for RRD4J databases and datasources
       List<RrdDef> rrdDefList = parseConfigXML(rrdConfigUri);
@@ -330,38 +334,76 @@ public class Rrd4jDataLogger extends EventProcessor
       }
    }
 
-   private URI getRrdDirUri() throws InitializationException {
-      ControllerConfiguration config = ServiceContext.getControllerConfiguration();
-      URI resourceURI;
-      try {
-         resourceURI = new URI(config.getResourcePath());
 
-         if (!resourceURI.isAbsolute()) {
-            resourceURI = new File(config.getResourcePath()).toURI();
-         }
-      } catch (URISyntaxException e) {
-         throw new InitializationException("Property 'resource.path' value ''{0}'' cannot be parsed. "
-               + "It must contain a valid URI : {1}", e, config.getResourcePath(), e.getMessage());
-      }
-      URI rrdURI = resourceURI.resolve("rrd/");
-      if (!hasDirectoryReadAccess(rrdURI)) {
-         throw new InitializationException("Directory ''{0}'' does not exist or cannot be read.", rrdURI);
-      }
-      return rrdURI;
-   }
+  /**
+   * Attempts to resolve or create a RRD data directory. First checks for the presence of
+   * 'rrd' directory under the 'resource.path' location. If an 'rrd' directory is present,
+   * returns an URI to that location. <p>
+   *
+   * Otherwise attempts to create a new 'rrd' directory under the location pointed by
+   * 'resource.path' controller configuration property.
+   *
+   * @see org.openremote.controller.ControllerConfiguration#getResourcePath()
+   *
+   * @return    an URI pointing to the 'rrd' data directory if successful
+   *
+   * @throws    InitializationException if creating or accessing an existing RRD data directory
+   *                                    failed for any reason
+   */
+  private URI getRRDDataDirectory() throws InitializationException
+  {
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration().readXML();
+    URI resourceURI;
 
-   /**
-    * Checks that the rrd directory exists and we can access it.
-    * 
-    * @param uri
-    *           file URI pointing to the directory where rrd files are stored
-    * 
-    * @return true if we can read/write the dir, false otherwise
-    * 
-    * @throws InitializationException
-    *            if URI is null or security manager was installed but write access was not granted
-    *            to directory pointed by the given file URI
-    */
+    try
+    {
+      // TODO :
+      //   As is mentioned in the config.getResourcePath() method, the conversion to valid
+      //   URI should be made already when accepting the new value into controller configuration
+      //   class (and at initialization time) so these URI conversions and checks become
+      //   unnecessary at deeper code levels (where they are likely to differ in semantics).
+      //                                                                                      [JPL]
+
+      resourceURI = new URI(config.getResourcePath());
+
+      if (!resourceURI.isAbsolute())
+      {
+        resourceURI = new File(config.getResourcePath()).toURI();
+      }
+    }
+
+    catch (URISyntaxException e)
+    {
+      throw new InitializationException(
+          "Property 'resource.path' value ''{0}'' cannot be parsed. It must contain a valid URI: {1}",
+          e, config.getResourcePath(), e.getMessage()
+      );
+    }
+
+    URI rrdURI = resourceURI.resolve("rrd/");
+
+    if (!hasDirectoryReadAccess(rrdURI))
+    {
+      // throws config exception if fails..
+
+      createRRDDataDirectory(rrdURI);
+    }
+
+    return rrdURI;
+  }
+
+  /**
+   * Checks that the rrd directory exists and we can access it.
+   *
+   * @param uri
+   *           file URI pointing to the directory where rrd files are stored
+   *
+   * @return true if we can read/write the dir, false otherwise
+   *
+   * @throws InitializationException
+   *            if URI is null or security manager was installed but write access was not granted
+   *            to directory pointed by the given file URI
+   */
   private boolean hasDirectoryReadAccess(URI uri) throws InitializationException
   {
     if (uri == null)
@@ -385,6 +427,66 @@ public class Rrd4jDataLogger extends EventProcessor
       );
     }
   }
+
+  /**
+   * Attempts to create a RRD data directory if one does not exist.
+   *
+   * @param uri   an URI with "file" schema pointing to the location of the desired RRD
+   *              data directory, usually prefixed with the 'resource.path' configuration
+   *              variable in {@link org.openremote.controller.ControllerConfiguration#getResourcePath()}
+   *
+   * @throws ConfigurationException if creating the directory fails because of insufficient
+   *                                security permissions or for any other reason
+   */
+  private void createRRDDataDirectory(URI uri) throws ConfigurationException
+  {
+    try
+    {
+      File f = new File(uri);
+
+      try
+      {
+        if (!f.isDirectory())
+        {
+          try
+          {
+            boolean success = f.mkdir();
+
+            if (!success)
+            {
+              throw new ConfigurationException(
+                  "Failed to create a file directory ''{0}'' (reason unknown)", f
+              );
+            }
+          }
+
+          catch (SecurityException e)
+          {
+            throw new ConfigurationException(
+                "Security manager has denied write access to create directory ''{0}'': {1}",
+                e, f, e.getMessage()
+            );
+          }
+        }
+      }
+
+      catch (SecurityException e)
+      {
+        throw new ConfigurationException(
+            "Security manager has denied read access to path ''{0}'': {1}", e, f, e.getMessage()
+        );
+      }
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      throw new ConfigurationException(
+          "Configured path for RRD data directory ''{0}'' must follow a ''file'' schema: {1}",
+          e, uri, e.getMessage()
+      );
+    }
+  }
+
 
   private String nodeToString(Node node) throws ConfigurationException
   {
