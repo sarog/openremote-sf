@@ -70,7 +70,7 @@ import org.xml.sax.SAXException;
  * later can be displayed within the console. The graphs are provided from a servlet.
  *
  * @author marcus
- *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class Rrd4jDataLogger extends EventProcessor
 {
@@ -78,10 +78,21 @@ public class Rrd4jDataLogger extends EventProcessor
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   *   Runtime RRD event processor logging category
+   *   Runtime RRD event processor logging category. Should be used for logging information
+   *   recorded during the execution and operation of the event processor (outside of startup
+   *   or shutdown or other lifecycle events).
    */
-  private final static Logger log = Logger.getLogger(
+  private final static Logger runtime = Logger.getLogger(
       Constants.RUNTIME_EVENTPROCESSOR_LOG_CATEGORY + ".rrd"
+  );
+
+  /**
+   * Separate logging of the lifecycle/configuration events. Usually these are more visible
+   * to the user on the console, boot logs, etc. whereas runtime logs in general are directed
+   * into their own specific files.
+   */
+  private final static Logger init = Logger.getLogger(
+      Constants.EVENT_PROCESSOR_INIT_LOG_CATEGORY + ".rrd"
   );
 
 
@@ -90,6 +101,35 @@ public class Rrd4jDataLogger extends EventProcessor
   private List<RrdDb> rrdDbList = Collections.emptyList();
   private Map<String,String> graphDefMap;
 
+  /**
+   * A "file" URI pointing to the RRD data directory.
+   */
+  private URI rrdDataDir = null;
+
+  /**
+   * Flag to indicate whether this event processor should process incoming events. In case of
+   * missing or incomplete or incorrect configuration, this flag can be set to false avoiding
+   * unnecessary processing when it cannot be completed.
+   */
+  private boolean processing = true;
+
+  /**
+   * Contains the controller configuration 'resource.path' property resolved to a valid URI. <p>
+   *
+   * TODO:
+   *       the use of this field should be temporary since the proper place to resolve the
+   *       config properties into URIs would be to do it early when the ControllerConfiguration
+   *       instance is constructed.
+   */
+  private URI resourcePath = null;
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+  public String getGraphDef(String graphName)
+  {
+    return graphDefMap.get(graphName);
+  }
 
 
   // EventProcessor Overrides ---------------------------------------------------------------------
@@ -101,6 +141,11 @@ public class Rrd4jDataLogger extends EventProcessor
 
   @Override public synchronized void push(EventContext ctx)
   {
+    if (!processing)
+    {
+      return;
+    }
+
     String sensorName = ctx.getEvent().getSource();
     Object eventValue = ctx.getEvent().getValue();
 
@@ -116,7 +161,7 @@ public class Rrd4jDataLogger extends EventProcessor
 
       catch (IOException e)
       {
-        log.error("Could not retrieve RRD datasource ''{0}'': {1}", e, sensorName, e.getMessage());
+        runtime.error("Could not retrieve RRD datasource ''{0}'': {1}", e, sensorName, e.getMessage());
 
         continue;
       }
@@ -150,7 +195,7 @@ public class Rrd4jDataLogger extends EventProcessor
 
       catch (NumberFormatException e)
       {
-        log.error(
+        runtime.error(
             "Attempted to store a non-number value to RRD database: ''{0}''",
             e, ctx.getEvent().getValue()
         );
@@ -158,7 +203,7 @@ public class Rrd4jDataLogger extends EventProcessor
 
       catch (IOException e)
       {
-        log.error(
+        runtime.error(
             "I/O error writing value ''{0}'' to RRD database ''{1}'': {2}",
             e, eventValue, rrdDatabase, e.getMessage()
         );
@@ -168,58 +213,98 @@ public class Rrd4jDataLogger extends EventProcessor
 
   @Override public void start(LifeCycleEvent ctx) throws InitializationException
   {
-    URI rrdDirUri = getRRDDataDirectory();
+    // Resolve the location of data files. Creates or uses an existing 'rrd' directory in that
+    // location. Will throw a config exceptions if can't be resolved, or created...
 
-    URI rrdConfigUri = rrdDirUri.resolve("rrd4j-config.xml");
+    resourcePath = resolveResourcePath();
+    rrdDataDir = getRRDDataDirectory();
 
-    if (!hasDirectoryReadAccess(rrdConfigUri))
+    if (!isRRDConfigAvailable())
     {
-       throw new InitializationException(
-           "File ''{0}'' does not exist or cannot be read.", rrdConfigUri);
+      init.info("RRD configuration not present. Sensor value history not saved.");
+
+      processing = false;
+
+      return;
+    }
+
+    //Parse XML for RRD4J databases and datasources
+
+    URI rrdConfig = resolveRRDConfigurationFile();
+
+    List<RrdDef> rrdDefList = parseConfigXML(rrdConfig);
+    rrdDbList = new ArrayList<RrdDb>();
+
+    for (RrdDef rrdDef : rrdDefList)
+    {
+      RrdDb rrdDb = null;
+      String dbFileName = rrdDef.getPath();
+
+      URI rrdFileURI = rrdDataDir.resolve(dbFileName);
+
+      try
+      {
+        File rrdFile = new File(rrdFileURI);
+
+        if (rrdFile.exists())
+        {
+          rrdDb = new RrdDb(rrdFile.getAbsolutePath());
+        }
+
+        else
+        {
+          rrdDef.setPath(rrdFile.getAbsolutePath());
+          rrdDb = new RrdDb(rrdDef);
+        }
+
+        rrdDbList.add(rrdDb);
+      }
+
+      catch (IllegalArgumentException e)
+      {
+         init.error(
+             "RRD datasource URI ''{0}'' must follow ''file'' schema: {1}",
+             e, rrdFileURI, e.getMessage()
+         );
+      }
+
+      catch (SecurityException e)
+      {
+         init.error(
+             "Security manager has denied access to RRD data file ''{0}'': {1}",
+             e, rrdFileURI, e.getMessage()
+         );
+      }
+
+      catch (IOException e)
+      {
+         init.error(
+             "I/O error in accessing RRD datafile ''{0}'': {1}", e, rrdFileURI, e.getMessage()
+         );
+      }
     }
       
-      //Parse XML for RRD4J databases and datasources
-      List<RrdDef> rrdDefList = parseConfigXML(rrdConfigUri);
-      rrdDbList = new ArrayList<RrdDb>();
-      for (RrdDef rrdDef : rrdDefList) {
-         RrdDb rrdDb = null;
-         String dbFileName = rrdDef.getPath();
-         try {
-            URI rrdFileUri = rrdDirUri.resolve(dbFileName);
-            File rrdFile = new File(rrdFileUri);
-            if (rrdFile.exists()) {
-               rrdDb = new RrdDb(rrdFile.getAbsolutePath());
-            } else {
-               rrdDef.setPath(rrdFile.getAbsolutePath());
-               rrdDb = new RrdDb(rrdDef);
-            }
-            rrdDbList.add(rrdDb);
-         } catch (IOException e) {
-            throw new InitializationException("Could not load/create rrd4j db file", e);
-         }
-      }
-      
-      //Parse XML for RRD4J graph definitions
-      graphDefMap = parseConfigXMLGraphs(rrdConfigUri, rrdDirUri);
+    //Parse XML for RRD4J graph definitions
+    graphDefMap = parseConfigXMLGraphs(rrdConfig, rrdDataDir);
 
-      
    }
 
-   public String getGraphDef(String graphName) {
-      return graphDefMap.get(graphName);
-   }
-   
-   @Override
-   public void stop() {
-      for (RrdDb rrdDb : rrdDbList) {
-         try {
-            rrdDb.close();
-         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
+
+  @Override public void stop()
+  {
+    for (RrdDb rrdDb : rrdDbList)
+    {
+      try
+      {
+        rrdDb.close();
       }
-   }
+
+      catch (IOException e)
+      {
+        init.warn("I/O error while shutting down RRD database (''{0}''): {1}", e, rrdDb, e.getMessage());
+      }
+    }
+  }
 
 
   // Private Instance Methods ---------------------------------------------------------------------
@@ -352,35 +437,8 @@ public class Rrd4jDataLogger extends EventProcessor
    */
   private URI getRRDDataDirectory() throws InitializationException
   {
-    ControllerConfiguration config = ServiceContext.getControllerConfiguration().readXML();
-    URI resourceURI;
 
-    try
-    {
-      // TODO :
-      //   As is mentioned in the config.getResourcePath() method, the conversion to valid
-      //   URI should be made already when accepting the new value into controller configuration
-      //   class (and at initialization time) so these URI conversions and checks become
-      //   unnecessary at deeper code levels (where they are likely to differ in semantics).
-      //                                                                                      [JPL]
-
-      resourceURI = new URI(config.getResourcePath());
-
-      if (!resourceURI.isAbsolute())
-      {
-        resourceURI = new File(config.getResourcePath()).toURI();
-      }
-    }
-
-    catch (URISyntaxException e)
-    {
-      throw new InitializationException(
-          "Property 'resource.path' value ''{0}'' cannot be parsed. It must contain a valid URI: {1}",
-          e, config.getResourcePath(), e.getMessage()
-      );
-    }
-
-    URI rrdURI = resourceURI.resolve("rrd/");
+    URI rrdURI = resourcePath.resolve("rrd/");
 
     if (!hasDirectoryReadAccess(rrdURI))
     {
@@ -425,6 +483,55 @@ public class Rrd4jDataLogger extends EventProcessor
          "In order to write rrd data, file write access must be explicitly " +
          "granted to this directory. ({1})", e, uri, e.getMessage()
       );
+    }
+  }
+
+
+  /**
+   * Resolves the rrd4j configuration xml file location within the RRD data directory.
+   *
+   * @see #rrdDataDir
+   *
+   * @return an URI pointing to RRD configuration file
+   */
+  private URI resolveRRDConfigurationFile()
+  {
+    return rrdDataDir.resolve("rrd4j-config.xml");
+  }
+
+  /**
+   * Checks whether the RRD configuration file is available and readable.
+   *
+   * @return  true if file exists and is readable
+   */
+  private boolean isRRDConfigAvailable()
+  {
+    URI uri = resolveRRDConfigurationFile();
+
+    try
+    {
+      File f = new File(uri);
+
+      return f.exists() && f.canRead();
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      init.warn("Configured path for RRD configuration file ''{0}'' must follow a ''file'' schema: {1}",
+          e, uri, e.getMessage()
+      );
+
+      return false;
+    }
+
+    catch (SecurityException e)
+    {
+      init.info(
+          "Security manager has denied read access to RRD configuration file ''{0}'': {1}",
+          e, uri, e.getMessage()
+      );
+
+      return false;
     }
   }
 
@@ -487,6 +594,40 @@ public class Rrd4jDataLogger extends EventProcessor
     }
   }
 
+  private URI resolveResourcePath() throws ConfigurationException
+  {
+    // TODO:
+    //   Getting controller configuration is currently an expensive operation (due to poor API
+    //   design). Make sure we only fetch it once when this event processor is started.
+    //
+    //   As is mentioned in the config.getResourcePath() method, the conversion to valid
+    //   URI should be made already when accepting the new value into controller configuration
+    //   class (and at initialization time) so these URI conversions and checks become
+    //   unnecessary at deeper code levels (where they are likely to differ in semantics).
+    //                                                                                      [JPL]
+
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration().readXML();
+
+    try
+    {
+      URI resourceURI = new URI(config.getResourcePath());
+
+      if (!resourceURI.isAbsolute())
+      {
+        resourceURI = new File(config.getResourcePath()).toURI();
+      }
+
+      return resourceURI;
+    }
+
+    catch (URISyntaxException e)
+    {
+      throw new ConfigurationException(
+          "Property 'resource.path' value ''{0}'' cannot be parsed. It must contain a valid URI: {1}",
+          e, config.getResourcePath(), e.getMessage()
+      );
+    }
+  }
 
   private String nodeToString(Node node) throws ConfigurationException
   {
@@ -505,7 +646,7 @@ public class Rrd4jDataLogger extends EventProcessor
 
       catch (TransformerException e)
       {
-        log.error("Unable to transform node {0}, error: {1}", e, node, e.getMessage());
+        runtime.error("Unable to transform node {0}, error: {1}", e, node, e.getMessage());
       }
     }
 
