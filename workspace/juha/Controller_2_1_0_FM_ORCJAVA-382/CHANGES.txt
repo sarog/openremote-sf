@@ -1,3 +1,10 @@
+Controller ORCJAVA-382
+======================
+
+  - Do not rely on pre-existing directory structure when
+    creating RRD files (Juha Lindfors)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
