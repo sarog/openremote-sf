@@ -1,3 +1,12 @@
+
+Lawrie Griffits work branch
+===========================
+
+ - Implementations for text-to-speech, serial port,
+   email sending.
+
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
