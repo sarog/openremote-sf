@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -27,9 +27,16 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
+import org.openremote.controller.protocol.knx.datatype.ThreeByteValue;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.protocol.knx.datatype.TwoOctetFloat;
+import org.openremote.controller.protocol.knx.datatype.Time;
+import org.openremote.controller.protocol.knx.datatype.Date;
+import org.openremote.controller.protocol.knx.datatype.FourOctetSigned;
+import org.openremote.controller.protocol.knx.datatype.FourOctetFloat;
+import org.openremote.controller.protocol.knx.datatype.KNXString;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
@@ -99,6 +106,8 @@ import java.math.RoundingMode;
  * @see DataType
  * 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Kenneth Stridh
+ * @author Stefan Langerman
  */
 class ApplicationProtocolDataUnit
 {
@@ -106,7 +115,7 @@ class ApplicationProtocolDataUnit
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * Represents the full APDU (APCI + data) for Group Value Write service request with DPT 1.001
+   * Represents the full APDU   (APCI + data) for Group Value Write service request with DPT 1.001
    * (Switch) to state 'ON'.
    *
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
@@ -304,11 +313,44 @@ class ApplicationProtocolDataUnit
 
 
   /**
+  * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+  * 8-bit signed counter or percentage value (DPT 6.001 or DPT 6.010).
+  * <p>
+  *
+  * Valid parameter value range is [-128..127].
+  *
+  * @param parameter
+  *           counter value for range
+  *
+  * @return APDU instance for a 8-bit signed counter value
+  *
+  * @throws ConversionException
+  *            if the value is not in a given range
+  */
+  static ApplicationProtocolDataUnit createSignedRange(CommandParameter parameter) 
+      throws ConversionException
+  {
+    int value = parameter.getValue().intValue();
+
+    if (value < -128 || value > 127)
+    {
+      throw new ConversionException("Expected value is in range [-128..127] , received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Signed8Bit(
+          DataPointType.Signed8BitValue.VALUE_1_COUNT,
+          value)
+    );
+  }
+
+
+  /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
-   * 6-bit unsigned scene number value (DPT 17.001).
-   * <p>
+   * 6-bit unsigned scene number value (DPT 17.001). <p>
    *
-   * Valid parameter value range is [0-63].
+   * Valid parameter value range is [1-64].
    *
    * @param parameter
    *           scene number value
@@ -325,17 +367,27 @@ class ApplicationProtocolDataUnit
   {
     int value = parameter.getValue().intValue();
 
-    if (value < 0 || value > 63)
+    if (value < 1 || value > 64)
     {
-      throw new ConversionException("Expected value is in range [0-63] , received " + value);
+      throw new ConversionException("Expected value is in range [1-64] , received " + value);
     }
 
+    // adjust value down by one for the KNX frame (zero-base)...
+
+    value = value - 1;
+    
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new Unsigned8Bit(
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
-          learn ? value : 0x80 | value)
+          learn ? 0x80 | value : value)
     );
+
+    // TODO :
+    //   as the javadoc mentions this should be a unsigned 6-bit value where most significant
+    //   bits are reserved -- since we limit the values to low 6 bits the Unsigned8Bit works but
+    //   should add a proper 6-bit datatype to the implementation which enforces the valid value
+    //   range. See ORCJAVA-360 (http://jira.openremote.org/browse/ORCJAVA-360)
   }
 
   /**
@@ -400,6 +452,195 @@ class ApplicationProtocolDataUnit
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new TwoOctetFloat(DataPointType.VALUE_TEMP, value)
+    );
+  }
+
+  /**
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+   * 3-octet Time value (DPT 10.001).
+   * 
+   * @param parameter
+   *
+   * Parameter value should be in format "dhhmmss"
+   *
+   * Where d is day of week in range [0-7] 
+   * 1 = Monday
+   *      ***
+   * 7 = Sunday
+   * 0 = no day
+   *
+   * hh is hours in range [0-23]
+   *
+   * mm is minutes in range [0-59]
+   *
+   * ss is seconds in range [0-59]
+   *
+   * No paremeter value (null) or parameter = 0 will send the current time
+   *
+   * @return APDU instance for a 3-oct Time value
+   *
+   * @throws  ConversionException   if the value is not within the expected range [0-7235959]
+   *                                
+   * 
+   */
+  static ApplicationProtocolDataUnit createTime(CommandParameter parameter)
+      throws ConversionException
+  {
+    int value = parameter.getValue().intValue();
+  
+    if (value < 0 || value > 7235959)
+    {
+      throw new ConversionException(
+          "Expected time value is [0-7235959] -- received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Time(DataPointType.VALUE_TIME, value)
+    );
+  }
+
+
+  /**
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+   * 3-octet Date value (DPT 11.001).
+   * 
+   * @param parameter
+   *
+   * Parameter value should be in format "DDMMYY"
+   *
+   * Where DD is day of month in range [1-31] 
+   *
+   * MM is month in range [1-12]
+   *
+   * YY is year in range [0-99]
+   *
+   * Year value = 90 : interpret as 20th century                              
+   * Year value < 90: interpret as 21st century
+   *                                
+   * EXAMPLE:                              
+   * year value = 99 equals with 1999
+   * year value = 0 equals with 2000                               
+   * year value = 4 equals with 2004
+   *                                
+   * No paremeter value (null) or parameter = 0 will send the current date
+   *
+   * @return APDU instance for a 3-oct Date value
+   *
+   * @throws  ConversionException   if the value is not within the expected range [0 or 10100-311299]
+   *                                
+   * 
+   */
+  static ApplicationProtocolDataUnit createDate(CommandParameter parameter)
+      throws ConversionException
+  {
+    int value = parameter.getValue().intValue();
+    
+    if ((value != 0 && value < 10100)|| value > 311299)
+    {
+      throw new ConversionException(
+          "Expected date value is [0 or 10100-311299] -- received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Date(DataPointType.VALUE_DATE, value)
+    );
+  }
+
+
+  /**
+   * Constructs an APDU corresponding to a Group Value Energy service for a device expecting an
+   * 4-octet signed value (DPT 13.001).
+   *
+   * Valid parameter value range is [-2147483648 - 2147483647].
+   *
+   * @param  parameter  Energy value for range
+   *
+   * @return APDU instance for a 4-octet signed value
+   * 
+   * @throws  ConversionException   if the value is not in a given range or cannot be scaled to the
+   *                                desired range
+   * 
+   */
+  static ApplicationProtocolDataUnit createEnergy(CommandParameter parameter)
+    throws ConversionException
+  {
+    float value = parameter.getValue().floatValue();
+     
+    if (value < -2147483648 || value > 2147483647)
+    {
+      throw new ConversionException(
+        "Expected Power value is [-2147483648 - 2147483647] -- received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new FourOctetSigned(DataPointType.VALUE_ENERGY, value)
+    );
+  }
+
+
+  /**
+   * Constructs an APDU corresponding to a Group Value Power service for a device expecting an
+   * 4-octet float value (DPT 14.001).
+   *
+   * Valid parameter value range is [-3.4028235E38 - 3.4028235E38].
+   *
+   * @param  parameter  Power value for range
+   *
+   * @return APDU instance for a 4-octet float value
+   * 
+   * @throws  ConversionException   if the value is not in a given range or cannot be scaled to the
+   *                                desired range
+   * 
+   */
+  static ApplicationProtocolDataUnit createPower(CommandParameter parameter)
+      throws ConversionException
+  { 
+    float value = parameter.getValue().floatValue();
+     
+    if (value < -3.4028235E38 || value > 3.4028235E38)
+    {
+      throw new ConversionException(
+          "Expected Power value is [-3.4028235E38 - 3.4028235E38] -- received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new FourOctetFloat(DataPointType.VALUE_POWER, value)
+    );
+  }
+
+
+
+
+  static ApplicationProtocolDataUnit createThreeByteRGBValue(CommandParameter rgbValue)
+      throws ConversionException
+  {
+    String s = rgbValue.getRawValue();
+    int len = s.length();
+    byte[] data = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+      try {
+          data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+      } catch (Throwable ignore) {}
+    }
+
+    return new ApplicationProtocolDataUnit(
+       ApplicationLayer.Service.GROUPVALUE_WRITE,
+       new ThreeByteValue(DataPointType.RGB_VALUE, data)
+    );
+  }
+
+
+
+
+  public static ApplicationProtocolDataUnit createText(CommandParameter parameter)
+  {
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new KNXString(DataPointType.STRING_ASCII, parameter.getRawValue())
     );
   }
 
@@ -735,15 +976,10 @@ class ApplicationProtocolDataUnit
      */
     static ResponseAPDU createStringResponse(final byte[] apdu)
     {
-      int len = apdu.length;
-      byte[] stringData = new byte[len - 2];
-
-      System.arraycopy(apdu, 2, stringData, 0, stringData.length);
-
       return new ResponseAPDU(
           ApplicationLayer.Service.GROUPVALUE_RESPONSE,
-          stringData.length + 1, /* Data length */
-          stringData
+          15, /* Data length */
+          apdu
       );
     }
 
@@ -803,6 +1039,16 @@ class ApplicationProtocolDataUnit
         );
       }
 
+      else if (dpt instanceof DataPointType.Signed8BitValue)
+      {
+        DataPointType.Signed8BitValue value = (DataPointType.Signed8BitValue)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToSigned8BitValue(value, getDataType().getData() [0])
+        );
+      }
+
       else if (dpt instanceof DataPointType.TwoOctetFloat)
       {
         DataPointType.TwoOctetFloat value = (DataPointType.TwoOctetFloat)dpt;
@@ -812,6 +1058,47 @@ class ApplicationProtocolDataUnit
             resolveToTwoOctetFloat(value, getDataType().getData())
         );
       }
+
+      else if (dpt instanceof DataPointType.Time)
+      {
+        DataPointType.Time value = (DataPointType.Time)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToTime(value, getDataType().getData())
+        );
+      }
+
+      else if (dpt instanceof DataPointType.Date)
+      {
+        DataPointType.Date value = (DataPointType.Date)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToDate(value, getDataType().getData())
+        );
+      }
+
+      else if (dpt instanceof DataPointType.FourOctetSigned)
+      {
+        DataPointType.FourOctetSigned value = (DataPointType.FourOctetSigned)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToFourOctetSigned(value, getDataType().getData())
+        );
+      }
+
+      else if (dpt instanceof DataPointType.FourOctetFloat)
+      {
+        DataPointType.FourOctetFloat value = (DataPointType.FourOctetFloat)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToFourOctetFloat(value, getDataType().getData())
+        );
+      }
+
       else if (dpt instanceof DataPointType.Float2ByteValue)
       {
         DataPointType.Float2ByteValue value = (DataPointType.Float2ByteValue) dpt;
@@ -820,7 +1107,15 @@ class ApplicationProtocolDataUnit
             getApplicationLayerService(),
             resolveToFloat2ByteValue(value, getDataType().getData()));
       }
+      
+      else if (dpt instanceof DataPointType.KNXString)
+      {
+        DataPointType.KNXString value = (DataPointType.KNXString) dpt;
 
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToKNXString(value, getDataType().getData()));
+      }
 
       else
       {
@@ -844,6 +1139,19 @@ class ApplicationProtocolDataUnit
 
     /**
      * TODO
+     * 
+     * @param dpt
+     * @param value
+     * @return
+     */
+    private Signed8Bit resolveToSigned8BitValue(DataPointType.Signed8BitValue dpt, int value)
+    {
+      return new Signed8Bit(dpt, value);
+    }
+
+
+    /**
+     * TODO
      *
      * @param dpt
      * @param value
@@ -857,6 +1165,11 @@ class ApplicationProtocolDataUnit
     private TwoOctetFloat resolveToTwoOctetFloat(DataPointType.TwoOctetFloat dpt, byte[] value)
     {
       return new TwoOctetFloat(dpt, value);
+    }
+    
+    private KNXString resolveToKNXString(DataPointType.KNXString dpt, byte[] value)
+    {
+      return new KNXString(dpt, value);
     }
 
     /**
@@ -915,7 +1228,27 @@ class ApplicationProtocolDataUnit
       }
     }
 
+    private Time resolveToTime(DataPointType.Time dpt, byte[] value)
+    {
+      return new Time(dpt, value);
+    }
+
+    private Date resolveToDate(DataPointType.Date dpt, byte[] value)
+    {
+      return new Date(dpt, value);
+    }
+
+    private FourOctetSigned resolveToFourOctetSigned(DataPointType.FourOctetSigned dpt, byte[] value)
+    {
+      return new FourOctetSigned(dpt, value);
+    }
+
+    private FourOctetFloat resolveToFourOctetFloat(DataPointType.FourOctetFloat dpt, byte[] value)
+    {
+      return new FourOctetFloat(dpt, value);
+    }
+
   }
 
-
 }
+

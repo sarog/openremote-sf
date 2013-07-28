@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,6 +20,9 @@
  */
 package org.openremote.controller.protocol.dscit100;
 
+/**
+ * @author Greg Rapp
+ */
 public interface DSCIT100Connection
 {
 

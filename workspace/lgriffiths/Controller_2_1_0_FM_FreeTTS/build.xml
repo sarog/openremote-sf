@@ -116,6 +116,7 @@
     <fileset dir = "${lib.dir}/freetts" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/jsr113" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/email" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/rrd4j-2.1.1" includes = "**/*.jar"/>
   </path>
 
   <!--
@@ -246,6 +247,9 @@
       <fileset dir = "${lib.dir}/email">
         <include name = "*.jar"/>
       </fileset>
+      <fileset dir = "${lib.dir}/rrd4j-2.1.1">
+        <include name = "*.jar"/>
+      </fileset>
     </copy>
 
 
@@ -373,8 +377,19 @@
      | Copy compiled classes into the controller web app...
      +-->
     <copy todir = "${output.controller.dir}/WEB-INF/classes">
-      <fileset dir = "${classes.dir}"/>
+      <fileset dir = "${classes.dir}">
+
+        <!-- Package z-wave separately... -->
+        <exclude name = "org/openremote/controller/protocol/zwave/**"/>
+
+      </fileset>
     </copy>
+
+    <!-- Include a placeholder archive for z-wave implementation (to avoid startup errors)... -->
+    <zip basedir = "${classes.dir}"
+         destfile = "${output.controller.dir}/WEB-INF/lib/zwave.jar">
+      <include name = "org/openremote/controller/protocol/zwave/**"/>
+    </zip>
 
     <!--
      | Copy libs into controller web app...
