@@ -49,14 +49,15 @@
 	<classpathentry kind="lib" path="lib/json-path/json-smart-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-exec-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/cmu_us_kal.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/cmulex.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/en_us.jar"/>
-	<classpathentry kind="lib" path="lib/freetts/freetts.jar"/>
-	<classpathentry kind="lib" path="lib/email/mail.jar"/>
-	<classpathentry kind="lib" path="lib/jsr113/jsr113.jar"/>
-	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jar"/>
-	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.freetts.jar"/>
-	<classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.jar"/>
+	<classpathentry kind="lib" path="lib/rrd4j-2.1.1/rrd4j-2.1.1.jar"/>
+        <classpathentry kind="lib" path="lib/freetts/cmu_us_kal.jar"/>
+        <classpathentry kind="lib" path="lib/freetts/cmulex.jar"/>
+        <classpathentry kind="lib" path="lib/freetts/en_us.jar"/>
+        <classpathentry kind="lib" path="lib/freetts/freetts.jar"/>
+        <classpathentry kind="lib" path="lib/email/mail.jar"/>
+        <classpathentry kind="lib" path="lib/jsr113/jsr113.jar"/>
+        <classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jar"/>
+        <classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.freetts.jar"/>
+        <classpathentry kind="lib" path="lib/jsr113/org.jvoicexml.jsapi2.jse.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

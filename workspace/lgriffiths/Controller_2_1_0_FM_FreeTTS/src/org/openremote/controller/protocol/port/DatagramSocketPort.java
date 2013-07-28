@@ -26,6 +26,9 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
+import org.openremote.controller.protocol.knx.KNXCommandBuilder;
+import org.openremote.controller.utils.Logger;
+
 /**
  * A physical port (bus) using datagram sockets to send and receive messages.
  * 
@@ -33,14 +36,17 @@ import java.util.Map;
  *
  * @author Olivier Gandit
  */
-public class DatagramSocketPort implements Port {
-   private DatagramSocket inSocket, outSocket;
+public class DatagramSocketPort implements Port
+{
+  private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
-   @Override
-   public void configure(Map<String, Object> configuration) {
-      this.inSocket = (DatagramSocket) configuration.get("inSocket");
-      this.outSocket = (DatagramSocket) configuration.get("outSocket");
-   }
+  private DatagramSocket inSocket, outSocket;
+
+  @Override public void configure(Map<String, Object> configuration)
+  {
+    this.inSocket = (DatagramSocket) configuration.get("inSocket");
+    this.outSocket = (DatagramSocket) configuration.get("outSocket");
+  }
 
    @Override
    public void start() {
@@ -58,11 +64,19 @@ public class DatagramSocketPort implements Port {
       this.outSocket.send(new DatagramPacket(m.getContent(), m.getContent().length, m.getDestAddr()));
    }
 
-   @Override
-   public Message receive() throws IOException {
-      byte[] buffer = new byte[1024];
-      DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-      this.inSocket.receive(p);
-      return new DatagramSocketMessage((InetSocketAddress) this.inSocket.getLocalSocketAddress(), p.getData());
-   }
+
+  @Override public Message receive() throws IOException
+  {
+    if (inSocket == null)
+    {
+      throw new IOException("Configuration error, listening socket is null and cannot receive!");
+    }
+
+    byte[] buffer = new byte[1024];
+    DatagramPacket p = new DatagramPacket(buffer, buffer.length);
+
+    this.inSocket.receive(p);
+
+    return new DatagramSocketMessage((InetSocketAddress) this.inSocket.getLocalSocketAddress(), p.getData());
+  }
 }

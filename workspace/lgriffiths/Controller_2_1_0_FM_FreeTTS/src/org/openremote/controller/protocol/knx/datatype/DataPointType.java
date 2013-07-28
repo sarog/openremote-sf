@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -31,6 +31,7 @@ import org.openremote.controller.utils.Strings;
  * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Kenneth Stridh
  */
 public abstract class DataPointType
 {
@@ -116,6 +117,9 @@ public abstract class DataPointType
   public final static Unsigned8BitValue RELPOS_VALVE = new Unsigned8BitValue(5, 4);
   public final static Unsigned8BitValue VALUE_1_UCOUNT = new Unsigned8BitValue(5, 10);
 
+  public final static Signed8BitValue PERCENT_V8 = new Signed8BitValue(6, 1);
+  public final static Signed8BitValue VALUE_1_COUNT = new Signed8BitValue(6, 10);
+
   public final static TwoOctetFloat VALUE_TEMP = new TwoOctetFloat(9, 1);
   public final static TwoOctetFloat VALUE_TEMPD = new TwoOctetFloat(9, 2);
   public final static TwoOctetFloat VALUE_TEMPA = new TwoOctetFloat(9, 3);
@@ -127,12 +131,24 @@ public abstract class DataPointType
   public final static TwoOctetFloat VALUE_VOLT = new TwoOctetFloat(9, 20);
   public final static TwoOctetFloat VALUE_CURR = new TwoOctetFloat(9, 21);
   
+  public final static Time VALUE_TIME = new Time(10, 1);
+  public final static Date VALUE_DATE = new Date(11, 1);
+
+  public final static FourOctetSigned VALUE_ENERGY = new FourOctetSigned(13, 1);
+  public final static FourOctetFloat VALUE_POWER = new FourOctetFloat(14, 1);
+
 
   // Scene management
   public final static Unsigned8BitValue SCENE_NUMBER = new Unsigned8BitValue(17, 1);
   public final static Unsigned8BitValue SCENE_CONTROL = new Unsigned8BitValue(18, 1);
 
-
+  // RGB value
+  public final static ThreeByteValue RGB_VALUE = new ThreeByteValue(232, 600);
+  
+  // String
+  public final static KNXString STRING_ASCII = new KNXString(16, 0);
+  public final static KNXString STRING_8859_1 = new KNXString(16, 1);
+  
   //public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
 
   public static DataPointType lookup(String dptID)
@@ -295,6 +311,15 @@ public abstract class DataPointType
     }
   }
 
+  public static class Signed8BitValue extends DataPointType
+  {
+
+    private Signed8BitValue(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
   public static class TwoOctetFloat extends DataPointType
   {
 
@@ -303,6 +328,44 @@ public abstract class DataPointType
       super(main, sub, false);
     }
   }
+
+    public static class Time extends DataPointType
+  {
+
+    private Time(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class Date extends DataPointType
+  {
+
+    private Date(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class FourOctetSigned extends DataPointType
+  {
+
+    private FourOctetSigned(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+
+  public static class FourOctetFloat extends DataPointType
+    {
+
+      private FourOctetFloat(int main, int sub)
+      {
+        super(main, sub, false);
+      }
+    }
+
 
   public static class Float2ByteValue extends DataPointType
   {
@@ -314,4 +377,22 @@ public abstract class DataPointType
     }
   }
 
+  
+  public static class KNXString extends DataPointType
+  {
+     
+    private KNXString(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
+  public static class ThreeByteValue extends DataPointType
+  {
+     
+    private ThreeByteValue(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
 }

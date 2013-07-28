@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -37,6 +37,10 @@ import org.openremote.controller.utils.Strings;
  * controller/protocol SPI.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ * @author Olivier Gandit
+ * @author Kenneth Stridh
  */
 class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
@@ -73,7 +77,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
   {
     name = Strings.toUpperCase(name.trim());
 
-    ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter);
+    ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter, dpt);
 
     if (apdu == null)
       return null;
@@ -128,11 +132,12 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
      *
      * @param   name        lookup name
      * @param   parameter   command parameter, or <tt>null</tt> if not available
+     * @param   dpt         DPT of the parameter
      *
      * @return  complete application protocol data unit with control information (APCI) and data,
      *          or <tt>null</tt> if command was not found by name
      */
-    private static ApplicationProtocolDataUnit get(String name, CommandParameter parameter)
+    private static ApplicationProtocolDataUnit get(String name, CommandParameter parameter, DataPointType dpt)
     {
       /*
        * IMPLEMENTATION NOTE:
@@ -216,7 +221,10 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
         try
         {
-          return ApplicationProtocolDataUnit.createRange(parameter);
+          if (dpt instanceof DataPointType.Signed8BitValue)
+	          return ApplicationProtocolDataUnit.createSignedRange(parameter);
+	        else
+	          return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {
@@ -298,6 +306,139 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         try
         {
           return ApplicationProtocolDataUnit.createDoubleDecimalCelsiusTemp(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+      else if (name.startsWith("TEXT"))
+      {
+        if ((parameter == null) && (name.length()>6))
+        {
+           String param = name.substring(5);
+           if (param.isEmpty()) {
+              throw new NoSuchCommandException("Missing value parameter for TEXT command.");
+           }
+           try {
+             parameter = new CommandParameter(param);
+           } catch (ConversionException e) {
+             throw new NoSuchCommandException(e.getMessage(), e);
+           }
+        }
+   
+       return ApplicationProtocolDataUnit.createText(parameter);
+      }
+
+      else if (name.equals("TIME"))
+      {
+        if (parameter == null)
+        {
+          try
+          {
+            parameter = new CommandParameter("0");
+          }
+   
+          catch (ConversionException e)
+          {
+            throw new NoSuchCommandException(e.getMessage(), e);
+          }
+        }
+
+//        if (parameter == null)
+//        {
+//          throw new NoSuchCommandException("Missing time value for TIME command.");
+//        }
+  
+        try
+        {
+          return ApplicationProtocolDataUnit.createTime(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("DATE"))
+      {
+        if (parameter == null)
+        {
+          try
+          {
+            parameter = new CommandParameter("0");
+          }
+   
+          catch (ConversionException e)
+          {
+            throw new NoSuchCommandException(e.getMessage(), e);
+          }
+        }
+
+//         if (parameter == null)
+//         {
+//           throw new NoSuchCommandException("Missing date value for DATE command.");
+//         }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createDate(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+  
+      else if (name.equals("POWER"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing power value for POWER command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createPower(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("ENERGY"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing power value for ENERGY command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createEnergy(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("RGB"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing rgb value for RGB command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createThreeByteRGBValue(parameter);
         }
 
         catch (ConversionException e)

@@ -267,6 +267,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "freeTTS"          value-ref = "freeTTSCommandBuilder"/>
         <entry key = "email"          	value-ref = "emailCommandBuilder"/>
         <entry key = "serial"          	value-ref = "serialCommandBuilder"/>
+        <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -302,6 +303,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	<!-- UDPListener Command Builder -->
 	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
 	
+	<!-- rrdGraphUrl Command Builder -->
+	<bean id = "rrdGraphUrlCommandBuilder" class = "org.openremote.controller.protocol.rrdgraphurl.RrdGraphUrlCommandBuilder"/>
+
 	<!-- shellexe Command Builder -->
 	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	
@@ -400,7 +404,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   </bean>
 
   <!-- DSC IT Security System -->
-  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder">
+    <constructor-arg value = "${dscit100.interface.password}"/>
+  </bean>
   
   <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
@@ -442,6 +448,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "slider" value-ref = "sliderBuilder"/>
         <entry key = "gesture" value-ref = "gestureBuilder"/>
         <entry key = "image"  value-ref = "imageBuilder"/>
+        <entry key = "colorpicker" value-ref = "colorpickerBuilder"/>
       </map>
     </property>
   </bean>
@@ -454,10 +461,26 @@ The needed classes have to be provided as a jar file and copied to lib folder.
    +-->
   <bean id = "eventProcessorChain" class = "org.openremote.controller.statuscache.EventProcessorChain">
     <property name = "eventProcessors">
-      <bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    	<list>
+    		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    		<ref bean="rrd4jLogger"/>
+     		<ref bean="emonCMSLogger"/>
+    	</list>
     </property>
   </bean>
 
+  <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
+  
+  <bean id = "emonCMSLogger" class = "org.openremote.controller.statuscache.emoncms.EmonDataLogger" >
+    <property name="emonURL" value="http://emoncms.org/api/post?apikey=47d18060923b1f84dcad19f0adc90645&amp;json=" />
+    <property name="sensors">
+      <list>
+      	<value>tempSensor</value>
+      	<value>sensor2</value>
+      	<value>sensor3</value>
+      </list>
+    </property>
+  </bean>
 
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
@@ -504,6 +527,14 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 
   <!-- TODO -->
 	<bean id = "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+
+  <!-- TODO -->
+  <bean id = "colorpickerBuilder" class="org.openremote.controller.component.control.colorpicker.ColorPickerBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
 
     <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
