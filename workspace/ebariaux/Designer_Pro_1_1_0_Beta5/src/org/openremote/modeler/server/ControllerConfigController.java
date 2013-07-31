@@ -41,25 +41,17 @@ public class ControllerConfigController extends BaseGWTSpringController implemen
 
    @Override
    public HashSet<ControllerConfigDTO> getConfigDTOsByCategoryForCurrentAccount(String categoryName) {
-     return createDTOsFromBeans(controllerConfigService.listAllConfigsByCategory(categoryName));
+     return new HashSet<ControllerConfigDTO>(controllerConfigService.listAllConfigDTOsByCategory(categoryName));
    }
 
    @Override
    public HashSet<ControllerConfigDTO> listAllMissedConfigDTOsByCategoryName(String categoryName) {
-     return createDTOsFromBeans(controllerConfigService.listMissedConfigsByCategoryName(categoryName));
-   }
-
-   private HashSet<ControllerConfigDTO> createDTOsFromBeans(Set<ControllerConfig> configs) {
-     HashSet<ControllerConfigDTO> dtos = new HashSet<ControllerConfigDTO>();
-     for (ControllerConfig cc : configs) {
-       dtos.add(new ControllerConfigDTO(cc.getOid(), cc.getCategory(), cc.getName(), cc.getValue(), cc.getHint(), cc.getValidation(), cc.getOptions()));
-     }
-     return dtos;
+     return new HashSet<ControllerConfigDTO>(controllerConfigService.listMissedConfigDTOsByCategoryName(categoryName));
    }
 
    @Override
    public HashSet<ControllerConfigDTO> saveAllDTOs(HashSet<ControllerConfigDTO> configs) {
-     return createDTOsFromBeans(controllerConfigService.saveAllDTOs(configs));
+     return new HashSet<ControllerConfigDTO>(controllerConfigService.saveAllDTOs(configs));
    }
 
    @Override

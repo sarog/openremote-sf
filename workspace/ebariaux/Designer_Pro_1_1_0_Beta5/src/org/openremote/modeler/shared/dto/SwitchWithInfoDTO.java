@@ -92,5 +92,58 @@ public class SwitchWithInfoDTO implements DTO {
   public void setOid(Long oid) {
     this.oid = oid;
   }
+
+  public int equalityHashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((deviceName == null) ? 0 : deviceName.hashCode());
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((offCommandName == null) ? 0 : offCommandName.hashCode());
+    result = prime * result + ((oid == null) ? 0 : oid.hashCode());
+    result = prime * result + ((onCommandName == null) ? 0 : onCommandName.hashCode());
+    result = prime * result + ((sensorName == null) ? 0 : sensorName.hashCode());
+    return result;
+  }
+
+  public boolean equalityEquals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SwitchWithInfoDTO other = (SwitchWithInfoDTO) obj;
+    if (deviceName == null) {
+      if (other.deviceName != null)
+        return false;
+    } else if (!deviceName.equals(other.deviceName))
+      return false;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (offCommandName == null) {
+      if (other.offCommandName != null)
+        return false;
+    } else if (!offCommandName.equals(other.offCommandName))
+      return false;
+    if (oid == null) {
+      if (other.oid != null)
+        return false;
+    } else if (!oid.equals(other.oid))
+      return false;
+    if (onCommandName == null) {
+      if (other.onCommandName != null)
+        return false;
+    } else if (!onCommandName.equals(other.onCommandName))
+      return false;
+    if (sensorName == null) {
+      if (other.sensorName != null)
+        return false;
+    } else if (!sensorName.equals(other.sensorName))
+      return false;
+    return true;
+  }
   
 }

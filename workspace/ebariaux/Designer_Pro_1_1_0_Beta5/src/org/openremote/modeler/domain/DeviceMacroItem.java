@@ -28,7 +28,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
+import com.extjs.gxt.ui.client.data.BeanModel;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
 import flexjson.JSON;
 
 
@@ -97,5 +98,12 @@ public class DeviceMacroItem extends UICommand {
          return macroItemA == null && macroItemB == null;
       }
     }
+
+   @Transient
+   public MacroItemDetailsDTO getMacroItemDetailsDTO() {
+     // Subclasses re-implement as appropriate
+     // EBR : why not abstract ?
+     return null;
+   }
 
 }

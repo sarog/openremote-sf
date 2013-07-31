@@ -24,6 +24,7 @@ import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.domain.BusinessEntity;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -71,7 +72,7 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
     */
    @Transient
    @JSON(include=false)
-   public abstract String getPanelXml();
+   public abstract String getPanelXml(ConfigurationFilesGenerationContext context);
    
    public int getPreferredWidth() {
       return 50;
@@ -152,16 +153,26 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
       if (getClass() != obj.getClass()) {
          return false;
       }
-      UIComponent other = (UIComponent) obj;
-      return other.getPanelXml().equals(getPanelXml());
+      UIComponent other = (UIComponent) obj;      
+      if (getOid() != other.getOid()) {
+        return false;
+      } else if (getName() == null) {
+        if (other.getName() != null)
+          return false;
+      } else if (!getName().equals(other.getName())) {
+        return false;
+      }
+      return true;
    }
 
    @Override
    public int hashCode() {
-      return (int) getOid();
+     final int prime = 31;
+     int result = 1;
+     result = prime * result + (int) (getOid() ^ (getOid() >>> 32));
+     result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+     return result;
    }
-   
-   
    
    /**
     * Gets the bean model.

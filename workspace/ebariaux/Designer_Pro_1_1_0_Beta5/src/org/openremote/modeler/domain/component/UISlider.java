@@ -23,13 +23,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
+import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
+import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import flexjson.JSON;
 
@@ -84,8 +88,9 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       this.minTrackImage = uiSlider.getMinTrackImage();
       this.maxImage = uiSlider.getMaxImage();
       this.maxTrackImage = uiSlider.getMaxTrackImage();
-      this.sliderDTO = uiSlider.sliderDTO;
+      this.sliderDTO = uiSlider.getSliderDTO();
    }
+   
    public boolean isVertical() {
       return vertical;
    }
@@ -160,8 +165,13 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    }
 
    @Override
-   public String getPanelXml() {
-      StringBuffer xmlContent = new StringBuffer();
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
+     SliderDetailsDTO sliderDetailsDTO = null;
+     if (getSliderDTO() != null) {
+       sliderDetailsDTO = context.getSlider(getSliderDTO().getOid());
+     }
+
+     StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <slider id=\"" + getOid() + "\" ");
       if (isThumbUploaded()) {
          xmlContent.append("thumbImage=\"" + thumbImage.getImageFileName() + "\" ");
@@ -169,22 +179,23 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       if (vertical) {
          xmlContent.append("vertical=\"true\" ");
       }
-      if (slider == null || slider.getSetValueCmd() == null) {
+      if (sliderDetailsDTO == null || sliderDetailsDTO.getCommand() == null) {
          xmlContent.append("passive=\"true\" ");
       }
       xmlContent.append(">\n");
       int min = 0;
       int max = 100;
-      if (getSensor() != null) {
-         Sensor sensor = getSensor();
-         if (sensor.getType() == SensorType.RANGE || sensor.getType() == SensorType.LEVEL) {
-            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOffsetId() + "\" />\n");
-            if (sensor.getType() == SensorType.RANGE) {
-               RangeSensor rangeSensor = (RangeSensor) getSensor();
-               min = rangeSensor.getMin();
-               max = rangeSensor.getMax();
+      if (sliderDetailsDTO != null && sliderDetailsDTO.getSensor() != null) {
+        SensorDetailsDTO sensorDetailsDTO = context.getSensor(sliderDetailsDTO.getSensor().getId());
+        if (sensorDetailsDTO != null) {
+          if (sensorDetailsDTO.getType() == SensorType.RANGE || sensorDetailsDTO.getType() == SensorType.LEVEL) {
+            xmlContent.append("<link type=\"sensor\" ref=\"" + sensorDetailsDTO.getOffsetId() + "\" />\n");
+            if (sensorDetailsDTO.getType() == SensorType.RANGE) {
+               min = sensorDetailsDTO.getMinValue();
+               max = sensorDetailsDTO.getMaxValue();
             }
-         }
+          }
+        }
       }
       xmlContent.append("<min value=\"" + min + "\"");
       if (isMinImageUploaded()) {
@@ -348,4 +359,63 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       }
       return false;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((maxImage == null) ? 0 : maxImage.hashCode());
+    result = prime * result + ((maxTrackImage == null) ? 0 : maxTrackImage.hashCode());
+    result = prime * result + ((minImage == null) ? 0 : minImage.hashCode());
+    result = prime * result + ((minTrackImage == null) ? 0 : minTrackImage.hashCode());
+    result = prime * result + ((sliderDTO == null) ? 0 : sliderDTO.equalityHashCode());
+    result = prime * result + ((thumbImage == null) ? 0 : thumbImage.hashCode());
+    result = prime * result + (vertical ? 1231 : 1237);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UISlider other = (UISlider) obj;
+    if (maxImage == null) {
+      if (other.maxImage != null)
+        return false;
+    } else if (!maxImage.equals(other.maxImage))
+      return false;
+    if (maxTrackImage == null) {
+      if (other.maxTrackImage != null)
+        return false;
+    } else if (!maxTrackImage.equals(other.maxTrackImage))
+      return false;
+    if (minImage == null) {
+      if (other.minImage != null)
+        return false;
+    } else if (!minImage.equals(other.minImage))
+      return false;
+    if (minTrackImage == null) {
+      if (other.minTrackImage != null)
+        return false;
+    } else if (!minTrackImage.equals(other.minTrackImage))
+      return false;
+    if (sliderDTO == null) {
+      if (other.sliderDTO != null)
+        return false;
+    } else if (!sliderDTO.equalityEquals(other.sliderDTO))
+      return false;
+    if (thumbImage == null) {
+      if (other.thumbImage != null)
+        return false;
+    } else if (!thumbImage.equals(other.thumbImage))
+      return false;
+    if (vertical != other.vertical)
+      return false;
+    return true;
+  }
+
 }

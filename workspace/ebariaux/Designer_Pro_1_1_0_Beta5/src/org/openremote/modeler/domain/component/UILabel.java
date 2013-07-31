@@ -22,6 +22,7 @@ package org.openremote.modeler.domain.component;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.utils.StringUtils;
@@ -152,12 +153,12 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
   
   @Transient
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       StringBuilder sb = new StringBuilder();
       sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
-      if (sensor != null) {
-         sb.append(sensorLink.getXMLString());
+      if (getSensorDTO() != null) {
+         sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
       }
       sb.append("</label>");
       return sb.toString();
@@ -186,4 +187,45 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
    public int getPreferredHeight() {
       return 50;
    }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((color == null) ? 0 : color.hashCode());
+    result = prime * result + fontSize;
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.equalityHashCode());
+    result = prime * result + ((text == null) ? 0 : text.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UILabel other = (UILabel) obj;
+    if (color == null) {
+      if (other.color != null)
+        return false;
+    } else if (!color.equals(other.color))
+      return false;
+    if (fontSize != other.fontSize)
+      return false;
+    if (sensorDTO == null) {
+      if (other.sensorDTO != null)
+        return false;
+    } else if (!sensorDTO.equalityEquals(other.sensorDTO))
+      return false;
+    if (text == null) {
+      if (other.text != null)
+        return false;
+    } else if (!text.equals(other.text))
+      return false;
+    return true;
+  }
+   
 }
