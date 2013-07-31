@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openremote.useraccount.domain.RoleDTO;
+import org.openremote.useraccount.domain.UserDTO;
 
 
 
@@ -242,5 +243,21 @@ public class User extends BusinessEntity {
   @Override public String toString()
   {
     return getUsername() + " - " + getEmail() + " (oid = " + getOid() + ")";
+  }
+  
+  @Transient
+  public UserDTO getUserDTO() {
+    UserDTO userDTO = new UserDTO();
+    userDTO.setOid(getOid());
+    userDTO.setUsername(getUsername());
+    userDTO.setEmail(getEmail());
+    
+    List<RoleDTO> roleDTOs = new ArrayList<RoleDTO>();
+    for (Role role : roles) {
+      roleDTOs.add(new RoleDTO(role.getName(), role.getOid()));
+    }
+    userDTO.setRoles(roleDTOs);
+    
+    return userDTO;
   }
 }

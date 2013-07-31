@@ -33,23 +33,39 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
 import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.State;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
+import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
 
   private DeviceCommandService deviceCommandService;
+  private DeviceService deviceService;  
+  private UserService userService;
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
   }
 
+  public void setDeviceService(DeviceService deviceService) {
+	this.deviceService = deviceService;
+  }
+
+  public void setUserService(UserService userService) {
+	this.userService = userService;
+  }
+
+  @Override
   @Transactional public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
@@ -63,6 +79,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return true;
    }
 
+   @Override
    public List<Sensor> loadAll(Account account) {
       List<Sensor> sensors = account.getSensors();
       for (Sensor sensor : sensors) {
@@ -73,16 +90,19 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensors;
    }
 
+   @Override
    @Transactional public Sensor saveSensor(Sensor sensor) {
       genericDAO.save(sensor);
       return sensor;
    }
 
+   @Override
    @Transactional public Sensor updateSensor(Sensor sensor) {
      genericDAO.saveOrUpdate(sensor);
      return sensor;
    }
 
+   @Override
    public Sensor loadById(long id) {
       Sensor sensor = genericDAO.getById(Sensor.class, id);
       if (sensor instanceof CustomSensor) {
@@ -91,11 +111,40 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensor;
    }
 
+   @Override
    public List<Sensor> loadByDeviceId(long deviceId) {
       Device device = genericDAO.loadById(Device.class, deviceId);
       return device.getSensors();
    }
    
+   @Override
+   public List<SensorDTO> loadSensorDTOsByDeviceId(long id) {
+     ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
+     List<Sensor> sensors = loadByDeviceId(id);
+     for (Sensor s : sensors) {
+       // EBR - MODELER-405 : initial implementation did not include sensor command in returned DTOs
+       dtos.add(s.getSensorDTO());
+     }
+     return dtos;
+   }
+   
+   @Override
+   public SensorDetailsDTO loadSensorDetailsDTO(long id) {
+     Sensor sensor = loadById(id);
+     return (sensor != null)?sensor.getSensorDetailsDTO():null;
+   }
+
+   @Override
+   public List<SensorWithInfoDTO> loadAllSensorWithInfosDTO() {
+     ArrayList<SensorWithInfoDTO> dtos = new ArrayList<SensorWithInfoDTO>();
+     List<Sensor> sensors = loadAll(userService.getAccount());
+     for (Sensor sensor : sensors) {
+       dtos.add(sensor.getSensorWithInfoDTO());
+     }
+     return dtos;    
+   }
+
+   @Override
    public List<Sensor> loadSameSensors(Sensor sensor) {
       List<Sensor> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
@@ -115,6 +164,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return result;
    }
 
+    @Override
     @Transactional
     public List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account) {
         for (Sensor sensor : sensorList) {
@@ -127,6 +177,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
         return sensorList;
     }
     
+    @Override
     @Transactional
     public void updateSensorWithDTO(SensorDetailsDTO sensor) {
       Sensor sensorBean = loadById(sensor.getOid());
@@ -161,4 +212,34 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
      }
       updateSensor(sensorBean);
     }
+    
+  @Override
+  @Transactional
+  public void saveNewSensor(SensorDetailsDTO sensorDTO, long deviceId) {
+    Sensor sensor = null;
+    if (sensorDTO.getType() == SensorType.RANGE) {
+      sensor = new RangeSensor(sensorDTO.getMinValue(), sensorDTO.getMaxValue());
+    } else if (sensorDTO.getType() == SensorType.CUSTOM) {
+      CustomSensor customSensor = new CustomSensor();
+      for (Map.Entry<String,String> e : sensorDTO.getStates().entrySet()) {
+        customSensor.addState(new State(e.getKey(), e.getValue()));
+      }
+      sensor = customSensor;
+    } else {
+      sensor = new Sensor(sensorDTO.getType());
+    }
+        
+    Device device = deviceService.loadById(deviceId);
+    sensor.setDevice(device);
+    sensor.setName(sensorDTO.getName());
+    sensor.setAccount(userService.getAccount());
+
+    DeviceCommand deviceCommand = deviceCommandService.loadById(sensorDTO.getCommand().getId());
+    SensorCommandRef commandRef = new SensorCommandRef();
+    commandRef.setSensor(sensor);
+    commandRef.setDeviceCommand(deviceCommand);
+    sensor.setSensorCommandRef(commandRef);
+    
+    saveSensor(sensor);
+  }
 }

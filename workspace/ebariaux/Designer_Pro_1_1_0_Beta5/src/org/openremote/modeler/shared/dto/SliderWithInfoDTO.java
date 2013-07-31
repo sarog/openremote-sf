@@ -82,5 +82,52 @@ public class SliderWithInfoDTO implements DTO {
   public void setDeviceName(String deviceName) {
     this.deviceName = deviceName;
   }
+
+  public int equalityHashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((commandName == null) ? 0 : commandName.hashCode());
+    result = prime * result + ((deviceName == null) ? 0 : deviceName.hashCode());
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((oid == null) ? 0 : oid.hashCode());
+    result = prime * result + ((sensorName == null) ? 0 : sensorName.hashCode());
+    return result;
+  }
+
+  public boolean equalityEquals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SliderWithInfoDTO other = (SliderWithInfoDTO) obj;
+    if (commandName == null) {
+      if (other.commandName != null)
+        return false;
+    } else if (!commandName.equals(other.commandName))
+      return false;
+    if (deviceName == null) {
+      if (other.deviceName != null)
+        return false;
+    } else if (!deviceName.equals(other.deviceName))
+      return false;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (oid == null) {
+      if (other.oid != null)
+        return false;
+    } else if (!oid.equals(other.oid))
+      return false;
+    if (sensorName == null) {
+      if (other.sensorName != null)
+        return false;
+    } else if (!sensorName.equals(other.sensorName))
+      return false;
+    return true;
+  }
   
 }

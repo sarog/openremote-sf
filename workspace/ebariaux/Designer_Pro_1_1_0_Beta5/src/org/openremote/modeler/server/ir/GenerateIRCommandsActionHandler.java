@@ -78,7 +78,7 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
       @SuppressWarnings("unchecked")
       List<DeviceCommandDetailsDTO> dtos = (List<DeviceCommandDetailsDTO>) result.getResult();
       for (DeviceCommandDetailsDTO dto : dtos) {
-        DeviceCommand dc = DeviceCommandController.createDeviceCommandFromDTO(dto);
+        DeviceCommand dc = DeviceCommand.createDeviceCommandFromDTO(dto);
         dc.setDevice(device);
         deviceCommandService.save(dc);
       }
