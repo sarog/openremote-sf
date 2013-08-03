@@ -181,7 +181,7 @@ public class StringsTest
 
     try
     {
-      Locale.setDefault(new Locale("tr"));    // turkmen language ISO-639 two letter code
+      Locale.setDefault(new Locale("tr"));    // turkish language ISO-639 two letter code
 
       Assert.assertTrue(
           "Expected 'SWITCH', got '" + Strings.toUpperCase(s2) + "'",
@@ -226,7 +226,7 @@ public class StringsTest
 
     try
     {
-      Locale.setDefault(new Locale("tr"));    // turkmen language ISO-639 two letter code
+      Locale.setDefault(new Locale("tr"));    // turkish language ISO-639 two letter code
 
       Assert.assertTrue(
           "Expected 'switch', got '" + Strings.toLowerCase(s2) + "'",
@@ -247,6 +247,41 @@ public class StringsTest
       Locale.setDefault(defaultLocale);
     }
   }
+
+  /**
+   * Unit tests for ORCJAVA-391 (http://jira.openremote.org/browse/ORCJAVA-391)  <p>
+   *
+   * Codify the null arg handling as per the stated method javadoc.
+   */
+  @Test public void testLowerCaseNullArg()
+  {
+    String s1 = null;
+
+    s1 = Strings.toLowerCase(s1);
+
+    Assert.assertTrue(
+        "Expected '<null>', got '" + s1 + "'.",
+        s1.equals("<null>")
+    );
+  }
+
+  /**
+   * Unit tests for ORCJAVA-391 (http://jira.openremote.org/browse/ORCJAVA-391)  <p>
+   *
+   * Codify the null arg handling as per the stated method javadoc.
+   */
+  @Test public void testUpperCaseNullArg()
+  {
+    String s1 = null;
+
+    s1 = Strings.toUpperCase(s1);
+
+    Assert.assertTrue(
+        "Expected '<NULL>', got '" + s1 + "'.",
+        s1.equals("<NULL>")
+    );
+  }
+
 
 
 
