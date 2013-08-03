@@ -66,7 +66,7 @@ public class Strings
    * string case changes to avoid issues with system default locales that can have unpredictable
    * results when string conversions are made. <p>
    *
-   * String.toUpperCase() is locale dependent. This causes issue with turkmen language locale
+   * String.toUpperCase() is locale dependent. This causes issue with turkish language locale
    * (ISO-639 "tr") for example where character 'i' is not converted as expected. Therefore the
    * String.toUpperCase() should *not* be used by implementation code except where explicitly
    * locale dependent behavior is desired (mostly user-facing messages). <p>
@@ -77,15 +77,22 @@ public class Strings
    *
    * @param str   String to convert to uppercase using ENGLISH locale.
    *
-   * @return      Upper case string.
+   * @return      Upper case string, or <NULL> if string was null
    */
   public static String toUpperCase(String str)
   {
+    if (str == null)
+    {
+      // as per ORCJAVA-391...
+
+      return "<NULL>";
+    }
+
     /*
      * IMPLEMENTATION NOTES:
      *
      *   - regression tests confirm the differing behavior between this method and
-     *     String.toUpperCase() when turkmen locale is being used
+     *     String.toUpperCase() when turkish locale is being used
      *
      *   - All use of String.toUpperCase() should delegate to this implementation instead so
      *     changes become centralized in the codebase
@@ -102,7 +109,7 @@ public class Strings
    * string case changes to avoid issues with system default locales that can have unpredictable
    * results when string conversions are made. <p>
    *
-   * String.toLowerCase() is locale dependent. This causes issue with turkmen language locale
+   * String.toLowerCase() is locale dependent. This causes issue with turkish language locale
    * (ISO-639 "tr") for example where character 'i' is not converted as expected. Therefore the
    * String.toLowerCase() should *not* be used by implementation code except where explicitly
    * locale dependent behavior is desired (mostly user-facing messages). <p>
@@ -113,15 +120,20 @@ public class Strings
    *
    * @param str   String to convert to lower case using ENGLISH locale.
    *
-   * @return      Lower case string.
+   * @return      Lower case string, or <null> if string was null
    */
   public static String toLowerCase(String str)
   {
+    if (str == null)
+    {
+      return "<null>";
+    }
+
     /*
      * IMPLEMENTATION NOTES:
      *
      *   - regression tests confirm the differing behavior between this method and
-     *     String.toLowerCase() when turkmen locale is being used
+     *     String.toLowerCase() when turkish locale is being used
      *
      *   - All use of String.toLowerCase() should delegate to this implementation instead so
      *     changes become centralized in the codebase
