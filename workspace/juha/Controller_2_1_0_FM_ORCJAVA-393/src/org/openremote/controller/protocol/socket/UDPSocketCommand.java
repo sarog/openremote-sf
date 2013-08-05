@@ -313,7 +313,7 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
           cmd += "\r\n";
         }
 
-        else
+        else if (!lineEnding.equalsIgnoreCase("NONE"))
         {
           logger.error("Unrecognized UDP line ending '" + "'. Use 'LF', 'CR' or 'CRLF'.");
         }
