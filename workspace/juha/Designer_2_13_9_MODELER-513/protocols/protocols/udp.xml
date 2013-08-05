@@ -59,7 +59,7 @@
 
     <attr name = "ending" label = "Line Endings" options="NONE,LF,CR,CRLF" tooltipMessage="Select line ending">
       <validations>
-        <allowBlank>false</allowBlank>
+        <allowBlank>true</allowBlank>
       </validations>
     </attr>
 
