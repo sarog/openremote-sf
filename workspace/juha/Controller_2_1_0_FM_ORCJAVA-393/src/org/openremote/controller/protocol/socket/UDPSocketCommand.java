@@ -78,17 +78,9 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
    private Integer timeOut = DEFAULT_TIMEOUT;   
    
    /** The line ending */
-   private String lineEnding;
+   private String lineEnding = "NONE";
 
 
-   /**
-    * Gets the line ending.
-    *
-    * @return the line ending
-    */
-   public String getLineEnding() {
-      return lineEnding;
-   }
 
    /**
     * Sets the line ending.
@@ -205,7 +197,7 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
     * @return the timeOut
     */
    public Integer getTimeOut() {
-      return timeOut;  
+      return timeOut;
    }
    
    /**
