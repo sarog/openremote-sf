@@ -20,6 +20,7 @@ Daniel Berenguer
 Ivan Martinez
 Stefan Langerman
 Phil Taylor
+Simon Vincent
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
