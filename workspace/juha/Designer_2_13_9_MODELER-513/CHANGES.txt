@@ -1,3 +1,11 @@
+
+MODELER-513
+===========
+
+  - Add 'line ending' configuration to UDP protocol
+    (Simon Vincent)
+
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
