@@ -311,7 +311,6 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
           throw new NoSuchCommandException(e.getMessage(), e);
         }
       }
-
       else if (name.equals("TIME"))
       {
         if (parameter == null)
@@ -402,6 +401,24 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         try
         {
           return ApplicationProtocolDataUnit.createEnergy(parameter);
+        }
+
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("RGB"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing rgb value for RGB command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createThreeByteRGBValue(parameter);
         }
 
         catch (ConversionException e)
