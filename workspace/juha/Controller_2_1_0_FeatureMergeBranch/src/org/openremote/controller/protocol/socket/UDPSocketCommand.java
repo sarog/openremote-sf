@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.socket;
 
 import java.io.BufferedReader;
@@ -34,15 +35,16 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.utils.Strings;
 
 /**
- * The Socket Event.
+ * TODO
  *
  * @author Rich Turner 2011-04-15
+ * @author Simon Vincent 2013-05-07
  */
 public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
 
-   /** The logger. */
    private static Logger logger = Logger.getLogger(UDPSocketCommand.class.getName());
 
    /** The default timeout used to wait for a result */
@@ -74,6 +76,20 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
    
    /** The wait timeout period in seconds */
    private Integer timeOut = DEFAULT_TIMEOUT;   
+   
+   /** The line ending */
+   private String lineEnding = "NONE";
+
+
+
+   /**
+    * Sets the line ending.
+    *
+    * @param lineEnding the new line ending
+    */
+   public void setLineEnding(String lineEnding) {
+      this.lineEnding = lineEnding;
+   }
    
    /**
     * Gets the command.
@@ -181,7 +197,7 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
     * @return the timeOut
     */
    public Integer getTimeOut() {
-      return timeOut;  
+      return timeOut;
    }
    
    /**
@@ -237,54 +253,95 @@ public class UDPSocketCommand implements ExecutableCommand, StatusCommand {
       return statusDefault;
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void send() {
-      send(false);
+   @Override public void send()
+   {
+     send(false);
    }
 
-   public void send(boolean readResponse) {
-      DatagramSocket socket = null;
-      if (readResponse) {
-         setResponse("");
+  public void send(boolean readResponse)
+  {
+    DatagramSocket socket = null;
+
+    if (readResponse)
+    {
+      setResponse("");
+    }
+
+    try
+    {
+      // Create socket no need to specify port; port info is in the packet
+      socket = new DatagramSocket();
+
+      // Create packet
+      InetAddress address = InetAddress.getByName(getIp());
+      int port = Integer.parseInt(getPort());
+
+      byte[] bytes;
+
+      // If there's a '0x' prefix, we assume it defines bytes to be sent...
+
+      if (Strings.toLowerCase(getCommand()).startsWith("0x"))
+      {
+        String tmp = getCommand().substring(2);
+        bytes = hexStringToByteArray(Strings.toLowerCase(tmp.replaceAll(" ", "")));
       }
-      try {
-      	// Create socket no need to specify port; port info is in the packet
-      	socket = new DatagramSocket();
-      	
-      	// Create packet
-      	InetAddress address = InetAddress.getByName(getIp());
-         int port = Integer.parseInt(getPort());
-      	byte[] bytes;
-      	if (getCommand().toLowerCase().startsWith("0x")) {
-      	   String tmp = getCommand().substring(2);
-      	   bytes = hexStringToByteArray(tmp.replaceAll(" ", "").toLowerCase());
-      	} else {
-      	   bytes = getCommand().getBytes();
-      	}
-      	DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
-      	
-      	// Send the packet
-      	socket.send(packet);
-      	
-      	// Read the response if necessary
-         if (readResponse) {
-            byte[] buf = new byte[512];
-            packet = new DatagramPacket(buf, buf.length);
-            socket.setSoTimeout(getTimeOut());
-            socket.receive(packet);
-            response = new String(packet.getData(), 0, packet.getLength());
-         }
-      } catch (Exception e) {
-         logger.error("could not perform UDP Event", e);
-      } finally {
-         if (socket != null) {
-            socket.disconnect();            
-         }
+
+      else
+      {
+        String cmd = getCommand();
+
+        if (lineEnding.equalsIgnoreCase("LF"))
+        {
+          cmd += "\n";
+        }
+
+        else if (lineEnding.equalsIgnoreCase("CR"))
+        {
+          cmd += "\r";
+        }
+
+        else if (lineEnding.equalsIgnoreCase("CRLF"))
+        {
+          cmd += "\r\n";
+        }
+
+        else if (!lineEnding.equalsIgnoreCase("NONE"))
+        {
+          logger.error("Unrecognized UDP line ending '" + "'. Use 'LF', 'CR' or 'CRLF'.");
+        }
+
+      	bytes = getCommand().getBytes();
       }
-   }
+
+      DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, port);
+
+      // Send the packet
+      socket.send(packet);
+      	
+      // Read the response if necessary
+      if (readResponse)
+      {
+        byte[] buf = new byte[512];
+        packet = new DatagramPacket(buf, buf.length);
+        socket.setSoTimeout(getTimeOut());
+        socket.receive(packet);
+        response = new String(packet.getData(), 0, packet.getLength());
+      }
+    }
+
+    catch (Exception e)
+    {
+      logger.error("could not perform UDP Event", e);
+    }
+
+    finally
+    {
+      if (socket != null)
+      {
+        socket.disconnect();
+      }
+    }
+  }
 
    @Override
    public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
