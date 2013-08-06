@@ -1,3 +1,11 @@
+ORCJAVA-393
+===========
+
+  - Add an option to specify what type of line ending is
+    used for sent UDP commands. Defaults to 'NONE', other
+    options are 'CR', 'LF' and 'CRLF' (Simon Vincent)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
