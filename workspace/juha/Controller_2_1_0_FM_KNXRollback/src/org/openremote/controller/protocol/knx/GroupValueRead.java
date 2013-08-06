@@ -30,6 +30,7 @@ import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.protocol.knx.datatype.KNXString;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.protocol.knx.datatype.Signed8Bit;
 import org.openremote.controller.protocol.knx.datatype.Float2Byte;
@@ -368,6 +369,12 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       {
         throw new Error("Unrecognized datapoint type " + dpt + " on CUSTOM sensor.");
       }
+    }
+
+    else if (dpt instanceof DataPointType.KNXString)
+    {
+      KNXString valueDPT = (KNXString)responseAPDU.getDataType();
+      return valueDPT.resolve();
     }
 
     else
