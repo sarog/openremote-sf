@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -48,7 +48,7 @@ public class DSCIT100CommandBuilderTest
   @Before
   public void setUp() throws Exception
   {
-    builder = new DSCIT100CommandBuilder(null /*password*/);
+    builder = new DSCIT100CommandBuilder();
   }
 
   // Tests
@@ -236,28 +236,28 @@ public class DSCIT100CommandBuilderTest
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_ADDRESS);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_ADDRESS);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, address);
 
     ele.addContent(propAddr);
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_COMMAND);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_COMMAND);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, cmd);
 
     ele.addContent(propAddr2);
 
     Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_CODE);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_CODE);
     propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, code);
 
     ele.addContent(propAddr3);
 
     Element propAddr4 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr4.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_TARGET);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_TARGET);
     propAddr4.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, target);
 
     ele.addContent(propAddr4);
@@ -273,7 +273,7 @@ public class DSCIT100CommandBuilderTest
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_COMMAND);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_COMMAND);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, cmd);
 
     ele.addContent(propAddr2);
@@ -289,7 +289,7 @@ public class DSCIT100CommandBuilderTest
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_ADDRESS);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_ADDRESS);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, address);
 
     ele.addContent(propAddr);
@@ -305,14 +305,14 @@ public class DSCIT100CommandBuilderTest
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_ADDRESS);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_ADDRESS);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, address);
 
     ele.addContent(propAddr);
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-        DSCIT100CommandBuilder.DSC_XMLPROPERTY_COMMAND);
+        DSCIT100CommandBuilder.DSCIT100_XMLPROPERTY_COMMAND);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, cmd);
 
     ele.addContent(propAddr2);

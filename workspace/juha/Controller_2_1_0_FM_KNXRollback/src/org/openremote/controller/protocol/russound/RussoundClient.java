@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
@@ -39,12 +38,10 @@ import org.openremote.controller.utils.Logger;
  * A second Sensor for a different property of zone data is just updated by the already loaded zone data.
  * If a statusPollingInterval is given, a second thread is created which polls the Russound for it's status.
  * 
- * Note: The reason this class uses a buffer of int[] is that byte does not do the expected thing for arithmetics of values > 128
- * 
  * @author marcus
  *
  */
-public class RussoundClient {
+public class RussoundClient extends Thread {
 
    // Constants ------------------------------------------------------------------------------------
    public final static int SOCKET_CONNECT_TIMEOUT = 3000;
@@ -58,12 +55,9 @@ public class RussoundClient {
    final OutputStream os;
    final HashMap<String, ZoneData> zonesWithSensors = new HashMap<String, ZoneData>();
 
-   // This semaphore will allow sending at most one command until the acknowledge is received. (todo: timeout of 2.5 seconds)
-   static Semaphore sendCommandSemaphore = new Semaphore(1);
-   
    // Constructors ----------------------------------------------------------------------------------
    public RussoundClient(String ipAddress, int port, String keypadId, String serialDevice, final int statusPollingInterval) throws Exception {
-      
+      super("Russound Client");
       this.keypadId = (byte) ((Character.digit(keypadId.charAt(0), 16) << 4) + Character.digit(keypadId.charAt(1), 16));
      
       if (serialDevice == null) {
@@ -80,9 +74,7 @@ public class RussoundClient {
          os = serialPort.getOutputStream();
       }
       
-      Thread responseThread = new Thread(new ResponseDispatcher());
-      responseThread.setName("Russound response thread");
-      responseThread.start();
+      this.start();
 
       //If a statusPollingInterval is defined in config.properties an extra thread for polling is creazed
       if (statusPollingInterval > 0) {
@@ -101,67 +93,42 @@ public class RussoundClient {
       }
    }
 
-   class ResponseDispatcher implements Runnable {
-      
-      byte[] buffer = new byte[1024];
+   // Methods ------------------------------------------------------------------------------
+   @Override
+   public void run() {
+      int avail = 0;
       int total = 0;
-      
-      int parseData(int i) {
-         if (buffer[i] == (byte)0xf7) {
-            // End-flag received, do some work with the data
-            // Increment i since we need to include the end-byte
-            i++;
-            // Copy the message
-            byte[] message = Arrays.copyOf(buffer, i);
-            // Copy the buffer onto itself to remove the message from buffer
-            System.arraycopy(buffer, i, buffer, 0, total - i);
-            total = total - i;
-            
-            logger.debug("Received Message (" + message.length + " byte) (hex): " + byteArrayToHex(message));
-            
-            if (message[7] != 0x02) {
-               // Unless we receive a acknowledge we send an acknowledge our selves and release the lock 
-               sendAcknowledge(message);
-               
-               sendCommandSemaphore.release();
-               logger.debug("Released Lock");
+      byte[] data = new byte[1024];
+      while (true) {
+         try {
+            avail = is.available();
+            if (avail == 0) {
+               try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+               continue;
             }
-            
-            if ((message.length==34) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x04)) {  //zone-status
-               consumeStatus(message);
-            } else if ((message.length==24) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x05) && (message[13]==(byte)0x00)) {  //turn-on-volume
-               consumeTurnonVolumeStatus(message);
-            } 
-         }
-         return i;
-      }
+            int readCount = is.read(data, total, avail);
+            total += readCount;
 
-      @Override
-      public void run() {
-         int avail = 0;
-         while (true) {
-            try {
-               avail = is.available();
-               if (avail == 0) {
-                  try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
-                  continue;
+            if (data[total-1] == (byte)0xf7) {  //end-flag received, do some work with the data
+               byte[] trimmedData = Arrays.copyOf(data, total);
+               if ((trimmedData.length==34) && (trimmedData[0]==(byte)0xF0) && (trimmedData[9]==(byte)0x04)) {  //zone-status
+                  consumeStatus(trimmedData);
+               } else if ((trimmedData.length==24) && (trimmedData[0]==(byte)0xF0) && (trimmedData[9]==(byte)0x05) && (trimmedData[13]==(byte)0x00)) {  //turn-on-volume
+                  consumeTurnonVolumeStatus(trimmedData);
                }
-               int readCount = is.read(buffer, total, avail);
-               total += readCount;
-   
-               for (int i = 0; i < total; i++) {
-                  i = parseData(i);
-               }
-            } catch (Exception e) {
-               logger.error("Could not receive Russound data", e);
+               data = new byte[1024];
+               total = 0;
             }
+         } catch (IOException e) {
+            logger.error("Could not receive Russound data", e);
+            e.printStackTrace();
          }
       }
    }
-      
+
    private void consumeTurnonVolumeStatus(byte[] data) {
-      String msg = String.format("Controller:%1$02X Zone:%2$02X TurnOnVolume:%3$02X", data[4]+1, data[12]+1, data[21]);
-      logger.info("Consume TurnOnVolumeStatus Message: " + msg);
+      String msg = String.format("Received Russound data: Controller:%1$02X Zone:%2$02X TurnOnVolume:%3$02X", data[4]+1, data[12]+1, data[21]);
+      logger.debug(msg);
       
       String controller = Integer.toString(data[4]+1);
       String zone = Integer.toString(data[12]+1);
@@ -173,9 +140,9 @@ public class RussoundClient {
    }
 
    private void consumeStatus(byte[] data) {
-      String msg = String.format("Controller:%1$02X Zone:%2$02X Status:%3$02X src:%4$02X vol:%5$02X bass:%6$02X treb:%7$02X loud:%8$02X bal:%9$02X sys:%10$02X shrsrc:%11$02X party:%12$02X,DnD:%13$02X",
+      String msg = String.format("Received Russound data: Controller:%1$02X Zone:%2$02X Status:%3$02X src:%4$02X vol:%5$02X bass:%6$02X treb:%7$02X loud:%8$02X bal:%9$02X sys:%10$02X shrsrc:%11$02X party:%12$02X,DnD:%13$02X",
             data[4]+1, data[12]+1, data[20], data[21]+1, data[22], data[23], data[24], data[25], data[26], data[27], data[28], data[29], data[30]);
-      logger.info("Consume Status Message: " + msg);
+      logger.debug(msg);
          
       String controller = Integer.toString(data[4]+1);
       String zone = Integer.toString(data[12]+1);
@@ -227,33 +194,7 @@ public class RussoundClient {
       return data;
    }
   
-   private String byteArrayToHex(byte[] a) {
-      StringBuilder sb = new StringBuilder();
-      for(byte b: a)
-         sb.append(String.format("%02x ", b&0xff));
-      return sb.toString();
-   }
-   
-   private String intArrayToHex(int[] a) {
-      StringBuilder sb = new StringBuilder();
-      for(int b: a)
-         sb.append(String.format("%02x ", b&0xff));
-      return sb.toString();
-   }
-   
    private void sendData(int[] data) {
-      if (data[7] != 0x02) {
-         // Unless it is an acknowledge a lock is acquired
-         try {
-            sendCommandSemaphore.acquire();
-            logger.debug("Aquired Lock");
-         } catch (InterruptedException e) {
-            logger.error("Failed aquire lock");
-         }
-      }
-      
-      logger.debug("Sent Message (hex): " + intArrayToHex(data));
-      
       for (int i = 0; i < data.length; i++) {
          try {
             os.write(data[i]);
@@ -438,8 +379,6 @@ public class RussoundClient {
       data[6] = keypadId;
       data[11] = zz;
       data[data.length - 2] = russChecksum(data);
-
-      logger.info("sendRequestTurnOnVolume");
       sendData(data);  //request zone turnonVolume
       
       try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -452,47 +391,8 @@ public class RussoundClient {
       data[6] = keypadId;
       data[11] = zz;
       data[data.length - 2] = russChecksum(data);
-
-      logger.info("sendRequestStatus");
       sendData(data);  //request zone status
    }
 
-   /**
-    * An acknowledge is necessary when:
-    *  * A keypad Id <> 0x70 is used.
-    *  * When a message have high priority
-    * 
-    * Bytes:
-    * # 0 Start Msg
-    * # 1 Target Controller ID
-    * # 2 Target Zone ID
-    * # 3 Target Keypad ID
-    * # 4 Source Controller ID
-    * # 5 Source Zone ID
-    * # 6 Source Keypad ID
-    * # 7 Message Type
-    * # 8 Acknowledge Type (06 = Event)
-    * # 9 Checksum
-    * # 10 End Msg
-    */
-   public void sendAcknowledge(final byte[] receivedMessage) {
-      int[] data = new int[11] ;
-      data[0] = 0xF0;
-      // Copying the incoming target id and source id
-      // Can not use arraycopy since we are copying byte to int.  
-      for (int i=1;i<4;i++) {
-          data[i] = receivedMessage[i+3];
-      }
-      for (int i=1;i<4;i++) {
-          data[i+3] = receivedMessage[i];
-      }
-      data[7] = 0x02;
-      data[8] = 0x06;
-      data[10] = 0xF7;
-      data[9] = russChecksum(data);
-      
-      logger.info("sendAcknowledge");
-      sendData(data);
-   }
-   
+
 }

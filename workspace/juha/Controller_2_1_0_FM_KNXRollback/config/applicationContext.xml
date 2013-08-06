@@ -401,9 +401,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   </bean>
 
   <!-- DSC IT Security System -->
-  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder">
-    <constructor-arg value = "${dscit100.interface.password}"/>
-  </bean>
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
   
   <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">

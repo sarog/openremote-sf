@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -221,14 +221,11 @@ abstract class KNXCommand implements Command
    * Destination address for this command.
    */
   private GroupAddress address;
-  
-
-  // Protected Instance Fields ----------------------------------------------------------------------
 
   /**
    * Connection manager to be used to transmit this command.
    */
-  protected KNXIpConnectionManager connectionManager;
+  private KNXIpConnectionManager connectionManager;
 
 
 
@@ -331,22 +328,32 @@ abstract class KNXCommand implements Command
 
 
   /**
-   * Relay a read command to an open KNX/IP connection. 
-   * The value which is received after this read is handled by the KNXConnection which updates the sensor
-   * 
-   * @param command KNX read command
+   * Relay a read command to an open KNX/IP connection.
+   *
+   * TODO : call semantics on return value 
+   *
+   * @param command   KNX read command
+   *
+   * @return  Returns the application protocol data unit (APDU) for a Group Value Read Response
+   *          frame. This frame contains the response value from the device. <P>
+   *
+   *          NOTE: may return <code>null</code> in case there's a connection exception or the
+   *          read response is not available from the device yet.
    */
-  void triggerRead(GroupValueRead command)
+  ApplicationProtocolDataUnit read(GroupValueRead command)
   {
     KNXConnection connection = connectionManager.getCurrentConnection();
 
     if (connection == null)
     {
        log.info("KNX connection not available.");
+
+       return null;
     }
+
     else
     {
-      connection.read(command);
+      return connection.read(command);
     }
   }
   
