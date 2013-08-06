@@ -1,4 +1,3 @@
-
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
@@ -50,6 +49,9 @@ New Features:
   - UDP protocol:
      * Sending hex values by prefixing command data with '0x' string added.
      * Receiving of UDP packets added (ORCJAVA-392)
+     * Add an option to specify what type of line ending is used for sent 
+       UDP commands. Defaults to 'NONE', other options are 'CR', 'LF' and 'CRLF' 
+       (Simon Vincent, ORCJAVA-393)
 
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
