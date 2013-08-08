@@ -365,16 +365,16 @@ class GroupValueRead extends KNXCommand implements StatusCommand
         return valueDPT.resolve().toString();      
       }
 
+      else if (dpt instanceof DataPointType.KNXString)
+      {
+        KNXString valueDPT = (KNXString)responseAPDU.getDataType();
+        return valueDPT.resolve();
+      }
+
       else
       {
         throw new Error("Unrecognized datapoint type " + dpt + " on CUSTOM sensor.");
       }
-    }
-
-    else if (dpt instanceof DataPointType.KNXString)
-    {
-      KNXString valueDPT = (KNXString)responseAPDU.getDataType();
-      return valueDPT.resolve();
     }
 
     else
