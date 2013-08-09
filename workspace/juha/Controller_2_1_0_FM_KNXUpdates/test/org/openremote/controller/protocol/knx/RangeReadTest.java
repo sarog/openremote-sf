@@ -38,8 +38,7 @@ import java.io.ByteArrayInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
-import org.openremote.controller.protocol.bus.PhysicalBus;
-import org.openremote.controller.protocol.bus.Message;
+import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverReq;
@@ -56,6 +55,7 @@ import org.openremote.controller.protocol.knx.dib.SupportedServiceFamily;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.CommandParameter;
+import org.openremote.controller.protocol.port.Port;
 import org.openremote.controller.utils.Strings;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.exception.ConversionException;
@@ -228,7 +228,7 @@ public class RangeReadTest
 
   // Nested Classes -------------------------------------------------------------------------------
 
-  public static class RangeReadMockGateway implements PhysicalBus
+  public static class RangeReadMockGateway implements Port
   {
 
 
@@ -240,7 +240,12 @@ public class RangeReadTest
     int seqCounter = 0;
 
 
-    @Override public void start(Object a, Object b)
+    @Override public void configure(Map<String, Object> properties)
+    {
+
+    }
+    
+    @Override public void start()
     {
 
     }
