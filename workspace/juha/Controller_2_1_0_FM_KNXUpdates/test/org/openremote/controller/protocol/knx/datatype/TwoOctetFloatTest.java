@@ -25,6 +25,7 @@ import java.math.RoundingMode;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Unit tests for {@link org.openremote.controller.protocol.knx.datatype.TwoOctetFloat} class. <p>
@@ -860,7 +861,7 @@ public class TwoOctetFloatTest
     TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 20.48f);
     byte[] data = knxFloat.getData();
 
-    Assert.assertTrue("Expected 15, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xF);
+    Assert.assertTrue("Expected 15-, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xF);
     Assert.assertTrue("Expected 15, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0xF);
     Assert.assertTrue("Expected 7, got " + (data[0] & 0xF), (data[0] & 0xF) == 7);
     Assert.assertTrue("Expected 0, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 0);
@@ -903,49 +904,57 @@ public class TwoOctetFloatTest
   }
 
 
+  /**
+   * Test conversions back and forth between two constructors, one that takes Java float
+   * and converts to two-byte data format and another that takes the byte format and converts
+   * to Java's decimal. Do this in the KNX two-octet float exponent 1 encoding (negative) range.
+   */
   @Test public void testNegativeFirstExponentRange()
   {
-    byte[] mantissaBitPattern = new byte[2048];
+    // Test values from upper boundary -20.50 to lower boundary -40.94...
 
-    BigDecimal val = new BigDecimal(-20.49).setScale(2, RoundingMode.HALF_UP);
+    BigDecimal val = new BigDecimal(-20.50).setScale(2, RoundingMode.HALF_UP);
     BigDecimal increment = new BigDecimal(-0.02).setScale(2, RoundingMode.HALF_UP);
-    BigDecimal boundary = new BigDecimal(-20.47 - 20.47*2).setScale(2, RoundingMode.HALF_UP);
+    BigDecimal boundary = new BigDecimal(-20.47 - 20.47).setScale(2, RoundingMode.HALF_UP);
+
+    // Iterate through the values with -0.02 increments...
 
     for (; val.compareTo(boundary) >= 0; val = val.add(increment))
     {
+      // Java float to KNX byte format...
+
       TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, val.floatValue());
       byte[] data = knxFloat.getData();
+
+      // Assert exponent = 1...
 
       Assert.assertTrue(
           "Expected 0x8, got " + (data[0] & 0x8) + " at value " + val,
           (data[0] & 0x8) == 0x8
       );
 
+      // Assert sign bit is set...
+
       Assert.assertTrue(
           "Expected 0x8, got " + ((data[0] & 0x80) >> 4) + " at value " + val,
           ((data[0] & 0x80) >> 4) == 0x8
       );
       
-      int mantissaValue = data[1];
-      mantissaValue &= 0xFF;
-      mantissaValue += (data[0] & 0x7) << 8;
 
-      mantissaBitPattern[mantissaValue] += 1;
-
+      // Convert from byte format to decimal....
 
       knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
       BigDecimal value = knxFloat.resolve();
 
-      Assert.assertTrue(value.compareTo(val) == 0);
-    }
 
-    for (int i = 1; i < 2048; ++i)
-    {
+      // We should end with the same value we started with...
+
       Assert.assertTrue(
-          "Found " + mantissaBitPattern[i] + " at index " + i,
-          mantissaBitPattern[i] == 1
+          "Not equal : " + value + ", " + val,
+          value.compareTo(val) == 0
       );
     }
+
   }
 
 
