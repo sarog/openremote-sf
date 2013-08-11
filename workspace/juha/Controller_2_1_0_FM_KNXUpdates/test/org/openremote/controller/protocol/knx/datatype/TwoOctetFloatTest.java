@@ -846,58 +846,50 @@ public class TwoOctetFloatTest
     }
   }
 
-  @Test public void testFirstExponentLowBoundaryRoundingError()
-  {
-    // value 20.48 demonstrates a rounding error due to switching to a higher exponent --
-    // this increases precision from 0.01*M*2^0 == 0.01 to 0.01*M*2^1 == 0.02
-    // therefore 20.48 falls beyond upper bound of zero exponent max value of 20.47 and below
-    // first exponent minimum value of 20.49
-    //
-    // this implementation rounds down -- therefore as far as the bit pattern is concerned,
-    // values 20.47 and 20.48 cannot be distinguished
-    // value 20.47 (and 20.48) translates to 2047 (0x7FF) in mantissa (0.01 precision),
-    // hibyte should be 7 (no exponent) and lobyte should be 0xFF
-
-    TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 20.48f);
-    byte[] data = knxFloat.getData();
-
-    Assert.assertTrue("Expected 15-, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xF);
-    Assert.assertTrue("Expected 15, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0xF);
-    Assert.assertTrue("Expected 7, got " + (data[0] & 0xF), (data[0] & 0xF) == 7);
-    Assert.assertTrue("Expected 0, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 0);
-
-    // translate back to Java float...
-
-    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
-    int value = knxFloat.resolve().multiply(BigDecimal.TEN.pow(2)).intValue();
-
-    Assert.assertTrue("Expected 2047, got " + value, value == 2047);
-  }
-
-
+  /**
+   * Test conversions back and forth between two constructors, one that takes Java float
+   * and converts to two-byte data format and another that takes the byte format and converts
+   * to Java's decimal. Do this in the KNX two-octet float exponent 1 encoding range.
+   */
   @Test public void testPositiveFirstExponentRange()
   {
+    // Test values from lower boundary 20.49 to upper boundary 40.94...
+
     int val = 2049;
     int boundary = 4094;
-    int increment = 2;
+    int increment = 1;
+
+    // Iterate through values based on increment...
 
     for (; val <= boundary; val += increment)
     {
+      // Java float to KNX byte format...
+
       TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, (float)val / 100);
       byte[] data = knxFloat.getData();
+
+
+      // Assert the exponent = 1...
 
       Assert.assertTrue(
           "Expected 0x8, got " + (data[0] & 0xF8) + " at value " + val,
           (data[0] & 0xF8) == 0x8
       );
 
+
+      // resolve back to integer...
+
       knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
       int value = (int)(knxFloat.resolve().doubleValue() * 100);
 
+
       Assert.assertTrue(
+
+          // Adjust to rounding errors that may occur due to E = 1 => 2^E = 2 : 0.02 value granularity
+
           "Comparing " + value + " to " + val,
-          value >= (val - 1)  &&
-          value <= (val + 1)
+          value >= val - 1 && value <= val + 1
+
       );
 
     }
@@ -915,7 +907,7 @@ public class TwoOctetFloatTest
 
     BigDecimal val = new BigDecimal(-20.50).setScale(2, RoundingMode.HALF_UP);
     BigDecimal increment = new BigDecimal(-0.02).setScale(2, RoundingMode.HALF_UP);
-    BigDecimal boundary = new BigDecimal(-20.47 - 20.47).setScale(2, RoundingMode.HALF_UP);
+    BigDecimal boundary = new BigDecimal(-20.48 - 20.48).setScale(2, RoundingMode.HALF_UP);
 
     // Iterate through the values with -0.02 increments...
 
@@ -957,6 +949,34 @@ public class TwoOctetFloatTest
 
   }
 
+
+  @Test public void testFirstExponentLowBoundaryRoundingError()
+  {
+    // value 20.48 demonstrates a rounding error due to switching to a higher exponent --
+    // this increases precision from 0.01*M*2^0 == 0.01 to 0.01*M*2^1 == 0.02
+    // therefore 20.48 falls beyond upper bound of zero exponent max value of 20.47 and below
+    // first exponent minimum value of 20.49
+    //
+    // this implementation rounds down -- therefore as far as the bit pattern is concerned,
+    // values 20.47 and 20.48 cannot be distinguished
+    // value 20.47 (and 20.48) translates to 2047 (0x7FF) in mantissa (0.01 precision),
+    // hibyte should be 7 (no exponent) and lobyte should be 0xFF
+
+    TwoOctetFloat knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, 20.48f);
+    byte[] data = knxFloat.getData();
+
+    Assert.assertTrue("Expected 15-, got " + (data[1] & 0xF), (data[1] & 0xF) == 0xF);
+    Assert.assertTrue("Expected 15, got " + ((data[1] & 0xF0) >> 4), ((data[1] & 0xF0) >> 4) == 0xF);
+    Assert.assertTrue("Expected 7, got " + (data[0] & 0xF), (data[0] & 0xF) == 7);
+    Assert.assertTrue("Expected 0, got " + ((data[0] & 0XF0) >> 4), ((data[0] & 0xF0) >> 4) == 0);
+
+    // translate back to Java float...
+
+    knxFloat = new TwoOctetFloat(DataPointType.VALUE_TEMP, data);
+    int value = knxFloat.resolve().multiply(BigDecimal.TEN.pow(2)).intValue();
+
+    Assert.assertTrue("Expected 2047, got " + value, value == 2047);
+  }
 
 }
 
