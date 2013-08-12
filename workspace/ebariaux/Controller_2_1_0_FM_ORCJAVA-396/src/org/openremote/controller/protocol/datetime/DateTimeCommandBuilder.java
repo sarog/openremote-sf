@@ -24,6 +24,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * CommandBuilder implementation to create DateTime commands. DateTime commands can be used to display date or time on
@@ -49,6 +50,7 @@ public class DateTimeCommandBuilder implements CommandBuilder {
    private final static String STR_ATTRIBUTE_NAME_TIMEZONE = "timezone";
    private final static String STR_ATTRIBUTE_NAME_COMMAND = "command";
    private final static String STR_ATTRIBUTE_NAME_FORMAT = "format";
+   private final static String STR_ATTRIBUTE_NAME_POLLINGINTERVAL = "pollingInterval";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -67,6 +69,8 @@ public class DateTimeCommandBuilder implements CommandBuilder {
       String timezone = null;
       String command = null;
       String format = null;
+      String interval = null;
+      Integer intervalInMillis = null;
 
       // read values from config xml
 
@@ -98,7 +102,26 @@ public class DateTimeCommandBuilder implements CommandBuilder {
             format = elementValue;
             logger.debug("DateTime command: format = " + format);
          }
+         
+         else if (STR_ATTRIBUTE_NAME_POLLINGINTERVAL.equals(elementName)) {
+           interval = elementValue;
+           logger.debug("ShellExe Command: pollingInterval = " + interval);
+         }
       }
+      
+      
+      try
+      {
+        if (interval != null) {
+          intervalInMillis = Integer.valueOf(Strings.convertPollingIntervalString(interval));
+        } else {
+           intervalInMillis = 60000; // Default to 1 minute polling
+        }
+      } catch (Exception e)
+      {
+        throw new NoSuchCommandException("Unable to create DateTime command, pollingInterval could not be converted into milliseconds", e);
+      }
+
 
       if (command.equals("sunrise") || command.equals("sunset") || command.equals("minutesUntilSunrise")
             || command.equals("minutesUntilSunset") || command.equals("isDay") || command.equals("isNight")) {
@@ -109,7 +132,7 @@ public class DateTimeCommandBuilder implements CommandBuilder {
       }
 
       logger.debug("DateTime command created successfully");
-      return new DateTimeCommand(latitude, longitude, timezone, command, format);
+      return new DateTimeCommand(latitude, longitude, timezone, command, format, intervalInMillis);
    }
 
 }

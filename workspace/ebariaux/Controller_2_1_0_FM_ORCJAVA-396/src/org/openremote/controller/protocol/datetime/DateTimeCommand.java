@@ -57,6 +57,9 @@ public class DateTimeCommand implements EventListener, Runnable {
    private SimpleDateFormat dateFormatter;
    private SunriseSunsetCalculator calculator;
    
+   /** The polling interval which is used for the sensor update thread */
+   private Integer pollingInterval;
+
    private Thread pollingThread;
    private Sensor sensor;
    
@@ -66,7 +69,7 @@ public class DateTimeCommand implements EventListener, Runnable {
 
    // Implements StatusCommand ---------------------------------------------------------------------
 
-   public DateTimeCommand(String latitude, String longitude, String timezone, String command, String format) {
+   public DateTimeCommand(String latitude, String longitude, String timezone, String command, String format, Integer pollingInterval) {
 
       if (timezone == null) {
          this.timezone = TimeZone.getDefault();
@@ -80,6 +83,7 @@ public class DateTimeCommand implements EventListener, Runnable {
          dateFormatter = new SimpleDateFormat();
       }
       this.command = command;
+      this.pollingInterval = pollingInterval;
 
       if (!command.equalsIgnoreCase("date")) {
          Location location = new Location(latitude, longitude);
@@ -151,6 +155,9 @@ public class DateTimeCommand implements EventListener, Runnable {
    @Override
    public void setSensor(Sensor sensor) {
       logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
+      if (pollingInterval == null) {
+         throw new RuntimeException("Could not set sensor because no polling interval was given");
+       }
       this.sensor = sensor;
       pollingThread = new Thread(this);
       pollingThread.setName("Polling thread for sensor: " + sensor.getName());
@@ -173,7 +180,7 @@ public class DateTimeCommand implements EventListener, Runnable {
             sensor.update(readValue);
          }
          try {
-            Thread.sleep(60000); // We recalculate every minute
+            Thread.sleep(pollingInterval); // We recalculate at requested polling interval
          } catch (InterruptedException e) {
             this.doPoll = false;
             pollingThread.interrupt();
