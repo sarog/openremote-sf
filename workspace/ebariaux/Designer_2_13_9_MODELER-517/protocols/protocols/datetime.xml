@@ -35,31 +35,31 @@
 
     <protocol displayName="DateTime Protocol" tagName="datetime">
 
-        <attr name="latitude" label="Latitude for Sunrise/Sunset calculation">
+        <attr name="latitude" label="Latitude" tooltipMessage = "Latitude for Sunrise/Sunset calculation">
             <validations>
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
 
-        <attr name="longitude" label="Longitude for Sunrise/Sunset calculation">
+        <attr name="longitude" label="Longitude" tooltipMessage = "Longitude for Sunrise/Sunset calculation">
             <validations>
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
 
-        <attr name="timezone" label="Timezone todo time corrections. If not set, default is taken.">
+        <attr name="timezone" label="Timezone" tooltipMessage = "Timezone todo time corrections. If not set, default is taken.">
             <validations>
                 <allowBlank>true</allowBlank>
             </validations>
         </attr>
         
-        <attr name="command" label="What should be calculated / returned?">
+        <attr name="command" label="Command" tooltipMessage = "What should be calculated / returned?">
             <validations>
                 <allowBlank>false</allowBlank>
             </validations>
         </attr>
         
-        <attr name="format" label="How should date/time values be formatted?">
+        <attr name="format" label="Format" tooltipMessage = "How should date/time values be formatted?">
             <validations>
                 <allowBlank>true</allowBlank>
             </validations>
