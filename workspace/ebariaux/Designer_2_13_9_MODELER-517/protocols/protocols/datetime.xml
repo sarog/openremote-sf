@@ -53,7 +53,7 @@
             </validations>
         </attr>
         
-        <attr name="command" label="Command" tooltipMessage = "What should be calculated / returned?">
+        <attr name="command" label="Command" tooltipMessage = "What should be calculated / returned?" options="date,sunrise,sunset,minutesUntilSunrise,minutesUntilSunset,isDay,isNight">
             <validations>
                 <allowBlank>false</allowBlank>
             </validations>
