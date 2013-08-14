@@ -31,6 +31,15 @@
       <parameter name="IRADIO">IRADIO</parameter>
       <parameter name="TUNER">TUNER</parameter>
       <parameter name="MEDIAPLAYER">MPLAY</parameter>
+      <parameter name="LASTFM">LASTFM</parameter>
+      <parameter name="FAVORITES">FAVORITES</parameter>
+      <parameter name="SERVER">SERVER</parameter>
+      <parameter name="USB/IPOD">USB/IPOD</parameter>
+      <parameter name="USB">USB</parameter>
+      <parameter name="IPOD">IPD</parameter> <!-- iPod DIRECT start playback -->
+      <parameter name="IRP">IRP</parameter> <!--  Internet Radio Recent Play -->
+      <parameter name="FVP">FVP</parameter> <!--  Network Favorites Play -->
+	  <parameter name="NETWORK">NET</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
@@ -85,6 +94,15 @@
       <parameter name="STOP">9C</parameter>
       <parameter name="SKIP PLUS">9D</parameter>
       <parameter name="SKIP MINUS">9E</parameter>
+      <parameter name="REPEAT ONE">9H</parameter>
+      <parameter name="REPEAT ALL">9I</parameter>
+      <parameter name="REPEAT OFF">9J</parameter>
+      <parameter name="RANDOM ON">9K</parameter>
+      <parameter name="RANDOM OFF">9M</parameter>
+      <parameter name="TOGGLE BROWSE REMOTE">9W</parameter>
+      <parameter name="PAGE NEXT">9X</parameter>
+      <parameter name="PAGE PREVIOUS">9Y</parameter>
+      <parameter name="TOGGLE PARTY MODE">PT</parameter>
     </parameters>
   </command>
 
