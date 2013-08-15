@@ -4,6 +4,8 @@ Controller Pro 1.0.11
 Bug Fixes:
 
   - Reliability updates to Russound integration (Torbjorn Osterdahl) (ORCJAVA-376)
+  - Guard against null pointer exception in RRD logger lifecycle
+    (Juha Lindfors) (ORCJAVA-356)
 
 Controller Pro 1.0.10
 =====================
@@ -83,7 +85,7 @@ Bug Fixes:
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
-    
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
