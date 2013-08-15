@@ -1,12 +1,24 @@
+Controller Pro 1.0.11
+=====================
+
+Bug Fixes:
+
+  - Reliability updates to Russound integration (Torbjorn Osterdahl) (ORCJAVA-376)
+
 Controller Pro 1.0.10
 =====================
 
- - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314 + ORCJAVA-375)
- - EnOcean Implementation (Rainer Hitz) (ORCJAVA-348)
- - Fix an NPE in lagarto command caused by undetermined
-   initialization order between ExecutableCommand and
-   EventListener implementations (Juha Lindfors) (ORCJAVA-346)
+New Features:
+
+  - Add Port Abstraction Daemon (PAD) source files to project (ORCJAVA-314 + ORCJAVA-375)
+  - EnOcean Implementation (Rainer Hitz) (ORCJAVA-348)
   - Rewrite TCP for EventListener interface (Marcus Redeker) (ORCJAVA-298)
+
+Bug Fixes:
+
+  - Fix an NPE in lagarto command caused by undetermined
+    initialization order between ExecutableCommand and
+    EventListener implementations (Juha Lindfors) (ORCJAVA-346)
 
 Controller Pro 1.0.9
 ====================
