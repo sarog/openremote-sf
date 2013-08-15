@@ -6,6 +6,8 @@ Bug Fixes:
   - Reliability updates to Russound integration (Torbjorn Osterdahl) (ORCJAVA-376)
   - Guard against null pointer exception in RRD logger lifecycle
     (Juha Lindfors) (ORCJAVA-356)
+  - Fix lagarto configuration to read its settings from controller.xml
+    in addition to the config.properties file (Juha Lindfors) (ORCJAVA-264)
 
 Controller Pro 1.0.10
 =====================
