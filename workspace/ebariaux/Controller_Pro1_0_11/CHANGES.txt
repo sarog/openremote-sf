@@ -1,6 +1,11 @@
 Controller Pro 1.0.11
 =====================
 
+New Features:
+
+  - Direct HTTP related logging into its own file in /logs/http/http.log
+    (Juha Lindfors) (ORCJAVA-368)
+
 Bug Fixes:
 
   - Reliability updates to Russound integration (Torbjorn Osterdahl) (ORCJAVA-376)
