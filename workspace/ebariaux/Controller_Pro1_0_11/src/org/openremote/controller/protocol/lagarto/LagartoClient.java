@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -34,6 +34,9 @@ import org.openremote.controller.model.sensor.Sensor;
 
 /**
  * Lagarto client thread
+ *
+ * @author Daniel Berenguer
+ * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  */
 public class LagartoClient extends Thread
 {
@@ -57,8 +60,18 @@ public class LagartoClient extends Thread
    */
   public LagartoClient()
   {
-    // FIXME: Currently unable to get the new broadcast address from Designer
-    //broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
+
+    // TODO:
+    //   fix the readXML() call once the controller configuration has been refactored to current
+    //   deployer lifecycle (see ORCJAVA-183). Since the lagarto client is created only once,
+    //   it is sort of ok'ish to call it here although still potentially redundant.
+    //                                                                                  [JPL]
+
+    LagartoCommandBuilder.controllerConfig.readXML();
+
+    logger.info(LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr());
+
+    broadcastAddr = LagartoCommandBuilder.controllerConfig.getLagartoBroadcastAddr();
   }
 
   /**
