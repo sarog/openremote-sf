@@ -52,6 +52,7 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
  *
  * @see Bool
  * @see Controlled3Bit
+ * @see TwoOctetFloat
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
