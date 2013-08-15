@@ -8,6 +8,8 @@ Bug Fixes:
     (Juha Lindfors) (ORCJAVA-356)
   - Fix lagarto configuration to read its settings from controller.xml
     in addition to the config.properties file (Juha Lindfors) (ORCJAVA-264)
+  - X10: patch for potential race condition between thread deallocating 
+    gateway and thread processing serial port input (Juha Lindfors, ORCJAVA-359)
 
 Controller Pro 1.0.10
 =====================

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1999  Jesse E. Peterson
  * Copyright (C) 2007  Manish Pandya
- * Copyright (C) 2009  OpenRemote Inc.
+ * Copyright (C) 2009-2013  OpenRemote Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1628,7 +1628,7 @@ public class CM11A extends SerialGateway implements
 
         try
         {
-            while (inputStream.available() > 0)
+            while (inputStream != null && inputStream.available() > 0)
             {
                 result = inputStream.read();
 
@@ -1667,6 +1667,18 @@ public class CM11A extends SerialGateway implements
         {
             System.err.println("IOException while trying to process pending requests.");
             e.printStackTrace();
+        }
+
+        catch (NullPointerException e)
+        {
+            // It seems there's a potential race condition where deallocate() may null the input
+            // stream in the middle of this processing. Catching the error here to prevent it
+            // from propagating further. [JPL]
+
+            if (System.getProperty("DEBUG") != null)
+            {
+              System.out.println("DEBUG: Input stream was closed. Skipping processing of pending requests...");
+            }
         }
     }
 
