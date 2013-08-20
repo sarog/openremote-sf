@@ -310,4 +310,120 @@ public class FindPanelByIDTest
      Assert.assertEquals("No such Panel :NAME = doesNotExist", error.getString("message"));
   }
 
+  /**
+   * Tests the HTTP response code on request for a specific panel against controller that has no
+   * configuration deployed.
+   *
+   * @throws Exception  if any error occurs
+   */
+  @Test public void testNoPanelXMLDeployed() throws Exception
+  {
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted (incomplete element).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureNotWellFormatted() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    AllTests.replacePanelXML("brokenPanelStructure-NotWellFormatted.xml");
+
+
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted (missing elements).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureNotWellFormatted2() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    AllTests.replacePanelXML("brokenPanelStructure-NotWellFormatted2.xml");
+
+
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted
+   * (missing one <panels> tag).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureMissingPanelsTag() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    AllTests.replacePanelXML("brokenPanelStructure-MissingPanelsTag.xml");
+
+
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted
+   * (missing ending tag).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureMissingEndTag() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    AllTests.replacePanelXML("brokenPanelStructure-MissingEndTag.xml");
+
+
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
 }
