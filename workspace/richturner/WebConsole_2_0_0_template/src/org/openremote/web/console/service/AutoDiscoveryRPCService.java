@@ -36,5 +36,5 @@ public interface AutoDiscoveryRPCService extends RemoteService {
     * 
     * @return the auto discovery servers
     */
-   List<String> getAutoDiscoveryServers();
+   List<String> getAutoDiscoveryServers() throws Exception;
 }
