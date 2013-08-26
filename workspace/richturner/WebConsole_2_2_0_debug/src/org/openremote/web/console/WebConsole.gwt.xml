@@ -4,6 +4,20 @@
 	<inherits name="com.google.gwt.json.JSON"/>
 	<inherits name="com.google.web.bindery.autobean.AutoBean"/>
 	
+	<!-- Logging													-->
+	<inherits name="com.google.gwt.logging.Logging" />  
+	<set-property name="gwt.logging.logLevel" value="INFO" />            
+	<set-property name="gwt.logging.enabled" value="TRUE" />   
+	<set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />    
+	<set-property name="gwt.logging.systemHandler" value="DISABLED" />  
+	<set-property name="gwt.logging.popupHandler" value="ENABLED" />  
+	<set-property name="gwt.logging.consoleHandler" value="ENABLED"/>   
+	<set-property name="gwt.logging.firebugHandler" value="ENABLED" />
+	<set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+	<set-property name="compiler.stackMode" value="emulated" />  
+	<set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>   
+	<set-configuration-property name="compiler.emulatedStack.recordFileNames" value="true"/> 
+	
   	<!-- Other module inherits                                      -->
   	<source path="client"/>
   	<source path="controller"/>
