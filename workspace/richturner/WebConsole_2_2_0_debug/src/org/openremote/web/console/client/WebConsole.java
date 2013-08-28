@@ -21,16 +21,16 @@ package org.openremote.web.console.client;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.openremote.web.console.panel.entity.PanelSizeInfo;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -60,6 +60,15 @@ public class WebConsole implements EntryPoint {
 	    }
 		});
 		
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {  
+      public void execute() {  
+        onModuleLoad2();  
+      }  
+    });
+		
+	}
+	
+	public void onModuleLoad2() {		
 		// Export method to hide alert window from native JS
 		BrowserUtils.exportStaticMethod();
 		
