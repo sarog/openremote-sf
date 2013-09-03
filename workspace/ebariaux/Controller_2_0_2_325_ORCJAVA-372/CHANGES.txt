@@ -1,0 +1,30 @@
+Controller ORCJAVA-325
+======================
+
+ - ISY-99 implementation does not scale to high number of
+   sensors (Kevin Purney)
+
+
+Controller 2.0.2 (2013-02-26)
+============================
+
+ - Update Web Console implementation to 2.1.0 (Richard Turner, ORCJAVA-312)
+ - Bug fix: sensor status cache was throwing a runtime exception
+   which was not handled if a panel requested a sensor status on
+   a sensor which failed to start (due to configuration or
+   other errors). The unhandled exception caused the client
+   call to fail instead of gracefully falling back to default or
+   error value. (Eric Bariaux, ORCJAVA-268)
+ - Bug fix: logging generated errors (null pointer exception) at
+   shutdown (Eric Bariaux, ORCJAVA-222)
+ 
+
+Controller 2.0.1 (2012-11-21)
+=============================
+
+ - Update Web Console implementation to 2.0.0 FINAL
+ - Change Tomcat runtime default logging to file size
+   bound (10MB per file) instead of unlimited file
+   size logging
+
+
