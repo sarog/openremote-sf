@@ -60,7 +60,7 @@ public class Isy99CommandBuilder implements CommandBuilder
   private String hostname;
   private String username;
   private String password;
-  private Isy99StatusReader StatusReader;
+  private Isy99StatusReader statusReader;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ public class Isy99CommandBuilder implements CommandBuilder
     this.hostname = hostname;
     this.username = username;
     this.password = password;
-    this.StatusReader = new Isy99StatusReader(hostname, username, password);
+    this.statusReader = new Isy99StatusReader(hostname, username, password);
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -163,11 +163,11 @@ public class Isy99CommandBuilder implements CommandBuilder
 
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command(hostname, username, password, address, command, StatusReader);
+      cmd = new Isy99Command(hostname, username, password, address, command, statusReader);
     }
     else
     {
-      cmd = new Isy99Command(hostname, username, password, address, command, commandParam, StatusReader);
+      cmd = new Isy99Command(hostname, username, password, address, command, commandParam, statusReader);
     }
 
     return cmd; 
