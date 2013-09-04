@@ -74,7 +74,6 @@ public class Isy99CommandBuilder implements CommandBuilder
     this.hostname = hostname;
     this.username = username;
     this.password = password;
-    this.statusReader = new Isy99StatusReader(hostname, username, password);
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -122,6 +121,9 @@ public class Isy99CommandBuilder implements CommandBuilder
     String address = null;
     String command = null;
 
+    // StatusReader is only created when a command is built, indicating the protocol is used
+    startStatusReaderIfRequired();
+    
     @SuppressWarnings("unchecked")
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
         element.getNamespace());
@@ -171,6 +173,16 @@ public class Isy99CommandBuilder implements CommandBuilder
     }
 
     return cmd; 
+  }
+  
+  /**
+   * Creates the StatusReader object, if it does not exist already.
+   * This will start a continuous poll to the ISY99 device.
+   */
+  private synchronized void startStatusReaderIfRequired() {
+     if (statusReader == null) {
+        statusReader = new Isy99StatusReader(hostname, username, password);
+     }
   }
 
 }
