@@ -297,6 +297,8 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 	}
 	
 	private void syncUI(PanelSizeInfo sizeInfo) {
+		if (sizeInfo == null) return;			
+			
 		if (sizeInfo.getPanelSizeType().equals("fullscreen")) {
 			setPanelSizeType(PanelSizeType.FULLSCREEN);
 			widthInput.setValue("");

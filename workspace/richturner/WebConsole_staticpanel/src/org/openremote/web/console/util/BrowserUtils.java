@@ -493,6 +493,14 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		}-*/;
 		
 		public static native String getBuildVersionString() /*-{
-		return $wnd.buildVersionStr;
-	}-*/;
+			return $wnd.buildVersionStr;
+		}-*/;
+		
+		public static native String getControllerUrlString() /*-{
+			return $wnd.controllerUrl;
+		}-*/;
+		
+		public static native String getPanelNameString() /*-{
+			return $wnd.panelName;
+		}-*/;
 }

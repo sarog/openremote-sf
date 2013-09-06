@@ -95,16 +95,15 @@ import com.google.web.bindery.autobean.shared.AutoBean;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public class ConsoleUnit extends VerticalPanel implements RotationHandler, WindowResizeHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
-	public static final int MIN_WIDTH = 320;
-	public static final int MIN_HEIGHT = 460;
-	public static final int DEFAULT_DISPLAY_WIDTH = 320;
-	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
-	public static final String DEFAULT_DISPLAY_COLOUR = "#000";
+	public static final int MIN_WIDTH = 768;
+	public static final int MIN_HEIGHT = 1024;
+	public static final int DEFAULT_DISPLAY_WIDTH = 768;
+	public static final int DEFAULT_DISPLAY_HEIGHT = 1024;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
-	public static final int FRAME_WIDTH_TOP = 20;
-	public static final int FRAME_WIDTH_BOTTOM = 50;
-	public static final int FRAME_WIDTH_LEFT = 20;
-	public static final int FRAME_WIDTH_RIGHT = 20;
+	public static final int FRAME_WIDTH_TOP = 0;
+	public static final int FRAME_WIDTH_BOTTOM = 0;
+	public static final int FRAME_WIDTH_LEFT = 0;
+	public static final int FRAME_WIDTH_RIGHT = 0;
 	public static final int BOSS_WIDTH = 2;
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -238,11 +237,11 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		add(consoleDisplay);
 		
 		// Create Logo
-		SimplePanel logoPanel = new SimplePanel();
+/*		SimplePanel logoPanel = new SimplePanel();
 		logoPanel.getElement().setId("consoleFrameLogo");
 		logoPanel.setHeight(FRAME_WIDTH_BOTTOM - BOSS_WIDTH + "px");
 		logoPanel.getElement().setAttribute("onselect", "return false;");
-		add(logoPanel);
+		add(logoPanel);*/
 		
 		// Set static console unit styling
 		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -954,69 +953,22 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void initialiseConsole() {
-		// Check welcome message has been shown for this version
-		String versionStr = BrowserUtils.getBuildVersionString();
-		int version = 0;
-		
-		try {
-			version = Integer.parseInt(versionStr);
-		} catch (Exception e) {}
-		
-  	String welcomeObj = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
-		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
-		Integer welcomeVersion = -1;
-		WelcomeFlag welcomeFlag = null;
-		
-		if (bean != null) {
-			welcomeFlag = (WelcomeFlag)bean.as();
-			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
-		}
-
-		if (welcomeVersion < version) {
-			// Show welcome message
-			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
-			
-			welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
-			welcomeFlag.setWelcomeVersion(version);
-			
-			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
-		}
-		
 		// Display warning if cookies disabled
 		if (!LocalDataServiceImpl.getInstance().isAvailable())
 		{
 			BrowserUtils.showAlert(COOKIE_WARNING_MESSAGE_STRING);
 		}
 		
-		// Check for Last Controller and Panel in Cache
-		ControllerCredentials controllerCreds;
-		String panelName = "";
+		// Remove frame
+/*		toggleFrame(false);*/
 		
-		controllerCreds = dataService.getLastControllerCredentials();
-		if (controllerCreds != null && controllerCreds.getUrl() != null) {
-			loadController(controllerCreds);
-		} else {
-			// No controller to load so go to settings
-			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
-		}
-		
-//		// TODO: Check for default Controller in Settings
-//		controllerCreds = dataService.getDefaultControllerCredentials();
-//		if (controllerCreds != null) {
-//			panelName = controllerCreds.getDefaultPanel();
-//		} else {
-//			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
-//			controllerCreds.setUrl("http://controller.openremote.org/iphone/controller/");
-//			controllerCreds.setDefaultPanel("My Home");
-//			dataService.setDefaultControllerCredentials(controllerCreds);
-//		}
-//		
-//		if (panelName != null && !panelName.equals("")) {
-//			loadControllerAndPanel(controllerCreds, panelName);
-//		} else {		
-
-
-//		}
+		// Load specified controller
+		String controllerUrl = BrowserUtils.getControllerUrlString();
+		String panelName = BrowserUtils.getPanelNameString();
+		ControllerCredentials controllerCreds = AutoBeanService.getInstance().getFactory().controllerCredentials().as();
+		controllerCreds.setUrl(controllerUrl);
+		controllerCreds.setDefaultPanel(panelName);
+		loadController(controllerCreds);
 	}
 	
 	/*
