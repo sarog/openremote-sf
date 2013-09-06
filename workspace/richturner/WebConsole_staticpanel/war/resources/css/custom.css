@@ -30,27 +30,15 @@ CONSOLE UNIT
 ************************************************************************/
 
 #consoleUnit {
-	background-color: #383838;
-	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(0,0,0)), color-stop(0.5, rgb(56,56,56)));
-	background-image: -moz-linear-gradient(center bottom, rgb(0,0,0) 0%, rgb(56,56,56) 50%);
-	/* ie10 */
-	background-image: -ms-linear-gradient(#383838,#000000);
-	/* opera 11.1 */
-	background-image: -o-linear-gradient(#383838,#000000);
-	/* The "standard" */
-	background-image: linear-gradient(#383838,#000000);			
-	-webkit-border-radius: 15px;
-	-o-border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+	background: none;
 }
 
 #consoleDisplayWrapper {
-	border-color: #333333;
+
 }
 
 #consoleDisplay, body.fullscreen {
-	background-color: black;
+	background-color: #02A9EF;
 }
 
 /************************************************************************
@@ -132,6 +120,9 @@ TAB BAR
 /************************************************************************
 SCREEN INDICATOR
 *************************************************************************/
+.screenIndicatorComponent {
+	display: none;
+}
 
 .screenIndicatorItem {
 	height: 12px;
@@ -403,10 +394,6 @@ WIDGETS
 
 
 .buttonComponent, .switchComponent {
-	-moz-border-radius: 4px;
-	-ms-border-radius: 4px;
-	-o-border-radius: 4px;
-	-webkit-border-radius: 4px;
 	font-size: 16px;
 	background: #dddee1;
 	background-image: -moz-linear-gradient(-90deg, #dddee1, #b4b7be);
@@ -427,6 +414,10 @@ WIDGETS
 }
 
 .buttonComponent.noImage, .switchComponent.noImage {
+	-moz-border-radius: 4px;
+	-ms-border-radius: 4px;
+	-o-border-radius: 4px;
+	-webkit-border-radius: 4px;
 	-moz-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-ms-box-shadow: 0px 2px 2px rgba(0,0,0, .7);
 	-o-box-shadow: 0px 2px 2px rgba(0,0,0, .7);

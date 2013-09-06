@@ -50,7 +50,7 @@
 
 	    <style type="text/css">
 	    	.fullscreen {
-	    		background-color: #000;
+	    		background-color: #02A9EF;
 	    	}
 	    	
 	    	#console_loading_image {
@@ -157,12 +157,12 @@
 				to { -o-transform: rotate(-720deg); }
 			}
 	    </style>
-	    <link type="text/css" rel="stylesheet" href="resources/css/custom.css">
-		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
 		
 	    <!-- GWT Bootstrap -->
 		<script language="javascript">
 			var buildVersionStr = "@VERSION@";
+			var controllerUrl = "http://multimation.co.uk:8080/controller";
+			var panelName = "test";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>

@@ -57,7 +57,7 @@ public class WebConsole implements EntryPoint {
 			// Check preferences
 			LocalDataService dataService = LocalDataServiceImpl.getInstance();
 			PanelSizeInfo sizeInfo = null;
-
+/*
 			String panelSizeInfo = dataService.getObjectString("panelSizeInfo");
 			if (panelSizeInfo == null) {
 				// Generate defaults
@@ -65,7 +65,7 @@ public class WebConsole implements EntryPoint {
 				sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, DEFAULT_PANEL_SIZE_INFO).as();
 			} else {
 				sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, panelSizeInfo).as();
-			}
+			}*/
 			
 			if (sizeInfo != null) {
 				// Get stored size info

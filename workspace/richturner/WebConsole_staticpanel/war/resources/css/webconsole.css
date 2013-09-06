@@ -47,6 +47,8 @@ body {
 	-moz-touch-callout: none;
 	-o-touch-callout: none;
 	-touch-callout: none;
+	background: #02A9EF;
+	overflow: hidden;
 }
 
 #noScriptError {
@@ -65,6 +67,7 @@ body {
 *************************************************************************/
 
 .toolbar {
+	display: none;
 	color: #FFF;
 	z-index: 1000;
 }
@@ -249,7 +252,7 @@ CONSOLE UNIT
 }
 
 #consoleUnit.framed #consoleFrameLogo {
- 	display: block;
+ 	display: none;
 }
  
 #consoleUnit.fullscreen #consoleFrameLogo {
@@ -270,12 +273,7 @@ CONSOLE UNIT
 	border: none;
 }
 
-.framed #consoleDisplayWrapper {
-	border-width: 2px;
-	border-style: solid;
-}
-
-.fullscreen #consoleDisplayWrapper {
+.framed #consoleDisplayWrapper, .fullscreen #consoleDisplayWrapper {
 	border: none;
 }
 
