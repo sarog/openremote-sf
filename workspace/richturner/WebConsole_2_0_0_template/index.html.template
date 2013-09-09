@@ -131,6 +131,11 @@
 				-o-animation: backward 1s linear infinite;			
 			}
 			
+			@keyframes forward {
+				from { -webkit-transform: rotate(0deg); }
+				to { -webkit-transform: rotate(360deg); }
+			}
+			
 			@-webkit-keyframes forward {
 				from { -webkit-transform: rotate(0deg); }
 				to { -webkit-transform: rotate(360deg); }
@@ -142,6 +147,11 @@
 			@-o-keyframes forward {
 				from { -o-transform: rotate(0deg); }
 				to { -o-transform: rotate(360deg); }
+			}
+			
+			@keyframes backward {
+				from { transform: rotate(0deg); }
+				to { transform: rotate(360deg); }
 			}
 			
 			@-webkit-keyframes backward {
