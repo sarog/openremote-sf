@@ -995,11 +995,15 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		
 		show();
 		
+		initialiseConsole();
+		
+		return;
+		
 		// Initialise the system panel
 //		String systemPanelStr = dataService.getObjectString(EnumDataMap.SYSTEM_PANEL.getDataName());
 //		if (systemPanelStr == null) {
 			// Load from Server
-			BrowserUtils.showLoadingMsg("Retreiving System Panel Definition");
+/*			BrowserUtils.showLoadingMsg("Retreiving System Panel Definition");
 
 			try {
 				int displayDensity = BrowserUtils.getDisplayDensityValue();
@@ -1072,7 +1076,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 //			systemPanel = AutoBeanService.getInstance().fromJsonString(Panel.class, systemPanelStr).as();
 //			initialiseConsole();
 //		}
-		
+*/		
 	}
 	
 	@Override

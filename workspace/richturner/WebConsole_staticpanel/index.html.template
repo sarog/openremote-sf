@@ -1,8 +1,8 @@
 <!doctype html>
 	<head>
-		<title>OpenRemote Web Console - 2.0</title>
+		<title>Eindhoven Stratumseind</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-		
+
 		<!-- Enable IE9 Standards mode -->
 		<meta http-equiv="X-UA-Compatible" content="IE=9" >
 		
@@ -21,7 +21,7 @@
 		<!-- set startup image when web app launched from home screen on iOS -->
 		<link rel="apple-touch-startup-image" href="resources/images/startup.png">
 		
-		       <!-- iPhone ICON -->
+        <!-- iPhone ICON -->
         <link href="resources/images/icon-57x57.png" sizes="57x57" rel="apple-touch-icon">
         <!-- iPad ICON-->
         <link href="resources/images/icon-72x72.png" sizes="72x72" rel="apple-touch-icon">
@@ -119,42 +119,29 @@
 	    		}
 			}
 	    	
-			.loading_image_outer {
-				-webkit-animation: forward 1s linear infinite;
-				-moz-animation: forward 1s linear infinite;
-				-o-animation: forward 1s linear infinite;
+			.loading_image {
+				animation: forward 3s rotate infinite;
+				-webkit-animation: forward 3s rotate infinite;
+				-moz-animation: forward 3s rotate infinite;
+				-o-animation: forward 3s rotate infinite;
 			}
 			
-			.loading_image_inner {
-				-webkit-animation: backward 1s linear infinite;
-				-moz-animation: backward 1s linear infinite;
-				-o-animation: backward 1s linear infinite;			
+			@keyframes rotate {
+				from { transform: rotateY(0deg); }
+				to { transform: rotateY(360deg); }
 			}
 			
-			@-webkit-keyframes forward {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(360deg); }
+			@-webkit-keyframes rotate {
+				from { -webkit-transform: rotateY(0deg); }
+				to { -webkit-transform: rotateY(360deg); }
 			}
-			@-moz-keyframes forward {
-				from { -moz-transform: rotate(0deg); }
-				to { -moz-transform: rotate(360deg); }
+			@-moz-keyframes rotate {
+				from { -moz-transform: rotateY(0deg); }
+				to { -moz-transform: rotateY(360deg); }
 			}
-			@-o-keyframes forward {
-				from { -o-transform: rotate(0deg); }
-				to { -o-transform: rotate(360deg); }
-			}
-			
-			@-webkit-keyframes backward {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(-720deg); }
-			}
-			@-moz-keyframes backward {
-				from { -moz-transform: rotate(0deg); }
-				to { -moz-transform: rotate(-720deg); }
-			}
-			@-o-keyframes backward {
-				from { -o-transform: rotate(0deg); }
-				to { -o-transform: rotate(-720deg); }
+			@-o-keyframes rotate {
+				from { -o-transform: rotateY(0deg); }
+				to { -o-transform: rotateY(360deg); }
 			}
 	    </style>
 		
@@ -170,9 +157,7 @@
 	<body class="fullscreen">
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		<div style="width: 3000px; height: 3000px;"></div>
-		<div id="console_loading_image" class="loading_image_outer">
-			<div class="loading_image_inner" style="width: 100%; height: 100%; background-image: url(resources/images/loading_logo_centre.png); background-size: 100% 100%;"></div>
-		</div>
+		<div id="console_loading_image"></div>
 		<div id="console_loading_msg">
 			<span>LOADING...</span>
 		</div>
