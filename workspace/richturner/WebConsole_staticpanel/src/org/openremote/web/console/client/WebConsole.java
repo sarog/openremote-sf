@@ -78,7 +78,7 @@ public class WebConsole implements EntryPoint {
 				consoleUnit = new ConsoleUnit();
 			}
 			
-			SlidingToolbar.initialise(sizeInfo);
+			//SlidingToolbar.initialise(sizeInfo);
 		}
 		
 		if (consoleUnit != null) {
