@@ -364,7 +364,9 @@
      | Copy compiled classes into the controller web app...
      +-->
     <copy todir = "${output.controller.dir}/WEB-INF/classes">
-      <fileset dir = "${classes.dir}"/>
+      <fileset dir = "${classes.dir}">
+        <exclude name = "org/openremote/controller/protocol/samsungtv/**"/>
+      </fileset>
     </copy>
 
     <!--
@@ -382,6 +384,13 @@
          whenempty = "fail">
 
     </zip> 
+
+    <!--
+     | Create a separate jar with the samsungtv protocol
+     +-->
+    <jar destfile= "${output.dir}/samsungtv.jar" basedir = "${classes.dir}">
+        <include name = "org/openremote/controller/protocol/samsungtv/**"/>
+    </jar>
 
   </target>
 
@@ -410,7 +419,10 @@
       <lib dir = "${build.dir}/lib"/>
       <lib dir = "${lib.dir}/clink"/>
       <lib dir = "${lib.dir}/drools-5.1.1"/>
-      <classes dir = "${classes.dir}"/>
+      <classes dir = "${classes.dir}">
+        <exclude name = "org/openremote/controller/protocol/samsungtv/**"/>
+      </classes>
+
     </war>
   </target>
 -->
