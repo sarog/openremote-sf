@@ -1,3 +1,4 @@
+
 <!doctype html>
 	<head>
 		<title>Eindhoven Stratumseind</title>
@@ -61,9 +62,9 @@
 	    		position: absolute;
 	    		top: 50%;
 	    		left: 50%;
-	    		background-image: url(resources/images/loading_logo_outer.png);
+	    		background-image: url(resources/images/loading.png);
 	    		background-size: 100% 100%;
-	    		opacity: 0.3;
+	    		opacity: 0.8;
 	    	}
 	    	
 	    	#console_loading_msg {
@@ -76,10 +77,10 @@
 	    		position: absolute;
 	    		top: 50%;
 	    		left: 50%;
-	    		color: #2b6229;
+	    		color: #E01D1B;
 	    		font-weight: bold;
 	    		text-align: center;
-	    		opacity: 0.5;
+	    		opacity: 0.8;
 	    	}
 	    	
 			/* Pixel ratio of 1.5 */
@@ -119,11 +120,11 @@
 	    		}
 			}
 	    	
-			.loading_image {
-				animation: forward 3s rotate infinite;
-				-webkit-animation: forward 3s rotate infinite;
-				-moz-animation: forward 3s rotate infinite;
-				-o-animation: forward 3s rotate infinite;
+			#console_loading_image {
+				animation: rotate 3s linear infinite;
+				-webkit-animation: rotate 3s linear infinite;
+				-moz-animation: rotate 3s linear infinite;
+				-o-animation: rotate 3s linear infinite;
 			}
 			
 			@keyframes rotate {
