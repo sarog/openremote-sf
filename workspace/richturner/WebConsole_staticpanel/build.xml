@@ -38,10 +38,12 @@
 			<filterset>
 				<!-- Replace @VERSION@ with the version -->
 				<filter token="VERSION" value="${Revision}" />
+				<filter token="TITLE" value="${project.title}" />
 			</filterset>
 		</copy>
 		
         <echo>Revision found: ${Revision}</echo>
+		<echo>Title found: ${project.title}</echo>
   </target>
   
   <target name="libs" depends="find_revision" description="Copy libs to WEB-INF/lib">
