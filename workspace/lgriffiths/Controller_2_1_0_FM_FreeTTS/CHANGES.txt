@@ -55,6 +55,13 @@ New Features:
      * HTTP related logs now appear in their own file under /logs/http/http.log 
        (Juha Lindfors, ORCJAVA-368)
 
+  - UDP protocol:
+     * Sending hex values by prefixing command data with '0x' string added.
+     * Receiving of UDP packets added (ORCJAVA-392)
+     * Add an option to specify what type of line ending is used for sent 
+       UDP commands. Defaults to 'NONE', other options are 'CR', 'LF' and 'CRLF' 
+       (Simon Vincent, ORCJAVA-393)
+
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
     property added for sending values to switches (Marcus Redeker)
@@ -66,8 +73,6 @@ New Features:
     telnet log directory and telnet debug logs added (Juha Lindfors, ORCJAVA-328)
   - Date/Time : values updated once per minute instead of once per second
     (Marcus Redeker)
-  - UDP : send hex values by prefixing command data with '0x' string.
-    Receiving of UDP packets added (Marcus Redeker)
   - TCP : send hex values by prefixing command data with '0x' string,
     add polling interval and regular expression support for TCP payloads
     (Marcus Redeker, ORCJAVA-298)
