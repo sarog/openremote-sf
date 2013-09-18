@@ -94,22 +94,22 @@ public class PanelStateTest
 
     packet = new Packet("652", "10");
     panelState.processPacket(packet);
-    assertEquals(PartitionState.ARMED_AWAY,
+    assertEquals(PartitionState.AWAYARMED,
         panelState.getState(new StateDefinition(StateType.PARTITION, "1")));
 
     packet = new Packet("652", "11");
     panelState.processPacket(packet);
-    assertEquals(PartitionState.ARMED_STAY,
+    assertEquals(PartitionState.STAYARMED,
         panelState.getState(new StateDefinition(StateType.PARTITION, "1")));
 
     packet = new Packet("652", "12");
     panelState.processPacket(packet);
-    assertEquals(PartitionState.ARMED_AWAY_NODELAY,
+    assertEquals(PartitionState.AWAYARMEDND,
         panelState.getState(new StateDefinition(StateType.PARTITION, "1")));
 
     packet = new Packet("652", "13");
     panelState.processPacket(packet);
-    assertEquals(PartitionState.ARMED_STAY_NODELAY,
+    assertEquals(PartitionState.STAYARMEDND,
         panelState.getState(new StateDefinition(StateType.PARTITION, "1")));
 
     packet = new Packet("654", "1");
