@@ -150,7 +150,7 @@
 		<script language="javascript">
 			var buildVersionStr = "@VERSION@";
 			var controllerUrl = "http://multimation.co.uk:8080/controller";
-			var panelName = "test";
+			var panelName = "768_1024";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
