@@ -67,6 +67,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	private int width;
 	private int height;
 	private boolean isVertical = false;
+	private boolean isPassive = false;
 	private int minValue = 0;
 	private int maxValue = 100;
 	private int valueRange = 100;
@@ -110,6 +111,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			BrowserUtils.setStyleAttributeAllBrowsers(touchElem, "boxSizing", "border-box");
 
 			this.setWidget(visibleThumb);
+			
+			if (!isPassive)
+			{
+				visibleThumb.addStyleName(INTERACTIVE_CLASS_NAME);
+			}
 		}
 		
 		@Override
@@ -118,6 +124,10 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
+			if (isPassive)
+			{
+				return;
+			}
 			if (appearsVertical()) {
 				setValueFromAbsPos(event.getYPos(), false);
 			} else {
@@ -127,6 +137,10 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 
 		@Override
 		public void onDragEnd(DragEndEvent event) {
+			if (isPassive)
+			{
+				return;
+			}
 			updateSensor();
 		}
 
@@ -136,6 +150,10 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		 */
 		@Override
 		public void onDragCancel(DragCancelEvent event) {
+			if (isPassive)
+			{
+				return;
+			}
 			updateSensor();
 		}
 		
@@ -172,6 +190,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 				DOM.setStyleAttribute(elem, "backgroundPosition", "center center");
 				DOM.setStyleAttribute(elem, "backgroundColor", "transparent");
 				DOM.setStyleAttribute(elem, "dropShadow", "none");
+				DOM.setStyleAttribute(elem, "boxShadow", "none");
 			}
 		}
 		
@@ -193,7 +212,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	}
 	
 	class SlideBar extends AbsolutePanel {
-		private boolean isClickable = true;
+		private boolean isClickable = !isPassive;
 		private int length = 0;
 		
 		public SlideBar() {
@@ -223,6 +242,11 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 			BrowserUtils.setStyleAttributeAllBrowsers(maxTrack.getElement(), "boxSizing", "border-box");
 			
 			this.add(track,0,0);
+			
+			if (!isPassive)
+			{
+				this.addStyleName(INTERACTIVE_CLASS_NAME);
+			}
 		}
 		
 		public int getLength() {
@@ -280,13 +304,17 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 		}
 	}
 	
-	private SliderComponent(Boolean isVertical) {
+	private SliderComponent(Boolean isVertical, Boolean isPassive) {
 		// Define container widget
 		super(new Grid(), CLASS_NAME);
 		
 		if (isVertical != null && isVertical) {
 			this.isVertical = isVertical;
 			this.addStyleName("vertical");
+		}
+		
+		if (isPassive != null && isPassive) {
+			this.isPassive = true;
 		}
 		
 		// Define child components
@@ -802,7 +830,7 @@ public class SliderComponent extends InteractiveConsoleComponent implements Sens
 	// ---------------------------------------------------------------------------------
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
-		SliderComponent component = new SliderComponent(entity.getVertical());
+		SliderComponent component = new SliderComponent(entity.getVertical(), entity.getPassive());
 		if (entity == null) {
 			return component;
 		}

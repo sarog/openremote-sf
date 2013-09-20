@@ -36,7 +36,6 @@ body {
 	-ms-user-drag: none;
 	-moz-user-drag: none;
 	user-drag: none;
-	cursor: pointer;
 	-webkit-tap-highlight-color:rgba(0,0,0,0);
 	-o-tap-highlight-color:rgba(0,0,0,0);
 	-ms-tap-highlight-color:rgba(0,0,0,0);
@@ -208,7 +207,6 @@ CONSOLE UNIT
 	*display: inline;
 	zoom: 1;
 */
-	cursor: pointer;
 }
 
 #consoleUnit.portrait {
@@ -269,7 +267,6 @@ CONSOLE UNIT
 }
 
 #consoleDisplay {
-	cursor: pointer;
 	border: none;
 }
 
@@ -337,6 +334,9 @@ img, button {
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
 	box-sizing: border-box;
+}
+
+.interactiveComponent {
 	cursor: pointer;
 }
 

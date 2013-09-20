@@ -993,6 +993,9 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		// Configure display
 		consoleDisplay.onAdd(width, height);
 		
+		// Force orientation to landscape
+		setOrientation("landscape");
+		
 		show();
 		
 		initialiseConsole();
