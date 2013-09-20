@@ -106,6 +106,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			setHeight("100%");
 			setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			boolean hasText = false;
+			this.addStyleName(INTERACTIVE_CLASS_NAME);
 			
 			// Check if we have text
 			if (item.getName() != null && !item.getName().equals("")) {

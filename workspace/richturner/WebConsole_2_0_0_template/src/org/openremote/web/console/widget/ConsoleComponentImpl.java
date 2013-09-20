@@ -46,6 +46,7 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 	protected List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	protected boolean handlersRegistered = false;
 	protected boolean dataBindingActive = false;
+	public static String INTERACTIVE_CLASS_NAME = "interactiveComponent"; 
 	
 	protected ConsoleComponentImpl(Widget container, String className) {
 		initWidget(container);
