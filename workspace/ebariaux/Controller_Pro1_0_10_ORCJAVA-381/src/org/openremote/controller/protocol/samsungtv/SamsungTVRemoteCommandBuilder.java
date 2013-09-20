@@ -27,6 +27,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -60,8 +61,8 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder {
    // Constructors ---------------------------------------------------------------------------------
    
 
-   public SamsungTVRemoteCommandBuilder(String samsungTVIp) {
-      this.samsungTVIp = samsungTVIp;
+   public SamsungTVRemoteCommandBuilder(Deployer deployer) {
+      this.samsungTVIp = deployer.getConfigurationProperties().get("samsungTV.address");
    }
    
    
