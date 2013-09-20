@@ -62,7 +62,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
 		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
-		
+		this.addStyleName(INTERACTIVE_CLASS_NAME);
 		label = new LabelComponent();
 		label.setVisible(true);
 		label.removeStyleName("labelComponent");
