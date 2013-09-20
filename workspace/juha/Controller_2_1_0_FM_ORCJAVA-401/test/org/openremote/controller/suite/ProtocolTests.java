@@ -23,6 +23,7 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.EventListenerTest;
+import org.openremote.controller.protocol.datetime.DateTimeCommandBuilderTest;
 
 /**
  * Test protocol support classes.
@@ -32,7 +33,8 @@ import org.openremote.controller.protocol.EventListenerTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       EventListenerTest.class
+       EventListenerTest.class,
+       DateTimeCommandBuilderTest.class
    }
 )
 public class ProtocolTests
