@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -44,6 +44,7 @@
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
+            <value>classpath:enocean.properties</value>
           </list>
       </property>
   </bean>
@@ -75,6 +76,7 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
     <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
+    <property name = "beehiveSyncing" value="${controller.performBeehiveSyncing}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
     <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
@@ -100,6 +102,13 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
+    <property name="comPort" value="${enocean.comPort}" />
+    <property name="commLayer" value="${enocean.commLayer}" />
+    <property name="serialProtocol" value="${enocean.serialProtocol}" />
+  </bean>
+
+
   <!-- TODO -->
   <bean id = "controlCommandService"
         class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
@@ -122,7 +131,9 @@
     </bean>
 
     <!-- round-robin service -->
-    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
+    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" >
+    	<property name = "roundRobinConfig" ref = "roundRobinConfig"/>
+    </bean>
     
     <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
@@ -142,6 +153,7 @@
 
       <property name = "deployer" ref="deployer"/>
       <property name = "statusCache" ref="statusCache"/>
+      <property name = "changedStatusTable" ref = "changedStatusTable"/>
     </bean>
     
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
@@ -216,6 +228,16 @@
   </bean>
 
 
+<!-- 
+Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
+The config section of the controller.xml needs to provide information about the additional protocol and the commandBuilder class.
+Additional protocols can either be added manually when editing controller.xml or the designer can create the entry when commands for that
+protocol are defined. 
+
+The entry looks like this:  <property name="protocol.zwave.classname" value="org.openremote.controller.protocol.zwave.ZWaveCommandBuilder" />
+
+The needed classes have to be provided as a jar file and copied to lib folder.
+ -->
   <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
     <constructor-arg>
       <map>
@@ -241,6 +263,8 @@
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
+        <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -276,6 +300,9 @@
 	<!-- UDPListener Command Builder -->
 	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
 	
+	<!-- rrdGraphUrl Command Builder -->
+	<bean id = "rrdGraphUrlCommandBuilder" class = "org.openremote.controller.protocol.rrdgraphurl.RrdGraphUrlCommandBuilder"/>
+
 	<!-- shellexe Command Builder -->
 	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>
 	
@@ -286,7 +313,7 @@
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
 		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
 		<constructor-arg index="1" value="${knx.ip.interface.port}" type="int" />
-		<constructor-arg index="2" value="org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus"/>
+		<constructor-arg index="2" value="org.openremote.controller.protocol.port.DatagramSocketPort"/>
 	</bean>
 
 	<!-- TCP Socket Command Builder for IP enabled devices -->
@@ -307,6 +334,10 @@
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
+
+        <!-- EnOcean Command Builder -->
+        <bean id = "enoceanCommandBuilder" class = "org.openremote.controller.protocol.enocean.EnOceanCommandBuilder"/>
+
 
   <!-- 1-wire protocol Command Builder -->
   <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
@@ -370,7 +401,9 @@
   </bean>
 
   <!-- DSC IT Security System -->
-  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder">
+    <constructor-arg value = "${dscit100.interface.password}"/>
+  </bean>
   
   <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
@@ -387,6 +420,7 @@
         <entry key = "slider" value-ref = "sliderBuilder"/>
         <entry key = "gesture" value-ref = "gestureBuilder"/>
         <entry key = "image"  value-ref = "imageBuilder"/>
+        <entry key = "colorpicker" value-ref = "colorpickerBuilder"/>
       </map>
     </property>
   </bean>
@@ -399,10 +433,26 @@
    +-->
   <bean id = "eventProcessorChain" class = "org.openremote.controller.statuscache.EventProcessorChain">
     <property name = "eventProcessors">
-      <bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    	<list>
+    		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    		<ref bean="rrd4jLogger"/>
+     		<ref bean="emonCMSLogger"/>
+    	</list>
     </property>
   </bean>
 
+  <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
+  
+  <bean id = "emonCMSLogger" class = "org.openremote.controller.statuscache.emoncms.EmonDataLogger" >
+    <property name="emonURL" value="http://emoncms.org/api/post?apikey=47d18060923b1f84dcad19f0adc90645&amp;json=" />
+    <property name="sensors">
+      <list>
+      	<value>tempSensor</value>
+      	<value>sensor2</value>
+      	<value>sensor3</value>
+      </list>
+    </property>
+  </bean>
 
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
@@ -449,6 +499,14 @@
 
   <!-- TODO -->
 	<bean id = "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+
+  <!-- TODO -->
+  <bean id = "colorpickerBuilder" class="org.openremote.controller.component.control.colorpicker.ColorPickerBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
 
     <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
