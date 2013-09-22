@@ -1,0 +1,36 @@
+package org.openremote.controller.protocol.omnilink.model;
+
+import org.openremote.controller.protocol.omnilink.OmniLinkCmd;
+
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
+
+public class AudioSource extends OmnilinkDevice {
+   private AudioSourceProperties properties;
+   private String[] audioText;
+   
+   public AudioSource(AudioSourceProperties properties) {
+      this.properties = properties;
+   }
+   public AudioSourceProperties getProperties() {
+      return properties;
+   }
+   
+   public void setProperties(AudioSourceProperties properties) {
+      this.properties = properties;
+   }
+   public String[] getAudioText() {
+      return audioText;
+   }
+   public void setAudioText(String[] audioText) {
+      this.audioText = audioText;
+   }
+   @Override
+   public void updateSensors() {
+      if (sensors.get(OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT) != null && audioText !=null ) {
+         StringBuilder sb = new StringBuilder();
+         for(String s : audioText)
+            sb.append(s).append("|");
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT).update(sb.toString());
+      }
+   }
+}
