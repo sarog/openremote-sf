@@ -85,14 +85,19 @@ public class Version20ModelBuilderTest
    */
   @Test public void testGetControllerDefinitionFileWhiteSpace() throws Exception
   {
+    String systemSpecificSeparator = File.separator;
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("/My Path");
+    cc.setResourcePath(String.format("%sMy Path", systemSpecificSeparator));
 
     File f = Version20ModelBuilder.getControllerDefinitionFile(cc);
 
+    String expectedPathString = String.format("%s%s%s%s",systemSpecificSeparator, "My Path", systemSpecificSeparator, Version20ModelBuilder.CONTROLLER_XML);
+    
+    String generatedPathString = f.toString();
+    
     Assert.assertTrue(
-        "Expected '/My Path/" + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
-        f.toString().equals("/My Path/" + Version20ModelBuilder.CONTROLLER_XML)
+        "Expected"+ systemSpecificSeparator + "'My Path"+ systemSpecificSeparator + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
+        expectedPathString.equals(generatedPathString)
     );
   }
 
@@ -104,14 +109,16 @@ public class Version20ModelBuilderTest
    */
   @Test public void testGetControllerDefinitionFileURIEncoding() throws Exception
   {
+    String systemSpecificSeparator = File.separator;
+    
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("/Test%20Path");
+    cc.setResourcePath(String.format("%s%s", systemSpecificSeparator, "Test%20Path" ));
 
     File f = Version20ModelBuilder.getControllerDefinitionFile(cc);
 
     Assert.assertTrue(
-        "Expected '/Test%20Path/" + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
-        f.toString().equals("/Test%20Path/" + Version20ModelBuilder.CONTROLLER_XML)
+        "Expected" + systemSpecificSeparator + "'Test%20Path'"+ systemSpecificSeparator + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
+        f.toString().equals(String.format("%s%s%s%s", systemSpecificSeparator, "Test%20Path", systemSpecificSeparator, Version20ModelBuilder.CONTROLLER_XML))
     );
   }
 
@@ -123,14 +130,17 @@ public class Version20ModelBuilderTest
    */
   @Test public void testGetControllerDefinitionFileURLEncoding() throws Exception
   {
+     
+    String systemSpecificSeparator = File.separator;
+    
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("/Test+Path");
+    cc.setResourcePath(String.format("%s%s", systemSpecificSeparator, "Test+Path"));
 
     File f = Version20ModelBuilder.getControllerDefinitionFile(cc);
 
     Assert.assertTrue(
-        "Expected '/Test+Path/" + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
-        f.toString().equals("/Test+Path/" + Version20ModelBuilder.CONTROLLER_XML)
+        "Expected " + systemSpecificSeparator + "'Test+Path" + systemSpecificSeparator + Version20ModelBuilder.CONTROLLER_XML + "', got : '" + f.toString() + "'",
+        f.toString().equals(String.format("%s%s%s%s", systemSpecificSeparator, "Test+Path", systemSpecificSeparator,  Version20ModelBuilder.CONTROLLER_XML))
     );
   }
 
