@@ -265,6 +265,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "omnilink"         value-ref = "omnilinkCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -358,7 +359,14 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <constructor-arg index = "1" value = "${isy99.username}"/>
     <constructor-arg index = "2" value = "${isy99.password}"/>
   </bean>
-    
+  
+  <!-- Omnilink Builder for HAI systems -->  
+  <bean id = "omnilinkCommandBuilder" class = "org.openremote.controller.protocol.omnilink.OmnilinkCommandBuilder">
+    <constructor-arg index="0" value="${omnilink.address}" />
+    <constructor-arg index="1" value="${omnilink.port}" type="int" />
+    <constructor-arg index="2" value="${omnilink.key1}" />
+    <constructor-arg index="3" value="${omnilink.key2}" />
+  </bean>
   
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
