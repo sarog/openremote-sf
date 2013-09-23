@@ -27,10 +27,16 @@ public class AudioSource extends OmnilinkDevice {
    @Override
    public void updateSensors() {
       if (sensors.get(OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT) != null && audioText !=null ) {
-         StringBuilder sb = new StringBuilder();
-         for(String s : audioText)
-            sb.append(s).append("|");
-         sensors.get(OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT).update(sb.toString());
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT).update(formatAudioText());
       }
+   }
+   
+   public String formatAudioText(){
+      StringBuilder sb = new StringBuilder();
+      for(String s : audioText)
+         sb.append(s).append("|");
+      if(sb.length() == 0)
+         sb.append(" ");
+      return sb.toString();
    }
 }

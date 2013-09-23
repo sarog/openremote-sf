@@ -61,7 +61,6 @@ public class OmnilinkClient extends Thread {
    ConcurrentHashMap<Integer, ButtonProperties> buttons;
    ConcurrentHashMap<Integer, AudioZone> audioZones;
    ConcurrentHashMap<Integer, AudioSource> audioSources;
-   ConcurrentHashMap<Integer, String[]> audioSourcesText;
 
    
    private Connection c;
@@ -85,7 +84,6 @@ public class OmnilinkClient extends Thread {
       buttons = new ConcurrentHashMap<Integer, ButtonProperties>();
       audioZones = new ConcurrentHashMap<Integer, AudioZone>();
       audioSources = new ConcurrentHashMap<Integer, AudioSource>();
-      audioSourcesText = new ConcurrentHashMap<Integer, String[]>();
       start();
    }
    
@@ -252,17 +250,19 @@ public class OmnilinkClient extends Thread {
                 * notifications
                 */
                c.enableNotifications();
-              
+               
+               //audio sources are not pushed, just load all of them here
+               loadAudioSources();
+
                loaded = true;
+               
                while (running && c.connected()) {
                   /*
                    * Audio source text is not pushed in real time, so we poll 
                    * for it
                    */
-                  if (updateAudioSourceTexts()) {
-                     
-                     //update sensors 
-                  }
+                  updateAudioSourceTexts();
+                  
                   try {
                      synchronized (audioUpdateLock) {
                         audioUpdateLock.wait(5000);
@@ -354,6 +354,9 @@ public class OmnilinkClient extends Thread {
             AudioZoneProperties properties = readAudioZoneProperties(number);
             if(properties != null){
                az = new AudioZone(properties);
+               AudioSource src = audioSources.get(properties.getSource());
+               if(src !=null)
+                  az.setAudioSourceText(src.formatAudioText());
                audioZones.put(new Integer(number), az);
             }
          }
@@ -587,42 +590,45 @@ public class OmnilinkClient extends Thread {
 //
 //   }
 //
-//   private void loadAudioSources() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AUDIO_SOURCE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         AudioSourceProperties o = ((AudioSourceProperties) m);
-//         objnum = ((ObjectProperties) m).getNumber();
-//         Vector<String> text = new Vector<String>();
-//         int pos = 0;
-//         try {
-//            while ((m = c.reqAudioSourceStatus(o.getNumber(), pos)).getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
-//               AudioSourceStatus a = (AudioSourceStatus) m;
-//               log.info(a.toString());
-//               text.add(a.getSourceData());
-//               pos = a.getPosition();
-//            }
-//         } catch (Exception e) {
-//            log.error("", e);
-//            log.info("Bug in audio source code, continuing");
-//         }
-//         audioSources.put(new Integer(o.getNumber()), new AudioSource(o));
-//         audioSourcesText.put(new Integer(o.getNumber()), (String[]) text.toArray(new String[0]));
-//
-//      }
-//
-//   }
-//
-   private boolean updateAudioSourceTexts() throws IOException, OmniNotConnectedException,
+   private void loadAudioSources() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
+         OmniUnknownMessageTypeException {
+      int objnum = 0;
+      Message m;
+      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AUDIO_SOURCE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
+            ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+         log.info(m.toString());
+         AudioSourceProperties o = ((AudioSourceProperties) m);
+         objnum = ((ObjectProperties) m).getNumber();
+         Vector<String> text = new Vector<String>();
+         int pos = 0;
+         try {
+            while ((m = c.reqAudioSourceStatus(o.getNumber(), pos)).getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
+               AudioSourceStatus a = (AudioSourceStatus) m;
+               log.info(a.toString());
+               text.add(a.getSourceData());
+               pos = a.getPosition();
+            }
+         } catch (Exception e) {
+            log.error("", e);
+            log.info("Bug in audio source code, continuing");
+         }
+         AudioSource as = new AudioSource(o);
+         as.setAudioText((String[]) text.toArray(new String[0]));
+         audioSources.put(new Integer(o.getNumber()), as);
+         updateAudioZoneText(as);
+
+      }
+
+   }
+
+   private void updateAudioSourceTexts() throws IOException, OmniNotConnectedException,
          OmniInvalidResponseException, OmniUnknownMessageTypeException {
       Iterator<Integer> it = audioSources.keySet().iterator();
       while (it.hasNext()) {
          Integer source = it.next();
          int pos = 0;
          Message m;
+         boolean updated = false;
          Vector<String> text = new Vector<String>();
          while ((m = c.reqAudioSourceStatus(source.intValue(), pos)).getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
             AudioSourceStatus a = (AudioSourceStatus) m;
@@ -630,23 +636,43 @@ public class OmnilinkClient extends Thread {
             text.add(a.getSourceData());
             pos = a.getPosition();
          }
-         String text2[] = audioSourcesText.get(source);
+         
+         AudioSource as = audioSources.get(source);
+         
+         String text2[] = as.getAudioText();
+         
          if (text.size() == text2.length) {
             for (int i = 0; i < text.size(); i++) {
                if (!text2[i].equals((String) text.get(i))) {
-                  AudioSource o = audioSources.get(source);
-                  o.setAudioText( (String[]) text.toArray(new String[0]));
-                  return true;
+                  updated = true;
                }
             }
          } else {
-            AudioSource o = audioSources.get(source);
-            o.setAudioText( (String[]) text.toArray(new String[0]));
-            o.updateSensors();
-            return true;
+            updated = true;
+         }
+         
+         if(updated){
+            as.setAudioText((String[]) text.toArray(new String[0]));
+            as.updateSensors();
+            updateAudioZoneText(as);
          }
       }
-      return false;
+   }
+   
+   /**
+    * This formats the audio source text for zones as a helper for openrmote designers
+    * @param as
+    */
+   private void updateAudioZoneText(AudioSource as){
+      System.out.println("updateAudioZoneText  text: " + as.formatAudioText());
+      for(AudioZone az : audioZones.values()){
+         if(az != null && az.getProperties().getSource() == as.getProperties().getNumber()){
+            log.info("STATUS_AUDIO_ZONE updating sensor for zone " + az.getProperties().getNumber());
+            System.out.println("updateAudioSourceTexts updating zone " + az.getProperties().getNumber() + " with text " + as.formatAudioText());
+            az.setAudioSourceText(as.formatAudioText());
+            az.updateSensors();
+         }
+      }
    }
 //
 //   private Unit updateUnit(UnitStatus s) throws IOException, OmniNotConnectedException,
