@@ -75,6 +75,7 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
          case SENSOR_AUDIOZONE_SOURCE:
          case SENSOR_AUDIOZONE_VOLUME:
          case SENSOR_AUDIOZONE_MUTE:
+         case SENSOR_AUDIOZONE_TEXT:
             logger.info("calling addSensor for command " + command.toString() + " with number " + parameter2); 
             client.addSensor(ObjectProperties.OBJ_TYPE_AUDIO_ZONE, parameter2, sensor, command);
             break;
