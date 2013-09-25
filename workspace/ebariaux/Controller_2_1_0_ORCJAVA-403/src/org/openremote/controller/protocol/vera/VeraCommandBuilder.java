@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
@@ -63,11 +64,15 @@ public class VeraCommandBuilder implements CommandBuilder {
       this.deployer = deployer;
       Map<String, String> properties = this.deployer.getConfigurationProperties();
       String address = properties.get("vera.address");
-      this.client = new VeraClient(address);
-      try {
-         startVeraClient();
-      } catch (Exception e) {
-         logger.error("Could not start VeraClient: ", e);
+      if (!StringUtils.isEmpty(address)) {
+         this.client = new VeraClient(address);
+         try {
+            startVeraClient();
+         } catch (Exception e) {
+            logger.error("Could not start VeraClient: ", e);
+         }
+      } else {
+         logger.info("No Vera address configured, device auto-discovery won't be possible.");
       }
    }
 
