@@ -42,7 +42,7 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder
     {
       System.out.println(
           "\n\n" +
-          "*****************************************************************\n\n" +
+          "******************************************************************************\n\n" +
           "  The license of some of the source code used to support \n" +
           "  Samsung TV IP control prevents its distribution in OpenRemote Professional. \n" +
           "" +
@@ -50,7 +50,7 @@ public class SamsungTVRemoteCommandBuilder implements CommandBuilder
           "  http://sourceforge.net/projects/openremote/files/samsung and follow the \n" +
           "  installation instructions at http://www.openremote.org/x/-4YoAQ \n\n" +
           "" +
-          "*****************************************************************\n\n"
+          "******************************************************************************\n\n"
       );
 
       hasAnnounced = true;
