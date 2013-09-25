@@ -1,0 +1,11 @@
+//created on: Sep 23, 2013
+package org.openremote.controller.statuscache.rules
+import org.openremote.controller.protocol.*;
+
+rule "TestRuleFiring"
+when
+	Event()
+then
+System.out.println( "Test drool fired" );
+end
+
