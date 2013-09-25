@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ OpenRemote, the Home of the Digital Home.
+ Copyright 2008-2013, OpenRemote Inc.
+
+ See the contributors.txt file in the distribution for a
+ full listing of individual contributors.
+
+ This is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 3.0 of
+ the License, or (at your option) any later version.
+
+ This software is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public
+ License along with this software; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+ -->
+
+<!--
+ |  Micasaverde Vera protocol configuration for OpenRemote Designer.
+ |
+ |  Author: Marcus Redeker
+ +-->
+<openremote xmlns = "http://www.openremote.org"
+    xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation = "http://www.openremote.org protocol.xsd">
+
+    <protocol displayName = "Vera" tagName = "vera">
+
+        <!--
+         | Mandatory device parameter for vera protocol.
+         +-->
+        <attr name = "device" label = "DeviceId">
+            <validations>
+                <allowBlank>false</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Mandatory command parameter
+         +-->
+        <attr name = "command" label = "Command" options="GET_COMMENT,GET_BATTERY_LEVEL,ON,OFF,GET_STATUS,SET_LEVEL,GET_LEVEL,GET_TEMPERATURE,GET_HUMIDITY,GET_WATTS,GET_CONSUMPTION,GET_ARMED,GET_TRIPPED,SET_HEAT_SETPOINT,GET_HEAT_SETPOINT,GENERIC_ACTION,GENERIC_STATUS" tooltipMessage="Command to use">
+            <validations>
+                <allowBlank>false</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Optional additional command value
+         +-->
+        <attr name = "commandValue" label = "Value" tooltipMessage="Additional command value e.g. 'Normal' to set heating mode">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Optional statusAttribute
+         +-->
+        <attr name = "statusAttribute" label = "Status attribute" tooltipMessage="The statusAttribute is needed for GENERIC_STATUS commands which read the value from the attribute">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Optional serviceId
+         +-->
+        <attr name = "serviceId" label = "serviceId" tooltipMessage="The serviceId is needed for GENERIC_ACTION commands to assemble command URL">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Optional action
+         +-->
+        <attr name = "action" label = "action" tooltipMessage="The action is needed for GENERIC_ACTION commands to assemble command URL">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+
+        <!--
+         |  Optional variable
+         +-->
+        <attr name = "variable" label = "variable" tooltipMessage="The variable is needed for GENERIC_ACTION commands to assemble command URL">
+            <validations>
+                <allowBlank>true</allowBlank>
+            </validations>
+        </attr>
+
+    </protocol>
+
+</openremote>
+
