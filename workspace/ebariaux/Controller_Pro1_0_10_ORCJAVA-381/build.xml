@@ -49,10 +49,12 @@
    | Top level directories in the project source structure.
    +-->
   <property name = "src.dir" value = "src"/>
+  <property name = "samsungtv-src.dir" value = "samsungtv-src"/>
   <property name = "test.dir" value = "test"/>
   <property name = "lib.dir" value = "lib"/>
   <property name = "build.dir" value = "build"/>
   <property name = "classes.dir" value = "${build.dir}/classes"/>
+  <property name = "samsungtv-classes.dir" value = "${build.dir}/samsungtv-classes"/>
   <property name = "output.dir" value = "output"/>
   <property name = "output.controller.dir" value = "${output.dir}/OpenRemote-Controller-${version}/webapps/controller"/>
   <property name = "runtime.dir" value = "runtime/apache-tomcat-6.0.18"/>
@@ -301,6 +303,16 @@
            debug = "${build.debug}" encoding = "${default.javac.encoding}">
       <src path = "${src.dir}"/>
     </javac>
+
+    <!--
+     | Compile samsungtv protocol specific classes
+     +-->
+    <mkdir dir = "${samsungtv-classes.dir}"/>
+ 
+    <javac destdir = "${samsungtv-classes.dir}" classpathref = "compile.path.id"
+           debug = "${build.debug}" encoding = "${default.javac.encoding}">
+      <src path = "${samsungtv-src.dir}"/>
+    </javac>
   </target>
 
 
@@ -377,6 +389,13 @@
     </copy>
 
     <!--
+     | Create a separate jar with the "dummy" samsungtv protocol, packaged with controller
+     +-->
+    <jar destfile = "${output.controller.dir}/WEB-INF/lib/samsungtv.jar" basedir = "${classes.dir}">
+        <include name = "org/openremote/controller/protocol/samsungtv/**"/>
+    </jar>
+
+    <!--
      | Zip it up...
      +-->
     <zip basedir = "${output.dir}"
@@ -386,9 +405,9 @@
     </zip> 
 
     <!--
-     | Create a separate jar with the samsungtv protocol
+     | Create a separate jar with the "real" samsungtv protocol
      +-->
-    <jar destfile= "${output.dir}/samsungtv.jar" basedir = "${classes.dir}">
+    <jar destfile= "${output.dir}/samsungtv.jar" basedir = "${samsungtv-classes.dir}">
         <include name = "org/openremote/controller/protocol/samsungtv/**"/>
     </jar>
 
