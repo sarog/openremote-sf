@@ -60,7 +60,7 @@ public class Isy99CommandBuilder implements CommandBuilder
   private String hostname;
   private String username;
   private String password;
-  private Isy99StatusReader StatusReader;
+  private Isy99StatusReader statusReader;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -74,7 +74,6 @@ public class Isy99CommandBuilder implements CommandBuilder
     this.hostname = hostname;
     this.username = username;
     this.password = password;
-    this.StatusReader = new Isy99StatusReader(hostname, username, password);
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -122,6 +121,9 @@ public class Isy99CommandBuilder implements CommandBuilder
     String address = null;
     String command = null;
 
+    // StatusReader is only created when a command is built, indicating the protocol is used
+    startStatusReaderIfRequired();
+    
     @SuppressWarnings("unchecked")
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
         element.getNamespace());
@@ -163,14 +165,24 @@ public class Isy99CommandBuilder implements CommandBuilder
 
     if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new Isy99Command(hostname, username, password, address, command, StatusReader);
+      cmd = new Isy99Command(hostname, username, password, address, command, statusReader);
     }
     else
     {
-      cmd = new Isy99Command(hostname, username, password, address, command, commandParam, StatusReader);
+      cmd = new Isy99Command(hostname, username, password, address, command, commandParam, statusReader);
     }
 
     return cmd; 
+  }
+  
+  /**
+   * Creates the StatusReader object, if it does not exist already.
+   * This will start a continuous poll to the ISY99 device.
+   */
+  private synchronized void startStatusReaderIfRequired() {
+     if (statusReader == null) {
+        statusReader = new Isy99StatusReader(hostname, username, password);
+     }
   }
 
 }
