@@ -95,6 +95,12 @@
         </listener-class>
     </listener>
     
+    <listener>
+      <listener-class>
+        org.openremote.modeler.listener.ExclusiveAccountSessionListener
+      </listener-class>
+    </listener>
+    
     <filter>
 		<filter-name>userTimeoutFilter</filter-name>
 		<filter-class>
