@@ -317,6 +317,7 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
+      final MenuItem omnilinkImportMenuItem = omnilinkImportMenuItem();
 
       final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
@@ -327,6 +328,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
+      newMenu.add(omnilinkImportMenuItem);
 
      //  TODO:
      //     Enable once the IR Import service has been deployed.   [JPL]
@@ -490,6 +492,19 @@ public class DevicePanel extends ContentPanel {
       });
       return importCommandItem;
    }
+   
+   
+   private MenuItem omnilinkImportMenuItem() {
+	      MenuItem importCommandItem = new MenuItem("Import Omnilink Devices");
+	      importCommandItem.setIcon(icon.importFromDB());
+	      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+	         public void componentSelected(MenuEvent ce) {
+	        	 importOmnilinkCommand();
+	         }
+
+	      });
+	      return importCommandItem;
+	   }
 
    /**
     * Creates the device command.
@@ -939,6 +954,15 @@ public class DevicePanel extends ContentPanel {
        importWizard.center();
      }
    }
+   
+   private void importOmnilinkCommand() {    
+	     //final BeanModel deviceModel = getDeviceModel();
+	    // if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {       
+	       OmnilinkWizardWindow importWizard = new OmnilinkWizardWindow();
+	       importWizard.show();
+	       importWizard.center();
+	    // }
+	   }
    
    public TreePanel<BeanModel> getTree() {
       return tree;
