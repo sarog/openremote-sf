@@ -98,6 +98,7 @@
   <bean id="importKNXConfigActionHandler" class="org.openremote.modeler.server.knx.ImportKNXConfigActionHandler"></bean>
   <bean id="importLIRCCommandsActionHandler" class="org.openremote.modeler.server.lirc.ImportLIRCCommandsActionHandler"></bean>
   <bean id="generateIRCommandsActionHandler" class="org.openremote.modeler.server.ir.GenerateIRCommandsActionHandler"></bean>
+  <bean id="createOmnilinkDevicesActionHandler" class="org.openremote.modeler.server.omnilink.CreateOmnilinkDevicesActionHandler"></bean>
         
   <bean id="registry" class="net.customware.gwt.dispatch.server.DefaultActionHandlerRegistry">
     <property name="actionHandlers">
@@ -107,6 +108,7 @@
             <ref bean="importKNXConfigActionHandler"/>
             <ref bean="importLIRCCommandsActionHandler"/>
             <ref bean="generateIRCommandsActionHandler"/>
+            <ref bean="createOmnilinkDevicesActionHandler"/>
         </list>
     </property>
   </bean>
