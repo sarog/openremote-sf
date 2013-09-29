@@ -67,13 +67,15 @@ public enum OmniLinkCmd {
    CMD_ENERGY_SAVER_OFF(64),
    CMD_ENERGY_SAVER_ON(65),
    
-   CMD_THERMO_SET_HEAT_POINT(66),
-   CMD_THERMO_SET_COOL_POINT(67),
-   CMD_THERMO_SET_SYSTEM_MODE(68),
-   CMD_THERMO_SET_FAN_MODE(69),
-   CMD_THERMO_RAISE_LOWER_HEAT(71),
-   CMD_THERMO_RAISE_LOWER_COOL(71),
-   CMD_THERMO_SET_HOLD_MODE(70),
+   CMD_THERMO_SET_HEAT_POINTC(66),
+   CMD_THERMO_SET_COOL_POINTC(67),
+   CMD_THERMO_SET_HEAT_POINTF(68),
+   CMD_THERMO_SET_COOL_POINTF(69),
+   CMD_THERMO_SET_SYSTEM_MODE(70),
+   CMD_THERMO_SET_FAN_MODE(71),
+   CMD_THERMO_RAISE_LOWER_HEAT(72),
+   CMD_THERMO_RAISE_LOWER_COOL(73),
+   CMD_THERMO_SET_HOLD_MODE(74),
    
    CMD_MESSAGE_SHOW_MESSAGE_WITH_BEEP_AND_LED(80),
    CMD_MESSAGE_SHOW_MESSAGE_WITH_BEEP_OR_LED(86),
@@ -86,10 +88,11 @@ public enum OmniLinkCmd {
    CMD_CONSOLE_ENABLE_DISABLE_BEEPER(102),
    CMD_CONSOLE_BEEP(102),
    
-   CMD_AUDIO_ZONE_SET_ON_AND_MUTE(112),
-   CMD_AUDIO_ZONE_SET_VOLUME(113),
-   CMD_AUDIO_ZONE_SET_SOURCE(114),
-   CMD_AUDIO_ZONE_SELECT_KEY(115),
+   CMD_AUDIO_ZONE_SET_ON(112),
+   CMD_AUDIO_ZONE_SET_MUTE(113),
+   CMD_AUDIO_ZONE_SET_VOLUME(114),
+   CMD_AUDIO_ZONE_SET_SOURCE(115),
+   CMD_AUDIO_ZONE_SELECT_KEY(116),
    
    SENSOR_UNIT_POWER(1001),
    SENSOR_UNIT_LEVEL(1002),
@@ -133,5 +136,12 @@ public enum OmniLinkCmd {
          if(name.equals(command.toString()))
             return command;
       return null;
+   }
+   
+   public static String toList(){
+      StringBuilder sb = new StringBuilder();
+      for (OmniLinkCmd command : OmniLinkCmd.values())
+         sb.append(command.toString()).append(",");
+      return sb.toString();
    }
 }

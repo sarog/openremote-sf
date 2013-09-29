@@ -5,6 +5,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
 
+import com.digitaldan.jomnilinkII.MessageUtils;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 
 public class OmniLinkCommand implements EventListener, ExecutableCommand{
@@ -26,6 +27,19 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
    @Override
    public void send() {
       try {
+         switch(command){
+         case CMD_THERMO_SET_COOL_POINTC:
+         case CMD_THERMO_SET_HEAT_POINTC:
+            parameter1 = MessageUtils.CToOmni(parameter1);
+            break;
+         case CMD_THERMO_SET_COOL_POINTF:
+         case CMD_THERMO_SET_HEAT_POINTF:
+            parameter1 = MessageUtils.FtoOmni(parameter1);
+            break;  
+         case CMD_AUDIO_ZONE_SET_MUTE:
+            parameter1 += 2;
+            break;
+         }
          logger.info("Sending command " + command.toString() 
                + "(" + command.getNumber() + ")" + " with param1: " 
                + parameter1 + " and param2: " + parameter2);
