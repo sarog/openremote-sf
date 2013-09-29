@@ -17,16 +17,15 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.datalogger.data;
+package org.openremote.datalogger.model;
 
-import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 /**
  *
@@ -35,29 +34,17 @@ import javax.xml.bind.annotation.XmlValue;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="value")
-public class DataPoint {
-	@XmlAttribute
-	private Date at;
-	
-	@XmlValue
-	private String val;
+@XmlRootElement(name="eeml")
+public class Sensors {
+	@XmlElementWrapper(name = "environment")
+	@XmlElement(name="data")
+	private List<Sensor> sensors;
 
-	public String getVal() {
-		return val;
+	public List<Sensor> getSensors() {
+		return sensors;
 	}
 
-	public void setVal(String val) {
-		this.val = val;
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
 	}
-
-	public Date getAt() {
-		return at;
-	}
-
-	public void setAt(Date at) {
-		this.at = at;
-	}
-	
-
 }
