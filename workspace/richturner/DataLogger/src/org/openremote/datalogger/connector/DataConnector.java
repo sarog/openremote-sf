@@ -17,12 +17,15 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.datalogger.rest;
+package org.openremote.datalogger.connector;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.openremote.datalogger.exception.DataConnectorException;
+import org.openremote.datalogger.exception.DataSecurityException;
+import org.openremote.datalogger.model.SensorValue;
 
 /**
  *
@@ -30,43 +33,16 @@ import org.openremote.datalogger.exception.DataConnectorException;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-public class HibernateDataConnector implements DataConnector {
-
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.rest.DataConnector#init()
-	 */
-	@Override
-	public boolean init() {
-		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.rest.DataConnector#setCurrentFeedValue(java.lang.String, java.lang.Double)
-	 */
-	@Override
-	public void setFeedCurrentValue(String apiKey, String feedId, String value) throws DataConnectorException {
-
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.rest.DataConnector#addFeedValues(java.lang.String, java.util.HashMap)
-	 */
-	@Override
-	public void addFeedValues(String apiKey, String feedId, HashMap<Date, String> values) throws DataConnectorException {
-
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.rest.DataConnector#finish()
-	 */
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-
-	}
-
+public interface DataConnector {
+	// Initialise the data connector	
+	void init() throws DataConnectorException;
+	
+	// Set the current value for a particular sensor ID and API Key should also add a sensor value record to the sensor values
+	void setSensorCurrentValue(String apiKey, String sensorName, String currentValue) throws DataSecurityException, DataConnectorException;
+	
+	// Set multiple values for a particular sensor ID and API Key
+	void addSensorValues(String apiKey, String sensorName, Set<SensorValue> values, String currentValue) throws DataSecurityException, DataConnectorException;
+	
+	// Cleanup the data connector
+	void destroy();
 }

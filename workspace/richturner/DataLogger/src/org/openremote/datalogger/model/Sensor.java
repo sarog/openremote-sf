@@ -17,18 +17,20 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.datalogger.data;
+package org.openremote.datalogger.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.persistence.*;
+
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -38,31 +40,72 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="data")
-public class Data {
-	@XmlAttribute
-	private String id;
+@Entity
+@Table(name = "sensors")
+public class Sensor {
+	@XmlTransient
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id")
+	private Long id;
+	
+	@XmlAttribute(name="id")
+	private String name;
 	
 	@XmlElementWrapper(name = "datapoints")
 	@XmlElement(name="value")
-	private List<DataPoint> dataPoints;
+	@Transient
+	private List<SensorValue> newSensorValues;
+	
+	@XmlTransient
+	@OneToMany(mappedBy="sensor")
+	private Set<SensorValue> sensorValues;
 	
 	@XmlElement(name="current_value")
 	private String currentValue;
+	
+	@ManyToOne
+	@JoinColumn(name="userId", nullable = false)
+	private User user;
+	
+	public User getUser() {
+		return user;
+	}
 
-	public String getId() {
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public List<DataPoint> getDataPoints() {
-		return dataPoints;
+	public String getName() {
+		return name;
 	}
 
-	public void setValues(ArrayList<DataPoint> dataPoints) {
-		this.dataPoints = dataPoints;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<SensorValue> getNewSensorValues() {
+		return newSensorValues;
+	}
+
+	public void setNewSensorValues(List<SensorValue> newSensorValues) {
+		this.newSensorValues = newSensorValues;
+	}
+
+	public Set<SensorValue> getSensorValues() {
+		return sensorValues;
+	}
+
+	public void setSensorValues(Set<SensorValue> sensorValues) {
+		this.sensorValues = sensorValues;
 	}
 
 	public String getCurrentValue() {

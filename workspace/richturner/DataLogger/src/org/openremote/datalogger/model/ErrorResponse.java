@@ -17,14 +17,10 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.datalogger.data;
-
-import java.util.List;
+package org.openremote.datalogger.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -33,18 +29,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
+@XmlRootElement(name = "error")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="eeml")
-public class Eeml {
-	@XmlElementWrapper(name = "environment")
-	@XmlElement(name="data")
-	private List<Data> datas;
+public class ErrorResponse extends WarningResponse {
+	private String exception;
 
-	public List<Data> getDatas() {
-		return datas;
+	public String getException() {
+		return exception;
 	}
 
-	public void setDatas(List<Data> datas) {
-		this.datas = datas;
+	public void setException(String exception) {
+		this.exception = exception;
 	}
+	
 }

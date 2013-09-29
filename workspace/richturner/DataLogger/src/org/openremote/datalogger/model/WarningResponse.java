@@ -17,12 +17,11 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.datalogger.rest;
+package org.openremote.datalogger.model;
 
-import java.util.Date;
-import java.util.HashMap;
-
-import org.openremote.datalogger.exception.DataConnectorException;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -30,16 +29,17 @@ import org.openremote.datalogger.exception.DataConnectorException;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-public interface DataConnector {
-	// Initialise the data connector	
-	boolean init();
+@XmlRootElement(name = "warning")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class WarningResponse {
 	
-	// Set the current value for a particular feed ID and API Key
-	void setFeedCurrentValue(String apiKey, String feedId, String value) throws DataConnectorException;
+	private String message;
 	
-	// Set multiple values for a particular feed ID and API Key
-	void addFeedValues(String apiKey, String feedId, HashMap<Date, String> values) throws DataConnectorException;
-	
-	// Cleanup the data connector
-	void destroy();
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

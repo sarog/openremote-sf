@@ -25,18 +25,33 @@ package org.openremote.datalogger.exception;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-public class DataConnectorException extends Exception {
-	private static final long serialVersionUID = -4987485050486368838L;
+public class DataSecurityException extends Exception {
 
-	public DataConnectorException(String msg) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6866137482159742864L;
+
+	/**
+	 * @param msg
+	 */
+	public DataSecurityException(String msg) {
 		super(msg);
+		// TODO Auto-generated constructor stub
 	}
 	
-	public DataConnectorException(String msg, Exception e) {
+	/**
+	 * @param msg
+	 * @param e
+	 */
+	public DataSecurityException(String msg, Exception e) {
 		super(msg, e);
+		// TODO Auto-generated constructor stub
 	}
-	
-	public DataConnectorException(Throwable e) {
+
+
+	public DataSecurityException(Throwable e) {
 		super(e);
+	// TODO Auto-generated constructor stub
 	}
 }
