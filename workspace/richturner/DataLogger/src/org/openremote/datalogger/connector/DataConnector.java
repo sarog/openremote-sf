@@ -22,7 +22,6 @@ package org.openremote.datalogger.connector;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
-
 import org.openremote.datalogger.exception.DataConnectorException;
 import org.openremote.datalogger.exception.DataSecurityException;
 import org.openremote.datalogger.model.SensorValue;
@@ -42,6 +41,8 @@ public interface DataConnector {
 	
 	// Set multiple values for a particular sensor ID and API Key
 	void addSensorValues(String apiKey, String sensorName, Set<SensorValue> values, String currentValue) throws DataSecurityException, DataConnectorException;
+	
+	float getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException;
 	
 	// Cleanup the data connector
 	void destroy();
