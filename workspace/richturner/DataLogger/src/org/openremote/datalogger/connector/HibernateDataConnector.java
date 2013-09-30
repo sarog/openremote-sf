@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -103,8 +104,7 @@ public class HibernateDataConnector implements DataConnector {
 			Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
 			sCriteria.select(sensorRoot);
 			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName));
-			Sensor sensor;
-			
+			Sensor sensor;			
 			
 			EntityTransaction transaction = em.getTransaction();
 			transaction.begin();
@@ -153,6 +153,56 @@ public class HibernateDataConnector implements DataConnector {
 	@Override
 	public void destroy() {
 		// Nothing to do here
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openremote.datalogger.connector.DataConnector#getAverageSensorValue(java.lang.String, java.lang.String, java.util.Date, java.util.Date)
+	 */
+	@Override
+	public float getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException {
+		if (apiKey == null || apiKey.isEmpty()) {
+			throw new DataSecurityException("No API Key provided");
+		}
+		
+		if (sensorName == null || sensorName.isEmpty()) {
+			throw new DataConnectorException("No Sensor name provided");
+		}
+		
+		EntityManager em = EMF.createEntityManager();
+		
+		try {
+			CriteriaBuilder builder = em.getCriteriaBuilder();
+			
+			// Get the user for this apiKey
+			CriteriaQuery<User> uCriteria = builder.createQuery(User.class);
+			Root<User> userRoot = uCriteria.from(User.class);
+			uCriteria.select(userRoot);
+			uCriteria.where(
+					builder.equal(userRoot.get("readKey"), apiKey),
+					builder.equal(userRoot.get("status"), true)
+					);
+			User user;
+					
+			try {
+				user = em.createQuery(uCriteria).getSingleResult();
+			} catch (NoResultException e) {
+				throw new DataSecurityException("Invalid API Key provided");
+			}
+			
+			
+			EntityTransaction transaction = em.getTransaction();
+			//transaction.begin();
+			
+			Query query = em.createQuery("SELECT AVG(value) FROM " +
+					"( SELECT cast(value as float)	" +
+						"FROM ensorValues " +
+						"WHERE timestamp >= '2013-09-28T00:00:00Z' AND timestamp <= '2013-09-30T00:00:00Z' AND sensorId = 1) RangeValues");
+			return (float)query.getSingleResult();			
+		} catch (Exception e) {
+			throw new DataConnectorException(e);
+		} finally {
+			em.close();	
+		}	
 	}
 
 }

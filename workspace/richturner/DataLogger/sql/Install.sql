@@ -12,4 +12,4 @@ alter table sensorValues add constraint FK_hhj4hhb43wmpouafayktt3dyu foreign key
 alter table sensors add constraint FK_o0ph7r6o86us5cj4djxuq3htf foreign key (userId) references dataUsers;
 
 -- Add a test user for now called openremote with pre-defined md5 hash API Key
-INSERT INTO datausers(username, status, readKey, writeKey) VALUES ('openremote', true, '6fccf8cf3c864de0c857bbb3aad61a62', '6fccf8cf3c864de0c857bbb3aad61a62');
+INSERT INTO dataUsers(username, status, readKey, writeKey) VALUES ('openremote', true, '6fccf8cf3c864de0c857bbb3aad61a62', '6fccf8cf3c864de0c857bbb3aad61a62');

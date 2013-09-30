@@ -3,6 +3,8 @@ package org.openremote.datalogger.rest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import org.openremote.datalogger.connector.DataConnector;
 import org.openremote.datalogger.connector.HibernateDataConnector;
 import org.openremote.datalogger.exception.*;
 import org.openremote.datalogger.model.*;
-import org.openremote.datalogger.model.ErrorResponse;
 
 
 /**
@@ -56,16 +57,92 @@ public class RESTAPI extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// This is a request to get data
+		initialiseResponse(response, "application/xml");
 		
 		// Get API Key
 		String apiKey = request.getHeader("X-ApiKey");
+		String sensorName = request.getParameter("sensorName");
+		String intervalStr = request.getParameter("interval");
+		String intervalUnitsStr = request.getParameter("intervalUnits");
+		String from = request.getParameter("from");
+		String to = request.getParameter("to");
+
+		Date fromDate = null, toDate = new Date();
 		
-		response.getWriter().print("GET DATA");
-		initialiseResponse(response, "application/xml");
+		if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
+			// Look for interval
+			if (intervalStr == null || intervalStr.isEmpty()) {
+				doResponse(response, ResponseType.WARNING, new Exception("Either interval or from / to parameters must be set"));
+				return;
+			}
+			
+			Long interval = null;
+			
+			// Check interval parameter
+			try {
+				interval = Long.parseLong(intervalStr);
+			} catch (NumberFormatException e) {
+				doResponse(response, ResponseType.WARNING, new Exception("Interval must be an integer"));
+				return;
+			}
+
+			// Check interval units
+			if (intervalUnitsStr == null || intervalUnitsStr.isEmpty()) {
+				intervalUnitsStr = "s";
+			}
+			
+			switch (intervalUnitsStr.toLowerCase()) {
+				case "s":
+					interval = interval*1000;
+					break;
+				case "m":
+					interval = interval*60000;
+					break;
+				case "h":
+					interval = interval*3600000;
+					break;
+				default:
+					doResponse(response, ResponseType.WARNING, new Exception("Invalid interval units must be either s (seconds), m (minutes) or h (hours)"));
+					return;
+			}
+			
+			fromDate = new Date(System.currentTimeMillis() - interval);
+		} else {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat();
+				toDate = formatter.parse(to);
+				fromDate = formatter.parse(from);
+			} catch (ParseException e) {
+				doResponse(response, ResponseType.WARNING, new Exception("Invalid from or to date values"));
+				return;
+			}
+		}
+		
+		if (fromDate == null || toDate == null) {
+			return;
+		}
+		
+		try {
+			Float averageValue = connector.getAverageSensorValue(apiKey, sensorName, fromDate, toDate);
+			SensorOutputValue sensorOutput = new SensorOutputValue();
+			sensorOutput.setName(sensorName);
+			sensorOutput.setValue(averageValue.toString());
+			JAXBContext jaxbContext = JAXBContext.newInstance(SensorOutputValue.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+			jaxbMarshaller.marshal(sensorOutput, response.getOutputStream());			
+			// Just use generic error response for now 
+		} catch (JAXBException e) {
+			doResponse(response, ResponseType.ERROR, e);
+		} catch (DataSecurityException e) {
+			doResponse(response, ResponseType.WARNING, e);
+		} catch (DataConnectorException e) {
+			doResponse(response, ResponseType.ERROR, e);
+		}
 	}
 
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// This is a request to set data so process the request data
+		initialiseResponse(response, "application/xml");
 		
 		// Get API Key
 		String apiKey = request.getHeader("X-ApiKey");
@@ -83,10 +160,7 @@ public class RESTAPI extends HttpServlet {
 					}
 				}
 			}
-			
-/*			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			jaxbMarshaller.marshal(data, response.getOutputStream());*/
-			
+						
 			response.setStatus(200);
 			
 			// Just use generic error response for now 
