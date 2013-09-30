@@ -56,7 +56,7 @@ public class OmnilinkClient extends Thread {
    ConcurrentHashMap<Integer, Thermostat> thermos;
    ConcurrentHashMap<Integer, Zone> zones;
    ConcurrentHashMap<Integer, Area> areas;
-   ConcurrentHashMap<Integer, CodeProperties> codes;
+   //ConcurrentHashMap<Integer, CodeProperties> codes;
    ConcurrentHashMap<Integer, Aux> auxs;
    ConcurrentHashMap<Integer, ButtonProperties> buttons;
    ConcurrentHashMap<Integer, AudioZone> audioZones;
@@ -79,7 +79,7 @@ public class OmnilinkClient extends Thread {
       thermos = new ConcurrentHashMap<Integer, Thermostat>();
       zones = new ConcurrentHashMap<Integer, Zone>();
       areas = new ConcurrentHashMap<Integer, Area>();
-      codes = new ConcurrentHashMap<Integer, CodeProperties>();
+      //codes = new ConcurrentHashMap<Integer, CodeProperties>();
       auxs = new ConcurrentHashMap<Integer, Aux>();
       buttons = new ConcurrentHashMap<Integer, ButtonProperties>();
       audioZones = new ConcurrentHashMap<Integer, AudioZone>();
@@ -253,8 +253,14 @@ public class OmnilinkClient extends Thread {
                
                //audio sources are not pushed, just load all of them here
                loadAudioSources();
-
+               
                loaded = true;
+               
+               /*
+                * if we get disconnected then refresh any devices that we have
+                * to keep them up to date.
+                */
+               refreshDevices();
                
                while (running && c.connected()) {
                   /*
@@ -293,6 +299,7 @@ public class OmnilinkClient extends Thread {
          }
       }
    }
+   
 
    public void shutdown() {
       running = false;
@@ -410,6 +417,7 @@ public class OmnilinkClient extends Thread {
          break;
    }
    }
+   
    private ZoneProperties readZoneProperties(int number) throws IOException, OmniNotConnectedException, OmniInvalidResponseException, OmniUnknownMessageTypeException{
       Message m = c.reqObjectProperties(Message.OBJ_TYPE_ZONE, number, 0, ObjectProperties.FILTER_1_NAMED,
             ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD);
@@ -468,128 +476,46 @@ public class OmnilinkClient extends Thread {
       }
       return null;
    }
+   
    private void refreshDevices() throws IOException, OmniNotConnectedException, OmniInvalidResponseException, OmniUnknownMessageTypeException{
+      
       for(Unit u : units.values()){
          UnitProperties properties = readUnitProperties(u.getProperties().getNumber());
          u.setProperties(properties);
          u.updateSensors();
       }
+      for(Thermostat t : thermos.values()){
+         ThermostatProperties properties = readThermoProperties(t.getProperties().getNumber());
+         t.setProperties(properties);
+         t.updateSensors();
+      }
+      for(Zone z : zones.values()){
+         ZoneProperties properties = readZoneProperties(z.getProperties().getNumber());
+         z.setProperties(properties);
+         z.updateSensors();
+      }
+      for(Area a : areas.values()){
+         AreaProperties properties = readAreaProperties(a.getProperties().getNumber());
+         a.setProperties(properties);
+         a.updateSensors();
+      }
+      for(Aux a : auxs.values()){
+         AuxSensorProperties properties = readAuxProperties(a.getProperties().getNumber());
+         a.setProperties(properties);
+         a.updateSensors();
+      }
+      for(AudioZone a : audioZones.values()){
+         AudioZoneProperties properties = readAudioZoneProperties(a.getProperties().getNumber());
+         a.setProperties(properties);
+         a.updateSensors();
+      }
+      for(AudioSource a : audioSources.values()){
+         AudioSourceProperties properties = readAudioSourceProperties(a.getProperties().getNumber());
+         a.setProperties(properties);
+         a.updateSensors();
+      }
    }
-//   private void loadUnits() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         UnitProperties o = ((UnitProperties) m);
-//         objnum = o.getNumber();
-//         if(units.containsKey(new Ine))
-//         units.put(new Integer(o.getNumber()), new Unit(o));
-//      }
-//
-//   }
-//
-//   private void loadThermos() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_THERMO, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         ThermostatProperties o = ((ThermostatProperties) m);
-//         objnum = o.getNumber();
-//         thermos.put(new Integer(o.getNumber()), new Thermostat(o));
-//      }
-//
-//   }
-//
-//   private void loadZones() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_ZONE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         ZoneProperties o = ((ZoneProperties) m);
-//         objnum = o.getNumber();
-//         zones.put(new Integer(o.getNumber()), new Zone(o));
-//      }
-//
-//   }
-//
-//   private void loadAreas() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NAMED_UNAMED,
-//            ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         AreaProperties o = ((AreaProperties) m);
-//         objnum = o.getNumber();
-//         areas.put(new Integer(o.getNumber()), new Area(o));
-//      }
-//
-//   }
-//
-//   private void loadAuxs() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AUX_SENSOR, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         AuxSensorProperties o = ((AuxSensorProperties) m);
-//         objnum = o.getNumber();
-//         auxs.put(new Integer(o.getNumber()), new Aux(o));
-//      }
-//
-//   }
-//
-//   private void loadButtons() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_BUTTON, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         ButtonProperties o = ((ButtonProperties) m);
-//         objnum = o.getNumber();
-//         buttons.put(new Integer(o.getNumber()), o);
-//      }
-//
-//   }
-//
-//   private void loadCodes() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_CODE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         CodeProperties o = ((CodeProperties) m);
-//         objnum = o.getNumber();
-//         codes.put(new Integer(o.getNumber()), o);
-//      }
-//      log.info(m.toString());
-//
-//   }
-//
-//   private void loadAudioZones() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-//         OmniUnknownMessageTypeException {
-//      int objnum = 0;
-//      Message m;
-//      while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AUDIO_ZONE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-//            ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//         log.info(m.toString());
-//         AudioZoneProperties o = ((AudioZoneProperties) m);
-//         objnum = o.getNumber();
-//         audioZones.put(new Integer(o.getNumber()), new AudioZone(o));
-//      }
-//      log.info(m.toString());
-//
-//   }
-//
+
    private void loadAudioSources() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
          OmniUnknownMessageTypeException {
       int objnum = 0;
@@ -674,140 +600,7 @@ public class OmnilinkClient extends Thread {
          }
       }
    }
-//
-//   private Unit updateUnit(UnitStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateUnit " + s.getNumber() + " " + s.getStatus() + " " + s.getTime());
-//      Unit u = null;
-//      if ((u = units.get(new Integer(s.getNumber()))) != null) {
-//         u.getProperties().updateUnit(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_UNIT, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               UnitProperties up = (UnitProperties) m;
-//               units.put(new Integer(up.getNumber()), new Unit(up));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      return u;
-//   }
-//
-//   private Thermostat updateThermo(ThermostatStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateThermo " + s.getNumber());
-//      Thermostat p = null;
-//      if ((p = thermos.get(new Integer(s.getNumber()))) != null) {
-//         p.getProperties().updateThermostat(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_THERMO, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               ThermostatProperties tp = (ThermostatProperties) m;
-//               thermos.put(new Integer(tp.getNumber()), new Thermostat(tp));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      return p;
-//   }
-//
-//   private Zone updateZone(ZoneStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateUnit " + s.getNumber() + " " + s.getStatus() + " " + s.getLoop());
-//      Zone p = null;
-//      if ((p = zones.get(new Integer(s.getNumber()))) != null) {
-//         p.getProperties().updateZone(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_ZONE, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               ZoneProperties zp = (ZoneProperties) m;
-//               zones.put(new Integer(zp.getNumber()), new Zone(zp));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      return p;
-//   }
-//
-//   private Aux updateAux(AuxSensorStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateAux " + s.getNumber() + " " + s.getStatus() + " " + s.getTemp());
-//      Aux p = null;
-//      if ((p = auxs.get(new Integer(s.getNumber()))) != null) {
-//         p.getProperties().updateAuxSensor(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_AUX_SENSOR, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               AuxSensorProperties ap = (AuxSensorProperties) m;
-//               auxs.put(new Integer(ap.getNumber()), new Aux(ap));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      return p;
-//   }
-//
-//   private Area updateArea(AreaStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateArea " + s.getNumber() + " " + s.getMode() + " " + s.getAlarms());
-//      Area p = null;
-//      if ((p = areas.get(new Integer(s.getNumber()))) != null) {
-//         p.getProperties().updateArea(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               AreaProperties ap = (AreaProperties) m;
-//               areas.put(new Integer(ap.getNumber()), new Area(ap));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      
-//      return p;
-//   }
-//
-//   private AudioZone updateAudioZone(AudioZoneStatus s) throws IOException, OmniNotConnectedException,
-//         OmniInvalidResponseException, OmniUnknownMessageTypeException {
-//      log.info("updateAudioZone " + s.getNumber() + " " + s.isPower() + " " + s.getVolume());
-//      AudioZone p = null;
-//      if ((p = audioZones.get(new Integer(s.getNumber()))) != null) {
-//         p.getProperties().updateAudioZone(s);
-//      } else {
-//         try {
-//            Message m = c.reqObjectProperties(Message.OBJ_TYPE_AUDIO_ZONE, s.getNumber(), s.getNumber(),
-//                  ObjectProperties.FILTER_1_NAMED, ObjectProperties.FILTER_2_AREA_ALL,
-//                  ObjectProperties.FILTER_3_ANY_LOAD);
-//            if (m.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-//               AudioZoneProperties ap = (AudioZoneProperties) m;
-//               audioZones.put(new Integer(ap.getNumber()), new AudioZone(ap));
-//            }
-//         } catch (IOException e) {
-//            log.error("", e);
-//         }
-//      }
-//      return p;
-//   }
-//
+   
    public Connection connection() {
       return c;
    }
