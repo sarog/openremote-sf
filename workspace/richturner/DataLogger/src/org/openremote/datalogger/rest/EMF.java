@@ -24,7 +24,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 
 /**
  * This is a simple means of creating an Entity Manager Factory that is around
@@ -33,7 +32,6 @@ import javax.servlet.annotation.WebListener;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
-@WebListener
 public class EMF implements ServletContextListener {
 
     private static EntityManagerFactory emf;
