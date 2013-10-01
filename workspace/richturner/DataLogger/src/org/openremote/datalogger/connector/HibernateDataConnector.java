@@ -34,8 +34,6 @@ import org.openremote.datalogger.model.*;
 import org.openremote.datalogger.rest.EMF;
 
 /**
- *
- * 
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
@@ -103,8 +101,9 @@ public class HibernateDataConnector implements DataConnector {
 			CriteriaQuery<Sensor> sCriteria = builder.createQuery(Sensor.class);
 			Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
 			sCriteria.select(sensorRoot);
-			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName));
-			Sensor sensor;			
+			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
+											builder.equal(sensorRoot.get("userId"), user.getId()));
+			Sensor sensor;
 			
 			EntityTransaction transaction = em.getTransaction();
 			transaction.begin();
@@ -159,7 +158,7 @@ public class HibernateDataConnector implements DataConnector {
 	 * @see org.openremote.datalogger.connector.DataConnector#getAverageSensorValue(java.lang.String, java.lang.String, java.util.Date, java.util.Date)
 	 */
 	@Override
-	public float getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException {
+	public Double getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException {
 		if (apiKey == null || apiKey.isEmpty()) {
 			throw new DataSecurityException("No API Key provided");
 		}
@@ -189,15 +188,35 @@ public class HibernateDataConnector implements DataConnector {
 				throw new DataSecurityException("Invalid API Key provided");
 			}
 			
-			
+			// Get the sensor object
+			CriteriaQuery<Sensor> sCriteria = builder.createQuery(Sensor.class);
+			Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
+			sCriteria.select(sensorRoot);
+			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
+											builder.equal(sensorRoot.get("user"), user));
+			Sensor sensor;			
+
+			try {
+				sensor = em.createQuery(sCriteria).getSingleResult();
+			}  catch (NoResultException e) {
+				throw new DataConnectorException(String.format("Sensor '{0}' does not exist", sensorName));
+			}
+
 			EntityTransaction transaction = em.getTransaction();
-			//transaction.begin();
-			
-			Query query = em.createQuery("SELECT AVG(value) FROM " +
-					"( SELECT cast(value as float)	" +
-						"FROM ensorValues " +
-						"WHERE timestamp >= '2013-09-28T00:00:00Z' AND timestamp <= '2013-09-30T00:00:00Z' AND sensorId = 1) RangeValues");
-			return (float)query.getSingleResult();			
+			transaction.begin();
+						
+			// This should be changed to a JPA compliant query but this query is pretty standard SQL and should work on most DBs
+			Query query = em.createNativeQuery("SELECT AVG(value) FROM " +
+					"(SELECT cast(value as float)	" +
+						"FROM sensorValues " +
+						"WHERE timestamp >= '" + fromTime + "' AND timestamp <= '" + toTime + "' AND sensorId = " + sensor.getId() + ") RangeValues");
+			Object result = query.getSingleResult();
+			transaction.commit();
+			return (Double)result;
+		} catch (DataSecurityException e) {
+			throw e;
+		} catch (DataConnectorException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new DataConnectorException(e);
 		} finally {

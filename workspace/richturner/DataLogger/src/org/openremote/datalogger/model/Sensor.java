@@ -30,8 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.persistence.*;
 
-import org.hibernate.annotations.GenericGenerator;
-
 /**
  *
  * 
