@@ -43,8 +43,6 @@
 	<classpathentry kind="lib" path="lib/sunrise/SunriseSunsetLib-bin.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j/log4j-1.2.12.jar"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/json-path/json-path-0.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/json-path/json-smart-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-exec-1.1.jar"/>
@@ -55,5 +53,9 @@
 	<classpathentry kind="lib" path="lib/rrd4j-2.1.1/rrd4j-2.1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ORCommons"/>
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpasyncclient-4.0-beta4.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-nio-4.3-beta2.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
