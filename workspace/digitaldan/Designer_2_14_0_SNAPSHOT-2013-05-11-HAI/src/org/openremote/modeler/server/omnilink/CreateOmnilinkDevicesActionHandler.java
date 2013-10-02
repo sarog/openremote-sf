@@ -320,7 +320,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			Switch sw = createDeviceSwitch(cmdOn, cmdOff, senSwitch, name + " Switch");
 			switches.add(sw);
 
-			Slider slider = createDeviceSlider(device, cmdLevel, senLevel, name + "Slider");
+			Slider slider = createDeviceSlider(device, cmdLevel, senLevel, name + " Slider");
 			sliders.add(slider);
 		}
 	}
@@ -763,7 +763,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			Sensor senMute = createDeviceSensor(device, SensorType.SWITCH, cmdGetMute, name + " Sensor Mute");
 			sensors.add(senMute);
 
-			Slider sliderSetVolume  = createDeviceSlider(device, cmdSetVolume, senPower, name + " Slider Set Volume");
+			Slider sliderSetVolume  = createDeviceSlider(device, cmdSetVolume, senVolume, name + " Slider Set Volume");
 			sliders.add(sliderSetVolume);
 
 			Switch swPower = createDeviceSwitch(cmdSetOn, cmdSetOff, senPower, name + " Power Switch");
