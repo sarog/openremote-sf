@@ -76,7 +76,8 @@ public class RESTAPI extends HttpServlet {
 		initialiseResponse(response, "application/xml");
 		
 		// Get API Key
-		String apiKey = request.getHeader("X-ApiKey");
+		String apiKey = request.getParameter("apiKey");
+		apiKey = apiKey == null || apiKey.isEmpty() ? request.getHeader("X-ApiKey") : apiKey;
 		String sensorName = request.getParameter("sensorName");
 		String intervalStr = request.getParameter("interval");
 		String intervalUnitsStr = request.getParameter("intervalUnits");
@@ -160,7 +161,8 @@ public class RESTAPI extends HttpServlet {
 		initialiseResponse(response, "application/xml");
 		
 		// Get API Key
-		String apiKey = request.getHeader("X-ApiKey");
+		String apiKey = request.getParameter("apiKey");
+		apiKey = apiKey == null || apiKey.isEmpty() ? request.getHeader("X-ApiKey") : apiKey;
 		
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Sensors.class);
