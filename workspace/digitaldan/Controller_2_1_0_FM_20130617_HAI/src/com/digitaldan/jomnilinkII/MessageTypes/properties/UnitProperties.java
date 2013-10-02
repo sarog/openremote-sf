@@ -22,6 +22,21 @@ import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 
 public class UnitProperties extends ObjectProperties {
+	public static final int UNIT_TYPE_STANDARD		=1;
+	public static final int UNIT_TYPE_COMPOSE		=3;
+	public static final int UNIT_TYPE_UPB			=4;
+	public static final int UNIT_TYPE_HLC_ROOM		=5;
+	public static final int UNIT_TYPE_HLC_LOAD		=6;
+	public static final int UNIT_TYPE_LUMINA_MODE	=7;
+	public static final int UNIT_TYPE_RADIORA		=8;
+	public static final int UNIT_TYPE_CENTRALITE	=9;
+	public static final int UNIT_TYPE_VIZIARF_ROOM	=10;
+	public static final int UNIT_TYPE_VIZIARF_LOAD	=11;
+	public static final int UNIT_TYPE_FLAG			=12;
+	public static final int UNIT_TYPE_OUTPUT		=13;
+	public static final int UNIT_TYPE_AUDIO_ZONE	=14;
+	public static final int UNIT_TYPE_AUDIO_SRC		=15;
+	
 	private int state;
 	private int time;
 	private int unitType;

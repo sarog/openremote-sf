@@ -2,6 +2,7 @@ package org.openremote.controller.protocol.omnilink;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,10 +88,10 @@ public class OmnilinkClient extends Thread {
       start();
    }
    
-   public void addUnitSensor(Sensor sensor) {
-      
+   public Map<Integer,Unit> getUnits(){
+      return units;
    }
-
+   
    /**
     * Main processing loop
     */
@@ -155,6 +156,12 @@ public class OmnilinkClient extends Thread {
                            AudioZone audioZone = audioZones.get(new Integer(as.getNumber()));
                            if(audioZone != null){
                               log.info("STATUS_AUDIO_ZONE updating sensor for zone " + as.getNumber());
+                              audioZone.getProperties().updateAudioZone(as);
+                              AudioSource audioSrc = audioSources.get(new Integer(as.getSource()));
+                              //make sure we have the right audio src text. 
+                              if(audioSrc != null){
+                                 audioZone.setAudioSourceText(audioSrc.formatAudioText());
+                              }
                               audioZone.getProperties().updateAudioZone(as);
                               audioZone.updateSensors();
                            }
