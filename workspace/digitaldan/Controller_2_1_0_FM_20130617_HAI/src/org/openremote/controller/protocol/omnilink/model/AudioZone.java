@@ -44,6 +44,7 @@ public class AudioZone extends OmnilinkDevice {
       }
       if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_VOLUME) != null) {
          sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_VOLUME).update(properties.getVolume() + "");
+         log.info("Setting audio src " + properties.getNumber() + " to volume " + properties.getVolume());
       }
       if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT) != null) {
          log.info("SENSOR_AUDIOZONE_TEXT updating zone text " + audioSourceText);

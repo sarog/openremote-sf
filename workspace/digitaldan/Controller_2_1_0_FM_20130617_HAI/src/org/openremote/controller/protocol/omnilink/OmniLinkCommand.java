@@ -1,12 +1,17 @@
 package org.openremote.controller.protocol.omnilink;
 
+import java.util.Map;
+
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.omnilink.model.Unit;
 import org.openremote.controller.utils.Logger;
 
 import com.digitaldan.jomnilinkII.MessageUtils;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.MessageProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 
 public class OmniLinkCommand implements EventListener, ExecutableCommand{
    private final static Logger logger = Logger.getLogger(OmnilinkCommandBuilder.OMNILINK_PROTOCOL_LOG_CATEGORY);
@@ -28,6 +33,32 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
    public void send() {
       try {
          switch(command){
+         /*
+          * Hack for sliders on rooms, if we get this command, which is allowed
+          * by the omni protocol, check if the device is a room and if so
+          * set all the lights in the room to that level
+          */
+         case CMD_UNIT_PERCENT:{
+            Map<Integer,Unit> units = client.getUnits();
+            Unit u = units.get(new Integer(parameter2));
+            if(u != null && (u.getProperties().getUnitType() == 
+                  UnitProperties.UNIT_TYPE_HLC_ROOM || 
+                  u.getProperties().getUnitType() == 
+                  UnitProperties.UNIT_TYPE_VIZIARF_ROOM)){
+               int num = u.getProperties().getNumber();
+               for(int i=num;i<num + 8;i++){
+                  if(units.get(new Integer(i)) != null)
+                     client.connection().controllerCommand(command.getNumber(), parameter1, i);
+               }
+               //stop processing;
+               return;
+            }
+            break;
+         }
+         /*
+          * convert the c or f param to the internal omni format, we don't
+          * want to do this on the client.
+          */
          case CMD_THERMO_SET_COOL_POINTC:
          case CMD_THERMO_SET_HEAT_POINTC:
             parameter1 = MessageUtils.CToOmni(parameter1);
@@ -36,8 +67,15 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
          case CMD_THERMO_SET_HEAT_POINTF:
             parameter1 = MessageUtils.FtoOmni(parameter1);
             break;  
+            /*
+             * the omni protocol has power and mute in the same command using 
+             * 0-1 for power and 2-3 for mute, this hack makes it easier for 
+             * client by exposing mute and power as seperate commands 
+             */
          case CMD_AUDIO_ZONE_SET_MUTE:
             parameter1 += 2;
+            break;
+            default:
             break;
          }
          logger.info("Sending command " + command.toString() 
