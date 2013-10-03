@@ -203,7 +203,7 @@ public class RESTAPI extends HttpServlet {
 					sensorValues.addAll(sensor.getNewSensorValues());
 				}
 				
-				if (sensorValues.size() > 0) {
+				if (sensorValues.size() > 0 || (sensor.getCurrentValue() != null && !sensor.getCurrentValue().isEmpty())) {
 					connector.addSensorValues(apiKey, sensorName, sensorValues, sensor.getCurrentValue());
 				}
 			}
