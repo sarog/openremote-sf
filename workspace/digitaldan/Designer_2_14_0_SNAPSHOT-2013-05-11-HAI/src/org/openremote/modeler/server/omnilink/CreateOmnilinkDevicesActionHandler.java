@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import net.customware.gwt.dispatch.server.ActionHandler;
 import net.customware.gwt.dispatch.server.ExecutionContext;
 import net.customware.gwt.dispatch.shared.DispatchException;
@@ -59,6 +58,8 @@ import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.ReqSystemInformation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
@@ -230,6 +231,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 		loadThermos(c,deviceCommands,sensors,sliders,switches,devices);
 		loadAuxs(c,deviceCommands,sensors,sliders,switches,devices);
 		loadButtons(c,deviceCommands,sensors,sliders,switches,devices);
+		loadAreas(c,deviceCommands,sensors,sliders,switches,devices);
 		loadZones(c,deviceCommands,sensors,sliders,switches,devices);
 		loadAudioZones(c,deviceCommands,sensors,sliders,switches,devices);
 		loadAudioSources(c,deviceCommands,sensors,sliders,switches,devices);
@@ -526,27 +528,121 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			DeviceCommand cmdRestore = addDeviceCommand(device, name + " CMD Restore Zone", 0, objnum, OmniLinkCmd.CMD_SECURITY_RESTORE_ZONE);
 			deviceCommands.add(cmdRestore);
 
-			DeviceCommand cmdSenZone = addDeviceCommand(device, name + " CMD Get Zone Status", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS);
-			deviceCommands.add(cmdSenZone);
+			DeviceCommand cmdSenZoneCur = addDeviceCommand(device, name + " CMD Get Zone Status Current", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_CURRENT);
+			deviceCommands.add(cmdSenZoneCur);
+			
+			DeviceCommand cmdSenZoneLatch = addDeviceCommand(device, name + " CMD Get Zone Status Latched", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_LATCHED);
+			deviceCommands.add(cmdSenZoneLatch);
+			
+			DeviceCommand cmdSenZoneArm = addDeviceCommand(device, name + " CMD Get Zone Status Arming", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_ARMING);
+			deviceCommands.add(cmdSenZoneArm);
+			
+			Sensor senZoneCur = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneCur, name + " Sensor Current");
+			sensors.add(senZoneCur);
+			
+			Sensor senZoneLatch = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneLatch, name + " Sensor Latched");
+			sensors.add(senZoneLatch);
+			
+			Sensor senZoneArm = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneArm, name + " Sensor Arming");
+			sensors.add(senZoneArm);
 
 		}
 
 	}
-	//
-	//  private void loadAreas() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-	//  OmniUnknownMessageTypeException {
-	//	  int objnum = 0;
-	//	  Message m;
-	//	  while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NAMED_UNAMED,
-	//			  ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-	//		  log.info(m.toString());
-	//		  AreaProperties o = ((AreaProperties) m);
-	//		  objnum = o.getNumber();
-	//		  areas.put(new Integer(o.getNumber()), new Area(o));
-	//	  }
-	//
-	//  }
-	//
+	
+	  private void loadAreas(Connection c,
+				ArrayList<DeviceCommand> deviceCommands, ArrayList<Sensor> sensors,
+				ArrayList<Slider> sliders, ArrayList<Switch> switches,
+				ArrayList<Device> devices) throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
+	  OmniUnknownMessageTypeException {
+		  int objnum = 0;
+		  Message m;
+		  while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NAMED_UNAMED,
+				  ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+			  AreaProperties o = ((AreaProperties) m);
+			  objnum = o.getNumber();
+			  String name = "(Area) " + (o.getName().length() > 0 ? o.getName() : o.getNumber());
+				Device device = new Device(name, "HAI", "Omnilink");
+				device.setAccount(userService.getAccount());
+
+				List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
+
+				DeviceAttr datt = new DeviceAttr();
+				datt.setName(STR_ATTRIBUTE_NAME_OMNI_NUM);
+				datt.setValue(objnum + "");
+				dattrs.add(datt);
+
+				datt = new DeviceAttr();
+				datt.setName(STR_ATTRIBUTE_NAME_OMNI_TYPE);
+				datt.setValue(Message.OBJ_TYPE_AREA + "");
+				dattrs.add(datt);
+				device.setDeviceAttrs(dattrs);
+				devices.add(device);
+				
+
+//		         30            HAI Omni IIe
+//		         16            HAI OmniPro II
+//		         36            HAI Lumina
+//		         37            HAI Lumina Pro
+				SystemInformation si= c.reqSystemInformation();
+				boolean omni = si.getModel() < 36;
+				
+				DeviceCommand cmdDisarmOmni = addDeviceCommand(device, name + " CMD Set Disarm", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DISARM);
+				deviceCommands.add(cmdDisarmOmni);
+				
+				if(omni){
+					DeviceCommand cmdDayOmni = addDeviceCommand(device, name + " CMD Set Day Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_MODE);
+					deviceCommands.add(cmdDayOmni);
+					
+					DeviceCommand cmdNightOmni = addDeviceCommand(device, name + " CMD Set Night Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_MODE);
+					deviceCommands.add(cmdNightOmni);
+					
+					DeviceCommand cmdAwayOmni = addDeviceCommand(device, name + " CMD Set Day Away Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_AWAY_MODE);
+					deviceCommands.add(cmdAwayOmni);
+					
+					DeviceCommand cmdVacaOmni = addDeviceCommand(device, name + " CMD Set Day Vaccation Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_VACATION_MODE);
+					deviceCommands.add(cmdVacaOmni);
+					
+					DeviceCommand cmdDayInstOmni = addDeviceCommand(device, name + " CMD Set Day Instant Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_INSTANCE_MODE);
+					deviceCommands.add(cmdDayInstOmni);
+					
+					DeviceCommand cmdNightDelayOmni = addDeviceCommand(device, name + " CMD Set Night Delay Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE);
+					deviceCommands.add(cmdNightDelayOmni);
+				} else {
+					DeviceCommand cmdAeayLumina = addDeviceCommand(device, name + " CMD Set Away Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_AWAY_MODE);
+					deviceCommands.add(cmdAeayLumina);
+					
+					DeviceCommand cmdHomeLumina = addDeviceCommand(device, name + " CMD Set Home Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_HOME_MODE);
+					deviceCommands.add(cmdHomeLumina);
+					
+					DeviceCommand cmdPartyLumina = addDeviceCommand(device, name + " CMD Set Party Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_PARTY_MODE);
+					deviceCommands.add(cmdPartyLumina);
+					
+					DeviceCommand cmdSleepLumina = addDeviceCommand(device, name + " CMD Set Sleep Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SLEEP_MODE);
+					deviceCommands.add(cmdSleepLumina);
+					
+					DeviceCommand cmdSpecialLumina = addDeviceCommand(device, name + " CMD Set Special Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SPECIAL_MODE);
+					deviceCommands.add(cmdSpecialLumina);
+					
+					DeviceCommand cmdVacaLumina = addDeviceCommand(device, name + " CMD Set Vaccation Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_VACATION_MODE);
+					deviceCommands.add(cmdVacaLumina);
+				}
+				
+				DeviceCommand sensMode = addDeviceCommand(device, name + " CMD Get Mode", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_MODE);
+				deviceCommands.add(sensMode);
+				
+				DeviceCommand sensAlarm = addDeviceCommand(device, name + " CMD Get Alarm", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_ALARM);
+				deviceCommands.add(sensMode);
+				
+				Sensor senAreaMode = createDeviceSensor(device, SensorType.CUSTOM, sensMode, name + " Mode");
+				sensors.add(senAreaMode);
+				
+				Sensor senAreaAlarm = createDeviceSensor(device, SensorType.CUSTOM, sensAlarm, name + " Alarm");
+				sensors.add(senAreaAlarm);
+		  }
+	
+	  }
+	
 	private void loadAuxs(Connection c,
 			ArrayList<DeviceCommand> deviceCommands, ArrayList<Sensor> sensors,
 			ArrayList<Slider> sliders, ArrayList<Switch> switches,
