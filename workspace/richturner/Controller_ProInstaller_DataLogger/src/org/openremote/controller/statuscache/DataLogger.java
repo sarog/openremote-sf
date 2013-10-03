@@ -20,6 +20,7 @@
 package org.openremote.controller.statuscache;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPut;
@@ -84,25 +85,36 @@ public class DataLogger extends EventProcessor {
                request.addHeader("User-Agent", "OpenRemoteController");
                request.addHeader("X-ApiKey", getWriteAPIKey());
                request.setEntity(new StringEntity(xmlStr));
-               
-               httpclient.execute(request, new FutureCallback<HttpResponse>() {
-                  public void completed(final HttpResponse response) {
-                      int statusCode = response.getStatusLine().getStatusCode();
-                      if (statusCode != 200) {
-                         log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
-                      } else {
-                         log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
-                      }
-                  }
 
-                  public void failed(final Exception ex) {
-                      log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
-                  }
-
-                  public void cancelled() {
-                      log.debug(String.format("Request '" + request.getRequestLine() +"' Cancelled (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
-                  }
-               });
+               final Future<HttpResponse> future = httpclient.execute(request, null);
+                     
+//                     new FutureCallback<HttpResponse>() {
+//                  public void completed(final HttpResponse response) {
+//                      int statusCode = response.getStatusLine().getStatusCode();
+//                      if (statusCode != 200) {
+//                         log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                      } else {
+//                         log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
+//                      }
+//                  }
+//
+//                  public void failed(final Exception ex) {
+//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                  }
+//
+//                  public void cancelled() {
+//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Cancelled (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                  }
+//               });
+               HttpResponse response = future.get();
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode != 200) {
+                   log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+                } else {
+                   log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
+                }
+            } catch (Exception e) {
+               log.debug(String.format("Request Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
             } finally {
                httpclient.close();
             }
@@ -170,7 +182,7 @@ public class DataLogger extends EventProcessor {
                       "<current_value>" + sensorValue + "</current_value>" +
                       "</data>" +
                       "</environment>" +
-                      "<eeml>";
+                      "</eeml>";
       return xmlStr;
    }
 }
