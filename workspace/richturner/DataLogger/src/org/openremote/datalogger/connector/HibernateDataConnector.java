@@ -102,7 +102,7 @@ public class HibernateDataConnector implements DataConnector {
 			Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
 			sCriteria.select(sensorRoot);
 			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
-											builder.equal(sensorRoot.get("userId"), user.getId()));
+											builder.equal(sensorRoot.get("user"), user.getId()));
 			Sensor sensor;
 			
 			EntityTransaction transaction = em.getTransaction();
