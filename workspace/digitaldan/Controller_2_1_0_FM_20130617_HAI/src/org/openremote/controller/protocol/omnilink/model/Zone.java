@@ -32,9 +32,14 @@ public class Zone extends OmnilinkDevice {
       String latchedText = CURRENT_TEXT[latched];
       String armingText = CURRENT_TEXT[arming];
       
-      if (sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS) != null) {
-         sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS).update(currentText + "|" + 
-               latchedText + "|" + armingText);
+      if (sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_CURRENT) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_CURRENT).update(currentText);
+      }
+      if (sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_ARMING) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_ARMING).update(armingText);
+      }
+      if (sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_LATCHED) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_ZONE_STATUS_LATCHED).update(latchedText);
       }
    }
 }

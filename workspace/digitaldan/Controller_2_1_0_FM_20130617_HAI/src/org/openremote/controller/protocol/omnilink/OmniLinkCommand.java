@@ -108,10 +108,15 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
          case SENSOR_THERMO_TEMPF:
             client.addSensor(ObjectProperties.OBJ_TYPE_THERMO, parameter2, sensor, command);
             break;
-         case SENSOR_ZONE_STATUS:
+         case SENSOR_ZONE_STATUS_ARMING:
+         case SENSOR_ZONE_STATUS_CURRENT:
+         case SENSOR_ZONE_STATUS_LATCHED:
             client.addSensor(ObjectProperties.OBJ_TYPE_ZONE, parameter2, sensor, command);
             break;
-         case SENSOR_AREA_STATUS:
+         case SENSOR_AREA_STATUS_ALARM:
+         case SENSOR_AREA_STATUS_ENTRY_DELAY:
+         case SENSOR_AREA_STATUS_EXIT_DELAY:
+         case SENSOR_AREA_STATUS_MODE:
             client.addSensor(ObjectProperties.OBJ_TYPE_AREA, parameter2, sensor, command);
             break;
          case SENSOR_AUX_STATUS:

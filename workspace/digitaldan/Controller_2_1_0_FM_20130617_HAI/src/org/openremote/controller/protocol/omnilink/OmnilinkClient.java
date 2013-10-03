@@ -69,9 +69,10 @@ public class OmnilinkClient extends Thread {
    boolean connected = false;
    boolean loaded = false;
    boolean running = true;
-
+   
    private Object audioUpdateLock = new Object();
-
+   private boolean omni;
+   
    public OmnilinkClient(String address, int port, String key1, String key2) throws Exception {
       this.host = address;
       this.port = port;
@@ -252,6 +253,7 @@ public class OmnilinkClient extends Thread {
             try {
                SystemStatus sysstatus = c.reqSystemStatus();
                log.info("System: " + sysstatus.toString());
+               omni = c.reqSystemInformation().getModel() < 36;
                /*
                 * We need to explicitly tell the controller to send us real time
                 * notifications
@@ -385,7 +387,7 @@ public class OmnilinkClient extends Thread {
          if(area == null){
             AreaProperties properties = readAreaProperties(number);
             if(properties != null){
-               area = new Area(properties);
+               area = new Area(properties,omni);
                areas.put(new Integer(number), area);
             }
          }
