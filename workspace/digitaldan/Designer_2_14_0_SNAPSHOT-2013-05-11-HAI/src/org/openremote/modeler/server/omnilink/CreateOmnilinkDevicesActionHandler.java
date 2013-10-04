@@ -273,15 +273,19 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			UnitProperties o = ((UnitProperties) m);
 			objnum = o.getNumber();
 			String name = "(Unit) " + o.getName();
-
+			boolean isUpbRoom = false;	
 			if(o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM || 
 					o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM){
 				currentRoom = objnum;
 				currentRoomName = o.getName();
-			} else {
-				if(objnum < currentRoom + 8)
+				if(o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM)
+					isUpbRoom = true;
+			} else if(objnum < currentRoom + 8){
 					name = "(Unit) "  + currentRoomName + ": " + o.getName();
+			} else if(o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG){
+					name = "(Flag) " + o.getName();
 			}
+			
 			Device device = new Device(name, "HAI", "Omnilink");
 			device.setAccount(userService.getAccount());
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -313,6 +317,20 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			DeviceCommand cmdSensorPower = addDeviceCommand(device, name + " get power", 0, objnum, OmniLinkCmd.SENSOR_UNIT_POWER);
 			deviceCommands.add(cmdSensorPower);
 
+			if(isUpbRoom){
+				int roomNum = (objnum + 7) / 8;
+				//every room has 6 links, the 3rd is where link A starts,  
+				//so in room 1 linkA=link3 linkB=link4 linkc=link6 linkd=link7
+				int linkA = ((roomNum * 6) -5) + 2;
+				for(int i=0;i< 4; i++){
+					int link = linkA +i;
+					char linkChar = Character.toChars('A' + i)[0];
+					DeviceCommand cmdScene = addDeviceCommand(device, name + " cmd Scene " + linkChar,link, objnum, OmniLinkCmd.CMD_UNIT_UPB_LINK_ON);
+					deviceCommands.add(cmdScene);
+				}
+
+			}
+			
 			Sensor senLevel = createDeviceSensor(device, SensorType.LEVEL, cmdSensorLevel,name + " Sensor Level");
 			sensors.add(senLevel);
 
