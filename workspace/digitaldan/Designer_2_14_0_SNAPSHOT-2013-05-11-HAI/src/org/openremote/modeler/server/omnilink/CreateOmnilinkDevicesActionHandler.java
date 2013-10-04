@@ -321,7 +321,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 				int roomNum = (objnum + 7) / 8;
 				//every room has 6 links, the 3rd is where link A starts,  
 				//so in room 1 linkA=link3 linkB=link4 linkc=link6 linkd=link7
-				int linkA = ((roomNum * 6) -5) + 2;
+				int linkA = (roomNum * 6) -3;
 				for(int i=0;i< 4; i++){
 					int link = linkA +i;
 					char linkChar = Character.toChars('A' + i)[0];
