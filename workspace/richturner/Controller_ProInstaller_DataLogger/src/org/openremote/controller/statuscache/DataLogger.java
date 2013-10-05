@@ -92,29 +92,29 @@ public class DataLogger extends EventProcessor {
 //                  public void completed(final HttpResponse response) {
 //                      int statusCode = response.getStatusLine().getStatusCode();
 //                      if (statusCode != 200) {
-//                         log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                         log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
 //                      } else {
 //                         log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
 //                      }
 //                  }
 //
 //                  public void failed(final Exception ex) {
-//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
 //                  }
 //
 //                  public void cancelled() {
-//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Cancelled (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Cancelled (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
 //                  }
 //               });
                HttpResponse response = future.get();
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode != 200) {
-                   log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+                   log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
                 } else {
                    log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
                 }
             } catch (Exception e) {
-               log.debug(String.format("Request Failed (Sensor Name = {0}, Value = {1})", sensorName, sensorValue));
+               log.debug(String.format("Request Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
             } finally {
                httpclient.close();
             }
