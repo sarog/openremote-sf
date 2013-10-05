@@ -28,7 +28,32 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Strings;
 
 /**
- * TODO
+ * KNX datapoint types are a combination of a datatype and a dimension. Dimension specifies
+ * a range and unit for a datapoint type (e.g. 4.001 character range is [0-127] or 5.001 scale
+ * is in percentage units). The datatype defines the format and encoding of the value represented
+ * by the datapoint type, i.e. how the datapoint type value translates to bits in KNX frames. <p>
+ *
+ * The datapoint types use a naming scheme with a main number and sub-number, e.g. 16.001 where
+ * 16 is the main number for KNX string datatypes and 1 is a sub-number for  a specific
+ * ASCII encoded KNX string datapoint type. Both the main and sub-numbers are sixteen bit values.
+ * Datapoint types that share the same main number also share the same formatting and encoding
+ * properties, i.e. they share the same datatype. The minor number differentiates two datapoint
+ * types with same datatype but different units or range.  <p>
+ *
+ * Datapoint type main and sub-number assignments are done systematically following specific
+ * guidelines for main numbers (structured vs. unstructured datatypes and reserved main numbers
+ * abve 300 values), and sub-numbers based on application domains (common use, HVAC, load
+ * management, lighting, system, reserved and manufacturer specific). Refer to KNX 2.0
+ * specification Volume 3: System Specifications, Part 7 Interworking, Chapter 2: Data Point Types
+ * for more details.  <p>
+ *
+ * Datapoint types that are encoded in six bits or less are always transferred in the data field
+ * of the KNX frame. When less than six bits are used, the data field is padded with zero bits.
+ * See {@link org.openremote.controller.protocol.knx.ApplicationLayer} for details. When a
+ * datapoint type that is formatted to multiple bytes is converted to a KNX frame, it is encoded
+ * with most significant byte first (i.e. network byte order). However, the KNX specification
+ * leaves the bit order within bytes open, and it can depend on the medium used to transfer the
+ * KNX frame.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Kenneth Stridh
@@ -144,9 +169,20 @@ public abstract class DataPointType
 
   // RGB value
   public final static ThreeByteValue RGB_VALUE = new ThreeByteValue(232, 600);
-  
-  // String
+
+  /**
+   * General use DPT 16.000 KNX ASCII string. Character value range is [0-127]. In practice
+   * this means the most significant bit of the character byte is not used.
+   *
+   * @see KNXString
+   */
   public final static KNXString STRING_ASCII = new KNXString(16, 0);
+
+  /**
+   * TODO
+   *
+   * @see KNXString
+   */
   public final static KNXString STRING_8859_1 = new KNXString(16, 1);
   
   //public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
@@ -219,7 +255,7 @@ public abstract class DataPointType
 
   // Constructors ---------------------------------------------------------------------------------
 
-  DataPointType(int main, int sub, boolean is6Bit)
+  protected DataPointType(int main, int sub, boolean is6Bit)
   {
     this.mainNumber = main;
     this.subNumber = sub;
@@ -385,10 +421,24 @@ public abstract class DataPointType
       super(main, sub, false);
     }
   }
-  
+
+  /**
+   * This class represents the data point types "string" as defined in KNX 1.1 specifications
+   * Volume 3: System Specifications, Part 7 Interworking, Chapter 2: Data Point Types and the
+   * same document as defined in the KNX 2.0 specifications. <p>
+   *
+   * KNX strings are sequence of characters with a fixed length of 14 bytes. A string content
+   * is interpreted to start from the most significant (left-most) byte. The specific data
+   * point type uses its own defined character encoding (see {@link #STRING_ASCII} and
+   * {@link #STRING_8859_1} for example). <p>
+   *
+   * When KNX strings are transmitted in KNX data frames, the unused bytes are always filled
+   * with 0x00 byte, making the data payload always exactly 14 bytes in length. <p>
+   *
+   * The character encodings for strings are described in DTP 4.xxx.
+   */
   public static class KNXString extends DataPointType
   {
-     
     private KNXString(int main, int sub)
     {
       super(main, sub, false);
