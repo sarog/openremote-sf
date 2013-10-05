@@ -118,7 +118,7 @@ public class HibernateDataConnector implements DataConnector {
 			}
 			
 			if (sensorName == null || sensorName.isEmpty()) {
-				throw new DataConnectorException(String.format("Unable to get sensor object from DB for sensor name '{0}'", sensorName));
+				throw new DataConnectorException(String.format("Unable to get sensor object from DB for sensor name '%1$s'", sensorName));
 			}
 	
 			// Update currentValue
@@ -199,7 +199,7 @@ public class HibernateDataConnector implements DataConnector {
 			try {
 				sensor = em.createQuery(sCriteria).getSingleResult();
 			}  catch (NoResultException e) {
-				throw new DataConnectorException(String.format("Sensor '{0}' does not exist", sensorName));
+				throw new DataConnectorException(String.format("Sensor '%1$s' does not exist", sensorName));
 			}
 
 			EntityTransaction transaction = em.getTransaction();
