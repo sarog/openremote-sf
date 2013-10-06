@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,46 +22,37 @@ package org.openremote.controller.protocol.dscit100;
 
 import java.io.IOException;
 
-import org.openremote.controller.utils.Logger;
+import org.apache.log4j.Logger;
 
-/**
- * @author Greg Rapp
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
- */
-class Packet
+public class Packet
 {
 
-  // Class Members --------------------------------------------------------------------------------
+  // Class Members
+  // --------------------------------------------------------------------------------
 
   /**
-   * DSC logger. Uses a common category for all DSC related logging.
+   * DSCIT100 logger. Uses a common category for all KNX related logging.
    */
-  private final static Logger log = Logger.getLogger(DSCIT100CommandBuilder.DSC_LOG_CATEGORY);
-
-  /** End of Packet CRLF */
-  private static final String EOP = "\r\n";
-
-
-  // Instance Fields ------------------------------------------------------------------------------
+  private final static Logger log = Logger
+      .getLogger(DSCIT100CommandBuilder.DSCIT100_LOG_CATEGORY);
 
   private String command;
   private String data;
   private String checksum;
   private PacketCallback callback;
 
+  // End of Packet CRLF
+  public static final String EOP = "\r\n";
 
-  // Constructors ---------------------------------------------------------------------------------
-
-  protected Packet(String command, String data)
+  public Packet(String command, String data)
   {
     this.command = command;
     this.data = data;
     this.generateChecksum();
-
     log.debug("New packet created " + toString());
   }
 
-  protected Packet(String command, String data, PacketCallback callback)
+  public Packet(String command, String data, PacketCallback callback)
   {
     this(command, data);
     this.callback = callback;
@@ -72,11 +63,10 @@ class Packet
    * 
    * @param raw
    *          Raw data from host
-   *
    * @throws IOException
    *           Error parsing raw data
    */
-  protected Packet(String raw) throws IOException
+  public Packet(String raw) throws IOException
   {
     try
     {
@@ -85,14 +75,10 @@ class Packet
       this.data = raw.substring(3, raw.length() - 2);
 
       String calcChecksum = checksum();
-
       if (!this.checksum.equalsIgnoreCase(calcChecksum))
-      {
-        log.error(
-            "Received packet with invalid checksum [packet=" + checksum + ",calculated=" +
-            calcChecksum + "]"
-        );
-      }
+        log.error("Received packet with invalid checksum [packet=" + checksum
+            + ",calculated=" + calcChecksum + "]");
+
     }
     catch (StringIndexOutOfBoundsException e)
     {
@@ -100,54 +86,51 @@ class Packet
     }
   }
 
-
-  // Public Methods -------------------------------------------------------------------------------
-
-  protected String getCommand()
+  public String getCommand()
   {
     return command;
   }
 
-  protected String getData()
+  public String getData()
   {
     return data;
   }
 
-  protected PacketCallback getCallback()
+  public String getChecksum()
+  {
+    return checksum;
+  }
+
+  public PacketCallback getCallback()
   {
     return callback;
   }
 
-  protected void generateChecksum()
+  public void generateChecksum()
   {
     checksum = checksum();
   }
 
+  public String toString()
+  {
+    return "[command=" + command + ", data=" + data + ",checksum=" + checksum
+        + "]";
+  }
+
   /**
-   * Return the data to be sent to the IP gateway
+   * Return the data to be sent to the IT-100
    * 
-   * @return packet data as string
+   * @return String Packet data
    */
-  protected String toPacket()
+  public String toPacket()
   {
     return command + data + checksum + EOP;
   }
 
-  // Object Overrides -----------------------------------------------------------------------------
-
-  @Override public String toString()
-  {
-    return "[command=" + command + ", data=" + data + ",checksum=" + checksum + "]";
-  }
-
-
-
-  // Private Methods ------------------------------------------------------------------------------
-
   /**
    * Calculate the packet's checksum
    * 
-   * @return packet's checksum string
+   * @return String Packet checksum
    */
   private String checksum()
   {
@@ -170,10 +153,7 @@ class Packet
     return sChecksum;
   }
 
-
-  // Nested Interfaces ----------------------------------------------------------------------------
-
-  interface PacketCallback
+  public interface PacketCallback
   {
     public void receive(DSCIT100Connection connection, Packet packet);
   }

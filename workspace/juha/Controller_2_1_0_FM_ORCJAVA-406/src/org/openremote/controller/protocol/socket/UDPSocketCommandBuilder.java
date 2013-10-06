@@ -31,7 +31,6 @@ import org.openremote.controller.utils.CommandUtil;
  * The Class SocketEventBuilder.
  *
  * @author Rich Turner 2011-04-15
- * @author Simon Vincent 2013-05-07
  */
 public class UDPSocketCommandBuilder implements CommandBuilder {
 
@@ -51,8 +50,6 @@ public class UDPSocketCommandBuilder implements CommandBuilder {
             tcpEvent.setIp(ele.getAttributeValue("value"));
          } else if("command".equals(ele.getAttributeValue("name"))){
             tcpEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
-         } else if("ending".equals(ele.getAttributeValue("name"))){
-            tcpEvent.setLineEnding(ele.getAttributeValue("value"));
          }
       }
       return tcpEvent;
