@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,80 +20,75 @@
  */
 package org.openremote.controller.protocol.dscit100;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.utils.Logger;
 
 /**
- * This class is an abstract superclass for DSC protocol read/write commands.
+ * This class is an abstract superclass for DSCIT100 protocol read/write commands.
  * 
  * @see ExecuteCommand
  * @see ReadCommand
- *
- * @author Greg Rapp
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * 
  */
 public abstract class DSCIT100Command implements Command
 {
 
-  // TODO:
-  //   - since both IT100 and Envisalink gateways are now supported, this class should drop the
-  //     IT100 from the name
+  // Constants
+  // ------------------------------------------------------------------------------------
 
-
-  // Class Members --------------------------------------------------------------------------------
+  // Class Members
+  // --------------------------------------------------------------------------------
 
   /**
-   * DSC logger. Uses a common category for all DSC related logging.
+   * DSCIT100 logger. Uses a common category for all KNX related logging.
    */
-  private final static Logger log = Logger.getLogger(DSCIT100CommandBuilder.DSC_LOG_CATEGORY);
+  private final static Logger log = Logger
+      .getLogger(DSCIT100CommandBuilder.DSCIT100_LOG_CATEGORY);
 
   /**
-   * Factory method for creating DSC command instances {@link ExecuteCommand} and
-   * {@link ReadCommand} based on a human-readable configuration strings. <p>
+   * Factory method for creating DSCIT100 command instances
+   * {@link ExecuteCommand} and {@link ReadCommand} based on a human-readable
+   * configuration strings.
+   * <p>
    * 
    * Each DSCIT100 command instance is associated with a link to a connection
    * manager and a destination address.
    * 
-   * @param command
+   * @param name
    *          Command lookup name. This is usually a human-readable string used
    *          in configuration and tools. Note that multiple lookup names can be
    *          used to return Java equal() (but not same instance) commands.
-   *
    * @param mgr
-   *          DSC gateway connection manager used to transmit this command
-   *
+   *          DSCIT100 connection manager used to transmit this command
    * @param address
-   *          DSC destination address.
+   *          DSCIT100 destination address.
    * 
    * @throws NoSuchCommandException
    *           If command cannot be created by its lookup name
    * 
-   * @return new DSC command instance
+   * @return new DSCIT100 command instance
    */
-  public static DSCIT100Command createCommand(String command, String address, String code,
-                                              String target, DSCIT100ConnectionManager mgr)
+  public static DSCIT100Command createCommand(String name, String address,
+      String code, String target, DSCIT100ConnectionManager mgr)
   {
-    command = command.trim().toUpperCase();   // TODO: see ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
+    name = name.trim().toUpperCase();
 
-    ExecuteCommand execCommand = ExecuteCommand.createCommand(command, address, code, target, mgr);
-
+    ExecuteCommand execCommand = ExecuteCommand.createCommand(name, address,
+        code, target, mgr);
     if (execCommand != null)
-    {
       return execCommand;
-    }
 
-    ReadCommand readCommand = ReadCommand.createCommand(command, address, target, mgr);
-
+    ReadCommand readCommand = ReadCommand.createCommand(name, address, target,
+        mgr);
     if (readCommand != null)
-    {
       return readCommand;
-    }
 
-    throw new NoSuchCommandException("Unknown command '" + command + "'.");
+    throw new NoSuchCommandException("Unknown command '" + name + "'.");
   }
 
-  // Instance Fields ------------------------------------------------------------------------------
+  // Private Instance Fields
+  // ----------------------------------------------------------------------
 
   /**
    * Destination address for this command.
@@ -110,55 +105,45 @@ public abstract class DSCIT100Command implements Command
    */
   private DSCIT100ConnectionManager connectionManager;
 
-
-  // Constructors ---------------------------------------------------------------------------------
+  // Constructors
+  // ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a new DSC command with a given address, target partition or zone and connection
-   * manager
+   * Constructor 
    * 
    * @param address
    *          IT100 address
-   *
    * @param target
    *          Target partition or zone
-   *
    * @param connectionManager
-   *          DSC connection manager to access the DSC connection(s)
-   *
    */
-  public DSCIT100Command(String address, String target, DSCIT100ConnectionManager connectionManager)
+  public DSCIT100Command(String address, String target,
+      DSCIT100ConnectionManager connectionManager)
   {
     this.address = address;
     this.target = target;
     this.connectionManager = connectionManager;
   }
 
+  // Package-Private Instance Methods
+  // -------------------------------------------------------------
 
-  // Protected Instance Methods -------------------------------------------------------------
-
+  
   /**
-   * Send a command instance out a DSC connection
+   * Send a command instance out a DSCIT100Connection
    * 
    * @param command An instance of ExecuteCommand
+   * 
+   * @return void
    */
   protected void write(ExecuteCommand command)
   {
     try
     {
       DSCIT100Connection connection = connectionManager.getConnection(address);
-
       if (connection != null)
-      {
         connection.send(command);
-      }
-
-      else
-      {
-        log.error("Failed to send command ''{0}'' due to lost/non-existent connection.", command);
-      }
     }
-
     catch (Exception e)
     {
       log.error("Unable to send " + this + " : " + e.getMessage(), e);
@@ -169,7 +154,7 @@ public abstract class DSCIT100Command implements Command
    * Read the internal state map of the associated connection.
    * 
    * @param command
-   *          DSC ReadCommand instance
+   *          DSCIT100 ReadCommand instance
    * 
    * @return Returns a State object
    * 
@@ -181,16 +166,11 @@ public abstract class DSCIT100Command implements Command
     try
     {
       DSCIT100Connection connection = connectionManager.getConnection(address);
-
       if (connection != null)
-      {
         return connection.getState(command.getStateDefinition());
-      }
-
       else
       {
         log.error("Could not get connection instance for address : " + address);
-
         return null;
       }
     }

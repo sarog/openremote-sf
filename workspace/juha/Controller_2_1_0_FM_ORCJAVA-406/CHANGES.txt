@@ -6,53 +6,31 @@ New Features:
   - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
   - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330, ORCJAVA-331)
   - Round robind database (RRD) integration for storing sensor
-    data (Marcus Redeker, ORCJAVA-353, ORCJAVA-356)
+    data (Marcus Redeker, ORCJAVA-343, ORCJAVA-356)
   - EmonCMS integration for storing sensor data (Marcus Redeker, ORCJAVA-357)
-  - WebConsole upgraded to version 2.1.2, fixes issues with stuck
-    loading screen, label on/off states with switch sensors, and tweaks for
-    Midori web browser (Richard Turner, WEBCONSOLE-57, WEBCONSOLE-59, 
-    ORCJAVA-345, ORCJAVA-379)
-  - Added DSC Security System (IT-100/EnvisaLink) integration - IP to serial 
-    (Greg Rapp, Phil Taylor, ORCJAVA-302)
+  - WebConsole upgraded to version 2.1.1, fixes issues with stuck
+    loading screen (Richard Turner, ORCJAVA-345)
+  - Added DSC-IT 100 Security System integration - IP to serial (Greg Rapp)
   - Lagarto server (panStamps) integration (Daniel Berenguer)
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
-
-  - KNX: 
-     * Added distinct levels for 'DIM' and 'SCALE' commands that allow
-       set values to be configured for buttons, e.g. 'DIM 50' to dim directly
-       to 50% (Eric Bariaux, ORCJAVA-71). 
-     * Added DPT 6.001 and DPT 6.010 signed 8-bit value support 
-       (Stefan Langerman, ORCJAVA-361). 
-     * Added support for date datatype (DPT 10.xxx), time datatype (DPT 11.xxx), 
-       four-octet signed values (DPT 13.xxx) and four octet float 
-       values (DPT 14.xxx). Corresponding commands that have been added are 
-       'DATE', 'TIME', 'ENERGY' and 'POWER' (Kenneth Stridh, ORCJAVA-362).
-     * Support for DPT 232.600 (RGB values) and DPT 16.001 (text fields) added, 
-       implementation converted internally to EventListener API (Marcus Redeker, 
-       ORCJAVA-291, ORCJAVA-294, ORCJAVA-301)
-
-  - HTTP protocol: 
-     * Methods GET, POST, PUT and DELETE are now supported.
-     * For HTTP/JSON return documents, a JSON Path expression is supported.
-     * HTTP content-type headers are supported (Marcus Redeker, ORCJAVA-260) 
-     * For outgoing HTTP request, a user agent header is included which 
-       contains 'OpenRemoteController' as agent value which HTTP 
-       applications can use to identify requests originating from the 
-       controller. 
-     * Internally, the implementation has been converted to use URIs 
-       instead of URLs which resolves an issue with lack of encoding of 
-       HTTP parameters  which contain which contain white spaces or other 
-       special characters. 
-     * HTTP related logs now appear in their own file under /logs/http/http.log 
-       (Juha Lindfors, ORCJAVA-368)
-
-  - UDP protocol:
-     * Sending hex values by prefixing command data with '0x' string added.
-     * Receiving of UDP packets added (ORCJAVA-392)
-     * Add an option to specify what type of line ending is used for sent 
-       UDP commands. Defaults to 'NONE', other options are 'CR', 'LF' and 'CRLF' 
-       (Simon Vincent, ORCJAVA-393)
-
+  - KNX: added distinct levels for 'DIM' and 'SCALE' commands that allow
+    set values to be configured for buttons, e.g. 'DIM 50' to dim directly
+    to 50% (Eric Bariaux, ORCJAVA-71). Add DPT 6.001 and DPT 6.010 
+    (Stefan Langerman, ORCJAVA-361). Add support for data datatype (DPT 10.xxx),
+    time datatype (DPT 11.xxx), four-octet signed values (DPT 13.xxx) and
+    four octet float values (DPT 14.xxx). Corresponding commands that have been
+    added are 'DATE', 'TIME', 'ENERGY' and 'POWER' (Kenneth Stridh, ORCJAVA-362)
+  - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
+    For HTTP/JSON return documents, a JSON Path expression is supported.
+    HTTP content-type headers are supported. For outgoing HTTP request, 
+    a user agent header is included which contains 'OpenRemoteController'  
+    as agent value which HTTP applications can use to identify requests 
+    originating from the controller. Internally, the implementation has 
+    been converted to use URIs instead of URLs which resolves an issue with 
+    lack of encoding of HTTP parameters  which contain which contain white 
+    spaces or other special characters. HTTP related logs now appear in their
+    own file under /logs/http/http.log (Marcus Redeker, Juha Lindfors, 
+    ORCJAVA-260, ORCJAVA-368)
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales, data
     property added for sending values to switches (Marcus Redeker)
@@ -64,6 +42,8 @@ New Features:
     telnet log directory and telnet debug logs added (Juha Lindfors, ORCJAVA-328)
   - Date/Time : values updated once per minute instead of once per second
     (Marcus Redeker)
+  - UDP : send hex values by prefixing command data with '0x' string.
+    Receiving of UDP packets added (Marcus Redeker)
   - TCP : send hex values by prefixing command data with '0x' string,
     add polling interval and regular expression support for TCP payloads
     (Marcus Redeker, ORCJAVA-298)
@@ -114,9 +94,6 @@ Bug Fixes:
   - 1-wire: Fix NPE when owserver is not reachable (Marcus Redeker, ORCJAVA-267)
   - KNX SCENE and LEARN_SCENE commands were mixed up. Enable scene number
     to be used with level sensors (Marcus Redeker, ORCJAVA-282)
-  - Russound: reliability updates (Torbjorn Osterdahl, ORCJAVA-376)
-  - LIRC: Parse 'remotename' attribute in LIRC integration instead
-    of the default command 'name' attribute (ORCJAVA-380, Marcus Redeker)
 
 
 Internal:
@@ -125,7 +102,7 @@ Internal:
     on systems with differing default character encoding configurations
     (Juha Lindfors, ORCJAVA-329)
   - Add Port Abstraction Daemon (PAD) source files to project (Olivier Gandit,
-    Eric Bariaux, ORCJAVA-314, ORCJAVA-375)
+    ORCJAVA-314)
 
 
 Controller 2.0.2 (2013-02-26)

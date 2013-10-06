@@ -39,8 +39,9 @@ interface KNXConnection
   /**
    * TODO
    *
+   * @return t
    */
-  void read(GroupValueRead command);
+  ApplicationProtocolDataUnit read(GroupValueRead command);
 
   /**
    * Get KNX-IP interface status.
