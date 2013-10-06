@@ -255,7 +255,10 @@ public class IpTunnelClient implements IpProcessorListener
 
         else
         {
-          throw new KnxIpException(Code.WRONG_CHANNEL_ID, "Disconnect failed");
+          throw new KnxIpException(
+              Code.WRONG_CHANNEL_ID,
+              "Disconnect failed, channel mismatch: " + this.channelId + " != " + cr.getChannelId()
+          );
         }
       }
 
