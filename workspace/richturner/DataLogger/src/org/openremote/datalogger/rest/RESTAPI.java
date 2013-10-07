@@ -83,7 +83,8 @@ public class RESTAPI extends HttpServlet {
 		String intervalUnitsStr = request.getParameter("intervalUnits");
 		String from = request.getParameter("from");
 		String to = request.getParameter("to");
-
+		String format = request.getParameter("format");
+		
 		Date fromDate = null, toDate = new Date();
 		
 		if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
@@ -142,16 +143,15 @@ public class RESTAPI extends HttpServlet {
 			averageValue = averageValue == null ? 0d : averageValue;
 			SensorOutputValue sensorOutput = new SensorOutputValue();
 			sensorOutput.setName(sensorName);
-			sensorOutput.setValue(Double.toString(averageValue));
+			String valStr = format != null ? String.format(format,averageValue) : Double.toString(averageValue); 
+			sensorOutput.setValue(valStr);
 			JAXBContext jaxbContext = JAXBContext.newInstance(SensorOutputValue.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.marshal(sensorOutput, response.getOutputStream());			
 			// Just use generic error response for now 
-		} catch (JAXBException e) {
-			doResponse(response, ResponseType.ERROR, e);
 		} catch (DataSecurityException e) {
 			doResponse(response, ResponseType.WARNING, e);
-		} catch (DataConnectorException e) {
+		} catch (Exception e) {
 			doResponse(response, ResponseType.ERROR, e);
 		}
 	}
