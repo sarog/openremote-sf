@@ -23,14 +23,16 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.openremote.controller.utils.Strings;
+
 /**
  * A generic KNXnet/IP tunneling message. Manages the common IP frame header,
  * which includes information about the variable frame length, the KNXnet/IP version used and
  * a service type identifier (STI). The fixed header is included with each written
  * KNXnet/IP message. <p>
  *
- * Each IP Message may represent either a request or response message as defined
- * in {@link IpMessage.Primitive}  <p>
+ * Each IP message may represent either a request or response message as defined
+ * in {@link IpMessage.Primitive}.  <p>
  *
  * This implementation is based on the version 1.1 of the KNX specification as defined in
  * Volume 3: System Specifications, Part 8: EIBnet/IP, Chapter 2: Core. <p> 
@@ -47,19 +49,17 @@ import java.io.OutputStream;
  *
  * The header size for version 1.0 is fixed at 6 bytes (see {@link #KNXNET_IP_10_HEADER_SIZE}). <p>
  *
- * Version identifier for version 1.0 is defined in {@link #KNXNET_IP_10_VERSION}.
+ * Version identifier for version 1.0 is defined in {@link #KNXNET_IP_10_VERSION}. <p>
  *
- * Service type identifiers are defined as follows:
- *
- *     TODO
- *
- * <p>
+ * Service type identifiers are defined in
+ * {@link org.openremote.controller.protocol.knx.ServiceTypeIdentifier} enum.  <p>
  *
  * Total frame size should indicate the length of the entire frame in bytes -- including the
- * fixed header size of 6 bytes plus the variable length frame body size.  <p>
+ * fixed header size of 6 bytes plus the variable length frame body size. The various other
+ * structures within the frame body may have other fields that indicate the length of their
+ * individual sub-parts. <p>
  *
- * Frame body varies in content and lenght depending on the service type identifier.
- *
+ * Frame body varies in content and length depending on the service type identifier.
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -105,6 +105,11 @@ public abstract class IpMessage
    */
   public final static int KNXNET_IP_10_HEADER_STI_LOBYTE_INDEX = 3;
 
+  /**
+   * This is a standard response string returned by {@link #getFrameError(byte[])} method
+   * when no errors are detected in the KNX frame: "{@value}"
+   */
+  public final static String VALID_KNXNET_IP_10_FRAME = "<VALID KNXNET/IP 1.0 FRAME>";
 
 
   /**
@@ -153,14 +158,106 @@ public abstract class IpMessage
    */
   public static boolean isValidFrame(byte[] content)
   {
-    if (content.length < 6)
+    // IMPLEMENTATION NOTE:
+    //
+    //   TODO:
+    //     Should abstract the frames at higher level, at minimum could accept a
+    //     port package Message implementation instead of byte array. Ideally
+    //     though this KNX IP Message implementation would be a port package Message
+    //     implementation itself, and we validate frames at construction, i.e.
+    //
+    //       IpMessage.create(byte[] content) throws InvalidKNXFrameException
+    //
+    //     Or in subclasses:
+    //
+    //       SomeRespose.create(byte[] content) throws InvalidResponseException
+    //
+    //     Where in the latter case the specific Response or Request implementations
+    //     can include more detailed frame validation as they are subclasses of
+    //     this KNX IP Message.
+    //                                                                        [JPL]
+
+    if (content == null)
     {
       return false;
     }
 
-    return (content[0] == KNXNET_IP_10_HEADER_SIZE &&
-            content[1] == KNXNET_IP_10_VERSION     &&
-            content[4] + content[5] >= KNXNET_IP_10_HEADER_SIZE);
+    return getFrameError(content).equals(VALID_KNXNET_IP_10_FRAME);
+  }
+
+  /**
+   * This utility method can be used to retrieve a more detailed error message when a KNX
+   * frame cannot be parsed. The returned string will give details about the nature of
+   * the frame error.
+   *
+   * @param content  complete KNX/IP frame content
+   *
+   * @return  {@link #VALID_KNXNET_IP_10_FRAME} in case there's no error. Otherwise
+   *          returns a string describing the nature of the KNX frame error.
+   */
+  public static String getFrameError(byte[] content)
+  {
+
+    // IMPLEMENTATION NOTE:
+    //
+    // TODO:
+    //    See comments above on the isValidFrame() method on subclassing and
+    //    using port package Message abstraction. Same applies here.
+    //                                                                    [JPL]
+    //
+    // TODO:
+    //    We could validate the service type identifier bytes to make sure we
+    //    recognize it as a known type...
+
+    if (content == null)
+    {
+      return "KNX frame content was null.";
+    }
+
+    if (content.length < 6)
+    {
+      return "KNX frame must be at least 6 bytes long. Received frame content " +
+             "with " + content.length + " bytes.";
+    }
+
+    if (content[0] != KNXNET_IP_10_HEADER_SIZE)
+    {
+      return "KNX IP 1.0 frame header must be 6 bytes long. Received KNX frame that " +
+             "claims a frame header with size " + content[0] + ". This frame type is not " +
+             "supported.";
+    }
+
+    if (content[1] != KNXNET_IP_10_VERSION)
+    {
+      return "Only KNX IP version 1.0 (frame version byte value " +
+             Strings.byteToUnsignedHexString(KNXNET_IP_10_VERSION) + ") is supported. The " +
+             "incoming frame has version value " + Strings.byteToUnsignedHexString(content[1]) +
+             ". This frame version is not supported.";
+    }
+
+    int totalFrameSizeHiByte = content[4] & 0xFF;
+    int totalFrameSizeLoByte = content[5] & 0xFF;
+
+    int totalFrameSize = (totalFrameSizeHiByte << 8) + totalFrameSizeLoByte;
+
+    if (totalFrameSize < KNXNET_IP_10_HEADER_SIZE)
+    {
+      return "The total KNX frame size in the incoming frame is " +
+             Integer.toHexString(totalFrameSize) + ". This is below the minimum frame size of " +
+             "KNX IP 1.0 frame (" + Strings.byteToUnsignedHexString(KNXNET_IP_10_HEADER_SIZE) +
+             " bytes). This frame is not supported.";
+    }
+
+    if (totalFrameSize != content.length)
+    {
+      return
+          "Frame length field and actual frame length do not match. Frame lenght field value " +
+          "is " + totalFrameSize + " (" + Strings.toUpperCase(Integer.toHexString(totalFrameSize)) +
+          ") bytes, actual frame length is " + content.length + " (" +
+          Strings.toUpperCase(Integer.toHexString(content.length)) +   ") bytes.";
+    }
+
+    return VALID_KNXNET_IP_10_FRAME;
   }
 
 
