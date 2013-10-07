@@ -62,6 +62,29 @@ public class Strings
   }
 
   /**
+   * Translates an array of signed Java bytes into a string of unsigned hex values.
+   * See {@link #byteToUnsignedHexString(byte)} for details on conversion.
+   *
+   * @param bytes   byte array to convert to string representation
+   *
+   * @return A string containing a sequence of byte values with a '0x' prefix. Byte values
+   *         are always padded to two digits, so '1' becomes '0x01'.
+   */
+  public static String byteArrayToUnsignedHexString(byte[] bytes)
+  {
+    StringBuilder builder = new StringBuilder(50);
+
+    for (byte b : bytes)
+    {
+      builder.append(byteToUnsignedHexString(b));
+      builder.append(' ');
+    }
+
+    return builder.toString().trim();
+  }
+
+
+  /**
    * Locale independent string to upper case method. This should be used by all code related
    * string case changes to avoid issues with system default locales that can have unpredictable
    * results when string conversions are made. <p>
