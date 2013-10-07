@@ -59,13 +59,36 @@ import org.openremote.controller.utils.Strings;
  * structures within the frame body may have other fields that indicate the length of their
  * individual sub-parts. <p>
  *
- * Frame body varies in content and length depending on the service type identifier.
+ * Frame body varies in content and length depending on the service type identifier. <p>
+ *
+ * Byte order: the frames are always in big endian byte order.
  *
  * @author Olivier Gandit
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public abstract class IpMessage
 {
+
+  // IMPLEMENTATION NOTES:
+  //
+  //   TODO:
+  //
+  //     With regards to KNX IP frames, the specification (KNX 1.1 Extensions - Vol. 3, Part 8:
+  //     EIBnet/IP Chapter 2: Core) does mention that frame lengths longer than 252 bytes are
+  //     possible. Frame structures always start with the length of the structure followed by
+  //     some kind of frame type identifier byte. All data follows these two bytes.
+  //
+  //     However, where data length exceeds 252 bytes, the first byte (length) is marked with
+  //     byte 0xFF and the next two bytes contain the structure lenght as a 16-bit (two byte)
+  //     value, followed by the frame type identifier, so a total of 4 bytes. Data then starts
+  //     at the fifth byte.
+  //
+  //     None of our implementation currently takes this into account. Should review if there
+  //     are implementation cases where it would be possible to exceed the 252 data length.
+  //     In most cases the data structure lengths are fixed length or where variable length,
+  //     have strict upper limits below the 252 byte mark.
+  //                                                                                  [JPL]
+
 
   // Constants ------------------------------------------------------------------------------------
 
