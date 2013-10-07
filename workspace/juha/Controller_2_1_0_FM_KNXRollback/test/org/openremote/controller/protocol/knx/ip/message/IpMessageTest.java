@@ -1,0 +1,554 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2013, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.openremote.controller.protocol.knx.ip.message;
+
+import junit.framework.Assert;
+import org.junit.Test;
+
+/**
+ * Unit tests for {@link org.openremote.controller.protocol.knx.ip.message.IpMessage} class.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
+public class IpMessageTest
+{
+
+
+  // IsValidFrame Tests ---------------------------------------------------------------------------
+
+  /**
+   * Tests a no-op KNX frame that only includes the frame header.
+   */
+  @Test public void testKNXFrameHeader()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(IpMessage.isValidFrame(frame));
+  }
+
+  /**
+   * Tests broken KNX header.
+   */
+  @Test public void testBrokenKNXFrameHeader()
+  {
+    // missing frame size low byte, header is too short...
+
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+    };
+
+    Assert.assertTrue(!IpMessage.isValidFrame(frame));
+  }
+
+  /**
+   * Tests empty frame array.
+   */
+  @Test public void testEmptyFrameArray()
+  {
+    // no frame content...
+
+    byte[] frame = new byte[] {};
+
+    Assert.assertTrue(!IpMessage.isValidFrame(frame));
+  }
+
+
+  /**
+   * Tests null pointer argument
+   */
+  @Test public void testNullPointerArgument()
+  {
+    Assert.assertTrue(!IpMessage.isValidFrame(null));
+  }
+
+  /**
+   * Tests invalid frame header size.
+   */
+  @Test public void testInvalidFrameHeaderSize()
+  {
+    byte[] frame = new byte[]
+    {
+        0x00,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.isValidFrame(frame));
+  }
+
+
+  /**
+   * Tests unsupported frame header version.
+   */
+  @Test public void testUnsupportedFrameHeaderVersion()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x01,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.isValidFrame(frame));
+  }
+
+
+  /**
+   * Tests unsupported frame header version (hypothetical 2.0).
+   */
+  @Test public void testUnsupportedFrameHeaderVersion2()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x20,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.isValidFrame(frame));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidation()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x07,   // frame size low byte
+        0x00    // random payload
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame), IpMessage.isValidFrame(frame));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidation2()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x0A,   // frame size low byte
+        0x00,   // random payload
+        0x00,   // random payload
+        0x00,   // random payload
+        0x00    // random payload
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame), IpMessage.isValidFrame(frame));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidation3()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x66,   // frame size low byte
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00    // random payload
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame), IpMessage.isValidFrame(frame));
+  }
+
+
+
+  // GetFrameError Tests --------------------------------------------------------------------------
+
+  /**
+   * Tests a no-op KNX frame that only includes the frame header.
+   */
+  @Test public void testKNXFrameHeaderMessage()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+
+  /**
+   * Tests broken KNX header.
+   */
+  @Test public void testBrokenKNXFrameHeaderErrorMessage()
+  {
+    // missing frame size low byte, header is too short...
+
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+    };
+
+    Assert.assertTrue(!IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+  /**
+   * Tests empty frame array.
+   */
+  @Test public void testEmptyFrameArrayError()
+  {
+    // no frame content...
+
+    byte[] frame = new byte[] {};
+
+    Assert.assertTrue(!IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+
+  /**
+   * Tests null pointer argument
+   */
+  @Test public void testNullPointerArgumentError()
+  {
+    Assert.assertTrue(!IpMessage.getFrameError(null).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+
+  /**
+   * Tests invalid frame header size.
+   */
+  @Test public void testInvalidFrameHeaderSizeError()
+  {
+    byte[] frame = new byte[]
+    {
+        0x00,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+
+  /**
+   * Tests unsupported frame header version.
+   */
+  @Test public void testUnsupportedFrameHeaderVersionError()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x01,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+
+  /**
+   * Tests unsupported frame header version (hypothetical 2.0).
+   */
+  @Test public void testUnsupportedFrameHeaderVersionError2()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x20,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x06    // frame size low byte
+    };
+
+    Assert.assertTrue(!IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidationMessage()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x07,   // frame size low byte
+        0x00    // random payload
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidationMessage2()
+  {
+    byte[] frame = new byte[]
+    {
+        0x06,   // header size
+        0x10,   // version
+        0x00,   // service type identifier high byte
+        0x00,   // service type identifier low byte
+        0x00,   // frame size high byte
+        0x66,   // frame size low byte
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00    // random payload
+    };
+
+    Assert.assertTrue(IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME));
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidationMessage3()
+  {
+    // make sure the signed byte handling is done correctly on the length low byte (0xF6)
+
+    byte[] frame = new byte[]
+    {
+        0x06,        // header size
+        0x10,        // version
+        0x00,        // service type identifier high byte
+        0x00,        // service type identifier low byte
+        0x00,        // frame size high byte
+        (byte)0xF6,  // frame size low byte
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00    // random payload
+    };
+
+    Assert.assertTrue(
+        IpMessage.getFrameError(frame),
+        IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME)
+    );
+  }
+
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidationMessage4()
+  {
+    // make sure the signed byte handling is done correctly on the length low byte (0xF6)
+
+    byte[] frame = new byte[]
+    {
+        0x06,        // header size
+        0x10,        // version
+        0x00,        // service type identifier high byte
+        0x00,        // service type identifier low byte
+        0x00,        // frame size high byte
+        (byte)0xF6,  // frame size low byte
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00    // random payload
+    };
+
+    Assert.assertTrue(
+        IpMessage.getFrameError(frame),
+        IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME)
+    );
+  }
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testFrameLengthValidationMessage5()
+  {
+    // make sure two byte frame lengths are handled correctly (0x106)
+
+    byte[] frame = new byte[]
+    {
+        0x06,        // header size
+        0x10,        // version
+        0x00,        // service type identifier high byte
+        0x00,        // service type identifier low byte
+        0x01,        // frame size high byte
+        0x06,        // frame size low byte
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // random payload
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00    // random payload
+    };
+
+    Assert.assertTrue(
+        IpMessage.getFrameError(frame),
+        IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME)
+    );
+  }
+
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testVeryLongFrameLengthValidationMessage()
+  {
+    // very long frame -- make sure two byte frame lengths are handled correctly especially when
+    // need to handle conversions from Java's signed bytes (0x106)
+
+    byte[] frame = new byte[6 + 16 /* nibble */ * 16 /* byte */ * 16 /* hi byte low nibble + 1 */];
+
+    frame[0] = 0x06;
+    frame[1] = 0x10;
+    frame[2] = 0x00;
+    frame[3] = 0x00;
+    frame[4] = 0x10;
+    frame[5] = 0x06;
+
+    Assert.assertTrue(
+        IpMessage.getFrameError(frame),
+        IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME)
+    );
+  }
+
+
+  /**
+   * Tests validation that given frame size actually matches the size advertized in frame's
+   * length field.
+   */
+  @Test public void testVeryLongFrameLengthValidationMessage2()
+  {
+    // very long frame -- make sure two byte frame lengths are handled correctly especially when
+    // need to handle conversions from Java's signed bytes (0xF006)
+
+    byte[] frame = new byte[6 + 16 /* nibble */ * 16 /* byte */ * 16 /* hi byte low nibble + 1 */ * 15 /* hi byte hi nibble */];
+
+    frame[0] = 0x06;
+    frame[1] = 0x10;
+    frame[2] = 0x00;
+    frame[3] = 0x00;
+    frame[4] = (byte)0xF0;
+    frame[5] = 0x06;
+
+    Assert.assertTrue(
+        IpMessage.getFrameError(frame),
+        IpMessage.getFrameError(frame).equals(IpMessage.VALID_KNXNET_IP_10_FRAME)
+    );
+  }
+
+}
+
