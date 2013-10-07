@@ -34,6 +34,8 @@ import org.junit.Assert;
 public class StringsTest
 {
 
+  // ByteToUnsignedHexString Tests ----------------------------------------------------------------
+
   /**
    * Test single digits from 1 to 9.
    */
@@ -158,6 +160,24 @@ public class StringsTest
     Assert.assertTrue(Strings.byteToUnsignedHexString(zero).equals("0x00"));
   }
 
+
+  // ByteArrayToUnsignedHexString Tests -----------------------------------------------------------
+
+
+  @Test public void testArrayToHexString()
+  {
+    byte[] bytes = new byte[] { 0, 127, -1, -128 };
+
+    String result = "0x00 0x7F 0xFF 0x80";
+
+    Assert.assertTrue(
+        "Got '" + Strings.byteArrayToUnsignedHexString(bytes) + "' was expecting '" + result + "'",
+        result.equals(Strings.byteArrayToUnsignedHexString(bytes)));
+  }
+
+
+  // ToUpperCase Tests ----------------------------------------------------------------------------
+
   /**
    * Regression tests for issue ORCJAVA-332 (http://jira.openremote.org/browse/ORCJAVA-332)  <p>
    *
@@ -202,6 +222,9 @@ public class StringsTest
       Locale.setDefault(defaultLocale);
     }
   }
+
+
+  // ToLowerCase Tests ----------------------------------------------------------------------------
 
   /**
    * Regression tests for issue ORCJAVA-332 (http://jira.openremote.org/browse/ORCJAVA-332)  <p>
@@ -249,6 +272,8 @@ public class StringsTest
   }
 
 
+
+  // ConvertPollingIntervalString Tests -----------------------------------------------------------
 
   @Test public void testPollingIntervalConversion()
   {
