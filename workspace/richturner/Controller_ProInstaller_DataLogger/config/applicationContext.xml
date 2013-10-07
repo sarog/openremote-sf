@@ -470,12 +470,52 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 
   <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
 
+  <!-- Data Logger Configuration -->
   <bean id = "dataLogger" class = "org.openremote.controller.statuscache.DataLogger" >
     <property name="dataLoggerURL" value="http://multimation.co.uk:8080/datalogger/rest" />
     <property name="writeAPIKey" value="6fccf8cf3c864de0c857bbb3aad61a62" />
     <property name="sensors">
       <list>
-      	<value>test</value>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraOneIn" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+  		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraTwoIn" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraThreeIn" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraFourIn" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraFiveIn" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraOneOut" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+  		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraTwoOut" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraThreeOut" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraFourOut" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sesnorName" value="PPMCameraFiveOut" />
+		      <property name="logRepeatSeconds" value="120" />
+		  </bean>
       </list>
     </property>
   </bean>

@@ -19,6 +19,7 @@
 */
 package org.openremote.controller.statuscache;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -28,11 +29,11 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.protocol.Event;
 import org.openremote.controller.statuscache.EventContext;
 import org.openremote.controller.statuscache.EventProcessor;
 import org.openremote.controller.statuscache.LifeCycleEvent;
 import org.openremote.controller.utils.Logger;
-import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.StringEntity;
 
 /**
@@ -59,7 +60,7 @@ public class DataLogger extends EventProcessor {
 
    private String dataLoggerURL;
    private String writeAPIKey;
-   private List<String> sensors;
+   private List<DataLoggerSensor> sensors;
    private boolean isValid = true;
    
    @Override
@@ -73,11 +74,45 @@ public class DataLogger extends EventProcessor {
       
       final String sensorName = ctx.getEvent().getSource();
       try {
-         if (sensors != null && sensors.contains(sensorName.toLowerCase())) {
+         DataLoggerSensor sensor = null;
+         if (sensors != null) {
+            for (DataLoggerSensor s : sensors) {
+               if (sensorName.equalsIgnoreCase(s.getSensorName())) {
+                  sensor = s;
+                  break;
+               }
+            }
+         }
+         
+         if (sensor != null) {
+            boolean okToLog = false;
+            Date lastLogTime = sensor.getLastLogTime();
+            Date now = new Date();
+            int logRepeat = sensor.getLogRepeatSeconds();
+            if (lastLogTime == null || logRepeat <= 0)
+            {
+               okToLog = true;
+            } else {
+               long ms = now.getTime() - lastLogTime.getTime();
+               okToLog = ms > logRepeat * 1000;
+            }
+            sensor.setLastLogTime(now);
+            
+            if (!okToLog) {
+               StatusCache cache = ctx.getDeviceStateCache();
+               Event event = cache.queryStatus(sensorName);
+               okToLog = !event.getValue().equals(ctx.getEvent().getValue());
+            }
+            
+            if (!okToLog) {
+               log.debug("Ignoring Sensor '" + sensorName + "' as value is unchanged and log repeat time has not elapsed");
+               return;
+            }
+ 
             final String sensorValue = ctx.getEvent().getValue().toString().trim();
             String xmlStr = buildXml(sensorName, sensorValue);
             String url = getDataLoggerURL();
-            
+            log.debug("Saving Sensor '" + sensorName + "' [" + sensorValue + "]");
             final CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
             httpclient.start();
             try {
@@ -87,40 +122,19 @@ public class DataLogger extends EventProcessor {
                request.setEntity(new StringEntity(xmlStr));
 
                final Future<HttpResponse> future = httpclient.execute(request, null);
-                     
-//                     new FutureCallback<HttpResponse>() {
-//                  public void completed(final HttpResponse response) {
-//                      int statusCode = response.getStatusLine().getStatusCode();
-//                      if (statusCode != 200) {
-//                         log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
-//                      } else {
-//                         log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
-//                      }
-//                  }
-//
-//                  public void failed(final Exception ex) {
-//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
-//                  }
-//
-//                  public void cancelled() {
-//                      log.debug(String.format("Request '" + request.getRequestLine() +"' Cancelled (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
-//                  }
-//               });
                HttpResponse response = future.get();
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != 200) {
-                   log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
-                } else {
-                   log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
-                }
+               int statusCode = response.getStatusLine().getStatusCode();
+               if (statusCode != 200) {
+                  log.debug(String.format("Request '" + request.getRequestLine() +"' Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
+               } else {
+                  log.debug("Request '" + request.getRequestLine() +"' Completed successfully");
+               }
             } catch (Exception e) {
                log.debug(String.format("Request Failed (Sensor Name = %1$s, Value = %2$s)", sensorName, sensorValue));
             } finally {
                httpclient.close();
             }
          }
-      } catch (NumberFormatException nfe) {
-         log.debug("The value: '" + ctx.getEvent().getValue().toString().trim() + "' could not be converted into a double.");
       } catch (Exception e) {
          log.error("Unknown error", e);
       }
@@ -130,7 +144,7 @@ public class DataLogger extends EventProcessor {
    public void start(LifeCycleEvent ctx) throws InitializationException {
       String url = getDataLoggerURL();
       String apiKey = getWriteAPIKey();
-      List<String> sensors = getSensors();
+      List<DataLoggerSensor> sensors = getSensors();
       if (url == null || url.isEmpty() || apiKey == null || apiKey.isEmpty() || sensors == null || sensors.size() == 0) {
          log.warn("Invalid settings, please ensure dataLoggerURL, apiKey and sensor list are defined in applicationContext.xml");
          isValid = false;
@@ -157,16 +171,11 @@ public class DataLogger extends EventProcessor {
       this.writeAPIKey = writeAPIKey;
    }
 
-   public List<String> getSensors() {
+   public List<DataLoggerSensor> getSensors() {
       return sensors;
    }
 
-   public void setSensors(List<String> sensors) {
-      if (sensors != null) {
-         for (int i=0; i<sensors.size(); i++) {
-            sensors.set(i, sensors.get(i).toLowerCase());
-         }
-      }
+   public void setSensors(List<DataLoggerSensor> sensors) {
       this.sensors = sensors;
    }
    
@@ -175,7 +184,7 @@ public class DataLogger extends EventProcessor {
          return null;
       }
       
-      String xmlStr = "<?xml version='1.0' encoding='UTF-8'?>" +
+      String xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                       "<eeml>" +
                       "<environment>" +
                       "<data id='" + sensorName + "'>" +
