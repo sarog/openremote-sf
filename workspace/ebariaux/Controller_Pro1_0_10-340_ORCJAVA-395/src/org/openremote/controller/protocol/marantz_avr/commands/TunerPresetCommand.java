@@ -49,7 +49,7 @@ public class TunerPresetCommand extends MarantzAVRCommand implements ExecutableC
     */
    protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-   public static TunerPresetCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+   public static TunerPresetCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       // Check for mandatory attributes
       if (parameter == null) {
         throw new NoSuchCommandException("A parameter is always required for the Tuner Preset command.");

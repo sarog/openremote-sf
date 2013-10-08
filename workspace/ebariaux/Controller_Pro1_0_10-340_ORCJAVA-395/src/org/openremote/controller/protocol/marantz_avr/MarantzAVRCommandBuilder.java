@@ -143,7 +143,7 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
       
       // Translate the command string to a type safe Marantz AVR Command types...
 
-      Command cmd = MarantzAVRCommand.createCommand(commandAsString, gateway, parameter);
+      Command cmd = MarantzAVRCommand.createCommand(commandAsString, gateway, parameter, zone);
 
       log.info("Created Marantz AVR Command " + cmd);
 
