@@ -31,7 +31,9 @@ import java.util.Map;
  * by the Marantz protocol "over the wire" to the device. 
  *
  * name is the command name as used in the Designer configuration
- * value is the corresponding command string used by the Marantz procotol
+ * 
+ * If the command is not zone specific, value is the corresponding command string used by the Marantz procotol
+ * if it is zone specific, values is a map providing command string per zone (supported zones are MAIN, ZONE2, ZONE3).
  * 
  * Some commands can be handled by the same generic implementation,
  * whereas others require a specific implementation.
@@ -47,6 +49,7 @@ public class CommandConfig {
    
    private String name;
    private String value;
+   private Map<String, String> valuePerZone;
    private Class<? extends MarantzAVRCommand> commandClass;
    private Map<String, String> knownParameters;
    
@@ -54,6 +57,7 @@ public class CommandConfig {
       super();
       this.name = name;
       this.value = value;
+      this.valuePerZone = new HashMap<String, String>();
       this.commandClass = commandClass;
       this.knownParameters = new HashMap<String, String>();
    }
@@ -62,12 +66,20 @@ public class CommandConfig {
       knownParameters.put(orParam, onkyoParam);
    }
 
+   public void addValuePerZone(String zone, String value) {
+      valuePerZone.put(zone, value);
+   }
+   
    public String getName() {
       return name;
    }
    
    public String getValue() {
       return value;
+   }
+   
+   public String getValuePerZone(String zone) {
+      return valuePerZone.get(zone);
    }
 
    public Class<? extends MarantzAVRCommand> getCommandClass() {
