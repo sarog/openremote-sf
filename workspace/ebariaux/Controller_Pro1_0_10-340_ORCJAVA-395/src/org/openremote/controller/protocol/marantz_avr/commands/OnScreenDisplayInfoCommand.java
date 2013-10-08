@@ -29,7 +29,7 @@ public class OnScreenDisplayInfoCommand extends MarantzAVRCommand implements Exe
        */
       protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-      public static OnScreenDisplayInfoCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+      public static OnScreenDisplayInfoCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
          // Check for mandatory attributes
          if (parameter == null) {
            throw new NoSuchCommandException("A parameter is always required for the OSD info command.");

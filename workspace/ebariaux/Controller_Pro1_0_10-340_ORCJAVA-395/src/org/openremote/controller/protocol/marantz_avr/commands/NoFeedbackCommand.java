@@ -45,7 +45,7 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
     */
    protected final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
-   public static NoFeedbackCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+   public static NoFeedbackCommand createCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       // Check for mandatory attributes
       if (commandConfig == null) {
          throw new NoSuchCommandException("No configuration provided for " + name + " command.");
