@@ -81,6 +81,30 @@ public class CommandConfig {
    public String getValuePerZone(String zone) {
       return valuePerZone.get(zone);
    }
+   
+   /**
+    * Returns the value that should be used for the given command, for the provided zone.
+    * The logic is:
+    * <ul>
+    *   <li>if a single value is provided on the command definition, it is always used, regardless of the provided zone.</li>
+    *   <li>if no single value is provided on the command definition and a value exists for the provided zone, it is used.</li>
+    *   <li>if no single value is provided on the command definition but no value exists for the provided zone,
+    *       the value for zone 'MAIN' is used (even if that might end up being null).</li>
+    * </ul>
+    * 
+    * @param zone String zone to get value for
+    * @return String value to use, as per rules defined above
+    */
+   public String getValueToUseForZone(String zone) {
+      if (getValue() != null) {
+         return getValue();
+      }
+      String zoneValue = getValuePerZone(zone);
+      if (zoneValue != null) {
+         return zoneValue;
+      }
+      return getValuePerZone("MAIN");
+   }
 
    public Class<? extends MarantzAVRCommand> getCommandClass() {
       return commandClass;
