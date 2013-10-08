@@ -36,6 +36,8 @@ import org.openremote.controller.utils.Logger;
  * 
  * Does not provide any feedback to sensors and ignores feedback strings.
  * 
+ * This command supports zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
@@ -53,13 +55,14 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
 
       // parameter is optional
 
-      return new NoFeedbackCommand(commandConfig, name, gateway, parameter);
+      return new NoFeedbackCommand(commandConfig, name, gateway, parameter, zone);
     }
 
-   public NoFeedbackCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+   public NoFeedbackCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       super(name, gateway);
       this.commandConfig = commandConfig;
       this.parameter = parameter;
+      this.zone = zone;
    }
 
    // Private Instance Fields ----------------------------------------------------------------------
@@ -73,6 +76,11 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
     * Parameter used by this command.
     */
    private String parameter;
+   
+   /**
+    * Zone used by this command.
+    */
+   private String zone;
 
    // Implements ExecutableCommand -----------------------------------------------------------------
 
@@ -87,7 +95,7 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
             parameterValue = commandConfig.getParameter(parameter);
          }
       }
-     gateway.sendCommand(commandConfig.getValue(), parameterValue);
+     gateway.sendCommand(commandConfig.getValuePerZone(zone), parameterValue);
    }
 
    // Implements EventListener -------------------------------------------------------------------

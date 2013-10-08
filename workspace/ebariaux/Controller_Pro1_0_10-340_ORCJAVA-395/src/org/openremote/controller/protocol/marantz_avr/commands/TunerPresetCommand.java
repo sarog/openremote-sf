@@ -40,6 +40,8 @@ import org.openremote.controller.utils.Logger;
  * 
  * Only handles custom sensor type with preset "number".
  * 
+ * This command does NOT support zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class TunerPresetCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
