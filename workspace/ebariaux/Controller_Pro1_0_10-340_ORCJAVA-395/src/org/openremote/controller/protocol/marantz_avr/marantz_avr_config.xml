@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <commands>
-  <command name="POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="PW">
+  <command name="MAIN_POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="PW">
     <parameters>
       <parameter name="ON">ON</parameter>
       <parameter name="OFF">STANDBY</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
-  <command name="MUTE" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="MU">
+  <command name="POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand">
+    <values>
+      <value zone="MAIN">ZM</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
+    <parameters>
+      <parameter name="ON">ON</parameter>
+      <parameter name="OFF">STANDBY</parameter>
+      <parameter name="STATUS">?</parameter>
+    </parameters>
+  </command>
+  <command name="MUTE" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand">
+    <values>
+      <value zone="MAIN">MU</value>
+      <value zone="ZONE2">Z2MU</value>
+      <value zone="ZONE3">Z3MU</value>
+    </values>
     <parameters>
       <parameter name="ON">ON</parameter>
       <parameter name="OFF">OFF</parameter>
@@ -15,7 +32,12 @@
     </parameters>
   </command>
 
-  <command name="INPUT" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand" value="SI">
+  <command name="INPUT" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand">
+    <values>
+      <value zone="MAIN">SI</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
     <parameters>
       <parameter name="PHONO">PHONO</parameter>
       <parameter name="CD">CD</parameter>
@@ -73,7 +95,13 @@
     </parameters>
   </command>
 
-  <command name="VOLUME" class="org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand" value="MV"/>
+  <command name="VOLUME" class="org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand">
+    <values>
+      <value zone="MAIN">ZM</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
+  </command>
 
   <command name="UP" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCUP"/>
   <command name="DOWN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCDN"/>
