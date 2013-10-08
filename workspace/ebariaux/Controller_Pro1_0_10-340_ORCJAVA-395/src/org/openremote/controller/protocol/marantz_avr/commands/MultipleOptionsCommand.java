@@ -38,6 +38,8 @@ import org.openremote.controller.utils.Logger;
  * 
  * Maps to custom sensor values, all other sensor types are not supported.
  * 
+ * This command supports zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class MultipleOptionsCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
@@ -56,13 +58,14 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
          throw new NoSuchCommandException("A parameter is always required for " + name + " command.");
       }
 
-      return new MultipleOptionsCommand(commandConfig, name, gateway, parameter);
+      return new MultipleOptionsCommand(commandConfig, name, gateway, parameter, zone);
     }
 
-   public MultipleOptionsCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+   public MultipleOptionsCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       super(name, gateway);
       this.parameter = parameter;
       this.commandConfig = commandConfig;
+      this.zone = zone;
    }
 
    // Private Instance Fields ----------------------------------------------------------------------
@@ -76,6 +79,11 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
     * Parameter used by this command.
     */
    private String parameter;
+   
+   /**
+    * Zone used by this command.
+    */
+   private String zone;
 
    // Implements ExecutableCommand -----------------------------------------------------------------
 
@@ -86,7 +94,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
       if (commandConfig.getParameter(parameter) == null) {
          throw new NoSuchCommandException("Invalid parameter (" + parameter + ") for command " + name);
       }
-     gateway.sendCommand(commandConfig.getValue(), commandConfig.getParameter(parameter));
+     gateway.sendCommand(commandConfig.getValueToUseForZone(zone), commandConfig.getParameter(parameter));
    }
 
    // Implements EventListener -------------------------------------------------------------------
@@ -96,7 +104,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand(commandConfig.getValue(), this);
+          gateway.registerCommand(commandConfig.getValuePerZone(zone), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -111,7 +119,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand(commandConfig.getValue(), this);
+         gateway.unregisterCommand(commandConfig.getValuePerZone(zone), this);
       }
    }
    

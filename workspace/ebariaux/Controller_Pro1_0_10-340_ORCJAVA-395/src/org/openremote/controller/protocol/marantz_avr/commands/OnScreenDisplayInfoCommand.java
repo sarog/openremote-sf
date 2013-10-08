@@ -20,6 +20,8 @@ import org.openremote.controller.utils.Logger;
  * OSD_INFO_SELECTED returns the cursor/selection information and supports Switch sensor only.
  * The parameter is used to indicate the line of information to retrieve, from 0 to 8.
  * 
+ * This command does NOT support zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class OnScreenDisplayInfoCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {

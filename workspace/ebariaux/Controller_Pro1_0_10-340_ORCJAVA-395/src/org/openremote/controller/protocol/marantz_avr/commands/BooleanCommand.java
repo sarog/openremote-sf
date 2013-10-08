@@ -38,6 +38,8 @@ import org.openremote.controller.utils.Logger;
  * 
  * Maps to on/off values for switch sensors and 1/0 values for range sensors.
  * 
+ * This command supports zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class BooleanCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
@@ -56,13 +58,14 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
          throw new NoSuchCommandException("A parameter is always required for " + name + " command.");
       }
 
-      return new BooleanCommand(commandConfig, name, gateway, parameter);
+      return new BooleanCommand(commandConfig, name, gateway, parameter, zone);
     }
 
-   public BooleanCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter) {
+   public BooleanCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       super(name, gateway);
       this.commandConfig = commandConfig;
       this.parameter = parameter;
+      this.zone = zone;
    }
 
    // Private Instance Fields ----------------------------------------------------------------------
@@ -76,6 +79,11 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
     * Parameter used by this command.
     */
    private String parameter;
+   
+   /**
+    * Zone used by this command.
+    */
+   private String zone;
 
    // Implements ExecutableCommand -----------------------------------------------------------------
 
@@ -86,7 +94,7 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
      if (commandConfig.getParameter(parameter) == null) {
         throw new NoSuchCommandException("Invalid parameter (" + parameter + ") for command " + name);
      }
-     gateway.sendCommand(commandConfig.getValue(), commandConfig.getParameter(parameter));
+     gateway.sendCommand(commandConfig.getValueToUseForZone(zone), commandConfig.getParameter(parameter));
    }
 
    // Implements EventListener -------------------------------------------------------------------
@@ -96,7 +104,7 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand(commandConfig.getValue(), this);
+          gateway.registerCommand(commandConfig.getValueToUseForZone(zone), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -111,7 +119,7 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand(commandConfig.getValue(), this);
+         gateway.unregisterCommand(commandConfig.getValueToUseForZone(zone), this);
       }
    }
    

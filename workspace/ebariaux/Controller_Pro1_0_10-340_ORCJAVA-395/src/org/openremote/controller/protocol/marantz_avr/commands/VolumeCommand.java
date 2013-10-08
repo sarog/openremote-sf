@@ -42,6 +42,8 @@ import org.openremote.controller.utils.Logger;
  * 
  * Handles all sensor types. Switch sensor is considered on as soon as volume is non zero.
  * 
+ * This command supports zones.
+ * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class VolumeCommand extends MarantzAVRCommand implements ExecutableCommand, EventListener {
@@ -57,12 +59,14 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
         throw new NoSuchCommandException("A parameter is always required for the VOLUME command.");
       }
 
-      return new VolumeCommand(name, gateway, parameter);
+      return new VolumeCommand(commandConfig, name, gateway, parameter, zone);
     }
 
-   public VolumeCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   public VolumeCommand(CommandConfig commandConfig, String name, MarantzAVRGateway gateway, String parameter, String zone) {
       super(name, gateway);
+      this.commandConfig = commandConfig;
       this.parameter = parameter;
+      this.zone = zone;
       volumeFormat = NumberFormat.getInstance();
       volumeFormat.setMaximumFractionDigits(0);
       volumeFormat.setMinimumIntegerDigits(3);
@@ -72,10 +76,20 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
    // Private Instance Fields ----------------------------------------------------------------------
 
    /**
+    * Configuration defining this command.
+    */
+   private CommandConfig commandConfig;
+
+   /**
     * Parameter used by this command.
     */
    private String parameter;
-   
+
+   /**
+    * Zone used by this command.
+    */
+   private String zone;
+
    private NumberFormat volumeFormat;
 
    // Implements ExecutableCommand -----------------------------------------------------------------
@@ -85,15 +99,15 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
     */
    public void send() {
      if ("STATUS".equals(parameter)) {
-        gateway.sendCommand("MV",  "?");
+        gateway.sendCommand(commandConfig.getValuePerZone(zone),  "?");
      } else if ("UP".equals(parameter) || "DOWN".equals(parameter)) {
-        gateway.sendCommand("MV", parameter);
+        gateway.sendCommand(commandConfig.getValuePerZone(zone), parameter);
      } else {
         // This should then be a value, parse it and reformat appropriately
         try {
            float value = Float.parseFloat(parameter);
            value = Math.round(value * 2.0f) / 2.0f; // Round to closest .5 value
-           gateway.sendCommand("MV", volumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
+           gateway.sendCommand(commandConfig.getValuePerZone(zone), volumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
         } catch (NumberFormatException e) {
            throw new NoSuchCommandException("Invalid volume parameter value (" + parameter + ")");
         }
@@ -107,7 +121,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand("MV", this);
+          gateway.registerCommand(commandConfig.getValuePerZone(zone), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -122,7 +136,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand("MV", this);
+         gateway.unregisterCommand(commandConfig.getValuePerZone(zone), this);
       }
    }
    
