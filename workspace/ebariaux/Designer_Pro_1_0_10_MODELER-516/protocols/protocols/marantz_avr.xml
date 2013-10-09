@@ -44,5 +44,10 @@
 				<allowBlank>true</allowBlank>
 			</validations>
 		</attr>
+                <attr name="zone" label="Zone" options="MAIN,ZONE2,ZONE3">
+			<validations>
+				<allowBlank>true</allowBlank>
+			</validations>
+		</attr>
 	</protocol>
 </openremote>
