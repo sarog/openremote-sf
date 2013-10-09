@@ -34,7 +34,7 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 	<protocol displayName="Marantz A/V receivers" tagName="marantz_avr">
-		<attr name="command" label="Command" options="POWER,MUTE,VOLUME,INPUT,SURROUND_MODE,TUNER_FREQUENCY,TUNER_PRESET,OSD_LINE_TEXT,OSD_LINE_SELECTED,NETWORK_CONTROL,UP,DOWN,LEFT,RIGHT,ENTER,RETURN">
+		<attr name="command" label="Command" options="MAIN_POWER,POWER,MUTE,VOLUME,INPUT,SURROUND_MODE,TUNER_FREQUENCY,TUNER_PRESET,OSD_LINE_TEXT,OSD_LINE_SELECTED,NETWORK_CONTROL,UP,DOWN,LEFT,RIGHT,ENTER,RETURN">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
