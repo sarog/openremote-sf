@@ -364,6 +364,10 @@ public class DeviceCommandWindow extends FormWindow {
          if (protocolValidator.getType() == ProtocolValidator.ALLOW_BLANK_TYPE) {
             if (Boolean.valueOf(protocolValidator.getValue())) {
                comboField.setAllowBlank(true);
+               
+               // If empty value allowed for a drop down list, add empty value to the list (MODELER-522)
+               StringComboBoxData comboData = new StringComboBoxData("", "");
+               comboField.getStore().insert(comboData, 0);
             } else {
                comboField.setAllowBlank(false);
                messages.setBlankText(protocolValidator.getMessage());
