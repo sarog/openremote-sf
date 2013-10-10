@@ -32,7 +32,8 @@ New Features:
        ORCJAVA-291, ORCJAVA-294, ORCJAVA-301)
 
   - HTTP protocol: 
-     * Methods GET, POST, PUT and DELETE are now supported.
+     * Methods GET, POST, PUT and DELETE are now supported (Marcus Redeker,
+       ORCJAVA-400)
      * For HTTP/JSON return documents, a JSON Path expression is supported.
      * HTTP content-type headers are supported (Marcus Redeker, ORCJAVA-260) 
      * For outgoing HTTP request, a user agent header is included which 
