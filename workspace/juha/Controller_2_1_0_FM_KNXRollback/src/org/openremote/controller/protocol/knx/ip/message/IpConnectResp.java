@@ -24,9 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.openremote.controller.protocol.knx.ip.tunnel.Channel;
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
 import org.openremote.controller.protocol.knx.IndividualAddress;
-import org.openremote.controller.protocol.knx.tunnel.ConnectionResponseData;
+import org.openremote.controller.protocol.knx.ip.tunnel.ConnectionResponseData;
 import org.openremote.controller.utils.Strings;
 
 
@@ -68,7 +69,7 @@ import org.openremote.controller.utils.Strings;
  *
  * IMPLEMENTATION NOTE : this implementation is currently specific to *tunneling* connection
  * responses via dependency to
- * {@link org.openremote.controller.protocol.knx.tunnel.ConnectionResponseData}. It is otherwise
+ * {@link org.openremote.controller.protocol.knx.ip.tunnel.ConnectionResponseData}. It is otherwise
  * fairly generic to the 'core' CRD so can be fairly easily modified to other connection types
  * if necessary.
  *
@@ -218,8 +219,8 @@ public class IpConnectResp extends IpMessage
   /**
    * Constructs an in-memory {@link ServiceTypeIdentifier@CONNECT_RESPONSE} frame.
    *
-   * @param   channelID
-   *            channel identifier for the established connection
+   * @param   channel
+   *            channel for the established connection
    *
    * @param   status
    *            connection status -- {@link Status#NO_ERROR} for successful connections
@@ -233,12 +234,18 @@ public class IpConnectResp extends IpMessage
    *            KNX individual address associated with this connection (service container
    *            individual address)
    */
-  public IpConnectResp(int channelID, Status status, Hpai serverDataEndpoint,
+  public IpConnectResp(Channel channel, Status status, Hpai serverDataEndpoint,
                        IndividualAddress connectionAddress)
   {
     super(STI, 2 + Hpai.KNXNET_IP_10_HPAI_SIZE + KNXNET_IP_10_TUNNELING_CRD_SIZE);
 
-    this.channelId = channelID;
+    // TODO:
+    //    - Should store the channel reference, no need to extract the ID only.
+    //      Will migrate to the new Channel API later (need unit tests to back this up)
+    //
+    //                                                                [JPL]
+
+    this.channelId = channel.getIdentifier();
 
     this.status = status;
 
