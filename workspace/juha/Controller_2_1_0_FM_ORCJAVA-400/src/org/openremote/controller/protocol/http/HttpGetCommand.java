@@ -34,6 +34,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -48,6 +49,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.HTTP;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -222,17 +226,28 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
        request = new HttpDelete(uri);
     }
     String resp = "";
+    HttpResponse response = null;
     ResponseHandler<String> responseHandler = new BasicResponseHandler();
     request.addHeader("User-Agent", "OpenRemoteController");
+    request.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
     if (contentType != null) {
        request.addHeader("Content-Type", contentType);
     }
     try {
-       resp = client.execute(request, responseHandler);
+       response = client.execute(request);
+       resp = responseHandler.handleResponse(response);
     } catch (ClientProtocolException e) {
        logger.error("ClientProtocolException when executing HTTP method", e);
     } catch (IOException e) {
        logger.error("IOException when executing HTTP method", e);
+    }
+    finally {
+       try {
+          if ((response != null) && (response.getEntity() != null)) {
+             response.getEntity().consumeContent();    
+          }
+       } catch (IOException ignored) {}
+       client.getConnectionManager().shutdown();
     }
     logger.info("received message: " + resp);
     return resp;
