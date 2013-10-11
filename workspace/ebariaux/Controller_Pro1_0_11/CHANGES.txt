@@ -19,6 +19,7 @@ Bug Fixes:
     gateway and thread processing serial port input (Juha Lindfors, ORCJAVA-359)
   - Fix ISY-99 connection error messages at regular interval (ORCJAVA-372)
   - Vera protocol implementation exception at startup (ORCJAVA-403)
+  - Update Marantz implementation to use locale independent string case conversions (ORCJAVA-340)
 
 Controller Pro 1.0.10
 =====================
