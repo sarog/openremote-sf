@@ -40,6 +40,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway.MarantzResponse;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Base class for all Commands understood by Marantz AVR protocol.
@@ -113,7 +114,7 @@ public abstract class MarantzAVRCommand implements Command {
    static MarantzAVRCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
       log.debug("Received request to build command with name " + name);
     
-      name = name.trim().toUpperCase();
+      name = Strings.toUpperCase(name.trim());
       CommandConfig commandConfig = commandConfigurations.get(name);
       log.debug("This command maps to command config " + commandConfig);
 
