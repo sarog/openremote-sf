@@ -77,5 +77,18 @@
       </validations>
     </attr>
 
+    <attr name = "ip" label = "Address" tooltipMessage = "Optional address used in generated URL">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name = "port" label = "Port" tooltipMessage="Optional port used in generated URL">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <maxLength>5</maxLength>
+        <regex message="Numbers only">\d+</regex>
+      </validations>
+    </attr>
   </protocol>
 </openremote>
