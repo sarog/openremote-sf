@@ -103,13 +103,22 @@
     </values>
   </command>
 
-  <command name="UP" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCUP"/>
-  <command name="DOWN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCDN"/>
-  <command name="LEFT" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCLT"/>
-  <command name="RIGHT" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCRT"/>
-  <command name="ENTER" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNENT"/>
-  <command name="RETURN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNRTN"/>
 
+  <command name="MAIN_CONTROL" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MN">
+    <parameters>
+      <parameter name="CURSOR UP">CUP</parameter>
+      <parameter name="CURSOR DOWN">CDN</parameter>
+      <parameter name="CURSOR LEFT">CLT</parameter>
+      <parameter name="CURSOR RIGHT">CRT</parameter>
+      <parameter name="ENTER">ENT</parameter>
+      <parameter name="RETURN">RTN</parameter>
+      <parameter name="OPTION">OPT</parameter>
+      <parameter name="INFO">INF</parameter>
+      <parameter name="SETUP MENU ON">MEN ON</parameter>
+      <parameter name="SETUP MENU OFF">MEN OFF</parameter>
+    </parameters>
+  </command>
+  
   <command name="NETWORK_CONTROL" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="NS">
     <parameters>
       <parameter name="CURSOR UP">90</parameter>
