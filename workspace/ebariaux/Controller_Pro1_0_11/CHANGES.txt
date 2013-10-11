@@ -20,6 +20,7 @@ Bug Fixes:
   - Fix ISY-99 connection error messages at regular interval (ORCJAVA-372)
   - Vera protocol implementation exception at startup (ORCJAVA-403)
   - Update Marantz implementation to use locale independent string case conversions (ORCJAVA-340)
+  - Marantz AVR protocol improvements: multiple-zone support and additional commands (ORCJAVA-395)
 
 Controller Pro 1.0.10
 =====================

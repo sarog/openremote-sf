@@ -81,6 +81,17 @@ public abstract class MarantzAVRCommand implements Command {
                Class<? extends MarantzAVRCommand> clazz = (Class<? extends MarantzAVRCommand>)Class.forName(commandElement.getAttributeValue("class"));
                CommandConfig commandConfig = new CommandConfig(commandName, commandElement.getAttributeValue("value"), clazz);
                
+               Element valuesElement = commandElement.getChild("values");
+               if (valuesElement != null) {
+                  @SuppressWarnings("unchecked")
+                  List<Element> valueElements = valuesElement.getChildren();
+                  if (valueElements != null) {
+                     for (Element valueElement : valueElements) {
+                        commandConfig.addValuePerZone(valueElement.getAttributeValue("zone"), valueElement.getText());
+                     }
+                  }
+               }
+               
                Element parametersElement = commandElement.getChild("parameters");
                if (parametersElement != null) {
                   @SuppressWarnings("unchecked")
@@ -111,7 +122,7 @@ public abstract class MarantzAVRCommand implements Command {
     * 
     * @return new Marantz AVR command instance
     */
-   static MarantzAVRCommand createCommand(String name, MarantzAVRGateway gateway, String parameter) {
+   static MarantzAVRCommand createCommand(String name, MarantzAVRGateway gateway, String parameter, String zone) {
       log.debug("Received request to build command with name " + name);
     
       name = Strings.toUpperCase(name.trim());
@@ -125,10 +136,10 @@ public abstract class MarantzAVRCommand implements Command {
       Class<? extends MarantzAVRCommand> commandClass = commandConfig.getCommandClass();
       MarantzAVRCommand cmd = null;
       try {
-         Method method = commandClass.getMethod("createCommand", CommandConfig.class, String.class, MarantzAVRGateway.class, String.class);
+         Method method = commandClass.getMethod("createCommand", CommandConfig.class, String.class, MarantzAVRGateway.class, String.class, String.class);
          log.debug("Got the creation method " + method + ", will call it");
          
-         cmd = (MarantzAVRCommand) method.invoke(null, commandConfig, name, gateway, parameter);
+         cmd = (MarantzAVRCommand) method.invoke(null, commandConfig, name, gateway, parameter, zone);
          log.debug("Creation successfull, got command " + cmd);
       } catch (SecurityException e) {
          // TODO: should this be logged, check other source code
