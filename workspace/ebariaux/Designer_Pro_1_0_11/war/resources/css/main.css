@@ -397,3 +397,7 @@ table.screen-btn-cont td.br-c{
  color:red;
 }
 
+/* EBR, introduced for MODELER-522 to ensure blank in dropdown list display with full line height */
+.x-combo-list-item {
+  min-height: 1em;
+}
