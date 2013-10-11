@@ -5,6 +5,10 @@ Fixes:
  - Logout not working under Firefox (MODELER-507)
  - Designer can't handle multiple login with the same account (MODELER-508)
 
+New features:
+
+ - Support new features in Marantz AVR protocol: multiple-zone support and additional commandsr (MODELER-516)
+
 Pro 1.0.10
 ==========
 
