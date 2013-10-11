@@ -1,3 +1,9 @@
+Designer MODELER-522
+====================
+
+  - Have empty option for commands in protocol definition
+    with allowBlank constraint true when using list of options
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
