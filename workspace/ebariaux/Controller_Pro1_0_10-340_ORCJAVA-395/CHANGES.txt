@@ -1,3 +1,8 @@
+Controller ORCJAVA-395
+======================
+
+ - Marantz AVR protocol improvements: multiple-zone support and additional commands
+
 Controller Pro 1.0.10
 =====================
 
