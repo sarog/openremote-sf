@@ -6,6 +6,7 @@ New Features:
   - Direct HTTP related logging into its own file in /logs/http/http.log
     (Juha Lindfors) (ORCJAVA-368)
   - Have Samsung protocol as separate jar for Pro release (ORCJAVA-381)
+  - Add a polling interval on the DateTime protocol (ORCJAVA-396)
 
 Bug Fixes:
 
