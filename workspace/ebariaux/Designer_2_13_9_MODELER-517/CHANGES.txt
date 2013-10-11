@@ -1,3 +1,8 @@
+Designer MODELER-517
+====================
+
+  - Update DateTime protocol configuration
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
