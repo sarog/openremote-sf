@@ -1,3 +1,8 @@
+Controller ORCJAVA-396
+======================
+
+  - Add a polling interval on the DateTime protocol
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
