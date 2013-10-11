@@ -1,3 +1,8 @@
+Designer MODELER-521
+====================
+
+ - Add controller configuration parameters for Samsung TV
+
 Pro 1.0.10
 ==========
 
