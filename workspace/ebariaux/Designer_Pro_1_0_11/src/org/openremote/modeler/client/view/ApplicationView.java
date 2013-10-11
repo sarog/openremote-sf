@@ -444,7 +444,7 @@ public class ApplicationView implements View {
       logoutButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            Window.open("j_security_logout", "_self", "");
+           Window.open(GWT.getHostPageBaseURL() + "j_security_logout", "_self", "");
          }
       });
       return logoutButton;
