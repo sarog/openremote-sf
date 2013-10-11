@@ -1,3 +1,9 @@
+Pro 1.0.11
+==========
+
+Fixes:
+ - Logout not working under Firefox (MODELER-507)
+
 Pro 1.0.10
 ==========
 
