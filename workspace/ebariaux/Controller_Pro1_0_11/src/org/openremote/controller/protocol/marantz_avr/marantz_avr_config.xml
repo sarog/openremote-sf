@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <commands>
-  <command name="POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="PW">
+  <command name="MAIN_POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="PW">
     <parameters>
       <parameter name="ON">ON</parameter>
       <parameter name="OFF">STANDBY</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
-  <command name="MUTE" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand" value="MU">
+  <command name="POWER" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand">
+    <values>
+      <value zone="MAIN">ZM</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
+    <parameters>
+      <parameter name="ON">ON</parameter>
+      <parameter name="OFF">STANDBY</parameter>
+      <parameter name="STATUS">?</parameter>
+    </parameters>
+  </command>
+  <command name="MUTE" class="org.openremote.controller.protocol.marantz_avr.commands.BooleanCommand">
+    <values>
+      <value zone="MAIN">MU</value>
+      <value zone="ZONE2">Z2MU</value>
+      <value zone="ZONE3">Z3MU</value>
+    </values>
     <parameters>
       <parameter name="ON">ON</parameter>
       <parameter name="OFF">OFF</parameter>
@@ -15,7 +32,12 @@
     </parameters>
   </command>
 
-  <command name="INPUT" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand" value="SI">
+  <command name="INPUT" class="org.openremote.controller.protocol.marantz_avr.commands.MultipleOptionsCommand">
+    <values>
+      <value zone="MAIN">SI</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
     <parameters>
       <parameter name="PHONO">PHONO</parameter>
       <parameter name="CD">CD</parameter>
@@ -31,6 +53,15 @@
       <parameter name="IRADIO">IRADIO</parameter>
       <parameter name="TUNER">TUNER</parameter>
       <parameter name="MEDIAPLAYER">MPLAY</parameter>
+      <parameter name="LASTFM">LASTFM</parameter>
+      <parameter name="FAVORITES">FAVORITES</parameter>
+      <parameter name="SERVER">SERVER</parameter>
+      <parameter name="USB/IPOD">USB/IPOD</parameter>
+      <parameter name="USB">USB</parameter>
+      <parameter name="IPOD">IPD</parameter> <!-- iPod DIRECT start playback -->
+      <parameter name="IRP">IRP</parameter> <!--  Internet Radio Recent Play -->
+      <parameter name="FVP">FVP</parameter> <!--  Network Favorites Play -->
+	  <parameter name="NETWORK">NET</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
@@ -64,15 +95,30 @@
     </parameters>
   </command>
 
-  <command name="VOLUME" class="org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand" value="MV"/>
+  <command name="VOLUME" class="org.openremote.controller.protocol.marantz_avr.commands.VolumeCommand">
+    <values>
+      <value zone="MAIN">ZM</value>
+      <value zone="ZONE2">Z2</value>
+      <value zone="ZONE3">Z3</value>
+    </values>
+  </command>
 
-  <command name="UP" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCUP"/>
-  <command name="DOWN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCDN"/>
-  <command name="LEFT" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCLT"/>
-  <command name="RIGHT" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNCRT"/>
-  <command name="ENTER" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNENT"/>
-  <command name="RETURN" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MNRTN"/>
 
+  <command name="MAIN_CONTROL" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="MN">
+    <parameters>
+      <parameter name="CURSOR UP">CUP</parameter>
+      <parameter name="CURSOR DOWN">CDN</parameter>
+      <parameter name="CURSOR LEFT">CLT</parameter>
+      <parameter name="CURSOR RIGHT">CRT</parameter>
+      <parameter name="ENTER">ENT</parameter>
+      <parameter name="RETURN">RTN</parameter>
+      <parameter name="OPTION">OPT</parameter>
+      <parameter name="INFO">INF</parameter>
+      <parameter name="SETUP MENU ON">MEN ON</parameter>
+      <parameter name="SETUP MENU OFF">MEN OFF</parameter>
+    </parameters>
+  </command>
+  
   <command name="NETWORK_CONTROL" class="org.openremote.controller.protocol.marantz_avr.commands.NoFeedbackCommand" value="NS">
     <parameters>
       <parameter name="CURSOR UP">90</parameter>
@@ -85,6 +131,15 @@
       <parameter name="STOP">9C</parameter>
       <parameter name="SKIP PLUS">9D</parameter>
       <parameter name="SKIP MINUS">9E</parameter>
+      <parameter name="REPEAT ONE">9H</parameter>
+      <parameter name="REPEAT ALL">9I</parameter>
+      <parameter name="REPEAT OFF">9J</parameter>
+      <parameter name="RANDOM ON">9K</parameter>
+      <parameter name="RANDOM OFF">9M</parameter>
+      <parameter name="TOGGLE BROWSE REMOTE">9W</parameter>
+      <parameter name="PAGE NEXT">9X</parameter>
+      <parameter name="PAGE PREVIOUS">9Y</parameter>
+      <parameter name="TOGGLE PARTY MODE">PT</parameter>
     </parameters>
   </command>
 

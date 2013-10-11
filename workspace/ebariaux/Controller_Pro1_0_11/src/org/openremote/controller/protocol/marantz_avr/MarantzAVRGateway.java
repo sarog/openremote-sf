@@ -314,8 +314,8 @@ public class MarantzAVRGateway {
 //         MarantzCommand otherCommand = (MarantzCommand) other;
          return false;
 
-         // TODO: To be coalescable requires quite a bit of knownledge on commands
-         // For instance, 2 absolute volume settings can be coalesced into the last occurence
+         // TODO: To be coalescable requires quite a bit of knowledge on commands
+         // For instance, 2 absolute volume settings can be coalesced into the last occurrence
          // where as 2 UP volume commands must not.
       }
 

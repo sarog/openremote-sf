@@ -52,6 +52,8 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
    public final static String MARANTZ_AVR_XMLPROPERTY_COMMAND = "command";
 
    public final static String MARANTZ_AVR_XMLPROPERTY_PARAMETER = "parameter";
+   
+   public final static String MARANTZ_AVR_XMLPROPERTY_ZONE = "zone";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -81,6 +83,7 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
     * <command protocol = "marantz_avr" >
     *   <property name = "command" value = ""/>
     *   <property name = "parameter" value = ""/>
+    *   <property name = "zone" value = ""/>
     * </command>
     * }
     * </pre>
@@ -96,6 +99,7 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
    public Command build(Element element) {
       String commandAsString = null;
       String parameter = null;
+      String zone = "MAIN"; // Default to main zone if none provided
 
       // Get the list of properties from XML...
 
@@ -112,6 +116,10 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
 
          else if (MARANTZ_AVR_XMLPROPERTY_PARAMETER.equalsIgnoreCase(propertyName)) {
             parameter = propertyValue;
+         }
+         
+         else if (MARANTZ_AVR_XMLPROPERTY_ZONE.equalsIgnoreCase(propertyName)) {
+            zone = propertyValue;
          }
 
          else if (!MARANTZ_AVR_XMLPROPERTY_NAME.equalsIgnoreCase(propertyName)) { // name property is allowed but we're not interested in its value
@@ -135,7 +143,7 @@ public class MarantzAVRCommandBuilder implements CommandBuilder {
       
       // Translate the command string to a type safe Marantz AVR Command types...
 
-      Command cmd = MarantzAVRCommand.createCommand(commandAsString, gateway, parameter);
+      Command cmd = MarantzAVRCommand.createCommand(commandAsString, gateway, parameter, zone);
 
       log.info("Created Marantz AVR Command " + cmd);
 

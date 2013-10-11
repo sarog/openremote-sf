@@ -31,7 +31,9 @@ import java.util.Map;
  * by the Marantz protocol "over the wire" to the device. 
  *
  * name is the command name as used in the Designer configuration
- * value is the corresponding command string used by the Marantz procotol
+ * 
+ * If the command is not zone specific, value is the corresponding command string used by the Marantz procotol
+ * if it is zone specific, values is a map providing command string per zone (supported zones are MAIN, ZONE2, ZONE3).
  * 
  * Some commands can be handled by the same generic implementation,
  * whereas others require a specific implementation.
@@ -47,6 +49,7 @@ public class CommandConfig {
    
    private String name;
    private String value;
+   private Map<String, String> valuePerZone;
    private Class<? extends MarantzAVRCommand> commandClass;
    private Map<String, String> knownParameters;
    
@@ -54,6 +57,7 @@ public class CommandConfig {
       super();
       this.name = name;
       this.value = value;
+      this.valuePerZone = new HashMap<String, String>();
       this.commandClass = commandClass;
       this.knownParameters = new HashMap<String, String>();
    }
@@ -62,12 +66,44 @@ public class CommandConfig {
       knownParameters.put(orParam, onkyoParam);
    }
 
+   public void addValuePerZone(String zone, String value) {
+      valuePerZone.put(zone, value);
+   }
+   
    public String getName() {
       return name;
    }
    
    public String getValue() {
       return value;
+   }
+   
+   public String getValuePerZone(String zone) {
+      return valuePerZone.get(zone);
+   }
+   
+   /**
+    * Returns the value that should be used for the given command, for the provided zone.
+    * The logic is:
+    * <ul>
+    *   <li>if a single value is provided on the command definition, it is always used, regardless of the provided zone.</li>
+    *   <li>if no single value is provided on the command definition and a value exists for the provided zone, it is used.</li>
+    *   <li>if no single value is provided on the command definition but no value exists for the provided zone,
+    *       the value for zone 'MAIN' is used (even if that might end up being null).</li>
+    * </ul>
+    * 
+    * @param zone String zone to get value for
+    * @return String value to use, as per rules defined above
+    */
+   public String getValueToUseForZone(String zone) {
+      if (getValue() != null) {
+         return getValue();
+      }
+      String zoneValue = getValuePerZone(zone);
+      if (zoneValue != null) {
+         return zoneValue;
+      }
+      return getValuePerZone("MAIN");
    }
 
    public Class<? extends MarantzAVRCommand> getCommandClass() {
