@@ -11,6 +11,8 @@ New features:
  - Update DateTime protocol configuration (MODELER-517)
  - Add ip and port parameters to RRD4J graph protocol (MODELER-520)
  - Add controller configuration parameters for Samsung TV (MODELER-521)
+ - Have empty option for commands in protocol definition
+   with allowBlank constraint true when using list of options (MODELER-522)
 
 Pro 1.0.10
 ==========
