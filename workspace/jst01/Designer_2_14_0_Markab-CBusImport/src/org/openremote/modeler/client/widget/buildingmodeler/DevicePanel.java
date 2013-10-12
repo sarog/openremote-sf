@@ -317,6 +317,7 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
+      final MenuItem newCBusImportMenuItem = createNewCBusImportMenu();
 
       final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
@@ -327,6 +328,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
+      newMenu.add(newCBusImportMenuItem);
 
      //  TODO:
      //     Enable once the IR Import service has been deployed.   [JPL]
@@ -485,6 +487,23 @@ public class DevicePanel extends ContentPanel {
       importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
          public void componentSelected(MenuEvent ce) {
             importLutronCommand();
+         }
+
+      });
+      return importCommandItem;
+   }
+   
+   /**
+    * Creates the import cbus menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createNewCBusImportMenu() {
+      MenuItem importCommandItem = new MenuItem("Import CBus Commands from XML");
+      importCommandItem.setIcon(icon.importFromDB());
+      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            importCBusCommand();
          }
 
       });
@@ -935,6 +954,18 @@ public class DevicePanel extends ContentPanel {
      final BeanModel deviceModel = getDeviceModel();
      if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {       
        LutronImportWizard importWizard = new LutronImportWizard((DeviceDTO) deviceModel.getBean(), eventBus);
+       importWizard.show();
+       importWizard.center();
+     }
+   }
+   
+   /**
+    * Import CBusn command.
+    */
+   private void importCBusCommand() {    
+     final BeanModel deviceModel = getDeviceModel();
+     if (deviceModel != null && deviceModel.getBean() instanceof DeviceDTO) {       
+       CBusImportWizard importWizard = new CBusImportWizard((DeviceDTO) deviceModel.getBean(), eventBus);
        importWizard.show();
        importWizard.center();
      }
