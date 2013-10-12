@@ -26,6 +26,8 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SwitchService;
@@ -121,5 +123,14 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          }
       }
       return result;
+   }
+   
+   @Transactional
+   public List<Switch> saveAllSwitches(List<Switch> switchList, Account account) {
+       for (Switch s : switchList) {
+           s.setAccount(account);
+           genericDAO.save(s);
+       }
+       return switchList;
    }
 }
