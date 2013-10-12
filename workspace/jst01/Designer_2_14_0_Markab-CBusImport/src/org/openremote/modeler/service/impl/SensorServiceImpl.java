@@ -119,8 +119,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
     public List<Sensor> saveAllSensors(List<Sensor> sensorList, Account account) {
         for (Sensor sensor : sensorList) {
           
-          System.out.println("Saving sensor " + sensor);
-          
+         
             sensor.setAccount(account);
             genericDAO.save(sensor);
         }
