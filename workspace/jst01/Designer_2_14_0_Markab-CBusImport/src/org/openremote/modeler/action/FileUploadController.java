@@ -31,9 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.modeler.cbus.CBusImporter;
 import org.openremote.modeler.domain.KnxGroupAddress;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
+import org.openremote.modeler.server.cbus.importmodel.CBusImportResult;
 import org.openremote.modeler.server.lutron.importmodel.LutronImportResult;
 import org.openremote.modeler.server.lutron.importmodel.Project;
 import org.openremote.modeler.service.ResourceService;
@@ -137,6 +139,25 @@ public class FileUploadController extends MultiActionController implements BeanF
       response.setHeader("content-type", "text/html");
       response.setCharacterEncoding("UTF-8");
       response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
+    }
+    
+    public void importCBus(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "cbus");
+
+	CBusImportResult importResult = new CBusImportResult();
+
+	try {
+	    org.openremote.modeler.server.cbus.importmodel.Project project = CBusImporter.importXMLConfiguration(multipartFile.getInputStream());
+	    importResult.setProject(project);
+	} catch (org.openremote.modeler.cbus.ImportException e) {
+	    LOGGER.error("Import file error.", e);
+	    importResult.setErrorMessage(e.getMessage());        
+	}
+	JSONSerializer serializer = new JSONSerializer();
+	System.out.println("Generated JSON >" + serializer.exclude("*.class").deepSerialize(importResult) + "<");
+	response.setHeader("content-type", "text/html");
+	response.setCharacterEncoding("UTF-8");
+	response.getWriter().println(serializer.exclude("*.class").deepSerialize(importResult));
     }
 
     /**
