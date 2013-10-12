@@ -182,10 +182,11 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
     * 
     * @return the list< bean model>
     */
-   public static List<BeanModel> createModels(Collection<? extends UIComponent> list) {
+   @SuppressWarnings("unchecked")
+   public static List<BeanModel> createModels(Collection<? extends BusinessEntity> list) {
       List<BeanModel> models = new ArrayList<BeanModel>();
-      for (UIComponent b : list) {
-         models.add(b.getBeanModel());
+      for (UIComponent b : (Collection<? extends UIComponent>) list) {
+	  models.add(b.getBeanModel());
       }
       return models;
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+
+  <protocol displayName="Clipsal CBus" tagName="cbus">
+
+    <attr name="command" label="Command">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message="Must be one of SETVALUE, ON, OFF, DIM, PULSE, STATUS">SETVALUE|ON|OFF|DIM|PULSE|STATUS</regex>
+      </validations>
+    </attr>
+    
+    <attr name="network" label="Network name (blank will use default network)">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+        
+    <attr name="application" label="Application name (blank will use Lighting)">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+    
+    <attr name="group" label="Group name (as per CBus project)">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+    
+    <attr name="command_value" label="Command Parameters (pipe-delimited)">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+  </protocol>
+</openremote>
