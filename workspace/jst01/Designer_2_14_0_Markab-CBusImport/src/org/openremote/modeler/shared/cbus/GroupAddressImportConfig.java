@@ -34,7 +34,7 @@ public class GroupAddressImportConfig implements Serializable
     private String groupAddressName;
     private String groupAddress;
     private boolean dimmable;
-    private boolean switchCompatible;
+    private boolean switchWanted;
 
     public GroupAddressImportConfig() 
     {
@@ -49,7 +49,7 @@ public class GroupAddressImportConfig implements Serializable
 	this.groupAddressName = groupAddressName;
 	this.groupAddress = groupAddress;
 	this.dimmable = canDim;
-	this.switchCompatible = switchCompatible;
+	this.switchWanted = switchCompatible;
     }
     
     public GroupAddressImportConfig(String networkName, String applicationName,
@@ -108,14 +108,14 @@ public class GroupAddressImportConfig implements Serializable
         this.dimmable = canDim;
     }
 
-    public boolean isSwitchCompatible()
+    public boolean isSwitchWanted()
     {
-        return switchCompatible;
+        return switchWanted;
     }
 
-    public void setSwitchCompatible(boolean switchCompatible)
+    public void setSwitchWanted(boolean switchCompatible)
     {
-        this.switchCompatible = switchCompatible;
+        this.switchWanted = switchCompatible;
     }
     
 

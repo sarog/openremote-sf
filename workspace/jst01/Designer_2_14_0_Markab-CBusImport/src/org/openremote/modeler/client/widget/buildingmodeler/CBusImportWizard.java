@@ -47,6 +47,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.EventBus;
@@ -90,9 +91,6 @@ public class CBusImportWizard extends DialogBox
 
     private final MultiSelectionModel<GroupAddressImportConfig> selectionModel = new MultiSelectionModel<GroupAddressImportConfig>();
 
-    final String NoScene = null;
-    final String NoLevel = null;
-    final String NoKey = null;
 
     @UiFactory
     DialogBox itself() 
@@ -170,18 +168,44 @@ public class CBusImportWizard extends DialogBox
 	    @Override
 	    public Boolean getValue(GroupAddressImportConfig outputConfig)
 	    {
-		return outputConfig.isSwitchCompatible();
+		return outputConfig.isSwitchWanted();
 	    }
 		};
+		
+	switchColumn.setFieldUpdater(new FieldUpdater<GroupAddressImportConfig, Boolean>()
+	{
+
+	    @Override
+	    public void update(int index, GroupAddressImportConfig outputConfig,
+		    Boolean val)
+	    {
+		outputConfig.setSwitchWanted(val);
+		
+	    }
+	    
+	});
 		
 	Column<GroupAddressImportConfig, Boolean> dimmableColumn = new Column<GroupAddressImportConfig, Boolean>(new CheckboxCell(false, false)) 
 	{
 	    @Override
 	    public Boolean getValue(GroupAddressImportConfig outputConfig)
 	    {
-		return outputConfig.isDimmable();
-	    }
+		return outputConfig.isDimmable();		
+	    }  
+	    
+	    
 	};
+	dimmableColumn.setFieldUpdater(new FieldUpdater<GroupAddressImportConfig, Boolean>()
+	{
+
+	    @Override
+	    public void update(int index, GroupAddressImportConfig outputConfig,
+		    Boolean val)
+	    {
+		outputConfig.setDimmable(val);		
+	    }    
+	    
+	});
 
 	selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() 
 	{      
