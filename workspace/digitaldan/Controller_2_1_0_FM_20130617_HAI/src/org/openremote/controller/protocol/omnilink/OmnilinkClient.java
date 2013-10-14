@@ -34,7 +34,6 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
-import com.digitaldan.jomnilinkII.MessageTypes.properties.CodeProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
@@ -57,7 +56,6 @@ public class OmnilinkClient extends Thread {
    ConcurrentHashMap<Integer, Thermostat> thermos;
    ConcurrentHashMap<Integer, Zone> zones;
    ConcurrentHashMap<Integer, Area> areas;
-   //ConcurrentHashMap<Integer, CodeProperties> codes;
    ConcurrentHashMap<Integer, Aux> auxs;
    ConcurrentHashMap<Integer, ButtonProperties> buttons;
    ConcurrentHashMap<Integer, AudioZone> audioZones;
@@ -81,7 +79,6 @@ public class OmnilinkClient extends Thread {
       thermos = new ConcurrentHashMap<Integer, Thermostat>();
       zones = new ConcurrentHashMap<Integer, Zone>();
       areas = new ConcurrentHashMap<Integer, Area>();
-      //codes = new ConcurrentHashMap<Integer, CodeProperties>();
       auxs = new ConcurrentHashMap<Integer, Aux>();
       buttons = new ConcurrentHashMap<Integer, ButtonProperties>();
       audioZones = new ConcurrentHashMap<Integer, AudioZone>();
@@ -161,7 +158,7 @@ public class OmnilinkClient extends Thread {
                               AudioSource audioSrc = audioSources.get(new Integer(as.getSource()));
                               //make sure we have the right audio src text. 
                               if(audioSrc != null){
-                                 audioZone.setAudioSourceText(audioSrc.formatAudioText());
+                                 audioZone.setAudioSource(audioSrc);
                               }
                               audioZone.getProperties().updateAudioZone(as);
                               audioZone.updateSensors();
@@ -372,11 +369,11 @@ public class OmnilinkClient extends Thread {
                az = new AudioZone(properties);
                AudioSource src = audioSources.get(properties.getSource());
                if(src !=null)
-                  az.setAudioSourceText(src.formatAudioText());
+                  az.setAudioSource(src);
                audioZones.put(new Integer(number), az);
             }
          }
-         log.info("About to add audioZone, az null ? " + (az== null));
+
          if(az != null){
             az.addSensor(cmd, sensor);
             az.updateSensors();
@@ -599,12 +596,10 @@ public class OmnilinkClient extends Thread {
     * @param as
     */
    private void updateAudioZoneText(AudioSource as){
-      System.out.println("updateAudioZoneText  text: " + as.formatAudioText());
       for(AudioZone az : audioZones.values()){
          if(az != null && az.getProperties().getSource() == as.getProperties().getNumber()){
             log.info("STATUS_AUDIO_ZONE updating sensor for zone " + az.getProperties().getNumber());
-            System.out.println("updateAudioSourceTexts updating zone " + az.getProperties().getNumber() + " with text " + as.formatAudioText());
-            az.setAudioSourceText(as.formatAudioText());
+            az.setAudioSource(as);
             az.updateSensors();
          }
       }

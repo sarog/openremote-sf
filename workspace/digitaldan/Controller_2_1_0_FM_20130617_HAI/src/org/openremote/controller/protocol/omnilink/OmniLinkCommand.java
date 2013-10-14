@@ -34,19 +34,40 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
       try {
          switch(command){
          /*
-          * Hack for sliders on rooms, if we get this command, which is allowed
-          * by the omni protocol, check if the device is a room and if so
-          * set all the lights in the room to that level
+          * Hack for sliders and steps on rooms, if we get this command, 
+          * which is allowed by the omni protocol, check if the device is a 
+          * room and if so set all the lights in the room to that level
           */
-         case CMD_UNIT_PERCENT:{
+         case CMD_UNIT_PERCENT:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_1:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_2:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_3:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_4:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_5:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_6:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_7:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_8:
+         case CMD_UNIT_UPB_BRIGHTEN_STEP_9:
+         case CMD_UNIT_UPB_DIM_STEP_1:
+         case CMD_UNIT_UPB_DIM_STEP_2:
+         case CMD_UNIT_UPB_DIM_STEP_3:
+         case CMD_UNIT_UPB_DIM_STEP_4:
+         case CMD_UNIT_UPB_DIM_STEP_5:
+         case CMD_UNIT_UPB_DIM_STEP_6:
+         case CMD_UNIT_UPB_DIM_STEP_7:
+         case CMD_UNIT_UPB_DIM_STEP_8:
+         case CMD_UNIT_UPB_DIM_STEP_9:{
+            
             Map<Integer,Unit> units = client.getUnits();
             Unit u = units.get(new Integer(parameter2));
+            
             if(u != null && (u.getProperties().getUnitType() == 
                   UnitProperties.UNIT_TYPE_HLC_ROOM || 
                   u.getProperties().getUnitType() == 
                   UnitProperties.UNIT_TYPE_VIZIARF_ROOM)){
                int num = u.getProperties().getNumber();
-               for(int i=num;i<num + 8;i++){
+               //rooms do not respond to these commands, so fake it.
+               for(int i=num + 1;i < num + 8;i++){
                   if(units.get(new Integer(i)) != null)
                      client.connection().controllerCommand(command.getNumber(), parameter1, i);
                }
@@ -55,6 +76,7 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
             }
             break;
          }
+         
          /*
           * convert the c or f param to the internal omni format, we don't
           * want to do this on the client.
@@ -95,6 +117,7 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
       switch(command) {
          case SENSOR_UNIT_POWER:
          case SENSOR_UNIT_LEVEL:
+         case SENSOR_UNIT_DISPLAY:
             client.addSensor(ObjectProperties.OBJ_TYPE_UNIT, parameter2, sensor, command);
             break;
          case SENSOR_THERMO_HEAT_POINTC:
@@ -133,10 +156,16 @@ public class OmniLinkCommand implements EventListener, ExecutableCommand{
          case SENSOR_AUDIOZONE_VOLUME:
          case SENSOR_AUDIOZONE_MUTE:
          case SENSOR_AUDIOZONE_TEXT:
+         case SENSOR_AUDIOZONE_TEXT_FIELD1:
+         case SENSOR_AUDIOZONE_TEXT_FIELD2:
+         case SENSOR_AUDIOZONE_TEXT_FIELD3:
             logger.info("calling addSensor for command " + command.toString() + " with number " + parameter2); 
             client.addSensor(ObjectProperties.OBJ_TYPE_AUDIO_ZONE, parameter2, sensor, command);
             break;
          case SENSOR_AUDIOSOURCE_TEXT:
+         case SENSOR_AUDIOSOURCE_TEXT_FIELD1:
+         case SENSOR_AUDIOSOURCE_TEXT_FIELD2:
+         case SENSOR_AUDIOSOURCE_TEXT_FIELD3:
             client.addSensor(ObjectProperties.OBJ_TYPE_AUDIO_SOURCE, parameter2, sensor, command);
             break;
             default:
