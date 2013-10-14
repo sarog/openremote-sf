@@ -9,7 +9,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 public class AudioZone extends OmnilinkDevice {
    private final static Logger log = Logger.getLogger(OmnilinkCommandBuilder.OMNILINK_PROTOCOL_LOG_CATEGORY);
    private AudioZoneProperties properties;
-   private String audioSourceText;
+   private AudioSource audioSource;
    
    public AudioZone( AudioZoneProperties properties) {
      this.properties = properties;
@@ -23,12 +23,12 @@ public class AudioZone extends OmnilinkDevice {
       this.properties = properties;
    }
 
-   public String getAudioSourceText() {
-      return audioSourceText;
+   public AudioSource getAudioSource() {
+      return audioSource;
    }
 
-   public void setAudioSourceText(String audioSourceText) {
-      this.audioSourceText = audioSourceText;
+   public void setAudioSource(AudioSource audioSource) {
+      this.audioSource = audioSource;
    }
 
    @Override
@@ -44,13 +44,18 @@ public class AudioZone extends OmnilinkDevice {
       }
       if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_VOLUME) != null) {
          sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_VOLUME).update(properties.getVolume() + "");
-         log.info("Setting audio src " + properties.getNumber() + " to volume " + properties.getVolume());
       }
       if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT) != null) {
-         log.info("SENSOR_AUDIOZONE_TEXT updating zone text " + audioSourceText);
-         if(audioSourceText == null || audioSourceText.length() == 0)
-            audioSourceText = "...";
-         sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT).update(audioSourceText);
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT).update(audioSource.formatAudioText());
+      }
+      if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD1) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD1).update(audioSource != null ? audioSource.getAudioText(0) : "");
+      }
+      if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD2) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD2).update(audioSource != null ? audioSource.getAudioText(1) : "");
+      }
+      if (sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD3) != null) {
+         sensors.get(OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD3).update(audioSource != null ? audioSource.getAudioText(2) : "");
       }
    }
 }
