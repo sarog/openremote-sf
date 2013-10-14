@@ -127,50 +127,49 @@ public class ImportCBusConfigActionHandler implements ActionHandler<ImportCBusCo
       
       for (GroupAddressImportConfig addressConfig : config.getAddresses())
       {
-	//create on/off commands if switch compatible
-	DeviceCommand onCommand = null;
-	DeviceCommand offCommand = null;
-	if(addressConfig.isSwitchCompatible())
-	{
-	    onCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " ON",
-		    addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
-		    "ON", null);
-	    deviceCommands.add(onCommand);
+	  //create on/off commands if switch compatible
+	  DeviceCommand onCommand = null;
+	  DeviceCommand offCommand = null;
 
-	    offCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " OFF",
-		    addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
-		    "OFF", null);
-	    deviceCommands.add(offCommand);
-	}
-	
-	DeviceCommand levelCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " STATUS",
-		addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
-		"STATUS", null);
-	deviceCommands.add(levelCommand);
-	
-	if(addressConfig.isSwitchCompatible())
-	{
-	    Sensor sensor = createDeviceSensor(device, SensorType.SWITCH, levelCommand, addressConfig.getGroupAddressName() + " Switch Sensor");
-	    sensors.add(sensor);
+	  onCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " ON",
+		  addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
+		  "ON", null);
+	  deviceCommands.add(onCommand);
 
-	    Switch s = createDeviceSwitch(device, onCommand, offCommand, sensor, addressConfig.getGroupAddressName() + " Switch");
-	    switches.add(s);
-	}
-	
-	//create sensors and sliders
-        if (addressConfig.isDimmable()) 
-        {
-          //create dimming command and slider
-          DeviceCommand dimCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " DIM",
-  		addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
-  		"DIM", "${param}");
-          deviceCommands.add(dimCommand);
-          
-          Sensor dimSensor = createDeviceSensor(device, SensorType.RANGE, levelCommand, addressConfig.getGroupAddressName() + " Dim Sensor");
-  	  sensors.add(dimSensor);
-          
-          sliders.add(createDeviceSlider(device, dimCommand, dimSensor, addressConfig.getGroupAddressName() + " Slider"));        
-        } 
+	  offCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " OFF",
+		  addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
+		  "OFF", null);
+	  deviceCommands.add(offCommand);
+
+
+	  DeviceCommand levelCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " STATUS",
+		  addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
+		  "STATUS", null);
+	  deviceCommands.add(levelCommand);
+
+	  if(addressConfig.isSwitchWanted())
+	  {
+	      Sensor sensor = createDeviceSensor(device, SensorType.SWITCH, levelCommand, addressConfig.getGroupAddressName() + " Switch Sensor");
+	      sensors.add(sensor);
+
+	      Switch s = createDeviceSwitch(device, onCommand, offCommand, sensor, addressConfig.getGroupAddressName() + " Switch");
+	      switches.add(s);
+	  }
+
+	  //create sensors and sliders
+	  if (addressConfig.isDimmable()) 
+	  {
+	      //create dimming command and slider
+	      DeviceCommand dimCommand = addDeviceCommand(device, addressConfig.getGroupAddressName() + " DIM",
+		      addressConfig.getNetworkName(), addressConfig.getApplicationName(), addressConfig.getGroupAddressName(),
+		      "DIM", "${param}");
+	      deviceCommands.add(dimCommand);
+
+	      Sensor dimSensor = createDeviceSensor(device, SensorType.RANGE, levelCommand, addressConfig.getGroupAddressName() + " Dim Sensor");
+	      sensors.add(dimSensor);
+
+	      sliders.add(createDeviceSlider(device, dimCommand, dimSensor, addressConfig.getGroupAddressName() + " Slider"));        
+	  } 
       }
             
       
