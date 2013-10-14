@@ -96,6 +96,7 @@ public enum OmniLinkCmd {
    
    SENSOR_UNIT_POWER(1001),
    SENSOR_UNIT_LEVEL(1002),
+   SENSOR_UNIT_DISPLAY(1003),
    SENSOR_THERMO_HEAT_POINTC(2001),
    SENSOR_THERMO_HEAT_POINTF(2002),
    SENSOR_THERMO_COOL_POINTC(2003),
@@ -126,7 +127,13 @@ public enum OmniLinkCmd {
    SENSOR_AUDIOZONE_VOLUME(6003),
    SENSOR_AUDIOZONE_MUTE(6004),
    SENSOR_AUDIOZONE_TEXT(6005),
-   SENSOR_AUDIOSOURCE_TEXT(7001);
+   SENSOR_AUDIOZONE_TEXT_FIELD1(6006),
+   SENSOR_AUDIOZONE_TEXT_FIELD2(6007),
+   SENSOR_AUDIOZONE_TEXT_FIELD3(6008),
+   SENSOR_AUDIOSOURCE_TEXT(7001),
+   SENSOR_AUDIOSOURCE_TEXT_FIELD1(7002),
+   SENSOR_AUDIOSOURCE_TEXT_FIELD2(7003),
+   SENSOR_AUDIOSOURCE_TEXT_FIELD3(7004);
    
    private int number;
    
@@ -143,6 +150,14 @@ public enum OmniLinkCmd {
          if(name.equals(command.toString()))
             return command;
       return null;
+   }
+   
+   public static OmniLinkCmd getCommand(int ordinal) {
+	   OmniLinkCmd [] values = OmniLinkCmd.values();
+	   if(ordinal < values.length)
+		   return values[ordinal];
+	   else
+		   return null;
    }
    
    public static String toList(){
