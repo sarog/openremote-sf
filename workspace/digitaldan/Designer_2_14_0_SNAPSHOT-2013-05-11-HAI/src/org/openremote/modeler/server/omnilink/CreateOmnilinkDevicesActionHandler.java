@@ -59,6 +59,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.ReqSystemInformation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemFeatures;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
@@ -85,7 +86,65 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 	protected SliderService sliderService;
 	protected SwitchService switchService;
 	protected UserService userService;
+	public static final String[] AUDIOCMD_HAIHIFI = {"Power","Source Step",
+			"Vol Up", "Vol Down", "Mute"};
+	public static final String[] AUDIOCMD_RUSSOUND = { "Power", "Source step",
+			"Vol up ", "Vol down", "Mute", "Play", "Stop", "Pause", "Minus",
+			"Plus", "Previous", "Next ", "Record", "Channel up",
+			"Channel down", "Zero", "One", "Two", "Three", "Four", "Five",
+			"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter", "Last",
+			"Sleep", "Guide", "Exit", "Info", "Menu", "Menu up", "Menu right",
+			"Menu down", "Menu left", "Select", "Favorite 1", "Favorite 2" };
+	public static final String[] AUDIOCMD_NUVO = { "Power", "Source step",
+			"Vol up", "Vol down", "Mute", "Play", "Stop", "Pause", "Rewind",
+			"Forward", "Fast rewind", "Fast forward", "Continuous", "Shuffle",
+			"Group", "Disc", "Zero", "One", "Two", "Three", "Four", "Five",
+			"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter",
+			"Hotkey zero", "Hotkey one", "Hotkey two", "Hotkey three",
+			"Hotkey four", "Hotkey five", "Hotkey six", "Hotkey seven",
+			"Hotkey eight", "Hotkey nine"
 
+	};
+	public static final String[] AUDIOCMD_NUVOGRAND = { "Power", "Source step",
+			"Vol up", "Vol down", "Mute", "Play / Pause", "Stop (not used)",
+			"Pause (not used)", "Previous", "Next", "Favorite 1", "Favorite 2",
+			"Favorite 3", "Favorite 4", "Favorite 5", "Favorite 6",
+			"Favorite 7", "Favorite 8", "Favorite 9", "Favorite 10",
+			"Favorite 11", "Favorite 12", "Ok button down", "Ok button up",
+			"Play / Pause button down", "Play / Pause button up",
+			"Previous button down", "Previous button up", "Next button down",
+			"Next button up", "Power / Mute button down",
+			"Power / Mute button up", "Menu button down", "Menu button up",
+			"Up button down", "Up button up", "Down button down",
+			"Down button up"
+
+	};
+	public static final String[] AUDIOCMD_XANTECH = { "Power",
+			"Source select 1", "Source select 2", "Source select 3",
+			"Source select 4", "Source select 5", "Source select 6",
+			"Source select 7", "Source select 8", "Channel up", "Channel down",
+			"Mute", "Play", "Stop", "Pause", "Rewind", "Forward", "Vol up",
+			"Vol down", "Tier 2 power", "Tier 2 source select 1",
+			"Tier 2 source select 2", "Tier 2 source select 3",
+			"Tier 2 source select 4", "Tier 2 source select 5",
+			"Tier 2 source select 6", "Tier 2 source select 7",
+			"Tier 2 source select 8", "Tier 2 channel up",
+			"Tier 2 channel down", "Tier 2 mute", "Tier 2 play", "Tier 2 stop",
+			"Tier 2 pause", "Tier 2 rewind", "Tier 2 forward"
+
+	};
+	public static final String[] AUDIOCMD_SPEAKEERCRAFT = { "Source select 1",
+			"Source select 2", "Source select 3", "Source select 4",
+			"Source select 5", "Source select 6", "Source select 7",
+			"Source select 8", null, "Mute", "Vol Up", "Power", "Vol Down",
+			null, null, null, "One", "Two", "Three", "Four", "Five", "Six",
+			"Seven", "Eight", "Nine", "Track", "Zero", "Disc", "Random",
+			"Repeat", "Bass", "Treble", "Guide", "Menu", "Up", "Left",
+			"Select", "Right", "Down", "Escape", "Info", "Rewind", "Forward",
+			"Pause", "Play", "Stop"
+
+	};
+	
 	//	private HashMap<Integer, Device> units;
 	//	private HashMap<Integer, Device> thermos;
 	//	private HashMap<Integer, Device> zones;
@@ -273,7 +332,10 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			UnitProperties o = ((UnitProperties) m);
 			objnum = o.getNumber();
 			String name = "(Unit) " + o.getName();
-			boolean isUpbRoom = false;	
+			
+			boolean isUpbRoom = false;
+			boolean isUpbUnit = false;
+			
 			if(o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM || 
 					o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM){
 				currentRoom = objnum;
@@ -285,6 +347,11 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			} else if(o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG){
 					name = "(Flag) " + o.getName();
 			}
+			
+			isUpbUnit = 
+					o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD || 
+					o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM ||
+					o.getUnitType() == UnitProperties.UNIT_TYPE_UPB;
 			
 			Device device = new Device(name, "HAI", "Omnilink");
 			device.setAccount(userService.getAccount());
@@ -316,6 +383,9 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdSensorPower = addDeviceCommand(device, name + " get power", 0, objnum, OmniLinkCmd.SENSOR_UNIT_POWER);
 			deviceCommands.add(cmdSensorPower);
+			
+			DeviceCommand cmdSensorDisplay = addDeviceCommand(device, name + " get display", 0, objnum, OmniLinkCmd.SENSOR_UNIT_DISPLAY);
+			deviceCommands.add(cmdSensorDisplay);
 
 			if(isUpbRoom){
 				int roomNum = (objnum + 7) / 8;
@@ -325,10 +395,20 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 				for(int i=0;i< 4; i++){
 					int link = linkA +i;
 					char linkChar = Character.toChars('A' + i)[0];
-					DeviceCommand cmdScene = addDeviceCommand(device, name + " cmd Scene " + linkChar,link, objnum, OmniLinkCmd.CMD_UNIT_UPB_LINK_ON);
+					DeviceCommand cmdScene = addDeviceCommand(device, name + " cmd Scene " + linkChar, 0, link, OmniLinkCmd.CMD_UNIT_UPB_LINK_ON);
 					deviceCommands.add(cmdScene);
 				}
 
+			}
+			
+			if(isUpbUnit){
+				for(int i=0;i< 9; i++){
+					DeviceCommand cmdDim = addDeviceCommand(device, name + " cmd UPB Dim Step " + (i+1), 0, objnum, OmniLinkCmd.getCommand(OmniLinkCmd.CMD_UNIT_UPB_DIM_STEP_1.ordinal() + i));
+					deviceCommands.add(cmdDim);
+					
+					DeviceCommand cmdBrt = addDeviceCommand(device, name + " cmd UPB Brighten Step " + (i+1), 0, objnum, OmniLinkCmd.getCommand(OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1.ordinal() + i));
+					deviceCommands.add(cmdBrt);
+				};
 			}
 			
 			Sensor senLevel = createDeviceSensor(device, SensorType.LEVEL, cmdSensorLevel,name + " Sensor Level");
@@ -336,6 +416,9 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			Sensor senSwitch = createDeviceSensor(device, SensorType.SWITCH, cmdSensorPower,name + " Sensor Switch");
 			sensors.add(senSwitch);
+			
+			Sensor senDisplay = createDeviceSensor(device, SensorType.CUSTOM, cmdSensorDisplay,name + " Sensor Display");
+			sensors.add(senDisplay);
 
 			Switch sw = createDeviceSwitch(cmdOn, cmdOff, senSwitch, name + " Switch");
 			switches.add(sw);
@@ -826,9 +909,44 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			devices.add(device);
 
-			for(int i = 1; i<=46; i++){
-				DeviceCommand cmdSelectKey = addDeviceCommand(device, name + " CMD Set Audio Zone Select Key " + i, i,objnum, OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY);
-				deviceCommands.add(cmdSelectKey);
+			int [] features = c.reqSystemFeatures().getFeatures();
+			String [] audioCmd = null;
+			for (int i = 0; i < features.length; i++) {
+				switch (features[i]) {
+				case 1: // Nuvo Concerto
+				case 2: // Nuvo Essentials/Simplese
+					audioCmd = AUDIOCMD_NUVO;
+					break;
+				case 3: // Nuvo Grand
+					audioCmd = AUDIOCMD_NUVOGRAND;
+					break;
+				case 4: // Russound
+					audioCmd = AUDIOCMD_RUSSOUND;
+					break;
+				case 5: // HAI Hi-Fi
+					audioCmd = AUDIOCMD_HAIHIFI;
+					break;
+				case 6: // XANTECH
+					audioCmd = AUDIOCMD_XANTECH;
+					;
+					break;
+				case 7: // SpeakerCraft
+					audioCmd = AUDIOCMD_SPEAKEERCRAFT;
+					break;
+				default:
+					break;
+				}
+				if (audioCmd != null)
+					break;
+			}
+			
+			if(audioCmd != null){
+				for(int i = 0; i<audioCmd.length; i++){
+					if(audioCmd[i] != null){
+						DeviceCommand cmdSelectKey = addDeviceCommand(device, name + " CMD Set Audio Zone Key " + audioCmd[i], i + 1,objnum, OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY);
+						deviceCommands.add(cmdSelectKey);
+					}
+				}
 			}
 			for(int i = 1; i<=8;i++){
 				DeviceCommand cmdSetSrc = addDeviceCommand(device, name + " CMD Set Audio Zone Source " + i, i,objnum, OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE);
@@ -861,6 +979,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdGetText = addDeviceCommand(device, name + " CMD Get Audio Zone Text", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT);
 			deviceCommands.add(cmdGetText);
+			
+			DeviceCommand cmdGetTextF1 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 1", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD1);
+			deviceCommands.add(cmdGetTextF1);
+			
+			DeviceCommand cmdGetTextF2 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 2", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD2);
+			deviceCommands.add(cmdGetTextF2);
+			
+			DeviceCommand cmdGetTextF3 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 3", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD3);
+			deviceCommands.add(cmdGetTextF3);
 
 			DeviceCommand cmdGetVolume = addDeviceCommand(device, name + " CMD Get Audio Zone Volume", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_VOLUME);
 			deviceCommands.add(cmdGetVolume);
@@ -870,6 +997,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			Sensor senText = createDeviceSensor(device, SensorType.CUSTOM, cmdGetText, name + " Sensor Text");
 			sensors.add(senText);
+			
+			Sensor senTextF1 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF1, name + " Sensor Text Field 1");
+			sensors.add(senTextF1);
+			
+			Sensor senTextF2 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF2, name + " Sensor Text Field 2");
+			sensors.add(senTextF2);
+			
+			Sensor senTextF3 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF3, name + " Sensor Text Field 3");
+			sensors.add(senTextF3);
 
 			Sensor senPower = createDeviceSensor(device, SensorType.SWITCH, cmdGetPower, name + " Sensor Power");
 			sensors.add(senPower);
@@ -924,9 +1060,27 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdGetText = addDeviceCommand(device, name + " CMD Get Audio Source Text", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT);
 			deviceCommands.add(cmdGetText);
+			
+			DeviceCommand cmdGetTextF1 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 1", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD1);
+			deviceCommands.add(cmdGetTextF1);
+			
+			DeviceCommand cmdGetTextF2 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 2", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD2);
+			deviceCommands.add(cmdGetTextF2);
+			
+			DeviceCommand cmdGetTextF3 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 3", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD3);
+			deviceCommands.add(cmdGetTextF3);
 
 			Sensor senText = createDeviceSensor(device, SensorType.CUSTOM, cmdGetText, name + " Sensor Text");
 			sensors.add(senText);
+			
+			Sensor senTextF1 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF1, name + " Sensor Text Field 1");
+			sensors.add(senTextF1);
+			
+			Sensor senTextF2 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF2, name + " Sensor Text Field 2");
+			sensors.add(senTextF2);
+			
+			Sensor senTextF3 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF3, name + " Sensor Text Field 3");
+			sensors.add(senTextF3);
 
 
 		}
