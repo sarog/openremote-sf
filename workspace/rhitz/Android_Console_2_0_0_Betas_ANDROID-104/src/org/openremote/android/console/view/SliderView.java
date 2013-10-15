@@ -146,8 +146,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		int maxSpacing = 0;
 				
 		if (slider.getMinImage() != null) {
-			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMinImage().getSrc());
+			Drawable drawable = ImageUtil.createFromPathQuietly(context, slider.getMinImage().getSrc());
 			minImage.setImageDrawable(drawable);
 			minWidth = drawable.getIntrinsicWidth();
 			minHeight = drawable.getIntrinsicHeight();
@@ -155,8 +154,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		}
 
 		if (slider.getMaxImage() != null) {
-			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMaxImage().getSrc());
+			Drawable drawable = ImageUtil.createFromPathQuietly(context, slider.getMaxImage().getSrc());
 			maxImage.setImageDrawable(drawable);
 			maxWidth = drawable.getIntrinsicWidth();
 			maxHeight = drawable.getIntrinsicHeight();
@@ -199,8 +197,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 				.getLayoutParams();
 
 		if (slider.getThumbImage() != null) {
-			thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getThumbImage().getSrc());
+			thumbDrawable = ImageUtil.createFromPathQuietly(context, slider.getThumbImage().getSrc());
 		} else {
 			thumbDrawable = getResources().getDrawable(R.drawable.slider_thumb);
 		}
@@ -232,8 +229,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 				.getLayoutParams();
 
 		if (slider.getMinTrackImage() != null) {
-			BitmapDrawable minTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMinTrackImage().getSrc());
+			BitmapDrawable minTrackBitmap = ImageUtil.createFromPathQuietly(context, slider.getMinTrackImage().getSrc());
 			
 			// Position the image within the view
 			if (isVertical) {
@@ -277,8 +273,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		}
 	
 		if (slider.getMaxTrackImage() != null) {
-			BitmapDrawable maxTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMaxTrackImage().getSrc());
+			BitmapDrawable maxTrackBitmap = ImageUtil.createFromPathQuietly(context, slider.getMaxTrackImage().getSrc());
 			
 			// Position the image within the view
 			if (isVertical) {

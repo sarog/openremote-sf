@@ -87,7 +87,7 @@ public class ScreenView extends RelativeLayout {
       int screenHeight = screen.isLandscape() ? Screen.SCREEN_WIDTH - Screen.SCREEN_STATUS_BAR_HEIGHT : Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
 
       Background background = screen.getBackground();
-			BitmapDrawable backgroundBitmap = ImageUtil.createFromPathQuietly(getContext(), Constants.FILE_FOLDER_PATH + screen.getBackgroundSrc());
+			BitmapDrawable backgroundBitmap = ImageUtil.createFromPathQuietly(getContext(), screen.getBackgroundSrc());
 
 			if (backgroundBitmap == null) {
           return;

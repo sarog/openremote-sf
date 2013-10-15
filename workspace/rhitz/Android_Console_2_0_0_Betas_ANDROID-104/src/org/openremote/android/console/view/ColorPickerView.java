@@ -63,7 +63,7 @@ public class ColorPickerView extends ControlView {
     */
    private void initView(Context context, int width, int height, Image image) {
       imageView = new ImageView(context);
-      final BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH + image.getSrc(), width, height);
+      final BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(context, image.getSrc(), width, height);
       if (bd == null) {
          return;
       }
