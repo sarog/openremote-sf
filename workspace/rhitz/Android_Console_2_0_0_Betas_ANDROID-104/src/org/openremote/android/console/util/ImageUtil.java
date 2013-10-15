@@ -41,29 +41,30 @@ public class ImageUtil {
    /**
     * Calls native Drawable.createFromPath(pathName), but catch OutOfMemoryError and do nothing.
     * 
-    * @param pathName
-    *           path name
+    * @param fileName
+    *           file name
     * @return Drawable instance
     */
-   public static BitmapDrawable createFromPathQuietly(Context ctx, String pathName) {
+   public static BitmapDrawable createFromPathQuietly(Context ctx, String fileName) {
       BitmapDrawable ret = null;
       try {
+    	 String pathName = ctx.getFileStreamPath(fileName).getAbsolutePath(); 
          Bitmap decodedBitmap = BitmapFactory.decodeFile(pathName);
          ret = new BitmapDrawable(ctx.getResources(), decodedBitmap);
       } catch (OutOfMemoryError e) {
-         Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
+         Log.e("OpenRemote-OutOfMemoryError", fileName + ": bitmap size exceeds VM budget");
       }
       return ret;
    }
    
-   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String pathName, int width, int height) {
+   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String fileName, int width, int height) {
      BitmapDrawable croppedBitmap = null;
      try {
-       croppedBitmap = createFromPathQuietly(ctx, pathName);
+       croppedBitmap = createFromPathQuietly(ctx, fileName);
        croppedBitmap.setBounds(0, 0, width, height);
        croppedBitmap.setGravity(Gravity.LEFT|Gravity.TOP);
      } catch (OutOfMemoryError e) {
-       Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
+       Log.e("OpenRemote-OutOfMemoryError", fileName + ": bitmap size exceeds VM budget");
      }
      return croppedBitmap;
    }

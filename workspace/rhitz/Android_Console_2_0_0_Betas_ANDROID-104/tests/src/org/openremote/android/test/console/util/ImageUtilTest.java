@@ -80,7 +80,7 @@ public class ImageUtilTest extends InstrumentationTestCase
    */
   public void testCreateFromPathQuietlyNoScaling() throws IOException
   {
-    Drawable d = ImageUtil.createFromPathQuietly(targetCtx, Constants.FILE_FOLDER_PATH + LIGHTS_BUTTON_FILENAME);
+    Drawable d = ImageUtil.createFromPathQuietly(targetCtx, LIGHTS_BUTTON_FILENAME);
     assertEquals(LIGHTS_BUTTON_WIDTH, d.getIntrinsicWidth());
     assertEquals(LIGHTS_BUTTON_HEIGHT, d.getIntrinsicHeight());
   }
@@ -94,8 +94,7 @@ public class ImageUtilTest extends InstrumentationTestCase
   public void testCreateClipedDrawableFromPathNoScaling() throws IOException
   {
     BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(targetCtx,
-        Constants.FILE_FOLDER_PATH + LIGHTS_BUTTON_FILENAME, LIGHTS_BUTTON_WIDTH,
-        LIGHTS_BUTTON_HEIGHT);
+        LIGHTS_BUTTON_FILENAME, LIGHTS_BUTTON_WIDTH, LIGHTS_BUTTON_HEIGHT);
     assertEquals(LIGHTS_BUTTON_WIDTH, bd.getIntrinsicWidth());
     assertEquals(LIGHTS_BUTTON_HEIGHT, bd.getIntrinsicHeight());
   }

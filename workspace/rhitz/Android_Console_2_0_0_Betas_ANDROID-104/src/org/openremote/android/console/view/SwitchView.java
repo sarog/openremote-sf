@@ -95,11 +95,11 @@ public class SwitchView extends SensoryControlView {
       button.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
       
       if (switchComponent.getOnImage() != null) {
-         onImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
+         onImage = ImageUtil.createFromPathQuietly(context, switchComponent.getOnImage().getSrc());    	  
          onImage.setGravity(Gravity.TOP | Gravity.LEFT);
       }
       if (switchComponent.getOffImage() != null) {
-         offImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
+         offImage = ImageUtil.createFromPathQuietly(context, switchComponent.getOffImage().getSrc());
          offImage.setGravity(Gravity.TOP | Gravity.LEFT);
       }
       
