@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -35,6 +36,7 @@ import org.jdom.input.SAXBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
@@ -61,56 +63,16 @@ public abstract class MarantzAVRCommand implements Command {
    private final static Logger log = Logger.getLogger(MarantzAVRCommandBuilder.MARANTZ_AVR_LOG_CATEGORY);
 
    // Keep a list of all the command strings we receive from OR Console and the associated command class to handle that command
-   private static HashMap<String, CommandConfig> commandConfigurations = new HashMap<String, CommandConfig>();
+   private static Map<String, CommandConfig> commandConfigurations;
 
    static {
-      SAXBuilder builder = new SAXBuilder();
-
       URL configResource = Thread.currentThread().getContextClassLoader().getResource("/org/openremote/controller/protocol/marantz_avr/marantz_avr_config.xml");     
       log.debug("Marantz configuration file is " + configResource);
       
       if (configResource != null) {
          try {
-            Document doc = builder.build(configResource);
-            @SuppressWarnings("unchecked")
-            List<Element> commandElements = doc.getRootElement().getChildren();
-            for (Element commandElement : commandElements) {
-               String commandName = commandElement.getAttributeValue("name");
-
-               @SuppressWarnings("unchecked")
-               Class<? extends MarantzAVRCommand> clazz = (Class<? extends MarantzAVRCommand>)Class.forName(commandElement.getAttributeValue("class"));
-               CommandConfig commandConfig = new CommandConfig(commandName, commandElement.getAttributeValue("value"), clazz);
-               
-               Element valuesElement = commandElement.getChild("values");
-               if (valuesElement != null) {
-                  @SuppressWarnings("unchecked")
-                  List<Element> valueElements = valuesElement.getChildren();
-                  if (valueElements != null) {
-                     for (Element valueElement : valueElements) {
-                        commandConfig.addValuePerZone(valueElement.getAttributeValue("zone"), valueElement.getText());
-                     }
-                  }
-               }
-               
-               Element parametersElement = commandElement.getChild("parameters");
-               if (parametersElement != null) {
-                  @SuppressWarnings("unchecked")
-                  List<Element> parameterElements = parametersElement.getChildren();
-                  if (parameterElements != null) {
-                     for (Element parameterElement : parameterElements) {
-                        commandConfig.addParameter(parameterElement.getAttributeValue("name"), parameterElement.getText());
-                     }
-                  }
-               }
-               commandConfigurations.put(commandName, commandConfig);
-            }
-         } catch (JDOMException e) {
-            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
-         } catch (IOException e) {
-            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
-         } catch (ClassNotFoundException e) {
-            log.error("Configuration of commands for Marantz AVR protocol failed.", e);
-         } catch (SecurityException e) {
+            commandConfigurations = CommandConfigurationParser.parseCommandConfiguration(configResource);
+         } catch (ConfigurationException e) {
             log.error("Configuration of commands for Marantz AVR protocol failed.", e);
          }
       }
