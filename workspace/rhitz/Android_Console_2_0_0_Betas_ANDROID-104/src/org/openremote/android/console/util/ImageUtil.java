@@ -45,7 +45,7 @@ public class ImageUtil {
     *           file name
     * @return Drawable instance
     */
-   public static BitmapDrawable createFromPathQuietly(Context ctx, String fileName) {
+   public static BitmapDrawable createFromFileNameQuietly(Context ctx, String fileName) {
       BitmapDrawable ret = null;
       try {
     	 String pathName = ctx.getFileStreamPath(fileName).getAbsolutePath(); 
@@ -57,10 +57,10 @@ public class ImageUtil {
       return ret;
    }
    
-   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String fileName, int width, int height) {
+   public static BitmapDrawable createClipedDrawableFromFileName(Context ctx, String fileName, int width, int height) {
      BitmapDrawable croppedBitmap = null;
      try {
-       croppedBitmap = createFromPathQuietly(ctx, fileName);
+       croppedBitmap = createFromFileNameQuietly(ctx, fileName);
        croppedBitmap.setBounds(0, 0, width, height);
        croppedBitmap.setGravity(Gravity.LEFT|Gravity.TOP);
      } catch (OutOfMemoryError e) {

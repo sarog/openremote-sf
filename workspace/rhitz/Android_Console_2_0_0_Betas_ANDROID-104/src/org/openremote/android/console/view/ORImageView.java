@@ -62,7 +62,7 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    }
 
    private void addImageView(String imageSrc) {
-      Drawable bd = ImageUtil.createFromPathQuietly(context, imageSrc);
+      Drawable bd = ImageUtil.createFromFileNameQuietly(context, imageSrc);
       if (bd == null) {
          return;
       }

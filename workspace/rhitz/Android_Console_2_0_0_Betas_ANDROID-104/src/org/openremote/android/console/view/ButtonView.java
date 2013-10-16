@@ -88,14 +88,14 @@ public class ButtonView extends ControlView {
       uiButton.setLayoutParams(params);
 
       if (button.getDefaultImage() != null) {
-         defaultImage = ImageUtil.createClipedDrawableFromPath(context, button.getDefaultImage().getSrc(), width, height);
+         defaultImage = ImageUtil.createClipedDrawableFromFileName(context, button.getDefaultImage().getSrc(), width, height);
          if (defaultImage != null) {
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
       
       if (button.getPressedImage() != null) {
-         pressedImage = ImageUtil.createClipedDrawableFromPath(context, button.getPressedImage().getSrc(), width, height);
+         pressedImage = ImageUtil.createClipedDrawableFromFileName(context, button.getPressedImage().getSrc(), width, height);
       }
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
