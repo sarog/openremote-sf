@@ -74,26 +74,26 @@ public class ImageUtilTest extends InstrumentationTestCase
 
   /**
    * Running this on a device with high density or greater should demonstrate that
-   * bitmaps are not being scaled down by ImageUtil.createFromPathQuietly().
+   * bitmaps are not being scaled down by ImageUtil.createFromFileNameQuietly().
    *
    * @throws IOException
    */
-  public void testCreateFromPathQuietlyNoScaling() throws IOException
+  public void testCreateFromFileNameQuietlyNoScaling() throws IOException
   {
-    Drawable d = ImageUtil.createFromPathQuietly(targetCtx, LIGHTS_BUTTON_FILENAME);
+    Drawable d = ImageUtil.createFromFileNameQuietly(targetCtx, LIGHTS_BUTTON_FILENAME);
     assertEquals(LIGHTS_BUTTON_WIDTH, d.getIntrinsicWidth());
     assertEquals(LIGHTS_BUTTON_HEIGHT, d.getIntrinsicHeight());
   }
 
   /**
    * Running this on a device with high density or greater should demonstrate that
-   * bitmaps are not being scaled down by ImageUtil.testCreateClipedDrawableFromPath().
+   * bitmaps are not being scaled down by ImageUtil.testCreateClipedDrawableFromFileName().
    *
    * @throws IOException
    */
-  public void testCreateClipedDrawableFromPathNoScaling() throws IOException
+  public void testCreateClipedDrawableFromFileNameNoScaling() throws IOException
   {
-    BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(targetCtx,
+    BitmapDrawable bd = ImageUtil.createClipedDrawableFromFileName(targetCtx,
         LIGHTS_BUTTON_FILENAME, LIGHTS_BUTTON_WIDTH, LIGHTS_BUTTON_HEIGHT);
     assertEquals(LIGHTS_BUTTON_WIDTH, bd.getIntrinsicWidth());
     assertEquals(LIGHTS_BUTTON_HEIGHT, bd.getIntrinsicHeight());
