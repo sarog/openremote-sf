@@ -26,6 +26,8 @@ import org.openremote.controller.protocol.EventListenerTest;
 import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilderTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddressTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandConfigTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandConfigurationParserTest;
 
 /**
  * Test protocol support classes.
@@ -38,7 +40,9 @@ import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTe
        EventListenerTest.class,
        LutronHomeWorksAddressTest.class,
        LutronHomeWorksCommandBuilderTest.class,
-       AMXNICommandBuilderTest.class
+       AMXNICommandBuilderTest.class,
+       MarantzCommandConfigurationParserTest.class,
+       MarantzCommandConfigTest.class
    }
 )
 public class ProtocolTests
