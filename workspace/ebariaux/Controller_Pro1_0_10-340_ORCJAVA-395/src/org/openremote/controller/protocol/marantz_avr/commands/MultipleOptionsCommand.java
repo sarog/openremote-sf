@@ -104,7 +104,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand(commandConfig.getValuePerZone(zone), this);
+          gateway.registerCommand(commandConfig.getValueToUseForZone(zone), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -119,7 +119,7 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand(commandConfig.getValuePerZone(zone), this);
+         gateway.unregisterCommand(commandConfig.getValueToUseForZone(zone), this);
       }
    }
    

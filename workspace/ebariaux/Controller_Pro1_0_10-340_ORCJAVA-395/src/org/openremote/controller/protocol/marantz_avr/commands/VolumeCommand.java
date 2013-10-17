@@ -99,15 +99,15 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
     */
    public void send() {
      if ("STATUS".equals(parameter)) {
-        gateway.sendCommand(commandConfig.getValuePerZone(zone),  "?");
+        gateway.sendCommand(commandConfig.getValueToUseForZone(zone),  "?");
      } else if ("UP".equals(parameter) || "DOWN".equals(parameter)) {
-        gateway.sendCommand(commandConfig.getValuePerZone(zone), parameter);
+        gateway.sendCommand(commandConfig.getValueToUseForZone(zone), parameter);
      } else {
         // This should then be a value, parse it and reformat appropriately
         try {
            float value = Float.parseFloat(parameter);
            value = Math.round(value * 2.0f) / 2.0f; // Round to closest .5 value
-           gateway.sendCommand(commandConfig.getValuePerZone(zone), volumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
+           gateway.sendCommand(commandConfig.getValueToUseForZone(zone), volumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
         } catch (NumberFormatException e) {
            throw new NoSuchCommandException("Invalid volume parameter value (" + parameter + ")");
         }
@@ -121,7 +121,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
        if (sensors.isEmpty()) {
           
           // First sensor registered, we also need to register ourself with the gateway
-          gateway.registerCommand(commandConfig.getValuePerZone(zone), this);
+          gateway.registerCommand(commandConfig.getValueToUseForZone(zone), this);
           addSensor(sensor);
 
           // Trigger a query to get the initial value
@@ -136,7 +136,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
       removeSensor(sensor);
       if (sensors.isEmpty()) {
          // Last sensor removed, we may unregister ourself from gateway
-         gateway.unregisterCommand(commandConfig.getValuePerZone(zone), this);
+         gateway.unregisterCommand(commandConfig.getValueToUseForZone(zone), this);
       }
    }
    
