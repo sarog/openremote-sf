@@ -15,7 +15,7 @@
     </values>
     <parameters>
       <parameter name="ON">ON</parameter>
-      <parameter name="OFF">STANDBY</parameter>
+      <parameter name="OFF">OFF</parameter>
       <parameter name="STATUS">?</parameter>
     </parameters>
   </command>
