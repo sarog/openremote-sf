@@ -146,13 +146,17 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
       // MVMAX comes here also, don't handle it
       // TODO: in later version, better parsing of response should mean MVMAX command is not associated with this class
       if (!response.parameter.startsWith("MAX")) {
-         float value = Float.parseFloat(response.parameter);
-         if (response.parameter.length() == 3) {
-            // 3 characters value such as 275 mean 27.5 volume.
-            value = value / 10.0f;
+         try {
+            float value = Float.parseFloat(response.parameter);
+            if (response.parameter.length() == 3) {
+               // 3 characters value such as 275 mean 27.5 volume.
+               value = value / 10.0f;
+            }
+            
+            updateSensorsWithValue(value);
+         } catch (NumberFormatException e) {
+            // No update, this does not represent a volume
          }
-         
-         updateSensorsWithValue(value);
       }
    }
    

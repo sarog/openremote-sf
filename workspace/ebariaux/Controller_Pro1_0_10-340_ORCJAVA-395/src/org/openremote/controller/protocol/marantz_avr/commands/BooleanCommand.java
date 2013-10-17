@@ -125,7 +125,11 @@ public class BooleanCommand extends MarantzAVRCommand implements ExecutableComma
    
    @Override
    protected void updateWithResponse(MarantzResponse response) {
-      updateSensorsWithValue("ON".equals(commandConfig.lookupResponseParam(response.parameter)));
+      String value = commandConfig.lookupResponseParam(response.parameter);
+      // Only update if the value makes sense for us, otherwise ignore
+      if ("ON".equalsIgnoreCase(value) || "OFF".equalsIgnoreCase(value)) {
+         updateSensorsWithValue("ON".equalsIgnoreCase(value));
+      }
    }
    
    @Override

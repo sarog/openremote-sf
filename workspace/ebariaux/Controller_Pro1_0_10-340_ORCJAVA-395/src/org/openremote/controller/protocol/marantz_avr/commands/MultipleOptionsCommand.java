@@ -125,7 +125,11 @@ public class MultipleOptionsCommand extends MarantzAVRCommand implements Executa
    
    @Override
    protected void updateWithResponse(MarantzResponse response) {
-      updateSensorsWithValue(commandConfig.lookupResponseParam(response.parameter));
+      String value = commandConfig.lookupResponseParam(response.parameter);
+      // Only update if the value makes sense for us, otherwise ignore
+      if (value != null) {
+         updateSensorsWithValue(value);
+      }
    }
    
    @Override
