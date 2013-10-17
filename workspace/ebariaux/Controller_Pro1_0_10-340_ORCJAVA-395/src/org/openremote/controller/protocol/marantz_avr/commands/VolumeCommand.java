@@ -67,10 +67,15 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
       this.commandConfig = commandConfig;
       this.parameter = parameter;
       this.zone = zone;
-      volumeFormat = NumberFormat.getInstance();
-      volumeFormat.setMaximumFractionDigits(0);
-      volumeFormat.setMinimumIntegerDigits(3);
-      volumeFormat.setMaximumIntegerDigits(3);
+      threeDigitsVolumeFormat = NumberFormat.getInstance();
+      threeDigitsVolumeFormat.setMaximumFractionDigits(0);
+      threeDigitsVolumeFormat.setMinimumIntegerDigits(3);
+      threeDigitsVolumeFormat.setMaximumIntegerDigits(3);
+      twoDigitsVolumeFormat = NumberFormat.getInstance();
+      twoDigitsVolumeFormat.setMaximumFractionDigits(0);
+      twoDigitsVolumeFormat.setMinimumIntegerDigits(2);
+      twoDigitsVolumeFormat.setMaximumIntegerDigits(2);
+
    }
 
    // Private Instance Fields ----------------------------------------------------------------------
@@ -90,7 +95,15 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
     */
    private String zone;
 
-   private NumberFormat volumeFormat;
+   /**
+    * Number format to format the volume as a 3 digit string.
+    */
+   private NumberFormat threeDigitsVolumeFormat;
+   
+   /**
+    * Number format to format the volume as a 2 digit string.
+    */
+   private NumberFormat twoDigitsVolumeFormat;
 
    // Implements ExecutableCommand -----------------------------------------------------------------
 
@@ -106,8 +119,14 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
         // This should then be a value, parse it and reformat appropriately
         try {
            float value = Float.parseFloat(parameter);
-           value = Math.round(value * 2.0f) / 2.0f; // Round to closest .5 value
-           gateway.sendCommand(commandConfig.getValueToUseForZone(zone), volumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
+           if ("MAIN".equals(zone)) {
+              // Only main zone supports 3 digits volume format, with .5 dB increments.
+              value = Math.round(value * 2.0f) / 2.0f; // Round to closest .5 value
+              gateway.sendCommand(commandConfig.getValueToUseForZone(zone), threeDigitsVolumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
+           } else {
+              value = Math.round(value);
+              gateway.sendCommand(commandConfig.getValueToUseForZone(zone), twoDigitsVolumeFormat.format(value)); // Sent string is 2 digits, only integral part
+           }
         } catch (NumberFormatException e) {
            throw new NoSuchCommandException("Invalid volume parameter value (" + parameter + ")");
         }
