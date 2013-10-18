@@ -706,9 +706,9 @@ public class MarantzCommandsTest {
       cmd.send();
       Assert.assertEquals("VOLUME STATUS with no zone specified should send MV?", "MV?", gateway.getSentString());
       gateway.reset();
-      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "425", null);
+      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42.5", null);
       cmd.send();
-      Assert.assertEquals("VOLUME 425 with no zone specified should send MV425", "MV425", gateway.getSentString());
+      Assert.assertEquals("VOLUME 42.5 with no zone specified should send MV425", "MV425", gateway.getSentString());
       gateway.reset();
       cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42", null);
       cmd.send();
@@ -731,9 +731,9 @@ public class MarantzCommandsTest {
       cmd.send();
       Assert.assertEquals("VOLUME STATUS for main zone should send MV?", "MV?", gateway.getSentString());
       gateway.reset();
-      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "425", "MAIN");
+      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42.5", "MAIN");
       cmd.send();
-      Assert.assertEquals("VOLUME 425 for main zone should send MV425", "MV425", gateway.getSentString());
+      Assert.assertEquals("VOLUME 42.5 for main zone should send MV425", "MV425", gateway.getSentString());
       gateway.reset();
       cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42", "MAIN");
       cmd.send();
@@ -756,9 +756,9 @@ public class MarantzCommandsTest {
       cmd.send();
       Assert.assertEquals("VOLUME STATUS for zone 2 should send Z2?", "Z2?", gateway.getSentString());
       gateway.reset();
-      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "425", "ZONE2");
+      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42.5", "ZONE2");
       cmd.send();
-      Assert.assertEquals("VOLUME 425 for zone 2 should send Z243", "Z243", gateway.getSentString());
+      Assert.assertEquals("VOLUME 42.5 for zone 2 should send Z243", "Z243", gateway.getSentString());
       gateway.reset();
       cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42", "ZONE2");
       cmd.send();
@@ -781,9 +781,9 @@ public class MarantzCommandsTest {
       cmd.send();
       Assert.assertEquals("VOLUME STATUS for zone 3 should send Z3?", "Z3?", gateway.getSentString());
       gateway.reset();
-      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "425", "ZONE3");
+      cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42.5", "ZONE3");
       cmd.send();
-      Assert.assertEquals("VOLUME 425 for zone 3 should send Z343", "Z343", gateway.getSentString());
+      Assert.assertEquals("VOLUME 42.5 for zone 3 should send Z343", "Z343", gateway.getSentString());
       gateway.reset();
       cmd = (ExecutableCommand) MarantzAVRCommand.createCommand("VOLUME", gateway, "42", "ZONE3");
       cmd.send();
