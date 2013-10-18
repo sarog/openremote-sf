@@ -95,7 +95,7 @@ public class TunerFrequencyCommand extends MarantzAVRCommand implements Executab
            
            gateway.sendCommand("TFAN", parameter);
         } catch (NumberFormatException e) {
-           throw new NoSuchCommandException("Invalid volume parameter value (" + parameter + ")");
+           throw new NoSuchCommandException("Invalid frequency parameter value (" + parameter + ")");
         }
      }
    }
