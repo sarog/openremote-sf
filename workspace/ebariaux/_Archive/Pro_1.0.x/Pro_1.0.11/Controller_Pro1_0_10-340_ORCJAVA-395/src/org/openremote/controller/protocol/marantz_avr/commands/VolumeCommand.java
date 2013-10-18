@@ -119,7 +119,7 @@ public class VolumeCommand extends MarantzAVRCommand implements ExecutableComman
         // This should then be a value, parse it and reformat appropriately
         try {
            float value = Float.parseFloat(parameter);
-           if ("MAIN".equals(zone)) {
+           if (zone == null || "MAIN".equals(zone)) {
               // Only main zone supports 3 digits volume format, with .5 dB increments.
               value = Math.round(value * 2.0f) / 2.0f; // Round to closest .5 value
               gateway.sendCommand(commandConfig.getValueToUseForZone(zone), threeDigitsVolumeFormat.format(value * 10.0f)); // Sent string is 3 digits without decimal point
