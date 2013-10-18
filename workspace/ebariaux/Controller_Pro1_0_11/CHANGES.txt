@@ -7,6 +7,7 @@ New Features:
     (Juha Lindfors) (ORCJAVA-368)
   - Have Samsung protocol as separate jar for Pro release (ORCJAVA-381)
   - Add a polling interval on the DateTime protocol (ORCJAVA-396)
+  - Create unit tests for Marantz protocol implementation (ORCJAVA-408)
 
 Bug Fixes:
 

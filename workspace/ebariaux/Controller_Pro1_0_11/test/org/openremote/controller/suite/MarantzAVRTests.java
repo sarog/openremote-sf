@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,28 +22,26 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.openremote.controller.protocol.EventListenerTest;
-import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilderTest;
-import org.openremote.controller.protocol.lutron.LutronHomeWorksAddressTest;
-import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandBuilderTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandConfigTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandConfigurationParserTest;
+import org.openremote.controller.protocol.marantz_avr.MarantzCommandsTest;
 
 /**
- * Test protocol support classes.
+ * All Marantz AVR tests aggregated here.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       EventListenerTest.class,
-       LutronHomeWorksAddressTest.class,
-       LutronHomeWorksCommandBuilderTest.class,
-       AMXNICommandBuilderTest.class,
-       MarantzAVRTests.class
+       MarantzCommandConfigTest.class,
+       MarantzCommandConfigurationParserTest.class,
+       MarantzCommandBuilderTest.class,
+       MarantzCommandsTest.class
    }
 )
-public class ProtocolTests
-{
+
+public class MarantzAVRTests {
 
 }
-
