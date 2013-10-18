@@ -28,7 +28,6 @@ import org.owfs.jowfsclient.OwfsConnection;
  */
 public class OneWireExecutableCommand extends OneWireCommand implements ExecutableCommand {
 
-
 	@Override
 	public void send() {
 		try {

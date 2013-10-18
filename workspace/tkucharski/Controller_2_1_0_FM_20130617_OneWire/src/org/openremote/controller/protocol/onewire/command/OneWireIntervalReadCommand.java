@@ -34,9 +34,9 @@ import org.owfs.jowfsclient.PeriodicJob;
  */
 public class OneWireIntervalReadCommand extends OneWireCommand implements EventListener {
 
-	public static final String NOT_A_NUMBER = "N/A";
-
 	private static final Logger log = OneWireLoggerFactory.getLogger();
+
+	public static final String NOT_A_NUMBER = "N/A";
 
 	private Sensor sensor;
 
@@ -49,14 +49,14 @@ public class OneWireIntervalReadCommand extends OneWireCommand implements EventL
 	@Override
 	public void setSensor(Sensor sensor) {
 		this.sensor = sensor;
-		log.info("Installing periodic scheduler on sensor: " + sensor.getName() + " using command: " + this.toString());
+		log.info("Installing periodic scheduler on command: " + this.toString()+", notification to sensor: " + sensor.getName());
 		owfsConnectorFactory.addPeriodicJob(periodicJob);
 	}
 
 	@Override
 	public void stop(Sensor sensor) {
 		this.sensor = null;
-		log.info("Uninstalling periodic scheduler on sensor: " + sensor.getName() + " using command: " + this.toString());
+		log.info("Uninstalling periodic scheduler on command: " + this.toString()+", notification to sensor: " + sensor.getName());
 		periodicJob.cancel();
 	}
 
@@ -69,7 +69,7 @@ public class OneWireIntervalReadCommand extends OneWireCommand implements EventL
 		@Override
 		public void run(OwfsConnection connection) {
 			String read = readValue(connection);
-			log.info("Sensor: '"+sensor.getName()+"', value: '"+read+"'");
+			log.info("Sensor: "+sensor.getName()+"="+read);
 			sensor.update(read);
 		}
 
@@ -80,5 +80,11 @@ public class OneWireIntervalReadCommand extends OneWireCommand implements EventL
 				return NOT_A_NUMBER;
 			}
 		}
+	}
+
+	@Override
+	public StringBuilder toStringParameterOnly() {
+		return super.toStringParameterOnly()
+		.append(", intervalInMiliseconds='").append(periodicJob != null ? periodicJob.getIntervalInMiliseconds() : null).append("'");
 	}
 }
