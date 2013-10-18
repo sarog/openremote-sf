@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.onewire;
 
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -57,12 +58,18 @@ public class OneWireConfigurationReader {
 	 */
 	private final Element rootElement;
 
+	private static OneWireDefaultConfiguration controllerConfiguration;
+
 	public OneWireConfigurationReader(Element rootElement) {
+		if (controllerConfiguration == null) {
+			controllerConfiguration = new OneWireDefaultConfiguration();
+		}
 		this.rootElement = rootElement;
 	}
 
 	/**
 	 * Returns unique command id
+	 *
 	 * @return
 	 */
 	public String getCommandId() {
@@ -72,6 +79,7 @@ public class OneWireConfigurationReader {
 	/**
 	 * Actually command type is not defined within xml configuration. As a result its type is defined in different properties.
 	 * See OneWireCommandType enum for details
+	 *
 	 * @return
 	 */
 	public OneWireCommandType getCommandType() {
@@ -79,7 +87,7 @@ public class OneWireConfigurationReader {
 			return OneWireCommandType.ALARMING;
 		} else if (OneWireCommandType.SWITCHABLE.toString().equals(getDevicePropertyValue())) {
 			return OneWireCommandType.SWITCHABLE;
-		} else if (getPollingInterval() != null){
+		} else if (getPollingInterval() != null) {
 			return OneWireCommandType.INTERVAL;
 		} else {
 			return OneWireCommandType.EXECUTABLE;
@@ -90,21 +98,41 @@ public class OneWireConfigurationReader {
 		OneWireHost oneWireHost = new OneWireHost();
 		oneWireHost.setHostname(getHostName());
 		oneWireHost.setPort(getPortNumber());
+		oneWireHost.setTemperatureScale(controllerConfiguration.getTemperatureScale());
 		return oneWireHost;
 	}
 
+	/**
+	 * Retrieves command host name. If not specified it loads default from global configuration
+	 *
+	 * @return owserver host name
+	 */
 	public String getHostName() {
-		return readPropertyValue(XML_PROPERTY_CONFIG_HOSTNAME);
+		String s = readPropertyValue(XML_PROPERTY_CONFIG_HOSTNAME);
+		if (StringUtils.isEmpty(s)) {
+			return controllerConfiguration.getHost();
+		} else {
+			return s;
+		}
 	}
 
+	/**
+	 * Retrieves command port number. If not specified it loads default from global configuration.
+	 *
+	 * @return owserver port number
+	 */
 	public int getPortNumber() {
 		String portNumber = readPropertyValue(XML_PROPERTY_CONFIG_PORT);
+		if (StringUtils.isEmpty(portNumber)) {
+			portNumber = controllerConfiguration.getPort();
+		}
 		try {
 			return Integer.parseInt(portNumber);
 		} catch (NumberFormatException e) {
 			logger.warn("Invalid property " + XML_PROPERTY_CONFIG_PORT + ". Found: '" + portNumber + "'. Using default port (" + CONFIG_PORT_DEFAULT + ")");
 			return CONFIG_PORT_DEFAULT;
 		}
+
 	}
 
 	public String getDeviceName() {
@@ -164,7 +192,7 @@ public class OneWireConfigurationReader {
 				return child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
 			}
 		}
-		throw new NoSuchCommandException("Unable to create OneWire command, property '" + propertyName + "' not found.");
+		return null;
 	}
 
 	public String getDynamicValue() {

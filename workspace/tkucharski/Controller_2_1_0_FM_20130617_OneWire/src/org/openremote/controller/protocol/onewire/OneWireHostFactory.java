@@ -31,14 +31,15 @@ import org.owfs.jowfsclient.OwfsConnectionFactory;
  */
 public class OneWireHostFactory {
 
-	private Map<OneWireHost, OwfsConnectionFactory> commands = new HashMap<OneWireHost, OwfsConnectionFactory>();
+	private Map<OneWireHost, OwfsConnectionFactory> factories = new HashMap<OneWireHost, OwfsConnectionFactory>();
 
 	public OwfsConnectionFactory loadOrCreate(OneWireHost key) {
-		OwfsConnectionFactory object = commands.get(key);
-		if (object == null) {
-			object = new OwfsConnectionFactory(key.getHostname(), key.getPort());
-			commands.put(key,object);
+		OwfsConnectionFactory factory = factories.get(key);
+		if (factory == null) {
+			factory = new OwfsConnectionFactory(key.getHostname(), key.getPort());
+			factory.getConnectionConfig().setTemperatureScale(key.getTemperatureScale());
+			factories.put(key, factory);
 		}
-		return object;
+		return factory;
 	}
 }

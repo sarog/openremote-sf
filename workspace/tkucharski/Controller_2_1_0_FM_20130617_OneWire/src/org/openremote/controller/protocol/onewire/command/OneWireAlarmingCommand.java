@@ -47,7 +47,7 @@ public class OneWireAlarmingCommand extends OneWireCommand implements EventListe
 		OneWireSwitchSensor oneWireSensor = new OneWireSwitchSensor((StateSensor)sensor);
 		int inputNumber = oneWireSensor.getInputNumber();
 		inputToSensorMap.put(inputNumber, oneWireSensor);
-		log.debug("OneWire device:'" + deviceName + "': installing " +"sensor input number: '"+ inputNumber +"', " +sensor);
+		log.info("OneWire device:'" + deviceName + "': installing " +"sensor input number: '"+ inputNumber +"', " +sensor);
 		tryToInstallAlarmingListenerForDevice();
 	}
 
@@ -66,7 +66,7 @@ public class OneWireAlarmingCommand extends OneWireCommand implements EventListe
 	private void removeSensorFromInputToSensorMap(Sensor sensor) {
 		OneWireSwitchSensor oneWireSensor = new OneWireSwitchSensor((StateSensor)sensor);
 		int inputNumber = oneWireSensor.getInputNumber();
-		log.debug("OneWire device:'" + deviceName + "': uninstalling " +"sensor input number: '"+inputNumber +"', " +sensor);
+		log.info("OneWire device:'" + deviceName + "': uninstalling " +"sensor input number: '"+inputNumber +"', " +sensor);
 		inputToSensorMap.remove(inputNumber);
 	}
 
@@ -84,7 +84,7 @@ public class OneWireAlarmingCommand extends OneWireCommand implements EventListe
 				alarmingScanner.addAlarmingDeviceHandler(createSwitchAlarmingDeviceListener());
 			}
 		} catch (Exception e) {
-			log.error("Cannot register alarm listener for device: " + deviceName);
+			log.error("Cannot register alarm listener for device: " + deviceName,e);
 		}
 	}
 

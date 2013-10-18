@@ -37,11 +37,6 @@ public class OneWireCommand implements Command {
 	protected final static Logger log = OneWireLoggerFactory.getLogger();
 
 	/**
-	 * owserver host location, contains ip address and port number
-	 */
-	protected OneWireHost host;
-
-	/**
 	 * Connection factory for given connection
 	 */
 	protected OwfsConnectionFactory owfsConnectorFactory;
@@ -65,10 +60,6 @@ public class OneWireCommand implements Command {
 		this.owfsConnectorFactory = owfsConnectorFactory;
 	}
 
-	public void setHost(OneWireHost host) {
-		this.host = host;
-	}
-
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
 	}
@@ -87,7 +78,7 @@ public class OneWireCommand implements Command {
 	 * @throws NoSuchCommandException if validation fails
 	 */
 	public void validate() throws NoSuchCommandException {
-		if (deviceName == null || devicePropertyName == null || host.getHostname() == null) {
+		if (deviceName == null || devicePropertyName == null || owfsConnectorFactory.getConnectionConfig().getHostName() == null) {
 			throw new NoSuchCommandException("Unable to create OneWireCommand, missing configuration parameter(s). "+this);
 		}
 	}
@@ -102,7 +93,8 @@ public class OneWireCommand implements Command {
 
 	public StringBuilder toStringParameterOnly() {
 		return new StringBuilder()
-				.append("host=").append(host)
+				.append("host=")
+				.append("'"+owfsConnectorFactory.getConnectionConfig().getHostName()+":"+owfsConnectorFactory.getConnectionConfig().getPortNumber()+"'")
 				.append(", deviceName='").append(deviceName).append('\'')
 				.append(", devicePropertyName='").append(devicePropertyName).append('\'');
 	}

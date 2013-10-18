@@ -42,8 +42,7 @@ public class OneWireCommandBuilder implements CommandBuilder {
 	private final static Logger logger = OneWireLoggerFactory.getLogger();
 
 	/**
-	 * Command repository.
-	 * Every
+	 * Command repository cache. Commands are created once and reused by id property corelation.
 	 */
 	private static Map<String, OneWireCommand> commandRepository = new HashMap<String, OneWireCommand>();
 
@@ -137,7 +136,6 @@ public class OneWireCommandBuilder implements CommandBuilder {
 
 	private void configureWithGeneralProperties(OneWireCommand command, OneWireConfigurationReader configuration) {
 		OneWireHost oneWireHost = configuration.getOneWireHost();
-		command.setHost(oneWireHost);
 		command.setOwfsConnectorFactory(connectionFactoryRepository.loadOrCreate(oneWireHost));
 		command.setDeviceName(configuration.getDeviceName());
 		command.setDevicePropertyName(configuration.getDevicePropertyName());

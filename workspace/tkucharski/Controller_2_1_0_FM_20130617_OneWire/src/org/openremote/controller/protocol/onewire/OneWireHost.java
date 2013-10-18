@@ -20,14 +20,20 @@
  */
 package org.openremote.controller.protocol.onewire;
 
+import org.owfs.jowfsclient.Enums;
+
 /**
  * Simple composite to store owserver host and port number within one object. Used in {@org.openremote.controller.protocol.onewire.OneWireHostFactory}
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
 public class OneWireHost {
 
 	private String hostname;
+
 	private int port;
+
+	private Enums.OwTemperatureScale temperatureScale;
 
 	public String getHostname() {
 		return hostname;
@@ -45,11 +51,20 @@ public class OneWireHost {
 		this.port = port;
 	}
 
+	public Enums.OwTemperatureScale getTemperatureScale() {
+		return temperatureScale;
+	}
+
+	public void setTemperatureScale(Enums.OwTemperatureScale temperatureScale) {
+		this.temperatureScale = temperatureScale;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("OneWireHost{");
 		sb.append("hostname='").append(hostname).append('\'');
 		sb.append(", port=").append(port);
+		sb.append(", temperatureScale=").append(temperatureScale);
 		sb.append('}');
 		return sb.toString();
 	}
@@ -63,6 +78,7 @@ public class OneWireHost {
 
 		if (port != that.port) return false;
 		if (hostname != null ? !hostname.equals(that.hostname) : that.hostname != null) return false;
+		if (temperatureScale != that.temperatureScale) return false;
 
 		return true;
 	}
@@ -71,6 +87,7 @@ public class OneWireHost {
 	public int hashCode() {
 		int result = hostname != null ? hostname.hashCode() : 0;
 		result = 31 * result + port;
+		result = 31 * result + (temperatureScale != null ? temperatureScale.hashCode() : 0);
 		return result;
 	}
 }
