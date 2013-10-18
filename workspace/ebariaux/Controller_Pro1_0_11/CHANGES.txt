@@ -7,6 +7,7 @@ New Features:
     (Juha Lindfors) (ORCJAVA-368)
   - Have Samsung protocol as separate jar for Pro release (ORCJAVA-381)
   - Add a polling interval on the DateTime protocol (ORCJAVA-396)
+  - Marantz AVR protocol improvements: multiple-zone support and additional commands (ORCJAVA-395)
   - Create unit tests for Marantz protocol implementation (ORCJAVA-408)
 
 Bug Fixes:
@@ -21,7 +22,6 @@ Bug Fixes:
   - Fix ISY-99 connection error messages at regular interval (ORCJAVA-372)
   - Vera protocol implementation exception at startup (ORCJAVA-403)
   - Update Marantz implementation to use locale independent string case conversions (ORCJAVA-340)
-  - Marantz AVR protocol improvements: multiple-zone support and additional commands (ORCJAVA-395)
 
 Controller Pro 1.0.10
 =====================
