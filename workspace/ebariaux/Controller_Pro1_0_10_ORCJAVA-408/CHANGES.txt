@@ -1,3 +1,8 @@
+Controller ORCJAVA-408
+======================
+
+ - Create unit tests for Marantz protocol implementation
+
 Controller ORCJAVA-395
 ======================
 
