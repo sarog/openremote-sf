@@ -18,17 +18,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.onewire;
+package org.openremote.controller.protocol.onewire.old;
 
 import java.io.IOException;
-
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
-import org.owfs.jowfsclient.Enums.*;
-import org.owfs.jowfsclient.OwfsClient;
-import org.owfs.jowfsclient.OwfsClientFactory;
+import org.owfs.jowfsclient.Enums.OwTemperatureScale;
+import org.owfs.jowfsclient.OwfsConnection;
+import org.owfs.jowfsclient.OwfsConnectionConfig;
+import org.owfs.jowfsclient.OwfsConnectionFactory;
 import org.owfs.jowfsclient.OwfsException;
 
 /**
@@ -58,22 +58,28 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
 
   // Instance Fields ------------------------------------------------------------------------------
 
+  /** Boolean to indicate if polling thread should run */
+  boolean doPoll = false;
+
   private String hostname;
+
   private int port = 4304;
+
   private String deviceAddress;
+
   private String filename;
+
   private int pollingInterval;
+
   private TemperatureScale tempScale;
+
   private String data;
 
   /** The thread that is used to peridically update the sensor */
   private Thread pollingThread;
-  
+
   /** The sensor which is updated */
   private Sensor sensor;
-  
-  /** Boolean to indicate if polling thread should run */
-  boolean doPoll = false;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -110,33 +116,32 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   private String read()
   {
     logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be read.");
-    OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
-
-    client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
-    client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
-    client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
+	  OwfsConnectionFactory owfsConnectionFactory = new OwfsConnectionFactory(hostname, port);
+	  OwfsConnectionConfig connectionConfig = owfsConnectionFactory.getConnectionConfig();
     switch (tempScale) {
       case Celsius:
-        client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);  
+        connectionConfig.setTemperatureScale(OwTemperatureScale.CELSIUS);
         break;
       case Fahrenheit:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_FAHRENHEIT);  
+	      connectionConfig.setTemperatureScale(OwTemperatureScale.FAHRENHEIT);
          break;
       case Kelvin:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_KELVIN);  
+	      connectionConfig.setTemperatureScale(OwTemperatureScale.KELVIN);
          break;
       case Rankine:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_RANKINE);  
+	      connectionConfig.setTemperatureScale(OwTemperatureScale.RANKINE);
          break;
    }
-    
-    String value = null;
+
+	  OwfsConnection connection = owfsConnectionFactory.createNewConnection();
+
+	  String value = null;
 
     logger.debug("Client created, before call");
 
     try
     {
-      value = client.read(deviceAddress+"/"+filename);
+      value = connection.read(deviceAddress+"/"+filename);
     }
     catch (Exception e)
     {
@@ -167,11 +172,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
 
     logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be changed to: '" + data);
 
-    OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
-
-    client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
-    client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
-    client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
+    OwfsConnection client = new OwfsConnectionFactory(hostname, port).createNewConnection();
     try
     {
       client.write(deviceAddress+"/"+filename, data);
@@ -186,7 +187,6 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
     }
   }
 
-
   @Override
   public void setSensor(Sensor sensor)
   {
@@ -198,13 +198,11 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
     pollingThread.start();
   }
 
-
   @Override
   public void stop(Sensor sensor)
   {
     this.doPoll = false;
   }
-
 
   @Override
   public void run()
