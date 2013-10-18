@@ -59,7 +59,7 @@ public class OnScreenDisplayInfoCommand extends MarantzAVRCommand implements Exe
        */
       public void send() {
         // Only supported command is the request of information
-        gateway.sendCommand("NSE",  "?");
+        gateway.sendCommand("NSE",  "");
       }
 
       // Implements EventListener -------------------------------------------------------------------
