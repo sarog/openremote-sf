@@ -95,7 +95,7 @@ public class NoFeedbackCommand extends MarantzAVRCommand implements ExecutableCo
             parameterValue = commandConfig.getParameter(parameter);
          }
       }
-     gateway.sendCommand(commandConfig.getValuePerZone(zone), parameterValue);
+     gateway.sendCommand(commandConfig.getValueToUseForZone(zone), parameterValue);
    }
 
    // Implements EventListener -------------------------------------------------------------------

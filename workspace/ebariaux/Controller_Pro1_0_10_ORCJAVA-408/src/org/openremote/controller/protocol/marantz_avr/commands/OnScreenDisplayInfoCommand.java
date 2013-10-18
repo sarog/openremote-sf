@@ -102,8 +102,8 @@ public class OnScreenDisplayInfoCommand extends MarantzAVRCommand implements Exe
             int startOfInfo = 2;
             boolean lineSelected = false;
             
-            // Lines 0, 7, 8 don't have an "prefix" information in 1st byte
-            if ("0".equals(parameter) || "7".equals(parameter) || "8".equals (parameter)) {
+            // Line 0 doesn't have a "prefix" information in 1st byte
+            if ("0".equals(parameter)) {
                startOfInfo = 1;
             } else {
                char statusByte = response.parameter.charAt(1);
