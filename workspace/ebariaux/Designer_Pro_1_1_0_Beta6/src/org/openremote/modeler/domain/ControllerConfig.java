@@ -26,6 +26,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
+
 import flexjson.JSON;
 
 /**
@@ -170,5 +172,9 @@ public class ControllerConfig extends BusinessEntity{
       return true;
    }
    
+   @Transient
+   public ControllerConfigDTO getControllerConfigDTO() {
+     return new ControllerConfigDTO(getOid(), getCategory(), getName(), getValue(), getHint(), getValidation(), getOptions());
+   }
    
 }

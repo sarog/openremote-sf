@@ -97,15 +97,10 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     LogFacade log = LogFacade.getInstance(LogFacade.Category.EXPORT);
 
-    resourceService.resolveDTOReferences(panelList);
-
-    // TODO : this call should be internalized, see MODELER-287
-    resourceService.initResources(panelList, maxId);
-
-    resourceService.saveResourcesToBeehive(panelList);
-
-    // TODO : should be injected
-    ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+    // Saving the resources provides us with a valid local cache that can be used to produce the export file.
+    // This is a depency to make sure all files that are part of the export are correctly generated.
+    // Will go away with MODELER-288
+    LocalFileCache cache = resourceService.saveResourcesToBeehive(panelList, maxId);
 
     try
     {
@@ -149,7 +144,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
     }
 
     // TODO : should never come from cache in the first place but from Beehive
-    return resourceService.downloadZipResource(maxId, getThreadLocalRequest().getSession().getId(), panelList);
+    return resourceService.downloadZipResource(cache, panelList, maxId);
   }
 
 
@@ -217,21 +212,19 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
    public AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) {
       AutoSaveResponse autoSaveResponse = new AutoSaveResponse();
       
-      List<Panel> oldPanels = new ArrayList<Panel>();
+      Collection<Panel> oldPanels = new ArrayList<Panel>();
       if (getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY) != null) {
-         oldPanels = (List<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
+         oldPanels = (Collection<Panel>) getThreadLocalRequest().getSession().getAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY);
       }
       if (panels != null && panels.size() > 0) {
-        
-        resourceService.resolveDTOReferences(panels);
         
          if (!resourceService.getPanelsJson(panels).equals(resourceService.getPanelsJson(oldPanels))) {
             synchronized (getThreadLocalRequest().getSession()) {
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_PANEL_KEY, panels);
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
                autoSaveResponse.setUpdated(true);
-               resourceService.initResources(panels, maxID);
-               resourceService.saveResourcesToBeehive(panels);
+
+               resourceService.saveResourcesToBeehive(panels, maxID);
             }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
@@ -249,10 +242,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
             
-            resourceService.resolveDTOReferences(panels);
-            
-            resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive(panels);
+            resourceService.saveResourcesToBeehive(panels, maxID);
          }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
@@ -320,11 +310,6 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
          getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxOid);
       }
       return result;
-   }
-
-   @Override
-   public boolean canRestore() {
-      return resourceService.canRestore();
    }
    
    public ScreenFromTemplate buildScreenFromTemplate(Template template){

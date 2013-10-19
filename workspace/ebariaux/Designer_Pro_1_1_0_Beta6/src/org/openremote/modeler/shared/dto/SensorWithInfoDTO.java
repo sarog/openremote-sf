@@ -22,7 +22,11 @@ package org.openremote.modeler.shared.dto;
 
 import java.util.ArrayList;
 
+import javax.persistence.Transient;
+
 import org.openremote.modeler.domain.SensorType;
+
+import flexjson.JSON;
 
 public class SensorWithInfoDTO implements DTO {
 
@@ -118,4 +122,75 @@ public class SensorWithInfoDTO implements DTO {
     }
     return states.toString();
   }
+
+  public int equalityHashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((commandName == null) ? 0 : commandName.hashCode());
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((maxValue == null) ? 0 : maxValue.hashCode());
+    result = prime * result + ((minValue == null) ? 0 : minValue.hashCode());
+    result = prime * result + ((oid == null) ? 0 : oid.hashCode());
+    result = prime * result + ((stateNames == null) ? 0 : stateNames.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
+
+  public boolean equalityEquals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    SensorWithInfoDTO other = (SensorWithInfoDTO) obj;
+    if (commandName == null) {
+      if (other.commandName != null)
+        return false;
+    } else if (!commandName.equals(other.commandName))
+      return false;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (maxValue == null) {
+      if (other.maxValue != null)
+        return false;
+    } else if (!maxValue.equals(other.maxValue))
+      return false;
+    if (minValue == null) {
+      if (other.minValue != null)
+        return false;
+    } else if (!minValue.equals(other.minValue))
+      return false;
+    if (oid == null) {
+      if (other.oid != null)
+        return false;
+    } else if (!oid.equals(other.oid))
+      return false;
+    if (stateNames == null) {
+      if (other.stateNames != null)
+        return false;
+    } else if (!stateNames.equals(other.stateNames))
+      return false;
+    if (type != other.type)
+      return false;
+    return true;
+  }
+
+  /**
+   * Returns the sensor id offset by a predefined value.
+   * This is used to partition the id space between commands and sensor,
+   * and avoid having id collision.
+   * This is a temporary solution, see MODELER-413 for more details. 
+   * 
+   * @return int sensor id offset by predefine value.
+   */
+  @Transient
+  @JSON(include = false)
+  public long getOffsetId() {
+    return 100000 + getOid();
+  }
+
 }
