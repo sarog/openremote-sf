@@ -36,6 +36,7 @@ import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
@@ -56,6 +57,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    }
 
    @Override
+   @Transactional
    public List<Slider> loadAll() {
       List<Slider> result = userService.getAccount().getSliders();
       if (result == null || result.size() == 0) {
@@ -129,6 +131,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
      genericDAO.saveOrUpdate(slider);
    }
    
+   @Override
    public List<Slider> loadSameSliders(Slider slider) {
       List<Slider> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
@@ -146,6 +149,23 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       return result;
    }
 
+  @Override
+  public SliderDetailsDTO loadSliderDetailsDTO(long id) {
+    Slider slider = loadById(id);
+    return (slider != null)?slider.getSliderDetailsDTO():null;
+  }
+
+  @Override
+  public List<SliderWithInfoDTO> loadAllSliderWithInfosDTO() {
+    ArrayList<SliderWithInfoDTO> dtos = new ArrayList<SliderWithInfoDTO>();
+    List<Slider> sliders = loadAll();
+    for (Slider slider : sliders) {
+      dtos.add(slider.getSliderWithInfoDTO());
+    }
+    return dtos;
+  }
+
+   @Override
    @Transactional
    public List<Slider> saveAllSliders(List<Slider> sliderList, Account account) {
        for (Slider slider : sliderList) {
@@ -154,6 +174,21 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
        }
        return sliderList;
    }
+
+  @Override
+  @Transactional
+  public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
+    Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
+    DeviceCommand command = null;
+    if (sliderDTO.getCommand() != null) {
+      command = deviceCommandService.loadById(sliderDTO.getCommand().getId());
+    }
+
+    Slider slider = new Slider(sliderDTO.getName(), command, sensor);
+    slider.setAccount(userService.getAccount());
+
+    save(slider);
+  }
 
    public void setUserService(UserService userService) {
       this.userService = userService;

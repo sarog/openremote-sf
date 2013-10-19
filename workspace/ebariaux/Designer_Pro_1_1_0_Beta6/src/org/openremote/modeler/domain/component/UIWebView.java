@@ -3,6 +3,7 @@ package org.openremote.modeler.domain.component;
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.shared.dto.SensorWithInfoDTO;
 import org.openremote.modeler.utils.StringUtils;
@@ -31,7 +32,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public UIWebView() {
 	   }
 
-	   public UIWebView(String url, String userid,String password, String color, int fontSize, Sensor sensor) {
+	   public UIWebView(String url, String userid, String password, Sensor sensor) {
 	      this.url = url;
 	      this.userid=userid;
 	      this.password=password;
@@ -50,6 +51,7 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	      this.password=webview.password;
 	      this.sensor = webview.sensor;
 	      this.sensorLink = webview.sensorLink;
+	      this.sensorDTO = webview.sensorDTO;
 	   }
 
 	   public String getURL() {
@@ -121,13 +123,13 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 
 	   @Transient
 	   @Override
-	   public String getPanelXml() {
+	   public String getPanelXml(ConfigurationFilesGenerationContext context) {
 	      StringBuilder sb = new StringBuilder();
 	      sb.append("<web id=\"" + getOid() + "\" src=\"" + StringUtils.escapeXml(url)
 	            + "\" username=\"" + StringUtils.escapeXml(userid) + "\" password=\"" + StringUtils.escapeXml(password)	            
 	            + "\">\n");
-	      if (sensor != null) {
-	         sb.append(sensorLink.getXMLString());
+	      if (getSensorDTO() != null) {
+	         sb.append("<link type=\"sensor\" ref=\"" + getSensorDTO().getOffsetId() + "\"/>");
 	      }
 	      sb.append("</web>");
 	      return sb.toString();
@@ -156,4 +158,48 @@ public class UIWebView extends UIComponent implements SensorOwner, SensorLinkOwn
 	   public int getPreferredHeight() {
 	      return 50;
 	   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((password == null) ? 0 : password.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.equalityHashCode());
+    result = prime * result + ((url == null) ? 0 : url.hashCode());
+    result = prime * result + ((userid == null) ? 0 : userid.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (!super.equals(obj))
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UIWebView other = (UIWebView) obj;
+    if (password == null) {
+      if (other.password != null)
+        return false;
+    } else if (!password.equals(other.password))
+      return false;
+    if (sensorDTO == null) {
+      if (other.sensorDTO != null)
+        return false;
+    } else if (!sensorDTO.equalityEquals(other.sensorDTO))
+      return false;
+    if (url == null) {
+      if (other.url != null)
+        return false;
+    } else if (!url.equals(other.url))
+      return false;
+    if (userid == null) {
+      if (other.userid != null)
+        return false;
+    } else if (!userid.equals(other.userid))
+      return false;
+    return true;
+  }
+
 }

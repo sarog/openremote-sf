@@ -33,6 +33,13 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openremote.modeler.shared.dto.DTOReference;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
+
 import flexjson.JSON;
 
 
@@ -46,6 +53,8 @@ import flexjson.JSON;
 @Table(name = "device_macro")
 public class DeviceMacro extends BusinessEntity {
    
+  private static final long serialVersionUID = 718309862039722950L;
+
    /** The device macro items. */
    private List<DeviceMacroItem> deviceMacroItems = new ArrayList<DeviceMacroItem>();
    
@@ -182,6 +191,54 @@ public class DeviceMacro extends BusinessEntity {
          return true;
       }
       return macroItems == null && deviceMacroItems == null;
+   }
+   
+   @JSON(include=false)
+   @Transient
+   public MacroDTO getMacroDTO() {
+     MacroDTO dto = new MacroDTO(getOid(), getDisplayName());
+      ArrayList<MacroItemDTO> itemDTOs = new ArrayList<MacroItemDTO>();
+      for (DeviceMacroItem dmi : getDeviceMacroItems()) {
+        if (dmi instanceof DeviceMacroRef) {
+          itemDTOs.add(new MacroItemDTO(((DeviceMacroRef)dmi).getTargetDeviceMacro().getName(), MacroItemType.Macro));
+        } else if (dmi instanceof DeviceCommandRef) {
+          itemDTOs.add(new MacroItemDTO(((DeviceCommandRef)dmi).getDeviceCommand().getName(), MacroItemType.Command));
+        } else if (dmi instanceof CommandDelay) {
+          itemDTOs.add(new MacroItemDTO("Delay(" + ((CommandDelay)dmi).getDelaySecond() + " ms)", MacroItemType.Delay));
+        }
+      }
+      dto.setItems(itemDTOs);
+     return dto;
+   }
+
+   @JSON(include=false)
+   @Transient
+   public MacroDetailsDTO getMacroDetailsDTO() {
+     ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
+     for (DeviceMacroItem dmi : getDeviceMacroItems()) {
+       items.add(dmi.getMacroItemDetailsDTO());
+     }
+     return new MacroDetailsDTO(getOid(), getName(), items);
+   }
+   
+   /**
+    * Checks if this macro has references to another macro in the provided list.
+    * If list is empty, this basically checks that a macro does reference another macro.
+    * 
+    * @param otherMacros List of macros that this macro can "safely depend on"
+    * @return boolean true if this macro references a macro that is not in the provided list
+    */
+   @JSON(include=false)
+   @Transient
+   public boolean dependsOnMacrosNotInList(List<DeviceMacro> otherMacros) {
+     for (DeviceMacroItem dmi : getDeviceMacroItems()) {
+       if (dmi instanceof DeviceMacroRef) {
+         if (!otherMacros.contains(((DeviceMacroRef) dmi).getTargetDeviceMacro())) {
+           return true;
+         }
+       }
+     }
+     return false;
    }
    
 }
