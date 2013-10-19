@@ -138,6 +138,6 @@ public class OneWireCommandBuilder implements CommandBuilder {
 		OneWireHost oneWireHost = configuration.getOneWireHost();
 		command.setOwfsConnectorFactory(connectionFactoryRepository.loadOrCreate(oneWireHost));
 		command.setDeviceName(configuration.getDeviceName());
-		command.setDevicePropertyName(configuration.getDevicePropertyName());
+		command.setDevicePropertyName(configuration.getFilenameProperty());
 	}
 }

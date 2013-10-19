@@ -20,19 +20,24 @@
  */
 package org.openremote.controller.protocol.onewire.command;
 
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
 import org.owfs.jowfsclient.OwfsConnection;
 
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireSwitchableCommand extends OneWireExecutableCommand {
+public class OneWireSwitchableCommand extends OneWireExecutableCommand implements EventListener {
 
-	public static final String OFF = "0";
-	public static final String ON = "1";
+	private State state;
+
+	private Sensor sensor;
 
 	@Override
 	public void setDynamicValue(String dynamicValue) {
-		log.debug(this.toString()+" new dynamicValue:'"+dynamicValue+"'");
+		if (dynamicValue != null) {
+			setState(State.convert(dynamicValue));
+		}
 	}
 
 	@Override
@@ -40,21 +45,23 @@ public class OneWireSwitchableCommand extends OneWireExecutableCommand {
 		if (isItFirstExecution()) {
 			tryToReadInitialValue();
 		}
-		negateDynamicValue();
+		setState(state.negate());
 		super.send();
+		notifySensor();
 	}
 
 	/**
 	 * Rollback current state value as command was not sent to owfs server
+	 *
 	 * @param e exception thrown during send method
 	 */
 	@Override
 	protected void handleException(Exception e) {
-		negateDynamicValue();
+		setState(state.negate());
 		super.handleException(e);
 	}
 
-	public boolean isItFirstExecution() {
+	private boolean isItFirstExecution() {
 		return dynamicValue == null;
 	}
 
@@ -62,26 +69,63 @@ public class OneWireSwitchableCommand extends OneWireExecutableCommand {
 		try {
 			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
 			String value = connection.read(deviceName + "/" + devicePropertyName);
-			setState(value);
+			setState(State.valueOf(value));
 		} catch (Exception e) {
-			log.warn("OneWire cannot read initial value for command: "+this);
-			setState(OFF);
+			log.warn("OneWire cannot read initial value for command: " + this);
+			setState(State.off);
 		}
 	}
 
-	public void setState(String value) {
-		if (ON.equals(value)) {
-			dynamicValue = ON;
-		} else {
-			dynamicValue = OFF;
+	private void setState(State newState) {
+		state = newState;
+		super.setDynamicValue(newState.name());
+	}
+
+	private void notifySensor() {
+		if (sensor != null) {
+			log.info("update sensor:" + sensor.getName() + " with value '" + state + "'");
+			sensor.update(state.name());
 		}
 	}
 
-	public void negateDynamicValue() {
-		if (ON.equals(dynamicValue)) {
-			dynamicValue = OFF;
-		} else {
-			dynamicValue = ON;
+	@Override
+	public void setSensor(Sensor sensor) {
+		log.info("Installing sensor on " + this.toString());
+		this.sensor = sensor;
+	}
+
+	@Override
+	public void stop(Sensor sensor) {
+		log.info("Uninstalling sensor on " + this.toString());
+		this.sensor = null;
+	}
+
+	enum State {
+		on("1"),
+		off("2");
+
+		private String oneWireState;
+
+		State(String oneWireState) {
+			this.oneWireState = oneWireState;
 		}
+
+		public static State convert(String s) {
+			for (State state : values()) {
+				if (state.oneWireState.equals(s) || state.name().equals(s)) {
+					return state;
+				}
+			}
+			return off;
+		}
+
+		public State negate() {
+			if (this == on) {
+				return off;
+			} else {
+				return on;
+			}
+		}
+
 	}
 }
