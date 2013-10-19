@@ -83,9 +83,9 @@ public class OneWireConfigurationReader {
 	 * @return
 	 */
 	public OneWireCommandType getCommandType() {
-		if (OneWireCommandType.ALARMING.toString().equals(getDevicePropertyName())) {
+		if (OneWireCommandType.ALARMING.toString().equals(getFilenameProperty())) {
 			return OneWireCommandType.ALARMING;
-		} else if (OneWireCommandType.SWITCHABLE.toString().equals(getDevicePropertyValue())) {
+		} else if (OneWireCommandType.SWITCHABLE.toString().equals(getDataProperty())) {
 			return OneWireCommandType.SWITCHABLE;
 		} else if (getPollingInterval() != null) {
 			return OneWireCommandType.INTERVAL;
@@ -139,7 +139,7 @@ public class OneWireConfigurationReader {
 		return readPropertyValue(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
 	}
 
-	public String getDevicePropertyName() {
+	public String getFilenameProperty() {
 		String property = readPropertyValue(XML_PROPERTY_CONFIG_FILENAME);
 		if (property == null) {
 			return null;
@@ -149,7 +149,7 @@ public class OneWireConfigurationReader {
 		}
 	}
 
-	public String getDevicePropertyValue() {
+	public String getDataProperty() {
 		String property = readPropertyValue(XML_PROPERTY_CONFIG_FILENAME);
 		if (property == null) {
 			return null;

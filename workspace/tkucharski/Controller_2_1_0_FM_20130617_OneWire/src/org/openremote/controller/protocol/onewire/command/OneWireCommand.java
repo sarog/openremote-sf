@@ -22,7 +22,6 @@ package org.openremote.controller.protocol.onewire.command;
 
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.protocol.onewire.OneWireHost;
 import org.openremote.controller.protocol.onewire.OneWireLoggerFactory;
 import org.openremote.controller.utils.Logger;
 import org.owfs.jowfsclient.OwfsConnectionFactory;
