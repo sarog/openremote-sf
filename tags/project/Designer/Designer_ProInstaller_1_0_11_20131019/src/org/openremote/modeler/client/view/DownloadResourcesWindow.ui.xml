@@ -1,0 +1,41 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+		.centeredButton {
+			margin: 0 auto;
+			display: block;
+		}
+		.linkComment {
+			font-style: italic;
+			color: #888888;
+		}
+	</ui:style>
+	<g:DialogBox autoHide="false" modal="true">
+		<g:caption>
+			<b>Download Professional Designer resources</b>
+		</g:caption>
+		<g:HTMLPanel>
+		    <div>
+		      <p>The resources below are reserved for Professional Designer users.</p>
+		      <p>Please do not distribute.</p>
+		      <p>&nbsp;</p>
+		    </div>
+			<ul>
+			  <li><a href="download/OpenRemote_Controller.zip">Controller Pro v1.0.11</a>
+			  <p class="{style.linkComment}">Pro Controller package. Contains a tomcat server with the OpenRemote Controller and WebConsole deployed.</p></li>
+			  <li><a href="download/voyage_ebox_v1.4.11_20131019.img.zip">eBox image v1.4.11</a>
+			  <p class="{style.linkComment}">CF card image to use on eBox 3310</p></li>
+			</ul>
+			<div>&nbsp;</div>
+			<div>For more information, please consult <a href="http://www.openremote.com/support/ipcontroller">Controller of Things</a></div>
+			<div>&nbsp;</div>
+			<div>
+				<g:Button ui:field="okButton" styleName="{style.centeredButton}">OK</g:Button>
+			</div>
+		</g:HTMLPanel>
+   </g:DialogBox>
+</ui:UiBinder>
