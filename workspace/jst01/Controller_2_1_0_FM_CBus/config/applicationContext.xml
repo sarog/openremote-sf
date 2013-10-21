@@ -45,6 +45,7 @@
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
+            <value>classpath:cbus.properties</value>
           </list>
       </property>
   </bean>
@@ -113,7 +114,17 @@
    	<property name="udpPort" value="${denonAVRSerial.udpPort}" />
   </bean>
 
-    
+  <bean id="cbusConfiguration" class="org.openremote.controller.CbusConfig">
+    <property name="address" value="${cbus.ip_address}" />
+    <property name="port" value="${cbus.port}" />
+    <property name="eventPort" value="${cbus.event_port}" />
+    <property name="statusPort" value="${cbus.status_port}" />
+    <property name="projectFile" value="${cbus.project_file}" />
+  </bean>
+  
+  <bean id="cbusGateway" class="org.openremote.controller.protocol.cbus.CBusGateway"/>
+
+  
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -239,6 +250,7 @@
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "cbus"             value-ref = "cbusCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -257,6 +269,7 @@
                 <prop key = "onewire">oneWireCommandBuilder</prop>
                 <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
                 <prop key = "lagarto">lagartoCommandBuilder</prop>
+                <prop key = "cbus">cbusCommandBuilder</prop>
 		    </props>
 		</property>
 -->
@@ -373,6 +386,11 @@
   <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
     <property name="configuration" ref="configuration"/>
+  </bean>
+
+  <!-- CBus Command Builder -->
+  <bean id="cbusCommandBuilder" class = "org.openremote.controller.protocol.cbus.CBusCommandBuilder">
+		<property name="gateway" ref="cbusGateway"/>
   </bean>
 
   <!-- TODO -->
