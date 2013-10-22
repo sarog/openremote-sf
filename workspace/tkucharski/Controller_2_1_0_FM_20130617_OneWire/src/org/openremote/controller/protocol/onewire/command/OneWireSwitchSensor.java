@@ -38,7 +38,8 @@ public class OneWireSwitchSensor {
 	private static final String STATE_SENSOR_INTERNAL_FIELD_NAME = "states";
 
 	private StateSensor sensor;
-	private OneWireSwitchSensorState state;
+
+	private OneWireSwitchSensorState state = OneWireSwitchSensorState.off;
 
 	public OneWireSwitchSensor(StateSensor sensor) {
 		this.sensor = sensor;
@@ -53,7 +54,7 @@ public class OneWireSwitchSensor {
 	 */
 	public void setState(boolean newStateBoolean) {
 		OneWireSwitchSensorState newState = OneWireSwitchSensorState.valueOf(newStateBoolean);
-		logger.debug(sensor.getName() + ", " + state + "->" + newState);
+		logger.info(sensor.getName() + ", " + state.name() + "->" + newState.name());
 		if (!state.isOn() && !newState.isOn()) {
 			sensor.update(OneWireSwitchSensorState.on.name());
 			sensor.update(OneWireSwitchSensorState.off.name());
