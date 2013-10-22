@@ -1,7 +1,7 @@
 package org.openremote.controller.protocol.onewire.command;
 
 /**
- * @author Tomasz Kucharski <tomasz.kucharski@decerto.pl>
+ * @author Tom Kucharski <kucharski.tom@gmail.com>
  * @since 22.10.13 22:46
  */
 public enum OneWireSwitchSensorState {
