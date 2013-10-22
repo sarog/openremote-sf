@@ -72,7 +72,7 @@ public class OneWireSwitchableCommand extends OneWireWriteCommand implements Eve
 		try {
 			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
 			String value = connection.read(deviceName + "/" + deviceProperty);
-			setState(OneWireSwitchSensorState.valueOf(value));
+			setState(OneWireSwitchSensorState.convert(value));
 		} catch (Exception e) {
 			log.warn("OneWire cannot read initial value for command: " + this);
 			setState(OneWireSwitchSensorState.off);
