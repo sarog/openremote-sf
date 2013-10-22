@@ -33,15 +33,12 @@ import org.springframework.security.util.FieldUtils;
 public class OneWireSwitchSensor {
 	private final static Logger logger = OneWireLoggerFactory.getLogger();
 
-	private static final String STATE_ON = "on";
-	private static final String STATE_OFF = "off";
-
 	private static final String PROPERTY_INPUT = "INPUT";
 
 	private static final String STATE_SENSOR_INTERNAL_FIELD_NAME = "states";
 
 	private StateSensor sensor;
-	private boolean state;
+	private OneWireSwitchSensorState state;
 
 	public OneWireSwitchSensor(StateSensor sensor) {
 		this.sensor = sensor;
@@ -54,20 +51,21 @@ public class OneWireSwitchSensor {
 	 * ON->OFF  (input was released, but it was pressed since last scanning)
 	 * ON->ON   (input was released and pressed between scanning)
 	 */
-	public void setState(boolean newState) {
-		logger.debug(sensor.getName() + ", " + (state?1:0) + "->" + (newState?1:0));
-		if (!this.state && !newState) {
-			sensor.update(STATE_ON);
-			sensor.update(STATE_OFF);
-		} else if (!this.state) {
-			this.state = true;
-			sensor.update(STATE_ON);
-		} else if (!newState) {
-			this.state = false;
-			sensor.update(STATE_OFF);
+	public void setState(boolean newStateBoolean) {
+		OneWireSwitchSensorState newState = OneWireSwitchSensorState.valueOf(newStateBoolean);
+		logger.debug(sensor.getName() + ", " + state + "->" + newState);
+		if (!state.isOn() && !newState.isOn()) {
+			sensor.update(OneWireSwitchSensorState.on.name());
+			sensor.update(OneWireSwitchSensorState.off.name());
+		} else if (!state.isOn()) {
+			state = OneWireSwitchSensorState.on;
+			sensor.update(state.name());
+		} else if (!newState.isOn()) {
+			state = OneWireSwitchSensorState.off;
+			sensor.update(state.name());
 		} else {
-			sensor.update(STATE_OFF);
-			sensor.update(STATE_ON);
+			sensor.update(OneWireSwitchSensorState.off.name());
+			sensor.update(OneWireSwitchSensorState.on.name());
 		}
 	}
 

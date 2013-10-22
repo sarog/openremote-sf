@@ -20,7 +20,9 @@
  */
 package org.openremote.controller.protocol.onewire;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
@@ -35,6 +37,10 @@ import org.openremote.controller.utils.Strings;
  */
 public class OneWireConfigurationReader {
 
+	public final static String ALARMING = "ALARMING";
+
+	public final static String SWITCHABLE = "SWITCHABLE";
+
 	private final static Logger logger = OneWireLoggerFactory.getLogger();
 
 	private final static String XML_COMMAND_ID = "id";
@@ -47,24 +53,38 @@ public class OneWireConfigurationReader {
 
 	private final static String XML_PROPERTY_CONFIG_FILENAME = "filename";
 
+	private final static String XML_PROPERTY_CONFIG_DATA = "data";
+
 	private final static String XML_PROPERTY_CONFIG_POLLING_INTERVAL = "pollingInterval";
 
 	private final static String XML_PROPERTY_DYNAMIC = org.openremote.controller.command.Command.DYNAMIC_VALUE_ATTR_NAME;
 
 	private final static int CONFIG_PORT_DEFAULT = 4304;
 
+	private static OneWireDefaultConfiguration controllerConfiguration;
+
+	private String commandId;
+
+	private Map<String, String> values = new HashMap<String, String>();
+
 	/**
 	 * Root element representing single command configuration
 	 */
-	private final Element rootElement;
-
-	private static OneWireDefaultConfiguration controllerConfiguration;
-
 	public OneWireConfigurationReader(Element rootElement) {
 		if (controllerConfiguration == null) {
 			controllerConfiguration = new OneWireDefaultConfiguration();
 		}
-		this.rootElement = rootElement;
+		commandId = rootElement.getAttributeValue(XML_COMMAND_ID);
+		saveConfigurationInMap(rootElement);
+	}
+
+	public void saveConfigurationInMap(Element rootElement) {
+		List<Element> children = rootElement.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY, rootElement.getNamespace());
+		for (Element child : children) {
+			String key = child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
+			String value = child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
+			values.put(key, value);
+		}
 	}
 
 	/**
@@ -73,25 +93,7 @@ public class OneWireConfigurationReader {
 	 * @return
 	 */
 	public String getCommandId() {
-		return rootElement.getAttributeValue(XML_COMMAND_ID);
-	}
-
-	/**
-	 * Actually command type is not defined within xml configuration. As a result its type is defined in different properties.
-	 * See OneWireCommandType enum for details
-	 *
-	 * @return
-	 */
-	public OneWireCommandType getCommandType() {
-		if (OneWireCommandType.ALARMING.toString().equals(getFilenameProperty())) {
-			return OneWireCommandType.ALARMING;
-		} else if (OneWireCommandType.SWITCHABLE.toString().equals(getDataProperty())) {
-			return OneWireCommandType.SWITCHABLE;
-		} else if (getPollingInterval() != null) {
-			return OneWireCommandType.INTERVAL;
-		} else {
-			return OneWireCommandType.EXECUTABLE;
-		}
+		return commandId;
 	}
 
 	public OneWireHost getOneWireHost() {
@@ -108,7 +110,7 @@ public class OneWireConfigurationReader {
 	 * @return owserver host name
 	 */
 	public String getHostName() {
-		String s = readPropertyValue(XML_PROPERTY_CONFIG_HOSTNAME);
+		String s = values.get(XML_PROPERTY_CONFIG_HOSTNAME);
 		if (StringUtils.isEmpty(s)) {
 			return controllerConfiguration.getHost();
 		} else {
@@ -122,7 +124,7 @@ public class OneWireConfigurationReader {
 	 * @return owserver port number
 	 */
 	public int getPortNumber() {
-		String portNumber = readPropertyValue(XML_PROPERTY_CONFIG_PORT);
+		String portNumber = values.get(XML_PROPERTY_CONFIG_PORT);
 		if (StringUtils.isEmpty(portNumber)) {
 			portNumber = controllerConfiguration.getPort();
 		}
@@ -136,37 +138,21 @@ public class OneWireConfigurationReader {
 	}
 
 	public String getDeviceName() {
-		return readPropertyValue(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
+		return values.get(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
 	}
 
 	public String getFilenameProperty() {
-		String property = readPropertyValue(XML_PROPERTY_CONFIG_FILENAME);
-		if (property == null) {
-			return null;
-		} else {
-			String[] split = property.split("=");
-			return split[0];
-		}
+		return values.get(XML_PROPERTY_CONFIG_FILENAME);
 	}
 
 	public String getDataProperty() {
-		String property = readPropertyValue(XML_PROPERTY_CONFIG_FILENAME);
-		if (property == null) {
-			return null;
-		} else {
-			String[] split = property.split("=");
-			if (split.length == 1) {
-				return null;
-			} else {
-				return split[split.length - 1];
-			}
-		}
+		return values.get(XML_PROPERTY_CONFIG_DATA);
 	}
 
 	public Integer getPollingInterval() {
 		String elementValue;
 		try {
-			elementValue = readPropertyValue(XML_PROPERTY_CONFIG_POLLING_INTERVAL);
+			elementValue = values.get(XML_PROPERTY_CONFIG_POLLING_INTERVAL);
 		} catch (Exception e) {
 			return null;
 		}
@@ -184,20 +170,9 @@ public class OneWireConfigurationReader {
 		}
 	}
 
-	public String readPropertyValue(String propertyName) {
-		List<Element> children = rootElement.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY, rootElement.getNamespace());
-		for (Element child : children) {
-			String elementName = child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
-			if (elementName.equals(propertyName)) {
-				return child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
-			}
-		}
-		return null;
-	}
-
 	public String getDynamicValue() {
 		try {
-			return readPropertyValue(XML_PROPERTY_DYNAMIC);
+			return values.get(XML_PROPERTY_DYNAMIC);
 		} catch (Exception e) {
 			return null;
 		}
