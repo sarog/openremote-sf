@@ -210,7 +210,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
           items.add(new MacroItemDetailsDTO(macroRef.getOid(), MacroItemType.Macro, macroRef.getTargetDeviceMacro().getDisplayName(), new DTOReference(macroRef.getTargetDeviceMacro().getOid())));
         } else if (dmi instanceof DeviceCommandRef) {
           DeviceCommandRef commandRef = ((DeviceCommandRef)dmi);
-          items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getDisplayName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
+          items.add(new MacroItemDetailsDTO(commandRef.getOid(), MacroItemType.Command, commandRef.getDeviceCommand().getFullyQualifiedName(), new DTOReference(commandRef.getDeviceCommand().getOid())));
         } else if (dmi instanceof CommandDelay) {
           items.add(new MacroItemDetailsDTO(dmi.getOid(), Integer.parseInt(((CommandDelay)dmi).getDelaySecond())));
         }
