@@ -25,20 +25,20 @@ import java.util.Map;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.onewire.command.OneWireAlarmingCommand;
 import org.openremote.controller.protocol.onewire.command.OneWireCommand;
-import org.openremote.controller.protocol.onewire.command.OneWireExecutableCommand;
-import org.openremote.controller.protocol.onewire.command.OneWireIntervalReadCommand;
+import org.openremote.controller.protocol.onewire.command.OneWireReadCommand;
 import org.openremote.controller.protocol.onewire.command.OneWireSwitchableCommand;
+import org.openremote.controller.protocol.onewire.command.OneWireWriteCommand;
 import org.openremote.controller.utils.Logger;
-
 
 /**
  * OneWire command builder.
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
 public class OneWireCommandBuilder implements CommandBuilder {
+
 	private final static Logger logger = OneWireLoggerFactory.getLogger();
 
 	/**
@@ -58,86 +58,49 @@ public class OneWireCommandBuilder implements CommandBuilder {
 	/**
 	 * Main factory method building proper command. It tries to load existing command from repository based on its id.
 	 * This method is run every time new command is going to be send or defined. As a result dynamic value is always set
-	 * @param element  contains JDOM instances of the command XML snippet to parse
+	 *
+	 * @param element contains JDOM instances of the command XML snippet to parse
 	 * @return
 	 */
 	@Override
 	public Command build(Element element) {
 		OneWireConfigurationReader reader = new OneWireConfigurationReader(element);
-		OneWireCommand oneWireCommand = loadOrCreateCommand(reader);
-		oneWireCommand.setDynamicValue(reader.getDynamicValue());
-		return oneWireCommand;
+		return loadCommand(reader);
 	}
 
-	private OneWireCommand loadOrCreateCommand(OneWireConfigurationReader reader) {
+	private OneWireCommand loadCommand(OneWireConfigurationReader reader) {
 		OneWireCommand oneWireCommand = commandRepository.get(reader.getCommandId());
 		if (oneWireCommand == null) {
-			oneWireCommand = createAndValidateCommand(reader);
+			oneWireCommand = createProperTypeOfCommand(reader);
+			configureAndValidate(reader, oneWireCommand);
+			commandRepository.put(reader.getCommandId(), oneWireCommand);
 			logger.info("OneWire new command created: " + oneWireCommand);
-			commandRepository.put(reader.getCommandId(),oneWireCommand);
+		} else {
+			configureAndValidate(reader,oneWireCommand);
 		}
 		return oneWireCommand;
 	}
 
-	/**
-	 * Creates new command
-	 * @param configuration command configuration
-	 * @return
-	 */
-	private OneWireCommand createAndValidateCommand(OneWireConfigurationReader configuration) {
-		OneWireCommand command = createProperTypeOfCommand(configuration);
-		command.validate();
-		return command;
+	private void configureAndValidate(OneWireConfigurationReader reader, OneWireCommand oneWireCommand) {
+		oneWireCommand.setOwfsConnectorFactory(connectionFactoryRepository.loadOrCreate(reader.getOneWireHost()));
+		oneWireCommand.configure(reader);
+		oneWireCommand.validate();
 	}
 
 	/**
-	 * Creates command based on its command type
-	 * @param configuration
+	 * Creates command based on command configuration
+	 * @param configuration configuration reader
 	 * @return
 	 */
 	private OneWireCommand createProperTypeOfCommand(OneWireConfigurationReader configuration) {
-		switch (configuration.getCommandType()) {
-			case ALARMING:
-				 return buildOneWireAlarmingCommand(configuration);
-			case EXECUTABLE:
-				return buildOneWireExecutableCommand(configuration);
-			case SWITCHABLE:
-				return buildOneWireSwitchableCommand(configuration);
-			case INTERVAL:
-				return buildOneWireIntervalReadCommand(configuration);
+		if (OneWireConfigurationReader.ALARMING.equals(configuration.getFilenameProperty())) {
+			return new OneWireAlarmingCommand();
+		} else if (OneWireConfigurationReader.SWITCHABLE.equals(configuration.getDataProperty())) {
+			return new OneWireSwitchableCommand();
+		} else if (configuration.getDataProperty() != null) {
+			return new OneWireWriteCommand();
+		} else {
+			return new OneWireReadCommand();
 		}
-		throw new NoSuchCommandException("Cannot create OneWireCommand for command id: '"+ configuration.getCommandId()+"'.");
-	}
-
-	private OneWireCommand buildOneWireSwitchableCommand(OneWireConfigurationReader configuration) {
-		OneWireSwitchableCommand command = new OneWireSwitchableCommand();
-		configureWithGeneralProperties(command, configuration);
-		return command;
-	}
-
-	private OneWireCommand buildOneWireAlarmingCommand(OneWireConfigurationReader configuration) {
-		OneWireAlarmingCommand command = new OneWireAlarmingCommand();
-		configureWithGeneralProperties(command, configuration);
-		return command;
-	}
-
-	private OneWireCommand buildOneWireExecutableCommand(OneWireConfigurationReader configuration) {
-		OneWireExecutableCommand command = new OneWireExecutableCommand();
-		configureWithGeneralProperties(command, configuration);
-		return command;
-	}
-
-	private OneWireCommand buildOneWireIntervalReadCommand(OneWireConfigurationReader configuration) {
-		OneWireIntervalReadCommand command = new OneWireIntervalReadCommand();
-		configureWithGeneralProperties(command, configuration);
-		command.setPollingIntervalInMiliseconds(configuration.getPollingInterval());
-		return command;
-	}
-
-	private void configureWithGeneralProperties(OneWireCommand command, OneWireConfigurationReader configuration) {
-		OneWireHost oneWireHost = configuration.getOneWireHost();
-		command.setOwfsConnectorFactory(connectionFactoryRepository.loadOrCreate(oneWireHost));
-		command.setDeviceName(configuration.getDeviceName());
-		command.setDevicePropertyName(configuration.getFilenameProperty());
 	}
 }

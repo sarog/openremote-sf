@@ -21,24 +21,78 @@
 package org.openremote.controller.protocol.onewire.command;
 
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.onewire.OneWireConfigurationReader;
 import org.owfs.jowfsclient.OwfsConnection;
+import org.owfs.jowfsclient.PeriodicJob;
 
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireExecutableCommand extends OneWireCommand implements ExecutableCommand {
+public abstract class OneWireExecutableCommand extends OneWireCommand implements ExecutableCommand, EventListener {
 
-	@Override
-	public void send() {
-		try {
-			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
-			connection.write(deviceName + "/" + devicePropertyName, dynamicValue);
-		} catch (Exception e) {
-			handleException(e);
+	private Sensor sensor;
+
+	private PeriodicJob periodicJob;
+
+	public void setPollingIntervalInMiliseconds(int pollingIntervalInMiliseconds) {
+		// if it is not null it means that sensor is currently installed and reconfiguration is not possible
+		if (periodicJob == null) {
+			periodicJob = new PeriodicJob(pollingIntervalInMiliseconds) {
+				@Override
+				public void run(OwfsConnection connection) {
+					execute(connection);
+				}
+
+			};
 		}
 	}
 
-	protected void handleException(Exception e) {
-		log.error("Unable to send command to owfs server. Command: "+this, e);
+	@Override
+	public void setSensor(Sensor sensor) {
+		log.info("Installing periodic scheduler on command: " + this.toString() + ", notification to sensor: " + sensor.getName());
+		this.sensor = sensor;
+		if (periodicJob != null) {
+			owfsConnectorFactory.addPeriodicJob(periodicJob);
+		}
+	}
+
+	@Override
+	public void stop(Sensor sensor) {
+		log.info("Uninstalling periodic scheduler on command: " + this.toString() + ", notification to sensor: " + sensor.getName());
+		this.sensor = null;
+		if (periodicJob != null) {
+			periodicJob.cancel();
+		}
+	}
+
+	@Override
+	public final void send() {
+		OwfsConnection newConnection = owfsConnectorFactory.createNewConnection();
+		execute(newConnection);
+	}
+
+	public abstract void execute(OwfsConnection connection);
+
+	public void updateSensor(String value) {
+		if (sensor != null) {
+			log.info("Sensor: " + sensor.getName() + "=" + value);
+			sensor.update(value);
+		}
+	}
+
+	@Override
+	public StringBuilder toStringParameterOnly() {
+		return super.toStringParameterOnly()
+				.append(", intervalInMiliseconds='").append(periodicJob != null ? periodicJob.getIntervalInMiliseconds() : null).append("'");
+	}
+
+	@Override
+	public void configure(OneWireConfigurationReader configuration) {
+		super.configure(configuration);
+		if (configuration.getPollingInterval() != null) {
+			setPollingIntervalInMiliseconds(configuration.getPollingInterval());
+		}
 	}
 }

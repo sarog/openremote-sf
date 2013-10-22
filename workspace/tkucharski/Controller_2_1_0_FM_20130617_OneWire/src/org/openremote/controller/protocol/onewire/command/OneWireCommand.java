@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.onewire.command;
 
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.onewire.OneWireConfigurationReader;
 import org.openremote.controller.protocol.onewire.OneWireLoggerFactory;
 import org.openremote.controller.utils.Logger;
 import org.owfs.jowfsclient.OwfsConnectionFactory;
@@ -46,9 +47,14 @@ public class OneWireCommand implements Command {
 	protected String deviceName;
 
 	/**
-	 * sensor attribute - is filename in owfs that holds values, such as "temperature", "temperature9", "humidity" or similar
+	 * device attribute - is filename in owfs that holds values, such as "temperature", "temperature9", "humidity" or similar
 	 */
-	protected String devicePropertyName;
+	protected String deviceProperty;
+
+	/**
+	 * device attribute value to be set, should be overwritten by dynamic value if dynamic value is defined
+	 */
+	protected String deviceData;
 
 	/**
 	 * dynamic value, handled in subclasses
@@ -63,12 +69,15 @@ public class OneWireCommand implements Command {
 		this.deviceName = deviceName;
 	}
 
-	public void setDevicePropertyName(String devicePropertyName) {
-		this.devicePropertyName = devicePropertyName;
+	public void setDeviceProperty(String deviceProperty) {
+		this.deviceProperty = deviceProperty;
+	}
+
+	public void setDeviceData(String deviceData) {
+		this.deviceData = deviceData;
 	}
 
 	public void setDynamicValue(String dynamicValue) {
-		log.debug(this+" new dynamic value: '"+dynamicValue+"'");
 		this.dynamicValue = dynamicValue;
 	}
 
@@ -77,7 +86,7 @@ public class OneWireCommand implements Command {
 	 * @throws NoSuchCommandException if validation fails
 	 */
 	public void validate() throws NoSuchCommandException {
-		if (deviceName == null || devicePropertyName == null || owfsConnectorFactory.getConnectionConfig().getHostName() == null) {
+		if (deviceName == null || deviceProperty == null || owfsConnectorFactory.getConnectionConfig().getHostName() == null) {
 			throw new NoSuchCommandException("Unable to create OneWireCommand, missing configuration parameter(s). "+this);
 		}
 	}
@@ -95,6 +104,14 @@ public class OneWireCommand implements Command {
 				.append("host=")
 				.append("'"+owfsConnectorFactory.getConnectionConfig().getHostName()+":"+owfsConnectorFactory.getConnectionConfig().getPortNumber()+"'")
 				.append(", deviceName='").append(deviceName).append('\'')
-				.append(", devicePropertyName='").append(devicePropertyName).append('\'');
+				.append(", deviceProperty='").append(deviceProperty).append('\'')
+				.append(", deviceData='").append(deviceData).append('\'');
+	}
+
+	public void configure(OneWireConfigurationReader configuration) {
+		setDeviceName(configuration.getDeviceName());
+		setDeviceProperty(configuration.getFilenameProperty());
+		setDeviceData(configuration.getDataProperty());
+		setDynamicValue(configuration.getDynamicValue());
 	}
 }

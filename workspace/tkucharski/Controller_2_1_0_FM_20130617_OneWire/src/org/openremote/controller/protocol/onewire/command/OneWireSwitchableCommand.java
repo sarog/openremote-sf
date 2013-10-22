@@ -20,34 +20,37 @@
  */
 package org.openremote.controller.protocol.onewire.command;
 
-import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.owfs.jowfsclient.OwfsConnection;
 
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireSwitchableCommand extends OneWireExecutableCommand implements EventListener {
+public class OneWireSwitchableCommand extends OneWireWriteCommand implements EventListener {
 
-	private State state;
-
-	private Sensor sensor;
+	private OneWireSwitchSensorState state;
 
 	@Override
 	public void setDynamicValue(String dynamicValue) {
 		if (dynamicValue != null) {
-			setState(State.convert(dynamicValue));
+			// convert to negated value as it will be negated once again in execute() method
+			setState(OneWireSwitchSensorState.convert(dynamicValue).negate());
 		}
 	}
 
+	private void setState(OneWireSwitchSensorState newState) {
+		state = newState;
+		super.setDynamicValue(newState.name());
+	}
+
 	@Override
-	public void send() {
+	public void execute(OwfsConnection connection) {
 		if (isItFirstExecution()) {
 			tryToReadInitialValue();
 		}
 		setState(state.negate());
-		super.send();
-		notifySensor();
+		super.execute(connection);
+		updateSensor(state.name());
 	}
 
 	/**
@@ -58,7 +61,7 @@ public class OneWireSwitchableCommand extends OneWireExecutableCommand implement
 	@Override
 	protected void handleException(Exception e) {
 		setState(state.negate());
-		super.handleException(e);
+		log.error("Unable to send command to owfs server. Command: " + this, e);
 	}
 
 	private boolean isItFirstExecution() {
@@ -68,64 +71,11 @@ public class OneWireSwitchableCommand extends OneWireExecutableCommand implement
 	private void tryToReadInitialValue() {
 		try {
 			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
-			String value = connection.read(deviceName + "/" + devicePropertyName);
-			setState(State.valueOf(value));
+			String value = connection.read(deviceName + "/" + deviceProperty);
+			setState(OneWireSwitchSensorState.valueOf(value));
 		} catch (Exception e) {
 			log.warn("OneWire cannot read initial value for command: " + this);
-			setState(State.off);
+			setState(OneWireSwitchSensorState.off);
 		}
-	}
-
-	private void setState(State newState) {
-		state = newState;
-		super.setDynamicValue(newState.name());
-	}
-
-	private void notifySensor() {
-		if (sensor != null) {
-			log.info("update sensor:" + sensor.getName() + " with value '" + state + "'");
-			sensor.update(state.name());
-		}
-	}
-
-	@Override
-	public void setSensor(Sensor sensor) {
-		log.info("Installing sensor on " + this.toString());
-		this.sensor = sensor;
-	}
-
-	@Override
-	public void stop(Sensor sensor) {
-		log.info("Uninstalling sensor on " + this.toString());
-		this.sensor = null;
-	}
-
-	enum State {
-		on("1"),
-		off("2");
-
-		private String oneWireState;
-
-		State(String oneWireState) {
-			this.oneWireState = oneWireState;
-		}
-
-		public static State convert(String s) {
-			for (State state : values()) {
-				if (state.oneWireState.equals(s) || state.name().equals(s)) {
-					return state;
-				}
-			}
-			return off;
-		}
-
-		public State negate() {
-			if (this == on) {
-				return off;
-			} else {
-				return on;
-			}
-		}
-
 	}
 }

@@ -18,31 +18,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.onewire;
+package org.openremote.controller.protocol.onewire.command;
+
+import org.owfs.jowfsclient.OwfsConnection;
 
 /**
- * Represents types of commands supported by OneWire adapter
+ * Command that periodically reads data from owfs server and updates to sensor
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public enum OneWireCommandType {
-	/**
-	 * Devices that alerts on 1-wire alarm
-	 */
-	ALARMING,
+public class OneWireReadCommand extends OneWireExecutableCommand {
 
-	/**
-	 * Switchable devices, mostly used in DS2408 or in similar devices;
-	 */
-	SWITCHABLE,
+	public static final String NOT_AVAILABLE = "N/A";
 
-	/**
-	 * Simple command that reads its value periodically
-	 */
-	INTERVAL,
+	private String readValue(OwfsConnection connection) {
+		try {
+			return connection.read(deviceName + "/" + deviceProperty);
+		} catch (Exception e) {
+			return NOT_AVAILABLE;
+		}
+	}
 
-	/**
-	 * Simple passive command
-	 */
-	EXECUTABLE;
-
+	@Override
+	public void execute(OwfsConnection connection) {
+		String value = readValue(connection);
+		updateSensor(value);
+	}
 }

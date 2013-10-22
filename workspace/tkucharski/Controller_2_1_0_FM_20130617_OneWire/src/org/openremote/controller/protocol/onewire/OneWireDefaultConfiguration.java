@@ -7,6 +7,7 @@ import org.openremote.controller.utils.Logger;
 import org.owfs.jowfsclient.Enums;
 
 /**
+ * OneWire protocol configuration service that defines defaults for every 1-wire command
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
 public class OneWireDefaultConfiguration extends Configuration {
