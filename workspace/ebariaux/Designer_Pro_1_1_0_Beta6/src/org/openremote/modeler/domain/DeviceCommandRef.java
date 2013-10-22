@@ -135,7 +135,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
    
    @Transient
    public MacroItemDetailsDTO getMacroItemDetailsDTO() {
-     return new MacroItemDetailsDTO(getOid(), MacroItemType.Command, getDeviceCommand().getDisplayName(), new DTOReference(getDeviceCommand().getOid()));
+     return new MacroItemDetailsDTO(getOid(), MacroItemType.Command, getDeviceCommand().getFullyQualifiedName(), new DTOReference(getDeviceCommand().getOid()));
    }
    
 }
