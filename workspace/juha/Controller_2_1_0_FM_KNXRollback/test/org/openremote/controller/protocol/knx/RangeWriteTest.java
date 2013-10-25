@@ -533,7 +533,7 @@ public class RangeWriteTest
     // First byte in CEMI should be MessageCode: data request
 
     Assert.assertTrue(
-        cemi[KNXCommand.CEMI_MESSAGECODE_OFFSET] == DataLink.MessageCode.DATA_REQUEST_BYTE
+        cemi[KNXCommand.CEMI_MESSAGECODE_OFFSET] == DataLink.DATA_REQUEST.getByteValue()
     );
 
     // Second byte in CEMI should be additional info field length -- assume zero
