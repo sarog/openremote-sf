@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,7 +20,7 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
 import java.util.Map;
@@ -38,31 +38,32 @@ class DataLink
 
   // Constants -----------------------------------------------------------------------------------
 
-  private final static MessageCode DATA_REQUEST =
+  protected final static MessageCode DATA_REQUEST =
       new MessageCode(MessageCode.DATA_REQUEST_BYTE, "L_Data.req");
 
-  private final static MessageCode DATA_INDICATE =
+  protected final static MessageCode DATA_INDICATE =
       new MessageCode(MessageCode.DATA_INDICATE_BYTE, "L_Data.ind");
 
-  private final static MessageCode DATA_CONFIRM =
+  protected final static MessageCode DATA_CONFIRM =
       new MessageCode(MessageCode.DATA_CONFIRM_BYTE, "L_Data.con");
 
 
-  private final static MessageCode POLL_REQUEST =
+  protected final static MessageCode POLL_REQUEST =
       new MessageCode(MessageCode.POLL_REQUEST_BYTE, "L_Poll_Data.req");
 
-  private final static MessageCode POLL_CONFIRM =
+  protected final static MessageCode POLL_CONFIRM =
       new MessageCode(MessageCode.POLL_CONFIRM_BYTE, "L_Poll_Data.con");
 
 
-  private final static MessageCode RAW_REQUEST =
+  protected final static MessageCode RAW_REQUEST =
       new MessageCode(MessageCode.RAW_REQUEST_BYTE, "L_Raw.req");
 
-  private final static MessageCode RAW_INDICATE =
+  protected final static MessageCode RAW_INDICATE =
       new MessageCode(MessageCode.RAW_INDICATE_BYTE, "L_Raw.ind");
 
-  private final static MessageCode RAW_CONFIRM =
+  protected final static MessageCode RAW_CONFIRM =
       new MessageCode(MessageCode.RAW_CONFIRM_BYTE, "L_Raw.con");
+
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -73,34 +74,9 @@ class DataLink
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
-//  static boolean isDataIndicateFrame(byte msgCode)
-//  {
-//    return msgCode == MessageCode.DATA_INDICATE_BYTE;
-//  }
+  // Enums ----------------------------------------------------------------------------------------
 
-
-  static String findServicePrimitiveByMessageCode(byte msgCode)
-  {
-    MessageCode mc = MessageCode.lookup(msgCode);
-
-    if (mc == null)
-    {
-      log.warn(
-          "Looked up an unknown data link layer frame message code: " +
-          Strings.byteToUnsignedHexString(msgCode)
-      );
-
-      return "Unknown";
-    }
-
-    else
-    {
-      return mc.getPrimitiveName();
-    }
-  }
-
-
-  static enum Service
+  protected static enum Service
   {
     DATA(DATA_REQUEST, DATA_INDICATE, DATA_CONFIRM),
     POLL(POLL_REQUEST, POLL_CONFIRM),
@@ -130,47 +106,148 @@ class DataLink
     }
   }
 
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+
+  /**
+   * Represents the message code values (service type identifier) mainly used in the CEMI
+   * frames in this implementation.
+   */
   public static class MessageCode
   {
-    public final static int DATA_REQUEST_BYTE  = 0x11;
+
+    // Constants ----------------------------------------------------------------------------------
+
+    protected final static int DATA_REQUEST_BYTE  = 0x11;
+
+    /**
+     * @deprecated Use {@link DataLink.MessageCode#resolve(int)} instead.
+     *
+     * TODO: reduce visibility to protected
+     */
     public final static int DATA_INDICATE_BYTE = 0x29;
+
+    /**
+     * @deprecated Use {@link DataLink.MessageCode#resolve(int)} instead.
+     *
+     * TODO: reduce visibility to protected
+     */
     public final static int DATA_CONFIRM_BYTE  = 0x2E;
 
-    public final static int POLL_REQUEST_BYTE  = 0x13;
-    public final static int POLL_CONFIRM_BYTE  = 0x25;
+    protected final static int POLL_REQUEST_BYTE  = 0x13;
+    protected final static int POLL_CONFIRM_BYTE  = 0x25;
 
-    public final static int RAW_REQUEST_BYTE   = 0x10;
-    public final static int RAW_INDICATE_BYTE  = 0x2D;
-    public final static int RAW_CONFIRM_BYTE   = 0x2F;
+    protected final static int RAW_REQUEST_BYTE   = 0x10;
+    protected final static int RAW_INDICATE_BYTE  = 0x2D;
+    protected final static int RAW_CONFIRM_BYTE   = 0x2F;
 
 
-    private static Map<Byte, MessageCode> lookup = new ConcurrentHashMap<Byte, MessageCode>(25);
+    // Class Members ------------------------------------------------------------------------------
 
-    static MessageCode lookup(byte b)
+    /**
+     * Keep a lookup map of message code instances created by this implementation. Key is the
+     * message code byte used in the KNX frame.  <p>
+     *
+     * Static lookup maps are generally in poor form but in this case it is going to be a fixed
+     * set (not dynamic collection) so we might be ok.
+     */
+    private static Map<Integer, MessageCode> lookup = new ConcurrentHashMap<Integer, MessageCode>(15);
+
+    /**
+     * Resolves a message code byte value from a KNX frame to a message code instance.
+     *
+     * @param value   message code byte value in KNX frame -- should map to one of the service type
+     *                identifier constants defined in this class
+     *
+     * @return        A message code instance matching the frame byte value. If message code
+     *                cannot be resolved, returns a special unknown message code instance (to
+     *                avoid null pointer exceptions).
+     */
+    protected static MessageCode resolve(int value)
     {
-      return lookup.get(b);
+      MessageCode mc = lookup.get(value);
+
+      if (mc == null)
+      {
+        log.error(
+            "Cannot resolve KNX frame message code {0}", Strings.byteToUnsignedHexString((byte)value)
+        );
+
+        return new UnknownMessageCode(value);
+      }
+
+      else
+      {
+        return mc;
+      }
     }
 
 
+    // Instance Fields ----------------------------------------------------------------------------
+
+    /**
+     * The message code byte value used in KNX frames.
+     */
     private int messageCode;
+
+    /**
+     * String description of the primitive corresponding to the message code.
+     */
     private String primitive;
 
+
+    // Constructors -------------------------------------------------------------------------------
+
+    /**
+     * Constructs a new message code instance with a given frame byte code and a string
+     * description of the primitive corresponding to the message code.
+     *
+     * @param messageCode   byte value for the message code used in KNX frames
+     * @param primitive     string description of the primitive corresponding to the message code
+     */
     private MessageCode(int messageCode, String primitive)
     {
       this.messageCode = messageCode;
       this.primitive = primitive;
 
-      lookup.put((byte)messageCode, this);
+      lookup.put(messageCode, this);
     }
 
-    byte getByteValue()
+
+    // Instance Methods ---------------------------------------------------------------------------
+
+    /**
+     * Returns the byte value of this message code used in KNX frames.
+     *
+     * @return    frame byte value corresponding to this message code instance
+     */
+    protected byte getByteValue()
     {
       return (byte)messageCode;
     }
 
-    private String getPrimitiveName()
+    /**
+     * A text description of the primitive this message code represents.
+     *
+     * @return    a primitive name matching this message code
+     */
+    protected String getPrimitiveName()
     {
       return primitive;
+    }
+  }
+
+
+  /**
+   * Special definition for message codes we don't recognize. This avoids return null pointers.
+   */
+  private static class UnknownMessageCode extends MessageCode
+  {
+    private UnknownMessageCode(int value)
+    {
+      super(value, "<Unknown>");
     }
   }
 }
