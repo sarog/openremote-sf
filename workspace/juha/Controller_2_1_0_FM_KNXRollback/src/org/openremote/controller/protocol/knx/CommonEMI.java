@@ -621,7 +621,7 @@ public class CommonEMI extends Message
   {
     int messageCode = getContent() [CEMI_MESSAGE_CODE_INDEX] & 0xFF;
 
-    return DataLink.MessageCode.resolve(messageCode);
+    return DataLink.resolveMessageCode(messageCode);
   }
 
 
