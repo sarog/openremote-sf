@@ -107,6 +107,31 @@ class DataLink
   }
 
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Resolves a message code byte value from a KNX frame to a message code instance.
+   *
+   * @param value   message code byte value in KNX frame -- should map to one of the service type
+   *                identifier constants defined in this class
+   *
+   * @return        A message code instance matching the frame byte value. If message code
+   *                cannot be resolved, returns a special {@link DataLink.UnknownMessageCode
+   *                unknown message code} instance (to avoid null pointer exceptions).
+   */
+  protected static MessageCode resolveMessageCode(int value)
+  {
+    // IMPLEMENTATION NOTE:
+    //
+    //   - We are just delegating to message code implementation here -- this is done to ensure
+    //     the correct initialization order for the static lookup collection in message code
+    //     implementation. The message code constants are defined in this class so we need to
+    //     force it to be loaded for the instances to end up in the lookup collection, otherwise
+    //     we may resolve from an empty collection.
+
+    return MessageCode.resolve(value);
+  }
+
 
   // Nested Classes -------------------------------------------------------------------------------
 
@@ -165,7 +190,7 @@ class DataLink
      *                cannot be resolved, returns a special unknown message code instance (to
      *                avoid null pointer exceptions).
      */
-    protected static MessageCode resolve(int value)
+    private static MessageCode resolve(int value)
     {
       MessageCode mc = lookup.get(value);
 
@@ -243,8 +268,10 @@ class DataLink
   /**
    * Special definition for message codes we don't recognize. This avoids return null pointers.
    */
-  private static class UnknownMessageCode extends MessageCode
+  protected static class UnknownMessageCode extends MessageCode
   {
+    protected final static String UNKNOWN_PRIMITIVE = "<Unknown>";
+
     private UnknownMessageCode(int value)
     {
       super(value, "<Unknown>");
