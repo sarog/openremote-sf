@@ -615,16 +615,13 @@ public class CommonEMI extends Message
    * This utility method parses the CEMI message code from the CEMI frame byte array.
    * The message code byte is expected at index {@link #CEMI_MESSAGE_CODE_INDEX}.
    *
-   * @return      A message code instance matching the message code in the given frame <b>OR</b>
-   *              <tt>null</tt> in case message code could not be resolved.
+   * @return      A message code instance matching the message code in the given frame
    */
   private DataLink.MessageCode resolveMessageCode()
   {
     int messageCode = getContent() [CEMI_MESSAGE_CODE_INDEX] & 0xFF;
 
-    // may return null...
-
-    return DataLink.resolve(messageCode);
+    return DataLink.MessageCode.resolve(messageCode);
   }
 
 
