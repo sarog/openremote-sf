@@ -258,7 +258,7 @@ abstract class KNXCommand implements Command
    *
    * <pre>{@code
    *
-   * [FRAME] <CEMI Message Code> <source address> -> <dest. address> Data: <unsigned hex bytes>
+   * [FRAME] <CEMI Message Code Primitive> to <dest. address> Data: <unsigned hex bytes>
    *
    * }</pre>
    *
@@ -266,39 +266,20 @@ abstract class KNXCommand implements Command
    */
   @Override public String toString()
   {
-
     if (apdu == null)
     {
       return "[FRAME] null";
     }
-    
-    // TODO : need to adjust for CEMI frames that come with additional info fields...
 
-    Byte[] frame = getCEMIFrame();
-
-    StringBuffer buffer = new StringBuffer(2048);
-
-    String msgCode = DataLink.findServicePrimitiveByMessageCode(frame[CEMI_MESSAGECODE_OFFSET]);
-
-    String sourceAddr = IndividualAddress.formatToAreaLineDevice(
-        new byte[] { frame[CEMI_SOURCEADDR_HIGH_OFFSET], frame[CEMI_SOURCEADDR_LOW_OFFSET] }
-    );
-
-    String destAddr = GroupAddress.formatToMainMiddleSub(
-        new byte[] { frame[CEMI_DESTADDR_HIGH_OFFSET], frame[CEMI_DESTADDR_LOW_OFFSET] }
-    );
-
-    String data = apdu.dataAsString();
+    StringBuffer buffer = new StringBuffer(256);
 
     buffer
         .append("[FRAME] ")
-        .append(msgCode)
-        .append(" ")
-        .append(sourceAddr)
-        .append(" -> ")
-        .append(destAddr)
+        .append(DataLink.DATA_REQUEST.getPrimitiveName())
+        .append(" to ")
+        .append(address)
         .append(" Data: ")
-        .append(data);
+        .append(apdu.dataAsString());
 
     return buffer.toString();
   }
