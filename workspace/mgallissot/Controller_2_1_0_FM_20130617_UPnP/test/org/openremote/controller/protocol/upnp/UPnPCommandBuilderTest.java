@@ -26,6 +26,7 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.upnp.UPnPCommandBuilder;
 import org.openremote.controller.protocol.upnp.UPnPCommand;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jdom.Element;
@@ -36,6 +37,7 @@ import static junit.framework.Assert.assertTrue;
  * {@link org.openremote.controller.protocol.upnp.UPnPCommandBuilder}.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:mathieu.gallissot@gmail.com">Mathieu Gallissot</a>
  *
  */
 public class UPnPCommandBuilderTest
@@ -49,6 +51,16 @@ public class UPnPCommandBuilderTest
   {
     builder = new UPnPCommandBuilder();
   }
+  
+  @After public void tearDown() 
+  {
+      try {
+         // to prevent "addresses in uses" with multiple control point instances
+         builder.finalize();
+      } catch (Throwable e) {
+         e.printStackTrace();
+      }
+  }
 
 
   // Tests ----------------------------------------------------------------------------------------
@@ -58,7 +70,7 @@ public class UPnPCommandBuilderTest
    */
   @Test public void testUPnPCommandParsing()
   {
-    Command cmd = getCommandDeviceAndAction("ABC", "ON");
+    Command cmd = getCommandDeviceAndAction("ABC", "service","ON");
 
     assertTrue(cmd instanceof UPnPCommand);
   }
@@ -69,12 +81,12 @@ public class UPnPCommandBuilderTest
    */
   @Test public void testUPnPEventProperties()
   {
-    Command cmd = getCommandWithUPnPEventArguments("on", "1/1/1") ;
+    Command cmd = getCommandWithUPnPEventArguments("on","service", "1/1/1") ;
     assertTrue(cmd instanceof UPnPCommand);
   }
 
   /**
-   * Test KNX command parsing with a missing mandatory device property.
+   * Test UPnP command parsing with a missing mandatory device property.
    */
   @Test(expected = NoSuchCommandException.class)
   public void testUPnPWithMissingCommandProperty()
@@ -98,14 +110,14 @@ public class UPnPCommandBuilderTest
    */
   @Test public void testUPnPWithArbitraryPropertyOrder()
   {
-    Command cmd = getCommandDeviceAndActionArbitraryPropertyOrder("device", "on");
+    Command cmd = getCommandDeviceAndActionArbitraryPropertyOrder("device", "service", "on");
     assertTrue(cmd instanceof UPnPCommand);
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Command getCommandDeviceAndAction(String device, String action)
+  private Command getCommandDeviceAndAction(String device, String service, String action)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -121,22 +133,37 @@ public class UPnPCommandBuilderTest
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
-                           UPnPCommandBuilder.UPNP_XMLPROPERTY_ACTION);
+                           UPnPCommandBuilder.UPNP_XMLPROPERTY_SERVICE);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
-                           action);
+                           service);
 
     ele.addContent(propAddr2);
+    
+    Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           UPnPCommandBuilder.UPNP_XMLPROPERTY_ACTION);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           action);
+
+    ele.addContent(propAddr3);
 
     return builder.build(ele);
   }
 
-  private Command getCommandDeviceAndActionArbitraryPropertyOrder(String device, String action)
+  private Command getCommandDeviceAndActionArbitraryPropertyOrder(String device, String service, String action)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
     ele.setAttribute(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME, "upnp");
 
+    Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           UPnPCommandBuilder.UPNP_XMLPROPERTY_SERVICE);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           service);
 
+    ele.addContent(propAddr3);
+    
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
                            UPnPCommandBuilder.UPNP_XMLPROPERTY_ACTION);
@@ -144,8 +171,7 @@ public class UPnPCommandBuilderTest
                            action);
 
     ele.addContent(propAddr2);
-
-
+    
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
                           UPnPCommandBuilder.UPNP_XMLPROPERTY_DEVICE);
@@ -191,7 +217,7 @@ public class UPnPCommandBuilderTest
     return builder.build(ele);
   }
 
-  private Command getCommandWithUPnPEventArguments(String device, String action)
+  private Command getCommandWithUPnPEventArguments(String device, String service, String action)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -204,6 +230,14 @@ public class UPnPCommandBuilderTest
                           action);
 
     ele.addContent(propAddr);
+    
+    Element propAddr1 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr1.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                          UPnPCommandBuilder.UPNP_XMLPROPERTY_SERVICE);
+    propAddr1.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                          service);
+
+    ele.addContent(propAddr1);
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,

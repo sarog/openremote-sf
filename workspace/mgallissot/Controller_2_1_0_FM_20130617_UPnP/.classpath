@@ -18,6 +18,7 @@
 	<classpathentry kind="lib" path="lib/test/jtidy/jtidy-r918.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/clink/clink210.jar" sourcepath="/upnp-stack"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/dbunit/dbunit-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
@@ -28,7 +29,6 @@
 	<classpathentry kind="lib" path="lib/apache/commons-lang/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/rxtx/RXTXcomm-2.2-pre2.jar"/>
 	<classpathentry kind="lib" path="lib/apache/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/clink/clink170.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/antlr-runtime-3.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/drools-api-5.1.1.jar"/>

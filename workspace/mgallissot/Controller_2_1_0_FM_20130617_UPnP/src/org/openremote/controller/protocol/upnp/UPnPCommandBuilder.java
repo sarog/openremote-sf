@@ -40,14 +40,15 @@ import org.jdom.Element;
  * <pre>{@code
  * <command protocol = "upnp" >
  *   <property name = "device" value = "xxx"/>
- *   <property name = "action" value = "yyy"/>
+ *   <property name = "service" value = "yyy"/>
+ *   <property name = "action" value = "zzz"/>
  *   <property name = "argname1" value = "..."/>
  *   <property name = "argname2" value = "..."/>
  *   <property name = "argnameX" value = "..."/>
  * </command>
  * }</pre>
  *
- * Properties 'device' and 'action' are mandatory. Any other property name is considered
+ * Properties 'device', 'service' and 'action' are mandatory. Any other property name is considered
  * an UPnP Event argument.
  *
  * @author Mathieu Gallissot
@@ -74,6 +75,7 @@ public class UPnPCommandBuilder implements CommandBuilder
    * <pre>{@code
    * <command protocol = "upnp" >
    *   <property name = "device" value = "..."/>
+   *   <property name = "service" value = "..."/>
    *   <property name = "action" value = "ON"/>
    * </command>
    * }</pre>
@@ -83,12 +85,29 @@ public class UPnPCommandBuilder implements CommandBuilder
   /**
    * String constant for parsing UPnP protocol XML entries from controller.xml file.
    *
+   * This constant is the expected property name value for UPnP service
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "..."/>
+   *   <property name = "service" value = "..."/>
+   *   <property name = "action" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String UPNP_XMLPROPERTY_SERVICE = "service";
+  
+  /**
+   * String constant for parsing UPnP protocol XML entries from controller.xml file.
+   *
    * This constant is the expected property name value for UPnP action
    * (<code>{@value}</code>):
    *
    * <pre>{@code
    * <command protocol = "upnp" >
    *   <property name = "device" value = "..."/>
+   *   <property name = "service" value = "..."/>
    *   <property name = "action" value = "ON"/>
    * </command>
    * }</pre>
@@ -133,7 +152,8 @@ public class UPnPCommandBuilder implements CommandBuilder
    * <pre>{@code
    * <command protocol = "upnp" >
    *   <property name = "device" value = "xxx"/>
-   *   <property name = "action" value = "yyy"/>
+   *   <property name = "service" value = "yyy"/>
+   *   <property name = "action" value = "zzz"/>
    *   <property name = "argname1" value = "..."/>
    *   <property name = "argname2" value = "..."/>
    *   <property name = "argnameX" value = "..."/>
@@ -154,6 +174,7 @@ public class UPnPCommandBuilder implements CommandBuilder
 	public Command build(Element element)
   {
     String upnpDevice = null;
+    String upnpService = null;
     String upnpAction = null;
     Map<String, String> upnpEventArguments = new HashMap<String, String>(3);
 
@@ -170,6 +191,10 @@ public class UPnPCommandBuilder implements CommandBuilder
       if (UPNP_XMLPROPERTY_DEVICE.equalsIgnoreCase(upnpPropertyName))
       {
         upnpDevice = upnpPropertyValue;
+      }
+      else if (UPNP_XMLPROPERTY_SERVICE.equalsIgnoreCase(upnpPropertyName))
+      {
+        upnpService = upnpPropertyValue;
       }
       else if (UPNP_XMLPROPERTY_ACTION.equalsIgnoreCase(upnpPropertyName))
       {
@@ -193,6 +218,13 @@ public class UPnPCommandBuilder implements CommandBuilder
       );
     }
 
+    if (upnpService == null || "".equals(upnpService))
+    {
+      throw new NoSuchCommandException(
+          "UPnP command must have a '" + UPNP_XMLPROPERTY_SERVICE + "' property."
+      );
+    }
+    
     if (upnpAction == null || "".equals(upnpAction))
     {
       throw new NoSuchCommandException(
@@ -202,7 +234,13 @@ public class UPnPCommandBuilder implements CommandBuilder
 
     // done!
     
-		return new UPnPCommand(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
+		return new UPnPCommand(this.controlPoint, upnpDevice, upnpService, upnpAction, upnpEventArguments);
 	}
 
+	@Override
+   protected void finalize() throws Throwable
+   {
+      this.controlPoint.stop();
+      super.finalize();
+   }
 }
