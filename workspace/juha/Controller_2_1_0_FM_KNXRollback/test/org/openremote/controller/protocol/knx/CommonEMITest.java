@@ -497,10 +497,12 @@ public class CommonEMITest
         0x01,  // Destination address high byte
         0x01,  // Destination address low byte
         0x01,  // APDU data length
-        0x00,  // TPCI/APCI bits
-        0x00   // APCI bits/six-bit data field
+        (byte)ApplicationLayer.Service.GROUPVALUE_READ.getTPCIAPCI(),  // TPCI/APCI bits
+        (byte)ApplicationLayer.Service.GROUPVALUE_READ.getAPCIData()   // APCI bits/six-bit data field
     };
 
+
+System.err.println("FOO");
     CommonEMI cemi = new CommonEMI(cemiFrame);
 
     int control1Value = control.controlField1ToByteValue() & 0xFF;
@@ -553,8 +555,8 @@ public class CommonEMITest
         0x01,  // Destination address high byte
         0x01,  // Destination address low byte
         0x01,  // APDU data length
-        0x00,  // TPCI/APCI bits
-        0x00   // APCI bits/six-bit data field
+        (byte)ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT.getTPCIAPCI(),  // TPCI/APCI bits
+        (byte)ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT.getAPCIData()   // APCI bits/six-bit data field
     };
 
     CommonEMI cemi = new CommonEMI(cemiFrame);
