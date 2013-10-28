@@ -31,17 +31,17 @@ public class OneWireReadCommand extends OneWireExecutableCommand {
 
 	public static final String NOT_AVAILABLE = "N/A";
 
-	private String readValue(OwfsConnection connection) {
-		try {
-			return connection.read(deviceName + "/" + deviceProperty);
-		} catch (Exception e) {
-			return NOT_AVAILABLE;
-		}
-	}
-
 	@Override
 	public void execute(OwfsConnection connection) {
 		String value = readValue(connection);
-		updateSensor(value);
+		getDevice().setValue(value);
+	}
+
+	private String readValue(OwfsConnection connection) {
+		try {
+			return connection.read(getDevice().getAddress() + "/" + getDevice().getProperty());
+		} catch (Exception e) {
+			return NOT_AVAILABLE;
+		}
 	}
 }

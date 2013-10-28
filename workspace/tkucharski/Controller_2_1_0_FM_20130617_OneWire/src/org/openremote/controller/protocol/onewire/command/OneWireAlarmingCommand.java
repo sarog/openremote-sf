@@ -20,11 +20,11 @@
  */
 package org.openremote.controller.protocol.onewire.command;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.onewire.OneWireLogger;
+import org.openremote.controller.protocol.onewire.sensor.OneWireInputSensor;
+import org.owfs.jowfsclient.OwfsConnectionFactory;
 import org.owfs.jowfsclient.alarm.AlarmingDevicesScanner;
 import org.owfs.jowfsclient.device.SwitchAlarmingDeviceEvent;
 import org.owfs.jowfsclient.device.SwitchAlarmingDeviceListener;
@@ -32,9 +32,12 @@ import org.owfs.jowfsclient.device.SwitchAlarmingDeviceListener;
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireAlarmingCommand extends OneWireCommand implements EventListener {
+public class OneWireAlarmingCommand extends OneWireCommand<SwitchAlarmingDeviceEvent> implements EventListener {
 
-	private Map<Integer, OneWireSwitchSensor> inputToSensorMap = new HashMap<Integer, OneWireSwitchSensor>();
+	/**
+	 * Sensor related to this command
+	 */
+	private OneWireInputSensor oneWireInputSensor;
 
 	/**
 	 * According to {@link org.openremote.controller.protocol.EventListener} this method is called for each sensor associated with this command
@@ -44,11 +47,9 @@ public class OneWireAlarmingCommand extends OneWireCommand implements EventListe
 	 */
 	@Override
 	public void setSensor(final Sensor sensor) {
-		OneWireSwitchSensor oneWireSensor = new OneWireSwitchSensor((StateSensor)sensor);
-		int inputNumber = oneWireSensor.getInputNumber();
-		inputToSensorMap.put(inputNumber, oneWireSensor);
-		log.info("OneWire device:'" + deviceName + "': installing " +"sensor input number: '"+ inputNumber +"', " +sensor);
-		tryToInstallAlarmingListenerForDevice();
+		oneWireInputSensor = new OneWireInputSensor(sensor);
+		getDevice().addListener(oneWireInputSensor);
+		checkIfInstallAlarmingScanner(owfsConnectorFactory);
 	}
 
 	/**
@@ -59,56 +60,43 @@ public class OneWireAlarmingCommand extends OneWireCommand implements EventListe
 	 */
 	@Override
 	public void stop(Sensor sensor) {
-		removeSensorFromInputToSensorMap(sensor);
-		checkIfStopAlarmingScanner();
+		getDevice().removeListener(oneWireInputSensor);
+		checkIfStopAlarmingScanner(owfsConnectorFactory);
 	}
 
-	private void removeSensorFromInputToSensorMap(Sensor sensor) {
-		OneWireSwitchSensor oneWireSensor = new OneWireSwitchSensor((StateSensor)sensor);
-		int inputNumber = oneWireSensor.getInputNumber();
-		log.info("OneWire device:'" + deviceName + "': uninstalling " +"sensor input number: '"+inputNumber +"', " +sensor);
-		inputToSensorMap.remove(inputNumber);
-	}
-
-	private void checkIfStopAlarmingScanner() {
-		if (inputToSensorMap.isEmpty()) {
-			AlarmingDevicesScanner alarmingScanner = owfsConnectorFactory.getAlarmingScanner();
-			alarmingScanner.removeAlarmingDeviceHandler(deviceName);
-		}
-	}
-
-	private void tryToInstallAlarmingListenerForDevice() {
-		AlarmingDevicesScanner alarmingScanner = owfsConnectorFactory.getAlarmingScanner();
+	/**
+	 * It gets alarming scanner installed in owserver connection and checks if device related to this command is already registered
+	 *
+	 * @param owfsConnectionFactory owserver connection
+	 */
+	private void checkIfInstallAlarmingScanner(OwfsConnectionFactory owfsConnectionFactory) {
+		AlarmingDevicesScanner alarmingScanner = owfsConnectionFactory.getAlarmingScanner();
 		try {
-			if (!alarmingScanner.isAlarmingDeviceOnList(deviceName)) {
+			if (!alarmingScanner.isAlarmingDeviceOnList(getDevice().getAddress())) {
+				OneWireLogger.info("Installing alarm on device: " + getDevice().getAddress());
 				alarmingScanner.addAlarmingDeviceHandler(createSwitchAlarmingDeviceListener());
 			}
 		} catch (Exception e) {
-			log.error("Cannot register alarm listener for device: " + deviceName,e);
+			OneWireLogger.error("Cannot register alarm listener for device: " + getDevice().getAddress(), e);
 		}
 	}
 
 	private SwitchAlarmingDeviceListener createSwitchAlarmingDeviceListener() {
-		return new SwitchAlarmingDeviceListener(deviceName, SwitchAlarmingDeviceListener.ALARMING_MASK_8_SWITCHES) {
+		return new SwitchAlarmingDeviceListener(getDevice().getAddress(), SwitchAlarmingDeviceListener.ALARMING_MASK_8_SWITCHES) {
 			@Override
 			public void handleAlarm(SwitchAlarmingDeviceEvent event) {
-				log.info("OneWire device: " + deviceName + " alarming. " + event);
-				boolean[] latchStatusAsArray = event.getLatchStatusAsArray();
-				for (int i = 0; i < latchStatusAsArray.length; i++) {
-					if (latchStatusAsArray[i]) {
-						OneWireSwitchSensor sensor = inputToSensorMap.get(i);
-						if (sensor != null) {
-							sensor.setState(event.getSensedStatusAsArray()[i]);
-						}
-					}
-				}
+				OneWireLogger.info("OneWire device: " + getDevice().getAddress() + " alarming. " + event);
+				getDevice().setValue(event);
 			}
 		};
 	}
 
-	@Override
-	public StringBuilder toStringParameterOnly() {
-		return super.toStringParameterOnly()
-		.append(", inputToSensorMap=").append(inputToSensorMap);
+	private void checkIfStopAlarmingScanner(OwfsConnectionFactory owfsConnectionFactory) {
+		if (!getDevice().isAnyListenerRegistered()) {
+			OneWireLogger.info("Uninstalling alarm on device: " + getDevice().getAddress());
+			AlarmingDevicesScanner alarmingScanner = owfsConnectionFactory.getAlarmingScanner();
+			alarmingScanner.removeAlarmingDeviceHandler(getDevice().getAddress());
+		}
 	}
+
 }

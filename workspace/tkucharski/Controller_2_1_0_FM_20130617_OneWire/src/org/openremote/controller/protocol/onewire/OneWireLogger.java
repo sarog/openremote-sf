@@ -20,26 +20,37 @@
  */
 package org.openremote.controller.protocol.onewire;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.owfs.jowfsclient.OwfsConnectionFactory;
+import org.openremote.controller.Constants;
+import org.openremote.controller.utils.Logger;
 
 /**
- * Storage for 1-wire servers, Factory Method that returns single OwfsConnectionFactory per server configuration.
+ * Logger factory used in all classes in onewire package
  *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireHostFactory {
+public class OneWireLogger {
 
-	private Map<OneWireHost, OwfsConnectionFactory> factories = new HashMap<OneWireHost, OwfsConnectionFactory>();
+	private final static String ONEWIRE_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "onewire";
 
-	public OwfsConnectionFactory loadOrCreate(OneWireHost key) {
-		OwfsConnectionFactory factory = factories.get(key);
-		if (factory == null) {
-			factory = new OwfsConnectionFactory(key.getHostname(), key.getPort());
-			factory.getConnectionConfig().setTemperatureScale(key.getTemperatureScale());
-			factories.put(key, factory);
-		}
-		return factory;
+	private final static Logger logger = Logger.getLogger(ONEWIRE_PROTOCOL_LOG_CATEGORY);
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
+	public static void info(String message) {
+		logger.info(message);
+	}
+
+	public static void warn(String message) {
+		logger.warn(message);
+	}
+
+	public static void error(String message) {
+		logger.error(message);
+	}
+
+	public static void error(String message, Throwable e) {
+		logger.error(message, e);
 	}
 }

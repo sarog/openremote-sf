@@ -20,62 +20,55 @@
  */
 package org.openremote.controller.protocol.onewire.command;
 
+import java.io.IOException;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.onewire.OneWireLogger;
 import org.owfs.jowfsclient.OwfsConnection;
+import org.owfs.jowfsclient.OwfsException;
 
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
 public class OneWireSwitchableCommand extends OneWireWriteCommand implements EventListener {
 
-	private OneWireSwitchSensorState state;
-
+	/**
+	 * This method is overriden because it converts value send from OpenRemote server to on/off values. If proper value is sent (on/off) it stays untouched.
+	 * @param dynamicValue dynamic value overriding data parameter
+	 */
 	@Override
 	public void setDynamicValue(String dynamicValue) {
 		if (dynamicValue != null) {
-			// convert to negated value as it will be negated once again in execute() method
-			setState(OneWireSwitchSensorState.convert(dynamicValue).negate());
+			super.setDynamicValue(OneWireSwitchSensorState.onOffValue(dynamicValue));
 		}
-	}
-
-	private void setState(OneWireSwitchSensorState newState) {
-		state = newState;
-		super.setDynamicValue(newState.name());
-	}
-
-	@Override
-	public void execute(OwfsConnection connection) {
-		if (isItFirstExecution()) {
-			tryToReadInitialValue();
-		}
-		setState(state.negate());
-		super.execute(connection);
-		updateSensor(state.name());
 	}
 
 	/**
-	 * Rollback current state value as command was not sent to owfs server
+	 * Executes switch command. Read value from 1-wire if device value is unknown to negate value correctly.
+	 * Updates value only if writing to 1-wire did not throw exception
 	 *
-	 * @param e exception thrown during send method
+	 * @param connection owserver connection
 	 */
 	@Override
-	protected void handleException(Exception e) {
-		setState(state.negate());
-		log.error("Unable to send command to owfs server. Command: " + this, e);
+	public void execute(OwfsConnection connection) throws IOException, OwfsException {
+		if (isItFirstExecution()) {
+			tryToReadInitialValue();
+		}
+		String value = OneWireSwitchSensorState.negateToNumerical(dynamicValue != null ? dynamicValue : getDevice().getValue());
+		connection.write(getDevice().getPath(), value);
+		getDevice().setValue(OneWireSwitchSensorState.onOffValue(value));
 	}
 
 	private boolean isItFirstExecution() {
-		return dynamicValue == null;
+		return getDevice().getValue() == null;
 	}
 
 	private void tryToReadInitialValue() {
 		try {
 			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
-			String value = connection.read(deviceName + "/" + deviceProperty);
-			setState(OneWireSwitchSensorState.convert(value));
+			String value = connection.read(getDevice().getPath());
+			getDevice().setValue(OneWireSwitchSensorState.onOffValue(value));
 		} catch (Exception e) {
-			log.warn("OneWire cannot read initial value for command: " + this);
-			setState(OneWireSwitchSensorState.off);
+			OneWireLogger.warn("OneWire cannot read initial value for command: " + this);
 		}
 	}
 }

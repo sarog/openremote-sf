@@ -20,7 +20,9 @@
  */
 package org.openremote.controller.protocol.onewire.command;
 
+import java.io.IOException;
 import org.owfs.jowfsclient.OwfsConnection;
+import org.owfs.jowfsclient.OwfsException;
 
 /**
  * @author Tom Kucharski <kucharski.tom@gmail.com>
@@ -28,17 +30,10 @@ import org.owfs.jowfsclient.OwfsConnection;
 public class OneWireWriteCommand extends OneWireExecutableCommand {
 
 	@Override
-	public void execute(OwfsConnection connection) {
-		String valueToSet = dynamicValue != null ? dynamicValue : deviceData;
-		try {
-			connection.write(deviceName + "/" + deviceProperty, valueToSet);
-		} catch (Exception e) {
-			handleException(e);
-		}
-	}
-
-	protected void handleException(Exception e) {
-		log.error("Unable to send command to owfs server. Command: "+ this, e);
+	public void execute(OwfsConnection connection) throws IOException, OwfsException {
+		String value = dynamicValue != null ? dynamicValue : deviceData;
+		connection.write(getDevice().getPath(), value);
+		getDevice().setValue(value);
 	}
 
 }
