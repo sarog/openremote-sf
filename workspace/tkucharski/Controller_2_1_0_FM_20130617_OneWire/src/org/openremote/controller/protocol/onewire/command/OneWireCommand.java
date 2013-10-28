@@ -21,20 +21,22 @@
 package org.openremote.controller.protocol.onewire.command;
 
 import org.openremote.controller.command.Command;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.onewire.OneWireConfigurationReader;
-import org.openremote.controller.protocol.onewire.OneWireLoggerFactory;
-import org.openremote.controller.utils.Logger;
+import org.openremote.controller.protocol.onewire.container.OneWireDevice;
 import org.owfs.jowfsclient.OwfsConnectionFactory;
 
 /**
  * Basic 1-wire protocol command implementation for OpenRemote. Program accesses 1-wire network (owserver) via
  * library jowfsclient.
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireCommand implements Command {
+public class OneWireCommand<T> implements Command {
 
-	protected final static Logger log = OneWireLoggerFactory.getLogger();
+	/**
+	 * Command name
+	 */
+	private String commandName;
 
 	/**
 	 * Connection factory for given connection
@@ -42,14 +44,9 @@ public class OneWireCommand implements Command {
 	protected OwfsConnectionFactory owfsConnectorFactory;
 
 	/**
-	 * address of the 1-wire device, such as /1F.E9E803000000/main/28.25E9E3010000
+	 * device connected to this command. Device is found and installed in OneWireCommandBuilder
 	 */
-	protected String deviceName;
-
-	/**
-	 * device attribute - is filename in owfs that holds values, such as "temperature", "temperature9", "humidity" or similar
-	 */
-	protected String deviceProperty;
+	private OneWireDevice<T> device;
 
 	/**
 	 * device attribute value to be set, should be overwritten by dynamic value if dynamic value is defined
@@ -61,16 +58,24 @@ public class OneWireCommand implements Command {
 	 */
 	protected String dynamicValue;
 
+	public void setDevice(OneWireDevice<T> device) {
+		this.device = device;
+	}
+
+	public OneWireDevice<T> getDevice() {
+		return device;
+	}
+
 	public void setOwfsConnectorFactory(OwfsConnectionFactory owfsConnectorFactory) {
 		this.owfsConnectorFactory = owfsConnectorFactory;
 	}
 
-	public void setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
+	public OwfsConnectionFactory getOwfsConnectorFactory() {
+		return owfsConnectorFactory;
 	}
 
-	public void setDeviceProperty(String deviceProperty) {
-		this.deviceProperty = deviceProperty;
+	public void setCommandName(String commandName) {
+		this.commandName = commandName;
 	}
 
 	public void setDeviceData(String deviceData) {
@@ -79,16 +84,6 @@ public class OneWireCommand implements Command {
 
 	public void setDynamicValue(String dynamicValue) {
 		this.dynamicValue = dynamicValue;
-	}
-
-	/**
-	 * Validate if basic devices property are set correctly
-	 * @throws NoSuchCommandException if validation fails
-	 */
-	public void validate() throws NoSuchCommandException {
-		if (deviceName == null || deviceProperty == null || owfsConnectorFactory.getConnectionConfig().getHostName() == null) {
-			throw new NoSuchCommandException("Unable to create OneWireCommand, missing configuration parameter(s). "+this);
-		}
 	}
 
 	@Override
@@ -101,16 +96,17 @@ public class OneWireCommand implements Command {
 
 	public StringBuilder toStringParameterOnly() {
 		return new StringBuilder()
+				.append("commandName='").append(commandName).append('\'')
 				.append("host=")
-				.append("'"+owfsConnectorFactory.getConnectionConfig().getHostName()+":"+owfsConnectorFactory.getConnectionConfig().getPortNumber()+"'")
-				.append(", deviceName='").append(deviceName).append('\'')
-				.append(", deviceProperty='").append(deviceProperty).append('\'')
-				.append(", deviceData='").append(deviceData).append('\'');
+				.append("'" + owfsConnectorFactory.getConnectionConfig().getHostName() + ":" + owfsConnectorFactory.getConnectionConfig().getPortNumber() + "'")
+				.append(", deviceName='").append(getDevice().getAddress()).append('\'')
+				.append(", deviceProperty='").append(getDevice().getProperty()).append('\'')
+				.append(", deviceData='").append(deviceData).append('\'')
+				.append(", dynamicValue='").append(dynamicValue).append('\'');
 	}
 
 	public void configure(OneWireConfigurationReader configuration) {
-		setDeviceName(configuration.getDeviceName());
-		setDeviceProperty(configuration.getFilenameProperty());
+		setCommandName(configuration.getCommandName());
 		setDeviceData(configuration.getDataProperty());
 		setDynamicValue(configuration.getDynamicValue());
 	}

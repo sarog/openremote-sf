@@ -20,8 +20,6 @@
  */
 package org.openremote.controller.protocol.onewire;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -30,6 +28,8 @@ import org.openremote.controller.protocol.onewire.command.OneWireCommand;
 import org.openremote.controller.protocol.onewire.command.OneWireReadCommand;
 import org.openremote.controller.protocol.onewire.command.OneWireSwitchableCommand;
 import org.openremote.controller.protocol.onewire.command.OneWireWriteCommand;
+import org.openremote.controller.protocol.onewire.container.OneWireDeviceRepository;
+import org.openremote.controller.protocol.onewire.container.OneWireHostRepository;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -39,17 +39,17 @@ import org.openremote.controller.utils.Logger;
  */
 public class OneWireCommandBuilder implements CommandBuilder {
 
-	private final static Logger logger = OneWireLoggerFactory.getLogger();
-
-	/**
-	 * Command repository cache. Commands are created once and reused by id property corelation.
-	 */
-	private static Map<String, OneWireCommand> commandRepository = new HashMap<String, OneWireCommand>();
+	private final static Logger logger = OneWireLogger.getLogger();
 
 	/**
 	 * Connection repository that holds owfs servers connection factories. Each server has its own connection factory;
 	 */
-	private static OneWireHostFactory connectionFactoryRepository = new OneWireHostFactory();
+	private static OneWireHostRepository connectionFactoryRepository = new OneWireHostRepository();
+
+	/**
+	 * Command repository cache. Commands are created once and reused by id property corelation.
+	 */
+	private static OneWireDeviceRepository deviceRepository = new OneWireDeviceRepository();
 
 	public OneWireCommandBuilder() {
 		logger.info("Creating new OneWireCommandBuilder with clean repositories");
@@ -69,33 +69,23 @@ public class OneWireCommandBuilder implements CommandBuilder {
 	}
 
 	private OneWireCommand loadCommand(OneWireConfigurationReader reader) {
-		OneWireCommand oneWireCommand = commandRepository.get(reader.getCommandId());
-		if (oneWireCommand == null) {
-			oneWireCommand = createProperTypeOfCommand(reader);
-			configureAndValidate(reader, oneWireCommand);
-			commandRepository.put(reader.getCommandId(), oneWireCommand);
-			logger.info("OneWire new command created: " + oneWireCommand);
-		} else {
-			configureAndValidate(reader,oneWireCommand);
-		}
-		return oneWireCommand;
-	}
-
-	private void configureAndValidate(OneWireConfigurationReader reader, OneWireCommand oneWireCommand) {
+		OneWireCommand oneWireCommand = createProperTypeOfCommand(reader);
 		oneWireCommand.setOwfsConnectorFactory(connectionFactoryRepository.loadOrCreate(reader.getOneWireHost()));
+		oneWireCommand.setDevice(deviceRepository.getDevice(reader.getDeviceConfiguration()));
 		oneWireCommand.configure(reader);
-		oneWireCommand.validate();
+		return oneWireCommand;
 	}
 
 	/**
 	 * Creates command based on command configuration
+	 *
 	 * @param configuration configuration reader
 	 * @return
 	 */
 	private OneWireCommand createProperTypeOfCommand(OneWireConfigurationReader configuration) {
-		if (OneWireConfigurationReader.ALARMING.equals(configuration.getFilenameProperty())) {
+		if (configuration.isAlarming()) {
 			return new OneWireAlarmingCommand();
-		} else if (OneWireConfigurationReader.SWITCHABLE.equals(configuration.getDataProperty())) {
+		} else if (configuration.isSwitchable()) {
 			return new OneWireSwitchableCommand();
 		} else if (configuration.getDataProperty() != null) {
 			return new OneWireWriteCommand();

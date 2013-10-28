@@ -18,21 +18,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.onewire;
+package org.openremote.controller.protocol.onewire.container;
 
-import org.openremote.controller.Constants;
-import org.openremote.controller.utils.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import org.owfs.jowfsclient.OwfsConnectionFactory;
 
 /**
- * Logger factory used in all classes in onewire package
+ * Storage for 1-wire servers, Factory Method that returns single OwfsConnectionFactory per server configuration.
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
-public class OneWireLoggerFactory {
+public class OneWireHostRepository {
 
-	private final static String ONEWIRE_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "onewire";
-	private final static Logger logger = Logger.getLogger(ONEWIRE_PROTOCOL_LOG_CATEGORY);
+	private Map<OneWireHost, OwfsConnectionFactory> factories = new HashMap<OneWireHost, OwfsConnectionFactory>();
 
-	public static Logger getLogger() {
-		return logger;
+	public OwfsConnectionFactory loadOrCreate(OneWireHost key) {
+		OwfsConnectionFactory factory = factories.get(key);
+		if (factory == null) {
+			factory = new OwfsConnectionFactory(key.getHostname(), key.getPort());
+			factory.getConnectionConfig().setTemperatureScale(key.getTemperatureScale());
+			factories.put(key, factory);
+		}
+		return factory;
 	}
 }

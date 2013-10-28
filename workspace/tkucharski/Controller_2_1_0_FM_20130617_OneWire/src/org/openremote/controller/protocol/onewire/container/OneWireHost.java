@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.onewire;
+package org.openremote.controller.protocol.onewire.container;
 
 import org.owfs.jowfsclient.Enums;
 
@@ -60,16 +60,6 @@ public class OneWireHost {
 	}
 
 	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("OneWireHost{");
-		sb.append("hostname='").append(hostname).append('\'');
-		sb.append(", port=").append(port);
-		sb.append(", temperatureScale=").append(temperatureScale);
-		sb.append('}');
-		return sb.toString();
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
@@ -89,5 +79,15 @@ public class OneWireHost {
 		result = 31 * result + port;
 		result = 31 * result + (temperatureScale != null ? temperatureScale.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("OneWireHost{");
+		sb.append("hostname='").append(hostname).append('\'');
+		sb.append(", port=").append(port);
+		sb.append(", temperatureScale=").append(temperatureScale);
+		sb.append('}');
+		return sb.toString();
 	}
 }

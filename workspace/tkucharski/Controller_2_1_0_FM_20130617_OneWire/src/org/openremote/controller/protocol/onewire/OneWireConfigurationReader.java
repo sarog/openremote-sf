@@ -27,7 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.utils.Logger;
+import org.openremote.controller.protocol.onewire.container.OneWireDeviceConfiguration;
+import org.openremote.controller.protocol.onewire.container.OneWireHost;
 import org.openremote.controller.utils.Strings;
 
 /**
@@ -37,13 +38,11 @@ import org.openremote.controller.utils.Strings;
  */
 public class OneWireConfigurationReader {
 
-	public final static String ALARMING = "ALARMING";
+	private final static String ALARMING = "ALARMING";
 
-	public final static String SWITCHABLE = "SWITCHABLE";
+	private final static String SWITCHABLE = "SWITCHABLE";
 
-	private final static Logger logger = OneWireLoggerFactory.getLogger();
-
-	private final static String XML_COMMAND_ID = "id";
+	private final static String XML_PROPERTY_CONFIG_NAME = "name";
 
 	private final static String XML_PROPERTY_CONFIG_HOSTNAME = "hostname";
 
@@ -55,15 +54,20 @@ public class OneWireConfigurationReader {
 
 	private final static String XML_PROPERTY_CONFIG_DATA = "data";
 
+	/**
+	 * It is sensor specific property and is used only in setSensor method. It should be sensor specific parameter
+	 */
 	private final static String XML_PROPERTY_CONFIG_POLLING_INTERVAL = "pollingInterval";
 
 	private final static String XML_PROPERTY_DYNAMIC = org.openremote.controller.command.Command.DYNAMIC_VALUE_ATTR_NAME;
 
 	private final static int CONFIG_PORT_DEFAULT = 4304;
 
+	/**
+	 * Single instance of default configuration. If changes are made in default configuration all OpenRemote server has to be restarted due to lack of
+	 * command builder lifecycle.
+	 */
 	private static OneWireDefaultConfiguration controllerConfiguration;
-
-	private String commandId;
 
 	private Map<String, String> values = new HashMap<String, String>();
 
@@ -74,7 +78,6 @@ public class OneWireConfigurationReader {
 		if (controllerConfiguration == null) {
 			controllerConfiguration = new OneWireDefaultConfiguration();
 		}
-		commandId = rootElement.getAttributeValue(XML_COMMAND_ID);
 		saveConfigurationInMap(rootElement);
 	}
 
@@ -87,13 +90,12 @@ public class OneWireConfigurationReader {
 		}
 	}
 
-	/**
-	 * Returns unique command id
-	 *
-	 * @return
-	 */
-	public String getCommandId() {
-		return commandId;
+	public OneWireDeviceConfiguration getDeviceConfiguration() {
+		OneWireDeviceConfiguration oneWireDeviceConfiguration = new OneWireDeviceConfiguration();
+		oneWireDeviceConfiguration.setOneWireHost(getOneWireHost());
+		oneWireDeviceConfiguration.setDeviceAddress(getDeviceAddress());
+		oneWireDeviceConfiguration.setDeviceProperty(getFilenameProperty());
+		return oneWireDeviceConfiguration;
 	}
 
 	public OneWireHost getOneWireHost() {
@@ -102,6 +104,14 @@ public class OneWireConfigurationReader {
 		oneWireHost.setPort(getPortNumber());
 		oneWireHost.setTemperatureScale(controllerConfiguration.getTemperatureScale());
 		return oneWireHost;
+	}
+
+	public boolean isAlarming() {
+		return OneWireConfigurationReader.ALARMING.equals(getFilenameProperty());
+	}
+
+	public boolean isSwitchable() {
+		return OneWireConfigurationReader.SWITCHABLE.equals(getDataProperty());
 	}
 
 	/**
@@ -131,13 +141,17 @@ public class OneWireConfigurationReader {
 		try {
 			return Integer.parseInt(portNumber);
 		} catch (NumberFormatException e) {
-			logger.warn("Invalid property " + XML_PROPERTY_CONFIG_PORT + ". Found: '" + portNumber + "'. Using default port (" + CONFIG_PORT_DEFAULT + ")");
+			OneWireLogger.warn("Invalid property " + XML_PROPERTY_CONFIG_PORT + ". Found: '" + portNumber + "'. Using default port (" + CONFIG_PORT_DEFAULT + ")");
 			return CONFIG_PORT_DEFAULT;
 		}
 
 	}
 
-	public String getDeviceName() {
+	public String getCommandName() {
+		return values.get(XML_PROPERTY_CONFIG_NAME);
+	}
+
+	public String getDeviceAddress() {
 		return values.get(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
 	}
 
@@ -149,6 +163,19 @@ public class OneWireConfigurationReader {
 		return values.get(XML_PROPERTY_CONFIG_DATA);
 	}
 
+	public String getDynamicValue() {
+		return values.get(XML_PROPERTY_DYNAMIC);
+	}
+
+	/**
+	 * It returns null (meaning no value specified) if
+	 * 1. value is not specified or in invalid format
+	 * 2. value is empty
+	 * 3. value equals 0 (so far designer requires polling interval to be specified
+	 * If none of it is true value specified in this field is transformed from String to Integer using Strings.convertPollingIntervalString method
+	 *
+	 * @return value baes
+	 */
 	public Integer getPollingInterval() {
 		String elementValue;
 		try {
@@ -160,21 +187,18 @@ public class OneWireConfigurationReader {
 			if (null == elementValue || elementValue.trim().length() == 0) {
 				return null;
 			} else {
-				return Strings.convertPollingIntervalString(elementValue);
+				int value = Strings.convertPollingIntervalString(elementValue);
+				if (value > 0) {
+					return value;
+				} else {
+					return null;
+				}
 			}
 		} catch (NumberFormatException e) {
-			logger.warn("Invalid property " + XML_PROPERTY_CONFIG_POLLING_INTERVAL + ". Found: '" + elementValue + "'.");
-			throw new NoSuchCommandException("Invalid property " + XML_PROPERTY_CONFIG_POLLING_INTERVAL + " in device " + getCommandId() +
+			OneWireLogger.warn("Invalid property " + XML_PROPERTY_CONFIG_POLLING_INTERVAL + ". Found: '" + elementValue + "'.");
+			throw new NoSuchCommandException("Invalid property " + XML_PROPERTY_CONFIG_POLLING_INTERVAL + " in command " + getCommandName() +
 					". Found: '" + elementValue + "'."
 			);
-		}
-	}
-
-	public String getDynamicValue() {
-		try {
-			return values.get(XML_PROPERTY_DYNAMIC);
-		} catch (Exception e) {
-			return null;
 		}
 	}
 }

@@ -5,8 +5,8 @@ package org.openremote.controller.protocol.onewire.command;
  * @since 22.10.13 22:46
  */
 public enum OneWireSwitchSensorState {
-	on("1"),
-	off("2");
+	off("0"),
+	on("1");
 
 	private String state;
 
@@ -23,7 +23,35 @@ public enum OneWireSwitchSensorState {
 		return off;
 	}
 
-	public static OneWireSwitchSensorState valueOf(boolean state) {
+	public static boolean booleanValue(String value) {
+		if (on.getState().equals(value)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static String onOffValue(String value) {
+		OneWireSwitchSensorState convert = convert(value);
+		return convert.name();
+	}
+
+	public static String onOffValue(boolean value) {
+		OneWireSwitchSensorState convert = valueOf(value);
+		return convert.name();
+	}
+
+	public static String numericalValue(String value) {
+		OneWireSwitchSensorState convert = convert(value);
+		return convert.state;
+	}
+
+	public static String negateToNumerical(String value) {
+		OneWireSwitchSensorState convert = convert(value);
+		return convert.negate().state;
+	}
+
+	private static OneWireSwitchSensorState valueOf(boolean state) {
 		if (state) {
 			return on;
 		} else {
@@ -41,5 +69,9 @@ public enum OneWireSwitchSensorState {
 
 	public boolean isOn() {
 		return OneWireSwitchSensorState.on.equals(this);
+	}
+
+	public String getState() {
+		return state;
 	}
 }
