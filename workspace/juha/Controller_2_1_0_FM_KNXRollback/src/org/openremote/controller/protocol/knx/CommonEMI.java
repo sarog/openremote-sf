@@ -328,7 +328,12 @@ public class CommonEMI extends Message
    *
    * Some basic validation is done on the frame byte array to determine it's correctness. However,
    * these checks may not be comprehensive so frame bytes that would not normally make sense can
-   * still get through the validation.
+   * still get through the validation.  <p>
+   *
+   * This constructor will not resolve the resulting APDU in this CEMI instance to any known
+   * datatype. The KNX frame does not contain datatype information, and therefore the
+   * containing APDU will only have an unresolved datatype point instance if attempt is made
+   * to access the DPT information.
    *
    * @param cemiFrameStructure  Byte array containing the full CEMI frame, excluding the containing
    *                            KNX headers and KNX frame structures.
@@ -518,7 +523,10 @@ public class CommonEMI extends Message
 
 
   /**
-   * Utility method to parse the APDU instance from a CEMI frame byte array.
+   * Utility method to parse the APDU instance from a CEMI frame byte array.  <p>
+   *
+   * Note that we are not passing DPT information to the APDU parsing code. Therefore the
+   * APDU DPT cannot be resolved to a known type (the KNX frame doesn't carry datatype information).
    *
    * @return    APDU instance
    *
@@ -552,7 +560,10 @@ public class CommonEMI extends Message
     byte[] apdu = new byte[apduDataLength + 1];
     System.arraycopy(getContent(), CEMI_APDU_DATA_LENGTH_INDEX + 1, apdu, 0, apduDataLength);
 
-    return ApplicationProtocolDataUnit.constructKNXFrameAPDU(apdu, apduDataLength);
+    // Note that we lack the DPT information which is not carried in the KNX frame -- the APDU
+    // will be constructed with an unresolved frame DPT instance...
+
+    return ApplicationProtocolDataUnit.parseKNXFrameAPDU(apduDataLength, apdu);
   }
 
 
