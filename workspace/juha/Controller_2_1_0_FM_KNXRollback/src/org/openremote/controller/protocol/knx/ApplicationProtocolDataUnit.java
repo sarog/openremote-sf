@@ -640,7 +640,201 @@ class ApplicationProtocolDataUnit
         new KNXString(DataPointType.STRING_ASCII, parameter.getRawValue())
     );
   }
-  
+
+  /**
+   * Constructs an APDU corresponding to a Group Value *Response* service for a device
+   * adhering to an 14-byte KNX ASCII string data  (DPT 16.000). <p>
+   *
+   * This string value can be at most 14 characters long. Unused characters are filled with
+   * zero bytes, therefore the data payload is always 14 bytes long. Character value range
+   * is [0-127]. In practice this means the most significant bit of the character byte is not
+   * used.
+   *
+   * @param   value     the ASCII string to embed into this APDU data payload
+   *
+   * @return  GroupValue Response APDU instance with KNX ASCII string payload
+   *
+   * @throws  ConversionException   if the given string cannot be converted to KNX ASCII string
+   */
+  public static ApplicationProtocolDataUnit createKNXASCIIStringResponse(String value)
+      throws ConversionException
+  {
+    if (value == null)
+    {
+      log.warn("Received null string value for KNX ASCII string response, converting to empty string...");
+
+      value = "";
+    }
+
+    try
+    {
+      return new ApplicationProtocolDataUnit(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          new KNXString(DataPointType.STRING_ASCII, value)
+      );
+    }
+
+    // TODO : KNXString needs to be modified to throw conversion exceptions, not errors
+
+    catch (Error e)
+    {
+      throw new ConversionException(e.getMessage());
+    }
+  }
+
+
+  /**
+   * Attempts to construct an APDU from given CEMI APDU bytes. Note that this method
+   * returns an APDU with unresolved {@link UnresolvedKNXFrameDataPointType} datapoint type.
+   * There's no information provided of what is the expected datapoint type or even data type
+   * in the parsed APDU frames.
+   *
+   * @param dataLength  the value of the data length field in a CEMI frame
+   *
+   * @param apdu        the APDU bytes (only) of the CEMI frame, starting from the TPCI/APCI field,
+   *                    the APCI/Data field and additional data bytes if any
+   * @return            An APDU instance corresponding to the given frame structure
+   *
+   * @throws CommonEMI.InvalidFrameException    if there's an error parsing the frame bytes
+   */
+  public static ApplicationProtocolDataUnit parseKNXFrameAPDU(final int dataLength, byte[] apdu)
+      throws CommonEMI.InvalidFrameException
+  {
+    if (apdu == null || apdu.length < 2)
+    {
+      throw new CommonEMI.InvalidFrameException(
+          "APDU frame size must have at least two bytes. Received {0}", apdu
+      );
+    }
+
+    int cemiTpciApci = apdu[0] & 0xFF;
+    int cemiApciData = apdu[1] & 0xFF;
+
+    final byte[] data = parseCEMIData(dataLength, apdu);
+
+    ApplicationLayer.Service service =
+        ApplicationLayer.Service.resolveCEMIServiceType(dataLength, cemiTpciApci, cemiApciData);
+
+    return new ApplicationProtocolDataUnit(
+        service,
+        new DataType()
+        {
+          @Override public int getDataLength()
+          {
+            return dataLength;
+          }
+
+          @Override public byte[] getData()
+          {
+            return data;
+          }
+
+          @Override public DataPointType getDataPointType()
+          {
+           return new UnresolvedKNXFrameDataPointType();
+          }
+        }
+    );
+  }
+
+
+  /**
+   * Utility method to parse the data field value out of CEMI frame APDU bytes.
+   *
+   * @param apduDataLength    the value of the data length field in CEMI frame
+   * @param apduBytes         the CEMI frame byte array including the TPCI/APCI field,
+   *                          APCI/Data field and additional data fields if any
+   *
+   * @return                  the data payload of the CEMI frame
+   *
+   * @throws CommonEMI.InvalidFrameException    if CEMI frame cannot be parsed
+   */
+  private static byte[] parseCEMIData(int apduDataLength, byte[] apduBytes)
+      throws CommonEMI.InvalidFrameException
+  {
+    final int CEMI_SIX_BIT_DATA_BITMASK = 0x3F;
+
+    // Defensive...
+
+    if (apduDataLength <= 0)
+    {
+      throw new CommonEMI.InvalidFrameException("Invalid CEMI data field length: {0}", apduDataLength);
+    }
+
+    // This is a six bit data payload....
+
+    if (apduDataLength == 1)
+    {
+      int cemiTPCIAPCI = apduBytes[0] & 0xFF;
+      int cemiAPCIData = apduBytes[1] & 0xFF;
+
+      if (ApplicationLayer.Service.isSixBitGroupValueResponse(apduDataLength, cemiTPCIAPCI, cemiAPCIData) ||
+          ApplicationLayer.Service.isSixBitGroupValueWrite(apduDataLength, cemiTPCIAPCI, cemiAPCIData))
+      {
+        // clear out the APCI bits from two most significant bits...
+
+        int data = apduBytes[1] & CEMI_SIX_BIT_DATA_BITMASK;
+
+        return new byte[] { (byte)data };
+      }
+
+      else if (ApplicationLayer.Service.isGroupValueRead(apduDataLength, cemiTPCIAPCI, cemiAPCIData))
+      {
+        return new byte[] { 0 };
+      }
+
+      else
+      {
+        throw new CommonEMI.InvalidFrameException(
+            "Unrecognized CEMI frame type -- TPCI/APCI: {0}, APCI/Data: {1}",
+            Strings.byteToUnsignedHexString((byte)cemiTPCIAPCI),
+            Strings.byteToUnsignedHexString((byte)cemiAPCIData)
+        );
+      }
+    }
+
+    else
+    {
+      if (apduBytes.length < 3)
+      {
+        throw new CommonEMI.InvalidFrameException(
+            "Frame indexing error. Data length field has value {0} but APDU data has only {1} bytes.",
+            apduDataLength, apduBytes.length - 1
+        );
+      }
+
+      try
+      {
+        byte[] data = new byte[apduBytes.length - 2];
+
+        System.arraycopy(apduBytes, 2, data, 0, data.length);
+
+        if (data.length != apduDataLength - 1)
+        {
+          throw new CommonEMI.InvalidFrameException(
+              "Frame inconsistency error. CEMI data length field value was {0}, only found {1} " +
+              "data bytes in the frame ({2})",
+              apduDataLength, data.length, Strings.byteArrayToUnsignedHexString(data)
+          );
+        }
+
+        return data;
+      }
+
+      catch (ArrayIndexOutOfBoundsException e)
+      {
+        throw new CommonEMI.InvalidFrameException(
+            "Frame indexing error. Data length field {0}, APDU bytes: {1}",
+            apduDataLength, Strings.byteArrayToUnsignedHexString(apduBytes)
+        );
+      }
+    }
+  }
+
+
+
+
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -1244,6 +1438,25 @@ class ApplicationProtocolDataUnit
       return new FourOctetFloat(dpt, value);
     }
 
+  }
+
+
+  /**
+   * The KNX frame structure doesn't carry datapoint type information (for some reason).
+   * Whenever we receive KNX frames, there's no reliable way to determine from the KNX frame
+   * what kind of datapoint type is in question. We can only make this type of resolution
+   * when the user has provided an *expected* datapoint type information (which could still be
+   * wrong).  <p>
+   *
+   * When there's no user configured information available, but we want to construct an APDU,
+   * this unresolved KNX frame datapoint type can be used.
+   */
+  protected static class UnresolvedKNXFrameDataPointType extends DataPointType
+  {
+    private UnresolvedKNXFrameDataPointType()
+    {
+      super(-1, -1, false);
+    }
   }
 
 }
