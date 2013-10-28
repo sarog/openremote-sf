@@ -45,6 +45,7 @@ import org.openremote.controller.model.event.CustomState;
 
 public class RuleListenerTest {
    private StatefulKnowledgeSession ksession;
+   public static String TEST_SENSOR_NAME = "SENSOR_NAME";
    
    @Before
    public void setUp() throws Exception {
@@ -67,17 +68,24 @@ public class RuleListenerTest {
       ksession.dispose();
    }
 
+   /**
+    * This test confirms the plumbing for the event listener is working.
+    * This test is testing the following behavior:
+    *    The event listener detects rule activations.
+    *    The listener fires "BeforeActivationFired" in response to rule activations.
+    *    The listener is properly detecting and logging information about the rule (name, declarations, LHS, etc.).
+    */
    @Test
    public void testBeforeActivationFired() {
 
-      CustomState newState = new CustomState(1, "NEW_STATE", "ON" );
+      CustomState newState = new CustomState(1, TEST_SENSOR_NAME, "ON" );
 
       ksession.insert(newState);
       
       RuleListener ruleListener = new RuleListener();
       ksession.addEventListener(ruleListener);
       
-      //add a handler so logging output can be redirected to active memory
+      //add a handler so logging output can be stored in active memory
       Logger ruleLogger = ruleListener.getLogger();
       TestLogHandler handler = new TestLogHandler();
       ruleLogger.addHandler(handler);
@@ -86,9 +94,10 @@ public class RuleListenerTest {
       
       ksession.fireAllRules();
       
-      String lastLog = String.format("Rule Activation Imminent: /n" +
+      String lastLog = String.format("Rule Activation Imminent: /n/t" +
             "Rule: %s/n" +
-            "", "TestRuleFiring");
+            "/tDeclarations /t/tDeclaration:$e Value: Sensor Name: %s Sensor Value: ON/n/n" +
+            "/tLHS objects(antecedents) Class: CustomState Fields Name: %s/tValue: ON/n/n/n", "TestRuleFiring", TEST_SENSOR_NAME, TEST_SENSOR_NAME);
 
       handler.assertLastLog(Level.FINER, lastLog);
    }
