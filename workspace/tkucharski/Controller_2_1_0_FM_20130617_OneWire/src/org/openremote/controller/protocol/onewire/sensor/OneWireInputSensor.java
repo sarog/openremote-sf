@@ -60,7 +60,10 @@ public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEve
 					"Value must be between 0 and " + (latchStatus.length - 1)
 			);
 		} else if (latchStatus[inputNumber]) {
-			setState(oldEvent.getSensedStatusAsArray()[inputNumber], newEvent.getSensedStatusAsArray()[inputNumber]);
+			//if this is first execution oldEvent is null
+			boolean oldState = oldEvent != null && oldEvent.getSensedStatusAsArray()[inputNumber];
+			boolean newState = newEvent.getSensedStatusAsArray()[inputNumber];
+			setState(oldState, newState);
 		}
 	}
 
@@ -72,18 +75,24 @@ public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEve
 	 * ON->ON   (input was released and pressed between scanning)
 	 */
 	public void setState(boolean state, boolean newState) {
-		OneWireLogger.info(sensor.getName() + ", " + OneWireSwitchSensorState.onOffValue(state) + "->" + OneWireSwitchSensorState.onOffValue(newState));
+		OneWireLogger.info(sensor.getName() + ": " + OneWireSwitchSensorState.onOffValue(state) + "->" + OneWireSwitchSensorState.onOffValue(newState));
 		if (!state && !newState) {
-			sensor.update(OneWireSwitchSensorState.onOffValue(true));
-			sensor.update(OneWireSwitchSensorState.onOffValue(false));
+			update(true);
+			update(false);
 		} else if (!state) {
-			sensor.update(OneWireSwitchSensorState.onOffValue(true));
+			update(true);
 		} else if (!newState) {
-			sensor.update(OneWireSwitchSensorState.onOffValue(false));
+			update(false);
 		} else {
-			sensor.update(OneWireSwitchSensorState.onOffValue(false));
-			sensor.update(OneWireSwitchSensorState.onOffValue(true));
+			update(false);
+			update(true);
 		}
+	}
+
+	private void update(boolean newValue) {
+		String state = OneWireSwitchSensorState.onOffValue(newValue);
+		OneWireLogger.info(sensor.getName()+": "+state);
+		sensor.update(state);
 	}
 
 	private void loadInputNumberFromSensorConfiguration() {

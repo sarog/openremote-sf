@@ -53,9 +53,14 @@ public class OneWireSwitchableCommand extends OneWireWriteCommand implements Eve
 		if (isItFirstExecution()) {
 			tryToReadInitialValue();
 		}
-		String value = OneWireSwitchSensorState.negateToNumerical(dynamicValue != null ? dynamicValue : getDevice().getValue());
-		connection.write(getDevice().getPath(), value);
-		getDevice().setValue(OneWireSwitchSensorState.onOffValue(value));
+		String numericalValueToSet;
+		if (dynamicValue != null) {
+			numericalValueToSet = OneWireSwitchSensorState.numericalValue(dynamicValue);
+		} else {
+			numericalValueToSet = OneWireSwitchSensorState.negateToNumerical(getDevice().getValue());
+		}
+		connection.write(getDevice().getPath(), numericalValueToSet);
+		getDevice().setValue(OneWireSwitchSensorState.onOffValue(numericalValueToSet));
 	}
 
 	private boolean isItFirstExecution() {
