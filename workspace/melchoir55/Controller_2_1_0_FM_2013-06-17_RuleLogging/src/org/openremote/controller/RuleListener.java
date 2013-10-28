@@ -78,8 +78,8 @@ public class RuleListener extends DefaultAgendaEventListener {
       
       log.trace(String.format("Rule Activation Imminent: /n" +
       		                  "/tRule: %s/n" +
-      		                  "/tDeclarations %s/n" +
-      		                  "/tLHS objects(antecedents) %s/n", ruleName, declarationLog, objectLog));
+      		                  "/tDeclarations /n%s" +
+      		                  "/tLHS objects(antecedents) /n%s", ruleName, declarationLog, objectLog));
       
    }
    
