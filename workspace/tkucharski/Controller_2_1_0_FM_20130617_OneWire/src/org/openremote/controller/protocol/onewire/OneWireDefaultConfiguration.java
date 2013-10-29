@@ -17,24 +17,41 @@ public class OneWireDefaultConfiguration extends Configuration {
 
 	public static final String ONEWIRE_PORT = "onewire.port";
 
-	public static final String ONEWIRE_TEMPERATURE_SCALE = "onewire.temperaturescale";
+	public static final String ONEWIRE_TEMPERATURE_SCALE = "onewire.temperature.scale";
+
+	public static final String ONEWIRE_ALARMING_INITIAL_DELAY = "onewire.alarming.initial.delay";
 
 	private static Logger log = OneWireLogger.getLogger();
 
 	/**
-	 * Cached host value. Saves a lot of time to read controller.xml every command is created via command builder
+	 * owserver port number. Can be override in command configuration
+	 * Value stored in field as it saves a lot of time to read controller.xml every command is created via command builder
 	 */
 	private String host;
 
 	/**
-	 * Cached port value. Saves a lot of time to read controller.xml every command is created via command builder
+	 * owserver port number. Can be override in command configuration
+	 * Value stored in field as it saves a lot of time to read controller.xml every command is created via command builder
 	 */
 	private String port;
 
 	/**
-	 * Cached temperatureScale value. Saves a lot of time to read controller.xml every command is created via command builder
+	 * Scale of temperature returned by owserver. Can be CELSIUS, FAHRENHEIT, KELVIN or RANKINE
+	 * Value stored in field as it saves a lot of time to read controller.xml every command is created via command builder
 	 */
 	private Enums.OwTemperatureScale temperatureScale;
+
+	/**
+	 *
+	 * Used only for alarming devices. Defines delay (in miliseconds) between registering first OpenRemote alarming command and start of jowfsclient
+	 * active process looking for devices in alarming state. As a result first sensor update connected to alarming command will be updated at least
+	 * after passing period defined in this variable.
+	 * If this value is too small jowfsclient alarming server can start its job before installing all alarming devices.
+	 * Although it is completely safe to add new alarming devices, great decrease in speed of adding new alarming command can be observed as alarming
+	 * server works in highly concurrent environment.
+	 * Value stored in field as it saves a lot of time to read controller.xml every command is created via command builder
+	 */
+	private Integer alarmingInitialDelay;
 
 	public OneWireDefaultConfiguration() {
 		ControllerConfiguration.updateWithControllerXMLConfiguration(this);
@@ -54,6 +71,19 @@ public class OneWireDefaultConfiguration extends Configuration {
 			port = preferAttrCustomValue(ONEWIRE_PORT, StringUtils.EMPTY);
 		}
 		return port;
+	}
+
+	public Integer getAlarmingInitialDelay() {
+		if (alarmingInitialDelay == null) {
+			String value = preferAttrCustomValue(ONEWIRE_ALARMING_INITIAL_DELAY, StringUtils.EMPTY);
+			try {
+				alarmingInitialDelay = Integer.parseInt(value);
+			} catch (Exception e) {
+				log.info("Missing alarmingInitialDelay value in '" + ONEWIRE_ALARMING_INITIAL_DELAY + "' property. Default value will be used");
+				return null;
+			}
+		}
+		return alarmingInitialDelay;
 	}
 
 	public Enums.OwTemperatureScale getTemperatureScale() {

@@ -35,6 +35,8 @@ public class OneWireHost {
 
 	private Enums.OwTemperatureScale temperatureScale;
 
+	private Integer alarmingInitialDelay;
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -59,6 +61,14 @@ public class OneWireHost {
 		this.temperatureScale = temperatureScale;
 	}
 
+	public Integer getAlarmingInitialDelay() {
+		return alarmingInitialDelay;
+	}
+
+	public void setAlarmingInitialDelay(Integer alarmingInitialDelay) {
+		this.alarmingInitialDelay = alarmingInitialDelay;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -68,7 +78,6 @@ public class OneWireHost {
 
 		if (port != that.port) return false;
 		if (hostname != null ? !hostname.equals(that.hostname) : that.hostname != null) return false;
-		if (temperatureScale != that.temperatureScale) return false;
 
 		return true;
 	}
@@ -77,7 +86,6 @@ public class OneWireHost {
 	public int hashCode() {
 		int result = hostname != null ? hostname.hashCode() : 0;
 		result = 31 * result + port;
-		result = 31 * result + (temperatureScale != null ? temperatureScale.hashCode() : 0);
 		return result;
 	}
 
@@ -87,6 +95,7 @@ public class OneWireHost {
 		sb.append("hostname='").append(hostname).append('\'');
 		sb.append(", port=").append(port);
 		sb.append(", temperatureScale=").append(temperatureScale);
+		sb.append(", alarminIinitialDelay=").append(alarmingInitialDelay);
 		sb.append('}');
 		return sb.toString();
 	}
