@@ -394,7 +394,15 @@ public class ConfigurationFileImporter {
           if (owner != null && owner.getSensorLink() != null) {
             SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
             if (sensorDTO != null && sensorDTO.getOid() != null) {
-              sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+              if (sensorsOldOidToNewOid.get(sensorDTO.getOid()) != null) {
+                sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+              } else {
+                // Widget references unknown sensor, clear link
+                owner.getSensorLink().setSensorDTO(null);
+                // and report as warning to user
+                
+                // TODO: keep log of warnings to return to user
+              }
             }
           }
         }
