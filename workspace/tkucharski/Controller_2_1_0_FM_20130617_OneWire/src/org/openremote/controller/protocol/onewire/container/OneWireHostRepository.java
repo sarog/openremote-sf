@@ -38,6 +38,9 @@ public class OneWireHostRepository {
 		if (factory == null) {
 			factory = new OwfsConnectionFactory(key.getHostname(), key.getPort());
 			factory.getConnectionConfig().setTemperatureScale(key.getTemperatureScale());
+			if (key.getAlarmingInitialDelay() != null) {
+				factory.getConnectionConfig().setAlarmingInitialDelay(key.getAlarmingInitialDelay());
+			}
 			factories.put(key, factory);
 		}
 		return factory;

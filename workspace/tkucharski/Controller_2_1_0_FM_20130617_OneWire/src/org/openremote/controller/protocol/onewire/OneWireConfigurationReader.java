@@ -103,6 +103,7 @@ public class OneWireConfigurationReader {
 		oneWireHost.setHostname(getHostName());
 		oneWireHost.setPort(getPortNumber());
 		oneWireHost.setTemperatureScale(controllerConfiguration.getTemperatureScale());
+		oneWireHost.setAlarmingInitialDelay(controllerConfiguration.getAlarmingInitialDelay());
 		return oneWireHost;
 	}
 
