@@ -280,7 +280,6 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
         <entry key = "denonAVRSerial"   value-ref = "denonAVRSerialCommandBuilder"/>
         <entry key = "shellexe"         value-ref = "shellexeCommandBuilder"/>
-        <entry key = "isy99"            value-ref = "isy99CommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "rrdGraphUrl"         value-ref = "rrdGraphUrlCommandBuilder"/>
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
@@ -372,16 +371,6 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
         scope = "prototype"/>
 
-  <!-- ISY-99 Command Builder-->
-  <bean id = "isy99CommandBuilder"
-        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder">
-
-    <constructor-arg index = "0" value = "${isy99.hostname}"/>
-    <constructor-arg index = "1" value = "${isy99.username}"/>
-    <constructor-arg index = "2" value = "${isy99.password}"/>
-  </bean>
-    
-  
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
   <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
@@ -472,49 +461,161 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 
   <!-- Data Logger Configuration -->
   <bean id = "dataLogger" class = "org.openremote.controller.statuscache.DataLogger" >
-    <property name="dataLoggerURL" value="http://multimation.co.uk:8080/datalogger/rest" />
+    <property name="dataLoggerURL" value="http://localhost:8080/datalogger/rest" />
     <property name="writeAPIKey" value="6fccf8cf3c864de0c857bbb3aad61a62" />
     <property name="sensors">
       <list>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraOneIn" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraOneIn" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
   		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraTwoIn" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraTwoIn" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraThreeIn" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraThreeIn" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraFourIn" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraFourIn" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraFiveIn" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraFiveIn" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraOneOut" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraOneOut" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
   		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraTwoOut" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraTwoOut" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraThreeOut" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraThreeOut" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraFourOut" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraFourOut" />
+		      <property name="logRepeatSeconds" value="300" />
 		  </bean>
 		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
-		      <property name="sesnorName" value="PPMCameraFiveOut" />
-		      <property name="logRepeatSeconds" value="120" />
+		      <property name="sensorName" value="PPMCameraFiveOut" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="DensityCameraOne" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="DensityCameraTwo" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="DensityCameraThree" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="DensityCameraFour" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="DensityCameraFive" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelOneOnStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelOneOnStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelTwoOnStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelThreeOnStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelOneBehindStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SoundLevelTwoBehindStreet" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="LightState" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Sound Level On Street Average" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Sound Level Behind Street Average" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Sound Level Average" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Sound Level Highest" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Temperature" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Rainfall" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Wind Speed" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Wind Direction" />
+		      <property name="logRepeatSeconds" value="1800" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="SocialMediaActivity" />
+		      <property name="logRepeatSeconds" value="300" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Garbage" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Glass" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Beer" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Crime Level 1" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Crime Level 2" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="Crime Level 3" />
+		      <property name="logRepeatSeconds" value="3600" />
+		  </bean>
+		  <bean class = "org.openremote.controller.statuscache.DataLoggerSensor">
+		      <property name="sensorName" value="CarParkTotalAvailable" />
+		      <property name="logRepeatSeconds" value="3600" />
 		  </bean>
       </list>
     </property>
