@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,10 +20,13 @@
  */
 package org.openremote.controller.protocol.knx.ip.message;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.openremote.controller.protocol.knx.ServiceTypeIdentifier;
+import org.openremote.controller.utils.Strings;
 
 /**
  * This is an implementation of a <tt>SEARCH_REQUEST</tt> frame in KNXnet/IP v1.0 as
@@ -78,6 +81,10 @@ public class IpDiscoverReq extends IpMessage
    */
   public final static int STI = ServiceTypeIdentifier.SEARCH_REQUEST.getValue();
 
+  /**
+   * Fixed frame length of KNXnet/IP 1.0 search request frame: {@value}
+   */
+  public final static int KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH = 14;
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -93,11 +100,60 @@ public class IpDiscoverReq extends IpMessage
    */
   public static boolean isSearchRequest(byte[] knxFrame)
   {
-    return (knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]       == KNXNET_IP_10_HEADER_SIZE &&
-            knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX]    == KNXNET_IP_10_VERSION &&
-            ServiceTypeIdentifier.SEARCH_REQUEST.isIncluded(knxFrame));
+    return
+        knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]    == KNXNET_IP_10_HEADER_SIZE &&
+        knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX] == KNXNET_IP_10_VERSION &&
+        knxFrame[KNXNET_IP_10_HEADER_FRAME_LENGTH_LOBYTE_INDEX] == KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH &&
+        ServiceTypeIdentifier.SEARCH_REQUEST.isIncluded(knxFrame);
   }
 
+  /**
+   * Utility method to parse HPAI from KNX frame.
+   *
+   * @param knxFrameContent   a byte array containing a full KNX frame (including headers)
+   *
+   * @return  HPAI instance
+   *
+   * @throws FrameException   if HPAI cannot be parsed from the given KNX frame byte array
+   */
+  private static Hpai parseClientHPAI(byte[] knxFrameContent) throws FrameException
+  {
+    if (knxFrameContent == null)
+    {
+      throw new FrameException("Null KNX frame.");
+    }
+
+    if (!isSearchRequest(knxFrameContent))
+    {
+      throw new FrameException(
+          "Frame {0} is not a valid KNX search request frame.",
+          Strings.byteArrayToUnsignedHexString(knxFrameContent)
+      );
+    }
+
+    BufferedInputStream bin = new BufferedInputStream(new ByteArrayInputStream(knxFrameContent));
+
+    try
+    {
+      // skip the KNX header from the byte stream...
+
+      long actualBytesSkipped = bin.skip(KNXNET_IP_10_HEADER_SIZE);
+
+      if (actualBytesSkipped != KNXNET_IP_10_HEADER_SIZE)
+      {
+        throw new FrameException(
+            "Failed to parse KNX header. Unexpected byte skip {0}", actualBytesSkipped
+        );
+      }
+
+      return new Hpai(bin);
+    }
+
+    catch (IOException e)
+    {
+      throw new FrameException("I/O exception in reading the KNX frame: {0}", e, e.getMessage());
+    }
+  }
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -122,6 +178,18 @@ public class IpDiscoverReq extends IpMessage
     super(STI, Hpai.getStructureSize());
 
     this.discoveryEndpoint = hpai;
+  }
+
+  /**
+   * Constructs a new <tt>SEARCH_REQUEST</tt> from a given KNX frame.
+   *
+   * @param knxFrameContent   a byte array containing a full KNX frame (including headers)
+   *
+   * @throws FrameException   if the KNX frame cannot be parsed into a discovery request
+   */
+  public IpDiscoverReq(byte[] knxFrameContent) throws FrameException
+  {
+    this(parseClientHPAI(knxFrameContent));
   }
 
 
@@ -165,5 +233,16 @@ public class IpDiscoverReq extends IpMessage
     // TODO : could use TimeUnit instead of int
 
     return SEARCH_TIMEOUT;
+  }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * @return description of this discovery request.
+   */
+  @Override public String toString()
+  {
+    return "KNXnet/IP 1.0 Search Request from " + discoveryEndpoint.getAddress();
   }
 }
