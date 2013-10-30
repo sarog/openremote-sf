@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.knx.ip.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.openremote.controller.exception.OpenRemoteException;
 import org.openremote.controller.utils.Strings;
 
 /**
@@ -127,6 +128,17 @@ public abstract class IpMessage
    * Byte order index of the Service Type Identifier (STI) low byte in KNXnet/IP frame : {@value}
    */
   public final static int KNXNET_IP_10_HEADER_STI_LOBYTE_INDEX = 3;
+
+  /**
+   * Byte order index of the frame length field high byte in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_FRAME_LENGTH_HIBYTE_INDEX = 4;
+
+  /**
+   * Byte order index of the frame length field low byte in KNXnet/IP frame : {@value}
+   */
+  public final static int KNXNET_IP_10_HEADER_FRAME_LENGTH_LOBYTE_INDEX = 5;
+
 
   /**
    * This is a standard response string returned by {@link #getFrameError(byte[])} method
@@ -404,6 +416,61 @@ public abstract class IpMessage
     // TODO : can be replaced with direct variable access
 
     return this.variableLength;
+  }
+
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  /**
+   * Exception type to use when there's an issue with parsing KNX frames into their corresponding
+   * Java object instances.
+   */
+  protected static class FrameException extends OpenRemoteException
+  {
+    /**
+     * Constructs a frame exception with a given message.
+     *
+     * @param msg   exception message
+     */
+    protected FrameException(String msg)
+    {
+      super(msg);
+    }
+
+    /**
+     * Constructs a frame exception with a given message and message parameters.
+     *
+     * @param msg     exception message
+     * @param params  message parameters
+     */
+    protected FrameException(String msg, Object... params)
+    {
+      super(msg, params);
+    }
+
+    /**
+     * Constructs a frame exception with a given message and root cause.
+     *
+     * @param msg     exception message
+     * @param t       root cause
+     */
+    protected FrameException(String msg, Throwable t)
+    {
+      super(msg, t);
+    }
+
+    /**
+     * Constructs a frame exception with a given message, root cause and message parameters.
+     *
+     * @param msg     exception message
+     * @param t       root cause
+     * @param params  message parameters
+     */
+    protected FrameException(String msg, Throwable t, Object... params)
+    {
+      super(msg, t, params);
+    }
   }
 
 }
