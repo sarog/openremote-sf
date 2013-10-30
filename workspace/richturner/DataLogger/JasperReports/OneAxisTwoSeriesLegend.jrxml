@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="850" pageHeight="330" orientation="Landscape" columnWidth="850" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9d560c56-f8af-4a60-b724-5bf99af47447">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="AnotherSensor" uuid="523d6ba4-7ad9-437d-88ec-7e813e692209">
+		<parameter name="SensorTwoName" class="java.lang.String"/>
+		<parameter name="SeriesLabel" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT cast(value as float) as value, timestamp
+FROM sensorValues
+INNER JOIN sensors
+ON sensorValues.sensorId=sensors.id
+INNER JOIN dataUsers
+ON sensors.userId = dataUsers.id
+where dataUsers.readKey = '6fccf8cf3c864de0c857bbb3aad61a62' and sensors.name = $P{SensorTwoName} and isnumeric(sensorValues.value) and timestamp > (now() - interval '48 hour');]]>
+		</queryString>
+		<field name="value" class="java.lang.Double"/>
+		<field name="timestamp" class="java.sql.Timestamp"/>
+	</subDataset>
+	<parameter name="SensorOneName" class="java.lang.String"/>
+	<parameter name="SensorTwoName" class="java.lang.String"/>
+	<parameter name="YAxisLabel" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SeriesOneLabel" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="XAxisLabel" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Title" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SeriesTwoLabel" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="YAxisTwoLabel" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT cast(value as float) as value, timestamp
+FROM sensorValues
+INNER JOIN sensors
+ON sensorValues.sensorId=sensors.id
+INNER JOIN dataUsers
+ON sensors.userId = dataUsers.id
+where dataUsers.readKey = '6fccf8cf3c864de0c857bbb3aad61a62' and sensors.name = $P{SensorOneName} and isnumeric(sensorValues.value) and timestamp > (now() - interval '48 hour');]]>
+	</queryString>
+	<field name="value" class="java.lang.Double"/>
+	<field name="timestamp" class="java.sql.Timestamp"/>
+	<summary>
+		<band height="330">
+			<multiAxisChart>
+				<chart>
+					<reportElement uuid="b99d8dd7-bd28-4133-9f7d-93683c00bef4" x="0" y="0" width="850" height="330"/>
+					<chartTitle>
+						<titleExpression><![CDATA[$P{Title}]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend position="Top"/>
+				</chart>
+				<multiAxisPlot>
+					<plot/>
+					<axis position="leftOrTop">
+						<timeSeriesChart>
+							<chart>
+								<reportElement uuid="4d623a2e-b6e2-4b93-b990-ab6091657fcc" x="0" y="0" width="0" height="0" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000">
+									<titleExpression><![CDATA[$P{Title}]]></titleExpression>
+								</chartTitle>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF" position="Top"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Hour">
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{SeriesOneLabel}]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{value}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowShapes="false">
+								<plot/>
+								<timeAxisLabelExpression><![CDATA[$P{XAxisLabel}]]></timeAxisLabelExpression>
+								<timeAxisFormat>
+									<axisFormat/>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[$P{YAxisLabel}]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat/>
+								</valueAxisFormat>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+					<axis position="leftOrTop">
+						<timeSeriesChart>
+							<chart>
+								<reportElement uuid="4dab68ca-dd16-4bba-b073-26b7d37e5a0b" positionType="Float" x="0" y="0" width="0" height="0" backcolor="#FFFFFF"/>
+								<chartTitle color="#000000">
+									<titleExpression><![CDATA[$P{Title}]]></titleExpression>
+								</chartTitle>
+								<chartSubtitle color="#000000"/>
+								<chartLegend textColor="#000000" backgroundColor="#FFFFFF" position="Top"/>
+							</chart>
+							<timeSeriesDataset timePeriod="Hour">
+								<dataset>
+									<datasetRun subDataset="AnotherSensor" uuid="a491f141-4fe5-49a8-bbcb-b3c6859db28e">
+										<datasetParameter name="SensorTwoName">
+											<datasetParameterExpression><![CDATA[$P{SensorTwoName}]]></datasetParameterExpression>
+										</datasetParameter>
+										<datasetParameter name="SeriesLabel">
+											<datasetParameterExpression><![CDATA[$P{SeriesTwoLabel}]]></datasetParameterExpression>
+										</datasetParameter>
+									</datasetRun>
+								</dataset>
+								<timeSeries>
+									<seriesExpression><![CDATA[$P{SeriesLabel}]]></seriesExpression>
+									<timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
+									<valueExpression><![CDATA[$F{value}]]></valueExpression>
+								</timeSeries>
+							</timeSeriesDataset>
+							<timeSeriesPlot isShowShapes="false">
+								<plot/>
+								<timeAxisFormat>
+									<axisFormat/>
+								</timeAxisFormat>
+								<valueAxisLabelExpression><![CDATA[]]></valueAxisLabelExpression>
+								<valueAxisFormat>
+									<axisFormat labelColor="#FFFFFF" tickLabelColor="#FFFFFF" verticalTickLabels="false" axisLineColor="#FFFFFF"/>
+								</valueAxisFormat>
+							</timeSeriesPlot>
+						</timeSeriesChart>
+					</axis>
+				</multiAxisPlot>
+			</multiAxisChart>
+		</band>
+	</summary>
+</jasperReport>

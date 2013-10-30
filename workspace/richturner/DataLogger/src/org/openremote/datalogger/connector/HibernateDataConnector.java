@@ -199,7 +199,8 @@ public class HibernateDataConnector implements DataConnector {
 			try {
 				sensor = em.createQuery(sCriteria).getSingleResult();
 			}  catch (NoResultException e) {
-				throw new DataConnectorException(String.format("Sensor '%1$s' does not exist", sensorName));
+				return 0d; // Kludge to prevent controller from freezing
+				//throw new DataConnectorException(String.format("Sensor '%1$s' does not exist", sensorName));
 			}
 
 			EntityTransaction transaction = em.getTransaction();
@@ -214,8 +215,6 @@ public class HibernateDataConnector implements DataConnector {
 			transaction.commit();
 			return (Double)result;
 		} catch (DataSecurityException e) {
-			throw e;
-		} catch (DataConnectorException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new DataConnectorException(e);
