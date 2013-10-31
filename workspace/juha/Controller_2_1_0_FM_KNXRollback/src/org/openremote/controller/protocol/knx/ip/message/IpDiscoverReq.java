@@ -82,6 +82,11 @@ public class IpDiscoverReq extends IpMessage
   public final static int STI = ServiceTypeIdentifier.SEARCH_REQUEST.getValue();
 
   /**
+   * Byte order index of the start of the HPAI structure in KNXnet/IP search request : {@value}
+   */
+  public final static int KNXNET_IP_10_SEARCH_REQUEST_HPAI_INDEX = KNXNET_IP_10_HEADER_SIZE;
+
+  /**
    * Fixed frame length of KNXnet/IP 1.0 search request frame: {@value}
    */
   public final static int KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH = 14;
@@ -91,20 +96,48 @@ public class IpDiscoverReq extends IpMessage
 
   /**
    * Indicates whether the given KNXnet/IP frame includes a <tt>SEARCH_REQUEST</tt> service
-   * type identifier.
+   * type identifier. Note that this implementation assumes KNXnet/IP version 1.0 only, and
+   * makes assumptions on frame validity based on that version.
    * 
    * @param     knxFrame    KNXnet/IP frame as a byte array
    *
-   * @return    true if the frame header includes a <tt>SEARCH_REQUEST</tt> service type
-   *            identifier, false otherwise
+   * @return    true if the frame header is a valid KNXnet/IP 1.0 frame, includes a
+   *            <tt>SEARCH_REQUEST</tt> service type identifier, and matches expected frame
+   *            size and HPAI structure size for KNX 1.0 search request; false otherwise
    */
   public static boolean isSearchRequest(byte[] knxFrame)
   {
-    return
-        knxFrame[KNXNET_IP_10_HEADER_SIZE_INDEX]    == KNXNET_IP_10_HEADER_SIZE &&
-        knxFrame[KNXNET_IP_10_HEADER_VERSION_INDEX] == KNXNET_IP_10_VERSION &&
-        knxFrame[KNXNET_IP_10_HEADER_FRAME_LENGTH_LOBYTE_INDEX] == KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH &&
-        ServiceTypeIdentifier.SEARCH_REQUEST.isIncluded(knxFrame);
+    try
+    {
+      return
+
+          // validate fixed frame size...
+
+          knxFrame.length == KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH &&
+
+          // validate KNX header fields...
+
+          isValidFrame(knxFrame) &&
+
+          // validate KNX frame length field...
+
+          knxFrame[KNXNET_IP_10_HEADER_FRAME_LENGTH_LOBYTE_INDEX] == KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH &&
+
+          // validate Service Type Identifier (STI) values...
+
+          ServiceTypeIdentifier.SEARCH_REQUEST.isIncluded(knxFrame) &&
+
+          // validate HPAI size...
+
+          knxFrame[KNXNET_IP_10_SEARCH_REQUEST_HPAI_INDEX] == Hpai.getStructureSize();
+    }
+
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      log.warn("Indexing error: {0}", e, e.getMessage());
+
+      return false;
+    }
   }
 
   /**
