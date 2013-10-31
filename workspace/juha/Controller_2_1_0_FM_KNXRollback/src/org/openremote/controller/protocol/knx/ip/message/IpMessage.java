@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.openremote.controller.exception.OpenRemoteException;
+import org.openremote.controller.protocol.knx.KNXCommandBuilder;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.Strings;
 
 /**
@@ -80,7 +82,7 @@ public abstract class IpMessage
   //     some kind of frame type identifier byte. All data follows these two bytes.
   //
   //     However, where data length exceeds 252 bytes, the first byte (length) is marked with
-  //     byte 0xFF and the next two bytes contain the structure lenght as a 16-bit (two byte)
+  //     byte 0xFF and the next two bytes contain the structure length as a 16-bit (two byte)
   //     value, followed by the frame type identifier, so a total of 4 bytes. Data then starts
   //     at the fifth byte.
   //
@@ -180,6 +182,11 @@ public abstract class IpMessage
 
 
   // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common KNX log category.
+   */
+  protected final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
   /**
    * Does a simple validation on given KNXnet/IP frame content to check if it has a valid
