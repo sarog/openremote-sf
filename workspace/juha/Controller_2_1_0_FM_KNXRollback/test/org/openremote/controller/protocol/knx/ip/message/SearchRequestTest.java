@@ -35,6 +35,8 @@ public class SearchRequestTest
 {
 
 
+  // Frame Constructor Tests ----------------------------------------------------------------------
+
   /**
    * Basic test for KNX frame constructor.
    *
@@ -421,6 +423,315 @@ public class SearchRequestTest
     }
   }
 
+
+  // IsSearchRequest Tests ------------------------------------------------------------------------
+
+
+  /**
+   * Basic test for isSearchRequest() method.
+   */
+  @Test public void testIsSearchRequest()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(IpDiscoverReq.isSearchRequest(frame));
+  }
+
+
+  /**
+   * Test isSearchRequest() for a frame that only contains the KNX frame header.
+   */
+  @Test public void testIsSearchRequestHeaderOnly()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() for a frame that is not versioned as KNXnet/IP 1.0 frame.
+   */
+  @Test public void testIsSearchRequestNonKNX10Header()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION + 1,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() for a frame that has a non KNX 1.0 header length
+   */
+  @Test public void testIsSearchRequestNonKNX10HeaderLen()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE + 1,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+
+  /**
+   * Test isSearchRequest() for frame that doesn't include the correct STI hi byte
+   */
+  @Test public void testIsSearchRequestWrongSTIHiByte()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        0x00,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame that doesn't include the correct STI low byte
+   */
+  @Test public void testIsSearchRequestWrongSTI2()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        0x00,
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame length mismatch (overflow).
+   */
+  @Test public void testIsSearchRequestIncorrectFrameLen()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH + 1,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame length mismatch (too low)
+   */
+  @Test public void testIsSearchRequestIncorrectFrameLen2()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH - 1,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with non KNX 1.0 HPAI length.
+   */
+  @Test public void testIsSearchRequestIncorrectHPAILen()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE + 1,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with non KNX 1.0 HPAI length.
+   */
+  @Test public void testIsSearchRequestIncorrectHPAILen2()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE - 1,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame that contains too many bytes.
+   */
+  @Test public void testIsSearchRequestIncorrectExtraBytes()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50,
+        0
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame that doesn't contain all the bytes (missing port value).
+   */
+  @Test public void testIsSearchRequestIncorrectTooFewBytes()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        0,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0
+    };
+
+    Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
 
 }
 
