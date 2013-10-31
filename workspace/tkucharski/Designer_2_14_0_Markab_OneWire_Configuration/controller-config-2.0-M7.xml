@@ -391,6 +391,46 @@ If it's true, controller will auto-detect its groupmembers with multicast.
     </config>
   </category>
 
+  <category name="onewire">
+    <description>
+      <![CDATA[
+        Configuration for 1-wire network. OpenRemote uses owserver (part of owfs project) to communicate with 1-wire devices.
+      ]]>
+    </description>
+    <config name="onewire.host" value="192.168.1.2">
+      <hint>
+        <![CDATA[
+          owserver host address. Can be override in command configuration
+        ]]>
+      </hint>
+    </config>
+    <config name="onewire.port" value="4304">
+      <hint>
+        <![CDATA[
+          owserver port number. Can be override in command configuration
+        ]]>
+      </hint>
+    </config>
+    <config name="onewire.temperature.scale" value="CELSIUS">
+      <hint>
+        <![CDATA[
+          Scale of temperature returned by owserver. Can be CELSIUS, FAHRENHEIT, KELVIN or RANKINE
+        ]]>
+      </hint>
+    </config>
+
+    <config name="onewire.alarming.initial.delay" value="1000">
+      <hint>
+        <![CDATA[
+          Used only for alarming devices. Defines delay (in miliseconds) between registering first OpenRemote alarming command and start of jowfsclient active process looking 
+          for devices in alarming state. As a result first sensor update connected to alarming command will be updated at least after passing period defined in this variable. 
+          If this value is too small jowfsclient alarming server can start its job before installing all alarming devices. 
+          Although it is completely safe to add new alarming devices, great decrease in speed of adding new alarming command can be observed as alarming server 
+          works in highly concurrent environment.
+        ]]>
+      </hint>
+    </config>
+  </category>
 
 
   <!--
