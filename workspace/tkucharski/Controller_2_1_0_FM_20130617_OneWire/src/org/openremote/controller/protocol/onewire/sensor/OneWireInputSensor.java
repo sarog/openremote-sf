@@ -34,9 +34,9 @@ import org.springframework.security.util.FieldUtils;
  */
 public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEvent> {
 
-	private static final String PROPERTY_INPUT = "INPUT";
+//	private static final String PROPERTY_INPUT = "INPUT";
 
-	private static final String STATE_SENSOR_INTERNAL_FIELD_NAME = "states";
+//	private static final String STATE_SENSOR_INTERNAL_FIELD_NAME = "states";
 
 	private final Sensor sensor;
 
@@ -44,7 +44,11 @@ public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEve
 
 	public OneWireInputSensor(Sensor sensor) {
 		this.sensor = sensor;
-		loadInputNumberFromSensorConfiguration();
+//		loadInputNumberFromSensorConfiguration();
+	}
+
+	public void setInputNumber(int inputNumber) {
+		this.inputNumber = inputNumber;
 	}
 
 	/**
@@ -56,7 +60,8 @@ public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEve
 	public void update(SwitchAlarmingDeviceEvent oldEvent, SwitchAlarmingDeviceEvent newEvent) {
 		boolean[] latchStatus = newEvent.getLatchStatusAsArray();
 		if (inputNumber >= latchStatus.length || inputNumber < 0) {
-			OneWireLogger.warn("Invalid " + PROPERTY_INPUT + " property configuration in " + sensor.getName() + " sensor. " +
+			OneWireLogger.warn(
+					"Invalid inputNumber property configuration in " + sensor.getName() + " sensor. " +
 					"Value must be between 0 and " + (latchStatus.length - 1)
 			);
 		} else if (latchStatus[inputNumber]) {
@@ -95,25 +100,25 @@ public class OneWireInputSensor implements OneWireSensor<SwitchAlarmingDeviceEve
 		sensor.update(state);
 	}
 
-	private void loadInputNumberFromSensorConfiguration() {
-		try {
-			StateSensor.DistinctStates fieldValue = (StateSensor.DistinctStates) FieldUtils.getFieldValue(sensor, STATE_SENSOR_INTERNAL_FIELD_NAME);
-			Map<String, String> stateSensorInternalMap = (Map<String, String>) FieldUtils.getFieldValue(fieldValue, STATE_SENSOR_INTERNAL_FIELD_NAME);
-			inputNumber = convertValueToInputNumber(stateSensorInternalMap.get(PROPERTY_INPUT));
-		} catch (IllegalAccessException e) {
-			OneWireLogger.error("Could not access " + STATE_SENSOR_INTERNAL_FIELD_NAME + " private field in class StateSensor. Sensor: " + sensor, e);
-			throw new NoSuchCommandException("Could not access " + STATE_SENSOR_INTERNAL_FIELD_NAME + " private field in class StateSensor. Sensor: " + sensor);
-		}
-	}
+//	private void loadInputNumberFromSensorConfiguration() {
+//		try {
+//			StateSensor.DistinctStates fieldValue = (StateSensor.DistinctStates) FieldUtils.getFieldValue(sensor, STATE_SENSOR_INTERNAL_FIELD_NAME);
+//			Map<String, String> stateSensorInternalMap = (Map<String, String>) FieldUtils.getFieldValue(fieldValue, STATE_SENSOR_INTERNAL_FIELD_NAME);
+//			inputNumber = convertValueToInputNumber(stateSensorInternalMap.get(PROPERTY_INPUT));
+//		} catch (IllegalAccessException e) {
+//			OneWireLogger.error("Could not access " + STATE_SENSOR_INTERNAL_FIELD_NAME + " private field in class StateSensor. Sensor: " + sensor, e);
+//			throw new NoSuchCommandException("Could not access " + STATE_SENSOR_INTERNAL_FIELD_NAME + " private field in class StateSensor. Sensor: " + sensor);
+//		}
+//	}
 
-	int convertValueToInputNumber(String inputNumber) {
-		try {
-			return Integer.parseInt(inputNumber);
-		} catch (NumberFormatException e) {
-			OneWireLogger.warn("Invalid " + PROPERTY_INPUT + " property configuration in " + sensor.getName() + " sensor.");
-			throw new NoSuchCommandException("Invalid " + PROPERTY_INPUT + " property configuration in " + sensor.getName() + " sensor.", e);
-		}
-	}
+//	int convertValueToInputNumber(String inputNumber) {
+//		try {
+//			return Integer.parseInt(inputNumber);
+//		} catch (NumberFormatException e) {
+//			OneWireLogger.warn("Invalid " + PROPERTY_INPUT + " property configuration in " + sensor.getName() + " sensor.");
+//			throw new NoSuchCommandException("Invalid " + PROPERTY_INPUT + " property configuration in " + sensor.getName() + " sensor.", e);
+//		}
+//	}
 
 	@Override
 	public String toString() {

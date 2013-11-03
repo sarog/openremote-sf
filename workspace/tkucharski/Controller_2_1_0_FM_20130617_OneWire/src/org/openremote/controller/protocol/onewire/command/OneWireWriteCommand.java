@@ -31,7 +31,7 @@ public class OneWireWriteCommand extends OneWireExecutableCommand {
 
 	@Override
 	public void execute(OwfsConnection connection) throws IOException, OwfsException {
-		String value = dynamicValue != null ? dynamicValue : deviceData;
+		String value = getDynamicValue() != null ? getDynamicValue(): getDeviceData();
 		connection.write(getDevice().getPath(), value);
 		getDevice().setValue(value);
 	}

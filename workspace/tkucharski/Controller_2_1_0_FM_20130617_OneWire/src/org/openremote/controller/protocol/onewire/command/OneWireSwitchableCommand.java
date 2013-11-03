@@ -33,6 +33,7 @@ public class OneWireSwitchableCommand extends OneWireWriteCommand implements Eve
 
 	/**
 	 * This method is overriden because it converts value send from OpenRemote server to on/off values. If proper value is sent (on/off) it stays untouched.
+	 *
 	 * @param dynamicValue dynamic value overriding data parameter
 	 */
 	@Override
@@ -54,8 +55,10 @@ public class OneWireSwitchableCommand extends OneWireWriteCommand implements Eve
 			tryToReadInitialValue();
 		}
 		String numericalValueToSet;
-		if (dynamicValue != null) {
-			numericalValueToSet = OneWireSwitchSensorState.numericalValue(dynamicValue);
+		if (getDynamicValue() != null) {
+			numericalValueToSet = OneWireSwitchSensorState.numericalValue(getDynamicValue());
+		} else if (getDeviceData() != null) {
+			numericalValueToSet = OneWireSwitchSensorState.numericalValue(getDeviceData());
 		} else {
 			numericalValueToSet = OneWireSwitchSensorState.negateToNumerical(getDevice().getValue());
 		}
@@ -69,7 +72,7 @@ public class OneWireSwitchableCommand extends OneWireWriteCommand implements Eve
 
 	private void tryToReadInitialValue() {
 		try {
-			OwfsConnection connection = owfsConnectorFactory.createNewConnection();
+			OwfsConnection connection = getOwfsConnectorFactory().createNewConnection();
 			String value = connection.read(getDevice().getPath());
 			getDevice().setValue(OneWireSwitchSensorState.onOffValue(value));
 		} catch (Exception e) {

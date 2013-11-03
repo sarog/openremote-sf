@@ -41,22 +41,22 @@ public class OneWireCommand<T> implements Command {
 	/**
 	 * Connection factory for given connection
 	 */
-	protected OwfsConnectionFactory owfsConnectorFactory;
+	private OwfsConnectionFactory owfsConnectorFactory;
 
 	/**
-	 * device connected to this command. Device is found and installed in OneWireCommandBuilder
+	 * Device connected to this command. Device is found and installed in OneWireCommandBuilder
 	 */
 	private OneWireDevice<T> device;
 
 	/**
-	 * device attribute value to be set, should be overwritten by dynamic value if dynamic value is defined
+	 * Device attribute value to be set, should be overwritten by dynamic value if dynamic value is defined
 	 */
-	protected String deviceData;
+	private String deviceData;
 
 	/**
-	 * dynamic value, handled in subclasses
+	 * Dynamic value, handled in subclasses
 	 */
-	protected String dynamicValue;
+	private String dynamicValue;
 
 	public void setDevice(OneWireDevice<T> device) {
 		this.device = device;
@@ -82,8 +82,16 @@ public class OneWireCommand<T> implements Command {
 		this.deviceData = deviceData;
 	}
 
+	public String getDeviceData() {
+		return deviceData;
+	}
+
 	public void setDynamicValue(String dynamicValue) {
 		this.dynamicValue = dynamicValue;
+	}
+
+	public String getDynamicValue() {
+		return dynamicValue;
 	}
 
 	@Override

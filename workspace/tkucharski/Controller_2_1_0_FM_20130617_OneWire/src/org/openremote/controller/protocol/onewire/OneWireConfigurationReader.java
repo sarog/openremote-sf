@@ -69,7 +69,7 @@ public class OneWireConfigurationReader {
 	 */
 	private static OneWireDefaultConfiguration controllerConfiguration;
 
-	private Map<String, String> values = new HashMap<String, String>();
+	private Map<String, String> xmlValues = new HashMap<String, String>();
 
 	/**
 	 * Root element representing single command configuration
@@ -86,7 +86,7 @@ public class OneWireConfigurationReader {
 		for (Element child : children) {
 			String key = child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
 			String value = child.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
-			values.put(key, value);
+			xmlValues.put(key, value);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class OneWireConfigurationReader {
 	 * @return owserver host name
 	 */
 	public String getHostName() {
-		String s = values.get(XML_PROPERTY_CONFIG_HOSTNAME);
+		String s = xmlValues.get(XML_PROPERTY_CONFIG_HOSTNAME);
 		if (StringUtils.isEmpty(s)) {
 			return controllerConfiguration.getHost();
 		} else {
@@ -135,7 +135,7 @@ public class OneWireConfigurationReader {
 	 * @return owserver port number
 	 */
 	public int getPortNumber() {
-		String portNumber = values.get(XML_PROPERTY_CONFIG_PORT);
+		String portNumber = xmlValues.get(XML_PROPERTY_CONFIG_PORT);
 		if (StringUtils.isEmpty(portNumber)) {
 			portNumber = controllerConfiguration.getPort();
 		}
@@ -149,23 +149,23 @@ public class OneWireConfigurationReader {
 	}
 
 	public String getCommandName() {
-		return values.get(XML_PROPERTY_CONFIG_NAME);
+		return xmlValues.get(XML_PROPERTY_CONFIG_NAME);
 	}
 
 	public String getDeviceAddress() {
-		return values.get(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
+		return xmlValues.get(XML_PROPERTY_CONFIG_DEVICE_ADDRESS);
 	}
 
 	public String getFilenameProperty() {
-		return values.get(XML_PROPERTY_CONFIG_FILENAME);
+		return xmlValues.get(XML_PROPERTY_CONFIG_FILENAME);
 	}
 
 	public String getDataProperty() {
-		return values.get(XML_PROPERTY_CONFIG_DATA);
+		return xmlValues.get(XML_PROPERTY_CONFIG_DATA);
 	}
 
 	public String getDynamicValue() {
-		return values.get(XML_PROPERTY_DYNAMIC);
+		return xmlValues.get(XML_PROPERTY_DYNAMIC);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class OneWireConfigurationReader {
 	public Integer getPollingInterval() {
 		String elementValue;
 		try {
-			elementValue = values.get(XML_PROPERTY_CONFIG_POLLING_INTERVAL);
+			elementValue = xmlValues.get(XML_PROPERTY_CONFIG_POLLING_INTERVAL);
 		} catch (Exception e) {
 			return null;
 		}

@@ -14,23 +14,6 @@ public enum OneWireSwitchSensorState {
 		this.state = oneWireState;
 	}
 
-	public static OneWireSwitchSensorState convert(String s) {
-		for (OneWireSwitchSensorState state : values()) {
-			if (state.state.equals(s) || state.name().equals(s)) {
-				return state;
-			}
-		}
-		return off;
-	}
-
-	public static boolean booleanValue(String value) {
-		if (on.getState().equals(value)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public static String onOffValue(String value) {
 		OneWireSwitchSensorState convert = convert(value);
 		return convert.name();
@@ -51,6 +34,15 @@ public enum OneWireSwitchSensorState {
 		return convert.negate().state;
 	}
 
+	private static OneWireSwitchSensorState convert(String s) {
+		for (OneWireSwitchSensorState state : values()) {
+			if (state.state.equals(s) || state.name().equals(s)) {
+				return state;
+			}
+		}
+		return off;
+	}
+
 	private static OneWireSwitchSensorState valueOf(boolean state) {
 		if (state) {
 			return on;
@@ -59,19 +51,11 @@ public enum OneWireSwitchSensorState {
 		}
 	}
 
-	public OneWireSwitchSensorState negate() {
+	private OneWireSwitchSensorState negate() {
 		if (this == on) {
 			return off;
 		} else {
 			return on;
 		}
-	}
-
-	public boolean isOn() {
-		return OneWireSwitchSensorState.on.equals(this);
-	}
-
-	public String getState() {
-		return state;
 	}
 }

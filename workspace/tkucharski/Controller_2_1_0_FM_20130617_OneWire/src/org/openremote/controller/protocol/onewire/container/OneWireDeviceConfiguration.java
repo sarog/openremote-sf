@@ -1,6 +1,8 @@
 package org.openremote.controller.protocol.onewire.container;
 
 /**
+ * OneWire device "endpoint"/property configuration. It is not always related one-to-one to 1-wire hardware as single 1-wire hardware can have more than one
+ * attribute/property.
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  * @since 25.10.13 23:48
  */

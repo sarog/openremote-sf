@@ -6,8 +6,12 @@ import org.openremote.controller.protocol.onewire.OneWireLogger;
 import org.openremote.controller.protocol.onewire.sensor.OneWireSensor;
 
 /**
+ * Represents device and its current value. Devices are stored in {@link OneWireDeviceRepository} and shared across commands related to this device. Device
+ * is defined by {@link OneWireDeviceConfiguration}
  * @author Tom Kucharski <tomasz.kucharski@gmail.com>
  * @since 26.10.13 00:02
+ * @see OneWireDeviceRepository
+ * @see OneWireDeviceConfiguration
  */
 public class OneWireDevice<T extends Object> {
 
@@ -47,12 +51,12 @@ public class OneWireDevice<T extends Object> {
 		}
 	}
 
-	public void addListener(OneWireSensor listener) {
+	public void addListener(OneWireSensor<T> listener) {
 		OneWireLogger.info("Installing listener on device: " + this + ". Listener: " + listener);
 		listeners.add(listener);
 	}
 
-	public void removeListener(OneWireSensor listener) {
+	public void removeListener(OneWireSensor<T> listener) {
 		OneWireLogger.info("Uninstalling listener on device: " + this + ". Listener: " + listener);
 		listeners.remove(listener);
 	}
