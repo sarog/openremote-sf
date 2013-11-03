@@ -29,6 +29,7 @@ import org.openremote.controller.protocol.onewire.sensor.OneWirePeriodicSensor;
 import org.owfs.jowfsclient.OwfsConnection;
 
 /**
+ *
  * @author Tom Kucharski <kucharski.tom@gmail.com>
  */
 public abstract class OneWireExecutableCommand extends OneWireCommand<String> implements ExecutableCommand, EventListener {
@@ -55,7 +56,7 @@ public abstract class OneWireExecutableCommand extends OneWireCommand<String> im
 
 	@Override
 	public final void send() {
-		OwfsConnection newConnection = owfsConnectorFactory.createNewConnection();
+		OwfsConnection newConnection = getOwfsConnectorFactory().createNewConnection();
 		try {
 			execute(newConnection);
 		} catch (Exception e) {

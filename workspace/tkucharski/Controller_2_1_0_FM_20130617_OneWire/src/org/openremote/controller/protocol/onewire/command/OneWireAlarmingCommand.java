@@ -48,8 +48,21 @@ public class OneWireAlarmingCommand extends OneWireCommand<SwitchAlarmingDeviceE
 	@Override
 	public void setSensor(final Sensor sensor) {
 		oneWireInputSensor = new OneWireInputSensor(sensor);
+		oneWireInputSensor.setInputNumber(parseInputNumber(getDeviceData()));
 		getDevice().addListener(oneWireInputSensor);
-		checkIfInstallAlarmingScanner(owfsConnectorFactory);
+		checkIfInstallAlarmingScanner(getOwfsConnectorFactory());
+	}
+
+	private int parseInputNumber(String inputNumberAsString) throws IllegalArgumentException {
+		if (inputNumberAsString == null) {
+			throw new IllegalArgumentException("Parameter 'data' is null. "+this);
+		} else {
+			try {
+				return Integer.parseInt(inputNumberAsString);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Parameter 'data' cannot be parsed to int number. "+this);
+			}
+		}
 	}
 
 	/**
@@ -61,11 +74,11 @@ public class OneWireAlarmingCommand extends OneWireCommand<SwitchAlarmingDeviceE
 	@Override
 	public void stop(Sensor sensor) {
 		getDevice().removeListener(oneWireInputSensor);
-		checkIfStopAlarmingScanner(owfsConnectorFactory);
+		checkIfStopAlarmingScanner(getOwfsConnectorFactory());
 	}
 
 	/**
-	 * It gets alarming scanner installed in owserver connection and checks if device related to this command is already registered
+	 * It gets alarming scanner installed in owserver connection and checks if device related to this command is already registered.
 	 *
 	 * @param owfsConnectionFactory owserver connection
 	 */
@@ -81,6 +94,12 @@ public class OneWireAlarmingCommand extends OneWireCommand<SwitchAlarmingDeviceE
 		}
 	}
 
+	/**
+	 * Creates jowsfclient device listener that changes device value as device alarm arises.
+	 * Currently it can handle alarming on DS2408 device only.
+	 *
+	 * @return
+	 */
 	private SwitchAlarmingDeviceListener createSwitchAlarmingDeviceListener() {
 		return new SwitchAlarmingDeviceListener(getDevice().getAddress(), SwitchAlarmingDeviceListener.ALARMING_MASK_8_SWITCHES) {
 			@Override
