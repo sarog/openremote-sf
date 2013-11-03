@@ -33,12 +33,32 @@
 		      </filterchain>
 		</loadproperties>
 		<delete file="svnlog.out"/>
+		
+		<fail message="Failed to get revision info from SVN">
+			<condition>
+				<not>
+					<isset property="Revision"/>
+				</not>
+			</condition>
+		</fail>
 
 		<copy file="index.html.template" tofile="war/index.html" overwrite="true">
 			<filterset>
 				<!-- Replace @VERSION@ with the version -->
 				<filter token="VERSION" value="${Revision}" />
 				<filter token="TITLE" value="${project.title}" />
+				<filter token="CONTROLLERURL" value="${controller.url.internal}" />
+				<filter token="PANELNAME" value="${controller.panel.name}" />
+			</filterset>
+		</copy>
+		
+		<copy file="index.html.template" tofile="war/external.html" overwrite="true">
+			<filterset>
+				<!-- Replace @VERSION@ with the version -->
+				<filter token="VERSION" value="${Revision}" />
+				<filter token="TITLE" value="${project.title}" />
+				<filter token="CONTROLLERURL" value="${controller.url.external}" />
+				<filter token="PANELNAME" value="${controller.panel.name}" />
 			</filterset>
 		</copy>
 		
