@@ -149,8 +149,8 @@
 	    <!-- GWT Bootstrap -->
 		<script language="javascript">
 			var buildVersionStr = "@VERSION@";
-			var controllerUrl = "http://172.16.4.19:8688/controller";
-			var panelName = "768_1024";
+			var controllerUrl = "@CONTROLLERURL@";
+			var panelName = "@PANELNAME@";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
