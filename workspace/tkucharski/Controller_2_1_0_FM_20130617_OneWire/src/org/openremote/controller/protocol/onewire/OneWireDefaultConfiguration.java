@@ -13,12 +13,24 @@ import org.owfs.jowfsclient.Enums;
  */
 public class OneWireDefaultConfiguration extends Configuration {
 
+	/**
+	 * Constant value used in OpenRemote Designer.
+	 */
 	public static final String ONEWIRE_HOST = "onewire.host";
 
+	/**
+	 * Constant value used in OpenRemote Designer.
+	 */
 	public static final String ONEWIRE_PORT = "onewire.port";
 
+	/**
+	 * Constant value used in OpenRemote Designer.
+	 */
 	public static final String ONEWIRE_TEMPERATURE_SCALE = "onewire.temperature.scale";
 
+	/**
+	 * Constant value used in OpenRemote Designer.
+	 */
 	public static final String ONEWIRE_ALARMING_INITIAL_DELAY = "onewire.alarming.initial.delay";
 
 	private static Logger log = OneWireLogger.getLogger();
@@ -57,6 +69,8 @@ public class OneWireDefaultConfiguration extends Configuration {
 		ControllerConfiguration.updateWithControllerXMLConfiguration(this);
 		log.info("Default host: '" + getHost() + "'");
 		log.info("Default port: '" + getPort() + "'");
+		log.info("Default temperature scale: '" + getTemperatureScale() + "'");
+		log.info("Default alarming initial delay: '" + getAlarmingInitialDelay() + "'");
 	}
 
 	public String getHost() {
