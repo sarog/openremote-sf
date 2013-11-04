@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Service type identifier field in KNXnet/IP frame header.
@@ -231,5 +232,21 @@ public enum ServiceTypeIdentifier
            knxFrame[IpMessage.KNXNET_IP_10_HEADER_STI_LOBYTE_INDEX] == (sti & 0xFF);
   }
 
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * Prints the descriptive name of this service type identifier along with its frame bytes.
+   *
+   * @return    human readable description of this service type identifier
+   */
+  @Override public String toString()
+  {
+    int hiByte = (sti >> 8) & 0xFF;
+    int loByte = sti & 0xFF;
+
+    return name() + " (" + Strings.byteToUnsignedHexString((byte)hiByte) + " " +
+           Strings.byteToUnsignedHexString((byte)loByte) + ")";
+  }
 }
 
