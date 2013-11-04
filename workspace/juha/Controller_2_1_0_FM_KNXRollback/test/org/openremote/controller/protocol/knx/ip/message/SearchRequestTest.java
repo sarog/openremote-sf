@@ -304,7 +304,7 @@ public class SearchRequestTest
   }
 
   /**
-   * Test KNX frame constructor behavior with incorrect frame lenght value for a search
+   * Test KNX frame constructor behavior with incorrect frame length value for a search
    * request.
    */
   @Test public void testFrameConstructorWrongLength()
@@ -731,6 +731,42 @@ public class SearchRequestTest
     };
 
     Assert.assertTrue(!IpDiscoverReq.isSearchRequest(frame));
+  }
+
+  /**
+   * Test isSearchRequest() with frame that contains above 8-bit frame length value.
+   */
+  @Test public void testIsSearchRequestIncorrectLength()
+  {
+    byte[] frame = new byte[]
+    {
+        IpMessage.KNXNET_IP_10_HEADER_SIZE,
+        IpMessage.KNXNET_IP_10_VERSION,
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() >> 8),
+        (byte)(ServiceTypeIdentifier.SEARCH_REQUEST.getValue() & 0xFF),
+        1,
+        IpDiscoverReq.KNXNET_IP_10_SEARCH_REQUEST_FRAME_LENGTH,
+        Hpai.KNXNET_IP_10_HPAI_SIZE,
+        Hpai.HostProtocolCode.IPV4_UDP.getValue(),
+        127,
+        0,
+        0,
+        1,
+        0,
+        50,
+
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
+
+    Assert.assertTrue(IpDiscoverReq.getFrameError(frame), !IpDiscoverReq.isSearchRequest(frame));
   }
 
 }
