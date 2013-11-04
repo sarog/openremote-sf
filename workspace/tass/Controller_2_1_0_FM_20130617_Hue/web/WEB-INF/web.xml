@@ -47,6 +47,7 @@
   -->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
+    <welcome-file>bridge.jsp</welcome-file>
   </welcome-file-list>
 
 
@@ -262,6 +263,15 @@
 
   -->
 
+  <servlet>
+      <servlet-name>BridgeServlet</servlet-name>
+      <servlet-class>org.openremote.controller.action.BridgeServlet</servlet-class>
+  </servlet>
+  <!--mapping-->
+  <servlet-mapping>
+      <servlet-name>BridgeServlet</servlet-name>
+      <url-pattern>/BridgeServlet</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>dispatcherServlet</servlet-name>

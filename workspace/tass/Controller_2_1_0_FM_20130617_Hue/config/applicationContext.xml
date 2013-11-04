@@ -45,6 +45,7 @@
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
+            <value>classpath:huebridge.properties</value>
           </list>
       </property>
   </bean>
@@ -108,6 +109,10 @@
     <property name="serialProtocol" value="${enocean.serialProtocol}" />
   </bean>
 
+  <bean id="HuebridgeConfig" class="org.openremote.controller.HuebridgeConfig">
+    <property name="address" value="${huebridge.address}" />
+    <property name="key" value="${huebridge.key}" />
+  </bean>
 
   <!-- TODO -->
   <bean id = "controlCommandService"
@@ -265,6 +270,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "huebridge"        value-ref = "HueBridgeCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -407,6 +413,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
     <property name="configuration" ref="configuration"/>
   </bean>
+
+  <!-- Huebridge Command Builder -->  
+  <bean id = "HueBridgeCommandBuilder" class = "org.openremote.controller.protocol.huebridge.HueBridgeCommandBuilder" scope = "prototype" />
 
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
