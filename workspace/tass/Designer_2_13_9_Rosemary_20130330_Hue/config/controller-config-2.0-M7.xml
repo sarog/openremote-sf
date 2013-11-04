@@ -272,6 +272,29 @@ If it's true, controller will auto-detect its groupmembers with multicast.
     </config>
   </category>
 
+  <category name="Hue bridge">
+    <description>
+        <![CDATA[
+      Configuration for communication Hue bridge used by protocol of the Hue bridge protocol.
+    ]]>
+    </description>
+    <config name="huebridge.key" value="2AS12DFdfd2s">
+        <hint>
+            <![CDATA[
+        Key that is used to communicate with the Hue bridge, mandatory.
+      ]]>
+        </hint>
+    </config>
+    <config name="huebridge.address" value="192.168.1.1"
+            validation="(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)">
+        <hint>
+            <![CDATA[
+       Address of the Hue Bridge, mandatory.
+      ]]>
+        </hint>
+    </config>
+  </category>
+
   <category name="z-wave">
     <description>
         <![CDATA[
