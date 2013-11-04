@@ -32,6 +32,7 @@ import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.HuebridgeConfig;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -95,7 +96,8 @@ public abstract class ServiceContext
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
-    ENOCEAN_CONFIGURATION("enoceanConfig");                   // TODO : To be removed, see ORCJAVA-183
+    ENOCEAN_CONFIGURATION("enoceanConfig"),                   // TODO : To be removed, see ORCJAVA-183
+    HUEBRIDGE_CONFIGURATION("HuebridgeConfig");
 
     private String springBeanName;
 
@@ -183,6 +185,21 @@ public abstract class ServiceContext
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
       );
     }
+  }
+
+  public static HuebridgeConfig getHuebridgeConfiguration()
+  {
+      try
+      {
+          return (HuebridgeConfig)getInstance().getService(ServiceName.HUEBRIDGE_CONFIGURATION);
+      }
+
+      catch (ClassCastException e)
+      {
+          throw new Error(
+                  "Huebridge Configuration service has had an incompatible change.", e
+          );
+      }
   }
 
   /**
