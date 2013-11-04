@@ -78,7 +78,7 @@ public abstract class OneWireExecutableCommand extends OneWireCommand<String> im
 
 	@Override
 	public void configure(OneWireConfigurationReader configuration) {
-		super.configure(configuration);
+ 		super.configure(configuration);
 		if (configuration.getPollingInterval() != null) {
 			setPollingIntervalInMiliseconds(configuration.getPollingInterval());
 		}
