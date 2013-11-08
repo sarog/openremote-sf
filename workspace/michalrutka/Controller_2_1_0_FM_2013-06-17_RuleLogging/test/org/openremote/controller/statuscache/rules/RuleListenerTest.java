@@ -94,10 +94,10 @@ public class RuleListenerTest {
       
       ksession.fireAllRules();
       
-      String lastLog = String.format("Rule Activation Imminent: /n/t" +
-            "Rule: %s/n" +
-            "/tDeclarations /n/t/tDeclaration:$e Value: Sensor Name: %s Sensor Value: ON/n" +
-            "/tLHS objects(antecedents) /nClass: CustomState Fields Name: %s/tValue: ON/n/n", "TestRuleFiring", TEST_SENSOR_NAME, TEST_SENSOR_NAME);
+      String lastLog = String.format("Rule Activation Imminent: \n\t" +
+            "Rule: %s\n" +
+            "\tDeclarations \n\t\tDeclaration:$e Value: Sensor Name: %s Sensor Value: ON\n" +
+            "\tLHS objects(antecedents) \nClass: CustomState Fields Name: %s\tValue: ON\n\n", "TestRuleFiring", TEST_SENSOR_NAME, TEST_SENSOR_NAME);
 
       handler.assertLastLog(Level.FINER, lastLog);
    }
