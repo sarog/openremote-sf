@@ -434,7 +434,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     	<list>
     		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
     		<ref bean="rrd4jLogger"/>
-     		<ref bean="emonCMSLogger"/>
+<!--      		<ref bean="emonCMSLogger"/> -->
     	</list>
     </property>
   </bean>
