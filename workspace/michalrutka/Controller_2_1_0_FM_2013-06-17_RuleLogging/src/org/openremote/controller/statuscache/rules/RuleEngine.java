@@ -33,6 +33,7 @@ import java.util.Collection;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.RuleListener;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.protocol.Event;
@@ -46,6 +47,7 @@ import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.conf.AssertBehaviorOption;
+import org.drools.conf.EventProcessingOption;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.Globals;
 import org.drools.runtime.rule.FactHandle;
@@ -114,6 +116,7 @@ public class RuleEngine extends EventProcessor
   private KnowledgeBase kb;
   private StatefulKnowledgeSession knowledgeSession;
   private Map<Integer, FactHandle> eventSources = new HashMap<Integer, FactHandle>();
+  private long factCount;
 
   private SwitchFacade switchFacade;
   private LevelFacade levelFacade;
@@ -157,31 +160,48 @@ public class RuleEngine extends EventProcessor
 
     try
     {
+      long _factCount;
       if (!knowledgeSession.getObjects().contains(evt))
       {
+        boolean _debug = true;
         if (eventSources.keySet().contains(evt.getSourceID()))
         {
           knowledgeSession.retract(eventSources.get(evt.getSourceID()));
 
           eventSources.remove(evt.getSourceID());
+          _debug = false;
         }
 
         FactHandle handle = knowledgeSession.insert(evt);
 
         eventSources.put(evt.getSourceID(), handle);
-      }
 
-      log.trace("Inserted event {0}", evt);
-      log.trace("Fact count: " + knowledgeSession.getFactCount());
+        log.trace("Inserted event {0}", evt);
+        if(_debug){
+           log.debug("Inserted new event source \"{0}\"", evt.getSource());
+        }
+        _factCount = knowledgeSession.getFactCount();
+        log.trace("Fact count: " + _factCount);
+        if(_factCount != factCount){
+           log.debug("Fact count changed from {0} to {1} on \"{2}\"", factCount, _factCount, evt.getSource());
+        }
+        factCount = _factCount;
+      }
       
       knowledgeSession.fireAllRules();
+      
+      _factCount = knowledgeSession.getFactCount();
+      if(_factCount != factCount){
+         log.debug("Fact count changed from {0} to {1} on fireAllRules() after \"{2}\"", factCount, _factCount, evt.getSource());
+      }
+      factCount = _factCount;
     }
 
     catch (Throwable t)
     {
       log.error(
-          "Error in executing rule : {0} -- Event {1} not processed!",
-          t, t.getMessage(), ctx.getEvent()
+          "Error in executing rule : {0}\n\tEvent {1} not processed!",
+          t, evt.getSource()+":"+t.getMessage(), ctx.getEvent()
       );
 
       if (t.getCause() != null)
@@ -247,6 +267,7 @@ public class RuleEngine extends EventProcessor
 
     KnowledgeBaseConfiguration kbConfiguration = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
     kbConfiguration.setOption(AssertBehaviorOption.EQUALITY);
+    kbConfiguration.setOption(EventProcessingOption.STREAM);
 
     kb = KnowledgeBaseFactory.newKnowledgeBase(kbConfiguration);
 
@@ -297,6 +318,15 @@ public class RuleEngine extends EventProcessor
     try
     {
       knowledgeSession.setGlobal("levels", levelFacade);
+    }
+    
+    catch (Throwable t)
+    {}
+
+    try
+    {
+       RuleListener ruleListener = new RuleListener();
+       knowledgeSession.addEventListener(ruleListener);
     }
 
     catch (Throwable t)
