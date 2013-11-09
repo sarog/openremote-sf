@@ -98,6 +98,9 @@ public class EmonDataLogger extends EventProcessor {
    }
 
    public void setSensors(List<String> sensors) {
+      for(String s: sensors){
+         log.debug("Adding '{0}' for monitoring with EmonCMS.", s);
+      }
       this.sensors = sensors;
    }
    
