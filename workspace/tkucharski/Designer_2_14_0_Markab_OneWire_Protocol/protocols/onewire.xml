@@ -32,52 +32,55 @@
  |  Author: Tomasz Kucharski
  +-->
 <openremote xmlns="http://www.openremote.org"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.openremote.org protocol.xsd">
-    
-    <protocol displayName="1-Wire Protocol" tagName="onewire">
-        <attr name="hostname" label="Hostname" tooltipMessage = "owserver address. Optional, use it only if different from 'Config 
-from Controller/onewire' section in OpenRemote Designer'">
-            <validations>
-                <allowBlank>true</allowBlank>
-                <regex message="Hostname or IP address">.*</regex>
-            </validations>
-        </attr>
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 
-        <attr name="port" label="Port" tooltipMessage = "owserver port number. Optional, use it if different from 'Config from 
-Controller/onewire' section in OpenRemote Designer'">
-            <validations>
-                <allowBlank>true</allowBlank>
-                <maxLength>5</maxLength>
-                <regex message="Port number, only numbers allowed">[0-9]{1,5}</regex>
-            </validations>
-        </attr>
+	<protocol displayName="1-Wire Protocol" tagName="onewire">
+		<attr name="hostname" label="Hostname" tooltipMessage="owserver address. Optional, fill it only if different from 'Config
+		from Controller/onewire' section in OpenRemote Designer'">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<regex message="Hostname or IP address">.*</regex>
+			</validations>
+		</attr>
 
-        
-        <attr name="deviceAddress" label="Device address" tooltipMessage = "Device unique idendification in '29.F1950B000000' format">
-            <validations>
-                <allowBlank>false</allowBlank>
-                <regex message="Device address format">.*</regex>
-            </validations>
-        </attr>
-        
-        <attr name="filename" label="Sensor attribute" tooltipMessage="Path to property you want to read or write. If you want this command to react on 1-wire alarm set to 'ALARMING' (alarming currently supports only DS2408 devices)">
-            <validations>
-                <allowBlank>false</allowBlank>
-                <regex message="Sensor attribute, such as temperature or humidity">.*</regex>
-            </validations>
-        </attr>
-        
-        <attr name="pollingInterval" label="Polling interval" tooltipMessage = "Polling interval in form of (1s, 1m, 1h) or just milliseconds. If not specified command will not execute periodically (this is not a case if it is ALARMING command">
-            <validations>
-                <allowBlank>true</allowBlank>
-            </validations>
-        </attr>
+		<attr name="port" label="Port" tooltipMessage="owserver port number. Optional, fill it only if different from 'Config from
+		Controller'-'onewire' section in OpenRemote Designer'">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<maxLength>5</maxLength>
+				<regex message="Port number, only numbers allowed">[0-9]{1,5}</regex>
+			</validations>
+		</attr>
 
-        <attr name="data" label="Data to send" tooltipMessage="Data to be sent to a device, eg. '1' or '0' to turn switch on or off. If you want to use this command as a on/off switch set to 'SWITCHING'">
-            <validations>
-                <allowBlank>true</allowBlank>
-            </validations>
-        </attr>
-    </protocol>
+		<attr name="deviceAddress" label="Device address" tooltipMessage="Device unique number in '29.F1950B000000' format">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<regex message="Device address format">.*</regex>
+			</validations>
+		</attr>
+
+		<attr name="filename" label="Sensor attribute" tooltipMessage="Path to property you want to read or write. If you want
+		this command to be sensed on 1-wire alarm set to 'ALARMING' (alarming currently supports only DS2408 devices)">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<regex message="Sensor attribute, such as temperature or humidity">.*</regex>
+			</validations>
+		</attr>
+
+		<attr name="data" label="Data to send" tooltipMessage="Data to be sent to a device, eg. '1' or '0' to turn switch on
+		or off. If you want to use this command as a on/off switch set to 'SWITCHABLE'">
+			<validations>
+				<allowBlank>true</allowBlank>
+			</validations>
+		</attr>
+
+		<attr name="pollingInterval" label="Polling interval" tooltipMessage="Polling interval in form of (1s, 1m, 1h) or just
+		milliseconds. If not specified command will not execute periodically (this is not a case if it is ALARMING command)">
+			<validations>
+				<allowBlank>true</allowBlank>
+			</validations>
+		</attr>
+
+	</protocol>
 </openremote>
