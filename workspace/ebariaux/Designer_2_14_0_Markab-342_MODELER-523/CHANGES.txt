@@ -1,3 +1,8 @@
+MODELER-523
+===========
+
+ - Fixed MODELER-523: Creating slider from within New Device dialog
+   doesn't allow the creation of passive slider
 
 Designer 2.13.3 (2012-07-15 Rosemary)
 =====================================
