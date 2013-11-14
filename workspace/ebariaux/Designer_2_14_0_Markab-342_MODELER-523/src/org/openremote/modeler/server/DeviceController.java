@@ -219,7 +219,11 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      List<Slider> sliderBeans = new ArrayList<Slider>();
      for (SliderDetailsDTO sliderDTO : sliders) {
        Sensor sensor = sensorBeans.get(sliderDTO.getSensor().getDto());
-       DeviceCommand command = commandBeans.get(sliderDTO.getCommand().getDto());
+       
+       DeviceCommand command = null;
+       if (sliderDTO.getCommand() != null) {
+         commandBeans.get(sliderDTO.getCommand().getDto());
+       }
 
        Slider slider = new Slider(sliderDTO.getName(), command, sensor);
        slider.setAccount(account);
