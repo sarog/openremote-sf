@@ -164,7 +164,8 @@ public class PanelWindow extends FormWindow {
          public void handleEvent(FormEvent be) {
             Panel panel = new Panel();
             String panelName = panelNameField.getValue();
-            if (!UtilsProxy.isPanelNameAvailable(panelName)) {
+            
+            if (!UtilsProxy.isPanelNameAvailable(panelName, (Long)((panelModel != null)?panelModel.get("oid"):null))) {
                MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
                submitBtn.enable();
                return;

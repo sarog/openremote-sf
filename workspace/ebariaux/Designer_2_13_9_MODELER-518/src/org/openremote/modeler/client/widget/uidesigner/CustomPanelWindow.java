@@ -336,7 +336,7 @@ public class CustomPanelWindow extends FormWindow {
          if (!isValid()) return; 
          TouchPanelDefinition customPanel;
          String panelName = panelNameField.getValue();
-         if (!UtilsProxy.isPanelNameAvailable(panelName)) {
+         if (!UtilsProxy.isPanelNameAvailable(panelName, ((panel != null)?panel.getOid():null))) {
             MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
             return;
          }
