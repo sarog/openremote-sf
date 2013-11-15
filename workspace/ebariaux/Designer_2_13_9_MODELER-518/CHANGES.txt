@@ -1,3 +1,8 @@
+MODELER-518
+===========
+
+  - Fix MODELER-518: Edit of custom panel complains of duplicate name
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
