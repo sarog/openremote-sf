@@ -1,3 +1,8 @@
+MODELER-526
+===========
+
+  - Make text box for rules bigger and not wrap its text
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
