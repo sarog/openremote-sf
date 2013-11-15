@@ -1,3 +1,9 @@
+MODELER-527
+===========
+
+  - Fixed MODELER-527: Impossible to edit custom panel if
+    not all attributes are defined in the first place 
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
