@@ -199,8 +199,10 @@ public class ControllerConfigTabItem extends TabItem {
       if (config.getOptions().trim().length() == 0) {
         TextField<String> configValueField = new TextField<String>();
         if (config.getName().equals("rules.editor")) {
-          configValueField = new TextArea();
-          configValueField.setSize(200, 400);
+          configValueField = new RulesEditorTextArea();
+          configValueField.setAutoWidth(true);
+          configValueField.setHeight(600);
+          configValueField.addStyleName("ControllerConfigRulesEditor");
         } else {
           configValueField = new TextField<String>();
           configValueField.setRegex(config.getValidation());
