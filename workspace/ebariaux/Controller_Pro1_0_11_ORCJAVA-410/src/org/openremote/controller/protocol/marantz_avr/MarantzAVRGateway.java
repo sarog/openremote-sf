@@ -249,6 +249,7 @@ public class MarantzAVRGateway {
               line = null;
             }
           } while (line != null && !isInterrupted());
+         log.info("Out of reader thread");
       }
    }
 
