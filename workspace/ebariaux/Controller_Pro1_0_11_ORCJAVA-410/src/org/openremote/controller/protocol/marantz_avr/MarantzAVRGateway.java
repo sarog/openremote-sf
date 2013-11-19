@@ -219,9 +219,11 @@ public class MarantzAVRGateway {
          try {
            line = s.next();
          } catch (NoSuchElementException e) {
-            log.warn("Could not read from Marantz", e);
+            log.error("Could not read from Marantz", e);
+            line = null;
          } catch (IllegalStateException e) {
-            log.warn("Could not read from Marantz", e);
+            log.error("Could not read from Marantz", e);
+            line = null;
          }
          do {
            try {
@@ -240,9 +242,11 @@ public class MarantzAVRGateway {
                 }
               line = s.next();
            } catch (NoSuchElementException e) {
-              log.warn("Could not read from Marantz", e);
+              log.error("Could not read from Marantz", e);
+              line = null;
            } catch (IllegalStateException e) {
-              log.warn("Could not read from Marantz", e);
+              log.error("Could not read from Marantz", e);
+              line = null;
             }
           } while (line != null && !isInterrupted());
       }
