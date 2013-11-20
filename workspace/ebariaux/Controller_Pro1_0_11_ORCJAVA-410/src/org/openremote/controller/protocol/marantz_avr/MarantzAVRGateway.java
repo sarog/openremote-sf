@@ -170,6 +170,16 @@ public class MarantzAVRGateway {
          PrintWriter pr = new PrintWriter(new OutputStreamWriter(os));
 
          while (!isInterrupted()) {
+            
+            /*
+             * EBR : this implementation dequeues a message before sending it.
+             * If a problem occurs during sending, the message is not retried and simply lost.
+             * 
+             * A more robust implementation (for a protocol where the device always sends a response
+             * to commands) is to only dequeue commands from write queue when the corresponding reply
+             * has been received from the device (or after a number of failed retries).
+             */
+            
             MarantzCommand cmd = null;
             try {
                cmd = queue.blockingPoll();
