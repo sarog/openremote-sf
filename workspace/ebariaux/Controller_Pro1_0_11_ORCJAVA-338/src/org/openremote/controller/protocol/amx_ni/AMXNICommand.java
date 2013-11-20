@@ -34,6 +34,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Command to the AMX NI processor (through the gateway).
@@ -74,7 +75,7 @@ public abstract class AMXNICommand implements Command {
    static AMXNICommand createCommand(String name, AMXNIGateway gateway, Integer deviceIndex, Integer channel, Integer level, String value, Integer pulseTime, String statusFilter, Integer statusFilterGroup) {
     log.debug("Received request to build command with name " + name);
     
-      name = name.trim().toUpperCase();
+      name = Strings.toUpperCase(name.trim());
       Class<? extends AMXNICommand> commandClass = commandClasses.get(name);
 
       log.debug("This command maps to the command class " + commandClass);
