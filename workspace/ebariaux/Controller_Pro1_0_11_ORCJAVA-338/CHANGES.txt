@@ -1,3 +1,9 @@
+ORCJAVA-338
+===========
+
+  - Update AMX implementation to use locale independent
+    string case conversions
+
 Controller Pro 1.0.11
 =====================
 
