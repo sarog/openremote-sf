@@ -31,6 +31,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Command sent from the console that should result in action to the Lutron processor (through the gateway).
@@ -73,7 +74,7 @@ public abstract class LutronHomeWorksCommand implements Command {
 	static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key, Integer level) {
     log.debug("Received request to build command with name " + name);
     
-		name = name.trim().toUpperCase();
+		name = Strings.toUpperCase(name.trim());
 		Class<? extends LutronHomeWorksCommand> commandClass = commandClasses.get(name);
 
 		log.debug("This command maps to the command class " + commandClass);
