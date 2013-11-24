@@ -21,10 +21,8 @@
 package org.openremote.controller.protocol.marantz_avr;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -67,6 +65,9 @@ public class MarantzAVRGateway {
    private MessageQueueWithPriorityAndTTL<MarantzCommand> queue = new MessageQueueWithPriorityAndTTL<MarantzCommand>();
 
    private MarantzConnectionThread connectionThread;
+   
+   // Flag indicates if a message had been sent to the device while ping thread was sleeping
+   private boolean messageSent = false;
 
    private Map<String, List<MarantzAVRCommand>> registeredCommands = new HashMap<String, List<MarantzAVRCommand>>();
    
@@ -92,6 +93,14 @@ public class MarantzAVRGateway {
       startGateway();
       queue.add(new MarantzCommand(command, parameter));
    }
+   
+   private synchronized boolean isMessageSent() {
+      return messageSent;
+   }
+
+   private synchronized void setMessageSent(boolean messageSent) {
+      this.messageSent = messageSent;
+   }
 
    // ---
 
@@ -99,10 +108,17 @@ public class MarantzAVRGateway {
 
       private MarantzReaderThread readerThread;
       private MarantzWriterThread writerThread;
+      private MarantzPingThread pingThread;
 
       @Override
       public void run() {
          Socket socket;
+         
+         // Start a ping thread that regularly sends a packet to the device.
+         // Allows to detect sooner when connection goes down (ORCJAVA-410).
+         pingThread = new MarantzPingThread();
+         pingThread.start();
+         
          while (!isInterrupted()) {
             try {
                log.info("Trying to connect to " + marantzConfig.getAddress());
@@ -146,6 +162,9 @@ public class MarantzAVRGateway {
                log.warn("Interrupted during our sleep", e);
             }
          }
+         
+         pingThread.interrupt();
+         
          // For now do not support discovery, use information defined in config
       }
 
@@ -170,6 +189,16 @@ public class MarantzAVRGateway {
          PrintWriter pr = new PrintWriter(new OutputStreamWriter(os));
 
          while (!isInterrupted()) {
+            
+            /*
+             * EBR : this implementation dequeues a message before sending it.
+             * If a problem occurs during sending, the message is not retried and simply lost.
+             * 
+             * A more robust implementation (for a protocol where the device always sends a response
+             * to commands) is to only dequeue commands from write queue when the corresponding reply
+             * has been received from the device (or after a number of failed retries).
+             */
+            
             MarantzCommand cmd = null;
             try {
                cmd = queue.blockingPoll();
@@ -181,6 +210,8 @@ public class MarantzAVRGateway {
                
                pr.print(cmd.toString());
                pr.flush();
+               
+               setMessageSent(true);
                
                try {
                  Thread.sleep(100); // Allow 100ms between messages or device does not provide feedback on initial status requests
@@ -219,9 +250,11 @@ public class MarantzAVRGateway {
          try {
            line = s.next();
          } catch (NoSuchElementException e) {
-            log.warn("Could not read from Marantz", e);
+            log.error("Could not read from Marantz", e);
+            line = null;
          } catch (IllegalStateException e) {
-            log.warn("Could not read from Marantz", e);
+            log.error("Could not read from Marantz", e);
+            line = null;
          }
          do {
            try {
@@ -240,14 +273,44 @@ public class MarantzAVRGateway {
                 }
               line = s.next();
            } catch (NoSuchElementException e) {
-              log.warn("Could not read from Marantz", e);
+              log.error("Could not read from Marantz", e);
+              line = null;
            } catch (IllegalStateException e) {
-              log.warn("Could not read from Marantz", e);
+              log.error("Could not read from Marantz", e);
+              line = null;
             }
           } while (line != null && !isInterrupted());
+         log.info("Out of reader thread");
       }
    }
 
+   private class MarantzPingThread extends Thread {
+
+      @Override
+      public void run() {
+         log.info("Ping thread starting");
+         
+         // Threads awakes every 30 seconds and check if message has been send while it was asleep.
+         // If none, then sends a message to keep some activity on the connection.
+         while (!isInterrupted()) {
+            try {
+               Thread.sleep(30000);
+             } catch (InterruptedException e) {
+                break;
+             }
+            if (!isMessageSent()) {
+               queue.add(new MarantzCommand("PW", "?"));
+               // When message is actually de-queued and sent by the writer thread, flag is reset.
+               // This means that the ping message is actually sent only every other time,
+               // so half the wake-up frequency (i.e. every minute with the 30s wake-up used).
+            } else {
+               setMessageSent(false);
+            }
+         }
+      }
+
+   }
+   
    private MarantzResponse parseResponse(String responseText) {
       if (responseText == null) {
          return null;
