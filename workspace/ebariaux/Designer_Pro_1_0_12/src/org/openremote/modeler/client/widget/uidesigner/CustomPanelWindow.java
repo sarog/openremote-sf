@@ -191,8 +191,12 @@ public class CustomPanelWindow extends FormWindow {
          tabbarHeightField.setValue(touchPanelDefinition.getTabbarDefinition().getHeight());
          panelPaddingLeftField.setValue(touchPanelDefinition.getPaddingLeft());
          panelPaddingTopField.setValue(touchPanelDefinition.getPaddingTop());
-         panelImage.setValue(touchPanelDefinition.getBgImage());
-         tabbarImage.setValue(touchPanelDefinition.getTabbarDefinition().getBackground().getSrc());
+         if (touchPanelDefinition.getBgImage() != null) {
+           panelImage.setValue(touchPanelDefinition.getBgImage());
+         }
+         if (touchPanelDefinition.getTabbarDefinition().getBackground().getSrc() != null) {
+           tabbarImage.setValue(touchPanelDefinition.getTabbarDefinition().getBackground().getSrc());
+         }
       }
       initIntegerFieldStyle(panelPaddingLeftField, panelPaddingTopField, panelImage,
             screenWidthField, screenHeightField,tabbarHeightField,tabbarImage);
