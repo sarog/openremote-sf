@@ -1,3 +1,8 @@
+ORCJAVA-410
+===========
+
+  - Fixed ORCJAVA-410: Marantz protocol does not always re-connect to AVR
+
 Controller Pro 1.0.11
 =====================
 
