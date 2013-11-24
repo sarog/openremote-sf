@@ -1,8 +1,12 @@
-ORCJAVA-338
-===========
+Controller Pro 1.0.12
+=====================
+
+Bug Fixes:
 
   - Update AMX implementation to use locale independent
-    string case conversions
+    string case conversions (ORCJAVA-338)
+  - Update Lutron implementation to use locale independent
+    string case conversions (ORCJAVA-339)
 
 Controller Pro 1.0.11
 =====================
