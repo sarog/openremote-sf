@@ -7,6 +7,7 @@ Bug Fixes:
     string case conversions (ORCJAVA-338)
   - Update Lutron implementation to use locale independent
     string case conversions (ORCJAVA-339)
+  - Fixed Marantz protocol does not always re-connect to AVR (ORCJAVA-410)
 
 Controller Pro 1.0.11
 =====================
