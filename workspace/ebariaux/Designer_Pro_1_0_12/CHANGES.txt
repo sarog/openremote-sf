@@ -5,6 +5,8 @@ Fixes:
  - Edit of custom panel complains of duplicate name (MODELER-518)
  - Creating slider from within New Device dialog doesn't allow
    the creation of passive slider (MODELER-523)
+ - Impossible to edit custom panel if not all attributes
+   are defined in the first place (MODELER-527)
 
 New features:
   - Make text box for rules bigger and not wrap its text (MODELER-526)
