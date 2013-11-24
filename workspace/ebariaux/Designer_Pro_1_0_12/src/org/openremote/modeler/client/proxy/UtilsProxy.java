@@ -138,11 +138,26 @@ public class UtilsProxy {
       AsyncServiceFactory.getUtilsRPCServiceAsync().getOnLineTestURL(callback);
    }
    
-   public static boolean isPanelNameAvailable(String panelName) {
+   /**
+    * Check that the provided panel name is not already used by another panel.
+    * If a panelId is given, it is considered the name is the one for that panel
+    * id and so will be considered available.
+    * 
+    * @param panelName Panel name to check availability of
+    * @param panelId id of panel with that name
+    * @return boolean true if panel name is available for use
+    */
+   public static boolean isPanelNameAvailable(String panelName, Long panelId) {
       List<BeanModel> panelModels = BeanModelDataBase.panelTable.loadAll();
       for (BeanModel panelModel : panelModels) {
          if (panelName.equals(panelModel.get("name").toString())) {
-            return false;
+           if (panelId == null) {
+             return false;
+           } else {
+             if (!panelId.equals(panelModel.get("oid"))) {
+               return false;
+             }
+           }
          }
       }
       return true;
