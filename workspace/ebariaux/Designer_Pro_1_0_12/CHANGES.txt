@@ -3,6 +3,8 @@ Pro 1.0.12
 
 Fixes:
  - Edit of custom panel complains of duplicate name (MODELER-518)
+ - Creating slider from within New Device dialog doesn't allow
+   the creation of passive slider (MODELER-523)
 
 Pro 1.0.11
 ==========
@@ -181,7 +183,6 @@ Bug fix release:
 
  - MODELER-338: correctly reconstruct sensor data from
    database on load/restore
-
 
 Designer 2.13.3 (2012-07-15 Rosemary)
 =====================================
