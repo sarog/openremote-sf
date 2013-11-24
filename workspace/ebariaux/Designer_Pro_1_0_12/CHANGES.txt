@@ -1,3 +1,9 @@
+Pro 1.0.12
+==========
+
+Fixes:
+ - Edit of custom panel complains of duplicate name (MODELER-518)
+
 Pro 1.0.11
 ==========
 
