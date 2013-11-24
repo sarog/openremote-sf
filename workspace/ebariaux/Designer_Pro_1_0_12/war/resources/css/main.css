@@ -401,3 +401,7 @@ table.screen-btn-cont td.br-c{
 .x-combo-list-item {
   min-height: 1em;
 }
+
+.ControllerConfigRulesEditor {
+	padding-right: 9px;
+}
