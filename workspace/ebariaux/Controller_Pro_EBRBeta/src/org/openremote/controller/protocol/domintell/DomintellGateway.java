@@ -36,7 +36,7 @@ import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
 
 public class DomintellGateway {
 
@@ -248,7 +248,12 @@ public class DomintellGateway {
               }
             }
           }
-          DomintellCommandPacket cmd = queue.blockingPoll();
+          DomintellCommandPacket cmd = null;
+          try {
+               cmd = queue.blockingPoll();
+          } catch (InterruptedException e) {
+             break;
+          }
           if (cmd != null) {
             log.info("Sending >" + cmd.toString() + "< on socket");
             byte[] buf = cmd.toString().getBytes();
