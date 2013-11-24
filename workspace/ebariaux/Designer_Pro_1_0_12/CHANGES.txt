@@ -6,6 +6,9 @@ Fixes:
  - Creating slider from within New Device dialog doesn't allow
    the creation of passive slider (MODELER-523)
 
+New features:
+  - Make text box for rules bigger and not wrap its text (MODELER-526)
+
 Pro 1.0.11
 ==========
 
