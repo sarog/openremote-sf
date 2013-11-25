@@ -94,12 +94,12 @@ public class RuleListenerTest {
       
       ksession.fireAllRules();
       
-      String lastLog = String.format("Rule Activation Imminent: /n/t" +
-            "Rule: %s/n" +
-            "/tDeclarations /n/t/tDeclaration:$e Value: Sensor Name: %s Sensor Value: ON/n" +
-            "/tLHS objects(antecedents) /nClass: CustomState Fields Name: %s/tValue: ON/n/n", "TestRuleFiring", TEST_SENSOR_NAME, TEST_SENSOR_NAME);
+      String lastLog = String.format("Rule Activation Imminent: \n" +
+            "\trule \"%s\" // (package org.openremote.controller.statuscache.rules)\n" +
+            "\tDeclarations \n\t\tDeclaration: \"$e\"\n\t\tValue:\n\t\t\tSensor Name: \"%s\"\n\t\t\tSensor Value: \"ON\"\n" +
+            "\tLHS objects(antecedents)\n\t\tClass: \"CustomState\"\n\t\tFields: \n\t\t\tEvent Name: \t\"%s\"\n\t\t\tEvent Value: \t\"ON\"\n", "TestRuleFiring", TEST_SENSOR_NAME, TEST_SENSOR_NAME);
 
-      handler.assertLastLog(Level.FINER, lastLog);
+      handler.assertLastLog(Level.FINE, lastLog);
    }
 
    private static class TestLogHandler extends Handler
