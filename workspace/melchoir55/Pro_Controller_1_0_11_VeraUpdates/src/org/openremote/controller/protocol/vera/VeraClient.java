@@ -34,6 +34,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.protocol.vera.model.Dimmer;
+import org.openremote.controller.protocol.vera.model.DoorLock;
 import org.openremote.controller.protocol.vera.model.HumiditySensor;
 import org.openremote.controller.protocol.vera.model.PowerMeter;
 import org.openremote.controller.protocol.vera.model.SecuritySensor;
@@ -160,6 +161,8 @@ public class VeraClient extends Thread {
             case PowerMeter:
                this.devices.put(id, new PowerMeter(category, id, name, this));
                break;
+            case DoorLock:
+               this.devices.put(id, new DoorLock(category, id, name, this));
             default:
                this.devices.put(id, new GenericDevice(category, id, name, this));
          }
