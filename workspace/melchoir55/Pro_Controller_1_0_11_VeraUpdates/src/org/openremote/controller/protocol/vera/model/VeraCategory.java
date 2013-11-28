@@ -27,7 +27,7 @@ public enum VeraCategory {
    SecuritySensor(4),
    Thermostat(5),
    Camera(6),
-   DoorLock(7),
+   DoorLock(7), 
    Window(8),
    SceneController(14),
    AV(15),

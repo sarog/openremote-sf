@@ -47,7 +47,7 @@ public enum VeraCmd {
     * Humidity.Sensor: getHumidity
     * Thermostat: 
     * PowerMeter: getWatts, getConsumption
-    * 
+    * DoorLock: on, off, getStatus, getBatteryLevel
     * 
     */
 
