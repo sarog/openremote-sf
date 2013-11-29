@@ -1,3 +1,9 @@
+WEBCONSOLE-64
+=============
+
+  - Fixed : Having a button with both a navigation and command,
+    the navigation occurs but the command is not executed
+
 WebConsole 2.1.2
 ================
 
