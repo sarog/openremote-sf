@@ -143,7 +143,8 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	public void onTap(TapEvent event) {
 		if (navigate != null) {
 			eventBus.fireEvent(new NavigateEvent(navigate));
-		} else if (hasControlCommand) {
+		}
+		if (hasControlCommand) {
 			eventBus.fireEvent(new CommandSendEvent(getId(), "click", this));
 		}
 	}
