@@ -1,3 +1,8 @@
+WEBCONSOLE-66
+=============
+
+  - Fixed : Incorrect SVN build reported by WebConsole
+
 WebConsole 2.1.2
 ================
 
