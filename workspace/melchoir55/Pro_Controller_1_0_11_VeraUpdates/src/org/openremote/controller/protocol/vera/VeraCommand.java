@@ -20,6 +20,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.vera.model.Dimmer;
+import org.openremote.controller.protocol.vera.model.DoorLock;
 import org.openremote.controller.protocol.vera.model.Switch;
 import org.openremote.controller.protocol.vera.model.Thermostat;
 import org.openremote.controller.protocol.vera.model.VeraDevice;
@@ -65,6 +66,10 @@ public class VeraCommand implements EventListener, ExecutableCommand {
          case OFF:
             ((Switch)client.getDevice(deviceId)).turnOff();
             break;
+         case LOCK:
+            ((DoorLock)client.getDevice(deviceId)).lock();
+         case UNLOCK:
+            ((DoorLock)client.getDevice(deviceId)).unlock();
          case SET_LEVEL:
             ((Dimmer)client.getDevice(deviceId)).setLevel(paramValue);
             break;
