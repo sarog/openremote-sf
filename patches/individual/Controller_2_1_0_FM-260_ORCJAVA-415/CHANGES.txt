@@ -1,3 +1,8 @@
+Controller ORCJAVA-415
+======================
+
+ - Fix HTTPCommand to avoid Expect_Continue header for POST and PUT requests
+
 Controller ORCJAVA-260
 ======================
 
