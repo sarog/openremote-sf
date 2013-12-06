@@ -8,6 +8,7 @@ Bug Fixes:
   - Update Lutron implementation to use locale independent
     string case conversions (ORCJAVA-339)
   - Fixed Marantz protocol does not always re-connect to AVR (ORCJAVA-410)
+  - Fix HTTPCommand to avoid Expect_Continue header for POST and PUT requests (ORCJAVA-415)
 
 Controller Pro 1.0.11
 =====================
