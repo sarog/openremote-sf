@@ -1,3 +1,8 @@
+ORCJAVA-400
+===========
+
+  - Fix HTTPCommand to close connection after execution
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
