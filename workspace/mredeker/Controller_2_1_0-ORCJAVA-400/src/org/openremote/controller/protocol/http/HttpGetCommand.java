@@ -50,7 +50,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
@@ -229,7 +228,6 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     HttpResponse response = null;
     ResponseHandler<String> responseHandler = new BasicResponseHandler();
     request.addHeader("User-Agent", "OpenRemoteController");
-    request.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
     if (contentType != null) {
        request.addHeader("Content-Type", contentType);
     }
