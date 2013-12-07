@@ -172,7 +172,7 @@ public class Sensor extends BusinessEntity {
    @Transient
    @JSON(include = false)
    public long getOffsetId() {
-     return 100000 + getOid();
+     return 100000000 + getOid();
    }
 
 }

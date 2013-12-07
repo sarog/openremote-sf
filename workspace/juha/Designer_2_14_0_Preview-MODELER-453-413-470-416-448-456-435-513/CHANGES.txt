@@ -1,3 +1,9 @@
+MODELER-528
+===========
+
+ - Generated XML files (controller/panel) contain duplicate ids
+   Fixed by increasing offset from 100k to 100m
+
 
 MODELER-513
 ===========
