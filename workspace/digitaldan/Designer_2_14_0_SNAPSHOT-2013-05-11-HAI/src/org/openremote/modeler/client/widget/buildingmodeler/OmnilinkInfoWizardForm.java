@@ -93,18 +93,13 @@ public class OmnilinkInfoWizardForm extends CommonForm {
               Info.display("ERROR", caught.getMessage());
               MessageBox.alert("ERROR", caught.getMessage(), null);
               caught.printStackTrace();
-              hide();
-              
               // TODO: better error reporting
             }
 
             @Override
             public void onSuccess(CreateOmnilinkDeviceResult result) {
-              
               // TODO: might have an error message in result, handle it
-            	wrapper.fireEvent(new DeviceUpdatedEvent(null));
-              //wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result.getDevices()));
-              hide();
+              wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result.getDevices()));
             }            
           });
         }          

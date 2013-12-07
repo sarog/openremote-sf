@@ -56,7 +56,7 @@ public class OmnilinkWizardWindow extends WizardWindow {
    protected void initForms() {
       forms = new CommonForm[]{
             new OmnilinkInfoWizardForm(this)
-            };
+       };
    }
 
    /**

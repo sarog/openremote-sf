@@ -22,13 +22,16 @@ package org.openremote.modeler.server.omnilink;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.customware.gwt.dispatch.server.ActionHandler;
 import net.customware.gwt.dispatch.server.ExecutionContext;
 import net.customware.gwt.dispatch.shared.DispatchException;
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceAttr;
@@ -46,6 +49,7 @@ import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.omnilink.CreateOmnilinkDeviceAction;
 import org.openremote.modeler.shared.omnilink.CreateOmnilinkDeviceResult;
 import org.openremote.modeler.shared.omnilink.OmniLinkCmd;
@@ -86,65 +90,71 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 	protected SliderService sliderService;
 	protected SwitchService switchService;
 	protected UserService userService;
+
+	Map<String, Device> existingDevices;
+	CreateOmnilinkDeviceResult result;
+	public static final String VENDOR = "HAI";
+	public static final String MODEL = "Omnilink";
+
 	public static final String[] AUDIOCMD_HAIHIFI = {"Power","Source Step",
-			"Vol Up", "Vol Down", "Mute"};
+		"Vol Up", "Vol Down", "Mute"};
 	public static final String[] AUDIOCMD_RUSSOUND = { "Power", "Source step",
-			"Vol up ", "Vol down", "Mute", "Play", "Stop", "Pause", "Minus",
-			"Plus", "Previous", "Next ", "Record", "Channel up",
-			"Channel down", "Zero", "One", "Two", "Three", "Four", "Five",
-			"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter", "Last",
-			"Sleep", "Guide", "Exit", "Info", "Menu", "Menu up", "Menu right",
-			"Menu down", "Menu left", "Select", "Favorite 1", "Favorite 2" };
+		"Vol up ", "Vol down", "Mute", "Play", "Stop", "Pause", "Minus",
+		"Plus", "Previous", "Next ", "Record", "Channel up",
+		"Channel down", "Zero", "One", "Two", "Three", "Four", "Five",
+		"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter", "Last",
+		"Sleep", "Guide", "Exit", "Info", "Menu", "Menu up", "Menu right",
+		"Menu down", "Menu left", "Select", "Favorite 1", "Favorite 2" };
 	public static final String[] AUDIOCMD_NUVO = { "Power", "Source step",
-			"Vol up", "Vol down", "Mute", "Play", "Stop", "Pause", "Rewind",
-			"Forward", "Fast rewind", "Fast forward", "Continuous", "Shuffle",
-			"Group", "Disc", "Zero", "One", "Two", "Three", "Four", "Five",
-			"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter",
-			"Hotkey zero", "Hotkey one", "Hotkey two", "Hotkey three",
-			"Hotkey four", "Hotkey five", "Hotkey six", "Hotkey seven",
-			"Hotkey eight", "Hotkey nine"
+		"Vol up", "Vol down", "Mute", "Play", "Stop", "Pause", "Rewind",
+		"Forward", "Fast rewind", "Fast forward", "Continuous", "Shuffle",
+		"Group", "Disc", "Zero", "One", "Two", "Three", "Four", "Five",
+		"Six", "Seven", "Eight", "Nine", "Plus ten", "Enter",
+		"Hotkey zero", "Hotkey one", "Hotkey two", "Hotkey three",
+		"Hotkey four", "Hotkey five", "Hotkey six", "Hotkey seven",
+		"Hotkey eight", "Hotkey nine"
 
 	};
 	public static final String[] AUDIOCMD_NUVOGRAND = { "Power", "Source step",
-			"Vol up", "Vol down", "Mute", "Play / Pause", "Stop (not used)",
-			"Pause (not used)", "Previous", "Next", "Favorite 1", "Favorite 2",
-			"Favorite 3", "Favorite 4", "Favorite 5", "Favorite 6",
-			"Favorite 7", "Favorite 8", "Favorite 9", "Favorite 10",
-			"Favorite 11", "Favorite 12", "Ok button down", "Ok button up",
-			"Play / Pause button down", "Play / Pause button up",
-			"Previous button down", "Previous button up", "Next button down",
-			"Next button up", "Power / Mute button down",
-			"Power / Mute button up", "Menu button down", "Menu button up",
-			"Up button down", "Up button up", "Down button down",
-			"Down button up"
+		"Vol up", "Vol down", "Mute", "Play / Pause", "Stop (not used)",
+		"Pause (not used)", "Previous", "Next", "Favorite 1", "Favorite 2",
+		"Favorite 3", "Favorite 4", "Favorite 5", "Favorite 6",
+		"Favorite 7", "Favorite 8", "Favorite 9", "Favorite 10",
+		"Favorite 11", "Favorite 12", "Ok button down", "Ok button up",
+		"Play / Pause button down", "Play / Pause button up",
+		"Previous button down", "Previous button up", "Next button down",
+		"Next button up", "Power / Mute button down",
+		"Power / Mute button up", "Menu button down", "Menu button up",
+		"Up button down", "Up button up", "Down button down",
+		"Down button up"
 
 	};
 	public static final String[] AUDIOCMD_XANTECH = { "Power",
-			"Source select 1", "Source select 2", "Source select 3",
-			"Source select 4", "Source select 5", "Source select 6",
-			"Source select 7", "Source select 8", "Channel up", "Channel down",
-			"Mute", "Play", "Stop", "Pause", "Rewind", "Forward", "Vol up",
-			"Vol down", "Tier 2 power", "Tier 2 source select 1",
-			"Tier 2 source select 2", "Tier 2 source select 3",
-			"Tier 2 source select 4", "Tier 2 source select 5",
-			"Tier 2 source select 6", "Tier 2 source select 7",
-			"Tier 2 source select 8", "Tier 2 channel up",
-			"Tier 2 channel down", "Tier 2 mute", "Tier 2 play", "Tier 2 stop",
-			"Tier 2 pause", "Tier 2 rewind", "Tier 2 forward"
+		"Source select 1", "Source select 2", "Source select 3",
+		"Source select 4", "Source select 5", "Source select 6",
+		"Source select 7", "Source select 8", "Channel up", "Channel down",
+		"Mute", "Play", "Stop", "Pause", "Rewind", "Forward", "Vol up",
+		"Vol down", "Tier 2 power", "Tier 2 source select 1",
+		"Tier 2 source select 2", "Tier 2 source select 3",
+		"Tier 2 source select 4", "Tier 2 source select 5",
+		"Tier 2 source select 6", "Tier 2 source select 7",
+		"Tier 2 source select 8", "Tier 2 channel up",
+		"Tier 2 channel down", "Tier 2 mute", "Tier 2 play", "Tier 2 stop",
+		"Tier 2 pause", "Tier 2 rewind", "Tier 2 forward"
 
 	};
 	public static final String[] AUDIOCMD_SPEAKEERCRAFT = { "Source select 1",
-			"Source select 2", "Source select 3", "Source select 4",
-			"Source select 5", "Source select 6", "Source select 7",
-			"Source select 8", null, "Mute", "Vol Up", "Power", "Vol Down",
-			null, null, null, "One", "Two", "Three", "Four", "Five", "Six",
-			"Seven", "Eight", "Nine", "Track", "Zero", "Disc", "Random",
-			"Repeat", "Bass", "Treble", "Guide", "Menu", "Up", "Left",
-			"Select", "Right", "Down", "Escape", "Info", "Rewind", "Forward",
-			"Pause", "Play", "Stop"
+		"Source select 2", "Source select 3", "Source select 4",
+		"Source select 5", "Source select 6", "Source select 7",
+		"Source select 8", null, "Mute", "Vol Up", "Power", "Vol Down",
+		null, null, null, "One", "Two", "Three", "Four", "Five", "Six",
+		"Seven", "Eight", "Nine", "Track", "Zero", "Disc", "Random",
+		"Repeat", "Bass", "Treble", "Guide", "Menu", "Up", "Left",
+		"Select", "Right", "Down", "Escape", "Info", "Rewind", "Forward",
+		"Pause", "Play", "Stop"
 
 	};
-	
+
 	//	private HashMap<Integer, Device> units;
 	//	private HashMap<Integer, Device> thermos;
 	//	private HashMap<Integer, Device> zones;
@@ -181,10 +191,23 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 	@Override
 	public CreateOmnilinkDeviceResult execute(CreateOmnilinkDeviceAction action, ExecutionContext context) throws DispatchException {
-		System.out.println("CreateOmnilinkDeviceResult");
-		CreateOmnilinkDeviceResult result = new CreateOmnilinkDeviceResult();
+		System.out.println("CreateOmnilinkDeviceResult.");
+		result = new CreateOmnilinkDeviceResult();
 		Exception ex = null;
+		existingDevices = new HashMap<String, Device>();
+		/*
+		 * we should only load devices from a user, but I am running into
+		 * hibernate issues, so this will have to do for now.
+		 */
 		try {
+			for(Device d : deviceService.loadAll()){
+				if(d.getAccount().getOid() == userService.getAccount().getOid() 
+						&& d.getVendor().equals(VENDOR) 
+						&& d.getModel().equals(MODEL)){
+					existingDevices.put(d.getName(), d);
+				}
+			}
+			System.out.println("Existing devices count " + existingDevices.size());
 			importAllDevices(action.getHost(), action.getPort(), action.getKey1() + ":" + action.getKey2()); 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -213,107 +236,57 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 		// TODO Implementation only required for compound action
 	}
 
-	//	private void populateCache(){
-	//		System.out.println("populateCache");
-	//		units = new HashMap<Integer, Device>();
-	//
-	//				List<Device> devices= deviceService.loadAll();
-	//				for(Device device : devices){
-	//					List<DeviceAttr> attrs = device.getDeviceAttrs();
-	//					int type = -1;
-	//					int num = -1;
-	//					for(DeviceAttr attr : attrs){
-	//						if(attr.getName().equals(STR_ATTRIBUTE_NAME_OMNI_TYPE)){
-	//							try { 
-	//								type = Integer.parseInt(attr.getValue()); 
-	//							} catch (Exception ignored){
-	//		
-	//							}
-	//						} else if(attr.getName().equals(STR_ATTRIBUTE_NAME_OMNI_NUM)){
-	//							try { 
-	//								num = Integer.parseInt(attr.getValue()); 
-	//							} catch (Exception ignored){
-	//		
-	//							}
-	//						}
-	//					}
-	//					if(type > -1 && num > -1){
-	//						Integer i = new Integer(num);
-	//						switch(type){
-	//						case Message.OBJ_TYPE_UNIT:
-	//							units.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_THERMO:
-	//							thermos.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_ZONE:
-	//							zones.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_AREA:
-	//							areas.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_CODE:
-	//							codes.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_AUX_SENSOR:
-	//							auxs.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_BUTTON:
-	//							units.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_AUDIO_ZONE:
-	//							audioZones.put(i, device);
-	//							break;
-	//						case Message.OBJ_TYPE_AUDIO_SOURCE:
-	//							audioSources.put(i, device);
-	//							break;
-	//						default:
-	//							break;
-	//						}
-	//					}
-	//				}
-	//	}
-
-	
 	@Transactional
 	private void importAllDevices(String host, int port, String key) throws UnknownHostException, IOException, Exception{
-		
+
 		ArrayList<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
 		ArrayList<Sensor> sensors = new ArrayList<Sensor>();
 		ArrayList<Slider> sliders = new ArrayList<Slider>();
 		ArrayList<Switch> switches = new ArrayList<Switch>();
 		ArrayList<Device> devices = new ArrayList<Device>();
-		
-		Connection c = new Connection(host, port, key);
-		
-		loadUnits(c,deviceCommands,sensors,sliders,switches,devices);
-		loadThermos(c,deviceCommands,sensors,sliders,switches,devices);
-		loadAuxs(c,deviceCommands,sensors,sliders,switches,devices);
-		loadButtons(c,deviceCommands,sensors,sliders,switches,devices);
-		loadAreas(c,deviceCommands,sensors,sliders,switches,devices);
-		loadZones(c,deviceCommands,sensors,sliders,switches,devices);
-		loadAudioZones(c,deviceCommands,sensors,sliders,switches,devices);
-		loadAudioSources(c,deviceCommands,sensors,sliders,switches,devices);
+		Connection c = null;
+		try {
+			c = new Connection(host, port, key);
 
-		//no exceptions, go ahead and save all
-		for(Device device : devices){
-			System.out.println("Saving Device " + device.getName());
-			deviceService.saveDevice(device);
-		}
-		/*
-		 * saving the devices above will save all the commands tied to them
-		 * so don't do it again
-		 */
-		//deviceCommandService.saveAll(deviceCommands);
-		
-		sensorService.saveAllSensors(sensors, userService.getAccount());
-		
-		sliderService.saveAllSliders(sliders, userService.getAccount());
-		
-		//hmm, switchService does not have a save all.
-		for(Switch sw : switches){
-			sw.setAccount(userService.getAccount());
-			switchService.save(sw);
+			loadUnits(c,deviceCommands,sensors,sliders,switches,devices);
+			loadThermos(c,deviceCommands,sensors,sliders,switches,devices);
+			loadAuxs(c,deviceCommands,sensors,sliders,switches,devices);
+			loadButtons(c,deviceCommands,sensors,sliders,switches,devices);
+			loadAreas(c,deviceCommands,sensors,sliders,switches,devices);
+			loadZones(c,deviceCommands,sensors,sliders,switches,devices);
+			loadAudioZones(c,deviceCommands,sensors,sliders,switches,devices);
+			loadAudioSources(c,deviceCommands,sensors,sliders,switches,devices);
+
+			//no exceptions, go ahead and save all
+			ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
+			for(Device device : devices){
+				System.out.println("Saving Device " + device.getName());
+				deviceService.saveDevice(device);
+				dtos.add(new DeviceDTO(device.getOid(), device.getDisplayName()));
+			}
+			result.setDevices(dtos);
+
+			/*
+			 * saving the devices above will save all the commands tied to them
+			 * so don't do it again
+			 */
+			//deviceCommandService.saveAll(deviceCommands);
+
+
+			sensorService.saveAllSensors(sensors, userService.getAccount());
+
+			sliderService.saveAllSliders(sliders, userService.getAccount());
+
+			//hmm, switchService does not have a save all.
+			for(Switch sw : switches){
+				sw.setAccount(userService.getAccount());
+				switchService.save(sw);
+			}
+		} finally {
+			try {
+				c.disconnect();
+			} catch (Exception e) {
+			}
 		}
 	}
 
@@ -323,6 +296,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			ArrayList<Device> devices) throws IOException,
 			OmniNotConnectedException, OmniInvalidResponseException,
 			OmniUnknownMessageTypeException {
+
 		int objnum = 0;
 		Message m;
 		int currentRoom = 0;
@@ -332,10 +306,11 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			UnitProperties o = ((UnitProperties) m);
 			objnum = o.getNumber();
 			String name = "(Unit) " + o.getName();
-			
+
+
 			boolean isUpbRoom = false;
 			boolean isUpbUnit = false;
-			
+
 			if(o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM || 
 					o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM){
 				currentRoom = objnum;
@@ -343,19 +318,27 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 				if(o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM)
 					isUpbRoom = true;
 			} else if(objnum < currentRoom + 8){
-					name = "(Unit) "  + currentRoomName + ": " + o.getName();
+				name = "(Unit) "  + currentRoomName + ": " + o.getName();
 			} else if(o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG){
-					name = "(Flag) " + o.getName();
+				name = "(Flag) " + o.getName();
 			}
-			
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
 			isUpbUnit = 
 					o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD || 
 					o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM ||
 					o.getUnitType() == UnitProperties.UNIT_TYPE_UPB;
-			
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
-			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
+
+			List<DeviceAttr> dattrs = new ArrayList<DeviceAttr>();
 			DeviceAttr datt = new DeviceAttr();
 			datt.setName(STR_ATTRIBUTE_NAME_OMNI_NUM);
 			datt.setValue(objnum + "");
@@ -366,7 +349,6 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			datt.setValue(Message.OBJ_TYPE_UNIT + "");
 			dattrs.add(datt);
 			device.setDeviceAttrs(dattrs);
-
 			devices.add(device);
 
 			DeviceCommand cmdOn = addDeviceCommand(device, name + " cmd on", 0, objnum, OmniLinkCmd.CMD_UNIT_ON);
@@ -383,7 +365,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdSensorPower = addDeviceCommand(device, name + " get power", 0, objnum, OmniLinkCmd.SENSOR_UNIT_POWER);
 			deviceCommands.add(cmdSensorPower);
-			
+
 			DeviceCommand cmdSensorDisplay = addDeviceCommand(device, name + " get display", 0, objnum, OmniLinkCmd.SENSOR_UNIT_DISPLAY);
 			deviceCommands.add(cmdSensorDisplay);
 
@@ -400,23 +382,23 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 				}
 
 			}
-			
+
 			if(isUpbUnit){
 				for(int i=0;i< 9; i++){
 					DeviceCommand cmdDim = addDeviceCommand(device, name + " cmd UPB Dim Step " + (i+1), 0, objnum, OmniLinkCmd.getCommand(OmniLinkCmd.CMD_UNIT_UPB_DIM_STEP_1.ordinal() + i));
 					deviceCommands.add(cmdDim);
-					
+
 					DeviceCommand cmdBrt = addDeviceCommand(device, name + " cmd UPB Brighten Step " + (i+1), 0, objnum, OmniLinkCmd.getCommand(OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1.ordinal() + i));
 					deviceCommands.add(cmdBrt);
 				};
 			}
-			
+
 			Sensor senLevel = createDeviceSensor(device, SensorType.LEVEL, cmdSensorLevel,name + " Sensor Level");
 			sensors.add(senLevel);
 
 			Sensor senSwitch = createDeviceSensor(device, SensorType.SWITCH, cmdSensorPower,name + " Sensor Switch");
 			sensors.add(senSwitch);
-			
+
 			Sensor senDisplay = createDeviceSensor(device, SensorType.CUSTOM, cmdSensorDisplay,name + " Sensor Display");
 			sensors.add(senDisplay);
 
@@ -443,7 +425,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			ThermostatProperties o = ((ThermostatProperties) m);
 			objnum = o.getNumber();
 			String name = "(Thermostat) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -465,13 +455,13 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			DeviceCommand cmdRaiseCoolPoint = addDeviceCommand(device, name + " CMD Set Raise Cool Point", 1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_COOL);
 			deviceCommands.add(cmdRaiseCoolPoint);
 
-			DeviceCommand cmdLowerCoolPoint = addDeviceCommand(device, name + " CMD Set Lower Cool Point", -11, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_COOL);
+			DeviceCommand cmdLowerCoolPoint = addDeviceCommand(device, name + " CMD Set Lower Cool Point", -1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_COOL);
 			deviceCommands.add(cmdLowerCoolPoint);
 
-			DeviceCommand cmdRaiseHeatPoint = addDeviceCommand(device, name + " CMD Set Raise Heat", 1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_HEAT);
+			DeviceCommand cmdRaiseHeatPoint = addDeviceCommand(device, name + " CMD Set Raise Heat Point", 1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_HEAT);
 			deviceCommands.add(cmdRaiseHeatPoint);
 
-			DeviceCommand cmdLowerHeatPoint = addDeviceCommand(device, name + " CMD Set Lower Heat", -1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_HEAT);
+			DeviceCommand cmdLowerHeatPoint = addDeviceCommand(device, name + " CMD Set Lower Heat Point", -1, objnum, OmniLinkCmd.CMD_THERMO_RAISE_LOWER_HEAT);
 			deviceCommands.add(cmdLowerHeatPoint);
 
 			DeviceCommand cmdSetCoolPointC = addDeviceCommand(device, name + " CMD Set Cool Point C", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_COOL_POINTC);
@@ -483,17 +473,50 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			DeviceCommand cmdSetFanMode = addDeviceCommand(device, name + " CMD Set Fan Mode (auto,on,cycle)", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_FAN_MODE);
 			deviceCommands.add(cmdSetFanMode);
 
+			DeviceCommand cmdSetFanModeAuto = addDeviceCommand(device, name + " CMD Set Fan Mode Auto", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_FAN_MODE);
+			deviceCommands.add(cmdSetFanModeAuto);
+
+			DeviceCommand cmdSetFanModeOn = addDeviceCommand(device, name + " CMD Set Fan Mode On", 1, objnum, OmniLinkCmd.CMD_THERMO_SET_FAN_MODE);
+			deviceCommands.add(cmdSetFanModeOn);
+
+			DeviceCommand cmdSetFanModeCycle = addDeviceCommand(device, name + " CMD Set Fan Mode Cycle", 2, objnum, OmniLinkCmd.CMD_THERMO_SET_FAN_MODE);
+			deviceCommands.add(cmdSetFanModeCycle);
+
 			DeviceCommand cmdSetHeatPointC = addDeviceCommand(device, name + " CMD Set Heat Point C", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_HEAT_POINTC);
 			deviceCommands.add(cmdSetHeatPointC);
 
 			DeviceCommand cmdSetHeatPointF = addDeviceCommand(device, name + " CMD Set Heat Point F", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_HEAT_POINTF);
 			deviceCommands.add(cmdSetHeatPointF);
 
-			DeviceCommand cmdSetHoldMode = addDeviceCommand(device, name + " CMD Set Hold Mode (off,hold,vacation)", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE);
+			DeviceCommand cmdSetHoldMode = addDeviceCommand(device, name + " CMD Set Hold Mode (off/0,hold/255)", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE);
 			deviceCommands.add(cmdSetHoldMode);
+
+			DeviceCommand cmdSetHoldModeOff = addDeviceCommand(device, name + " CMD Set Hold Mode Off", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE);
+			deviceCommands.add(cmdSetHoldModeOff);
+
+			DeviceCommand cmdSetHoldModeHold = addDeviceCommand(device, name + " CMD Set Hold Mode Hold", 255, objnum, OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE);
+			deviceCommands.add(cmdSetHoldModeHold);
+
+			//			DeviceCommand cmdSetHoldModeVaca = addDeviceCommand(device, name + " CMD Set Hold Mode Vacation", 2, objnum, OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE);
+			//			deviceCommands.add(cmdSetHoldModeVaca);
 
 			DeviceCommand cmdSetSystemMode = addDeviceCommand(device, name + " CMD Set System Mode (off,heat,cool,auto,emergency)", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
 			deviceCommands.add(cmdSetSystemMode);
+
+			DeviceCommand cmdSetSystemModeOff = addDeviceCommand(device, name + " CMD Set System Mode Off", 0, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
+			deviceCommands.add(cmdSetSystemModeOff);
+
+			DeviceCommand cmdSetSystemModeHeat = addDeviceCommand(device, name + " CMD Set System Mode Heat", 1, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
+			deviceCommands.add(cmdSetSystemModeHeat);
+
+			DeviceCommand cmdSetSystemModeCool = addDeviceCommand(device, name + " CMD Set System Mode Cool", 2, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
+			deviceCommands.add(cmdSetSystemModeCool);
+
+			DeviceCommand cmdSetSystemModeAuto = addDeviceCommand(device, name + " CMD Set System Mode Auto", 3, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
+			deviceCommands.add(cmdSetSystemModeAuto);
+
+			DeviceCommand cmdSetSystemModeEmer = addDeviceCommand(device, name + " CMD Set System Mode Emergency", 4, objnum, OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE);
+			deviceCommands.add(cmdSetSystemModeEmer);
 
 			DeviceCommand cmdSensorCoolPointC = addDeviceCommand(device, name + " CMD Get Cool Point C", 0, objnum, OmniLinkCmd.SENSOR_THERMO_COOL_POINTC);
 			deviceCommands.add(cmdSensorCoolPointC);
@@ -532,10 +555,13 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			senRangeCoolPointF.setMax(189);
 			sensors.add(senRangeCoolPointF);
 
-			RangeSensor senRangeFanMode = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorFanMode, name + " Sensor Range Fan Mode");
-			senRangeFanMode.setMin(0);
-			senRangeFanMode.setMax(2);
-			sensors.add(senRangeFanMode);
+			//			RangeSensor senRangeFanMode = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorFanMode, name + " Sensor Range Fan Mode");
+			//			senRangeFanMode.setMin(0);
+			//			senRangeFanMode.setMax(2);
+			//			sensors.add(senRangeFanMode);
+
+			Sensor senFanMode =  createDeviceSensor(device, SensorType.SWITCH, cmdSensorFanMode, name + " Sensor Switch Fan Mode (Auto,On)");
+			sensors.add(senFanMode);
 
 			RangeSensor senRangeHeatPointC = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorHeatPointC, name + " Sensor Range Heat Point C");
 			senRangeHeatPointC.setMin(-40);
@@ -547,15 +573,11 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			senRangeHeatPointF.setMax(189);
 			sensors.add(senRangeHeatPointF);
 
-			RangeSensor senRangeHoldMode = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorHodeMold, name + " Sensor Range Hold Mode");
-			senRangeHoldMode.setMin(0);
-			senRangeHoldMode.setMax(2);
-			sensors.add(senRangeHoldMode);
+			Sensor senHoldMode =  createDeviceSensor(device, SensorType.SWITCH, cmdSensorHodeMold, name + " Sensor Switch Hold Mode");
+			sensors.add(senHoldMode);
 
-			RangeSensor senRangeSystemMode = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorSystemMode, name + " Sensor Range System Mode");
-			senRangeSystemMode.setMin(0);
-			senRangeSystemMode.setMax(4);
-			sensors.add(senRangeSystemMode);
+			Sensor senSystemMode = createDeviceSensor(device, SensorType.CUSTOM, cmdSensorSystemMode, name + " Sensor System Mode");
+			sensors.add(senSystemMode);
 
 			RangeSensor senRangeTempC = (RangeSensor)createDeviceSensor(device, SensorType.RANGE, cmdSensorTempC, name + " Sensor Range Temp C");
 			senRangeTempC.setMin(-40);
@@ -578,16 +600,12 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			Slider sliderSetHeatPointC  = createDeviceSlider(device, cmdSetHeatPointC, senRangeHeatPointC, name + " Slider Set Heat Point C");
 			sliders.add(sliderSetHeatPointC);
+			
+			Switch switchSetFanMode = createDeviceSwitch(cmdSetFanModeAuto, cmdSetFanModeOn, senFanMode, "Switch Set Fan Mode");
+			switches.add(switchSetFanMode);
 
-			Slider sliderSetFanMode  = createDeviceSlider(device, cmdSetFanMode, senRangeFanMode, name + " Slider Set Fan Mode");
-			sliders.add(sliderSetFanMode);
-
-			Slider sliderHoldFanMode  = createDeviceSlider(device, cmdSetHoldMode, senRangeHoldMode, name + " Slider Set Hold Mode");
-			sliders.add(sliderHoldFanMode);
-
-			Slider sliderSystemMode  = createDeviceSlider(device, cmdSetSystemMode, senRangeSystemMode, name + " Slider Set System Mode");
-			sliders.add(sliderSystemMode);
-
+			Switch switchSetHoldMode = createDeviceSwitch(cmdSetHoldModeOff, cmdSetHoldMode, senHoldMode, "Switch Set Hold Mode");
+			switches.add(switchSetHoldMode);
 		}
 
 	}
@@ -605,7 +623,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			ZoneProperties o = ((ZoneProperties) m);
 			objnum = o.getNumber();
 			String name = "(Zone) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -631,119 +657,127 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdSenZoneCur = addDeviceCommand(device, name + " CMD Get Zone Status Current", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_CURRENT);
 			deviceCommands.add(cmdSenZoneCur);
-			
+
 			DeviceCommand cmdSenZoneLatch = addDeviceCommand(device, name + " CMD Get Zone Status Latched", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_LATCHED);
 			deviceCommands.add(cmdSenZoneLatch);
-			
+
 			DeviceCommand cmdSenZoneArm = addDeviceCommand(device, name + " CMD Get Zone Status Arming", 0, objnum, OmniLinkCmd.SENSOR_ZONE_STATUS_ARMING);
 			deviceCommands.add(cmdSenZoneArm);
-			
+
 			Sensor senZoneCur = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneCur, name + " Sensor Current");
 			sensors.add(senZoneCur);
-			
+
 			Sensor senZoneLatch = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneLatch, name + " Sensor Latched");
 			sensors.add(senZoneLatch);
-			
+
 			Sensor senZoneArm = createDeviceSensor(device, SensorType.CUSTOM, cmdSenZoneArm, name + " Sensor Arming");
 			sensors.add(senZoneArm);
 
 		}
 
 	}
-	
-	  private void loadAreas(Connection c,
-				ArrayList<DeviceCommand> deviceCommands, ArrayList<Sensor> sensors,
-				ArrayList<Slider> sliders, ArrayList<Switch> switches,
-				ArrayList<Device> devices) throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
-	  OmniUnknownMessageTypeException {
-		  int objnum = 0;
-		  Message m;
-		  while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NAMED_UNAMED,
-				  ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-			  AreaProperties o = ((AreaProperties) m);
-			  objnum = o.getNumber();
-			  String name = "(Area) " + (o.getName().length() > 0 ? o.getName() : o.getNumber());
-				Device device = new Device(name, "HAI", "Omnilink");
-				device.setAccount(userService.getAccount());
 
-				List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
+	private void loadAreas(Connection c,
+			ArrayList<DeviceCommand> deviceCommands, ArrayList<Sensor> sensors,
+			ArrayList<Slider> sliders, ArrayList<Switch> switches,
+			ArrayList<Device> devices) throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
+			OmniUnknownMessageTypeException {
+		int objnum = 0;
+		Message m;
+		while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NAMED_UNAMED,
+				ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+			AreaProperties o = ((AreaProperties) m);
+			objnum = o.getNumber();
+			String name = "(Area) " + (o.getName().length() > 0 ? o.getName() : o.getNumber());
 
-				DeviceAttr datt = new DeviceAttr();
-				datt.setName(STR_ATTRIBUTE_NAME_OMNI_NUM);
-				datt.setValue(objnum + "");
-				dattrs.add(datt);
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
 
-				datt = new DeviceAttr();
-				datt.setName(STR_ATTRIBUTE_NAME_OMNI_TYPE);
-				datt.setValue(Message.OBJ_TYPE_AREA + "");
-				dattrs.add(datt);
-				device.setDeviceAttrs(dattrs);
-				devices.add(device);
-				
+			Device device = new Device(name, VENDOR, MODEL);
+			device.setAccount(userService.getAccount());
 
-//		         30            HAI Omni IIe
-//		         16            HAI OmniPro II
-//		         36            HAI Lumina
-//		         37            HAI Lumina Pro
-				SystemInformation si= c.reqSystemInformation();
-				boolean omni = si.getModel() < 36;
-				
-				DeviceCommand cmdDisarmOmni = addDeviceCommand(device, name + " CMD Set Disarm", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DISARM);
-				deviceCommands.add(cmdDisarmOmni);
-				
-				if(omni){
-					DeviceCommand cmdDayOmni = addDeviceCommand(device, name + " CMD Set Day Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_MODE);
-					deviceCommands.add(cmdDayOmni);
-					
-					DeviceCommand cmdNightOmni = addDeviceCommand(device, name + " CMD Set Night Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_MODE);
-					deviceCommands.add(cmdNightOmni);
-					
-					DeviceCommand cmdAwayOmni = addDeviceCommand(device, name + " CMD Set Day Away Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_AWAY_MODE);
-					deviceCommands.add(cmdAwayOmni);
-					
-					DeviceCommand cmdVacaOmni = addDeviceCommand(device, name + " CMD Set Day Vaccation Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_VACATION_MODE);
-					deviceCommands.add(cmdVacaOmni);
-					
-					DeviceCommand cmdDayInstOmni = addDeviceCommand(device, name + " CMD Set Day Instant Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_INSTANCE_MODE);
-					deviceCommands.add(cmdDayInstOmni);
-					
-					DeviceCommand cmdNightDelayOmni = addDeviceCommand(device, name + " CMD Set Night Delay Mode Omni", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE);
-					deviceCommands.add(cmdNightDelayOmni);
-				} else {
-					DeviceCommand cmdAeayLumina = addDeviceCommand(device, name + " CMD Set Away Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_AWAY_MODE);
-					deviceCommands.add(cmdAeayLumina);
-					
-					DeviceCommand cmdHomeLumina = addDeviceCommand(device, name + " CMD Set Home Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_HOME_MODE);
-					deviceCommands.add(cmdHomeLumina);
-					
-					DeviceCommand cmdPartyLumina = addDeviceCommand(device, name + " CMD Set Party Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_PARTY_MODE);
-					deviceCommands.add(cmdPartyLumina);
-					
-					DeviceCommand cmdSleepLumina = addDeviceCommand(device, name + " CMD Set Sleep Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SLEEP_MODE);
-					deviceCommands.add(cmdSleepLumina);
-					
-					DeviceCommand cmdSpecialLumina = addDeviceCommand(device, name + " CMD Set Special Mode Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SPECIAL_MODE);
-					deviceCommands.add(cmdSpecialLumina);
-					
-					DeviceCommand cmdVacaLumina = addDeviceCommand(device, name + " CMD Set Vaccation Lumina", 0,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_VACATION_MODE);
-					deviceCommands.add(cmdVacaLumina);
-				}
-				
-				DeviceCommand sensMode = addDeviceCommand(device, name + " CMD Get Mode", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_MODE);
-				deviceCommands.add(sensMode);
-				
-				DeviceCommand sensAlarm = addDeviceCommand(device, name + " CMD Get Alarm", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_ALARM);
-				deviceCommands.add(sensMode);
-				
-				Sensor senAreaMode = createDeviceSensor(device, SensorType.CUSTOM, sensMode, name + " Mode");
-				sensors.add(senAreaMode);
-				
-				Sensor senAreaAlarm = createDeviceSensor(device, SensorType.CUSTOM, sensAlarm, name + " Alarm");
-				sensors.add(senAreaAlarm);
-		  }
-	
-	  }
-	
+			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
+
+			DeviceAttr datt = new DeviceAttr();
+			datt.setName(STR_ATTRIBUTE_NAME_OMNI_NUM);
+			datt.setValue(objnum + "");
+			dattrs.add(datt);
+
+			datt = new DeviceAttr();
+			datt.setName(STR_ATTRIBUTE_NAME_OMNI_TYPE);
+			datt.setValue(Message.OBJ_TYPE_AREA + "");
+			dattrs.add(datt);
+			device.setDeviceAttrs(dattrs);
+			devices.add(device);
+
+
+			//		         30            HAI Omni IIe
+			//		         16            HAI OmniPro II
+			//		         36            HAI Lumina
+			//		         37            HAI Lumina Pro
+			SystemInformation si= c.reqSystemInformation();
+			boolean omni = si.getModel() < 36;
+
+			DeviceCommand cmdDisarmOmni = addDeviceCommand(device, name + " CMD Set Disarm", 0,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DISARM);
+			deviceCommands.add(cmdDisarmOmni);
+
+			if(omni){
+				DeviceCommand cmdDayOmni = addDeviceCommand(device, name + " CMD Set Day Mode Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_MODE);
+				deviceCommands.add(cmdDayOmni);
+
+				DeviceCommand cmdNightOmni = addDeviceCommand(device, name + " CMD Set Night Mode Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_MODE);
+				deviceCommands.add(cmdNightOmni);
+
+				DeviceCommand cmdAwayOmni = addDeviceCommand(device, name + " CMD Set Day Away Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_AWAY_MODE);
+				deviceCommands.add(cmdAwayOmni);
+
+				DeviceCommand cmdVacaOmni = addDeviceCommand(device, name + " CMD Set Day Vaccation Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_VACATION_MODE);
+				deviceCommands.add(cmdVacaOmni);
+
+				DeviceCommand cmdDayInstOmni = addDeviceCommand(device, name + " CMD Set Day Instant Mode Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_DAY_INSTANCE_MODE);
+				deviceCommands.add(cmdDayInstOmni);
+
+				DeviceCommand cmdNightDelayOmni = addDeviceCommand(device, name + " CMD Set Night Delay Mode Omni", 1,objnum, OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE);
+				deviceCommands.add(cmdNightDelayOmni);
+			} else {
+				DeviceCommand cmdAeayLumina = addDeviceCommand(device, name + " CMD Set Away Mode Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_AWAY_MODE);
+				deviceCommands.add(cmdAeayLumina);
+
+				DeviceCommand cmdHomeLumina = addDeviceCommand(device, name + " CMD Set Home Mode Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_HOME_MODE);
+				deviceCommands.add(cmdHomeLumina);
+
+				DeviceCommand cmdPartyLumina = addDeviceCommand(device, name + " CMD Set Party Mode Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_PARTY_MODE);
+				deviceCommands.add(cmdPartyLumina);
+
+				DeviceCommand cmdSleepLumina = addDeviceCommand(device, name + " CMD Set Sleep Mode Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SLEEP_MODE);
+				deviceCommands.add(cmdSleepLumina);
+
+				DeviceCommand cmdSpecialLumina = addDeviceCommand(device, name + " CMD Set Special Mode Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_SPECIAL_MODE);
+				deviceCommands.add(cmdSpecialLumina);
+
+				DeviceCommand cmdVacaLumina = addDeviceCommand(device, name + " CMD Set Vaccation Lumina", 1,objnum, OmniLinkCmd.CMD_SECURITY_LUMINA_VACATION_MODE);
+				deviceCommands.add(cmdVacaLumina);
+			}
+
+			DeviceCommand sensMode = addDeviceCommand(device, name + " CMD Get Mode", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_MODE);
+			deviceCommands.add(sensMode);
+
+			DeviceCommand sensAlarm = addDeviceCommand(device, name + " CMD Get Alarm", 0,objnum, OmniLinkCmd.SENSOR_AREA_STATUS_ALARM);
+			deviceCommands.add(sensMode);
+
+			Sensor senAreaMode = createDeviceSensor(device, SensorType.CUSTOM, sensMode, name + " Mode");
+			sensors.add(senAreaMode);
+
+			Sensor senAreaAlarm = createDeviceSensor(device, SensorType.CUSTOM, sensAlarm, name + " Alarm");
+			sensors.add(senAreaAlarm);
+		}
+
+	}
+
 	private void loadAuxs(Connection c,
 			ArrayList<DeviceCommand> deviceCommands, ArrayList<Sensor> sensors,
 			ArrayList<Slider> sliders, ArrayList<Switch> switches,
@@ -757,7 +791,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			AuxSensorProperties o = ((AuxSensorProperties) m);
 			objnum = o.getNumber();
 			String name = "(Aux) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -842,7 +884,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			ButtonProperties o = ((ButtonProperties) m);
 			objnum = o.getNumber();
 			String name = "(Button) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -894,7 +944,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			AudioZoneProperties o = ((AudioZoneProperties) m);
 			objnum = o.getNumber();
 			String name = "(Audio Zone) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
 			DeviceAttr datt = new DeviceAttr();
@@ -939,7 +997,7 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 				if (audioCmd != null)
 					break;
 			}
-			
+
 			if(audioCmd != null){
 				for(int i = 0; i<audioCmd.length; i++){
 					if(audioCmd[i] != null){
@@ -979,13 +1037,13 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdGetText = addDeviceCommand(device, name + " CMD Get Audio Zone Text", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT);
 			deviceCommands.add(cmdGetText);
-			
+
 			DeviceCommand cmdGetTextF1 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 1", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD1);
 			deviceCommands.add(cmdGetTextF1);
-			
+
 			DeviceCommand cmdGetTextF2 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 2", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD2);
 			deviceCommands.add(cmdGetTextF2);
-			
+
 			DeviceCommand cmdGetTextF3 = addDeviceCommand(device, name + " CMD Get Audio Zone Text Field 3", 0,objnum, OmniLinkCmd.SENSOR_AUDIOZONE_TEXT_FIELD3);
 			deviceCommands.add(cmdGetTextF3);
 
@@ -997,13 +1055,13 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			Sensor senText = createDeviceSensor(device, SensorType.CUSTOM, cmdGetText, name + " Sensor Text");
 			sensors.add(senText);
-			
+
 			Sensor senTextF1 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF1, name + " Sensor Text Field 1");
 			sensors.add(senTextF1);
-			
+
 			Sensor senTextF2 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF2, name + " Sensor Text Field 2");
 			sensors.add(senTextF2);
-			
+
 			Sensor senTextF3 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF3, name + " Sensor Text Field 3");
 			sensors.add(senTextF3);
 
@@ -1040,7 +1098,15 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 			objnum = ((ObjectProperties) m).getNumber();
 
 			String name = "(Audio Source) " + o.getName();
-			Device device = new Device(name, "HAI", "Omnilink");
+
+			/*
+			 * For right now lets not add duplicate devices. Later we can make
+			 * this smarter and add new sensors and sliders. on existing devices
+			 */
+			if(existingDeviceForName(name) != null)
+				continue;
+
+			Device device = new Device(name, VENDOR, MODEL);
 			device.setAccount(userService.getAccount());
 
 			List<DeviceAttr> dattrs = new LinkedList<DeviceAttr>();
@@ -1060,25 +1126,25 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 
 			DeviceCommand cmdGetText = addDeviceCommand(device, name + " CMD Get Audio Source Text", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT);
 			deviceCommands.add(cmdGetText);
-			
+
 			DeviceCommand cmdGetTextF1 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 1", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD1);
 			deviceCommands.add(cmdGetTextF1);
-			
+
 			DeviceCommand cmdGetTextF2 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 2", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD2);
 			deviceCommands.add(cmdGetTextF2);
-			
+
 			DeviceCommand cmdGetTextF3 = addDeviceCommand(device, name + " CMD Get Audio Source Text Field 3", 0,objnum, OmniLinkCmd.SENSOR_AUDIOSOURCE_TEXT_FIELD3);
 			deviceCommands.add(cmdGetTextF3);
 
 			Sensor senText = createDeviceSensor(device, SensorType.CUSTOM, cmdGetText, name + " Sensor Text");
 			sensors.add(senText);
-			
+
 			Sensor senTextF1 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF1, name + " Sensor Text Field 1");
 			sensors.add(senTextF1);
-			
+
 			Sensor senTextF2 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF2, name + " Sensor Text Field 2");
 			sensors.add(senTextF2);
-			
+
 			Sensor senTextF3 = createDeviceSensor(device, SensorType.CUSTOM, cmdGetTextF3, name + " Sensor Text Field 3");
 			sensors.add(senTextF3);
 
@@ -1091,10 +1157,9 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 	private DeviceCommand addDeviceCommand(Device aDevice, String name, int parameter1, int parameter2, OmniLinkCmd command) {
 		DeviceCommand dc = new DeviceCommand();
 
-		Protocol protocol = dc.createProtocol("Omnilink");
+		Protocol protocol = dc.createProtocol(MODEL);
 		protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_COMMAND, command + "");
-		if(parameter1 > 0)
-			protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_PARAMETER1, parameter1 + "");
+		protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_PARAMETER1, parameter1 + "");
 		protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_PARAMETER2, parameter2 + "");
 		//    protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_OMNI_TYPE, omnilinkType + ""); 
 		//    protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_OMNI_NUM, omnilinkNum + ""); 
@@ -1134,6 +1199,46 @@ public class CreateOmnilinkDevicesActionHandler implements ActionHandler<CreateO
 		Switch sw = new Switch(onCmd, offCmd, sensor);
 		sw.setName(name);
 		return sw;
+	}
+
+	private Device existingDeviceForName(String deviceName){
+		return existingDevices.get(deviceName);
+	}
+
+	private DeviceCommand existingDeviceCommand(Device device, String commandName){
+		List<DeviceCommand> existingCommands = deviceCommandService.loadByDevice(device.getOid());
+		for(DeviceCommand dc : existingCommands){
+			if(dc.getName().equals(commandName))
+				return dc;
+		}
+		return null;
+	}
+
+	private boolean doesSensorExistForDevice(Device device, String sensorName){
+		List<Sensor> existingSensor = sensorService.loadByDeviceId(device.getOid());
+		for(Sensor sen : existingSensor){
+			if(sen.getName().equals(sensorName))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean doesSwitchExist(String switchName){
+		List<Switch> existingSwitches = switchService.loadAll();
+		for(Switch sw : existingSwitches){
+			if(sw.getName().equals(switchName))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean doesSliderExist(String sliderName){
+		List<Slider> existingSliders = sliderService.loadAll();
+		for(Slider sl : existingSliders){
+			if(sl.getName().equals(sliderName))
+				return true;
+		}
+		return false;
 	}
 
 }
