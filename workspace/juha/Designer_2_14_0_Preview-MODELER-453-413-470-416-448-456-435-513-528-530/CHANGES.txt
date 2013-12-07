@@ -1,3 +1,9 @@
+MODELER-530
+===========
+
+ - Remove regexp validation of UDP IP address
+
+
 MODELER-528
 ===========
 
