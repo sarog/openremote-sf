@@ -1,9 +1,3 @@
-MODELER-530
-===========
-
-  - Remove regexp validation of UDP IP address
-
-
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
