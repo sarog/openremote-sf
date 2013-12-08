@@ -119,7 +119,7 @@ public class PollingHelper {
             	
             ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentController(context),dh);
             	 
-            dh.closeConnection();
+            //dh.closeConnection();
             
             //if none vailable show dialog for now and finish
             Log.i(LOG_CATEGORY, "availableGroupMemberURL." + availableGroupMemberURL);

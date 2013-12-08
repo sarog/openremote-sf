@@ -162,7 +162,7 @@ public class AddEditControllerActivity extends GenericActivity {
 								dh.addController(newController);
 							}
 							
-           	 	dh.closeConnection();
+           	 	//dh.closeConnection();
 							
               Intent intent = getIntent();
               intent.putExtra(getPackageName() + ".ControllerUrl", controllerUrl);
@@ -175,7 +175,7 @@ public class AddEditControllerActivity extends GenericActivity {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            	dh.closeConnection();
+            	//dh.closeConnection();
               finish();
             }            
         });        
