@@ -162,7 +162,7 @@ public class HttpXmlControllerService implements ControllerService
    // switch controller maybe
      ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentController(ctx),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
 	 
-     dh.closeConnection();
+     //dh.closeConnection();
      
      //if none vailable show dialog for now and finish
      Log.i(LOG_CATEGORY, "availableGroupMemberURL." + availableGroupMemberURL);

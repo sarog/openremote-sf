@@ -3,10 +3,12 @@ package org.openremote.android.console;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,9 @@ public class ControllerDataHelper {
    private static final String DATABASE_NAME = "example.db";
    private static final int DATABASE_VERSION = 2;
    private static final String TABLE_NAME = "table1";
-   private Context context;
    private OpenHelper openHelper;
    private SQLiteDatabase db;
+   private Context context;
    private static SQLiteStatement insertStmt;
    private static SQLiteStatement updateStmt;
    private SQLiteStatement deleteStmt;
@@ -38,13 +40,7 @@ public class ControllerDataHelper {
 		      + TABLE_NAME + " where name = ?" ;
    
    public ControllerDataHelper(Context context) {
-      this.context = context;
-      openHelper = new OpenHelper(this.context);
-      this.db = openHelper.getWritableDatabase();
-      this.updateStmt = this.db.compileStatement(UPDATE);
-      this.insertStmt = this.db.compileStatement(INSERT);
-      this.deleteStmt = this.db.compileStatement(DELETE);
-      this.selectStmt = this.db.compileStatement(SELECT);
+	   this.context = context;
    }
  
 //	 public boolean insert(String name, String info) {
@@ -63,12 +59,6 @@ public class ControllerDataHelper {
 //	    this.insertStmt.bindString(2, info);
 //	    return this.insertStmt.executeInsert();
 //	 }
-   
-	public boolean controllerExists(String name) {
-		String s[] = new String[] {name};
-		Cursor c = db.rawQuery(FIND, s);
-		return c.getCount() > 0;
-	}
 
 //   public long find(String name){
 //	      String s[] = new String[1];
@@ -81,17 +71,54 @@ public class ControllerDataHelper {
 //	   return 0;	   
 //   }
    
-   public void closeConnection() {
+   private void closeConnection() {
 	   openHelper.close();
+	   openHelper = null;
    }
    
+   private boolean openConnection() {
+	   if (db == null || !db.isOpen()) {
+		   openHelper = new OpenHelper(context);
+		   db = openHelper.getWritableDatabase();
+	       this.updateStmt = this.db.compileStatement(UPDATE);
+	       this.insertStmt = this.db.compileStatement(INSERT);
+	       this.deleteStmt = this.db.compileStatement(DELETE);
+	       this.selectStmt = this.db.compileStatement(SELECT);
+		   return true;
+	   }
+	   return false;
+   }
+   
+	public boolean controllerExists(String name) {
+		String s[] = new String[] {name};
+		boolean exists = false;
+		try {
+			boolean opened = openConnection();
+			Cursor c = db.rawQuery(FIND, s);
+			exists = c.getCount() > 0;
+			if (opened)
+				closeConnection();
+		} catch (Exception e) {
+			Log.e("SQL Exception", "Failed to determine if controller exists '" +  name + "'", e);
+		}
+		return exists;
+	}
+	
 	public void addController(ControllerObject controller) {
-		insertStmt.bindString(1, controller.getUrl());
-		insertStmt.bindString(2, ""); // Not sure what this property is
-		insertStmt.bindString(3, controller.getDefaultPanel());
-		insertStmt.bindString(4, controller.getUsername());
-		insertStmt.bindString(5, controller.getUserPass());
-		insertStmt.executeInsert();
+		try {
+			boolean opened = openConnection();
+			insertStmt.bindString(1, controller.getUrl());
+			insertStmt.bindString(2, ""); // Not sure what this property is
+			insertStmt.bindString(3, controller.getDefaultPanel());
+			insertStmt.bindString(4, controller.getUsername());
+			insertStmt.bindString(5, controller.getUserPass());
+			insertStmt.executeInsert();
+			if (opened)
+				closeConnection();
+		} catch (Exception e) {
+			Log.e("SQL Exception", "Add Controller failed", e);
+		}
+		
 	}
    
 	public void updateController(ControllerObject oldController, ControllerObject newController) {
@@ -109,22 +136,45 @@ public class ControllerDataHelper {
 		cv.put("username", newController.getUsername());
 		cv.put("userpass", newController.getUserPass());
 		
-		db.update(TABLE_NAME, cv, "name = ?", new String[] {oldController.getUrl()});
+		try {
+			boolean opened = openConnection();
+			db.update(TABLE_NAME, cv, "name = ?", new String[] {oldController.getUrl()});
+			if (opened)
+				closeConnection();
+		} catch (Exception e) {
+			Log.e("SQL Exception", "Update Controller failed", e);
+		}
 	}
    
    public void deleteController(String url) {
-  	 this.deleteStmt.bindString(1, url);
-  	 this.deleteStmt.execute();
+	   try {
+			boolean opened = openConnection();
+			this.deleteStmt.bindString(1, url);
+			this.deleteStmt.execute();
+			if (opened)
+				closeConnection();
+		} catch (Exception e) {
+			Log.e("SQL Exception", "Update Controller failed", e);
+		}
    }
    
    public void deleteAll() {
-      this.db.delete(TABLE_NAME, null, null);
+	   try {
+			boolean opened = openConnection();
+			this.db.delete(TABLE_NAME, null, null);
+			if (opened)
+				closeConnection();
+		} catch (Exception e) {
+			Log.e("SQL Exception", "Update Controller failed", e);
+		}     
    }
    
    public ArrayList<ControllerObject> getAllControllers() {
 	   ArrayList<ControllerObject> list = new ArrayList<ControllerObject>();
 
-     	Cursor cursor = this.db.query(TABLE_NAME, null, null, null, null, null, "name desc");
+	   try {
+		   boolean opened = openConnection();
+		   Cursor cursor = this.db.query(TABLE_NAME, null, null, null, null, null, "name desc");
 			if (cursor.moveToFirst()) {
 			   do {
 			      list.add(getControllerFromCursor(cursor));
@@ -133,17 +183,29 @@ public class ControllerDataHelper {
 			if (cursor != null && !cursor.isClosed()) {
 			   cursor.close();
 			}
-			return list;
+			if (opened)
+				closeConnection();
+	   } catch(Exception e) {
+		   Log.e("SQL Exception", "Failed to get all controllers", e);
+	   }
+	   return list;
    }
    
    public ControllerObject getControllerByUrl(String url) {
 			ControllerObject controller = null;
-			if (url == null)
+			if (url == null || url.equals(""))
 				return controller;
 			
-			Cursor cursor = db.rawQuery(FIND, new String[] {url});
-			if (cursor.moveToFirst()) {
-           controller = getControllerFromCursor(cursor);
+			try {
+				boolean opened = openConnection();
+				Cursor cursor = db.rawQuery(FIND, new String[] {url});
+				if (cursor.moveToFirst()) {
+					controller = getControllerFromCursor(cursor);
+				}
+				if (opened)
+					closeConnection();
+			} catch (Exception e) {
+				Log.e("Failed to get controller by URL", url);
 			}
 			
 			return controller;

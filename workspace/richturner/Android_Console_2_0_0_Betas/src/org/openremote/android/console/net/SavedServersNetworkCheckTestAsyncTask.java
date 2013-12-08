@@ -92,7 +92,7 @@ public class SavedServersNetworkCheckTestAsyncTask extends AsyncTask<String, Str
     	    
     	    customServers=customServersNew;	
     	 
-    	    dh.closeConnection();
+    	    //dh.closeConnection();
     
            return customServers;
          

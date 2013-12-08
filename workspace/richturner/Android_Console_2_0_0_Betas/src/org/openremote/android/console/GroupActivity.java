@@ -520,7 +520,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
             MenuItem menuItem = menu.add(0, i, i, items.get(i).getName());
             if (items.get(i).getImage() != null) {
                menuItem.setIcon(ImageUtil.createFromPathQuietly(this, Constants.FILE_FOLDER_PATH
-                     + items.get(i).getImage().getSrc()));
+                     + items.get(i).getImage().getSrc(), 100, 100)); // Only need small images for tab bar
             }
             final Navigate navigate = items.get(i).getNavigate();
             if (navigate != null) {
@@ -586,12 +586,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    protected void onDestroy() {
       super.onDestroy();
       cancelCurrentPolling();
+      ImageUtil.clearBitmaps();
    }
 
    @Override
    protected void onPause() {
-      super.onPause();
-      cancelCurrentPolling();
+    super.onPause();
+    cancelCurrentPolling();
+    finish();    
    }
 
    /**
