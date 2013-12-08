@@ -31,6 +31,7 @@ import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -46,10 +47,15 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    private ImageView imageView;
    private TextView textView;
    private String newStatus;
+   private int imageWidth;
+   private int imageHeight;
+   
    public ORImageView(Context context, Image image) {
       super(context);
       setComponent(image);
       if (image != null) {
+    	 imageWidth = image.getFrameWidth();
+    	 imageHeight = image.getFrameHeight();
          image.setLinkedLabel();// read label from cache.
          imageView = new ImageView(context);
          textView = new TextView(getContext());
@@ -62,7 +68,7 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    }
 
    private void addImageView(String imageSrc) {
-      Drawable bd = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + imageSrc);
+      Drawable bd = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH + imageSrc, imageWidth, imageHeight);
       if (bd == null) {
          return;
       }

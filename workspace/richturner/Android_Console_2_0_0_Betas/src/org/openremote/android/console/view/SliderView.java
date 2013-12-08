@@ -23,6 +23,7 @@ package org.openremote.android.console.view;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.R;
+import org.openremote.android.console.bindings.Image;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -30,6 +31,7 @@ import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -144,19 +146,21 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		int maxHeight = 0;
 		int maxWidth = 0;
 		int maxSpacing = 0;
-				
-		if (slider.getMinImage() != null) {
+		Image minImg = slider.getMinImage();
+		
+		if (minImg != null) {
 			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMinImage().getSrc());
+					+ minImg.getSrc(), minImg.getFrameWidth(), minImg.getFrameHeight());
 			minImage.setImageDrawable(drawable);
 			minWidth = drawable.getIntrinsicWidth();
 			minHeight = drawable.getIntrinsicHeight();
 			minSpacing = spacing;
 		}
 
-		if (slider.getMaxImage() != null) {
+		Image maxImg = slider.getMinImage();
+		if (maxImg != null) {
 			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMaxImage().getSrc());
+					+ maxImg.getSrc(), maxImg.getFrameWidth(), maxImg.getFrameHeight());
 			maxImage.setImageDrawable(drawable);
 			maxWidth = drawable.getIntrinsicWidth();
 			maxHeight = drawable.getIntrinsicHeight();
@@ -198,9 +202,10 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		RelativeLayout.LayoutParams thumbLayoutParams = (RelativeLayout.LayoutParams) thumb
 				.getLayoutParams();
 
-		if (slider.getThumbImage() != null) {
+		Image thumbImg = slider.getMinImage();
+		if (thumbImg != null) {
 			thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getThumbImage().getSrc());
+					+ thumbImg.getSrc(), thumbImg.getFrameWidth(), thumbImg.getFrameHeight());
 		} else {
 			thumbDrawable = getResources().getDrawable(R.drawable.slider_thumb);
 		}
@@ -231,9 +236,10 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		RelativeLayout.LayoutParams maxLayoutParams = (RelativeLayout.LayoutParams) maxTrack
 				.getLayoutParams();
 
-		if (slider.getMinTrackImage() != null) {
+		Image minTImg = slider.getMinImage();
+		if (minTImg != null) {
 			BitmapDrawable minTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMinTrackImage().getSrc());
+					+ minTImg.getSrc(), minTImg.getFrameWidth(), minTImg.getFrameHeight());
 			
 			// Position the image within the view
 			if (isVertical) {
@@ -276,9 +282,11 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			minTrackDrawable = getResources().getDrawable(minId);
 		}
 	
-		if (slider.getMaxTrackImage() != null) {
+		Image maxTImg = slider.getMinImage();
+		
+		if (maxTImg != null) {
 			BitmapDrawable maxTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ slider.getMaxTrackImage().getSrc());
+					+ maxTImg.getSrc(), maxTImg.getFrameWidth(), maxTImg.getFrameHeight());
 			
 			// Position the image within the view
 			if (isVertical) {
