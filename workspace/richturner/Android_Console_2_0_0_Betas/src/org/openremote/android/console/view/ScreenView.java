@@ -31,9 +31,11 @@ import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -62,103 +64,128 @@ public class ScreenView extends RelativeLayout {
 
       }
 
-      ArrayList<LayoutContainer> layouts = screen.getLayouts();
-      for (int i = 0; i < layouts.size(); i++) {
-         LayoutContainerView la = LayoutContainerView.buildWithLayoutContainer(context, layouts.get(i));
-         if (la != null) {
-            LayoutContainer layout = layouts.get(i);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(layout.getWidth(), layout.getHeight());
-            params.topMargin = layout.getTop();
-            params.leftMargin = layout.getLeft();
-            addView(la, params);
-         }
+    ArrayList<LayoutContainer> layouts = screen.getLayouts();
+    for (int i = 0; i < layouts.size(); i++) {
+      LayoutContainerView la = LayoutContainerView
+              .buildWithLayoutContainer(context, layouts.get(i));
+      if (la != null) {
+        LayoutContainer layout = layouts.get(i);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(layout.getWidth(),
+                layout.getHeight());
+        params.topMargin = layout.getTop();
+        params.leftMargin = layout.getLeft();
+        addView(la, params);
       }
-      
-   }
+    }
 
-   /**
-    * @param screen
-    */
-   private void addBackground() {
-      ImageView backgroundView = new ImageView(this.getContext());
-      int left = 0;
-      int top = 0;
-      int screenWidth = screen.isLandscape() ? Screen.SCREEN_HEIGHT : Screen.SCREEN_WIDTH;
-      int screenHeight = screen.isLandscape() ? Screen.SCREEN_WIDTH - Screen.SCREEN_STATUS_BAR_HEIGHT : Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
+  }
 
-      Background background = screen.getBackground();
-			BitmapDrawable backgroundBitmap = ImageUtil.createFromPathQuietly(getContext(), Constants.FILE_FOLDER_PATH + screen.getBackgroundSrc());
+  /**
+   * @param screen
+   */
+  private void addBackground() {
+    ImageView backgroundView = new ImageView(this.getContext());
+    int left = 0;
+    int top = 0;
+    int screenWidth = screen.isLandscape() ? Screen.SCREEN_HEIGHT : Screen.SCREEN_WIDTH;
+    int screenHeight = screen.isLandscape() ? Screen.SCREEN_WIDTH - Screen.SCREEN_STATUS_BAR_HEIGHT
+            : Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
+    Background background = screen.getBackground();
+    BitmapDrawable backgroundBitmap = null;
+    String imagePath = Constants.FILE_FOLDER_PATH + screen.getBackgroundSrc();
+    // BitmapDrawable backgroundBitmap =
+    // ImageUtil.createFromPathQuietly(getContext(),
+    // Constants.FILE_FOLDER_PATH + screen.getBackgroundSrc());
+    //
+    // if (backgroundBitmap == null) {
+    // return;
+    // }
+    //
+    // int imageWidth = backgroundBitmap.getIntrinsicWidth();
+    // int imageHeight = backgroundBitmap.getIntrinsicHeight();
 
-			if (backgroundBitmap == null) {
-          return;
-			}
-			
-			int imageWidth = backgroundBitmap.getIntrinsicWidth();
-			int imageHeight = backgroundBitmap.getIntrinsicHeight();
-   		backgroundView.setAdjustViewBounds(true);
-			LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-   		backgroundView.setImageDrawable(backgroundBitmap);
-   		backgroundView.setScaleType(ScaleType.MATRIX);
-   		if (background.isFillScreen()) {
-   			backgroundView.setScaleType(ScaleType.CENTER_CROP);
-  		} else if (background.isBackgroundImageAbsolutePosition()) {
-  			left = background.getBackgroundImageAbsolutePositionLeft();
-        top = background.getBackgroundImageAbsolutePositionTop();
-  		} else {
+    if (background.isFillScreen()) {
+      backgroundBitmap = ImageUtil.createScaledDrawableFromPath(getContext(), imagePath,
+              screenWidth, screenHeight);
+      // backgroundView.setScaleType(ScaleType.CENTER_CROP);
+    } else {
+      backgroundBitmap = ImageUtil.createFromPathQuietly(getContext(), imagePath, screenWidth, screenHeight);
+      if (background.isBackgroundImageAbsolutePosition()) {        
+          left = background.getBackgroundImageAbsolutePositionLeft();
+          top = background.getBackgroundImageAbsolutePositionTop();
+      } else {
+        Pair<Integer, Integer> size = ImageUtil.getNativeImageSize(imagePath);        
         String backgroundImageRelativePosition = background.getBackgroundImageRelativePosition();
+        
         if ("top_left".equals(backgroundImageRelativePosition)) {
         } else if ("top".equals(backgroundImageRelativePosition)) {
-           left = (screenWidth - imageWidth) / 2;
+          left = (screenWidth - size.first) / 2;
         } else if ("top_right".equals(backgroundImageRelativePosition)) {
-           left = screenWidth - imageWidth;
+          left = screenWidth - size.first;
         } else if ("left".equals(backgroundImageRelativePosition)) {
-           top = (screenHeight - imageHeight) / 2;
+          top = (screenHeight - size.second) / 2;
         } else if ("center".equals(backgroundImageRelativePosition)) {
-           left = (screenWidth - imageWidth) / 2;
-           top = (screenHeight - imageHeight) / 2;
+          left = (screenWidth - size.first) / 2;
+          top = (screenHeight - size.second) / 2;
         } else if ("right".equals(backgroundImageRelativePosition)) {
-           left = screenWidth - imageWidth;
-           top = (screenHeight - imageHeight) / 2;
+          left = screenWidth - size.first;
+          top = (screenHeight - size.second) / 2;
         } else if ("bottom".equals(backgroundImageRelativePosition)) {
-           left = (screenWidth - imageWidth) / 2;
-           top = screenHeight - imageHeight;
+          left = (screenWidth - size.first) / 2;
+          top = screenHeight - size.second;
         } else if ("bottom_left".equals(backgroundImageRelativePosition)) {
-           top = screenHeight - imageHeight;
+          top = screenHeight - size.second;
         } else if ("bottom_right".equals(backgroundImageRelativePosition)) {
-           left = screenWidth - imageWidth;
-           top = screenHeight - imageHeight;
+          left = screenWidth - size.first;
+          top = screenHeight - size.second;
         }
-  		} 
-   		layout.topMargin = top;
-   		layout.leftMargin = left;
-   		backgroundView.setLayoutParams(layout);
-      addView(backgroundView);
-   }
+      }
+    }
+    
+    LayoutParams layout = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+    backgroundView.setAdjustViewBounds(true);
+    backgroundView.setScaleType(ScaleType.MATRIX);
+    layout.topMargin = top;
+    layout.leftMargin = left;
+    backgroundView.setImageDrawable(backgroundBitmap);
+    backgroundView.setLayoutParams(layout);
+    addView(backgroundView);
+  }
 
-   /**
-    * Start polling on the screen's sensor components.
-    */
-   public void startPolling() {
-      if (!screen.getPollingComponentsIds().isEmpty()) {
-         polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
-      }
-      if (polling != null) {
-         new Thread(new Runnable() {
-            public void run() {
-               polling.requestCurrentStatusAndStartPolling();
-            }
-         }).start(); 
-      }
-   }
-   
-   public void cancelPolling() {
-      if (polling != null) {
-         polling.cancelPolling();
-      }
-   }
-   
-   public Screen getScreen() {
-      return screen;
-   }
-   
+  /**
+   * Start polling on the screen's sensor components.
+   */
+  public void startPolling() {
+    if (!screen.getPollingComponentsIds().isEmpty()) {
+      polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());
+    }
+    if (polling != null) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          polling.requestCurrentStatusAndStartPolling();
+        }
+      }).start();
+    }
+  }
+
+  public void cancelPolling() {
+    if (polling != null) {
+      polling.cancelPolling();
+    }
+  }
+
+  public Screen getScreen() {
+    return screen;
+  }
+
+  @Override
+  protected void onDraw(Canvas canvas) {
+    try {
+    super.onDraw(canvas);
+    } catch (Exception e) {
+      Log.e("Screen Error", "Screen Error", e);
+    }
+  }
 }

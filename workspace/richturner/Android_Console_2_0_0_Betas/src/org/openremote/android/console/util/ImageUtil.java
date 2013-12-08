@@ -19,12 +19,17 @@
 */
 package org.openremote.android.console.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.InflateException;
 
@@ -34,7 +39,8 @@ import android.view.InflateException;
  * @author Dan Cong
  */
 public class ImageUtil {
-
+  private static List<Bitmap> bitmapCache = new ArrayList<Bitmap>();
+  
    private ImageUtil() {
    }
    
@@ -45,28 +51,102 @@ public class ImageUtil {
     *           path name
     * @return Drawable instance
     */
-   public static BitmapDrawable createFromPathQuietly(Context ctx, String pathName) {
-      BitmapDrawable ret = null;
-      try {
-         Bitmap decodedBitmap = BitmapFactory.decodeFile(pathName);
-         ret = new BitmapDrawable(ctx.getResources(), decodedBitmap);
-      } catch (OutOfMemoryError e) {
-         Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
-      }
+   public static BitmapDrawable createFromPathQuietly(Context ctx, String pathName, int reqWidth, int reqHeight) {
+	   BitmapFactory.Options opts=new BitmapFactory.Options();
+	   opts.inDither=false;                     //Disable Dithering mode
+	   opts.inPurgeable=true;                   //Tell to gc that whether it needs free memory, the Bitmap can be cleared
+	   opts.inInputShareable=true;              //Which kind of reference will be used to recover the Bitmap data after being clear, when it will be used in the future
+	   opts.inTempStorage=new byte[32 * 1024]; 
+     BitmapDrawable ret = null;
+      
+	  Bitmap decodedBitmap = createBitmap(pathName, reqWidth, reqHeight);
+	  if (decodedBitmap != null)
+    		  ret = new BitmapDrawable(ctx.getResources(), decodedBitmap);
+      
       return ret;
    }
    
-   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String pathName, int width, int height) {
+   
+   private static Bitmap createBitmap(String pathName, int reqWidth, int reqHeight) {
+      Bitmap bitmap = null;
+      BitmapFactory.Options opts=new BitmapFactory.Options();
+      opts.inDither=false;                     //Disable Dithering mode
+      opts.inPurgeable=true;                   //Tell to gc that whether it needs free memory, the Bitmap can be cleared
+      opts.inInputShareable=true;              //Which kind of reference will be used to recover the Bitmap data after being clear, when it will be used in the future
+      opts.inTempStorage=new byte[32 * 1024]; 
+	   
+      try {
+    	  // Determine required sample size of the image
+    	  opts.inJustDecodeBounds = true;
+    	  BitmapFactory.decodeFile(pathName, opts);
+    	  
+    	  // Calculate inSampleSize
+    	  opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
+    	  opts.inJustDecodeBounds = false;
+    	  
+    	  bitmap = BitmapFactory.decodeFile(pathName, opts);
+      } catch (OutOfMemoryError e) {
+          Log.e("Out of Memory error: ", pathName);
+      }
+      
+      if (bitmap != null)
+        bitmapCache.add(bitmap);
+      
+      return bitmap;
+   }
+   
+   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String pathName, int reqWidth, int reqHeight, int width, int height) {
      BitmapDrawable croppedBitmap = null;
-     try {
-       croppedBitmap = createFromPathQuietly(ctx, pathName);
-       croppedBitmap.setBounds(0, 0, width, height);
-       croppedBitmap.setGravity(Gravity.LEFT|Gravity.TOP);
-     } catch (OutOfMemoryError e) {
-       Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
+     croppedBitmap = createFromPathQuietly(ctx, pathName, reqWidth, reqHeight);
+     if (croppedBitmap != null) {
+	     croppedBitmap.setBounds(0, 0, width, height);
+	     croppedBitmap.setGravity(Gravity.LEFT|Gravity.TOP);
      }
      return croppedBitmap;
    }
+   
+   public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height) {
+	     BitmapDrawable drawable = null;
+	     Bitmap bitmap = null;
+	     Bitmap tempBitmap = createBitmap(pathName, width, height);
+	     if (tempBitmap != null) {
+	       bitmap = Bitmap.createScaledBitmap(tempBitmap, width, height, false);
+	       if (tempBitmap != bitmap) {
+	         bitmapCache.remove(tempBitmap);
+	         tempBitmap.recycle();
+	       }
+         tempBitmap = null;
+	     }
+	     
+		  if (bitmap != null)
+		  {
+		    bitmapCache.add(bitmap);
+    		drawable = new BitmapDrawable(ctx.getResources(), bitmap);
+		  }
+	     return drawable;
+	   }
+   
+  public static Pair<Integer, Integer> getNativeImageSize(String pathName) {
+    Pair<Integer, Integer> size = null;
+    BitmapFactory.Options opts=new BitmapFactory.Options();
+    opts.inDither=false;                     //Disable Dithering mode
+    opts.inPurgeable=true;                   //Tell to gc that whether it needs free memory, the Bitmap can be cleared
+    opts.inInputShareable=true;              //Which kind of reference will be used to recover the Bitmap data after being clear, when it will be used in the future
+    opts.inTempStorage=new byte[32 * 1024]; 
+
+    try {
+      // Determine required sample size of the image
+      opts.inJustDecodeBounds = true;
+      Bitmap bitmap = BitmapFactory.decodeFile(pathName, opts);
+      bitmap.recycle();
+      bitmap = null;
+      size = new Pair<Integer, Integer>(opts.outWidth, opts.outHeight);
+    } catch (OutOfMemoryError e) {
+      Log.e("Out of Memory error: ", pathName);
+    }
+    return size;
+  }
+   
    /**
     * Calls native Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
     * 
@@ -88,4 +168,33 @@ public class ImageUtil {
       }
    }
    
+   public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	   // Raw height and width of image
+	   final int height = options.outHeight;
+	   final int width = options.outWidth;
+	   int inSampleSize = 1;
+	
+	   if (height > reqHeight || width > reqWidth) {
+	
+	       final int halfHeight = height / 2;
+	       final int halfWidth = width / 2;
+	
+	       // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+	       // height and width larger than the requested height and width.
+	       while ((halfHeight / inSampleSize) > reqHeight
+	               && (halfWidth / inSampleSize) > reqWidth) {
+	           inSampleSize *= 2;
+	       }
+	   }
+	
+	   return inSampleSize;
+   }
+   
+   public static void clearBitmaps() {
+     for (Bitmap b : bitmapCache) {
+       b.recycle();
+       b = null;
+     }
+     bitmapCache.clear();
+   }
 }
