@@ -10,6 +10,7 @@ Bug Fixes:
   - Fixed Marantz protocol does not always re-connect to AVR (ORCJAVA-410)
   - Fix HTTPCommand to avoid Expect_Continue header for POST and PUT requests (ORCJAVA-415)
   - Fixed invalid XML generated for sensor values (ORCJAVA-416)
+  - Fixed Marantz protocol takes a long time to connect to receiver (ORCJAVA-418)
 
 Controller Pro 1.0.11
 =====================
