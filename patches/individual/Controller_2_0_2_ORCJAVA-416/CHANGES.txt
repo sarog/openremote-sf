@@ -1,3 +1,8 @@
+ORCJAVA-416
+===========
+
+ - Fixed: Invalid XML generated for sensor values
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
