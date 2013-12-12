@@ -64,7 +64,7 @@ public class MarantzAVRGateway {
    // results in infinite recursion
    private MarantzAVRConfig marantzConfig;
 
-   private MessageQueueWithPriorityAndTTL<MarantzCommand> queue = new MessageQueueWithPriorityAndTTL<MarantzCommand>();
+   private MessageQueueWithPriorityAndTTL<MarantzCommand> queue = new MessageQueueWithPriorityAndTTL<MarantzCommand>(2 * 60 * 1000); // 2 min TTL
 
    private MarantzConnectionThread connectionThread;
 
