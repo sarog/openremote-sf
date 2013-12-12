@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openremote.controller.Constants;
 import org.openremote.controller.config.ControllerXMLChangedException;
 import org.openremote.controller.service.Deployer;
@@ -85,7 +86,7 @@ public class StatusCommandServiceImpl implements StatusCommandService
           .append(sensorID)
           .append("\">");
 
-      sb.append(latestStatuses.get(sensorID));
+      sb.append(StringEscapeUtils.escapeXml(latestStatuses.get(sensorID)));
       sb.append("</");
       sb.append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
       sb.append("\n");
