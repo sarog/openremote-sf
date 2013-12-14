@@ -77,8 +77,7 @@ public class RuleListener extends DefaultAgendaEventListener {
          objectLog = String.format("%s\t\tClass: \"%s\"\n\t\tFields: \n\t\t\t%s\n", objectLog, theClass, theValue);
       }
       
-      log.debug(String.format("Rule Activation Imminent: \n" +
-      		                  "\trule %s\n" +
+      log.debug(String.format("rule %s\n" +
       		                  "\tDeclarations \n%s" +
       		                  "\tLHS objects(antecedents)\n%s", ruleName, declarationLog, objectLog));
       
