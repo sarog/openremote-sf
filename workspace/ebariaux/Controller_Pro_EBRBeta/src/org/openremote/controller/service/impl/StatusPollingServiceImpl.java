@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.config.ControllerXMLChangedException;
@@ -155,7 +156,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
       Set<Integer> sensorIDs = changedStatuses.keySet();
       for (Integer sensorID : sensorIDs) {
           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-          sb.append(changedStatuses.get(sensorID));
+          sb.append(StringEscapeUtils.escapeXml(changedStatuses.get(sensorID)));
           sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
           sb.append("\n");
       }
