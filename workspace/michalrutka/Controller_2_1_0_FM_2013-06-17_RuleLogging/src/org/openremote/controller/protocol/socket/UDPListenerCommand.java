@@ -111,7 +111,11 @@ public class UDPListenerCommand implements EventListener {
                  Pattern regexPattern = Pattern.compile(regex);
                  Matcher matcher = regexPattern.matcher(msg);
                  if (matcher.find()) {
-                    sensor.update(""+System.currentTimeMillis());
+                    if (matcher.groupCount() > 0) {
+                      sensor.update(matcher.group(1));
+                    } else {
+                      sensor.update("" + System.currentTimeMillis());
+                    }
                  }
               }
 
