@@ -41,8 +41,8 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 	private Integer top;
 	private Integer right;
 	private Integer bottom;
-	protected Integer height;
-	protected Integer width;
+	private Integer height;
+	private Integer width;
 	private Double widthPercentage = null;
 	private Double heightPercentage = null;
 	private Double leftPercentage = null;
@@ -286,20 +286,23 @@ public abstract class PanelComponent extends PassiveConsoleComponent implements 
 		if (dimStr == null) return null;
 		
 		if (dimStr.endsWith("%")) {
+      unit = DimensionUnit.PERCENTAGE;
 			dimStr = dimStr.replaceAll("%", "");
 			try {
 				dim = (Double.parseDouble(dimStr)/100); 
 			} catch (Exception e) {
+//			  logger.log(Level.SEVERE, "Failed to parse dimension: ", e);
 				dim = 1;
 			}
-			unit = DimensionUnit.PERCENTAGE;
 		} else {
 			if (dimStr.endsWith("px")) {
 				dimStr = dimStr.replaceAll("px", "");
 			}
 			try {
-				dim = Integer.parseInt(dimStr);
-			} catch (Exception e) {}
+				dim = Double.parseDouble(dimStr);
+			} catch (Exception e) {
+//			  logger.log(Level.SEVERE, "Failed to parse dimension: ", e);
+			}
 		}
 		
 		return new DimensionResult(dim, unit);
