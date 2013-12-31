@@ -78,36 +78,45 @@ public class WebConsole implements EntryPoint {
 		
 		BrowserUtils.setupHistory();
 		
-		// Initialise the Console Unit - if mobile or Setting defined to load in fullscreen mode
-		if (BrowserUtils.isMobile) {
-			consoleUnit = new ConsoleUnit(true);
-		} else {
-			// Check preferences
-			LocalDataService dataService = LocalDataServiceImpl.getInstance();
-			PanelSizeInfo sizeInfo = null;
+    // Initialise the Console Unit - if mobile or Setting defined to load in fullscreen mode
+    if (BrowserUtils.isMobile) {
+      consoleUnit = new ConsoleUnit(true);
+    } else {
+      // Check preferences
+      LocalDataService dataService = LocalDataServiceImpl.getInstance();
+      PanelSizeInfo sizeInfo = null;
 
-			String panelSizeInfo = dataService.getObjectString("panelSizeInfo");
-			if (panelSizeInfo == null) {
-				// Generate defaults
-				dataService.setObject("panelSizeInfo", DEFAULT_PANEL_SIZE_INFO);
-				sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, DEFAULT_PANEL_SIZE_INFO).as();
-			} else {
-				sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, panelSizeInfo).as();
-			}
-			
-			if (sizeInfo != null) {
-				// Get stored size info
-				if (sizeInfo.getPanelSizeType().equals("fullscreen")) {
-					consoleUnit = new ConsoleUnit(true);
-				} else {
-					consoleUnit = new ConsoleUnit(sizeInfo.getPanelSizeWidth(), sizeInfo.getPanelSizeHeight());
-				}
-			} else {				
-				consoleUnit = new ConsoleUnit();
-			}
-			
-			SlidingToolbar.initialise(sizeInfo);
-		}
+      String panelSizeInfo = dataService.getObjectString("panelSizeInfo");
+      if (panelSizeInfo == null) {
+        // Generate defaults
+        dataService.setObject("panelSizeInfo", DEFAULT_PANEL_SIZE_INFO);
+        sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, DEFAULT_PANEL_SIZE_INFO).as();
+      } else {
+        sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, panelSizeInfo).as();
+      }
+      
+      if (sizeInfo != null) {
+        String fullscreen = Window.Location.getParameter("fullscreen");
+        if (fullscreen != null) {
+          sizeInfo.setPanelSizeType("fullscreen");
+        }
+        
+        // Get stored size info
+        if (sizeInfo.getPanelSizeType().equals("fullscreen")) {
+          consoleUnit = new ConsoleUnit(true);
+        } else {
+          consoleUnit = new ConsoleUnit(sizeInfo.getPanelSizeWidth(), sizeInfo.getPanelSizeHeight());
+        }
+      } else {
+        consoleUnit = new ConsoleUnit();
+      }
+      
+      // Show sliding toolbar if not disabled with GET parameter
+      String showToolbar = Window.Location.getParameter("showToolbar");
+      if (showToolbar == null) {
+        SlidingToolbar.initialise(sizeInfo);
+      }
+    }
 		
 		if (consoleUnit != null) {
 			RootPanel.get().add(consoleUnit, 0, 0);
