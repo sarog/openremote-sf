@@ -26,10 +26,12 @@ import java.util.Map;
 
 import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.UPnP;
-import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.Command;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.jdom.Element;
+import org.openremote.controller.Constants;
+import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Logger;
 
 /**
  * UPnPCommandBuilder is responsible for parsing the XML model from controller.xml and create
@@ -113,11 +115,15 @@ public class UPnPCommandBuilder implements CommandBuilder
    * }</pre>
    */
   public final static String UPNP_XMLPROPERTY_ACTION = "action";
+  
+  
+  public final static String UPNP_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "UPnP";
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
 	private ControlPoint controlPoint;
+	private final static Logger logger = Logger.getLogger(UPNP_PROTOCOL_LOG_CATEGORY);
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -136,9 +142,14 @@ public class UPnPCommandBuilder implements CommandBuilder
 	 */
 	public UPnPCommandBuilder()
   {
-		UPnP.setXMLParser(new UPnPParser());
+	   logger.info("UPnP Control point starting");
+	   UPnP.setXMLParser(new UPnPParser());
+	   UPnP.setDisable(UPnP.USE_LOOPBACK_ADDR);
+	   UPnP.setDisable(UPnP.USE_ONLY_IPV6_ADDR);
+	   UPnP.setEnable(UPnP.USE_ONLY_IPV4_ADDR);
 		this.controlPoint = new ControlPoint();
 		this.controlPoint.start();
+		logger.info("UPnP Control point started");
 	}
 
 
@@ -233,7 +244,7 @@ public class UPnPCommandBuilder implements CommandBuilder
     }
 
     // done!
-    
+    logger.info("built command for device " + upnpDevice + "/" + upnpService + "/" + upnpAction);
 		return new UPnPCommand(this.controlPoint, upnpDevice, upnpService, upnpAction, upnpEventArguments);
 	}
 

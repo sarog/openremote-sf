@@ -42,7 +42,7 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
    private ControlPoint controlPoint;
    private String service;
    private Device device;
-   private static Logger logger = Logger.getLogger(UPnPCommand.class.getName());
+   private static Logger logger = Logger.getLogger(UPnPCommandBuilder.UPNP_PROTOCOL_LOG_CATEGORY);
 
    /**
     * Constructor of the UPnP event.
@@ -106,7 +106,7 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
          logger.warn("Sending the command failed with status " + act.getControlStatus());
          return;
       }
-
+      logger.info("command " + this.action + " successfully send to " + this.device.getFriendlyName());
       // TODO : handle returned values ?
    }
 
