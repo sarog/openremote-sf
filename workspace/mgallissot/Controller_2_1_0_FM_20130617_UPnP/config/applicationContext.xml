@@ -247,7 +247,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "socket"           value-ref = "tcpSocketCommandBuilder"/>
         <entry key = "telnet"           value-ref = "telnetCommandBuilder"/>
         <entry key = "http"             value-ref = "httpGetCommandBuilder"/>
-<!--    <entry key = "upnp"             value-ref = "upnpCommandBuilder"/>      -->
+		<entry key = "upnp"             value-ref = "upnpCommandBuilder"/>
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
@@ -361,10 +361,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     
   
   <!-- Universal Plug'n'Play Command Builder -->
-  <!--
   <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
         scope = "singleton" />
-   -->
+        
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
 
