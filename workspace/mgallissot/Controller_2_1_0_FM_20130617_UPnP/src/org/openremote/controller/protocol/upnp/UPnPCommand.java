@@ -17,24 +17,28 @@
 package org.openremote.controller.protocol.upnp;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cybergarage.upnp.Action;
+import org.cybergarage.upnp.Argument;
 import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.Device;
 import org.cybergarage.upnp.Service;
 import org.cybergarage.upnp.device.DeviceChangeListener;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.ReadCommand;
 
 /**
  * UPnP Event class
  * 
  * @author Mathieu Gallissot
  */
-public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChangeListener {
+public class UPnPCommand extends ReadCommand implements ExecutableCommand, DeviceChangeListener, EventListener, org.cybergarage.upnp.event.EventListener {
 
    private String deviceUDN;
    private String action;
@@ -42,6 +46,9 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
    private ControlPoint controlPoint;
    private String service;
    private Device device;
+   private List<Sensor> sensors = new LinkedList<Sensor>();
+   private String cache = "";
+   
    private static Logger logger = Logger.getLogger(UPnPCommandBuilder.UPNP_PROTOCOL_LOG_CATEGORY);
 
    /**
@@ -65,10 +72,8 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
       this.args = args;
       this.controlPoint = controlPoint;
       this.controlPoint.addDeviceChangeListener(this);
-
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public void send() {
       // First, let's grab the device corresponding to the event's id
@@ -95,6 +100,7 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
          return;
       }
 
+      // Filling the arguments
       Iterator<String> i = args.keySet().iterator();
       while (i.hasNext()) {
          String argName = i.next();
@@ -107,30 +113,73 @@ public class UPnPCommand implements ExecutableCommand, StatusCommand, DeviceChan
          return;
       }
       logger.info("command " + this.action + " successfully send to " + this.device.getFriendlyName());
-      // TODO : handle returned values ?
+      
+      
+      //Processing results, if any
+      Iterator<Argument> j = act.getArgumentList().iterator();
+      while (j.hasNext()) {
+         Argument arg = j.next();
+         if(arg.isOutDirection()) {
+            this.cache = arg.getValue();
+            logger.info("action returned for argument \"" + arg.getName() + "\" value: " + this.cache);
+            for (Sensor sensor : this.sensors) {
+               sensor.update(this.cache);
+            }
+            logger.debug("sensors updated with new value");
+         }
+         
+      }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
-      // TODO
-      return null;
-   }
 
    // Methods to manage if the device has been yet discovered or not
    @Override
    public void deviceAdded(Device dev) {
       if (dev.getUDN().equals(this.deviceUDN)) {
          this.device = dev;
+         logger.info("Device \"" + dev.getFriendlyName() + "\" is online");
+         this.controlPoint.addEventListener(this);
+         if(this.controlPoint.subscribe(this.device.getService(this.service))) {
+            logger.info("succesfully subscribed to " + this.device.getFriendlyName() + "/" + this.service);
+         } else {
+            logger.warn("failed to subscribe to " + this.device.getFriendlyName() + "/" + this.service);
+            this.controlPoint.removeEventListener(this);
+         }
       }
    }
 
    @Override
    public void deviceRemoved(Device dev) {
       if (dev.getUDN().equals(this.deviceUDN)) {
+         logger.info("Device \"" + dev.getFriendlyName() + "\" is offline");
+         if(this.controlPoint.unsubscribe(this.device.getService(this.service))) {
+            logger.info("succesfully unsubscribed to " + this.device.getFriendlyName() + "/" + this.service);
+         } else {
+            logger.warn("failed to unsubscribe to " + this.device.getFriendlyName() + "/" + this.service);
+         }
+         this.controlPoint.removeEventListener(this);
          this.device = null;
       }
+   }
+
+   @Override
+   public void setSensor(Sensor sensor) {
+      this.sensors.add(sensor);
+   }
+
+   @Override
+   public void stop(Sensor sensor) {
+      this.sensors.remove(sensor);
+   }
+
+   @Override
+   public String read(Sensor sensor) {
+      return this.cache;
+   }
+
+   @Override
+   public void eventNotifyReceived(String uuid, long seq, String varName, String value) {
+      logger.info("received event from " + uuid + " for var " + varName + " with value " + value);
    }
 
 }
