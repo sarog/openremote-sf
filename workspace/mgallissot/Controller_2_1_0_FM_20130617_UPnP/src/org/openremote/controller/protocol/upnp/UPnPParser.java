@@ -20,9 +20,12 @@
 package org.openremote.controller.protocol.upnp;
 
 import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.cybergarage.xml.Node;
 import org.cybergarage.xml.ParserException;
+import org.openremote.controller.utils.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
@@ -37,6 +40,23 @@ import org.xml.sax.InputSource;
  * @author Mathieu Gallissot
  */
 public class UPnPParser extends org.cybergarage.xml.Parser {
+   
+   private final static Logger logger = Logger.getLogger(UPnPCommandBuilder.UPNP_PROTOCOL_LOG_CATEGORY);
+   
+   /** 
+    * Intercepting this method since it generates stacks dump into the console.
+    * 
+    * @see org.cybergarage.xml.Parser#parse(java.net.URL)
+    */
+   @Override
+   public Node parse(URL url) throws ParserException {
+      try {
+         return super.parse(url);
+      } catch (Throwable t) {
+         logger.warn("failed to parse " + url,t);
+         return null;
+      }
+   }
    
 	public org.cybergarage.xml.Node parse(org.cybergarage.xml.Node parentNode,
 			org.w3c.dom.Node domNode, int rank) {
