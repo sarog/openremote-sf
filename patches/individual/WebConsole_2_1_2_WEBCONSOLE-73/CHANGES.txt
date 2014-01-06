@@ -1,3 +1,9 @@
+WEBCONSOLE-73
+=============
+
+  - Update ANT build configuration to abort build
+    if revision is not found from SVN
+
 WebConsole 2.1.2
 ================
 
