@@ -1,3 +1,8 @@
+WEBCONSOLE-62
+=============
+
+  - Fixed : Console fails to load in QtWebkit Browser
+
 WebConsole 2.1.2
 ================
 
