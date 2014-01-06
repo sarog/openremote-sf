@@ -1,3 +1,8 @@
+WEBCONSOLE-68
+=============
+
+  - Fixed : QtEmbedded browser is not recognised as a mobile browser
+
 WebConsole 2.1.2
 ================
 
