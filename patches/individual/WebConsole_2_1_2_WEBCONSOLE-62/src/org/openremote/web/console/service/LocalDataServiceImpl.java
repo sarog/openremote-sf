@@ -60,8 +60,9 @@ public class LocalDataServiceImpl implements LocalDataService {
 	 * AutoBean is correctly generated when requested
 	 */
 	private void initData() {
-		for (EnumDataMap map : EnumDataMap.values()) { 
-			if (map.getInitValue() != null && getData(map.getDataName()).equals("")) {
+		for (EnumDataMap map : EnumDataMap.values()) {
+			String data = getData(map.getDataName());
+			if (map.getInitValue() != null && (data == null || data.equals(""))) {
 				setData(map.getDataName(),map.getInitValue());
 			}
 		}
@@ -75,13 +76,14 @@ public class LocalDataServiceImpl implements LocalDataService {
 		String oldData = getObjectString(dataName);
 		if (!data.equals(oldData)) {
 			String dataNamePath = buildPathString(dataName);
-			if (dataStore != null) {
-				dataStore.removeItem(dataNamePath);
-				dataStore.setItem(dataNamePath, data);
-			} else {
-				Cookies.setCookie(dataNamePath, data, new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365 * 100)));
-			}
-			
+			try {
+				if (dataStore != null) {
+					dataStore.removeItem(dataNamePath);
+					dataStore.setItem(dataNamePath, data);
+				} else {
+					Cookies.setCookie(dataNamePath, data, new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 365 * 100)));
+				}
+			} catch (Exception e) {}
 			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 			BindingDataChangeEvent event = new BindingDataChangeEvent(dataName);
 			eventBus.fireEvent(event);
@@ -92,12 +94,15 @@ public class LocalDataServiceImpl implements LocalDataService {
 		if (dataName == null || dataName.equals("")) return "";
 		
 		dataName = buildPathString(dataName);
-		String data;
-		if (dataStore != null) {
-			data = dataStore.getItem(dataName);
-		} else {
-			data = Cookies.getCookie(dataName);
-		}
+		String data = null;
+		try {
+			if (dataStore != null) {
+				data = dataStore.getItem(dataName);
+			} else {
+				data = Cookies.getCookie(dataName);
+			}
+		} catch (Exception e) {}
+	
 		if (data == null || data.equals("null")) {
 			data = "";
 		}
@@ -109,21 +114,25 @@ public class LocalDataServiceImpl implements LocalDataService {
 		if (dataName == null || dataName.equals("")) return;
 		
 		dataName = buildPathString(dataName);
-		if (dataStore != null) {
-			dataStore.removeItem(dataName);
-		} else {
-			Cookies.removeCookie(dataName);
-		}
+		try {
+			if (dataStore != null) {
+				dataStore.removeItem(dataName);
+			} else {
+				Cookies.removeCookie(dataName);
+			}
+		} catch (Exception e) {}
 		initData();
 	}
 	
 	@Override
 	public void clearAllData() {
-		if (dataStore != null) {
-			dataStore.clear();
-		} else {
-			// TODO: Clear out cookies
-		}
+		try {
+			if (dataStore != null) {
+				dataStore.clear();
+			} else {
+				// TODO: Clear out cookies
+			}
+		} catch (Exception e) {}
 		initData();
 	}
 	
