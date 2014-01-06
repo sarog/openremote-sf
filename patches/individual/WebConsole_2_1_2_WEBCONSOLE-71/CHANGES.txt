@@ -1,3 +1,8 @@
+WEBCONSOLE-71
+=============
+
+  - Support relative URLs in the web view widget
+
 WebConsole 2.1.2
 ================
 
