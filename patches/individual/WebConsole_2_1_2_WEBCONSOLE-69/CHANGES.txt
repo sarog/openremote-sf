@@ -1,3 +1,9 @@
+WEBCONSOLE-69
+=============
+
+  - Fixed : Controller discovery icon continues to indicate
+    that discovery is in progress when it fails for some reason
+
 WebConsole 2.1.2
 ================
 
