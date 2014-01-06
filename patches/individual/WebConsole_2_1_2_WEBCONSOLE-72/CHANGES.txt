@@ -1,3 +1,9 @@
+WEBCONSOLE-72
+=============
+
+  - Add GET parameters to specify a controller
+    and panel combination to load at startup
+
 WebConsole 2.1.2
 ================
 
