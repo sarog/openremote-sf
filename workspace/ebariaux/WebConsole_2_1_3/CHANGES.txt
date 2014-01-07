@@ -14,6 +14,8 @@ Fixes:
   - Fixed : Controller discovery icon continues to indicate
     that discovery is in progress when it fails for some reason
     (WEBCONSOLE-69)
+  - Fixed : Loading spinner not animating on certain browser versions 
+    (WEBCONSOLE-70)
 
 New features:
 
