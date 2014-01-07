@@ -992,6 +992,19 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 		ControllerCredentials controllerCreds;
 		String panelName = "";
 		
+		// Check for GET variables
+		String cUrl = Window.Location.getParameter("controllerURL");
+		String pName = Window.Location.getParameter("panelName");
+		
+		if (cUrl != null && !cUrl.isEmpty() && pName != null && !pName.isEmpty())
+		{
+			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
+			controllerCreds.setUrl(cUrl);
+			controllerCreds.setDefaultPanel(pName);
+			loadController(controllerCreds);
+			return;
+		}
+		
 		controllerCreds = dataService.getLastControllerCredentials();
 		if (controllerCreds != null && controllerCreds.getUrl() != null) {
 			loadController(controllerCreds);
