@@ -19,6 +19,9 @@
 */
 package org.openremote.web.console.client;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.openremote.web.console.panel.entity.PanelSizeInfo;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.LocalDataService;
@@ -27,6 +30,10 @@ import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -42,7 +49,28 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class WebConsole implements EntryPoint {
 	private static ConsoleUnit consoleUnit;
 	private static final String DEFAULT_PANEL_SIZE_INFO = "{\"panelSizeType\": \"fixed\", \"panelSizeWidth\": 320, \"panelSizeHeight\": 480}";
+	private Logger logger = Logger.getLogger("");
+	
 	public void onModuleLoad() {
+		
+		// Create Exception alert
+		GWT.setUncaughtExceptionHandler(new   
+	      GWT.UncaughtExceptionHandler() {  
+	      public void onUncaughtException(Throwable e) {
+	      	Throwable unwrapped = unwrap(e);
+	      	logger.log(Level.SEVERE, "Ex caught!", e);
+	    }
+		});
+		
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {  
+      public void execute() {  
+        onModuleLoad2();  
+      }  
+    });
+		
+	}
+	
+	public void onModuleLoad2() {		
 		// Export method to hide alert window from native JS
 		BrowserUtils.exportStaticMethod();
 		
@@ -97,6 +125,16 @@ public class WebConsole implements EntryPoint {
 			Window.alert("Failed to create Console Unit!");
 		}
 	}
+	
+  public Throwable unwrap(Throwable e) {   
+    if(e instanceof UmbrellaException) {   
+      UmbrellaException ue = (UmbrellaException) e;  
+      if(ue.getCauses().size() == 1) {   
+        return unwrap(ue.getCauses().iterator().next());  
+      }  
+    }  
+    return e;  
+  }
 	
 	public static ConsoleUnit getConsoleUnit() {
 		return consoleUnit;
