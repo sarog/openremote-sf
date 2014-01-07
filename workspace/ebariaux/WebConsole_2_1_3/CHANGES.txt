@@ -8,6 +8,8 @@ Fixes:
   - Fixed : Console fails to load in QtWebkit Browser (WEBCONSOLE-62)
   - Fixed : Having a button with both a navigation and command,
     the navigation occurs but the command is not executed (WEBCONSOLE-64)
+  - Fixed : Thumb rendered on slider, even "empty" png file
+    has been assigned as thumb image (WEBCONSOLE-65)
 
 New features:
 

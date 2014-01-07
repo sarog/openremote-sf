@@ -52,6 +52,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	
 	protected ButtonComponent() {
 		super(new Button(), CLASS_NAME);
+		this.addStyleName(INTERACTIVE_CLASS_NAME);
 	}
 	
 	public void setName(String name) {
