@@ -109,6 +109,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
 	public static final String WELCOME_MESSAGE_STRING = "Welcome to the latest Web Console!\n\nClick <a href=\"http://openremote.org/display/docs/Web+Console\" target=\"_blank\">here</a> for release notes and help on using the Web Console.";
+	public static final String COOKIE_WARNING_MESSAGE_STRING = "Cookies / Local Storage must be enabled for the Web Console to work correctly!";
 	public static final int IMAGE_CACHE_LOAD_TIMEOUT_SECONDS = 10;
 	protected ConsoleDisplay consoleDisplay;
 	private Boolean isFullscreen = true;
@@ -981,6 +982,12 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
 		}
 		
+		// Display warning if cookies disabled
+		if (!LocalDataServiceImpl.getInstance().isAvailable())
+		{
+			BrowserUtils.showAlert(COOKIE_WARNING_MESSAGE_STRING);
+		}
+		
 		// Check for Last Controller and Panel in Cache
 		ControllerCredentials controllerCreds;
 		String panelName = "";
@@ -1261,7 +1268,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 					@Override
 					public void onSuccess(List<String> discoveredUrls) {
 						ControllerCredentialsList credsListObj = dataService.getControllerCredentialsList();
-						List<ControllerCredentials> credsList = credsListObj.getControllerCredentials();
+						List<ControllerCredentials> credsList = new ArrayList<ControllerCredentials>();
+						
+						if (credsListObj != null)
+						{
+							credsList = credsListObj.getControllerCredentials();
+						}
+						
 						for (String discoveredUrl : discoveredUrls) {
 							boolean alreadyExists = false;
 							for (ControllerCredentials creds : credsList) {
@@ -1276,8 +1289,13 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 								credsList.add(credentialsBean.as());
 							}
 						}
-						credsListObj.setControllerCredentials(credsList);
-						dataService.setControllerCredentialsList(credsListObj);
+						
+						if (credsListObj != null)
+						{
+							credsListObj.setControllerCredentials(credsList);
+							dataService.setControllerCredentialsList(credsListObj);
+						}
+						
 						resetTabItemImage();
 					}
 					@Override
