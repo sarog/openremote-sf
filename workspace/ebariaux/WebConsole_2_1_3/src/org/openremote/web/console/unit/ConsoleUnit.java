@@ -954,33 +954,36 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void initialiseConsole() {
-		// Check welcome message has been shown for this version
-		String versionStr = BrowserUtils.getBuildVersionString();
-		int version = 0;
-		
-		try {
-			version = Integer.parseInt(versionStr);
-		} catch (Exception e) {}
-		
-  	String welcomeObj = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
-		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
-		Integer welcomeVersion = -1;
-		WelcomeFlag welcomeFlag = null;
-		
-		if (bean != null) {
-			welcomeFlag = (WelcomeFlag)bean.as();
-			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
-		}
-
-		if (welcomeVersion < version) {
-			// Show welcome message
-			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
-			
-			welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
-			welcomeFlag.setWelcomeVersion(version);
-			
-			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
-		}
+		// Check welcome message has been shown for this version or showwelcome GET parameter is set
+    String showWelcome = Window.Location.getParameter("showWelcome");
+    if (showWelcome == null) {
+  		String versionStr = BrowserUtils.getBuildVersionString();
+  		int version = 0;
+  		
+  		try {
+  			version = Integer.parseInt(versionStr);
+  		} catch (Exception e) {}
+  		
+    	String welcomeObj = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
+  		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
+  		Integer welcomeVersion = -1;
+  		WelcomeFlag welcomeFlag = null;
+  		
+  		if (bean != null) {
+  			welcomeFlag = (WelcomeFlag)bean.as();
+  			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
+  		}
+  
+  		if (welcomeVersion < version) {
+  			// Show welcome message
+  			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
+  			
+  			welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
+  			welcomeFlag.setWelcomeVersion(version);
+  			
+  			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
+  		}
+    }
 		
 		// Display warning if cookies disabled
 		if (!LocalDataServiceImpl.getInstance().isAvailable())
