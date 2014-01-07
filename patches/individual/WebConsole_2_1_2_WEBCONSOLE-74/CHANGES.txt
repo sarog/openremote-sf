@@ -1,3 +1,9 @@
+WEBCONSOLE-74
+=============
+
+  - Add additional GET Parameters to allow more control
+    over console startup
+
 WebConsole 2.1.2
 ================
 
