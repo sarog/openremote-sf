@@ -11,6 +11,9 @@ Fixes:
   - Fixed : Thumb rendered on slider, even "empty" png file
     has been assigned as thumb image (WEBCONSOLE-65)
   - Fixed : Incorrect SVN build reported by WebConsole (WEBCONSOLE-66)
+  - Fixed : Controller discovery icon continues to indicate
+    that discovery is in progress when it fails for some reason
+    (WEBCONSOLE-69)
 
 New features:
 
