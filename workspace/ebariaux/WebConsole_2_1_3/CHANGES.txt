@@ -24,6 +24,8 @@ New features:
     and panel combination to load at startup (WEBCONSOLE-72)
   - Update ANT build configuration to abort build
     if revision is not found from SVN (WEBCONSOLE-73)
+  - Add additional GET Parameters to allow more control
+    over console startup (WEBCONSOLE-74)
 
 WebConsole 2.1.2
 ================
