@@ -41,10 +41,10 @@ public class LocalDataServiceImpl implements LocalDataService {
 //	private StorageMap dataStoreMap = null;
 	
 	private LocalDataServiceImpl() {
-		dataStore = Storage.getLocalStorageIfSupported();
-//		if (dataStore != null) {
-//			dataStoreMap = new StorageMap(dataStore);
-//		}
+		try {
+			// Chrome throws exception here when cookies disabled even though it shouldn't
+			dataStore = Storage.getLocalStorageIfSupported();
+		} catch (Exception e) {}
 	}
 	
 	public static synchronized LocalDataServiceImpl getInstance() {
@@ -53,6 +53,10 @@ public class LocalDataServiceImpl implements LocalDataService {
 			instance.initData();
 		}
 		return instance;
+	}
+	
+	public boolean isAvailable() {
+		return dataStore != null;
 	}
 	
 	/*
@@ -67,13 +71,15 @@ public class LocalDataServiceImpl implements LocalDataService {
 		}
 	}
 	
+
+	
 	private static String buildPathString(String object) {
 		return PREFIX + "." + object;
 	}
 	
 	private void setData(String dataName, String data) {
 		String oldData = getObjectString(dataName);
-		if (!data.equals(oldData)) {
+		if (oldData == null || !data.equals(oldData)) {
 			String dataNamePath = buildPathString(dataName);
 			if (dataStore != null) {
 				dataStore.removeItem(dataNamePath);
@@ -131,7 +137,11 @@ public class LocalDataServiceImpl implements LocalDataService {
 	public ControllerCredentials getLastControllerCredentials() {
 		ControllerCredentials credentials = null;
 		EnumDataMap map = EnumDataMap.LAST_CONTROLLER_CREDENTIALS;
-		credentials = (ControllerCredentials) AutoBeanService.getInstance().fromJsonString(map.getClazz(), getData(map.getDataName())).as();
+		String dataStr = getData(map.getDataName());
+		if (dataStr != null && !dataStr.isEmpty())
+		{
+			credentials = (ControllerCredentials) AutoBeanService.getInstance().fromJsonString(map.getClazz(), dataStr).as();
+		}
 		return credentials;
 	}
 
@@ -150,7 +160,11 @@ public class LocalDataServiceImpl implements LocalDataService {
 	public ControllerCredentialsList getControllerCredentialsList() {
 		ControllerCredentialsList credentialsList = null;
 		EnumDataMap map = EnumDataMap.CONTROLLER_CREDENTIALS_LIST;
-		credentialsList = (ControllerCredentialsList) AutoBeanService.getInstance().fromJsonString(map.getClazz(), getData(map.getDataName())).as();
+		String dataStr = getData(map.getDataName());
+		if (dataStr != null && !dataStr.isEmpty())
+		{
+			credentialsList = (ControllerCredentialsList) AutoBeanService.getInstance().fromJsonString(map.getClazz(), dataStr).as();
+		}
 		return credentialsList;
 	}
 
