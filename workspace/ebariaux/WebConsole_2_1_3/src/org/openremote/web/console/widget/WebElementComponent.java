@@ -31,7 +31,7 @@ import com.google.gwt.user.client.ui.Frame;
 public class WebElementComponent extends PassiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "webElementComponent";
 	
-	private String urlPrefix = "http://";
+	private String urlPrefix = "";
 	private String url;
 	private String username;
 	private String password;
@@ -41,7 +41,10 @@ public class WebElementComponent extends PassiveConsoleComponent implements Sens
 	}
 	
 	public void setURL(String url) {
-		if (url.indexOf("https://") > 0) urlPrefix = "https://";
+		if (url.indexOf("https://") > 0)
+			urlPrefix = "https://";
+		if (url.indexOf("http://") > 0)
+			urlPrefix = "http://";
 		url = url.replace(urlPrefix, "");
 		this.url = url;
 	}

@@ -19,6 +19,8 @@ Fixes:
 
 New features:
 
+  - Support relative URLs in the web view widget (WEBCONSOLE-71)
+
 WebConsole 2.1.2
 ================
 
