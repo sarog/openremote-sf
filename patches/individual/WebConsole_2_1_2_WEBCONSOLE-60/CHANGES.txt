@@ -1,0 +1,20 @@
+WebConsole 2.1.2
+================
+
+  - A label connected to a 'switch' type sensor was always
+    showing text 'on/off' instead of the text values
+    configured in the label for on/off states (WEBCONSOLE-57,
+    Richard Turner)
+  - Treat Midori web browser as a desktop (mouse control)
+    browser rather than mobile (touch controlled) browser
+    by default (WEBCONSOLE-59, Richard Turner)
+
+
+WebConsole 2.1.1
+================
+
+ Bug fix release:
+
+  - WEBCONSOLE-56: Fix to prevent Console from hanging at 
+    loading screen if an invalid response is received from 
+    Controller (Richard Turner)
