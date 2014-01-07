@@ -1,3 +1,8 @@
+WEBCONSOLE-76
+=============
+
+  - Add ability to switch on debugging via configuration file
+
 WebConsole 2.1.2
 ================
 
