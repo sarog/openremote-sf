@@ -1,3 +1,12 @@
+WebConsole 2.1.3
+================
+
+Fixes:
+
+ - Fixed : Console fails to load in Chrome on Mac (WEBCONSOLE-60)
+
+New features:
+
 WebConsole 2.1.2
 ================
 
