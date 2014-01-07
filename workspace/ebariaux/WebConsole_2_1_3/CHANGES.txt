@@ -17,6 +17,7 @@ Fixes:
   - Fixed : Loading spinner not animating on certain browser versions 
     (WEBCONSOLE-70)
   - Code cleaning (WEBCONSOLE-79)
+  - Fixed : Widgets fail to display on qtEmbedded browser (WEBCONSOLE-77)
 
 New features:
 
