@@ -26,6 +26,8 @@ New features:
     if revision is not found from SVN (WEBCONSOLE-73)
   - Add additional GET Parameters to allow more control
     over console startup (WEBCONSOLE-74)
+  - Add ability to switch on debugging via configuration file
+    (WEBCONSOLE-76)
 
 WebConsole 2.1.2
 ================
