@@ -225,7 +225,10 @@ import com.google.gwt.user.client.ui.SimplePanel;
 //		UTILITIES BELOW HERE
 // -------------------------------------------------------------
 		
+		// Check useragent and touch screen support
 		private static boolean isMobile() {
+		  if (!supportsTouch()) return false;
+		  
 			for (String mobile: MOBILE_SPECIFIC_SUBSTRING) {
 				if (userAgent.toLowerCase().contains(mobile)) {
 					return true;
@@ -488,4 +491,16 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		public static native String getBuildVersionString() /*-{
 		return $wnd.buildVersionStr;
 	}-*/;
+		
+    public static native boolean supportsTouch() /*-{
+      var supportsTouch = false;
+      if ('ontouchstart' in window) {
+          //iOS & android
+          supportsTouch = true;
+      } else if(window.navigator.msPointerEnabled) {
+          //Win8
+          supportsTouch = true;
+      }
+      return supportsTouch;
+  }-*/;
 }
