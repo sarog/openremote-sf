@@ -10,6 +10,7 @@ Fixes:
     the navigation occurs but the command is not executed (WEBCONSOLE-64)
   - Fixed : Thumb rendered on slider, even "empty" png file
     has been assigned as thumb image (WEBCONSOLE-65)
+  - Fixed : Incorrect SVN build reported by WebConsole (WEBCONSOLE-66)
 
 New features:
 
