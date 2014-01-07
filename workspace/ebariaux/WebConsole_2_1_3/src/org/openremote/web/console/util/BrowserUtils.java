@@ -157,12 +157,19 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			int oldHeight = windowHeight;
 			
 			updateWindowInfo();
+
+			// Only continue if the console unit is initialised
+			ConsoleUnit console = WebConsole.getConsoleUnit();
+			if (console == null)
+			{
+				return;
+			}
 			
 			if ((oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowWidth || oldHeight != windowHeight)) || (!oldOrientation.equalsIgnoreCase(windowOrientation) && (oldWidth != windowHeight || oldHeight != windowWidth))) {
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new WindowResizeEvent(getWindowWidth(), getWindowHeight()));
 			}
 			
-			if (WebConsole.getConsoleUnit().getIsFullscreen() && !windowOrientation.equalsIgnoreCase(oldOrientation)) {
+			if (console.getIsFullscreen() && !windowOrientation.equalsIgnoreCase(oldOrientation)) {
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(getWindowOrientation(), getWindowWidth(), getWindowHeight()));
 			}
 		}
