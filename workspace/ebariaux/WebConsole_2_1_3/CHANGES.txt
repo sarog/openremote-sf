@@ -30,6 +30,8 @@ New features:
     over console startup (WEBCONSOLE-74)
   - Add ability to switch on debugging via configuration file
     (WEBCONSOLE-76)
+  - Improve mobile browser detection by checking for touch event
+    support as well as looking at the useragent string (WEBCONSOLE-78)
 
 WebConsole 2.1.2
 ================
