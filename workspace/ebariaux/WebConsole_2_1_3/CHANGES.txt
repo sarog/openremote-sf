@@ -5,6 +5,7 @@ Fixes:
 
   - Fixed console fails to load in Chrome on Mac (WEBCONSOLE-60)
   - Fixed console fails to load when cookies are disabled (WEBCONSOLE-61)
+  - Fixed console fails to load in QtWebkit Browser (WEBCONSOLE-62)
 
 New features:
 
