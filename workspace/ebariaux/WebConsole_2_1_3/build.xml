@@ -33,6 +33,14 @@
 		      </filterchain>
 		</loadproperties>
 		<delete file="svnlog.out"/>
+		
+		<fail message="Failed to get revision info from SVN">
+			<condition>
+				<not>
+					<isset property="Revision"/>
+				</not>
+			</condition>
+		</fail>
 
 		<copy file="index.html.template" tofile="war/index.html" overwrite="true">
 			<filterset>

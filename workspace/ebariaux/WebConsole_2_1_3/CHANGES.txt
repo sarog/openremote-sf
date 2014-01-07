@@ -22,6 +22,8 @@ New features:
   - Support relative URLs in the web view widget (WEBCONSOLE-71)
   - Add GET parameters to specify a controller
     and panel combination to load at startup (WEBCONSOLE-72)
+  - Update ANT build configuration to abort build
+    if revision is not found from SVN (WEBCONSOLE-73)
 
 WebConsole 2.1.2
 ================
