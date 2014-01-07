@@ -27,13 +27,15 @@ import org.openremote.web.console.controller.ControllerCredentialsList;
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
 public interface LocalDataService {
+	void clearData(String dataName);
+	void clearAllData();
+	boolean isAvailable();
+	
 	ControllerCredentials getLastControllerCredentials();
 	ControllerCredentialsList getControllerCredentialsList();
 	String getObjectString(String name);
 	
 	void setLastControllerCredentials(ControllerCredentials controllerCredentials);
 	void setControllerCredentialsList(ControllerCredentialsList controllerCredentialsList);
-	void clearData(String dataName);
-	void clearAllData();
 	void setObject(String name, String obj);
 }
