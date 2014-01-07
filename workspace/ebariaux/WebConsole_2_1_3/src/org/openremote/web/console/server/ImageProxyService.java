@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.util.Base64;
 /**
  * This servlet acts as a simple image proxy that supports HTTP Basic
  * authentication through GET parameters. Images are returned in PNG

@@ -16,6 +16,7 @@ Fixes:
     (WEBCONSOLE-69)
   - Fixed : Loading spinner not animating on certain browser versions 
     (WEBCONSOLE-70)
+  - Code cleaning (WEBCONSOLE-79)
 
 New features:
 

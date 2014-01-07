@@ -165,7 +165,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 								ListItemLayout layout = instanceBean.as();
 								ListItem item = ListItem.build(layout);
 								item.setParentList(this);
-								item.setWidth(this.width);
+								item.setWidth(getWidth());
 								listItems.add(item);
 							}
 						}
@@ -192,7 +192,7 @@ public class ListPanelComponent extends PanelComponent implements Draggable, Int
 		for (ListItem item : items) {
 			if (item != null) {
 				container.add(item);
-				item.onAdd(width, height);
+				item.onAdd(getWidth(), getHeight());
 			}
 		}
 	}
