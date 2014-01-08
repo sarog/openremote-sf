@@ -1619,12 +1619,11 @@ public class Deployer
        while (true) {
           if (!discoveredDevicesToAnnounce.isEmpty()) {
              synchronized (discoveredDevicesToAnnounce) {
+                ClientResource cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices");
                 if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
                    UserDTO user = controllerDTO.getAccount().getUsers().get(0);
-                   ClientResource cr = null;
+                   cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
                    try {   
-                      cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices");
-                      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
                       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
                       Representation result = cr.post(rep);
                       GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
