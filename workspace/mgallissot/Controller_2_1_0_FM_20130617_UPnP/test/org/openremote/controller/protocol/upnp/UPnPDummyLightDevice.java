@@ -149,6 +149,14 @@ public class UPnPDummyLightDevice extends Device implements ActionListener, Quer
 		stateVar.setValue(getPowerState());
 		return true;
 	}
+	
+	public void toggle() {
+	   if(onFlag) {
+	      off();
+	   } else {
+	      on();
+	   }
+	}
 
 }
 
