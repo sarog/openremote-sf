@@ -47,7 +47,7 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
    private String service;
    private Device device;
    private List<Sensor> sensors = new LinkedList<Sensor>();
-   private String cache = "";
+   protected String cache = "";
    
    private static Logger logger = Logger.getLogger(UPnPCommandBuilder.UPNP_PROTOCOL_LOG_CATEGORY);
 
@@ -72,6 +72,9 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
       this.args = args;
       this.controlPoint = controlPoint;
       this.controlPoint.addDeviceChangeListener(this);
+      if(this.controlPoint.getDevice(this.deviceUDN) != null) {
+         this.deviceAdded(this.controlPoint.getDevice(this.deviceUDN));
+      }
    }
 
    @Override
@@ -140,9 +143,9 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
          logger.info("Device \"" + dev.getFriendlyName() + "\" is online");
          this.controlPoint.addEventListener(this);
          if(this.controlPoint.subscribe(this.device.getService(this.service))) {
-            logger.info("succesfully subscribed to " + this.device.getFriendlyName() + "/" + this.service);
+            logger.info("succesfully subscribed to " + dev.getFriendlyName() + "/" + this.service);
          } else {
-            logger.warn("failed to subscribe to " + this.device.getFriendlyName() + "/" + this.service);
+            logger.warn("failed to subscribe to " + dev.getFriendlyName() + "/" + this.service);
             this.controlPoint.removeEventListener(this);
          }
       }
@@ -152,11 +155,11 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
    public void deviceRemoved(Device dev) {
       if (dev.getUDN().equals(this.deviceUDN)) {
          logger.info("Device \"" + dev.getFriendlyName() + "\" is offline");
-         if(this.controlPoint.unsubscribe(this.device.getService(this.service))) {
+         /* if(this.controlPoint.unsubscribe(this.device.getService(this.service))) {
             logger.info("succesfully unsubscribed to " + this.device.getFriendlyName() + "/" + this.service);
          } else {
             logger.warn("failed to unsubscribe to " + this.device.getFriendlyName() + "/" + this.service);
-         }
+         }*/
          this.controlPoint.removeEventListener(this);
          this.device = null;
       }
@@ -180,6 +183,7 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
    @Override
    public void eventNotifyReceived(String uuid, long seq, String varName, String value) {
       logger.info("received event from " + uuid + " for var " + varName + " with value " + value);
+      this.cache = value;
    }
 
 }

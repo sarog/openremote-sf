@@ -11,6 +11,7 @@ import org.cybergarage.upnp.Device;
 import org.cybergarage.upnp.UPnP;
 import org.cybergarage.upnp.device.DeviceChangeListener;
 import org.cybergarage.upnp.device.InvalidDescriptionException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,10 +52,17 @@ public class UPnPDummyLightDeviceTest  {
          }
       }
    }
+   
+   @After
+   public synchronized void stopControlPoint() {
+      this.device.stop();
+      this.device = null;
+      this.controlPoint.stop();
+      this.controlPoint = null;
+   }
 
    @Test
-   public void testLight() {
-
+   public void testLightSet() {
       HashMap<String, String> args = new HashMap<String, String>();
       args.put("Power", "1");
       args.put("Result", "");
@@ -63,7 +71,27 @@ public class UPnPDummyLightDeviceTest  {
       assertFalse(this.device.isOn());
       cmd.send();
       assertTrue(this.device.isOn());
-
+   }
+   
+   @Test
+   public void testLightGet() {
+      HashMap<String, String> args = new HashMap<String, String>();
+      args.put("Result", "");
+      UPnPCommand cmd = new UPnPCommand(this.controlPoint, "uuid:cybergarageLightDevice",
+            "urn:upnp-org:serviceId:power:1", "GetPower", args);
+      cmd.send();
+   }
+   
+   @Test
+   public void testEvent() {
+      HashMap<String, String> args = new HashMap<String, String>();
+      args.put("Power", "1");
+      args.put("Result", "");
+      UPnPCommand cmd = new UPnPCommand(this.controlPoint, "uuid:cybergarageLightDevice",
+            "urn:upnp-org:serviceId:power:1", "SetPower", args);
+      String state = cmd.cache;
+      this.device.toggle();
+      assertFalse(state.equals(cmd.cache));
    }
 
    private class DeviceDiscoveredNotifier extends Thread implements DeviceChangeListener {
