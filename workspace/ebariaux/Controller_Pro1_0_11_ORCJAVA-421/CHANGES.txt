@@ -1,3 +1,8 @@
+ORCJAVA-421
+===========
+
+  - Fixed : NPE while executing a gesture with a command linked to it
+
 Controller Pro 1.0.11
 =====================
 
