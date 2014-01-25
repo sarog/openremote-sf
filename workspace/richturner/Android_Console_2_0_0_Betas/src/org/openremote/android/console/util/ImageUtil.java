@@ -71,7 +71,7 @@ public class ImageUtil {
       Bitmap bitmap = null;
       BitmapFactory.Options opts=new BitmapFactory.Options();
       opts.inDither=false;                     //Disable Dithering mode
-      opts.inPurgeable=true;                   //Tell to gc that whether it needs free memory, the Bitmap can be cleared
+      opts.inPurgeable=true;                   //Tell gc the Bitmap can be cleared
       opts.inInputShareable=true;              //Which kind of reference will be used to recover the Bitmap data after being clear, when it will be used in the future
       opts.inTempStorage=new byte[32 * 1024]; 
 	   
@@ -106,21 +106,47 @@ public class ImageUtil {
    }
    
    public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height) {
+     return createScaledDrawableFromPath(ctx, pathName, width, height, false, false);
+   }
+   
+   public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height, boolean shrinkOnly, boolean maintainAspect) {
 	     BitmapDrawable drawable = null;
 	     Bitmap bitmap = null;
 	     Bitmap tempBitmap = createBitmap(pathName, width, height);
+
 	     if (tempBitmap != null) {
-	       bitmap = Bitmap.createScaledBitmap(tempBitmap, width, height, false);
-	       if (tempBitmap != bitmap) {
-	         bitmapCache.remove(tempBitmap);
-	         tempBitmap.recycle();
-	       }
-         tempBitmap = null;
+         int bWidth = tempBitmap.getWidth();
+         int bHeight = tempBitmap.getHeight();
+
+         // check if want to maintain aspect ratio
+         if (maintainAspect) {
+           double ratio = (double)bWidth/bHeight;
+           if (width >= height) {
+             width = (int)Math.round(height * ratio);
+           } else {
+             height = (int)Math.round(width / ratio);
+           }
+//           width = ratio > 1 ? (int)Math.round((double)width / ratio) : width;
+//           height = ratio > 1 ? height : (int)Math.round((double)height * ratio);
+         }
+
+         if (bWidth >= width || bHeight >= height || !shrinkOnly)
+         {
+           // Resize image
+           bitmap = Bitmap.createScaledBitmap(tempBitmap, width, height, false);
+           if (tempBitmap != bitmap) {
+             bitmapCache.remove(tempBitmap);
+             tempBitmap.recycle();
+             bitmapCache.add(bitmap);
+           }
+           tempBitmap = null;
+         } else {
+           bitmap = tempBitmap;
+         }
 	     }
 	     
 		  if (bitmap != null)
 		  {
-		    bitmapCache.add(bitmap);
     		drawable = new BitmapDrawable(ctx.getResources(), bitmap);
 		  }
 	     return drawable;
