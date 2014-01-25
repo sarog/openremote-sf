@@ -444,10 +444,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    public void handleMenu(MenuItem item) {
       switch (item.getItemId()) {
       case Constants.MENU_ITEM_SETTING:
-         Intent intent = new Intent();
-         intent.setClass(GroupActivity.this, AppSettingsActivity.class);
-         startActivity(intent);
-         //not finishing the GroupActivity
+         loadSettings();
          break;
       case Constants.MENU_ITEM_LOGOUT:
          doLogout();
@@ -593,7 +590,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    protected void onPause() {
     super.onPause();
     cancelCurrentPolling();
-    finish();    
    }
 
    /**
@@ -643,9 +639,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
             navigationHistory.remove(backward);
          }
       } else if (navigate.isSetting()) {
-         Intent intent = new Intent();
-         intent.setClass(GroupActivity.this, AppSettingsActivity.class);
-         startActivity(intent);
+         loadSettings();
       } else if (navigate.isLogin()) {
          Intent intent = new Intent();
          intent.setClass(GroupActivity.this, LoginViewActivity.class);
