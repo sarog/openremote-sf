@@ -192,6 +192,8 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		// minDrawable.getIntrinsicHeight();
 		minImage.setLayoutParams(mnLayoutParams);
 		maxImage.setLayoutParams(mxLayoutParams);
+		minImage.setOnTouchListener(this);
+		maxImage.setOnTouchListener(this);
 		
 		trackLength -= isVertical ? (minHeight + maxHeight) : (minWidth + maxWidth);
 		trackLength -= (minSpacing + maxSpacing);
@@ -386,7 +388,16 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 	    		 thumbPos = (int) (isVertical ? (thumbPos - event.getY()) : event.getX());
 	    	 } else if (v == maxTrack) {
 	    		 thumbPos = (int) (isVertical ? (trackLength - event.getY()) : thumbPos + event.getX());
-	    	 }
+	    	 } else if (v == minImage) {
+	    	   setValue(value-1, false);
+	         updatePosFromValue();
+	         break;
+	    	 } else if (v == maxImage) {
+	         setValue(value+1, false);
+           updatePosFromValue();
+           break;
+	    	 }	    	   
+	    	 
 	    	 thumbPos = thumbPos < 0 ? 0 : thumbPos > thumbRange ? thumbRange : thumbPos;
 	    	 updateThumbPos();
 	    	 updateValueFromPos();
