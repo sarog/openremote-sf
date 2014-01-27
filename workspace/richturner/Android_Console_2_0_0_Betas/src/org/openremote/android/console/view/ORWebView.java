@@ -20,7 +20,6 @@
 package org.openremote.android.console.view;
 
 import java.net.URL;
-
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.Sensor;
@@ -30,9 +29,10 @@ import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -171,6 +171,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
    * @param context the Android context to use for this widget
    * @param web the binding object with information about the Web element from XML
    */
+  @SuppressLint("NewApi")
   public ORWebView(Context context, Web web)
   {
     super(context);
@@ -185,6 +186,24 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       webView.getSettings().setJavaScriptEnabled(true);
       webView.setInitialScale(100);
 
+      webView.setBackgroundColor(0x00000000);
+      if (Build.VERSION.SDK_INT >= 11) {
+        webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+      }
+
+      webView.setWebViewClient(new WebViewClient()
+      {
+          @SuppressLint("NewApi")
+          @Override
+          public void onPageFinished(WebView view, String url)
+          {
+            webView.setBackgroundColor(0x00000000);
+              if (Build.VERSION.SDK_INT >= 11) {
+                webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+              }
+          }
+      });
+      
       URL url = web.getSrc();
       if (url != null)
       {
@@ -198,7 +217,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
             " " + web.getComponentId()), "text/html", "utf-8");
       }
       
-      webView.setBackgroundColor(0x00000000);
+      //webView.setBackgroundColor(0x00000000);
       //webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
       
       addView(webView);
