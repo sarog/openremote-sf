@@ -149,18 +149,18 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		Image minImg = slider.getMinImage();
 		
 		if (minImg != null) {
-			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ minImg.getSrc(), minImg.getFrameWidth(), minImg.getFrameHeight());
+			Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH
+					+ minImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), true, true);
 			minImage.setImageDrawable(drawable);
 			minWidth = drawable.getIntrinsicWidth();
 			minHeight = drawable.getIntrinsicHeight();
 			minSpacing = spacing;
 		}
 
-		Image maxImg = slider.getMinImage();
+		Image maxImg = slider.getMaxImage();
 		if (maxImg != null) {
-			Drawable drawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ maxImg.getSrc(), maxImg.getFrameWidth(), maxImg.getFrameHeight());
+      Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH
+              + maxImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), true, true);
 			maxImage.setImageDrawable(drawable);
 			maxWidth = drawable.getIntrinsicWidth();
 			maxHeight = drawable.getIntrinsicHeight();
@@ -204,10 +204,10 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		RelativeLayout.LayoutParams thumbLayoutParams = (RelativeLayout.LayoutParams) thumb
 				.getLayoutParams();
 
-		Image thumbImg = slider.getMinImage();
+		Image thumbImg = slider.getThumbImage();
 		if (thumbImg != null) {
-			thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ thumbImg.getSrc(), thumbImg.getFrameWidth(), thumbImg.getFrameHeight());
+			thumbDrawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH
+					+ thumbImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), true, true);
 		} else {
 			thumbDrawable = getResources().getDrawable(R.drawable.slider_thumb);
 		}
@@ -238,10 +238,10 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		RelativeLayout.LayoutParams maxLayoutParams = (RelativeLayout.LayoutParams) maxTrack
 				.getLayoutParams();
 
-		Image minTImg = slider.getMinImage();
+		Image minTImg = slider.getMinTrackImage();
 		if (minTImg != null) {
-			BitmapDrawable minTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ minTImg.getSrc(), minTImg.getFrameWidth(), minTImg.getFrameHeight());
+			BitmapDrawable minTrackBitmap = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH
+					+ minTImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), slider.getFrameWidth(), slider.getFrameHeight());
 			
 			// Position the image within the view
 			if (isVertical) {
@@ -284,11 +284,11 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 			minTrackDrawable = getResources().getDrawable(minId);
 		}
 	
-		Image maxTImg = slider.getMinImage();
+		Image maxTImg = slider.getMaxTrackImage();
 		
 		if (maxTImg != null) {
-			BitmapDrawable maxTrackBitmap = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
-					+ maxTImg.getSrc(), maxTImg.getFrameWidth(), maxTImg.getFrameHeight());
+      BitmapDrawable maxTrackBitmap = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH
+              + maxTImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), slider.getFrameWidth(), slider.getFrameHeight());
 			
 			// Position the image within the view
 			if (isVertical) {
