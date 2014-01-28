@@ -701,6 +701,7 @@ OpenRemote Sub-components:
   Version 3.0 or any later version.
 * ZeroMQ library is licensed under GNU Lesser General Public License (LGPL)
   Version 3.0 or any later version.
+* BouncyCastle 1.50 library is licensed under the terms included below.
 * JDOM library is licensed under the terms included below.
 * Jaxen library is licensed under the terms included below.
 * RRD4J 2.1.1 library is licensed under Apache License Version 2.0, see
