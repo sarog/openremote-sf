@@ -88,11 +88,7 @@
 
   <property name = "javadoc.locale" value = "en_US"/>
   <property name = "build-config.dir" value = "build_config"/>
-  <property name = "instrumented.dir" value = "build/instrumented"/>
   <property name = "junit.reports.dir" location = "build/junit_report"/>
-  <property name = "checkstyle.reports.dir" location = "build/checkstyle_report"/>
-  <property name = "cobertura.report.dir" location = "build/cobertura_report"/>
-  <property name = "cobertura.datafile" value = "${build.dir}/cobertura.ser"/>
   <property name = "sql.dir" value = "sql"/>
 
   <!--
@@ -114,6 +110,8 @@
     <fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/rrd4j-2.1.1" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/openremote-logging-0.1.0" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/openremote-security-0.2.0" includes = "**/*.jar"/>
   </path>
 
   <!--
@@ -126,35 +124,9 @@
     <path location = "${config.dir}"/>
 
     <path refid = "compile.path.id"/>
+
+    <fileset dir = "${lib.dir}/bouncycastle-1.50" includes = "**/*.jar"/>
   </path>
-
-
-  <path id = "container.libs">
-    <path location = "${test.dir}"/>
-    <fileset dir = "${lib.dir}/compile"/>
-    <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
-    <path location = "${classes.dir}"/>
-    <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
-    <path location = "${config.dir}"/>
-    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
-  </path>
-
-
-  <path id = "cobertura.path.id">
-    <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <path location = "${classes.dir}"/>
-  </path>
-
-  <!-- defind task for cobertura -->
-  <taskdef classpathref = "cobertura.path.id" resource = "tasks.properties"/>
-
-  <!-- defind task for checkstyle -->
-  <taskdef resource = "checkstyletask.properties" classpathref = "test.path.id"/>
-  <property name = "checkstyle.report.style" value = "${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
-
-
 
 
 
@@ -238,6 +210,16 @@
       <fileset dir = "${lib.dir}/rrd4j-2.1.1">
         <include name = "*.jar"/>
       </fileset>
+      <fileset dir = "${lib.dir}/openremote-logging-0.1.0">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/openremote-security-0.2.0">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/bouncycastle-1.50">
+        <include name = "*.jar"/>
+      </fileset>
+
     </copy>
 
 
@@ -613,8 +595,6 @@
            showoutput = "false"
            logfailedtests = "true">
 
-      <sysproperty key = "net.sourceforge.cobertura.datafile" file = "${cobertura.datafile}" />
-
       <sysproperty key = "ant.home" value = "${ant.home}" />
 
       <!-- classpath that includes compiled tests -->
@@ -817,86 +797,5 @@
   </target>
 
 
-  <!--
-   | TEST-COVERAGE:
-   |
-   | Run the test with cobertura.
-   +-->
-  <target name = "test-cov">
-    <echo message = "--------------------------------------------------------------------" />
-    <echo message = " Running test..." />
-    <echo message = "--------------------------------------------------------------------" />
-    <echo message = "" />
-    <property name = "test.targetclasspath" value = "${classes.dir}" />
-    <parallel>
-     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "test.path.id" fork = "true" />
-      <sequential>
-        <waitfor>
-          <socket server = "127.0.0.1" port = "8090" />
-        </waitfor>
-        <antcall target = "-junit" />
-        <java classname = "org.openremote.controller.jetty.JettyStop" classpathref = "test.path.id" />
-      </sequential>
-    </parallel>
-  </target>
-
-
-
-  <!--
-    | COBERTURA_INSTRUMENT:
-    |
-    | Make instrument for cobertura.
-    +-->
-  <target name = "cobertura_instrument" depends = "compile-test">
-    <delete file = "${cobertura.datafile}"/>
-    <cobertura-instrument todir = "${instrumented.dir}" datafile = "${cobertura.datafile}">
-      <ignore regex = "org.apache.log4j.*"/>
-      <ignore regex="org.openremote.controller.jetty.*"/>
-      <ignore regex="org.openremote.controller.suite.*"/>
-      <fileset dir = "${classes.dir}">
-        <include name = "**/*.class"/>
-        <exclude name="**/Jetty*.class"/>
-        <exclude name = "**/*Test.class"/>
-        <exclude name="**/*Tests.class"/>
-      </fileset>
-    </cobertura-instrument>
-  </target>
-
-  <!--
-    | REPORT-COBERTURA:
-    |
-    | Generate the cobertura report.
-    +-->
-  <target name = "report-cobertura" depends = "cobertura_instrument">
-    <property name = "test.targetclasspath" value = "${instrumented.dir}"/>
-    <antcall target = "test-cov"/>
-    <delete includeemptydirs = "true" dir = "${cobertura.report.dir}"/>
-    <cobertura-report format = "html" destdir = "${cobertura.report.dir}"
-                      srcdir = "${src.dir}" datafile = "${cobertura.datafile}" />
-    <cobertura-report format = "xml" destdir = "${cobertura.report.dir}"
-                      srcdir = "${src.dir}" datafile = "${cobertura.datafile}"/>
-    <delete file = "operation.log" failonerror = "false"/>
-    <delete file = "exception.log" failonerror = "false"/>
-  </target>
-
-
-  <!--
-    | REPORT-CHECKSTYLE:
-    |
-    | Generate the checkstyle report.
-    +-->
-  <target name = "report-checkstyle">
-    <mkdir dir = "${checkstyle.reports.dir}"/>
-    <checkstyle config = "${build-config.dir}/openremote_checks.xml"
-                failureProperty = "checkstyle.failure"
-                failOnViolation = "false">
-      <formatter type = "xml" tofile = "${checkstyle.reports.dir}/checkstyle_report.xml"/>
-      <fileset dir = "${src.dir}" includes = "**/*.java"/>
-      <fileset dir = "${test.dir}" includes = "**/*.java"/>
-    </checkstyle>
-    <xslt in = "${checkstyle.reports.dir}/checkstyle_report.xml"
-          out = "${checkstyle.reports.dir}/checkstyle.report.html"
-          style = "${checkstyle.report.style}" />
-  </target>
 
 </project>
