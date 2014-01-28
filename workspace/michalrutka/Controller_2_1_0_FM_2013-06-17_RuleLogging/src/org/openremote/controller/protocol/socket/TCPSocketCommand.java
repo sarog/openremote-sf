@@ -167,7 +167,7 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
             String cmd = (String) st.nextElement();
             byte[] bytes;
             if (cmd.startsWith("0x")) {
-               String tmp = getCommand().substring(2);
+               String tmp = cmd.substring(2);
                bytes = hexStringToByteArray(tmp.replaceAll(" ", "").toLowerCase());
             } else {
                bytes = (cmd + "\r").getBytes();
