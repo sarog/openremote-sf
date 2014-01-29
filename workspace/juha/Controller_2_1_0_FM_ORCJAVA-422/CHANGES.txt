@@ -1,3 +1,19 @@
+ORCJAVA-422
+===========
+
+  - Manage User Credentials in Controller. This change
+    incorporates the equivalent of ORCJAVA-295 fix for
+    correctly releasing restlet client resources. 
+    (Juha Lindfors)
+
+ORCJAVA-295
+===========
+
+  - Restlet ClientResource was released too soon (before resource
+    content was consumed), causing a NPE. Fixed by moving release 
+    call in finally block after processing. (Eric Bariaux)
+
+    
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
