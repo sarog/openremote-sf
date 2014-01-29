@@ -1656,7 +1656,7 @@ public class Deployer
 
         pw.removePassword(username, storeKey.toCharArray());
         pw.addPassword(username, credentials, storeKey.toCharArray());
-      }
+     }
 
       catch (IOException e)
       {
@@ -1850,8 +1850,32 @@ public class Deployer
 
     public void run()
     {
+      // TODO :
+      //    Guarding against potential timing issues with this thread (the thread implementation
+      //    needs to be fixed in general). This thread shouldn't start before a deployment
+      //    finishes, so currently starting too early. It's not an issue for now since the
+      //    implementation doesn't do anything until items are added to the discovery list
+      //    but where such conditions aren't checked, an issue would rise.
+
+      try
+      {
+        // wait for 10 seconds (arbitrary value) before starting execution...
+
+        Thread.sleep(10000);
+      }
+
+      catch (InterruptedException e)
+      {
+        interrupt();
+
+        return;
+      }
+
+      log.info("Starting device discovery service...");
+
       while (true)
       {
+        log.debug("checking for discovered devices...");
 
         if (!discoveredDevicesToAnnounce.isEmpty())
         {
@@ -1868,31 +1892,32 @@ public class Deployer
               if (username == null || username.equals(""))
               {
                 log.error("Unable to retrieve username for device discovery API call. Skipped...");
-
-                break;
               }
 
-              cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
-
-              Representation rep = new JsonRepresentation(
-                  new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
-              );
-
-              Representation result = cr.post(rep);
-              cr.release();
-
-              GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
-                  .use(null, GenericResourceResultWithErrorMessage.class)
-                  .use("result", ArrayList.class)
-                  .use("result.values", Long.class)
-                  .deserialize(result.getText());
-
-              if (res.getErrorMessage() != null)
+              else
               {
-                 throw new RuntimeException(res.getErrorMessage());
-              }
+                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
 
-              discoveredDevicesToAnnounce.clear();
+                Representation rep = new JsonRepresentation(
+                    new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
+                );
+
+                Representation result = cr.post(rep);
+                cr.release();
+
+                GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
+                    .use(null, GenericResourceResultWithErrorMessage.class)
+                    .use("result", ArrayList.class)
+                    .use("result.values", Long.class)
+                    .deserialize(result.getText());
+
+                if (res.getErrorMessage() != null)
+                {
+                   throw new RuntimeException(res.getErrorMessage());
+                }
+
+                discoveredDevicesToAnnounce.clear();
+              }
             }
 
             catch (Exception e)
@@ -1902,7 +1927,17 @@ public class Deployer
           }
         }
 
-        try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
+        try
+        {
+          Thread.sleep(1000 * 60);
+        }
+
+        catch (InterruptedException e)
+        {
+          interrupt();
+
+          return;
+        }
       }
     }
 
