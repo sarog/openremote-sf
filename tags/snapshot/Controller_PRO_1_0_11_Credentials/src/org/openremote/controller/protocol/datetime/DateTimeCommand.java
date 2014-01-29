@@ -82,6 +82,9 @@ public class DateTimeCommand implements EventListener, Runnable {
       } else {
          dateFormatter = new SimpleDateFormat();
       }
+
+      dateFormatter.setTimeZone(this.timezone);
+
       this.command = command;
       this.pollingInterval = pollingInterval;
 
