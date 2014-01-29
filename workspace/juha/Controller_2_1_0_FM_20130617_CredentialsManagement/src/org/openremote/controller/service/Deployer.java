@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,9 +22,13 @@ package org.openremote.controller.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -34,6 +38,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,8 +69,9 @@ import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.NetworkUtil;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
+import org.openremote.security.KeyManager;
+import org.openremote.security.PasswordManager;
 import org.openremote.useraccount.domain.ControllerDTO;
-import org.openremote.useraccount.domain.UserDTO;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -327,7 +334,7 @@ public class Deployer
        controllerAnnouncement.start();
    
        //Start discovered devices announcement thread
-       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
+       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement(this);
        discoveredDevicesAnnouncement.start();
     }
     
@@ -1170,9 +1177,82 @@ public class Deployer
 
     return map;
   }
-  
+
+  /**
+   * Returns the URI to the keystore file in the controller. The .keystore file will be stored
+   * in the location defined by
+   * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()}. <p>
+   *
+   * This implementation assumes the configured resource path location can be converted to a
+   * correctly formatted file URI.
+   *
+   * @return  URI pointing to a keystore file location
+   */
+  private URI getKeyStoreLocation()
+  {
+    File resourceDir = new File(controllerConfig.getResourcePath());
+    return new File(resourceDir, ".keystore").toURI();
+  }
+
+  /**
+   * Returns an URI to the user login name file in the controller. The .user file will be stored
+   * in the location defined by
+   * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()}. <p>
+   *
+   * This implementation assumes the configured resource path location can be converted to a
+   * correctly formatted file URI.
+   *
+   * @return    URI pointing to a file containing current user's login name
+   */
+  private URI getUserFileLocation()
+  {
+    // IMPLEMENTATION NOTE:
+    //    This file name is being used in privileged code blocks so therefore the method should
+    //    not be parameterized and should always return a single fixed file location.
+
+    File resourceDir = new File(controllerConfig.getResourcePath());
+
+    return new File(resourceDir, ".user").toURI();
+  }
+
+  /**
+   * Returns the system user login name, or an empty string if access to system user information
+   * has been denied.
+   *
+   * @return    system user login name or empty string
+   */
+  private String getSystemUser()
+  {
+    try
+    {
+      // ----- BEGIN PRIVILEGED CODE BLOCK ------------------------------------------------------
+
+      return AccessController.doPrivilegedWithCombiner(new PrivilegedAction<String>()
+      {
+        @Override public String run()
+        {
+          return System.getProperty("user.name");
+        }
+      });
+
+      // ----- END PRIVILEGED CODE BLOCK --------------------------------------------------------
+    }
+
+    catch (SecurityException e)
+    {
+      log.info("Security manager has denied access to user login name: {0}", e, e.getMessage());
+
+      return "";
+    }
+  }
 
 
+  private String encodeKey(String username, byte[] password)
+  {
+    Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+
+    return encoder.encodePassword(new String(password), username);
+  }
 
 
   // Nested Classes -------------------------------------------------------------------------------
@@ -1372,8 +1452,6 @@ public class Deployer
   }
 
 
-
-
   /**
    * Abstracts the connectivity from controller to back-end in this nested class. <p>
    *
@@ -1423,7 +1501,6 @@ public class Deployer
 
 
     // Instance Methods ---------------------------------------------------------------------------
-
 
     /**
      * Downloads user's configuration from Beehive using the user's account name and credentials.
@@ -1484,6 +1561,10 @@ public class Deployer
         {
           case HttpURLConnection.HTTP_OK:
 
+            // if authentication was ok, store user's credentials for background API calls...
+
+            storeCredentials(username, credentials.getBytes());
+
             return new BufferedInputStream(http.getInputStream());
 
           case HttpURLConnection.HTTP_UNAUTHORIZED:
@@ -1533,6 +1614,171 @@ public class Deployer
     }
 
 
+    /**
+     * Stores currently authenticated user's credentials in a keystore.
+     *
+     * @param username      user's login name
+     * @param credentials   user's credentials
+     */
+    private void storeCredentials(String username, byte[] credentials)
+    {
+      // Use a key to access the keystore. Note that this is not a secret key, access to
+      // the keystore file itself must be made secure by the host system.
+      //
+      // TODO : allow configuration of retrieving the store key from other locations
+
+      String storeKey = deployer.getSystemUser() + ".key";
+
+
+      URI keystoreLocation = deployer.getKeyStoreLocation();
+      File userfile = new File(deployer.getUserFileLocation());
+      BufferedWriter writer = null;
+
+      try
+      {
+        // If there was a previous user login file, delete it...
+
+        deleteUserFile();
+
+        // Write the current user login name to the file...
+
+        writer = new BufferedWriter(new FileWriter(userfile));
+        writer.write(username);
+        writer.close();
+
+        // Create a keystore or load an existing one if already present...
+
+        PasswordManager pw = new PasswordManager(keystoreLocation, storeKey.toCharArray());
+
+        // TODO : make sure previous user's key will also get removed...
+
+        // Add current user's credentials to keystore (delete previous one if existed)...
+
+        pw.removePassword(username, storeKey.toCharArray());
+        pw.addPassword(username, credentials, storeKey.toCharArray());
+      }
+
+      catch (IOException e)
+      {
+        log.error(
+            "Unable to save current user login name. Background API requests will not " +
+            "be able to authenticate: {0}", e, e.getMessage());
+
+        try
+        {
+          // clean up if there was any left-overs...
+
+          deleteUserFile();
+        }
+
+        catch (IOException io)
+        {
+          log.warn(
+              "Could not delete existing file ''{0}'' due to I/O error: {1}",
+              io, userfile, io.getMessage()
+          );
+        }
+      }
+
+      catch (SecurityException e)
+      {
+        log.error(
+            "Security manager has prevented saving user login name. Background API requests " +
+            "will not be able to authenticate: {0}", e, e.getMessage()
+        );
+
+        try
+        {
+          // clean up if there was any left-overs...
+
+          deleteUserFile();
+        }
+
+        catch (IOException io)
+        {
+          log.warn(
+              "Could not delete existing file ''{0}'' due to I/O error: {1}",
+              io, userfile, io.getMessage()
+          );
+        }
+      }
+
+      catch (KeyManager.KeyManagerException e)
+      {
+        log.error(
+            "Unable to store user credentials. Background API requests will not be able to " +
+            "authenticate: {0}", e, e.getMessage()
+        );
+      }
+
+      finally
+      {
+        if (writer != null)
+        {
+          try
+          {
+            writer.close();
+          }
+
+          catch (IOException e)
+          {
+            log.warn("Could not close file ''{0}'': {1}", e, userfile, e.getMessage());
+          }
+        }
+      }
+    }
+
+
+    /**
+     * Handles the file I/O and security on deleting the user file containing user's login name.
+     *
+     * @throws IOException    if security manager denies access to delete the user file
+     */
+    private void deleteUserFile() throws IOException
+    {
+      final File userfile = new File(deployer.getUserFileLocation());
+
+      try
+      {
+        // ---- BEGIN PRIVILEGED CODE BLOCK -------------------------------------------------------
+
+        boolean success = AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>()
+        {
+          @Override public Boolean run()
+          {
+            if (userfile.exists())
+            {
+              return userfile.delete();
+            }
+
+            else
+            {
+              return true;
+            }
+          }
+        });
+
+        // ---- END PRIVILEGED CODE BLOCK ---------------------------------------------------------
+
+        if (!success)
+        {
+          log.error(
+              "Cannot store user credentials. Unable to delete existing .user file. " +
+              "Background API requests will not be able to authenticate."
+          );
+        }
+      }
+
+      catch (SecurityException e)
+      {
+        throw new IOException(
+            "Security manager has denied access to user file at '" + deployer.getUserFileLocation() +
+            "': " + e.getMessage(), e
+        );
+      }
+    }
+
+
     // TODO
     //
     //
@@ -1549,6 +1795,7 @@ public class Deployer
 
       return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
     }
+
   }
 
 
@@ -1590,39 +1837,158 @@ public class Deployer
    * When discovered devices are available and the controller is linked to an account,<br>
    * those devices are sent to Beehive.
    */
-  private class DiscoveredDevicesAnnouncement extends Thread {
-     DiscoveredDevicesAnnouncement() {
-       super("DiscoveredDevicesAnnouncement");
+  private class DiscoveredDevicesAnnouncement extends Thread
+  {
+    private Deployer deployer;
+
+    DiscoveredDevicesAnnouncement(Deployer deployer)
+    {
+      super("DiscoveredDevicesAnnouncement");
+
+      this.deployer = deployer;
     }
 
-    public void run() {
-       while (true) {
-          if (!discoveredDevicesToAnnounce.isEmpty()) {
-             synchronized (discoveredDevicesToAnnounce) {
-                ClientResource cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices");
-                if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
-                   UserDTO user = controllerDTO.getAccount().getUsers().get(0);
-                   cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
-                   try {   
-                      Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
-                      Representation result = cr.post(rep);
-                      cr.release();
-                      GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
-                      if (res.getErrorMessage() != null) {
-                         throw new RuntimeException(res.getErrorMessage());
-                      }
-                      discoveredDevicesToAnnounce.clear();
-                   } catch (Exception e) {
-                     log.error("Could not announce discovered devices", e);
-                   }
-                }
-             }
-          }
-          try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
-       }
-     }
-  }
+    public void run()
+    {
+      while (true)
+      {
 
+        if (!discoveredDevicesToAnnounce.isEmpty())
+        {
+          synchronized (discoveredDevicesToAnnounce)
+          {
+            ClientResource cr = new ClientResource(
+                controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
+            );
+
+            try
+            {
+              String username = getUserName();
+
+              if (username == null || username.equals(""))
+              {
+                log.error("Unable to retrieve username for device discovery API call. Skipped...");
+
+                break;
+              }
+
+              cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+
+              Representation rep = new JsonRepresentation(
+                  new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
+              );
+
+              Representation result = cr.post(rep);
+              cr.release();
+
+              GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
+                  .use(null, GenericResourceResultWithErrorMessage.class)
+                  .use("result", ArrayList.class)
+                  .use("result.values", Long.class)
+                  .deserialize(result.getText());
+
+              if (res.getErrorMessage() != null)
+              {
+                 throw new RuntimeException(res.getErrorMessage());
+              }
+
+              discoveredDevicesToAnnounce.clear();
+            }
+
+            catch (Exception e)
+            {
+              log.error("Could not announce discovered devices", e);
+            }
+          }
+        }
+
+        try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
+      }
+    }
+
+
+    /**
+     * Retrieves user's password from controller's keystore.
+     *
+     * @param username    user's login name
+     *
+     * @return
+     *
+     * @throws KeyManager.KeyManagerException
+     *            if there was an error accessing the keystore
+     *
+     * @throws PasswordManager.PasswordNotFoundException
+     *            if the password for the user was not found in the keystore
+     */
+    private String getPassword(String username) throws KeyManager.KeyManagerException,
+                                                       PasswordManager.PasswordNotFoundException
+    {
+      PasswordManager pw = new PasswordManager(
+          deployer.getKeyStoreLocation(),
+          (deployer.getSystemUser() + ".key").toCharArray()
+      );
+
+      byte[] credentials = pw.getPassword(
+          username, (deployer.getSystemUser() + ".key").toCharArray()
+      );
+
+      return deployer.encodeKey(username, credentials);
+    }
+
+    /**
+     * Retrieves the user's login name from user file.
+     *
+     * @return  user's login name or an empty string if login name was not found or there
+     *          was an error reading it
+     */
+    private String getUserName()
+    {
+      File user = new File(getUserFileLocation());
+      BufferedReader reader = null;
+
+      try
+      {
+        if (!user.exists())   // TODO privileged block
+        {
+          return "";
+        }
+
+        reader = new BufferedReader(new FileReader(user));
+
+        return reader.readLine();
+      }
+
+      catch (IOException e)
+      {
+        log.error("Can't read login name due to I/O error : {0}", e, e.getMessage());
+
+        return "";
+      }
+
+      catch (SecurityException e)
+      {
+        log.error("Security manager has prevented access to user's login name: {0}", e, e.getMessage());
+
+        return "";
+      }
+
+      finally
+      {
+        if (reader != null)
+        {
+          try
+          {
+            reader.close();
+          }
+
+          catch (IOException e)
+          {
+            log.warn("Unable to close file ''{0}''", getUserFileLocation());
+          }
+        }
+      }
+    }
+  }
 
 }
 
