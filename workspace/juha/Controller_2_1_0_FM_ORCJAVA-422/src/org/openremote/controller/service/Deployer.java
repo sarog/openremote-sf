@@ -1881,12 +1881,14 @@ public class Deployer
         {
           synchronized (discoveredDevicesToAnnounce)
           {
-            ClientResource cr = new ClientResource(
-                controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
-            );
+            ClientResource cr = null;
 
             try
             {
+              cr = new ClientResource(
+                  controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
+              );
+
               String username = getUserName();
 
               if (username == null || username.equals(""))
@@ -1903,7 +1905,6 @@ public class Deployer
                 );
 
                 Representation result = cr.post(rep);
-                cr.release();
 
                 GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
                     .use(null, GenericResourceResultWithErrorMessage.class)
@@ -1923,6 +1924,14 @@ public class Deployer
             catch (Exception e)
             {
               log.error("Could not announce discovered devices", e);
+            }
+
+            finally
+            {
+              if (cr != null)
+              {
+                cr.release();
+              }
             }
           }
         }
