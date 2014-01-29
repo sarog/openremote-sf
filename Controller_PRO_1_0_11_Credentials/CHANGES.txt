@@ -13,6 +13,12 @@ ORCJAVA-295
     content was consumed), causing a NPE. Fixed by moving release
     call in finally block after processing. (Eric Bariaux)
 
+ORCJAVA-401
+===========
+
+  - Timezones in dates in datetime protocol do not work
+    (Juha Lindfors)
+
 
 Controller Pro 1.0.11
 =====================
