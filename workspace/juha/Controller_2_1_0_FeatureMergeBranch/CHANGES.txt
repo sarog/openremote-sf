@@ -1,4 +1,4 @@
-Controller 2.1.0 (2013-XX-XX Twin Galaxies)
+Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
 New Features:
@@ -34,7 +34,8 @@ New Features:
   - HTTP protocol: 
      * Methods GET, POST, PUT and DELETE are now supported, HTTP 100 Expect
        Continue headers have been set to false for compatibility with HTTP 
-       servers that don't support this header (Marcus Redeker, ORCJAVA-400)
+       servers that don't support this header (Marcus Redeker, ORCJAVA-400,
+       ORCJAVA-415)
      * For HTTP/JSON return documents, a JSON Path expression is supported.
      * HTTP content-type headers are supported (Marcus Redeker, ORCJAVA-260) 
      * For outgoing HTTP request, a user agent header is included which 
