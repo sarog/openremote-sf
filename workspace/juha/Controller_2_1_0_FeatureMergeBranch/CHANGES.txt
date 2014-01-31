@@ -4,7 +4,8 @@ Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 New Features:
 
   - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
-  - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330, ORCJAVA-331)
+  - Mi Casa Verde Vera Integration (Marcus Redeker, Eric Bariaux, Juha Lindfors,
+    ORCJAVA-330, ORCJAVA-331, ORCJAVA-295, ORCJAVA-422)
   - Round robind database (RRD) integration for storing sensor
     data (Marcus Redeker, ORCJAVA-353, ORCJAVA-356)
   - EmonCMS integration for storing sensor data (Marcus Redeker, ORCJAVA-357)
