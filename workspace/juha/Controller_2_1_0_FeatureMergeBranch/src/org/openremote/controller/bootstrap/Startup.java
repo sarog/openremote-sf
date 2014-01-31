@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.bootstrap;
 
+import java.security.Provider;
+import java.security.Security;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Level;
@@ -32,6 +34,7 @@ import java.text.MessageFormat;
 import org.openremote.controller.Constants;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.security.SecurityProvider;
 
 /**
  * Generic startup implementation for controller. Depending on deployment environment (servlet,
@@ -177,7 +180,33 @@ public class Startup
   }
 
 
+  /**
+   * Installs BouncyCastle as the primary security provider for this JVM.
+   *
+   * @throws InitializationException    if the initialization fails
+   */
+  public static void installBouncyCastleSecurityProvider() throws InitializationException
+  {
+    try
+    {
+      Provider provider = SecurityProvider.BC.getProviderInstance();
 
+      if (provider == null)
+      {
+        throw new InitializationException("Cannot load BouncyCastle security provider.");
+      }
+
+      Security.insertProviderAt(provider, 1);
+    }
+
+    catch (SecurityException e)
+    {
+      throw new InitializationException(
+          "Security manager has prevented installing BouncyCastle security provider: {0}",
+          e, e.getMessage()
+      );
+    }
+  }
 
 
   // Nested Classes -------------------------------------------------------------------------------
