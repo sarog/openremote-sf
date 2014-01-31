@@ -1,3 +1,9 @@
+ORCJAVA-401
+===========
+
+ - Fix for timezone setting in date fields (Juha Lindfors)
+
+
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
