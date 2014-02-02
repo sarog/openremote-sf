@@ -139,8 +139,11 @@ public class NetworkUtil
                }
             }
             if (onlyLinkLocal) continue;
-            macs.append(getMACString(networkInterface.getHardwareAddress()));
-            macs.append(",");
+            byte[] mac = networkInterface.getHardwareAddress();
+            if (mac != null) {
+               macs.append(getMACString(networkInterface.getHardwareAddress()));
+               macs.append(",");
+            }
          }
       }
       if (macs.length()==0) {
