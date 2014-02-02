@@ -206,7 +206,7 @@ public class ConfigManageController extends MultiActionController
       response.setStatus(HttpURLConnection.HTTP_OK);
       writer.print(accountID); 
     } catch (Throwable t) {
-      log.error("Error when checking controller link status", t.getMessage());
+      log.error("Error when checking controller link status", t);
       response.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
       writer.print(t.getMessage());
     } finally {
