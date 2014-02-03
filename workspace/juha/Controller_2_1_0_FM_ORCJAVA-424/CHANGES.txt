@@ -1,3 +1,11 @@
+
+ORCJAVA-424
+===========
+
+ - Integrate original NIO-based remote proxy controller side
+   components 
+
+
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
