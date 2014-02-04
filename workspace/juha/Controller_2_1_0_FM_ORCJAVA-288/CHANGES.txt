@@ -1,3 +1,8 @@
+ORCJAVA-288
+===========
+
+ - Remote command execution null pointer exception (Eric Bariaux)
+
 
 ORCJAVA-424
 ===========
