@@ -15,6 +15,13 @@ ORCJAVA-295
     call in finally block after processing. (Eric Bariaux)
 
 
+ORCJAVA-266
+===========
+
+  - Null pointer exception when registering controller
+    to Beehive (Eric Bariaux)
+
+
 ORCJAVA-288    
 ===========
 
