@@ -1,3 +1,4 @@
+
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
@@ -88,7 +89,7 @@ New Features:
   - Support for externally packaged and distributed protocol implementations, 
     such as Z-wave (Marcus Redeker, Juha Lindfors, ORCJAVA-347, ORCJAVA-366)
   - Support for remote access proxy (Marcus Redeker, Eric Bariaux, Juha
-    Lindfors, ORCJAVA-295, ORCJAVA-422, ORCJAVA-424, ORCJAVA-288)    
+    Lindfors, ORCJAVA-295, ORCJAVA-422, ORCJAVA-424, ORCJAVA-288, ORCJAVA-266)    
 
 
 Bug Fixes:
