@@ -1,3 +1,9 @@
+ORCJAVA-411
+===========
+
+  - Convert Beehive remote proxy service to blocking I/O 
+    (Marcus Redeker)
+
 
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
