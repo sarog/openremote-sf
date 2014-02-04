@@ -251,6 +251,11 @@ public class Deployer
    */
   private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
   
+  /**
+   * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
+   * For example unlink from Beehive, download new design, start proxy, update controller, .... 
+   */
+  private BeehiveCommandCheckService beehiveCommandCheckService;
   
   // Constructors ---------------------------------------------------------------------------------
 
@@ -275,7 +280,7 @@ public class Deployer
    *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
-                  ControllerConfiguration controllerConfig,
+                  ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -283,6 +288,8 @@ public class Deployer
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
     
+    this.beehiveCommandCheckService = beehiveCommandCheckService;
+    this.beehiveCommandCheckService.setDeployer(this);
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
@@ -1802,7 +1809,8 @@ public class Deployer
   /**
    * Handles the announcement of the controller via it's MAC address to Beehive.<br>
    * Once a user has linked this controller to an account and the returned ControllerDTO contains<br>
-   * a AccountDTO with users, this thread is ending.
+   * a AccountDTO with users, this thread is ending, but then the backend command agent is started<br>
+   * to perform a regular check on beehive if a command is there for this controller
    * 
    *
    */
@@ -1813,7 +1821,7 @@ public class Deployer
 
     public void run() {
        //As long as we are not linked to an account we periodically try to receive account info 
-       while ((controllerDTO == null) || (controllerDTO.getAccount() == null)) {
+       while (true) {
           try {
              ClientResource cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
              Representation r = cr.post(null);
@@ -1822,11 +1830,15 @@ public class Deployer
              str = r.getText();
              GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
              controllerDTO = (ControllerDTO)res.getResult();
+             if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
+                break;
+             }
           } catch (Exception e) {
              log.error("!!! Unable to announce controller MAC address to Beehive", e);
           }
-          try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
+          try { Thread.sleep(1000 * 30); } catch (InterruptedException e) {} //Let's wait 30 seconds
        }
+       beehiveCommandCheckService.start(controllerDTO);
     }
 
   }
@@ -2033,6 +2045,12 @@ public class Deployer
       }
     }
   }
+
+  public void unlinkController() {
+     this.controllerDTO = null;
+     this.controllerAnnouncement.start();
+  }
+
 
 }
 

@@ -32,6 +32,7 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
 
+
 /**
  * This class is used to provide utility method about network.
  *
@@ -68,7 +69,7 @@ public class NetworkUtil
   }
    
    private static String getLocalHostFromWindows(){
-      String ip = configuration.getWebappIp();
+      String ip = getConfiguration().getWebappIp();
       if ((ip != null) && (!ip.isEmpty())) {
           return ip;
       }
@@ -89,8 +90,15 @@ public class NetworkUtil
       return ipAddrStr.toString();
    }
    
+   private synchronized static ControllerConfiguration getConfiguration() {
+      if (configuration == null) {
+         configuration = ControllerConfiguration.readXML();
+      }
+      return configuration;
+   }
+
    private static String getLocalHostFromLinux(){
-      String ip = configuration.getWebappIp();
+      String ip = getConfiguration().getWebappIp();
       if ((ip != null) && (!ip.isEmpty())) {
           return ip;
       }
@@ -126,12 +134,20 @@ public class NetworkUtil
          if (!networkInterface.isLoopback()) {
             boolean onlyLinkLocal = true;
             for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-               if (!interfaceAddress.getAddress().isLinkLocalAddress()) onlyLinkLocal = false;
+               if (!interfaceAddress.getAddress().isLinkLocalAddress()) {
+                  onlyLinkLocal = false;
+               }
             }
             if (onlyLinkLocal) continue;
-            macs.append(getMACString(networkInterface.getHardwareAddress()));
-            macs.append(",");
+            byte[] mac = networkInterface.getHardwareAddress();
+            if (mac != null) {
+               macs.append(getMACString(networkInterface.getHardwareAddress()));
+               macs.append(",");
+            }
          }
+      }
+      if (macs.length()==0) {
+         return "no-mac-address-found";
       }
       macs.deleteCharAt(macs.length()-1);
       return macs.toString();
@@ -144,4 +160,5 @@ public class NetworkUtil
       }
       return sb.toString();
    }
+   
 }
