@@ -6,6 +6,7 @@ ORCJAVA-422
     correctly releasing restlet client resources. 
     (Juha Lindfors)
 
+
 ORCJAVA-295
 ===========
 
@@ -13,7 +14,13 @@ ORCJAVA-295
     content was consumed), causing a NPE. Fixed by moving release 
     call in finally block after processing. (Eric Bariaux)
 
-    
+
+ORCJAVA-288    
+===========
+
+  - Remote command execution null pointer exception (Eric Bariaux)
+
+
 ORCJAVA-424
 ===========
 
