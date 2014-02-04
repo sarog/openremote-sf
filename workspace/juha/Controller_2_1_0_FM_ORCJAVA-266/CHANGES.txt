@@ -1,3 +1,10 @@
+ORCJAVA-266
+===========
+
+  - Null pointer exception when registering controller
+    to Beehive (Eric Bariaux)
+
+
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
