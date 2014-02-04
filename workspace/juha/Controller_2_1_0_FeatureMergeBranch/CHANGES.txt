@@ -1,19 +1,11 @@
-
-ORCJAVA-424
-===========
-
- - Integrate original NIO-based remote proxy controller side
-   components 
-
-
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
 New Features:
 
   - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
-  - Mi Casa Verde Vera Integration (Marcus Redeker, Eric Bariaux, Juha Lindfors,
-    ORCJAVA-330, ORCJAVA-331, ORCJAVA-295, ORCJAVA-422)
+  - Mi Casa Verde Vera Integration (Marcus Redeker, Eric Bariaux,
+    ORCJAVA-330, ORCJAVA-331, ORCJAVA-295)
   - Round robind database (RRD) integration for storing sensor
     data (Marcus Redeker, ORCJAVA-353, ORCJAVA-356)
   - EmonCMS integration for storing sensor data (Marcus Redeker, ORCJAVA-357)
@@ -96,7 +88,9 @@ New Features:
     to files (Juha Lindfors, ORCJAVA-273)
   - Support for externally packaged and distributed protocol implementations, 
     such as Z-wave (Marcus Redeker, Juha Lindfors, ORCJAVA-347, ORCJAVA-366)
-    
+  - Support for remote access proxy (Marcus Redeker, Eric Bariaux, Juha
+    Lindfors, ORCJAVA-422, ORCJAVA-424, ORCJAVA-288)    
+
 
 Bug Fixes:
 
