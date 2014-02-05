@@ -7,6 +7,13 @@ ORCJAVA-422
     (Juha Lindfors)
 
 
+ORCJAVA-411
+===========
+
+  - Convert Beehive remote proxy service to blocking I/O
+    (Marcus Redeker)
+
+
 ORCJAVA-295
 ===========
 
