@@ -85,8 +85,6 @@
     <property name = "proxyTimeout" value = "${proxy.timeout}"/>
     <property name = "beehiveCommandServiceCheckInterval" value = "${beehiveCommandService.check.interval}"/>
     <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
-    <property name = "proxyTimeout" value = "${proxy.timeout}"/>
-    <property name = "beehiveCommandServiceCheckInterval" value = "${beehiveCommandService.check.interval}"/>
   </bean>
 
   <!-- round-robin variables -->
