@@ -112,7 +112,7 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
 
       // Post the action
       if(!act.postControlAction()) {
-         logger.warn("Sending the command failed with status " + act.getControlStatus());
+         logger.warn("Sending the command failed with status " + act.getControlStatus().getDescription());
          return;
       }
       logger.info("command " + this.action + " successfully send to " + this.device.getFriendlyName());
@@ -184,6 +184,9 @@ public class UPnPCommand extends ReadCommand implements ExecutableCommand, Devic
    public void eventNotifyReceived(String uuid, long seq, String varName, String value) {
       logger.info("received event from " + uuid + " for var " + varName + " with value " + value);
       this.cache = value;
+      for (Sensor sensor : this.sensors) {
+         sensor.update(value);
+      }
    }
 
 }
