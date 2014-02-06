@@ -13,6 +13,13 @@ ORCJAVA-295
     content was consumed), causing a NPE. Fixed by moving release
     call in finally block after processing. (Eric Bariaux)
 
+ORCJAVA-424
+===========
+
+ - Integrate original NIO-based remote proxy controller side
+   components
+
+
 ORCJAVA-401
 ===========
 
@@ -123,6 +130,7 @@ Bug Fixes:
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
+
 
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================

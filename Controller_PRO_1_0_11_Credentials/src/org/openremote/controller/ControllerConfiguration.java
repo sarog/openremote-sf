@@ -85,11 +85,11 @@ public class ControllerConfiguration extends Configuration
   public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
   public static final String LIRCD_CONF_PATH = "lircd.conf.path";
   public static final String WEBAPP_IP = "webapp.ip";
+
   public static final String PROXY_TIMEOUT = "proxy.timeout";
   public static final String BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL = "beehiveCommandService.check.interval";
  
   public static final String LAGARTO_BROADCAST_ADDRESS = "lagarto_network.broadcast";
-
 
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
 
@@ -152,6 +152,8 @@ public class ControllerConfiguration extends Configuration
   private int proxyTimeout;
   private int beehiveCommandServiceCheckInterval;
   private String lagartoBroadcastAddr;
+  private int proxyTimeout;
+  private int beehiveCommandServiceCheckInterval;
 
   /** Whether copy lircd.conf for user. */
   private boolean copyLircdconf;
@@ -571,4 +573,26 @@ public class ControllerConfiguration extends Configuration
   {
     this.lagartoBroadcastAddr = broadcastAddress.trim();
   }
+
+
+  public int getProxyTimeout()  
+  {
+    return preferAttrCustomValue(PROXY_TIMEOUT, proxyTimeout);
+  }
+
+  public void setProxyTimeout(int proxyTimeout)  
+  {
+    this.proxyTimeout = proxyTimeout;
+  }
+
+  public void setBeehiveCommandServiceCheckInterval(int interval) 
+  {
+    this.beehiveCommandServiceCheckInterval = interval;
+  }
+   
+  public int getBeehiveCommandServiceCheckInterval() 
+  {
+    return preferAttrCustomValue(BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL, beehiveCommandServiceCheckInterval);
+  }
+
 }
