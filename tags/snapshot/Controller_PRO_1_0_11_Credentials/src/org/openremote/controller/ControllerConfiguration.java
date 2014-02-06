@@ -152,8 +152,6 @@ public class ControllerConfiguration extends Configuration
   private int proxyTimeout;
   private int beehiveCommandServiceCheckInterval;
   private String lagartoBroadcastAddr;
-  private int proxyTimeout;
-  private int beehiveCommandServiceCheckInterval;
 
   /** Whether copy lircd.conf for user. */
   private boolean copyLircdconf;
@@ -532,13 +530,6 @@ public class ControllerConfiguration extends Configuration
       this.webappName = webappName;
    }
 
-   public int getProxyTimeout() {
-      return preferAttrCustomValue(PROXY_TIMEOUT, proxyTimeout);
-   }
-   
-   public void setProxyTimeout(int proxyTimeout) {
-      this.proxyTimeout = proxyTimeout;
-   }
 
   /**
    * Returns the broadcast address used to publish network events (ZeroMQ)
@@ -552,14 +543,6 @@ public class ControllerConfiguration extends Configuration
   {
     return preferAttrCustomValue(LAGARTO_BROADCAST_ADDRESS, lagartoBroadcastAddr);
   }
-
-   public void setBeehiveCommandServiceCheckInterval(int interval) {
-      this.beehiveCommandServiceCheckInterval = interval;
-   }
-   
-   public int getBeehiveCommandServiceCheckInterval() {
-      return preferAttrCustomValue(BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL, beehiveCommandServiceCheckInterval);
-   }
 
   /**
    * Sets the broadcast address used to receive network events (ZeroMQ) from
