@@ -6,6 +6,13 @@ ORCJAVA-422
     correctly releasing restlet client resources.
     (Juha Lindfors)
 
+ORCJAVA-411
+===========
+
+  - Convert Beehive remote proxy service to blocking I/O
+    (Marcus Redeker)
+
+
 ORCJAVA-295
 ===========
 
