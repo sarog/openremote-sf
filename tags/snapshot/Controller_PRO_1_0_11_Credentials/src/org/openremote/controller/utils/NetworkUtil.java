@@ -32,7 +32,6 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
 
-import sun.java2d.loops.MaskBlit;
 
 /**
  * This class is used to provide utility method about network.
