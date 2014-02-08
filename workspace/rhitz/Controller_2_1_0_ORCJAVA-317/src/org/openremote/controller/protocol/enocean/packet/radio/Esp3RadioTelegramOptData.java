@@ -98,6 +98,23 @@ public class Esp3RadioTelegramOptData
         ESP3_RADIO_OPT_DATA_DBM_TX, ESP3_RADIO_OPT_DATA_NO_SECURITY_TX);
   }
 
+  /**
+   * Constructs and returns an optional data instance which can be used for
+   * ADT ('Addressing Destination Telegram') based communication as
+   * specified in EnOcean Serial Protocol 3 (ESP3) V1.17 specification
+   * chapter 1.7.1 'Packet Structure'.
+   *
+   * @param destinationID  EnOcean destination device ID
+   *
+   * @return  new optional data instance
+   */
+  public static Esp3RadioTelegramOptData createOptDataADT(DeviceID destinationID)
+  {
+    return new Esp3RadioTelegramOptData(
+        ESP3_RADIO_OPT_DATA_SUB_TEL_NUM_TX, destinationID,
+        ESP3_RADIO_OPT_DATA_DBM_TX, ESP3_RADIO_OPT_DATA_NO_SECURITY_TX
+    );
+  }
 
   // Private Instance Fields ----------------------------------------------------------------------
 

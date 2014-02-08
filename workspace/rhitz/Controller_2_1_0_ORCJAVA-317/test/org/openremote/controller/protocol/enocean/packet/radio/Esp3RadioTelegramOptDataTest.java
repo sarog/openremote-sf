@@ -58,6 +58,19 @@ public class Esp3RadioTelegramOptDataTest
     assertOptDataParams(subTelNum, deviceID, dBm, securityLevel);
   }
 
+  @Test public void testOptionalDataWithDestinationAddress() throws Exception
+  {
+    int subTelNum = 3;
+    DeviceID destinationID = DeviceID.fromString("0xFF800001");
+    int dBm = 0xFF;
+    int securityLevel = 0;
+
+    byte[] expectedBytes = createOptDataAsByteArray(subTelNum, destinationID, dBm, securityLevel);
+    byte[] actualBytes = Esp3RadioTelegramOptData.createOptDataADT(destinationID).asByteArray();
+
+    Assert.assertArrayEquals(expectedBytes, actualBytes);
+  }
+
   @Test (expected = IllegalArgumentException.class)
   public void testNullArg() throws Exception
   {
