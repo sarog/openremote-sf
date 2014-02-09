@@ -187,7 +187,6 @@
     <constructor-arg value = "Default Deployer"/>
     <constructor-arg ref = "statusCache"/>
     <constructor-arg ref = "configuration"/>
-    <constructor-arg ref = "beehiveCmdCheckService"/>
     <constructor-arg>
       <map>
         <entry key = "2.0" value-ref = "schema20"/>
@@ -197,9 +196,6 @@
 
   </bean>
 
-  <bean id = "beehiveCmdCheckService" class = "org.openremote.controller.service.BeehiveCommandCheckService">
-    <constructor-arg ref = "configuration"/>
-  </bean>
 
   <!--
    | TODO   : XML mappers
