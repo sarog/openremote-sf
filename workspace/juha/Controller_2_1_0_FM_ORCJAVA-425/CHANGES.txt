@@ -1,4 +1,12 @@
 
+ORCJAVA-425
+===========
+
+  - Fix broken changes introduced to test suite in 
+    mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
+    part of ORCJAVA-424  (Juha Lindfors)
+
+
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
 ===========================================
 
