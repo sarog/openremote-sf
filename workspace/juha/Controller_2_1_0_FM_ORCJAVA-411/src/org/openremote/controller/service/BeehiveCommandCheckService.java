@@ -32,7 +32,6 @@ import org.openremote.controller.utils.Logger;
 import org.openremote.controllercommand.domain.ControllerCommandDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.openremote.useraccount.domain.ControllerDTO;
-import org.openremote.useraccount.domain.UserDTO;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
@@ -127,8 +126,11 @@ public class BeehiveCommandCheckService {
       ClientResource cr = null;
       try {
          cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "command/" + id);
-         UserDTO user = controllerDTO.getAccount().getUsers().get(0);
-         cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
+
+         String username = deployer.getUserName();
+
+         cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, deployer.getPassword(username));
+
          Representation r = cr.delete();
          String str;
          str = r.getText();
@@ -184,8 +186,10 @@ public class BeehiveCommandCheckService {
             try {
                cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "commands/" + controllerDTO.getOid());
                cr.setNext(c);
-               UserDTO user = controllerDTO.getAccount().getUsers().get(0);
-               cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
+
+               String username = deployer.getUserName();
+
+               cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, deployer.getPassword(username));
                Representation r = cr.get();
                String str;
                str = r.getText();
