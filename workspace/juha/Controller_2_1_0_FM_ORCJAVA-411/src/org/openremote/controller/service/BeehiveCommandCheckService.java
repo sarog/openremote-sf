@@ -76,13 +76,15 @@ public class BeehiveCommandCheckService
   public void start(ControllerDTO controllerDTO)
   {
     this.controllerDTO = controllerDTO;
-    commandCheckerThread.setRunning(true);
-    commandCheckerThread.start();
+
+    commandCheckerThread.startThread();
   }
    
   public void stop()
   {
-    commandCheckerThread.setRunning(false);
+    commandCheckerThread.stopThread();
+
+
   }
    
    
@@ -223,11 +225,25 @@ public class BeehiveCommandCheckService
   private class BeehiveCommandChecker extends Thread
   {
       
-    private boolean running;
+    private volatile boolean running;
       
     BeehiveCommandChecker()
     {
       super("BeehiveCommandChecker");
+    }
+
+    private void stopThread()
+    {
+      this.running = false;
+
+      interrupt();
+    }
+
+    private void startThread()
+    {
+      this.running = true;
+
+      start();
     }
 
     @SuppressWarnings("unchecked")
@@ -238,7 +254,7 @@ public class BeehiveCommandCheckService
 
       Client c = new Client(new Context(), Protocol.HTTP);
 
-      while (isRunning())
+      while (running)
       {
         ClientResource cr = null;
 
@@ -286,19 +302,20 @@ public class BeehiveCommandCheckService
           }
         }
 
-        try { Thread.sleep(sleepTime); } catch (InterruptedException e) {} //Let's wait 30 seconds
+        try
+        {
+          Thread.sleep(sleepTime);
+        }
+
+        catch (InterruptedException e)
+        {
+          interrupt();
+
+          running = false;
+        }
       }
     }
-
-    public boolean isRunning()
-    {
-         return running;
-    }
-
-    public void setRunning(boolean running)
-    {
-         this.running = running;
-    }
   }
+  
 }
 
