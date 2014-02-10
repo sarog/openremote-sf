@@ -777,6 +777,99 @@ public class Deployer
     return sensor;
   }
 
+  /**
+   * Retrieves the user's login name from user file.
+   *
+   * @return  user's login name or an empty string if login name was not found or there
+   *          was an error reading it
+   */
+  protected String getUserName()
+  {
+    // TODO :
+    //        moved temporarily into public Deployer API to satisfy requirements to Beehive
+    //        command check service -- should move back when the Beehive command check is
+    //        part of the Beehive Connection implementation where it belongs
+
+    File user = new File(getUserFileLocation());
+    BufferedReader reader = null;
+
+    try
+    {
+      if (!user.exists())   // TODO privileged block
+      {
+        return "";
+      }
+
+      reader = new BufferedReader(new FileReader(user));
+
+      return reader.readLine();
+    }
+
+    catch (IOException e)
+    {
+      log.error("Can't read login name due to I/O error : {0}", e, e.getMessage());
+
+      return "";
+    }
+
+    catch (SecurityException e)
+    {
+      log.error("Security manager has prevented access to user's login name: {0}", e, e.getMessage());
+
+      return "";
+    }
+
+    finally
+    {
+      if (reader != null)
+      {
+        try
+        {
+          reader.close();
+        }
+
+        catch (IOException e)
+        {
+          log.warn("Unable to close file ''{0}''", getUserFileLocation());
+        }
+      }
+    }
+  }
+
+  /**
+   * Retrieves user's password from controller's keystore.
+   *
+   * @param username    user's login name
+   *
+   * @return
+   *
+   * @throws KeyManager.KeyManagerException
+   *            if there was an error accessing the keystore
+   *
+   * @throws PasswordManager.PasswordNotFoundException
+   *            if the password for the user was not found in the keystore
+   */
+  protected String getPassword(String username) throws KeyManager.KeyManagerException,
+                                                     PasswordManager.PasswordNotFoundException
+  {
+    // TODO :
+    //        moved temporarily into public Deployer API to satisfy requirements to Beehive
+    //        command check service -- should move back when the Beehive command check is
+    //        part of the Beehive Connection implementation where it belongs
+
+    PasswordManager pw = new PasswordManager(
+        getKeyStoreLocation(),
+        (getSystemUser() + ".key").toCharArray()
+    );
+
+    byte[] credentials = pw.getPassword(
+        username, (getSystemUser() + ".key").toCharArray()
+    );
+
+    return encodeKey(username, credentials);
+  }
+
+
 
 
   // Private Instance Methods ---------------------------------------------------------------------
@@ -1969,88 +2062,6 @@ public class Deployer
       }
     }
 
-
-    /**
-     * Retrieves user's password from controller's keystore.
-     *
-     * @param username    user's login name
-     *
-     * @return
-     *
-     * @throws KeyManager.KeyManagerException
-     *            if there was an error accessing the keystore
-     *
-     * @throws PasswordManager.PasswordNotFoundException
-     *            if the password for the user was not found in the keystore
-     */
-    private String getPassword(String username) throws KeyManager.KeyManagerException,
-                                                       PasswordManager.PasswordNotFoundException
-    {
-      PasswordManager pw = new PasswordManager(
-          deployer.getKeyStoreLocation(),
-          (deployer.getSystemUser() + ".key").toCharArray()
-      );
-
-      byte[] credentials = pw.getPassword(
-          username, (deployer.getSystemUser() + ".key").toCharArray()
-      );
-
-      return deployer.encodeKey(username, credentials);
-    }
-
-    /**
-     * Retrieves the user's login name from user file.
-     *
-     * @return  user's login name or an empty string if login name was not found or there
-     *          was an error reading it
-     */
-    private String getUserName()
-    {
-      File user = new File(getUserFileLocation());
-      BufferedReader reader = null;
-
-      try
-      {
-        if (!user.exists())   // TODO privileged block
-        {
-          return "";
-        }
-
-        reader = new BufferedReader(new FileReader(user));
-
-        return reader.readLine();
-      }
-
-      catch (IOException e)
-      {
-        log.error("Can't read login name due to I/O error : {0}", e, e.getMessage());
-
-        return "";
-      }
-
-      catch (SecurityException e)
-      {
-        log.error("Security manager has prevented access to user's login name: {0}", e, e.getMessage());
-
-        return "";
-      }
-
-      finally
-      {
-        if (reader != null)
-        {
-          try
-          {
-            reader.close();
-          }
-
-          catch (IOException e)
-          {
-            log.warn("Unable to close file ''{0}''", getUserFileLocation());
-          }
-        }
-      }
-    }
   }
 
   public void unlinkController() {
