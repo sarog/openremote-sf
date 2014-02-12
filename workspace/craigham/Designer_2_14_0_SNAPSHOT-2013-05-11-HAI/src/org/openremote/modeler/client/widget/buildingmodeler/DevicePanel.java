@@ -330,6 +330,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
       newMenu.add(omnilinkImportMenuItem);
+      newMenu.add(isyImportMenuItem);
 
      //  TODO:
      //     Enable once the IR Import service has been deployed.   [JPL]
