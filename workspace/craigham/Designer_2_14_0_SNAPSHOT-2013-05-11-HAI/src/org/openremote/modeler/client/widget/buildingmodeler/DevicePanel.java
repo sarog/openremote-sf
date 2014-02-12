@@ -318,7 +318,8 @@ public class DevicePanel extends ContentPanel {
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
       final MenuItem omnilinkImportMenuItem = omnilinkImportMenuItem();
-
+      final MenuItem isyImportMenuItem = isyImportMenuItem();
+      
       final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
       newMenu.add(newCommandMemuItem);
@@ -493,7 +494,17 @@ public class DevicePanel extends ContentPanel {
       return importCommandItem;
    }
    
-   
+   private MenuItem isyImportMenuItem() {
+	      MenuItem importCommandItem = new MenuItem("Import ISY Devices");
+	      importCommandItem.setIcon(icon.importFromDB());
+	      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+	         public void componentSelected(MenuEvent ce) {
+	        	 importISYCommand();
+	         }
+
+	      });
+	      return importCommandItem;
+	   }
    private MenuItem omnilinkImportMenuItem() {
 	      MenuItem importCommandItem = new MenuItem("Import Omnilink Devices");
 	      importCommandItem.setIcon(icon.importFromDB());
@@ -963,7 +974,12 @@ public class DevicePanel extends ContentPanel {
 	       importWizard.center();
 	    // }
 	   }
-   
+   private void importISYCommand() {
+		ISYImportWizard importWizard = new ISYImportWizard();
+		importWizard.show();
+		importWizard.center();
+		// }
+		}
    public TreePanel<BeanModel> getTree() {
       return tree;
    }
