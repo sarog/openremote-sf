@@ -8,9 +8,6 @@ import java.util.Map;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.protocol.isy994.model.InsteonDevice;
-import org.openremote.controller.protocol.isy994.model.Light;
-import org.openremote.controller.protocol.isy994.model.PowerSwitch;
 import org.openremote.controller.utils.Logger;
 
 import com.nanoxml.XMLElement;
