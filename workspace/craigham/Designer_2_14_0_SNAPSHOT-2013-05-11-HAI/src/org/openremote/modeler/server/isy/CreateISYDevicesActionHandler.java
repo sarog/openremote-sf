@@ -3,7 +3,9 @@ package org.openremote.modeler.server.isy;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -69,6 +71,19 @@ public class CreateISYDevicesActionHandler implements
 	public CreateISYDeviceResult execute(CreateISYDeviceAction action,
 			ExecutionContext result) throws DispatchException {
 
+		Map<String, Device> existingDevices = new HashMap<String, Device>();
+		/*
+		 * we should only load devices from a user, but I am running into
+		 * hibernate issues, so this will have to do for now.
+		 */
+		for (Device d : deviceService.loadAll()) {
+			if (d.getAccount().getOid() == userService.getAccount().getOid()
+					&& d.getVendor().equals(VENDOR)
+					&& d.getModel().equals(MODEL)) {
+				existingDevices.put(d.getName(), d);
+			}
+		}
+		System.out.println("# existing ISY devices: " + existingDevices.size());
 		CreateISYDeviceResult returnValue = new CreateISYDeviceResult();
 		List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
 		List<Sensor> sensors = new ArrayList<Sensor>();
@@ -80,119 +95,111 @@ public class CreateISYDevicesActionHandler implements
 				action.getUserName(), action.getPassward());
 
 		for (ISYSeedinfo seedinfo : deviceSeedList) {
-			if ("1.45.65.0".equals(seedinfo.getType())
-					|| "2.42.66.0".equals(seedinfo.getType())
-					|| "1.32.65.0".equals(seedinfo.getType())) {
+			if (!existingDevices.containsKey(seedinfo.getName())) {
 				String address = seedinfo.getAddress();
 				String name = seedinfo.getName();
-
 				Device device = new Device(name, VENDOR, MODEL);
-				
 				device.setAccount(userService.getAccount());
 
 				devices.add(device);
-				DeviceCommand cmdOn = addDeviceCommand(device, address, name
-						+ " cmd-on", "DON");
-				deviceCommands.add(cmdOn);
+				if ("1.45.65.0".equals(seedinfo.getType())
+						|| "2.42.66.0".equals(seedinfo.getType())
+						|| "1.32.65.0".equals(seedinfo.getType())) {
 
-				DeviceCommand cmdOff = addDeviceCommand(device, address, name
-						+ " cmd-off", "DOF");
-				deviceCommands.add(cmdOff);
+					DeviceCommand cmdOn = addDeviceCommand(device, address,
+							name + " cmd-on", "DON");
+					deviceCommands.add(cmdOn);
 
-				DeviceCommand cmdFastOn = addDeviceCommand(device, address, name
-						+ " cmd-fast on", "DFON");
-				deviceCommands.add(cmdFastOn);
+					DeviceCommand cmdOff = addDeviceCommand(device, address,
+							name + " cmd-off", "DOF");
+					deviceCommands.add(cmdOff);
 
-				DeviceCommand cmdFastOff = addDeviceCommand(device, address, name
-						+ " cmd-off", "DFOF");
-				deviceCommands.add(cmdFastOff);
+					DeviceCommand cmdFastOn = addDeviceCommand(device, address,
+							name + " cmd-fast on", "DFON");
+					deviceCommands.add(cmdFastOn);
 
-				DeviceCommand cmdPower = addDeviceCommand(device, address, name
-						+ " get power", "get-power");
-				deviceCommands.add(cmdPower);
+					DeviceCommand cmdFastOff = addDeviceCommand(device,
+							address, name + " cmd-off", "DFOF");
+					deviceCommands.add(cmdFastOff);
 
-				Sensor powerSensor = createDeviceSensor(device,
-						SensorType.SWITCH, cmdPower, name + " power sensor");
-				sensors.add(powerSensor);
+					DeviceCommand cmdPower = addDeviceCommand(device, address,
+							name + " get power", "get-power");
+					deviceCommands.add(cmdPower);
 
-				Switch sw = createDeviceSwitch(cmdOn, cmdOff, powerSensor, name
-						+ " Switch");
-				switches.add(sw);
+					Sensor powerSensor = createDeviceSensor(device,
+							SensorType.SWITCH, cmdPower, name + " power sensor");
+					sensors.add(powerSensor);
 
-				boolean lightHasDimmer = !"2.42.66.0"
-						.equals(seedinfo.getType());
-				if (lightHasDimmer) {
-					DeviceCommand cmdLevel = addDeviceCommand(device, address,
-							name + " cmd level", "get-level");
-					deviceCommands.add(cmdLevel);
+					Switch sw = createDeviceSwitch(cmdOn, cmdOff, powerSensor,
+							name + " Switch");
+					switches.add(sw);
 
-					DeviceCommand cmdSetLevel = addDeviceCommand(device,
-							address, name + " set level", "DON");
-					deviceCommands.add(cmdSetLevel);
+					boolean lightHasDimmer = !"2.42.66.0".equals(seedinfo
+							.getType());
+					if (lightHasDimmer) {
+						DeviceCommand cmdLevel = addDeviceCommand(device,
+								address, name + " cmd level", "get-level");
+						deviceCommands.add(cmdLevel);
 
-					Sensor levelSensor = createDeviceSensor(device,
-							SensorType.RANGE, cmdLevel, name + " level sensor");
-					sensors.add(levelSensor);
-					Slider slider = createDeviceSlider(device, cmdSetLevel,
-							levelSensor, name + " Slider");
-					sliders.add(slider);
+						DeviceCommand cmdSetLevel = addDeviceCommand(device,
+								address, name + " set level", "DON");
+						deviceCommands.add(cmdSetLevel);
+
+						Sensor levelSensor = createDeviceSensor(device,
+								SensorType.RANGE, cmdLevel, name
+										+ " level sensor");
+						sensors.add(levelSensor);
+						Slider slider = createDeviceSlider(device, cmdSetLevel,
+								levelSensor, name + " Slider");
+						sliders.add(slider);
+					}
 				}
-			}
-			// motion
-			if ("16.1.65.0".equals(seedinfo.getType())) {
-				String name = seedinfo.getName();
-				Device device = new Device(name, VENDOR, MODEL);
-				device.setAccount(userService.getAccount());
-				devices.add(device);
-				DeviceCommand cmdPower = addDeviceCommand(device,
-						seedinfo.getAddress(), name + " get power", "get-power");
-				deviceCommands.add(cmdPower);
+				// motion
+				if ("16.1.65.0".equals(seedinfo.getType())) {
 
-				Sensor powerSensor = createDeviceSensor(device,
-						SensorType.SWITCH, cmdPower, name + " power sensor");
-				sensors.add(powerSensor);
-			}
-			// leak
-			if ("16.8.65.0".equals(seedinfo.getType())) {
-				String name = seedinfo.getName();
-				Device device = new Device(name, VENDOR, MODEL);
-				device.setAccount(userService.getAccount());
-				devices.add(device);
-				DeviceCommand cmdPower = addDeviceCommand(device,
-						seedinfo.getAddress(), name + " get power", "get-power");
-				deviceCommands.add(cmdPower);
+					DeviceCommand cmdPower = addDeviceCommand(device,
+							seedinfo.getAddress(), name + " get power",
+							"get-power");
+					deviceCommands.add(cmdPower);
 
-				Sensor powerSensor = createDeviceSensor(device,
-						SensorType.SWITCH, cmdPower, name + " power sensor");
-				sensors.add(powerSensor);
-			}
-			// relay
-			if ("2.9.66.0".equals(seedinfo.getType())) {
-				String name = seedinfo.getName();
-				Device device = new Device(name, VENDOR, MODEL);
-				device.setAccount(userService.getAccount());
-				devices.add(device);
-				DeviceCommand cmdPower = addDeviceCommand(device,
-						seedinfo.getAddress(), name + " get power", "get-power");
-				deviceCommands.add(cmdPower);
+					Sensor powerSensor = createDeviceSensor(device,
+							SensorType.SWITCH, cmdPower, name + " power sensor");
+					sensors.add(powerSensor);
+				}
+				// leak
+				if ("16.8.65.0".equals(seedinfo.getType())) {
+					DeviceCommand cmdPower = addDeviceCommand(device,
+							seedinfo.getAddress(), name + " get power",
+							"get-power");
+					deviceCommands.add(cmdPower);
 
-				Sensor powerSensor = createDeviceSensor(device,
-						SensorType.SWITCH, cmdPower, name + " power sensor");
-				sensors.add(powerSensor);
-			}
-			// outdoor capable switch
-			if ("2.56.66.0".equals(seedinfo.getType())) {
-				String name = seedinfo.getName();
-				Device device = new Device(name, VENDOR, MODEL);
-				device.setAccount(userService.getAccount());
-				devices.add(device);
-				DeviceCommand cmdPower = addDeviceCommand(device,
-						seedinfo.getAddress(), name + " get power", "get-power");
-				deviceCommands.add(cmdPower);
+					Sensor powerSensor = createDeviceSensor(device,
+							SensorType.SWITCH, cmdPower, name + " power sensor");
+					sensors.add(powerSensor);
+				}
+				// relay
+				if ("2.9.66.0".equals(seedinfo.getType())) {
 
-				Sensor powerSensor = createDeviceSensor(device,
-						SensorType.SWITCH, cmdPower, name + " power sensor");
-				sensors.add(powerSensor);
+					DeviceCommand cmdPower = addDeviceCommand(device,
+							seedinfo.getAddress(), name + " get power",
+							"get-power");
+					deviceCommands.add(cmdPower);
+
+					Sensor powerSensor = createDeviceSensor(device,
+							SensorType.SWITCH, cmdPower, name + " power sensor");
+					sensors.add(powerSensor);
+				}
+				// outdoor capable switch
+				if ("2.56.66.0".equals(seedinfo.getType())) {
+					DeviceCommand cmdPower = addDeviceCommand(device,
+							seedinfo.getAddress(), name + " get power",
+							"get-power");
+					deviceCommands.add(cmdPower);
+
+					Sensor powerSensor = createDeviceSensor(device,
+							SensorType.SWITCH, cmdPower, name + " power sensor");
+					sensors.add(powerSensor);
+				}
 			}
 		}
 
@@ -282,7 +289,7 @@ public class CreateISYDevicesActionHandler implements
 
 		protocol.addProtocolAttribute(ISY99_XMLPROPERTY_ADDRESS, address + "");
 		protocol.addProtocolAttribute(ISY99_XMLPROPERTY_COMMAND, command + "");
-//		protocol.addProtocolAttribute(ISY99_XMLPROPERTY_NAME, name + "");
+		// protocol.addProtocolAttribute(ISY99_XMLPROPERTY_NAME, name + "");
 
 		// protocol.addProtocolAttribute(STR_ATTRIBUTE_NAME_PARAMETER2,
 		// parameter2 + "");
