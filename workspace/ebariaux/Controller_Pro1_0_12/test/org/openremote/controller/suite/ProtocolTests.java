@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.EventListenerTest;
 import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilderTest;
+import org.openremote.controller.protocol.datetime.DateTimeCommandBuilderTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddressTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTest;
 
@@ -39,7 +40,8 @@ import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTe
        LutronHomeWorksAddressTest.class,
        LutronHomeWorksCommandBuilderTest.class,
        AMXNICommandBuilderTest.class,
-       MarantzAVRTests.class
+       MarantzAVRTests.class,
+       DateTimeCommandBuilderTest.class
    }
 )
 public class ProtocolTests
