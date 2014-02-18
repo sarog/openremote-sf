@@ -472,62 +472,75 @@ public class ControllerConfiguration extends Configuration
       this.macroIRExecutionDelay = macroIRExecutionDelay;
    }
 
-   public String getWebappIp() {      
-      return preferAttrCustomValue(WEBAPP_IP, webappIp);
+   public String getWebappIp()
+   {
+     return preferAttrCustomValue(WEBAPP_IP, webappIp);
    }
 
-   public void setWebappIp(String webappIp) {
-      this.webappIp = webappIp;
+   public void setWebappIp(String webappIp)
+   {
+     this.webappIp = webappIp.trim();
    }
 
-   public String getBeehiveRESTRootUrl() {
-
+   public String getBeehiveRESTRootUrl()
+   {
      // TODO : see ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
-      return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
+     return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
    }
 
-   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
-      this.beehiveRESTRootUrl = beehiveRESTRootUrl;
+   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl)
+   {
+     this.beehiveRESTRootUrl = beehiveRESTRootUrl.trim();
    }
    
-   public String getBeehiveAccountServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL, beehiveAccountServiceRESTRootUrl);
+   public String getBeehiveAccountServiceRESTRootUrl()
+   {
+     return preferAttrCustomValue(BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL, beehiveAccountServiceRESTRootUrl);
    }
 
-   public void setBeehiveAccountServiceRESTRootUrl(String beehiveAccountServiceRESTRootUrl) {
-      this.beehiveAccountServiceRESTRootUrl = beehiveAccountServiceRESTRootUrl;
+   public void setBeehiveAccountServiceRESTRootUrl(String beehiveAccountServiceRESTRootUrl)
+   {
+     this.beehiveAccountServiceRESTRootUrl = beehiveAccountServiceRESTRootUrl.trim();
    }
    
-   public String getBeehiveDeviceDiscoveryServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL, beehiveDeviceDiscoveryServiceRESTRootUrl);
+   public String getBeehiveDeviceDiscoveryServiceRESTRootUrl()
+   {
+     return preferAttrCustomValue(BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL, beehiveDeviceDiscoveryServiceRESTRootUrl);
    }
 
-   public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl) {
-      this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl;
+   public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl)
+   {
+     this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl.trim();
    }
 
-   public String getBeehiveControllerCommandServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL, beehiveControllerCommandServiceRESTRootUrl);
+   public String getBeehiveControllerCommandServiceRESTRootUrl()
+   {
+     return preferAttrCustomValue(BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL, beehiveControllerCommandServiceRESTRootUrl);
    }
 
-   public void setBeehiveControllerCommandServiceRESTRootUrl(String beehiveControllerCommandServiceRESTRootUrl) {
-      this.beehiveControllerCommandServiceRESTRootUrl = beehiveControllerCommandServiceRESTRootUrl;
+   public void setBeehiveControllerCommandServiceRESTRootUrl(String beehiveControllerCommandServiceRESTRootUrl)
+   {
+     this.beehiveControllerCommandServiceRESTRootUrl = beehiveControllerCommandServiceRESTRootUrl.trim();
    }
    
-   public boolean getBeehiveSyncing() {
-      return preferAttrCustomValue(BEEHIVE_SYNCING, beehiveSyncing);
+   public boolean getBeehiveSyncing()
+   {
+     return preferAttrCustomValue(BEEHIVE_SYNCING, beehiveSyncing);
    }
 
-   public void setBeehiveSyncing(boolean beehiveSyncing) {
-      this.beehiveSyncing = beehiveSyncing;
+   public void setBeehiveSyncing(boolean beehiveSyncing)
+   {
+     this.beehiveSyncing = beehiveSyncing;
    }
     
-   public String getWebappName() {
-      return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
+   public String getWebappName()
+   {
+     return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
    }
    
-   public void setWebappName(String webappName) {
-      this.webappName = webappName;
+   public void setWebappName(String webappName)
+   {
+     this.webappName = webappName;
    }
 
   /**
@@ -548,8 +561,6 @@ public class ControllerConfiguration extends Configuration
    * Lagarto servers
    *
    * @see #getLagartoBroadcastAddr()
-   *
-   * @param IP broadcast address as a string
    */
   public void setLagartoBroadcastAddr(String broadcastAddress)
   {
