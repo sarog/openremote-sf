@@ -18,7 +18,9 @@ package org.openremote.controller.protocol.socket;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -67,20 +69,20 @@ public class UDPListenerCommand implements EventListener {
          portListenerMap.get(port).add(regex, sensor);
       } else {
          UDPListenerThread thread = new UDPListenerThread(port);
-         thread.add(regex, sensor);
-         portListenerMap.put(port, thread);
          thread.start();
+         portListenerMap.put(port, thread);
+         portListenerMap.get(port).add(regex, sensor);
       }
    }
 
    @Override
    public void stop(Sensor sensor) {
-      portListenerMap.get(port).remove(regex);
+      portListenerMap.get(port).remove(regex, sensor);
    }
    
    private class UDPListenerThread extends Thread {
 
-      private Map<String, Sensor> regexSensorMap = new HashMap<String, Sensor>();
+      private Map<String, List<Sensor>> regexSensorMap = new HashMap<String, List<Sensor>>();
       
       private int port;
       
@@ -89,8 +91,19 @@ public class UDPListenerCommand implements EventListener {
          setName("UDPListener Port: " + port);
       }
 
-      public void remove(String regex) {
-         regexSensorMap.remove(regex);
+      public void add(String regex, Sensor sensor) {
+         if (!regexSensorMap.containsKey(regex))
+            regexSensorMap.put(regex, new ArrayList<Sensor>());
+         regexSensorMap.get(regex).add(sensor);		 
+      }
+
+      public void remove(String regex, Sensor sensor) {
+         if (regexSensorMap.containsKey(regex))
+         {
+            regexSensorMap.get(regex).remove(sensor);
+               if (regexSensorMap.get(regex).isEmpty())
+                  regexSensorMap.remove(regex);
+         }
       }
 
       @Override
@@ -105,13 +118,16 @@ public class UDPListenerCommand implements EventListener {
               dsocket.receive(packet);
               String msg = new String(buffer, 0, packet.getLength());
               logger.debug("Received UDP packet: " + msg);
-              for (Entry<String, Sensor> entry : regexSensorMap.entrySet()) {
+              for (Entry<String, List<Sensor>> entry : regexSensorMap.entrySet()) {
                  String regex = entry.getKey();
-                 Sensor sensor = entry.getValue();
                  Pattern regexPattern = Pattern.compile(regex);
                  Matcher matcher = regexPattern.matcher(msg);
-                 if (matcher.find()) {
-                    sensor.update(""+System.currentTimeMillis());
+                 if (matcher.matches()) {
+                 String updateValue = "" + System.currentTimeMillis();
+                 if (matcher.groupCount() > 0) 	
+                    updateValue = matcher.group(1);
+                 for (Sensor sensor : entry.getValue())
+                    sensor.update(updateValue);
                  }
               }
 
@@ -121,10 +137,6 @@ public class UDPListenerCommand implements EventListener {
           } catch (Exception e) {
             logger.error("Error in UDPListenerThread", e);
           }
-      }
-
-      public void add(String regex, Sensor sensor) {
-         regexSensorMap.put(regex, sensor);
       }
 
    }
