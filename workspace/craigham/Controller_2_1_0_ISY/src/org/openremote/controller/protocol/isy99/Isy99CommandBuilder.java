@@ -70,6 +70,7 @@ public class Isy99CommandBuilder implements CommandBuilder
   private String username;
   private String password;
 
+  private Isy99UpdateGateway mGateway;
   // Constructors ---------------------------------------------------------------------------------
 
   /**
@@ -82,6 +83,7 @@ public class Isy99CommandBuilder implements CommandBuilder
     this.hostname = hostname;
     this.username = username;
     this.password = password;
+    mGateway = new Isy99UpdateGateway(hostname, username, password);
   }
 
   // Implements EventBuilder ----------------------------------------------------------------------
@@ -173,8 +175,16 @@ public class Isy99CommandBuilder implements CommandBuilder
 
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
 
-    Isy99Command cmd = null;
+    Command cmd = null;
+    InsteonDeviceAddress insteonAddress = new InsteonDeviceAddress(address);
+    if ("get-level".equals(command) || "get-power".equals(command)) {
 
+       IsyStatusListenCommand listenerCommand = new IsyStatusListenCommand(command);
+       mGateway.addStatusChangeListener(insteonAddress, listenerCommand);
+       cmd = listenerCommand;
+    }
+
+    else 
     if (commandParam == null || commandParam.equals(""))
     {
       cmd = new Isy99Command(hostname, username, password, address, command);
