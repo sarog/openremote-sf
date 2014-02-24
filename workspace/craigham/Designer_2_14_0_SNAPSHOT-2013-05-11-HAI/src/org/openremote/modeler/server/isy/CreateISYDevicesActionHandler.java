@@ -250,7 +250,7 @@ public class CreateISYDevicesActionHandler implements
 		if (SensorType.RANGE == sensorType) {
 			RangeSensor rangeSensor = new RangeSensor();
 			rangeSensor.setMin(0);
-			rangeSensor.setMax(255);
+			rangeSensor.setMax(100);
 			sensor = rangeSensor;
 
 		} else if (SensorType.CUSTOM == sensorType) {
