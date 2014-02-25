@@ -291,7 +291,7 @@ public class ControllerConfigurationTest
     config.setConfigurationProperties(props);
 
     Assert.assertTrue(
-        "Got " + config.getRemoteCommandConnectionTimeout(),
+        "Got " + config.getRemoteCommandConnectionTimeoutMillis(),
         config.getRemoteCommandConnectionTimeoutMillis() == 1000
     );
   }
@@ -311,7 +311,7 @@ public class ControllerConfigurationTest
     config.setConfigurationProperties(props);
 
     Assert.assertTrue(
-        "Got " + config.getRemoteCommandConnectionTimeout(),
+        "Got " + config.getRemoteCommandConnectionTimeoutMillis(),
         config.getRemoteCommandConnectionTimeoutMillis() == 1000 * 60 * 2
     );
   }
@@ -331,7 +331,7 @@ public class ControllerConfigurationTest
     config.setConfigurationProperties(props);
 
     Assert.assertTrue(
-        "Got " + config.getRemoteCommandConnectionTimeout(),
+        "Got " + config.getRemoteCommandConnectionTimeoutMillis(),
         config.getRemoteCommandConnectionTimeoutMillis() == 12
     );
   }
@@ -351,7 +351,7 @@ public class ControllerConfigurationTest
     config.setConfigurationProperties(props);
 
     Assert.assertTrue(
-        "Got " + config.getRemoteCommandConnectionTimeout(),
+        "Got " + config.getRemoteCommandConnectionTimeoutMillis(),
         config.getRemoteCommandConnectionTimeoutMillis() == 5000
     );
   }
@@ -389,7 +389,7 @@ public class ControllerConfigurationTest
     config.setConfigurationProperties(props);
 
     Assert.assertTrue(
-        "Got " + config.getRemoteCommandConnectionTimeout(),
+        "Got " + config.getRemoteCommandConnectionTimeoutMillis(),
         config.getRemoteCommandConnectionTimeoutMillis() == 0
     );
   }
