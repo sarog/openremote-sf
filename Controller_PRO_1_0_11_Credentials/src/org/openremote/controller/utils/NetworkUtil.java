@@ -124,40 +124,5 @@ public class NetworkUtil
       }
       return ip; 
    }
-   
-   public static String getMACAddresses() throws Exception {
-      StringBuffer macs = new StringBuffer();
-      Enumeration<NetworkInterface> enum1 = NetworkInterface.getNetworkInterfaces();
-      while (enum1.hasMoreElements()) {
-         NetworkInterface networkInterface = (NetworkInterface) enum1.nextElement();
-         if (!networkInterface.isLoopback()) {
-            boolean onlyLinkLocal = true;
-            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-               if (!interfaceAddress.getAddress().isLinkLocalAddress()) {
-                  onlyLinkLocal = false;
-               }
-            }
-            if (onlyLinkLocal) continue;
-            byte[] mac = networkInterface.getHardwareAddress();
-            if (mac != null) {
-               macs.append(getMACString(networkInterface.getHardwareAddress()));
-               macs.append(",");
-            }
-         }
-      }
-      if (macs.length()==0) {
-         return "no-mac-address-found";
-      }
-      macs.deleteCharAt(macs.length()-1);
-      return macs.toString();
-   }
 
-   public static String getMACString(byte[] mac) {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < mac.length; i++) {
-         sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));     
-      }
-      return sb.toString();
-   }
-   
 }

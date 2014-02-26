@@ -13,6 +13,14 @@ ORCJAVA-411
     (Marcus Redeker)
 
 
+ORCJAVA-425
+===========
+
+  - Fix broken changes introduced to test suite in 
+    mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
+    part of ORCJAVA-424  (Juha Lindfors)
+
+
 ORCJAVA-295
 ===========
 
@@ -156,8 +164,36 @@ New Features:
   - One Wire: Added possibility to specify temperature values in
     either Celsius (default), Kelvin, Fahrenheit or Rankine scales.
   - Shell Command Execution: polling interval and regular expression
-    filtering on return values supported
-  - Telnet: polling interval property added
+    filtering on return values supported, including regexp groups to 
+    read in multiple sensor values at once. Support for using shell
+    commands with sliders added (Marcus Redeker, Ivan Martinez)
+  - Telnet: polling interval property added (Marcus Redeker), dedicated
+    telnet log directory and telnet debug logs added (Juha Lindfors, ORCJAVA-328)
+  - Date/Time : values updated once per minute instead of once per second
+    (Marcus Redeker), fix for timezones (ORCJAVA-401, Juha Lindfors)
+  - TCP : send hex values by prefixing command data with '0x' string,
+    add polling interval and regular expression support for TCP payloads
+    (Marcus Redeker, ORCJAVA-298)
+  - Samsung SmartTV : support control of multiple Samsung devices in single
+    installation (Ivan Martinez)
+  - Touch panel gestures can now be bound to macros in addition to individual
+    commands (Eric Bariaux, ORCJAVA-231)
+  - Color selection widget is now supported by the controller (Eric Bariaux,
+    Marcus Redeker, ORCJAVA-235, ORCJAVA-290)
+  - Direct Tomcat container logging to /logs/container/tomcat-server.log 
+    (Tomcat server logging) and /logs/container/appcontext.log (Controller
+    web application logging) files, and output directed to standard output
+    and error streams to /logs/container/stderrout.log -- catalina.out is
+    no longer created (Juha Lindfors, ORCJAVA-273)
+  - Adjusted 'start' and 'run' targets of openremote.sh to configure default
+    standard output console logging differently -- 'run' target will still
+    output logs to console where as 'start' target will redirect all logging
+    to files (Juha Lindfors, ORCJAVA-273)
+  - Support for externally packaged and distributed protocol implementations, 
+    such as Z-wave (Marcus Redeker, Juha Lindfors, ORCJAVA-347, ORCJAVA-366)
+  - Support for remote access proxy (Marcus Redeker, Eric Bariaux, Juha
+    Lindfors, ORCJAVA-295, ORCJAVA-422, ORCJAVA-424, ORCJAVA-288, ORCJAVA-266,
+    ORCJAVA-411)    
 
 
 Bug Fixes:

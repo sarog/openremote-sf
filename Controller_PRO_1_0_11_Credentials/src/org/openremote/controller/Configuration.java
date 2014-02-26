@@ -1,6 +1,6 @@
 /* 
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,8 +22,12 @@ package org.openremote.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.OpenRemoteException;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.utils.Logger;
 
 /**
  * Configuration class acts as a common superclass for various configuration segments. <p>
@@ -57,15 +61,126 @@ public abstract class Configuration
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * Common log category for configuration related information.
+   */
+  protected final static Logger log = Logger.getLogger(Constants.INIT_LOG_CATEGORY + ".configuration");
 
   protected static Configuration updateWithControllerXMLConfiguration(Configuration config)
   {
     // TODO : remove dependency to deprecated API, see ORCJAVA-193
     Map<String, String> properties = ServiceContext.getDeployer().getConfigurationProperties();
+
     config.setConfigurationProperties(properties);
 
     return config;
   }
+
+  /**
+   * Utility method to parse and replace a given property with a timeout value. This
+   * implementation will convert user convenience values such as '10m' (ten minutes) or
+   * '2s' (two seconds) to millisecond values and store them in the original property map.
+   *
+   * @param properties    the property map the converted value is retrieved from and
+   *                      stored into after conversion
+   *
+   * @param propertyName  the property name to convert
+   */
+  protected static void setTimeoutValue(Map<String, String> properties, String propertyName)
+  {
+    if (properties == null)
+    {
+      return;
+    }
+
+    String value = properties.get(propertyName);
+
+    if (value == null)
+    {
+      return;
+    }
+
+    try
+    {
+      properties.put(propertyName, Integer.toString(timeStringToMillis(value)));
+    }
+
+    catch (InvalidTimeException e)
+    {
+      log.warn(
+          "Invalid value {0} for configuration property ''{1}'', timeout has been disabled.",
+          value, propertyName
+      );
+
+      properties.put(propertyName, "0");
+    }
+
+    catch (ConfigurationException e)
+    {
+      log.warn("Invalid value ''{0}'' for configuration property ''{1}''.", value, propertyName);
+    }
+  }
+
+
+  /**
+   * Utility method to convert certain string conventions to millisecond values. An integer
+   * string with a suffix 'm', 's' or 'ms' are recognized and interpreted as minutes,
+   * seconds or milliseconds, respectively.
+   *
+   * @param timeString  the string representing a time value to convert to milliseconds
+   *
+   * @return  time value in milliseconds
+   *
+   * @throws InvalidTimeException     if given time value is negative
+   * @throws ConfigurationException   if given time value cannot be converted to an integer
+   */
+  protected static int timeStringToMillis(String timeString) throws InvalidTimeException,
+                                                                    ConfigurationException
+  {
+    if (timeString == null)
+    {
+      throw new ConfigurationException("null time");
+    }
+
+    timeString = timeString.trim();
+    int timeInMillis = 0;
+
+    try
+    {
+      if (timeString.endsWith("ms"))
+      {
+        timeInMillis = Integer.parseInt(timeString.substring(0, timeString.length() - 2).trim());
+      }
+
+      else if (timeString.endsWith("s"))
+      {
+        timeInMillis = Integer.parseInt(timeString.substring(0, timeString.length() - 1).trim()) * 1000;
+      }
+
+      else if (timeString.endsWith("m"))
+      {
+        timeInMillis = Integer.parseInt(timeString.substring(0, timeString.length() - 1).trim()) * 1000 * 60;
+      }
+
+      else
+      {
+        timeInMillis = Integer.parseInt(timeString) * 1000;
+      }
+
+      if (timeInMillis < 0)
+      {
+        throw new InvalidTimeException("Invalid time value : {0}", timeInMillis);
+      }
+
+      return timeInMillis;
+    }
+
+    catch (NumberFormatException e)
+    {
+      throw new ConfigurationException("Unrecognized time value : ''{0}''", timeString);
+    }
+  }
+
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -86,6 +201,24 @@ public abstract class Configuration
        return;
     }
 
+    Set<String> keys = configurationProperties.keySet();
+
+    if (keys.contains(ControllerConfiguration.REMOTE_COMMAND_CONNECTION_TIMEOUT))
+    {
+      setTimeoutValue(
+          configurationProperties,
+          ControllerConfiguration.REMOTE_COMMAND_CONNECTION_TIMEOUT
+      );
+    }
+
+    if (keys.contains(ControllerConfiguration.REMOTE_COMMAND_RESPONSE_TIMEOUT))
+    {
+      setTimeoutValue(
+          configurationProperties,
+          ControllerConfiguration.REMOTE_COMMAND_RESPONSE_TIMEOUT
+      );
+    }
+
     this.configurationProperties = new HashMap<String, String>(configurationProperties);
   }
 
@@ -104,14 +237,44 @@ public abstract class Configuration
 
   protected int preferAttrCustomValue(String attrName, int defaultValue)
   {
-    return configurationProperties.containsKey(attrName) ?
-        Integer.valueOf(configurationProperties.get(attrName)) : defaultValue;
+    try
+    {
+      return configurationProperties.containsKey(attrName)
+          ? Integer.valueOf(configurationProperties.get(attrName))
+          : defaultValue;
+    }
+
+    catch (NumberFormatException e)
+    {
+      log.warn(
+          "Invalid integer value ''{0}'' for property ''{1}''. " +
+          "Using default value {2} instead.",
+          configurationProperties.get(attrName), attrName, defaultValue
+      );
+
+      return defaultValue;
+    }
   }
 
   protected long preferAttrCustomValue(String attrName, long defaultValue)
   {
-    return configurationProperties.containsKey(attrName) ?
-        Long.valueOf(configurationProperties.get(attrName)) : defaultValue;
+    try
+    {
+      return configurationProperties.containsKey(attrName)
+          ? Long.valueOf(configurationProperties.get(attrName))
+          : defaultValue;
+    }
+
+    catch (NumberFormatException e)
+    {
+        log.warn(
+            "Invalid long value ''{0}'' for property ''{1}''. " +
+            "Using default value {2} instead.",
+            configurationProperties.get(attrName), attrName, defaultValue
+        );
+
+        return defaultValue;
+    }
   }
 
   protected String[] preferAttrCustomValue(String attrName, String[] defaultValue)
@@ -121,5 +284,15 @@ public abstract class Configuration
   }
 
 
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  public static class InvalidTimeException extends OpenRemoteException
+  {
+    public InvalidTimeException(String message, Object... args)
+    {
+      super(message, args);
+    }
+  }
 
 }
