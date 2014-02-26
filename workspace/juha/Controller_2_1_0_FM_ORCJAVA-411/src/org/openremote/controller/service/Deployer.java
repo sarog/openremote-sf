@@ -61,18 +61,21 @@ import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.exception.OpenRemoteException;
 import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
-import org.openremote.controller.utils.NetworkUtil;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
 import org.openremote.useraccount.domain.ControllerDTO;
+import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -253,10 +256,10 @@ public class Deployer
   
   /**
    * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
-   * For example unlink from Beehive, download new design, start proxy, update controller, .... 
+   * For example unlink from Beehive, download new design, start proxy, update controller, ....
    */
   private BeehiveCommandCheckService beehiveCommandCheckService;
-  
+
   // Constructors ---------------------------------------------------------------------------------
 
   /**
@@ -287,9 +290,6 @@ public class Deployer
     {
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
-    
-    this.beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
-    this.beehiveCommandCheckService.setDeployer(this);
     
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
@@ -338,7 +338,7 @@ public class Deployer
     if (controllerConfig.getBeehiveSyncing()) 
     {
        //Start controller announcement thread
-       controllerAnnouncement = new ControllerAnnouncement();
+       controllerAnnouncement = new ControllerAnnouncement(this);
        controllerAnnouncement.start();
    
        //Start discovered devices announcement thread
@@ -727,7 +727,7 @@ public class Deployer
         if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
            return controllerDTO.getAccount().getOid().toString();
         } else {
-           return "-"+NetworkUtil.getMACAddresses();
+           return "-"+BeehiveCommandCheckService.getMACAddresses();
         }
      } else {
         return "no";
@@ -849,24 +849,53 @@ public class Deployer
    * @throws PasswordManager.PasswordNotFoundException
    *            if the password for the user was not found in the keystore
    */
-  protected String getPassword(String username) throws KeyManager.KeyManagerException,
-                                                     PasswordManager.PasswordNotFoundException
+  protected String getPassword(String username) throws PasswordException
   {
     // TODO :
     //        moved temporarily into public Deployer API to satisfy requirements to Beehive
     //        command check service -- should move back when the Beehive command check is
     //        part of the Beehive Connection implementation where it belongs
 
-    PasswordManager pw = new PasswordManager(
-        getKeyStoreLocation(),
-        (getSystemUser() + ".key").toCharArray()
-    );
+    if (getKeyStoreLocation().getScheme().startsWith("file"))
+    {
+      File f = new File(getKeyStoreLocation());
 
-    byte[] credentials = pw.getPassword(
-        username, (getSystemUser() + ".key").toCharArray()
-    );
+      if (!f.exists())
+      {
+        throw new PasswordException(
+            "User credentials were not present, please synchronize the controller with your "+
+            "OpenRemote Designer/Beehive account first."
+        );
+      }
+    }
 
-    return encodeKey(username, credentials);
+    try
+    {
+      PasswordManager pw = new PasswordManager(
+          getKeyStoreLocation(),
+          (getSystemUser() + ".key").toCharArray()
+      );
+
+      byte[] credentials = pw.getPassword(
+          username, (getSystemUser() + ".key").toCharArray()
+      );
+
+      return encodeKey(username, credentials);
+    }
+
+    catch (PasswordManager.PasswordNotFoundException e)
+    {
+      throw new PasswordException(
+          "Password for user ''{0}'' was not found", e, username, e.getMessage()
+      );
+    }
+
+    catch (KeyManager.KeyManagerException e)
+    {
+      throw new PasswordException(
+          "Error accessing user's password: {0}", e, e.getMessage()
+      );
+    }
   }
 
 
@@ -895,6 +924,11 @@ public class Deployer
     // TODO : ORCJAVA-188, introduce lifecycle management for event processors
     // TODO : ORCJAVA-188, introduce lifecycle management for connection managers
     // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
+
+    if (beehiveCommandCheckService != null)
+    {
+      beehiveCommandCheckService.stop();
+    }
 
     deviceStateCache.shutdown();
 
@@ -967,7 +1001,15 @@ public class Deployer
 
     Map<String, String> props = getConfigurationProperties();
     controllerConfig.setConfigurationProperties(props);
-    
+
+    if (beehiveCommandCheckService != null)
+    {
+      beehiveCommandCheckService.stop();
+    }
+
+    beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
+    beehiveCommandCheckService.start(this);
+
     log.info("Startup complete.");
   }
 
@@ -1348,7 +1390,7 @@ public class Deployer
   }
 
 
-  private String encodeKey(String username, byte[] password)
+  protected String encodeKey(String username, byte[] password)
   {
     Md5PasswordEncoder encoder = new Md5PasswordEncoder();
 
@@ -1908,18 +1950,39 @@ public class Deployer
    * 
    *
    */
-  private class ControllerAnnouncement extends Thread {
-    ControllerAnnouncement() {
-       super("ConntrollerAnnouncement");
+  private class ControllerAnnouncement extends Thread
+  {
+
+    private Deployer deployer;
+
+    private ControllerAnnouncement(Deployer deployer)
+    {
+      super("ControllerAnnouncement");
+
+      this.deployer = deployer;
     }
 
-    public void run() {
-       //As long as we are not linked to an account we periodically try to receive account info 
+    public void run()
+    {
+
+      // TODO : the lifecycle of this thread wrt deployments needs to be implemented
+
+      
+      String acctURI = controllerConfig.getBeehiveAccountServiceRESTRootUrl();
+
+      if (acctURI == null || acctURI.startsWith("::loopback"))
+      {
+        return;
+      }
+
+       //As long as we are not linked to an account we periodically try to receive account info
        while (true) {
           ClientResource cr = null;
+          Client c = new Client(new Context(), Protocol.HTTPS);
           try {
-             log.trace("Controller will announce " + NetworkUtil.getMACAddresses() + " as MAC address to beehive");
-             cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
+             log.trace("Controller will announce " + BeehiveCommandCheckService.getMACAddresses() + " as MAC address to beehive");
+             cr = new ClientResource( acctURI + "controller/announce/"+ BeehiveCommandCheckService.getMACAddresses());
+             cr.setNext(c);
              Representation r = cr.post(null);
              String str;
              str = r.getText();
@@ -1938,7 +2001,6 @@ public class Deployer
           }
           try { Thread.sleep(1000 * 30); } catch (InterruptedException e) {} //Let's wait 30 seconds
        }
-       beehiveCommandCheckService.start(controllerDTO);
     }
 
   }
@@ -2064,11 +2126,21 @@ public class Deployer
 
   }
 
-  public void unlinkController() {
-     this.controllerDTO = null;
-     this.controllerAnnouncement.start();
+  public void unlinkController()
+  {
+    this.controllerDTO = null;
+    this.controllerAnnouncement = new ControllerAnnouncement(this);
+    controllerAnnouncement.start();
   }
 
+
+  public static class PasswordException extends OpenRemoteException
+  {
+    public PasswordException(String msg, Object... params)
+    {
+      super(msg, params);
+    }
+  }
 
 }
 
