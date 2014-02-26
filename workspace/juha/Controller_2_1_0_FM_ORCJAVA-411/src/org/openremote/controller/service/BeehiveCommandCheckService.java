@@ -508,8 +508,8 @@ public class BeehiveCommandCheckService
         );
 
         log.debug(
-            "Connecting to ''{0}'' \n  Connection Timeout : {1} \n  Response Timeout : {2}",
-            url, config.getRemoteCommandConnectionTimeoutMillis(),
+            "Connecting user ''{0}'' to ''{1}'' \n  Connection Timeout : {2} \n  Response Timeout : {3}",
+            username, url, config.getRemoteCommandConnectionTimeoutMillis(),
             config.getRemoteCommandResponseTimeoutMillis()
         );
 
@@ -577,7 +577,10 @@ public class BeehiveCommandCheckService
       {
         // I/O error during the connect. Connection exception will allow us to retry...
 
-        throw new ConnectionException("I/O error while connecting to ''{0}'' : {1}");
+        throw new ConnectionException(
+            "I/O error while connecting to ''{0}'' : {1}",
+            e, url, e.getMessage()
+        );
       }
     }
 
