@@ -85,6 +85,12 @@ public class ControllerConfiguration extends Configuration
   public static final String REMOTE_COMMAND_SERVICE_URI = "remote.command.service.uri";
 
   /**
+   * Configuration property name used for setting the request interval to check incoming
+   * remote commands to the controller.
+   */
+  public final static String REMOTE_COMMAND_REQUEST_INTERVAL = "remote.command.request.interval";
+
+  /**
    * Configuration property name used for setting the connection timeout value for remote command
    * service : {@value}
    */
@@ -112,11 +118,15 @@ public class ControllerConfiguration extends Configuration
   public static final String LAGARTO_BROADCAST_ADDRESS = "lagarto_network.broadcast";
 
   public static final String PROXY_TIMEOUT = "proxy.timeout";
-  public static final String BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL = "beehiveCommandService.check.interval";
- 
+
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
 
 
+  /**
+   * Default value to wait between requests when checking for available remote commands
+   * for this controller. Milliseconds : {@value}
+   */
+  public final static int DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL = 30000;
 
   /**
    * Default value to establish remote command service connection before timing out.
@@ -186,7 +196,6 @@ public class ControllerConfiguration extends Configuration
   private String lircdconfPath;
   private String lagartoBroadcastAddr;
   private int proxyTimeout;
-  private int beehiveCommandServiceCheckInterval;
 
   /**
    * The set of URIs used to retrieve remote commands. Note that this can contain a comma
@@ -195,6 +204,12 @@ public class ControllerConfiguration extends Configuration
    * actual URI instance that can be used.
    */
   private String remoteCommandServiceURI = "<undefined>";
+
+  /**
+   * The request interval used to check if remote commands are available for this controller.
+   * In milliseconds: {@link #DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL}
+   */
+  private int remoteCommandRequestInterval;
 
   /**
    * The connection timeout value used to wait for the remote command service to establish
@@ -764,7 +779,10 @@ public class ControllerConfiguration extends Configuration
    */
   public String getRemoteCommandResponseTimeout()
   {
-    return preferAttrCustomValue(REMOTE_COMMAND_RESPONSE_TIMEOUT, "" + remoteCommandResponseTimeout);
+    return preferAttrCustomValue(
+        REMOTE_COMMAND_RESPONSE_TIMEOUT,
+        Integer.toString(remoteCommandResponseTimeout)
+    );
   }
 
 
@@ -807,6 +825,67 @@ public class ControllerConfiguration extends Configuration
   }
 
 
+  /**
+   * Returns the configured remote command request interval value in milliseconds.
+   *
+   * @return  remote command request interval value in milliseconds
+   */
+  public int getRemoteCommandRequestIntervalMillis()
+  {
+    return preferAttrCustomValue(REMOTE_COMMAND_REQUEST_INTERVAL, remoteCommandRequestInterval);
+  }
+
+  /**
+   * This method returns the configured string value (uninterpreted, including potential suffices
+   * for minutes, seconds or milliseconds) for remote command request interval. <p>
+   *
+   * It is included to satisfy Spring framework configuration requirements but it is not used
+   * otherwise. See {@link #getRemoteCommandRequestIntervalMillis()} instead for the actual
+   * timeout value in milliseconds.
+   *
+   * @return    configuration string for remote command request interval, uninterpreted
+   *            including user convenience suffices for minutes, seconds or milliseconds
+   */
+  public String getRemoteCommandRequestInterval()
+  {
+    return preferAttrCustomValue(
+        REMOTE_COMMAND_REQUEST_INTERVAL,
+        Integer.toString(remoteCommandRequestInterval)
+    );
+  }
+
+  /**
+   * Sets the remote command request interval value. The string value must be parseable to
+   * an integer value and is interpreted as seconds. For smaller millisecond values, postfix the
+   * integer string with 'ms', e.g. '100ms'. For longer minute values postfix the integer
+   * string with 'm', e.g. '1m' for one minute (60 seconds, 60,000 milliseconds). An explicit
+   * 's' suffix is also accepted for seconds but is not required; any number value without
+   * a suffix is interpreted as a second value.
+   *
+   * @param interval  number string such as '10' for ten seconds or a number string with
+   *                  time-unit qualifier such as '2m' for two minutes, '1500ms' for
+   *                  1,500 milliseconds or '10s' for ten seconds
+   */
+  public void setRemoteCommandRequestInterval(String interval)
+  {
+    try
+    {
+      this.remoteCommandRequestInterval = timeStringToMillis(interval);
+    }
+
+    catch (Exception e)
+    {
+      log.info(
+          "Remote command request interval was set to {0}, using default value {1} instead. ",
+          interval, DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL
+      );
+
+      remoteCommandRequestInterval = DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL;
+    }
+  }
+
+
+
 
   public boolean getBeehiveSyncing()
   {
@@ -828,14 +907,5 @@ public class ControllerConfiguration extends Configuration
     this.proxyTimeout = proxyTimeout;
   }
 
-  public void setBeehiveCommandServiceCheckInterval(int interval) 
-  {
-    this.beehiveCommandServiceCheckInterval = interval;
-  }
-   
-  public int getBeehiveCommandServiceCheckInterval() 
-  {
-    return preferAttrCustomValue(BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL, beehiveCommandServiceCheckInterval);
-  }
 
 }
