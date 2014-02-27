@@ -156,7 +156,7 @@ public class Isy99CommandBuilder implements CommandBuilder {
 
       Command cmd = null;
       InsteonDeviceAddress insteonAddress = new InsteonDeviceAddress(address);
-      if ("get-level".equals(command) || "get-power".equals(command)) {
+      if ("status".equals(command) || "get-power".equals(command)) {
 
          IsyStatusListenCommand listenerCommand = new IsyStatusListenCommand(command);
          mGateway.addStatusChangeListener(insteonAddress, listenerCommand);

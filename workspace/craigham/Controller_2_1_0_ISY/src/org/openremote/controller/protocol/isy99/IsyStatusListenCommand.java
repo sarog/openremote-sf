@@ -35,7 +35,7 @@ public class IsyStatusListenCommand implements EventListener, StatusChangeListen
       GET_POWER, GET_LEVEL;
       public static StatusType fromString(String type) {
          if ("get-power".equals(type)) return GET_POWER;
-         else if ("get-level".equals(type)) return GET_LEVEL;
+         else if ("status".equals(type)) return GET_LEVEL;
          else
             throw new IllegalArgumentException("Cannot convert '" + type + "' into StatusType");
       }
