@@ -239,6 +239,7 @@
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "ad2usb"      		value-ref = "ad2usbCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -270,7 +271,9 @@
 	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
 	 | extend the implementation with additional command types.
 	 +-->
-
+	 
+	 
+	
 	<!-- UDPListener Command Builder -->
 	<bean id = "udpListenerCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPListenerCommandBuilder"/>
 	
@@ -325,7 +328,10 @@
     <constructor-arg index = "1" value = "${isy99.username}"/>
     <constructor-arg index = "2" value = "${isy99.password}"/>
   </bean>
-    
+  <bean id = "ad2usbCommandBuilder" class = "org.openremote.controller.protocol.ad2usb.Ad2UsbCommandBuilder"> 
+  	<constructor-arg index = "0" value = "${ad2usb.hostname}"/>
+    <constructor-arg index = "1" value = "${ad2usb.port}"/>
+  </bean>
   
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
