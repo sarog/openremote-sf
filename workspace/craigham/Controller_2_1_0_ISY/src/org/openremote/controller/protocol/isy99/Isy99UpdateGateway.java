@@ -37,11 +37,14 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.net.telnet.TelnetClient;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.tools.internal.xjc.reader.gbind.ConnectedComponent;
 
 /**
  * Sets up a Soap Subscription to ISY device, and then passes status (ST) reported by the ISY to the appropriate
@@ -58,6 +61,8 @@ public class Isy99UpdateGateway extends Thread {
    private String mHost;
    private String mUsername;
    private String mPassword;
+   private TelnetClient mTelnetClient = null;
+   private boolean mIsConnected = false;
 
    public Isy99UpdateGateway(String hostName, String userName, String password) {
       // TODO handle port passed in with hostName
@@ -70,7 +75,7 @@ public class Isy99UpdateGateway extends Thread {
    /*
     * Look for xml messages from the ISY, and parse those
     */
-   private String updateParser(String line) throws XPathExpressionException, SAXException, IOException {
+   private String parseInput(String line) throws XPathExpressionException, SAXException, IOException {
       String returnValue = null;
       if (line != null) {
          if (line.startsWith("<?xml version=\"1.0\"?>")) {
@@ -123,17 +128,34 @@ public class Isy99UpdateGateway extends Thread {
 
    @Override
    public void run() {
-      TelnetClient telnet = new TelnetClient();
-      try {
-         telnet.connect(mHost, 80);
-      } catch (SocketException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      } catch (IOException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+
+      String line;
+      while (true) {
+         if (!mIsConnected) connect();
+         sendSubscriptionRequest();
+         BufferedReader rd = new BufferedReader(new InputStreamReader(mTelnetClient.getInputStream()));
+         while (mIsConnected) {
+            try {
+               line = rd.readLine();
+               if (line != null) {
+                  logger.debug("Msg received: " + line);
+                  // TODO should we watch response to confirm subscription? Right now we just watch for status updates
+                  parseInput(line);
+               }
+            } catch (IOException e) {
+               logger.error("Error", e);
+            } catch (XPathExpressionException e) {
+               logger.error("XPath", e);
+            } catch (SAXException e) {
+               logger.error("Error", e);
+            }
+         }
       }
-      PrintWriter out = new PrintWriter(telnet.getOutputStream(), true);
+   }
+
+   private void sendSubscriptionRequest() {
+      logger.debug("Sending subscription request");
+      PrintWriter out = new PrintWriter(mTelnetClient.getOutputStream(), true);
       String subreq = "<s:Envelope><s:Body><u:Subscribe xmlns:u=\"urn:udi-com:service:X_Insteon_Lighting_Service:1\"><reportURL>REUSE_SOCKET</reportURL><duration>infinite</duration></u:Subscribe></s:Body></s:Envelope>";
       String userpassword = mUsername + ":" + mPassword;
       String encodedAuthorization = new String(Base64.encodeBase64((userpassword.getBytes())));
@@ -147,26 +169,42 @@ public class Isy99UpdateGateway extends Thread {
       out.println();
       out.println(subreq);
       out.flush();
-      logger.debug("reading response");
-      // Response
-      BufferedReader rd = new BufferedReader(new InputStreamReader(telnet.getInputStream()));
-      String line;
-      while (true) {
-         try {
-            line = rd.readLine();
-            if (line != null) {
-               logger.debug("Msg received: " + line);
-               updateParser(line);
-            }
-         } catch (IOException e) {
-            logger.error("Error", e);
-         } catch (XPathExpressionException e) {
-            logger.error("XPath", e);
-         } catch (SAXException e) {
-            logger.error("Error", e);
-         }
+   }
 
+   private void connect() {
+
+      int nextRetryDelay = 1;
+
+      mIsConnected = false;
+
+      mTelnetClient = new TelnetClient();
+      while (!mIsConnected) {
+         // max we will wait is 1 hour, so if wait is larger, let's cap it
+         if (nextRetryDelay > 1 * 1000 * 60 * 60) nextRetryDelay = 1 * 1000 * 60 * 60;
+
+         // we wait....
+         if (nextRetryDelay > 1) {
+            logger.debug("Waiting: " + nextRetryDelay + " seconds");
+            try {
+               Thread.sleep(1000 * nextRetryDelay);
+            } catch (InterruptedException e1) {
+               logger.error("thread interrupted", e1);
+            }
+         }
+         try {
+            logger.debug("Starting connect");
+            mTelnetClient.connect(mHost, 80);
+            mIsConnected = true;
+            logger.debug("Telnet connection active");
+         } catch (SocketException e) {
+            logger.error("ISY not available at '" + mHost + "'", e);
+            nextRetryDelay = nextRetryDelay * 2;
+         } catch (IOException e) {
+            logger.error("IOException", e);
+            nextRetryDelay = nextRetryDelay * 2;
+         }
       }
+
    }
 
    public void addStatusChangeListener(InsteonDeviceAddress insteonAddress, StatusChangeListener listener) {
