@@ -25,9 +25,9 @@
 		      <p>&nbsp;</p>
 		    </div>
 			<ul>
-			  <li><a href="download/OpenRemote_Controller.zip">Controller Pro v1.0.11</a>
+			  <li><a href="download/OpenRemote_Controller.zip">Controller Pro v1.0.12</a>
 			  <p class="{style.linkComment}">Pro Controller package. Contains a tomcat server with the OpenRemote Controller and WebConsole deployed.</p></li>
-			  <li><a href="download/voyage_ebox_v1.4.11_20131019.img.zip">eBox image v1.4.11</a>
+			  <li><a href="download/voyage_ebox_v1.4.12_20140228.img.zip">eBox image v1.4.12</a>
 			  <p class="{style.linkComment}">CF card image to use on eBox 3310</p></li>
 			</ul>
 			<div>&nbsp;</div>
