@@ -448,6 +448,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          break;
       case Constants.MENU_ITEM_LOGOUT:
          doLogout();
+         loadSettings();
          break;
          
       case Constants.MENU_ITEM_QUIT:
@@ -472,7 +473,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
       String password = UserCache.getPassword(GroupActivity.this);
       if (!TextUtils.isEmpty(password)) {
          UserCache.saveUser(GroupActivity.this, username, "");
-         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
       }
    }
 
@@ -646,6 +646,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          startActivity(intent);
       } else if (navigate.isLogout()) {
          doLogout();
+         loadSettings();
       }
       return false;
    }
