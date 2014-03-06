@@ -1,3 +1,8 @@
+MODELER-438
+===========
+
+  - Fixed tests (testng) exection from ant script
+
 MODELER-444
 ===========
 
