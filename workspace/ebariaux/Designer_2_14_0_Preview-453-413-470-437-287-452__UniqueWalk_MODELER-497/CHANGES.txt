@@ -1,3 +1,8 @@
+MODELER-497
+===========
+
+  - Fixed: walking functionality from MODELER-437 iterates multiple times over the same component
+
 MODELER-470
 ===========
 
