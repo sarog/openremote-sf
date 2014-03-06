@@ -6,6 +6,7 @@ Fixes:
  - Finish review of methods for DTO <-> Model objects conversion (MODELER-405)
  - Refactor walking the UIComponent objects within a panels collection (MODELER-437)
  - Fixed: walking functionality from MODELER-437 iterates multiple times over the same component (MODELER-497)
+ - Implement unit tests proving MODELER-497 (MODELER-498)
 
 Pro 1.0.12
 ==========
