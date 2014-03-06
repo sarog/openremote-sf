@@ -1,3 +1,8 @@
+MODELER-498
+===========
+
+  - Implement unit tests proving MODELER-497
+
 MODELER-470
 ===========
 
