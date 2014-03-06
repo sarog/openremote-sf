@@ -1,3 +1,9 @@
+Pro 1.0.13
+==========
+
+Fixes:
+ - Fixed tests (testng) exection from ant script (MODELER-438)
+
 Pro 1.0.12
 ==========
 
