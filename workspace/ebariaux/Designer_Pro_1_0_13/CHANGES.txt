@@ -5,6 +5,7 @@ Fixes:
  - Fixed tests (testng) exection from ant script (MODELER-438)
  - Finish review of methods for DTO <-> Model objects conversion (MODELER-405)
  - Refactor walking the UIComponent objects within a panels collection (MODELER-437)
+ - Fixed: walking functionality from MODELER-437 iterates multiple times over the same component (MODELER-497)
 
 Pro 1.0.12
 ==========
