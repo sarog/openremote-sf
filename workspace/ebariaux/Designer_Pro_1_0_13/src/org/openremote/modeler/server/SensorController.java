@@ -80,7 +80,8 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    public ArrayList<SensorDTO> loadSensorDTOsByDeviceId(long id) {
      ArrayList<SensorDTO> dtos = new ArrayList<SensorDTO>();
      for (Sensor s : sensorService.loadByDeviceId(id)) {
-       dtos.add(new SensorDTO(s.getOid(), s.getDisplayName(), s.getType()));
+       // EBR - MODELER-405 : initial implementation did not include sensor command in returned DTOs
+       dtos.add(s.getSensorDTO());
      }
      return dtos;
    }
@@ -88,36 +89,14 @@ public class SensorController extends BaseGWTSpringController implements SensorR
    @Override
    public SensorDetailsDTO loadSensorDetails(long id) {
      Sensor sensor = sensorService.loadById(id);
-     SensorDetailsDTO dto;
-     
-     if (sensor.getType() == SensorType.RANGE) {
-       dto = new SensorDetailsDTO(sensor.getOid(), sensor.getName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(),
-               ((RangeSensor)sensor).getMin(),
-               ((RangeSensor)sensor).getMax(), null);
-    } else if (sensor.getType() == SensorType.CUSTOM) {
-       CustomSensor customSensor = (CustomSensor)sensor;
-       HashMap<String, String> states = new HashMap<String, String>();
-       for (State state : customSensor.getStates()) {
-         states.put(state.getName(), state.getValue());
-       }
-       dto = new SensorDetailsDTO(sensor.getOid(), sensor.getName(),
-               sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, states);
-    } else {
-      dto = new SensorDetailsDTO(sensor.getOid(), sensor.getName(),
-              sensor.getType(), sensor.getSensorCommandRef().getDisplayName(), null, null, null);
-    }
-     if (sensor.getSensorCommandRef() != null) {
-       dto.setCommand(new DTOReference(sensor.getSensorCommandRef().getDeviceCommand().getOid()));
-     }
-    return dto;
+     return (sensor != null)?sensor.getSensorDetailsDTO():null;
   }
    
    @Override
   public ArrayList<SensorWithInfoDTO> loadAllSensorWithInfosDTO() {
      ArrayList<SensorWithInfoDTO> dtos = new ArrayList<SensorWithInfoDTO>();
      for (Sensor sensor : sensorService.loadAll(userService.getAccount())) {
-       dtos.add(createSensorWithInfoDTO(sensor));
+       dtos.add(sensor.getSensorWithInfoDTO());
      }
      return dtos;    
   }

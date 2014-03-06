@@ -95,38 +95,19 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      List<Device> devices = deviceService.loadAll(userService.getAccount());
      ArrayList<DeviceDTO> dtos = new ArrayList<DeviceDTO>();
      for (Device d : devices) {
-       dtos.add(new DeviceDTO(d.getOid(), d.getDisplayName()));
+       dtos.add(d.getDeviceDTO());
      }
      return dtos;
   }
 
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     ArrayList<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
-     for (Sensor sensor : device.getSensors()) {
-       sensorDTOs.add(SensorController.createSensorDTO(sensor));
-     }
-     deviceDTO.setSensors(sensorDTOs);
-     ArrayList<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
-     for (Switch s : device.getSwitchs()) {
-       switchDTOs.add(SwitchController.createSwitchDTO(s));
-     }
-     deviceDTO.setSwitches(switchDTOs);
-     ArrayList<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
-     for (Slider s : device.getSliders()) {
-       sliderDTOs.add(SliderController.createSliderDTO(s));
-     }
-     deviceDTO.setSliders(sliderDTOs);
-     return deviceDTO;
+     return device.getDeviceWithChildrenDTO();
    }
 
    public DeviceWithChildrenDTO loadDeviceWithCommandChildrenDTOById(long oid) {
      Device device = deviceService.loadById(oid);
-     DeviceWithChildrenDTO deviceDTO = new DeviceWithChildrenDTO(device.getOid(), device.getDisplayName());
-     deviceDTO.setDeviceCommands(createDeviceCommandDTOs(device.getDeviceCommands()));
-     return deviceDTO;
+     return device.getDeviceWithCommandChildrenDTO();
    }
 
   protected ArrayList<DeviceCommandDTO> createDeviceCommandDTOs(List<DeviceCommand> deviceCommands) {
@@ -139,7 +120,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    
    public DeviceDetailsDTO loadDeviceDetailsDTO(long oid) {
      Device device = deviceService.loadById(oid);
-     return new DeviceDetailsDTO(device.getOid(), device.getName(), device.getVendor(), device.getModel());
+     return device.getDeviceDetailsDTO();
    }
    
    @Override
@@ -147,7 +128,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      Device deviceBean = new Device(device.getName(), device.getVendor(), device.getModel());
      deviceBean.setAccount(userService.getAccount());
      deviceService.saveDevice(deviceBean);
-     return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
+     return deviceBean.getDeviceDTO();
    }
    
    @Override
@@ -232,7 +213,7 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
      deviceBean.setSliders(sliderBeans);
      
      deviceService.saveDevice(deviceBean);
-     return new DeviceDTO(deviceBean.getOid(), deviceBean.getDisplayName());
+     return deviceBean.getDeviceDTO();
    }
 
    public void updateDeviceWithDTO(DeviceDetailsDTO device) {
