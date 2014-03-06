@@ -156,9 +156,7 @@ public class SwitchServiceTest {
      Collection<Switch> switchs = service.loadAll();
      long originalNumberOfSwitches = switchs.size();
 
-      Switch swh = new Switch();
-      swh.setOid(createdSwitchId);
-      service.delete(1);
+      service.delete(createdSwitchId);
       
       switchs = service.loadAll();
       Assert.assertEquals(switchs.size(), originalNumberOfSwitches - 1);

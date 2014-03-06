@@ -84,7 +84,7 @@ public class ResourceServiceTest {
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
-      userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "ResourceServiceTest");
+      userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "dummy@openremote.org");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("ResourceServiceTest", "ResourceServiceTest"));
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
