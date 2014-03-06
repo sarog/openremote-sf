@@ -7,10 +7,10 @@
         <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
         
         <!-- HSQL Database Engine Server Mode -->
-        <!--<property name="url" value="jdbc:hsqldb:hsql://localhost/modeler"/>-->
+        <property name="url" value="jdbc:hsqldb:hsql://localhost/modeler"/>
         
         <!-- HSQL Database Engine In-Memory Mode -->
-        <property name="url" value="jdbc:hsqldb:mem:modeler"/>
+        <!-- property name="url" value="jdbc:hsqldb:mem:modeler"/-->
         
         <property name="username" value="sa"/>
         <property name="password" value=""/>

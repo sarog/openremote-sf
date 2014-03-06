@@ -301,13 +301,23 @@
 		</testng>
 	</target>
 
+        <target name="run-test" depends="compile-test" description="Run all unit tests">
+            <antcall target="dbup"/>
+
+            <testng classpathref="project.class.path" outputdir="${test.output}">
+                <xmlfileset dir="${test.dir}" includes="testng.xml"/>
+            </testng>
+
+            <antcall target="dbdown"/>
+        </target>
+
 	<!-- ==================================================================== -->
 	<!-- HSQLDB script                                                        -->
 	<!-- ==================================================================== -->
 
 	<!-- Start up HSQLDB instance in Engine Server Mode -->
 	<target name="dbup" description="Start the Hsqldb database server">
-		<java fork="true" classname="${hclass}" classpath="${hjar}" 
+		<java fork="true" spawn="true" classname="${hclass}" classpath="${hjar}" 
 		        args="${hfile} -dbname.0 ${halias} -port ${hport}" />
 	</target>
 
