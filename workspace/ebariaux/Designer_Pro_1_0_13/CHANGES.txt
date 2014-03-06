@@ -3,6 +3,7 @@ Pro 1.0.13
 
 Fixes:
  - Fixed tests (testng) exection from ant script (MODELER-438)
+ - Finish review of methods for DTO <-> Model objects conversion (MODELER-405)
 
 Pro 1.0.12
 ==========
