@@ -395,7 +395,10 @@
 	           driver="org.hsqldb.jdbcDriver" 
 	           url="jdbc:hsqldb:hsql://localhost:${hport}/${halias}" 
 	           userid="sa" password="" 
-	           print="yes">
+	           print="yes"
+                   onerror="continue">
+                   <!-- shutdown command kills our connection, so an error is always reported,
+                        ignore error to ensure build does not fail -->
 	        SHUTDOWN
 	    </sql>
 	</target>
