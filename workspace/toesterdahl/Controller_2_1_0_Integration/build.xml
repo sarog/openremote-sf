@@ -146,7 +146,19 @@
   <property name = "checkstyle.report.style" value = "${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
 
 
+  <path id="tomcat.path.id">
+	<fileset dir="${runtime.dir}/lib" includes="catalina-ant.jar" />
+  </path>
 
+	<!-- defined task for tomcat deploy -->
+  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+  	<classpath refid="tomcat.path.id"/>
+  </taskdef>
+	
+  <!-- defined task for tomcat undeploy -->
+  <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
+  	<classpath refid="tomcat.path.id"/>
+  	</taskdef>
 
 
   <!-- =======================================================================================
@@ -381,7 +393,6 @@
     |
     | Pack the war.
     +-->
-  <!--
   <target name = "war" depends = "compile" description = "">
 
     <echo message = "===================================================================="/>
@@ -390,7 +401,7 @@
     <echo message = ""/>
 
     <war warfile = "${output.dir}/${project.name}.war" webxml = "web/WEB-INF/web.xml">
-      <fileset dir = "web">
+      <fileset dir = "${web.dir}">
         <exclude name = "WEB-INF/classes/**/*.*"/>
         <exclude name = "WEB-INF/lib/**/*.*"/>
       </fileset>
@@ -403,10 +414,39 @@
       <classes dir = "${classes.dir}"/>
     </war>
   </target>
--->
 
-
-
+	
+	  <!--
+	    | DEPLOY TOMCAT:
+	    |
+	    | Deploy the project to tomcat using tomcat manager webapp.
+	    +-->
+	<target name="deploy-tomcat" depends="war" description="Deploy the project to tomcat using tomcat manager webapp">
+	  <echo message = "--------------------------------------------------------------------"/>
+	  <echo message = " Deploy the project to tomcat using tomcat manager webapp..."/>
+	  <echo message = " "/>
+	  <echo message = " Precondition 1: The 'admin' user exists in the tomcat realm"/>
+	  <echo message = " Precondition 2: The admin user password is passed in using the tomcat.manager.password property (-Dtomcat.manager.password=XXX)"/>
+	  <echo message = "--------------------------------------------------------------------"/>
+	  <echo message = "" />
+	  <echo message = " Undeploying project..."/>
+	  <echo message = "" />
+		<undeploy 
+			failonerror="no"
+			url="${tomcat.manager.url}"
+			username="${tomcat.manager.username}"
+			password="${tomcat.manager.password}"
+			path="/${project.name}" />
+	  <echo message = "" />
+	  <echo message = " Deploying project..."/>
+	  <echo message = "" />
+		<deploy 
+			url="${tomcat.manager.url}"
+			username="${tomcat.manager.username}"
+			password="${tomcat.manager.password}"
+			path="/${project.name}"
+			war="${output.dir}/${project.name}.war" />
+	</target>
 
   <!--
     | RUN-TEST:
