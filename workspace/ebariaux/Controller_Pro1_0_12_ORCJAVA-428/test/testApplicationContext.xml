@@ -44,6 +44,8 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:marantz_avr.properties</value>
+            <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
           </list>
@@ -103,6 +105,19 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
+    <property name="address" value="${marantz_avr.address}" />
+  </bean>
+  
+  <bean id="marantzAVRGateway" class="org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway"/>
+
+  <bean id="AMXNIConfig" class="org.openremote.controller.AMXNIConfig">
+    <property name="address" value="${amx_ni.address}" />
+    <property name="port" value="${amx_ni.port}" />
+  </bean>
+  
+  <bean id="AMXNIGateway" class="org.openremote.controller.protocol.amx_ni.AMXNIGateway"/>
+  
   <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
     <property name="comPort" value="${enocean.comPort}" />
     <property name="commLayer" value="${enocean.commLayer}" />
@@ -273,6 +288,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
@@ -285,6 +301,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "amx_ni"           value-ref = "AMXNICommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
@@ -382,6 +399,13 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+  <bean id="marantzAVRCommandBuilder" class = "org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder">
+    <property name="gateway" ref="marantzAVRGateway"/>
+  </bean>
+
+  <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
+    <property name="gateway" ref="AMXNIGateway"/>
+  </bean>
 
   <!-- DateTime Command Builder -->
   <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
