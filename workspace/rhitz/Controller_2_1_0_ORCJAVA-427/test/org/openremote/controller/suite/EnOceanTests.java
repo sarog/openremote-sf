@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -34,7 +34,7 @@ import org.openremote.controller.protocol.enocean.profile.*;
 /**
  * All EnOcean tests aggregated here.
  *
- * @author Rainer Hitz
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
@@ -141,7 +141,8 @@ import org.openremote.controller.protocol.enocean.profile.*;
         EepA51200Test.class,
         EepA51201Test.class,
         EepA51202Test.class,
-        EepA51203Test.class
+        EepA51203Test.class,
+        EepA53808Test.class
     }
 )
 public class EnOceanTests
