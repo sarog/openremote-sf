@@ -23,9 +23,8 @@ package org.openremote.controller.protocol.enocean.profile;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.protocol.enocean.ConfigurationException;
-import org.openremote.controller.protocol.enocean.Constants;
-import org.openremote.controller.protocol.enocean.DeviceID;
+import org.openremote.controller.command.CommandParameter;
+import org.openremote.controller.protocol.enocean.*;
 import org.openremote.controller.protocol.enocean.packet.radio.*;
 
 /**
@@ -43,6 +42,8 @@ public class EepA53808Test
   private static final String DIM_RANGE_STATUS_COMMAND = "EDIMR";
   private static final String DIM_STORE_DIM_VALUE_STATUS_COMMAND = "STR";
   private static final String SWITCH_STATUS_COMMAND = "SW";
+  private static final String DIM_COMMAND = "DIM";
+  private static final String DIM_COMMAND_ELTAKO = "DIM_ELTAKO";
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -424,7 +425,234 @@ public class EepA53808Test
     Assert.assertFalse(eep.isSwitchOn());
   }
 
+  @Test public void testDimCommandWithValueParameter() throws Exception
+  {
+    int dimValue = 100;
 
+    CommandParameter parameter = new CommandParameter(String.valueOf(dimValue));
+
+    EepA53808 eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID, DIM_COMMAND , parameter
+    );
+
+    Assert.assertNotNull(eep);
+
+
+    int commandID = 2;
+    int dimSpeed = 0;
+    boolean isTeachIn = false;
+    boolean isAbsoluteRange = false;
+    boolean isStoreDimValue = false;
+    boolean isSwitchOn = true;
+
+    EspRadioTelegram telegram = createRadioTelegramESP3(
+        deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+        isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    TestRadioInterface radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+
+
+    dimValue = 0;
+    isSwitchOn = false;
+
+    parameter = new CommandParameter(String.valueOf(dimValue));
+
+    eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+            deviceID, DIM_COMMAND , parameter
+    );
+
+    telegram = createRadioTelegramESP3(
+            deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+            isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+  }
+
+  @Test public void testDimCommandWithStaticDimValue() throws Exception
+  {
+    int dimValue = 100;
+
+    EepA53808 eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID, DIM_COMMAND + " " + String.valueOf(dimValue) , null
+    );
+
+    Assert.assertNotNull(eep);
+
+
+    int commandID = 2;
+    int dimSpeed = 0;
+    boolean isTeachIn = false;
+    boolean isAbsoluteRange = false;
+    boolean isStoreDimValue = false;
+    boolean isSwitchOn = true;
+
+    EspRadioTelegram telegram = createRadioTelegramESP3(
+        deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+        isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    TestRadioInterface radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+
+
+    dimValue = 0;
+    isSwitchOn = false;
+
+    eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+            deviceID,  DIM_COMMAND + " " + String.valueOf(dimValue) , null
+    );
+
+    telegram = createRadioTelegramESP3(
+            deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+            isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+  }
+
+  @Test public void testDimCommandWithValueParameterEltako() throws Exception
+  {
+    int dimValue = 100;
+
+    CommandParameter parameter = new CommandParameter(String.valueOf(dimValue));
+
+    EepA53808 eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID, DIM_COMMAND_ELTAKO , parameter
+    );
+
+    Assert.assertNotNull(eep);
+
+
+    int commandID = 2;
+    int dimSpeed = 0;
+    boolean isTeachIn = false;
+    boolean isAbsoluteRange = true;   // Eltako does not set the range flag correctly
+    boolean isStoreDimValue = false;
+    boolean isSwitchOn = true;
+
+    EspRadioTelegram telegram = createRadioTelegramESP3(
+        deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+        isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    TestRadioInterface radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+
+
+    dimValue = 0;
+    isSwitchOn = false;
+
+    parameter = new CommandParameter(String.valueOf(dimValue));
+
+    eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+            deviceID, DIM_COMMAND_ELTAKO , parameter
+    );
+
+    telegram = createRadioTelegramESP3(
+            deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+            isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+  }
+
+  @Test public void testCommandStringWithBlanksAndLowerCase() throws Exception
+  {
+    EepA53808 eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID, " " + DIM_STATUS_COMMAND.toLowerCase() + " ", null
+    );
+
+    Assert.assertNotNull(eep);
+  }
+
+  @Test public void testDimCommandWithStaticDimValueEltako() throws Exception
+  {
+    int dimValue = 100;
+
+    EepA53808 eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID, DIM_COMMAND_ELTAKO + " " + String.valueOf(dimValue) , null
+    );
+
+    Assert.assertNotNull(eep);
+
+
+    int commandID = 2;
+    int dimSpeed = 0;
+    boolean isTeachIn = false;
+    boolean isAbsoluteRange = true;   // Eltako does not set the range flag correctly
+    boolean isStoreDimValue = false;
+    boolean isSwitchOn = true;
+
+    EspRadioTelegram telegram = createRadioTelegramESP3(
+            deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+            isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    TestRadioInterface radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+
+
+    dimValue = 0;
+    isSwitchOn = false;
+
+    eep = (EepA53808)EepType.lookup("A5-38-08").createEep(
+        deviceID,  DIM_COMMAND_ELTAKO + " " + String.valueOf(dimValue) , null
+    );
+
+    telegram = createRadioTelegramESP3(
+        deviceID, commandID, dimValue, dimSpeed, isAbsoluteRange,
+        isStoreDimValue, isSwitchOn, isTeachIn
+    );
+
+    radioInterface = new TestRadioInterface();
+
+    eep.send(radioInterface);
+
+    Assert.assertArrayEquals(telegram.getPayload(), radioInterface.payload);
+    Assert.assertEquals(telegram.getRORG(), radioInterface.rorg);
+    Assert.assertEquals(telegram.getSenderID(), radioInterface.deviceID);
+  }
 
   // Helpers --------------------------------------------------------------------------------------
 
@@ -475,5 +703,34 @@ public class EepA53808Test
     payload[3] |= (byte)(isSwitchOn ? 0x01 : 0x00);
 
     return payload;
+  }
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  private class TestRadioInterface implements RadioInterface
+  {
+    EspRadioTelegram.RORG rorg;
+    DeviceID deviceID;
+    byte[] payload;
+
+    @Override public void sendRadio(EspRadioTelegram.RORG rorg, DeviceID deviceID, byte[] payload, byte statusByte) throws ConfigurationException, ConnectionException
+    {
+      this.payload = payload;
+      this.deviceID = deviceID;
+      this.rorg = rorg;
+    }
+
+    @Override
+    public void addRadioListener(DeviceID deviceID, RadioTelegramListener listener)
+    {
+
+    }
+
+    @Override
+    public void removeRadioListener(DeviceID deviceID, RadioTelegramListener listener)
+    {
+
+    }
   }
 }
