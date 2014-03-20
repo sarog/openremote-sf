@@ -21,11 +21,16 @@
 package org.openremote.controller.protocol.enocean.profile;
 
 import org.openremote.controller.command.CommandParameter;
+import org.openremote.controller.exception.ConversionException;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.enocean.*;
 import org.openremote.controller.protocol.enocean.datatype.*;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
 import org.openremote.controller.utils.Logger;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  Represents the EnOcean equipment profile (EEP) 'A5-38-08'. <p>
@@ -126,7 +131,23 @@ import org.openremote.controller.utils.Logger;
 public class EepA53808 implements EepTransceive
 {
 
+  // TODO : introduce Eltako subclass and as a result remove special cases from this class
+  // TODO : think about a new command parameter (device type) in order to be able to
+  //        handle special cases for certain devices like the Eltako ones.
+
   // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Regular expression pattern that is used to extract the static dim value from a
+   * dim command (e.g. DIM 25).
+   */
+  static final Pattern DIM_VALUE_REGEX = Pattern.compile("DIM\\s*(\\d+)");
+
+  /**
+   * Regular expression pattern that is used to extract the static dim value from a
+   * dim command (e.g. DIM 25) which is used to send dim values to a Eltako device.
+   */
+  static final Pattern DIM_VALUE_REGEX_ELTAKO = Pattern.compile("DIM_ELTAKO\\s*(\\d+)");
 
   /**
    * EnOcean equipment profile (EEP) command ID data field name.
@@ -398,6 +419,12 @@ public class EepA53808 implements EepTransceive
   static final String DIM_COMMAND = "DIM";
 
   /**
+   * Command string for configuring a command which is used to send the dim value to a
+   * Eltako dimmer device like the FUD14 or FUD61.
+   */
+  static final String DIM_COMMAND_ELTAKO = "DIM_ELTAKO";
+
+  /**
    * Command string for configuring a command which receives the dim value.
    */
   public static final String DIM_SPEED_STATUS_COMMAND = EEP_A53808_RMP_DATA_FIELD_NAME;
@@ -417,7 +444,10 @@ public class EepA53808 implements EepTransceive
    */
   public static final String SWITCH_STATUS_COMMAND = EEP_A53808_SW_DATA_FIELD_NAME;
 
-
+  /**
+   * Indicates that the telegram contains EEP data as opposed to a teach-in telegram.
+   */
+  static final int EEP_DATA_TELEGRAM = 0x01;
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -436,6 +466,11 @@ public class EepA53808 implements EepTransceive
      * Send dim value.
      */
     DIM(DIM_COMMAND),
+
+    /**
+     * Send dim value to Eltako device.
+     */
+    DIM_ELTAKO(DIM_COMMAND_ELTAKO),
 
     /**
      * Receive dimmer status value.
@@ -473,38 +508,45 @@ public class EepA53808 implements EepTransceive
     public static Command toCommand(String value, EepType eepType) throws ConfigurationException
     {
 
-      if(value.equalsIgnoreCase(DIM_STATUS.toString()) ||
-         value.equalsIgnoreCase(DIM_STATUS_COMMAND_STANDARD))
+      value = value.toUpperCase().trim();
+
+      if(value.equals(DIM_STATUS.toString()) ||
+         value.equals(DIM_STATUS_COMMAND_STANDARD))
       {
         return DIM_STATUS;
       }
 
-      if(value.equalsIgnoreCase(DIM_STATUS_ELTAKO.toString()))
+      if(value.equals(DIM_STATUS_ELTAKO.toString()))
       {
         return DIM_STATUS_ELTAKO;
       }
 
-      else if(value.equalsIgnoreCase(DIM_SPEED_STATUS.toString()))
+      else if(value.equals(DIM_SPEED_STATUS.toString()))
       {
         return DIM_SPEED_STATUS;
       }
 
-      else if(value.equalsIgnoreCase(DIM_RANGE_STATUS.toString()))
+      else if(value.equals(DIM_RANGE_STATUS.toString()))
       {
         return DIM_RANGE_STATUS;
       }
 
-      else if(value.equalsIgnoreCase(DIM_VALUE_STORE_STATUS.toString()))
+      else if(value.equals(DIM_VALUE_STORE_STATUS.toString()))
       {
         return DIM_VALUE_STORE_STATUS;
       }
 
-      else if(value.equalsIgnoreCase(SWITCH_STATUS.toString()))
+      else if(value.equals(SWITCH_STATUS.toString()))
       {
         return SWITCH_STATUS;
       }
 
-      else if(value.equalsIgnoreCase(DIM.toString()))
+      else if(value.startsWith(DIM_ELTAKO.toString()))
+      {
+        return DIM_ELTAKO;
+      }
+
+      else if(value.startsWith(DIM.toString()))
       {
         return DIM;
       }
@@ -637,17 +679,22 @@ public class EepA53808 implements EepTransceive
       throw new IllegalArgumentException("null device ID");
     }
 
+    if(commandString == null)
+    {
+      throw new IllegalArgumentException("null command string");
+    }
+
+    commandString = commandString.toUpperCase().trim();
+
+    this.parameter = parameter;
     this.eepType = EepType.EEP_TYPE_A53808;
     this.deviceID = deviceID;
 
     this.command = Command.toCommand(commandString, eepType);
 
-    this.parameter = parameter;
-
-
-    if(parameter == null && this.command == Command.DIM)
+    if(this.parameter == null && (this.command == Command.DIM || this.command == Command.DIM_ELTAKO))
     {
-      // TODO: handle static dim value
+      this.parameter = extractDimValueFromCommand(commandString, command);
     }
 
     this.commandID = createCommandID();
@@ -655,7 +702,7 @@ public class EepA53808 implements EepTransceive
     this.isRelativeDimRange = createRelativeDimValueFlag();
 
     this.controlData = new EepData(
-            this.eepType, 4, commandID, teachInFlag, isRelativeDimRange
+        this.eepType, 4, commandID, teachInFlag, isRelativeDimRange
     );
 
     this.absoluteDim = createAbsoluteDimRange();
@@ -686,9 +733,12 @@ public class EepA53808 implements EepTransceive
 
   @Override public void send(RadioInterface radioInterface) throws ConfigurationException, ConnectionException
   {
-    // TODO : constants
+    if(parameter == null)
+    {
+      return;
+    }
 
-    if(command == Command.DIM && parameter != null)
+    if(command == Command.DIM)
     {
       int dimValue = parameter.getValue().intValue();
 
@@ -699,12 +749,42 @@ public class EepA53808 implements EepTransceive
 
       if(dimValue == 0)
       {
-        payload[3] = 0x08;
+        payload[3] = (byte)(((EEP_A53808_SW_OFF_VALUE << 0) |
+                             (EEP_A53808_EDIMR_RELATIVE_VALUE << 2) |
+                             (EEP_DATA_TELEGRAM << 3)) & 0xFF);
       }
 
       else
       {
-        payload[3] = 0x09;
+        payload[3] = (byte)(((EEP_A53808_SW_ON_VALUE << 0) |
+                             (EEP_A53808_EDIMR_RELATIVE_VALUE << 2) |
+                             (EEP_DATA_TELEGRAM << 3)) & 0xFF);
+      }
+
+      radioInterface.sendRadio(eepType.getRORG(), deviceID, payload, (byte)0x00);
+    }
+
+    else if(command == Command.DIM_ELTAKO)
+    {
+      int dimValue = parameter.getValue().intValue();
+
+      byte[] payload = new byte[4];
+      payload[0] = (byte)(EEP_A53808_COM_DIM_COMMAND & 0xFF);
+      payload[1] = (byte)(dimValue & 0xFF);
+      payload[2] = 0;  // Use dim speed of device
+
+      if(dimValue == 0)
+      {
+        payload[3] = (byte)(((EEP_A53808_SW_OFF_VALUE << 0) |
+                             (EEP_A53808_EDIMR_ABSOLUTE_VALUE << 2) |
+                             (EEP_DATA_TELEGRAM << 3)) & 0xFF);
+      }
+
+      else
+      {
+        payload[3] = (byte)(((EEP_A53808_SW_ON_VALUE << 0) |
+                             (EEP_A53808_EDIMR_ABSOLUTE_VALUE << 2) |
+                             (EEP_DATA_TELEGRAM << 3)) & 0xFF);
       }
 
       radioInterface.sendRadio(eepType.getRORG(), deviceID, payload, (byte)0x00);
@@ -1043,5 +1123,38 @@ public class EepA53808 implements EepTransceive
     }
 
     return isDim;
+  }
+
+  private CommandParameter extractDimValueFromCommand(String commandString, Command command) throws NoSuchCommandException
+  {
+    CommandParameter parameter = null;
+
+    Matcher m;
+
+    if(command == Command.DIM_ELTAKO)
+    {
+      m = DIM_VALUE_REGEX_ELTAKO.matcher(commandString);
+    }
+    else
+    {
+      m = DIM_VALUE_REGEX.matcher(commandString);
+    }
+
+    if(!m.matches())
+    {
+      throw new NoSuchCommandException("Missing value parameter for DIM command");
+    }
+
+    try
+    {
+      parameter = new CommandParameter(m.group(1));
+    }
+
+    catch(ConversionException e)
+    {
+      throw new NoSuchCommandException(e.getMessage(), e);
+    }
+
+    return parameter;
   }
 }
