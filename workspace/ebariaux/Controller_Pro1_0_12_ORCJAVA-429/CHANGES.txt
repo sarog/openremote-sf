@@ -1,3 +1,8 @@
+ORCJAVA-429
+===========
+
+  - Update logo to current version
+
 Controller Pro 1.0.12
 =====================
 
