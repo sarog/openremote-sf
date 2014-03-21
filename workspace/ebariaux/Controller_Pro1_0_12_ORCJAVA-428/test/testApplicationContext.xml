@@ -299,7 +299,6 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
-        <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
         <entry key = "russound"         value-ref = "russoundCommandBuilder"/>
         <entry key = "hsc40"            value-ref = "hsc40CommandBuilder"/>
         <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
@@ -420,11 +419,6 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 
   <!-- WOL Command Builder -->
   <bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
-
-  <!-- Samsung TV Command Builder -->
-  <bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
-    <constructor-arg index="0" value="${samsungTV.interface.ip}" />
-  </bean>
 
   <!-- Russound Command Builder -->
   <bean id = "russoundCommandBuilder" class = "org.openremote.controller.protocol.russound.RussoundCommandBuilder">
