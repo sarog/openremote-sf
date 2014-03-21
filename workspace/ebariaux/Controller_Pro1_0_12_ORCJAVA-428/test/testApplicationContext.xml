@@ -225,6 +225,7 @@
     <constructor-arg ref = "configuration"/>
     <constructor-arg ref = "sensorBuilder"/>
     <constructor-arg ref = "commandBuilder"/>
+    <constructor-arg ref = "commandFactory"/>
     
   </bean>
 
