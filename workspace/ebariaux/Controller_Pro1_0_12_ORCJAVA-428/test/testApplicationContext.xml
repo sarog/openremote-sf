@@ -139,16 +139,6 @@
   </bean>
 
     
-    <!-- controller.xml parser -->
-<!--
-    <bean id = "remoteActionXMLParser"
-          class = "org.openremote.controller.command.RemoteActionXMLParser">
-    </bean>
-
-	<bean id = "fileService"
-	      class = "org.openremote.controller.service.impl.FileServiceImpl">
-	</bean>
--->
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -199,11 +189,6 @@
   </bean>
 
 
-	<!-- status cache service
-  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    <property name="cache" ref="statusCache"></property>
-  </bean>
-  -->
 
   <!--
    | TODO
@@ -257,21 +242,6 @@
     
   </bean>
 
-	<!-- controller.xml change service
-  <bean id = "controllerXMLChangeService"
-        class = "org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl">
-    <property name = "cache" ref = "statusCache"/>
-    <property name = "deployer" ref = "deployer"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
-    <property name = "controllerXMLListenSharingData" ref = "controllerXMLListenSharingData"/>
-    <property name = "changedStatusTable" ref = "changedStatusTable"/>
-    <property name = "sensorBuilder" ref = "sensorBuilder"/>
-  </bean>
-	-->
-
-  <!--
-	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
-   -->
 
 <!-- 
 Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
