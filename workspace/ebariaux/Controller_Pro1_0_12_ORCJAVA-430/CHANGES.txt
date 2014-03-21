@@ -1,3 +1,8 @@
+ORCJAVA-430
+===========
+
+  - Update copyright date on home page
+
 Controller Pro 1.0.12
 =====================
 
