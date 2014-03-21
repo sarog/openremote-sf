@@ -1,3 +1,9 @@
+ORCJAVA-392
+===========
+
+  - Extend UDP listener to accept event
+    values from a regexp group.
+
 Controller Pro 1.0.12
 =====================
 
@@ -116,7 +122,7 @@ Bug Fixes:
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
-
+	  
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
