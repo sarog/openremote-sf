@@ -6,6 +6,7 @@ New Features:
   - Updated DSC Security System  to support EnvisaLink and improved current IT100 support
     (Greg Rapp, Phil Taylor, ORCJAVA-302)
   - Update logo to current version (ORCJAVA-429)
+  - Update copyright date on home page (ORCJAVA-430)
 
 Bug Fixes:
 
