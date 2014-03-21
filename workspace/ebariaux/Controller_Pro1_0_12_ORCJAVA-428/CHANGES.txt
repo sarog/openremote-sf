@@ -1,3 +1,8 @@
+ORCJAVA-428
+===========
+
+  - Clean-up testApplicationContext.xml file
+
 Controller Pro 1.0.12
 =====================
 
