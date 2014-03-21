@@ -34,8 +34,7 @@
        xmlns:aop = "http://www.springframework.org/schema/aop"
        xmlns:tx = "http://www.springframework.org/schema/tx"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
-       default-autowire = "byName">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -44,15 +43,17 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:marantz_avr.properties</value>
+            <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
           </list>
       </property>
   </bean>
 
-  <bean id="denonAVRSerialConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+  <bean id="denonAVRSerialCommands" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 	<property name="location">
-		<value>classpath:denonAVRSerial.properties</value>
+		<value>classpath:denonAVRSerialCommands.properties</value>
 	</property>
   </bean>
 
@@ -77,9 +78,12 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
     <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
+    <property name = "beehiveControllerCommandServiceRESTRootUrl" value="${beehiveControllerCommandService.REST.Root.Url}" />
     <property name = "beehiveSyncing" value="${controller.performBeehiveSyncing}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
+    <property name = "proxyTimeout" value = "${proxy.timeout}"/>
+    <property name = "beehiveCommandServiceCheckInterval" value = "${beehiveCommandService.check.interval}"/>
     <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
   </bean>
 
@@ -103,6 +107,19 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
+    <property name="address" value="${marantz_avr.address}" />
+  </bean>
+  
+  <bean id="marantzAVRGateway" class="org.openremote.controller.protocol.marantz_avr.MarantzAVRGateway"/>
+
+  <bean id="AMXNIConfig" class="org.openremote.controller.AMXNIConfig">
+    <property name="address" value="${amx_ni.address}" />
+    <property name="port" value="${amx_ni.port}" />
+  </bean>
+  
+  <bean id="AMXNIGateway" class="org.openremote.controller.protocol.amx_ni.AMXNIGateway"/>
+  
   <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
     <property name="comPort" value="${enocean.comPort}" />
     <property name="commLayer" value="${enocean.commLayer}" />
@@ -115,17 +132,15 @@
     <constructor-arg ref = "deployer"/>
     <constructor-arg ref = "componentFactory"/>
   </bean>
-    
-    <!-- controller.xml parser -->
-<!--
-    <bean id = "remoteActionXMLParser"
-          class = "org.openremote.controller.command.RemoteActionXMLParser">
-    </bean>
+  
+  <bean id="denonAVRSerialConfiguration" class="org.openremote.controller.DenonAVRSerialConfiguration">
+   	<property name="connectionType" value="${denonAVRSerial.connectionType}" />
+   	<property name="comPort" value="${denonAVRSerial.comPort}" />
+   	<property name="udpIp" value="${denonAVRSerial.udpIp}" />
+   	<property name="udpPort" value="${denonAVRSerial.udpPort}" />
+  </bean>
 
-	<bean id = "fileService"
-	      class = "org.openremote.controller.service.impl.FileServiceImpl">
-	</bean>
--->
+    
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -176,11 +191,6 @@
   </bean>
 
 
-	<!-- status cache service
-  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    <property name="cache" ref="statusCache"></property>
-  </bean>
-  -->
 
   <!--
    | TODO
@@ -192,6 +202,7 @@
     <constructor-arg value = "Default Deployer"/>
     <constructor-arg ref = "statusCache"/>
     <constructor-arg ref = "configuration"/>
+    <constructor-arg ref = "beehiveCmdCheckService"/>
     <constructor-arg>
       <map>
         <entry key = "2.0" value-ref = "schema20"/>
@@ -201,7 +212,9 @@
 
   </bean>
 
-
+  <bean id = "beehiveCmdCheckService" class = "org.openremote.controller.service.BeehiveCommandCheckService">
+    <constructor-arg ref = "configuration"/>
+  </bean>
 
   <!--
    | TODO   : XML mappers
@@ -214,6 +227,7 @@
     <constructor-arg ref = "configuration"/>
     <constructor-arg ref = "sensorBuilder"/>
     <constructor-arg ref = "commandBuilder"/>
+    <constructor-arg ref = "commandFactory"/>
     
   </bean>
 
@@ -234,21 +248,6 @@
     
   </bean>
 
-	<!-- controller.xml change service
-  <bean id = "controllerXMLChangeService"
-        class = "org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl">
-    <property name = "cache" ref = "statusCache"/>
-    <property name = "deployer" ref = "deployer"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
-    <property name = "controllerXMLListenSharingData" ref = "controllerXMLListenSharingData"/>
-    <property name = "changedStatusTable" ref = "changedStatusTable"/>
-    <property name = "sensorBuilder" ref = "sensorBuilder"/>
-  </bean>
-	-->
-
-  <!--
-	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
-   -->
 
 <!-- 
 Preinstalled protocols that come shipped with the controller. Additional protocols can be loaded during controller.xml deployment.
@@ -273,9 +272,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+        <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
-        <entry key = "samsungTV"        value-ref = "samsungTVCommandBuilder"/>
         <entry key = "russound"         value-ref = "russoundCommandBuilder"/>
         <entry key = "hsc40"            value-ref = "hsc40CommandBuilder"/>
         <entry key = "udp"              value-ref = "udpSocketCommandBuilder"/>
@@ -285,6 +284,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "dscit100"         value-ref = "dscit100CommandBuilder"/>
         <entry key = "lagarto"          value-ref = "lagartoCommandBuilder"/>
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
+        <entry key = "amx_ni"           value-ref = "AMXNICommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
       </map>
@@ -369,6 +369,16 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
         scope = "prototype"/>
 
+  <!-- ISY-99 Command Builder-->
+  <bean id = "isy99CommandBuilder"
+        class = "org.openremote.controller.protocol.isy99.Isy99CommandBuilder">
+
+    <constructor-arg index = "0" value = "${isy99.hostname}"/>
+    <constructor-arg index = "1" value = "${isy99.username}"/>
+    <constructor-arg index = "2" value = "${isy99.password}"/>
+  </bean>
+    
+  
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
   <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
@@ -382,17 +392,19 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
+  <bean id="marantzAVRCommandBuilder" class = "org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder">
+    <property name="gateway" ref="marantzAVRGateway"/>
+  </bean>
+
+  <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
+    <property name="gateway" ref="AMXNIGateway"/>
+  </bean>
 
   <!-- DateTime Command Builder -->
   <bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
 
   <!-- WOL Command Builder -->
   <bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
-
-  <!-- Samsung TV Command Builder -->
-  <bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
-    <constructor-arg index="0" value="${samsungTV.interface.ip}" />
-  </bean>
 
   <!-- Russound Command Builder -->
   <bean id = "russoundCommandBuilder" class = "org.openremote.controller.protocol.russound.RussoundCommandBuilder">
@@ -410,9 +422,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   </bean>
 
   <!-- DSC IT Security System -->
-  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder">
-    <constructor-arg value = "${dscit100.interface.password}"/>
-  </bean>
+  <bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
   
   <!-- Lagarto Command Builder for SWAP (panStamp) devices and other technologies -->
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
@@ -445,24 +455,12 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     	<list>
     		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
     		<ref bean="rrd4jLogger"/>
-     		<ref bean="emonCMSLogger"/>
+     		
     	</list>
     </property>
   </bean>
 
   <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
-  
-  <bean id = "emonCMSLogger" class = "org.openremote.controller.statuscache.emoncms.EmonDataLogger" >
-    <property name="emonURL" value="http://emoncms.org/api/post?apikey=47d18060923b1f84dcad19f0adc90645&amp;json=" />
-    <property name="sensors">
-      <list>
-      	<value>tempSensor</value>
-      	<value>sensor2</value>
-      	<value>sensor3</value>
-      </list>
-    </property>
-  </bean>
-
 
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
