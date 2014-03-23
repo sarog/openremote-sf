@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -19,6 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.utils;
+
+import java.util.Locale;
 
 /**
  * String related utilities.
@@ -55,10 +57,83 @@ public class Strings
 
     value &= 0xFF;
     
-    return ( value < 16 ? "0x0" + Integer.toHexString(value).toUpperCase()
-                        : "0x"  + Integer.toHexString(value).toUpperCase());
+    return ( value < 16 ? "0x0" + toUpperCase(Integer.toHexString(value))
+                        : "0x"  + toUpperCase(Integer.toHexString(value)));
   }
-  
+
+  /**
+   * Locale independent string to upper case method. This should be used by all code related
+   * string case changes to avoid issues with system default locales that can have unpredictable
+   * results when string conversions are made. <p>
+   *
+   * String.toUpperCase() is locale dependent. This causes issue with turkmen language locale
+   * (ISO-639 "tr") for example where character 'i' is not converted as expected. Therefore the
+   * String.toUpperCase() should *not* be used by implementation code except where explicitly
+   * locale dependent behavior is desired (mostly user-facing messages). <p>
+   *
+   * This implementation uses the ENGLISH locale on all conversions.
+   *
+   * @see <a href="http://jira.openremote.org/browse/ORCJAVA-332">ORCJAVA-332</a>
+   *
+   * @param str   String to convert to uppercase using ENGLISH locale.
+   *
+   * @return      Upper case string.
+   */
+  public static String toUpperCase(String str)
+  {
+    /*
+     * IMPLEMENTATION NOTES:
+     *
+     *   - regression tests confirm the differing behavior between this method and
+     *     String.toUpperCase() when turkmen locale is being used
+     *
+     *   - All use of String.toUpperCase() should delegate to this implementation instead so
+     *     changes become centralized in the codebase
+     *
+     *   - References:
+     *      http://mattryall.net/blog/2009/02/the-infamous-turkish-locale-bug
+     *      http://mail.openjdk.java.net/pipermail/jdk8-dev/2011-July/000060.html
+     */
+    return str.toUpperCase(Locale.ENGLISH);
+  }
+
+  /**
+   * Locale independent string to lower case method. This should be used by all code related
+   * string case changes to avoid issues with system default locales that can have unpredictable
+   * results when string conversions are made. <p>
+   *
+   * String.toLowerCase() is locale dependent. This causes issue with turkmen language locale
+   * (ISO-639 "tr") for example where character 'i' is not converted as expected. Therefore the
+   * String.toLowerCase() should *not* be used by implementation code except where explicitly
+   * locale dependent behavior is desired (mostly user-facing messages). <p>
+   *
+   * This implementation uses the ENGLISH locale on all conversions.
+   *
+   * @see <a href="http://jira.openremote.org/browse/ORCJAVA-332">ORCJAVA-332</a>
+   *
+   * @param str   String to convert to lower case using ENGLISH locale.
+   *
+   * @return      Lower case string.
+   */
+  public static String toLowerCase(String str)
+  {
+    /*
+     * IMPLEMENTATION NOTES:
+     *
+     *   - regression tests confirm the differing behavior between this method and
+     *     String.toLowerCase() when turkmen locale is being used
+     *
+     *   - All use of String.toLowerCase() should delegate to this implementation instead so
+     *     changes become centralized in the codebase
+     *
+     *   - References:
+     *      http://mattryall.net/blog/2009/02/the-infamous-turkish-locale-bug
+     *      http://mail.openjdk.java.net/pipermail/jdk8-dev/2011-July/000060.html
+     */
+    return str.toLowerCase(Locale.ENGLISH);
+  }
+
+
   /**
    * Converts a String which represents a pollingInterval into an int which can be used as delay
    * for Thread.sleep();  <p>

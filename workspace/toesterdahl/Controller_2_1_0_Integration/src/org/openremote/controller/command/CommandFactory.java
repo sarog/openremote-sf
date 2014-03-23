@@ -118,6 +118,15 @@ public class CommandFactory
   }
   
   /**
+   * Method is used for junit tests to gain access to dynamically created CommandBuilders (Z-Wave, Vera)
+   * @param protocolName
+   * @return a CommandBuilder
+   */
+  public CommandBuilder getCommandBuilder(String protocolName) {
+     return commandBuilders.get(protocolName);
+  }
+  
+  /**
    *
    * @deprecated    Additional use of this method should be avoided -- implementations should
    *                delegate to in-memory object model for commands instead (see

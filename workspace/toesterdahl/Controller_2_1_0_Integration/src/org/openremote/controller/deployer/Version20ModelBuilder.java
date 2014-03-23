@@ -331,7 +331,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
 
   /**
-   * The commandFactory should update it's commandBuilder with the new configuration before building the model
+   * TODO: The commandFactory should update it's commandBuilder with the new configuration before building the model
    */
   private CommandFactory commandFactory;
   

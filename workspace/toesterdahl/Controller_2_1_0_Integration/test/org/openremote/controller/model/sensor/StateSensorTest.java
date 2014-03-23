@@ -489,7 +489,76 @@ public class StateSensorTest
     Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("emca"));
   }
 
-  
+
+  /**
+   * Regression tests related to issue ORCJAVA-324 (http://jira.openremote.org/browse/ORCJAVA-324)
+   *
+   * Trim incoming event producer values to increase tolerance of device input, stripping white
+   * space, etc.
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testProcessEventValueTrimming_ORCJAVA_324() throws Exception
+  {
+    final int SENSOR_ID = 324;
+
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addState("on");
+    states.addState("off");
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("on");
+    builder.append(" ");
+
+    StateSensor s1 = new StateSensor(
+        "trim", SENSOR_ID, cache, new StateReadCommand(false, builder.toString(), "off"), states
+    );
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'on', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
+        getSensorValueFromCache(SENSOR_ID).equals("on")
+    );
+  }
+
+  /**
+   * Regression tests related to issue ORCJAVA-324 (http://jira.openremote.org/browse/ORCJAVA-324)
+   *
+   * Trim incoming event producer values to increase tolerance of device input, stripping white
+   * space, etc.
+   *
+   * This one test in particular for the case of zero byte at the end of the string.
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testProcessEventValueTrimmingZeroByte_ORCJAVA_324() throws Exception
+  {
+    final int SENSOR_ID = 3241;
+
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addState("on");
+    states.addState("off");
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("on");
+    builder.append('\0');
+
+    StateSensor s1 = new StateSensor(
+        "trim", SENSOR_ID, cache, new StateReadCommand(false, builder.toString(), "off"), states
+    );
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'on', got '" + getSensorValueFromCache(SENSOR_ID) + "'",
+        getSensorValueFromCache(SENSOR_ID).equals("on")
+    );
+
+  }
+
 
   @Test public void testToString()
   {
@@ -532,15 +601,34 @@ public class StateSensorTest
 
   // Nested Classes -------------------------------------------------------------------------------
 
+  /**
+   * A read command implementation for tests. It takes a set of values that can be returned
+   * (read commands are regularly polled by the sensor). The first value in return values is always
+   * returned on poll request unless and until progressed to next value with a call to nextValue().
+   *
+   * Notice by default asserts that this command implementation only returns values that the sensor
+   * explicitly is waiting for via its passed state property values. To avoid asserting whether a
+   * value returned by this command implementation is actually a valid value as expected by the
+   * sensor implementation (useful for testing error and exception cases and unexpected values
+   * from command implementations), use the constructor that takes boolean assert if command
+   * values should match sensor state properties.
+   */
   private static class StateReadCommand extends ReadCommand
   {
 
     protected String[] returnValue;
     protected int index = 0;
+    protected boolean assertCommandValuesMatchSensorStateProperties;
 
     protected StateReadCommand(String... returnValue)
     {
+      this(true, returnValue);
+    }
+
+    protected StateReadCommand(boolean assertCommandValuesMatchSensorStateProperties, String... returnValue)
+    {
       this.returnValue = returnValue;
+      this.assertCommandValuesMatchSensorStateProperties = assertCommandValuesMatchSensorStateProperties;
     }
 
     @Override public String read(Sensor s)
@@ -548,17 +636,20 @@ public class StateSensorTest
       if (index >= returnValue.length )
         index = 0;
 
-      Assert.assertTrue(s instanceof StateSensor);
+      Assert.assertTrue("instance of failed for " + s, s instanceof StateSensor);
 
       List<String> vals = Arrays.asList(returnValue);
 
       for (int i = 1; i <= returnValue.length; ++i)
       {
-        Assert.assertTrue(s.getProperties().keySet().contains("state-" + i));
+        Assert.assertTrue("state property assertion failed for " + s, s.getProperties().keySet().contains("state-" + i));
 
         String state = s.getProperties().get("state-" + i);
 
-        Assert.assertTrue(vals.contains(state));
+        if (assertCommandValuesMatchSensorStateProperties)
+        {
+          Assert.assertTrue("state assertion failed for " + s, vals.contains(state));
+        }
       }
 
       return returnValue[index];

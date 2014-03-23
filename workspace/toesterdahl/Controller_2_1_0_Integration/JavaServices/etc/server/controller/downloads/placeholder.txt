@@ -1,0 +1,6 @@
+
+This is a place holder to keep a 'downloads' directory in place
+when dealing with server structure. The implementation actually
+would create this directory if it was missing but the current
+microkernel version in use chokes on a NPE when asked to scan
+a directory which doesn't exist yet.

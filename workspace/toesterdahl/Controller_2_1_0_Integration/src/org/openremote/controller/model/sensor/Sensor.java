@@ -337,7 +337,7 @@ public abstract class Sensor
 
     Event evt = processEvent(state);
 
-    log.trace("Processed {0}, received {1}", state, evt.getValue());
+    log.trace("Processed ''{0}'', received ''{1}''", state, evt.getValue());
 
     deviceStateCache.update(evt);
   }
