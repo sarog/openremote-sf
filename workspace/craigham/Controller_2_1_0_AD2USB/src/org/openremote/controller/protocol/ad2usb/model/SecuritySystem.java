@@ -1,6 +1,5 @@
 package org.openremote.controller.protocol.ad2usb.model;
 
-
 public class SecuritySystem {
 
    public enum ChimeStatus {
@@ -37,5 +36,9 @@ public class SecuritySystem {
 
    public ArmedStatus getArmedStatus() {
       return mPartition.getStatus();
+   }
+
+   public Partition getPartition() {
+      return mPartition;
    }
 }

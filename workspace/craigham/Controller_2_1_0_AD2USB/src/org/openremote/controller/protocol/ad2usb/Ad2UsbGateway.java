@@ -25,17 +25,16 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.ad2usb.model.ArmedStatus;
-import org.openremote.controller.protocol.ad2usb.model.Partition;
 import org.openremote.controller.protocol.ad2usb.model.SecuritySystem;
-import org.openremote.controller.protocol.ad2usb.model.SecuritySystem.ChimeStatus;
-import org.openremote.controller.protocol.dscit100.PanelState.AlarmState;
+import org.openremote.controller.protocol.ad2usb.model.SecurityZone;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
 import org.openremote.controller.utils.Logger;
 
@@ -162,6 +161,8 @@ public class Ad2UsbGateway {
    private class AD2USBReaderThread extends Thread {
 
       private InputStream is;
+      private Set<SecurityZone> priorNotReadyZones = new HashSet<SecurityZone>();
+      private Set<SecurityZone> notReadyZones = new HashSet<SecurityZone>();
 
       public AD2USBReaderThread(InputStream is) {
          super();
@@ -170,10 +171,8 @@ public class Ad2UsbGateway {
 
       @Override
       public void run() {
-         log.info("Reader thread starting");
-         log.debug("TC input stream " + is);
+         log.info("Ad2Usb Reader thread starting");
          BufferedReader br = new BufferedReader(new InputStreamReader(is));
-         log.debug("Buffered reader " + br);
 
          String line = null;
          try {
@@ -189,18 +188,42 @@ public class Ad2UsbGateway {
                   Ad2UsbUpdateParser parser = new Ad2UsbUpdateParser(line);
                   if (parser.fields != null && parser.fields.length > 2) {
                      if (parser.fields[3].contains("*DISARMED*")) {
+                        // getting the disarmed notification starts the cycle for zone status updates. the bus only lets
+                        // us know about faults, so we will keep track of prior faulted zones, and when new cycle
+                        // begins, infer that prior zones no longer coming up as faulted must be ready
+                        // priorNotReadyZones
+                        // let's check if the prior faulted zones are still faulted...any which aren't lets change
+                        // status to ready
+                        for (SecurityZone zone : priorNotReadyZones) {
+                           // are there zones in priorNotReadyZones that are not in notReadyZones, if so, those must now
+                           // be ready
+                           if (!notReadyZones.contains(zone)) zone.setStatus(SecurityZone.ZoneStatus.READY);
+                        }
+                        // get ready for next cycle through
+                        priorNotReadyZones = notReadyZones;
+                        notReadyZones = new HashSet<SecurityZone>();
+
                         // let's update security panel property
                         if (parser.fields[3].contains("FAULTED")) {
-                           getSecuritySystem().setArmedStatus(ArmedStatus.DISARMED_READY);
-                           updateArmedStatusChangedListeners(ArmedStatus.DISARMED_READY);
-                        } else {
                            getSecuritySystem().setArmedStatus(ArmedStatus.DISARMED_FAULTS);
                            updateArmedStatusChangedListeners(ArmedStatus.DISARMED_FAULTS);
+                        } else {
+                           getSecuritySystem().setArmedStatus(ArmedStatus.DISARMED_READY);
+                           updateArmedStatusChangedListeners(ArmedStatus.DISARMED_READY);
                         }
                      } else if (parser.fields[3].contains("*ARMED*")) {
                         log.debug("Double check if this is correct, in Ad2UsbGateway read thread");
                         getSecuritySystem().setArmedStatus(ArmedStatus.ARMED);
                         updateArmedStatusChangedListeners(ArmedStatus.ARMED);
+                     } else if (parser.fields[3].startsWith("FAULT")) {
+                        int id = Integer.parseInt(parser.fields[1]);
+                        // TODO get description
+                        int indexOfZoneId = parser.fields[3].indexOf(parser.fields[1]);
+                        String zoneDescription = parser.fields[3].substring(indexOfZoneId + parser.fields[1].length())
+                              .trim();
+                        getSecuritySystem().getPartition().setZoneStatus(id, zoneDescription,
+                              SecurityZone.ZoneStatus.FAULT);
+                        notReadyZones.add(getSecuritySystem().getPartition().getZone(id));
                      }
 
                      if (mSensor != null) {
