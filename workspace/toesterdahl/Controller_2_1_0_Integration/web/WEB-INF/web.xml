@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -321,7 +321,8 @@
     <servlet-name>graphServlet</servlet-name>
     <servlet-class>org.openremote.controller.servlet.RrdGraphServlet</servlet-class>
   </servlet>
-  
+
+
   <!--
    | Servlet for 'rest/panels' implementation.
    +-->
@@ -390,6 +391,7 @@
     <servlet-name>graphServlet</servlet-name>
     <url-pattern>/graph/*</url-pattern>
   </servlet-mapping>
+
 
 
   <!--
@@ -502,13 +504,14 @@
 
   -->
 
-  <!-- Constraint resource: /rest/panel/* 
 
+  <!-- Constraint resource: /rest/control/* -->
+  <!--
     <security-constraint>
       <web-resource-collection>
-        <web-resource-name>Panel identity RESTful service of Openremote Controller</web-resource-name>
-        <description>Panel identity RESTful service of Openremote Controller</description>
-        <url-pattern>/rest/panel/HTTP</url-pattern>
+        <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
+        <description>Control command RESTful service of Openremote Controller</description>
+        <url-pattern>/rest/control/*</url-pattern>
         <http-method>GET</http-method>
         <http-method>POST</http-method>
       </web-resource-collection>
@@ -516,8 +519,52 @@
         <role-name>openremote</role-name>
       </auth-constraint>
     </security-constraint>
-
   -->
+
+  <!-- Constraint resource: /rest/panel/* -->
+  <!--
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Panel identity RESTful service of Openremote Controller</web-resource-name>
+        <description>Panel identity RESTful service of Openremote Controller</description>
+        <url-pattern>/rest/panel/*</url-pattern>
+        <http-method>GET</http-method>
+        <http-method>POST</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+        <role-name>openremote</role-name>
+      </auth-constraint>
+    </security-constraint>
+  -->
+
+  <!--
+   <security-constraint>
+     <web-resource-collection>
+       <web-resource-name>Status command RESTful service of Openremote Controller</web-resource-name>
+       <description>Status command RESTful service of Openremote Controller</description>
+       <url-pattern>/rest/status/*</url-pattern>
+       <http-method>GET</http-method>
+       <http-method>POST</http-method>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>openremote</role-name>
+     </auth-constraint>
+   </security-constraint>
+   <security-constraint>
+     <web-resource-collection>
+       <web-resource-name>Polling command RESTful service of Openremote Controller</web-resource-name>
+       <description>Polling command RESTful service of Openremote Controller</description>
+       <url-pattern>/rest/polling/*</url-pattern>
+       <http-method>GET</http-method>
+       <http-method>POST</http-method>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>openremote</role-name>
+     </auth-constraint>
+   </security-constraint>
+   -->
+
+  <!--
     <login-config>
       <auth-method>BASIC</auth-method>
       <realm-name>OPENREMOTE_Controller</realm-name>
@@ -525,11 +572,10 @@
     <security-role>
       <role-name>openremote</role-name>
     </security-role>
-
-<!-- 
+  -->
+  
     <error-page>
       <error-code>401</error-code>
       <location>/401.jsp</location>
     </error-page>
- -->
 </web-app>

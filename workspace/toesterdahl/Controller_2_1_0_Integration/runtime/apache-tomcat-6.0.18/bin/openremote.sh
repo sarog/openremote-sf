@@ -113,6 +113,10 @@
 # $Id: catalina.sh 656834 2008-05-15 21:04:04Z markt $
 # -----------------------------------------------------------------------------
 
+
+# Setting java library path to use os version of jni libraries
+JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/usr/lib/jni"
+
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false
 darwin=false
@@ -274,6 +278,7 @@ printTomcatEnvVariables()
 ##
 executeTomcat()
 {
+  local PID_REDIRECT=")"
 
   if [ "$4" = "service" ]; then
 
@@ -281,11 +286,18 @@ executeTomcat()
     # file to first 50000 characters. Note that the redirect will automatically switch to a
     # buffered mode so stdout will appear in chunks, size of which is defined by the operating
     # system. For more detailed handling of std output, tools such as logrotate can be used.
-
     local REDIRECT="| head -c 50000 >> \"$CATALINA_BASE/logs/container/stderrout.log\" 2>&1 &"
+
+    # If CATALINA_PID has been specified, we need to capture the PID of the Java process
+    # Must use a separate file descriptor to capture that as the output is piped to a file
+    # See http://stackoverflow.com/questions/1652680/how-to-get-the-pid-of-a-process-that-is-piped-to-another-process-in-bash
+    if [ ! -z "$CATALINA_PID" ]; then
+      local PID_REDIRECT=" & echo \$! >&3) 3>"$CATALINA_PID
+    fi
+
   fi
 
-  eval "\"$1\"" \
+  eval "(\"$1\"" \
             -Dcatalina.home=\"$CATALINA_HOME\" \
             -Dcatalina.base=\"$CATALINA_BASE\" \
             -Djava.io.tmpdir=\"$CATALINA_TMPDIR\" \
@@ -293,7 +305,8 @@ executeTomcat()
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
-            \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $REDIRECT
+            \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $PID_REDIRECT $REDIRECT
+
 }
 
 # Execute OpenRemote 'run' target...
@@ -371,6 +384,34 @@ elif [ "$1" = "start" ]; then
   executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
 
 
+elif [ "$1" = "start_debug" ]; then
+
+  # Default startup log to INFO level unless explicitly set with env variable...
+
+  if [ -z "${CONTROLLER_STARTUP_LOG_LEVEL}" ] ; then
+    CONTROLLER_STARTUP_LOG_LEVEL=INFO
+  fi
+
+  # Default standard out (console) output to OFF unless explicitly set
+  # with env variable...
+
+  if [ -z "${CONTROLLER_CONSOLE_THRESHOLD}" ] ; then
+    CONTROLLER_CONSOLE_THRESHOLD=OFF
+  fi
+
+  JPDA_OPTS="-noverify -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000"
+  JAVA_OPTS="$JAVA_OPTS $JPDA_OPTS"
+
+  # set Tomcat's console logging level to match controller console logging level,
+  # pass log options to JVM and print the env variable values...
+
+  setTomcatConsoleLevel
+  printTomcatEnvVariables
+
+  # run Tomcat as service...
+
+  executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
+
 elif [ "$1" = "stop" ] ; then
 
   shift
@@ -404,6 +445,9 @@ else
   echo "       Start OpenRemote Controller in development mode in the current window"
   echo ""
   echo "  start"
+  echo "       Start OpenRemote Controller as a background process"
+  echo ""
+  echo "  start_debug"
   echo "       Start OpenRemote Controller as a background process"
   echo ""
   echo "  stop"

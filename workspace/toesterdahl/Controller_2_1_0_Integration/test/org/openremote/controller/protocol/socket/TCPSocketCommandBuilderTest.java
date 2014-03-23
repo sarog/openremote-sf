@@ -42,12 +42,12 @@ public class TCPSocketCommandBuilderTest {
 
    @Test
    public void testSocketCommandBuilder() {
-      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "test");
+      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "test", "500");
 
       Assert.assertEquals(cmd.getIp(), "192.168.0.1");
       Assert.assertEquals(cmd.getPort(), "9090");
       Assert.assertEquals(cmd.getCommand(), "test");
-      Assert.assertEquals(cmd.getName(), "testName");
+      Assert.assertEquals(cmd.getPollingInterval().intValue(), 500);
    }
    
    
@@ -56,15 +56,15 @@ public class TCPSocketCommandBuilderTest {
     */
    @Test
    public void testSocketCommandWithParam() {
-      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "light1_${param}");
+      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "light1_${param}", "1s");
       
       Assert.assertEquals(cmd.getIp(), "192.168.0.1");
       Assert.assertEquals(cmd.getPort(), "9090");
       Assert.assertEquals(cmd.getCommand(), "light1_255");
-      Assert.assertEquals(cmd.getName(), "testName");
+      Assert.assertEquals(cmd.getPollingInterval().intValue(), 1000);
    }
 
-   private TCPSocketCommand getCommand(String address, String port, String command) {
+   private TCPSocketCommand getCommand(String address, String port, String command, String interval) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
       ele.setAttribute("protocol", "tcpSocket");
@@ -86,10 +86,15 @@ public class TCPSocketCommandBuilderTest {
       propCommand.setAttribute("name", "command");
       propCommand.setAttribute("value", command);
 
+      Element propInterval = new Element("property");
+      propInterval.setAttribute("name", "pollingInterval");
+      propInterval.setAttribute("value", interval);
+      
       ele.addContent(propName);
       ele.addContent(propAddr);
       ele.addContent(propPort);
       ele.addContent(propCommand);
+      ele.addContent(propInterval);
 
       return (TCPSocketCommand) builder.build(ele);
    }

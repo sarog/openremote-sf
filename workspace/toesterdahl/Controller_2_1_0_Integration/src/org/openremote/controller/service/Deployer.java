@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -155,8 +155,7 @@ public class Deployer
    */
   private Map<ModelBuilder.SchemaVersion, ModelBuilder> builders;
 
-  private Map<Integer, Element> controllerXMLElementCache = new HashMap<Integer, Element>();
-  
+
   /**
    * Cache parsed XML elements to avoid triggering XML parser/XPath multiple times during
    * runtime execution.
@@ -233,7 +232,7 @@ public class Deployer
   /**
    * This list holds all discovered devices which are not announced to beehive yet 
    */
-  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -245,11 +244,6 @@ public class Deployer
    */
   private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
   
-  /**
-   * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
-   * For example unlink from Beehive, download new design, start proxy, update controller, .... 
-   */
-  private BeehiveCommandCheckService beehiveCommandCheckService;
   
   // Constructors ---------------------------------------------------------------------------------
 
@@ -274,7 +268,7 @@ public class Deployer
    *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
-                  ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
+                  ControllerConfiguration controllerConfig,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -282,8 +276,6 @@ public class Deployer
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
     
-    this.beehiveCommandCheckService = beehiveCommandCheckService;
-    this.beehiveCommandCheckService.setDeployer(this);
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
@@ -322,22 +314,23 @@ public class Deployer
           "Method startController() should only be called once per VM process. Use softRestart() " +
           "for hot-deploying new controller state."
       );
+
       return;
     }
 
-    if (controllerConfig.getBeehiveSyncing())
+    // TODO : should move to startup() and add clear start/stop lifecycles for these threads...
+
+    if (controllerConfig.getBeehiveSyncing()) 
     {
-      // Start controller announcement thread
-
-      controllerAnnouncement = new ControllerAnnouncement();
-      controllerAnnouncement.start();
+       //Start controller announcement thread
+       controllerAnnouncement = new ControllerAnnouncement();
+       controllerAnnouncement.start();
    
-      // Start discovered devices announcement thread
-
-      discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
-      discoveredDevicesAnnouncement.start();
+       //Start discovered devices announcement thread
+       discoveredDevicesAnnouncement = new DiscoveredDevicesAnnouncement();
+       discoveredDevicesAnnouncement.start();
     }
-
+    
     try
     {
       startup();
@@ -599,7 +592,7 @@ public class Deployer
 
 
     // Quick fix to cache parsed XML elements. See ORCJAVA-190
-    
+
     Element tmp = xmlElementCache.get(id);
 
     if (tmp == null)
@@ -796,8 +789,7 @@ public class Deployer
     // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
 
     deviceStateCache.shutdown();
-    controllerXMLElementCache.clear();
-    
+
     xmlElementCache.clear();
     
     modelBuilder = null;                // null here indicates to other services that this deployer
@@ -1177,7 +1169,6 @@ public class Deployer
     }
 
     return map;
-
   }
   
 
@@ -1564,8 +1555,7 @@ public class Deployer
   /**
    * Handles the announcement of the controller via it's MAC address to Beehive.<br>
    * Once a user has linked this controller to an account and the returned ControllerDTO contains<br>
-   * a AccountDTO with users, this thread is ending, but then the backend command agent is started<br>
-   * to perform a regular check on beehive if a command is there for this controller
+   * a AccountDTO with users, this thread is ending.
    * 
    *
    */
@@ -1576,30 +1566,20 @@ public class Deployer
 
     public void run() {
        //As long as we are not linked to an account we periodically try to receive account info 
-       while (true) {
-          ClientResource cr = null;
+       while ((controllerDTO == null) || (controllerDTO.getAccount() == null)) {
           try {
-             log.trace("Controller will announce " + NetworkUtil.getMACAddresses() + " as MAC address to beehive");
-             cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
+             ClientResource cr = new ClientResource( controllerConfig.getBeehiveAccountServiceRESTRootUrl() + "controller/announce/"+ NetworkUtil.getMACAddresses());
              Representation r = cr.post(null);
+             cr.release();
              String str;
              str = r.getText();
-             log.trace("Controller announcement received response >" + str + "<");
              GenericResourceResultWithErrorMessage res =new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ControllerDTO.class).deserialize(str); 
              controllerDTO = (ControllerDTO)res.getResult();
-             if ((controllerDTO != null) && (controllerDTO.getAccount() != null)) {
-                break;
-             }
           } catch (Exception e) {
              log.error("!!! Unable to announce controller MAC address to Beehive", e);
-          } finally {
-             if (cr != null) {
-                cr.release();
-             }
           }
-          try { Thread.sleep(1000 * 30); } catch (InterruptedException e) {} //Let's wait 30 seconds
+          try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
        }
-       beehiveCommandCheckService.start(controllerDTO);
     }
 
   }
@@ -1626,6 +1606,7 @@ public class Deployer
                    try {   
                       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce));
                       Representation result = cr.post(rep);
+                      cr.release();
                       GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>().use(null, GenericResourceResultWithErrorMessage.class).use("result", ArrayList.class).use("result.values", Long.class).deserialize(result.getText());
                       if (res.getErrorMessage() != null) {
                          throw new RuntimeException(res.getErrorMessage());
@@ -1633,10 +1614,6 @@ public class Deployer
                       discoveredDevicesToAnnounce.clear();
                    } catch (Exception e) {
                      log.error("Could not announce discovered devices", e);
-                   } finally {
-                      if (cr != null) {
-                         cr.release();
-                      }
                    }
                 }
              }
@@ -1644,12 +1621,6 @@ public class Deployer
           try { Thread.sleep(1000 * 60); } catch (InterruptedException e) {} //Let's wait one minute
        }
      }
-  }
-
-
-  public void unlinkController() {
-     this.controllerDTO = null;
-     this.controllerAnnouncement.start();
   }
 
 

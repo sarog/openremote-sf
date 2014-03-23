@@ -115,7 +115,7 @@ public class RussoundCommandBuilder implements CommandBuilder {
          logger.debug("Russound command created successfully");
          return new RussoundCommand(controller, zone, command, paramValue, commClient);
       } catch (Exception e) {
-         throw new NoSuchCommandException("Invlid commad: " + commandValue);
+         throw new NoSuchCommandException("Invalid commad: " + commandValue);
       }
    }
 

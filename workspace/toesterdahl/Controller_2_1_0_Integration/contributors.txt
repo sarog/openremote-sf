@@ -13,10 +13,11 @@ Fekete Kamosh
 Jaroslav Misura
 Richard Turner
 Yann Philippe
-Ivan Martinez
 Greg Rapp
+Kenneth Stridh
 Daniel Berenguer
 Ivan Martinez
+Stefan Langerman
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each

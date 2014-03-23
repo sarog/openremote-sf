@@ -1,0 +1,455 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><!-- $Id: readme.html,v 1.1.2.36 2006/05/13 15:42:36 dimitris Exp $ -->
+<meta content="text/html" http-equiv="content-type"><meta content="JBoss Inc." name="author"><title>JBoss
+5.0.0.Beta4 Readme</title></head>
+<body><a href="http://www.jboss.com"><img src="http://www.jboss.org/themes/jbosstheme/img/logo.gif" alt="JBoss Inc."></a> <h1>JBoss 5.0.0.Beta4
+Release Notes</h1>
+<p>This is the final <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBossProductVersioning">
+<span style="text-decoration: none; font-weight: 700;">Beta</span></a>
+release of the <b>JBoss 5.0.x</b> series for the <b>Java
+EE&trade;</b>
+5 codebase! This release completes a&nbsp; big round of
+refactorings
+related to the transformation of JBossAS into a pure POJO-based
+server.&nbsp;There should be no API changes from this point on as
+we move closer to a final release.</p><p> For information
+on the APIs that
+make up Java EE 5, see
+<a href="http://java.sun.com/javaee/reference/index.jsp">Java
+EE APIs &amp; Docs</a>. A tutorial on Java EE 5 can be found
+<a href="http://java.sun.com/javaee/5/docs/tutorial/doc/">here</a>.</p>
+<p>A sample Java EE 5 application that can be
+run on top of JBoss 5.0.0.Beta4 and demonstrates many interesting
+technologies is the <b><i>Seam Booking Application</i></b>
+available <a href="http://repository.jboss.org/maven2/org/jboss/seam/examples/">here</a>.&nbsp;This
+application makes use of the following technologies running on
+JBoss 5:</p>
+<ul><li>EJB3</li>
+<ul> <li>Stateful Session Beans</li> <li>Stateless
+Session Beans</li> <li>JPA (w/ Hibernate validation)</li>
+</ul><li>JSF</li>
+<ul> <li>Facelets</li> <li>Ajax4JSF</li>
+</ul><li><a href="http://www.jboss.com/products/seam">Seam</a></li>
+</ul>The <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBossSeam">JBoss
+Seam Wiki</a> links to many interesting topics about Seam.<h2>Overview</h2>
+<ul> <li><a href="#Highlights">Highlights</a></li>
+<li><a href="#Compatibility">Compatibility Issues</a></li>
+<li><a href="#Configuration">Configuration Issues</a></li>
+<li><a href="#Other">Other Issues</a></li>
+<li><a href="#Library%20Updates">JBoss/Thirdparty Library Updates</a></li>
+<li><a href="#Details">Detailed Release Notes</a></li>
+<li><a href="#Documentation">Additional Docs and Help</a></li>
+<li><a href="#Licenses">Licenses</a></li>
+<li><a href="#About">About JBoss</a></li>
+</ul><h2><a name="Highlights">Highlights</a></h2>
+<p>JBoss 5 is the next generation of the JBoss Application Server
+build on top of the new <a href="http://www.jboss.com/products/jbossmc">JBoss
+Microcontainer</a>. The JBoss Microcontainer is a lightweight
+container for managing POJOs, their deployment, configuration and
+lifecycle. It is a standalone project that replaces the famous JBoss
+JMX Microkernel of the 3.x and 4.x JBoss series. The Microcontainer
+integrates nicely with the JBoss framework for Aspect Oriented
+Programming, <a href="http://labs.jboss.com/portal/jbossaop">JBoss
+AOP</a>. Support for JMX in JBoss 5 remains strong and MBean
+services written against the old Microkernel are expected to work.</p>
+<p>JBoss5 is designed around the advanced concept of a
+<a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBoss5DeploymentFramework">Virtual
+Deployment Framework</a> (VDF), that takes the aspect oriented
+design of many of the earlier JBoss containers and applies it to the
+deployment layer. Aspectized Deployers operate in a chain over a
+<a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBoss5VirtualFileSystem">Virtual
+File System</a> (VFS), analyze deployments and produce metadata
+to be used by the JBoss Microcontainer, which in turn instantiates and
+wires together the various pieces of a deployment, controlling their
+lifecycle and dependencies.</p>
+<p>Many key features of JBoss 5 are provided by integrating other
+standalone JBoss projects:</p>
+<ul> <li><a href="http://labs.jboss.org/portal/jbossejb3">JBoss EJB3</a>
+included with JBoss 5 provides the implementation of the latest
+revision of the Enterprise Java Beans (EJB) specification. EJB 3.0 is a
+deep overhaul and simplification of the EJB specification. EJB 3.0's
+goals are to simplify development, facilitate a test driven approach,
+and focus more on writing plain old java objects (POJOs) rather than
+coding against complex EJB APIs.</li> <li><a href="http://www.jboss.com/products/messaging">JBoss
+Messaging</a> is a high performance JMS provider in the JBoss
+Enterprise Middleware Stack (JEMS), included with JBoss 5 as the
+default messaging provider. It is also the backbone of the <a href="http://www.jboss.com/products/esb">JBoss ESB</a>
+infrastructure. JBoss Messaging is a complete rewrite of JBossMQ, which
+is the default JMS provider for the JBoss AS 4.x series.</li> <li><a href="http://www.jboss.com/products/jbosscache">JBossCache</a>
+2.0 that comes in two flavors. A traditional tree-structured node-based
+cache and a <a href="http://labs.jboss.com/file-access/default/members/jbosscache/freezone/docs/2.0.0/PojoCache/en/html/index.html">
+PojoCache</a>, an in-memory, transactional, and replicated cache
+system that allows users to operate on simple POJOs transparently
+without active user management of either replication or persistency
+aspects.</li> <li><a href="http://labs.jboss.com/portal/jbossws">JBossWS 2</a>
+is the web services stack for JBoss 5 providing Java EE compatible web
+services, JAXWS-2.0.</li> <li><a href="http://www.jboss.com/products/transactions">JBoss
+Transactions</a> is the default transaction manager for JBoss 5.
+JBoss Transactions is founded on industry proven technology and 18 year
+history as a leader in distributed transactions, and is one of the most
+interoperable implementations available.</li> <li><a href="http://www.jboss.com/products/jbossweb">JBoss Web</a>
+is the Web container in JBoss 5, an implementation based on Apache
+Tomcat that includes the Apache Portable Runtime (APR) and Tomcat
+native technologies to achieve scalability and performance
+characteristics that match and exceed the Apache Http server.</li>
+</ul><p>JBoss 5 includes numerous features and bug fixes,
+many of them carried over upstream from the 4.x codebase. See the <a href="#Details">Detailed Release Notes</a> section for
+the full details.</p>
+<h2><a name="Compatibility">Compatibility Issues</a></h2><ul><li>JBossAS
+5 runs under Java 5 but there is an ongoing task to make it run safely
+under Java 6, too (<a href="http://jira.jboss.com/jira/browse/JBAS-5031">JBAS-5031</a>).
+If using a Sun Java 6 runtime, you may want to set&nbsp; <span style="font-family: monospace;">-Dsun.lang.ClassLoader.allowArraySyntax=true</span>,
+as described in <a href="http://jira.jboss.com/jira/browse/JBAS-4491">JBAS-4491</a>.</li><li>If
+using proprietary JBoss/EJB3 annotations, those&nbsp;have moved
+into the <span style="font-family: monospace;">org.jboss.ejb3.annotation
+</span>package, <a href="http://jira.jboss.com/jira/browse/EJBTHREE-1099">EJBTHREE-1099</a>.
+Those are now included in a new artifact, jboss-ejb3-ext-api.jar</li><li>Work
+on EJB3 Extended Persistence Context support is not completed, <a href="http://jira.jboss.com/jira/browse/EJBTHREE-1026">EJBTHREE-1026</a>.</li><li>Interoperating
+with previous JBoss EJB3 implementations may present problems due to
+serialVersionUIDs issues,<a href="http://jira.jboss.com/jira/browse/EJBTHREE-1118">
+EJBTHREE-1118</a>.</li><li>EJB 2.1 View requirements </li><ul><li>Home
+extending <u>EJBLocalHome</u><a href="http://wiki.jboss.org/wiki/Edit.jsp?page=EJBLocalHome">?</a>
+or EJBHome must be defined </li></ul><ul><li>Remote
+or Local interface must either be defined via @Local/@Remote or via
+return type of "create&lt;METHOD&gt;" methods of the Home </li></ul><ul><li>EJB
+2.1 Remote/Local interfaces must extend EJBObject/EJBLocalObject</li></ul><li>@Local/@Remote
+may be used to define either EJB 3.0 View Business Interface, or EJB
+2.1 View Remote/Local interface </li><li>Use of JBoss
+Cache 2.x. JBC 2.x has a significantly different API from the 1.x
+releases used in JBoss AS 4.x and 3.2.x. </li></ul><h2><a name="Configuration">Configuration Issues</a></h2>
+<p>This section lists changes that could affect the server
+configuration.</p><p>The directory structure of JBoss 5
+resembles that of the 4.x
+series with some notable differences:</p>
+<ul> <li>bin - start scripts and run.jar</li> <li>client
+- client jars</li> <li>docs - docs, chemas/dtds, examples</li>
+<li>lib - core bootstrap jars, somewhat different with the <b>introduction
+of the microcontainer</b> and breakup of jboss-common.</li>
+<li>server - the same server configuration dirs.<ul> <li>default
+configuration<ul> <li>conf</li> <ul> <li><b>bootstrap-beans.xml
+</b>- new mc kernel bootstrap configuration</li> <li><b>jax-ws-catalog.xml
+</b>- oasis catalog driven schema/dtd namespace configuration</li>
+<li><b>jbossjta-properties.xml </b>- new JBossTS
+properties</li> <li>jboss-service.xml - legacy static
+mbeans for compatibility</li> <li>jndi.properties - the
+same jndi props</li> <li>log4j.xml - the same log4j config</li>
+<li>login-config.xml - the same jaas login config</li> <li>props/
+- the same default jaas login properties files</li> <li>standardjaws.xml
+- obsolete cmp config</li> <li>standardjbosscmp-jdbc.xml -
+the same cmp2 config</li> <li>standardjboss.xml - the same
+ejb2 config </li> <li>xmdesc/ - legacy xmbean descriptors</li>
+</ul> <li>deploy/ - the same deploy directory.</li>
+<li><b>deployers/ - <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBoss5DeploymentFramework">new
+vdf deployers</a></b>
+<ul> <li>bsh-deployer - beanshell deployer</li>
+<li>ejb3.deployer - ejb3 deployers</li>
+<li>jboss-aop-jboss5.deployer - aspect deployer</li>
+<li>jboss-jca.deployer - JCA deployers</li>
+<li>jbossweb.deployer - war deployers</li>
+<li>jbossws.deployer - web services deployers</li>
+<li>ear-deployer-beans.xml - ear deployers</li>
+<li>ejb-deployer-beans.xml - ejb2.x deployers</li>
+<li>metadata-beans.xml - metadata handlers</li>
+<li>security-deployer-beans.xml - security deployers</li>
+<li>profileservice-beans.xml.bak - an example of the repository
+based profile service</li>
+</ul></li><li>lib/ - the same static library jars</li>
+</ul></li></ul></li></ul>Clustering
+related changes. Check out the&nbsp;<a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=JBossAS5ClusteringChanges">Wiki</a>
+for more info.<ul><li>The clustering configurations have
+been organized in the deploy dir in a new <span style="font-family: monospace;">cluster</span>
+subfolder (<a class="external" href="http://jira.jboss.com/jira/browse/JBAS-4709">JBAS-4709</a>).</li><li>A
+separate cache is now used for Clustered SSO (<a class="external" href="http://jira.jboss.com/jira/browse/JBAS-4676">JBAS-4676</a>).</li><li>Per
+webapp configuration of useJK, snapshot mode and snapshot interval (<a class="external" href="http://jira.jboss.com/jira/browse/JBAS-3460">JBAS-3460</a>).&nbsp;Default
+for useJK is whether jvmRoute is set (<a class="external" href="http://jira.jboss.com/jira/browse/JBAS-4961">JBAS-4961</a>).</li><li>Setting
+of default clustering metadata removed from the Web Deployer (<a class="external" href="http://jira.jboss.com/jira/browse/JBAS-4967">JBAS-4967</a>).
+</li></ul>EJB3
+configuration &nbsp;is now controlled by
+deployers/ejb3.deployer/META-INF/ejb3-deployers-beans.xml. For more
+details check out this <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=ToAS5.0.0.Beta4">wiki</a>
+page.<br><br>For security related configuration changes,
+please consult this <a href="http://wiki.jboss.org/wiki/Wiki.jsp?page=SecurityInJBoss5">wiki</a>
+page.<br><h2><a name="Other">Other
+Issues</a></h2><ul><li>Hot
+deployment is enabled, however undeployment&nbsp;on Windows, by
+removing files from the ./deploy directory&nbsp; is problematic due
+to
+jar files being locked, <a href="http://jira.jboss.com/jira/browse/JBAS-4310">JBAS-4310</a>.</li>
+<li>Excessive nestedjarNNN.tmp files in the tmp directory. The
+VFS unwraps nested
+jars by extracting the nested jar into a tmp file in the java tmp
+directory. This can
+result in a large number of files that fill up the tmp directory. You
+can disable this
+behavior by setting -Djboss.vfs.forceNoCopy=true on command line used
+to start
+jboss. This will be enabled by default in a future release, <a href="http://jira.jboss.com/jira/browse/JBAS-4389">JBAS-4389</a>.
+</li><li>The Farm service is removed. Distributed
+deployments will eventually be handled by the AS 5 Profile Service,
+with the Profile Service (or JBoss ON) coordinating deployments across
+the cluster from a centralized repository. The Farm Service's function
+of replicating deployment archives between file systems will not be
+maintained.</li>
+<li>The JSR77 view of the server is not implemented yet.</li><li>There
+is a noticable delay (10-15secs) in the start-up time of the
+application server. This is due to annotation processing from the AOP
+subsystem and is scheduled to be corrected in the CR release, <a href="http://jira.jboss.com/jira/browse/JBAS-5224">JBAS-5224</a>.</li>
+</ul><h2><a name="Libraries">Library Updates</a></h2>
+For a full list of the JBoss and thirdparty libraries used
+with JBoss AS 5.0.0.Beta4 see &nbsp;<a href="http://anonsvn.jboss.org/repos/jbossas/tags/JBoss_5_0_0_Beta4/build/build-thirdparty.xml">build-thirdparty.xml.</a><h1><a name="Details">Detailed
+Release
+Notes</a></h1>
+<h3>Includes versions: JBossAS-5.0.0.Beta4</h3>
+<hr><!-- ============ Feature Request =========================== --><h2>Feature
+Request</h2>
+<ul><li>[<a href="http://jira.jboss.com/jira/browse/JBAS-1451">JBAS-1451</a>]
+- Need additional trace level logging about security domain cache
+validation</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2283">JBAS-2283</a>]
+- Custom header based authentication</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2499">JBAS-2499</a>]
+- Add configurable policy for determining master node for HASingleton</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2936">JBAS-2936</a>]
+- Upgrade JBossSerialization to 1.0.0.CR4</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3323">JBAS-3323</a>]
+- Role Mapping Login Module that maps application role to declarative
+role</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3583">JBAS-3583</a>]
+- HAPartition should use its Marshaller for marshalling RPC responses</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3587">JBAS-3587</a>]
+- Add a system property to configure TCPPING.initial_hosts</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3588">JBAS-3588</a>]
+- Add system property to configure multiplexer stack</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3815">JBAS-3815</a>]
+- Deployment Level Principal-Role Mapping passed to authorization layer</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3851">JBAS-3851</a>]
+- Slow DataSource Failover - JCA Stale Connection Detection</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3870">JBAS-3870</a>]
+- Clone the JBossMX javax.management.timer.Timer implementation, to a
+jboss package</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4455">JBAS-4455</a>]
+- LoadBalancePolicy that tries to pin all requests associated with a tx
+to one server</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4543">JBAS-4543</a>]
+- Make HAServiceMBeanSupport "bean name aware"</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5139">JBAS-5139</a>]
+- Support injection-target properties within service-ref declarations</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5180">JBAS-5180</a>]
+- Make ClusterPartition mbean queryable</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5183">JBAS-5183</a>]
+- Provide info as to whether topology changes are due to a merge</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5196">JBAS-5196</a>]
+- Add a jboss.messaging.ServerPeerID system property to ServerPeer
+configuration in messaging-service.xml</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5215">JBAS-5215</a>]
+- Temporary fix: Set TCL and BeanMetaData classloader to the deployment
+classloader in TempBeanMetaDataDeployer </li>
+</ul><!-- ======================= Bug =========================== --><h2>Bug</h2><ul>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-1571">JBAS-1571</a>]
+- Logging of cluster rpc method exceptions at warn level is incorrect</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-1926">JBAS-1926</a>]
+- two timers executing at the same time in some conditions</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2188">JBAS-2188</a>]
+- "jboss:service=invoker,type=http,target=HAJNDI" misconfigured in file
+httpha-invoker.sar/META-INF/jboss-service.xml</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2403">JBAS-2403</a>]
+- JBossCacheManager session expiration algorithm ignores replication
+events</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2428">JBAS-2428</a>]
+- Lock Contention on org.jboss.ejb.BeanLockManager</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2429">JBAS-2429</a>]
+- Clustered SSO improperly invalidated upon web application shutdown</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2564">JBAS-2564</a>]
+- hashCode() of org.jboss.util.id.GUID and UID appears to return the
+same value for all GUIDs created</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2585">JBAS-2585</a>]
+- Lock contention on BasicMBeanRegistry::get</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2586">JBAS-2586</a>]
+- Synchronization into org.jboss.ejb.EnterpriseContext$EJBContextImpl</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3198">JBAS-3198</a>]
+- Problems with separated ClassLoaders for EARs and pooled invoker
+(PooledInvokerHA).</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3279">JBAS-3279</a>]
+- Authenticated user can bypass declarative role checks for servlets</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3438">JBAS-3438</a>]
+- LdapExtLoginModule does not handle roles containing '/' correctly</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3794">JBAS-3794</a>]
+- Remove all calls to InetAddress.getHostName() (causes reverse DNS
+lookup)</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3883">JBAS-3883</a>]
+- JBoss ignores "Class-Path" attribute in WAR's MANIFEST.MF</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4292">JBAS-4292</a>]
+- Legacy MainDeployer.deploy use of checkIncomplete causes leaks/test
+failures</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4313">JBAS-4313</a>]
+- Cluster loses his master</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4322">JBAS-4322</a>]
+- Wrong context path in Embedded JBoss JAR deployment</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4333">JBAS-4333</a>]
+- JBoss DD shemas should use a jboss specific namespace</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4491">JBAS-4491</a>]
+- Server startup failure with JDK 1.6</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4763">JBAS-4763</a>]
+- Depends element in jboss-web.xml ignored</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4919">JBAS-4919</a>]
+- HASingletonElectionPolicySimple does not handle heterogeneous
+topologies</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4943">JBAS-4943</a>]
+- jboss-ds_1_5.dtd is wrong</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5050">JBAS-5050</a>]
+- web-console doesn't start</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5066">JBAS-5066</a>]
+- InstanceInterceptors need to set SecurityContext on EnterpriseContext
+from Threadlocal</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5068">JBAS-5068</a>]
+- Possible NullPointerException in DistributedReplicantManager#_add()</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5074">JBAS-5074</a>]
+- MarshalledInvocation constructor should copy over all invocation
+attributes</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5091">JBAS-5091</a>]
+- BuddyCommunicationTimeout is too low</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5097">JBAS-5097</a>]
+- MessageDestinationReferenceMetaData produced by merge of annotation
+and xml loses information</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5105">JBAS-5105</a>]
+- PostgreSQL Entity Command for jdbc2pm is Not Working Properly</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5107">JBAS-5107</a>]
+- jboss-aop-jdk50-client.jar missing classes</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5136">JBAS-5136</a>]
+- AnnotationMetaDataDeployer queries isMetadataComplete on
+JBossMetaData before a merge has taken place</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5140">JBAS-5140</a>]
+- NPE in MergedJBossMetaDataDeployer merging security roles</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5142">JBAS-5142</a>]
+- cmp2.x jdbc2 pm: missing a join in a collection path translating
+"member of"</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5150">JBAS-5150</a>]
+- EJB Corba servants need to set Security Context on invocation for
+remote calls</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5155">JBAS-5155</a>]
+- DistributedReplicantManager - Add lookup method to that given a
+replicant name, returns a List of ClusterNode</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5164">JBAS-5164</a>]
+- Generic ProxyFactoryHA leaves proxy in JNDI after undeploy</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5171">JBAS-5171</a>]
+- TxConnectionManager is track-connection-by-tx false by default</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5175">JBAS-5175</a>]
+- The profile service bootstrap should undeploy in reverse deployment
+phase order</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5186">JBAS-5186</a>]
+- Incorrect service name in org.jboss.tutorial.webservice.client.Client</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5188">JBAS-5188</a>]
+- RoleBasedAuthorizationInterceptorv2 needs to set the contextid on the
+PolicyContext</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5194">JBAS-5194</a>]
+- DataSource connection properties should use a
+CompositeMetaType/CompositeValue</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5205">JBAS-5205</a>]
+- AnnotationMetaDataDeployer attempts to load all dependencies</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5212">JBAS-5212</a>]
+- NPE at
+org.jboss.aop.pointcut.FieldMatcher.visit(FieldMatcher.java:181) at
+shutdown</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5214">JBAS-5214</a>]
+- ServiceControllerLifecycleCallback.uninstall() should unregister mbean</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5217">JBAS-5217</a>]
+- Security Deployer issue with conflicting war names in multiple EARs</li>
+</ul><!-- ======================= Task ========================== --><h2>Task</h2><ul>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-1617">JBAS-1617</a>]
+- Merge fixes for JacORB bugs #562 and #568 into the JacORB lib shipped
+w/ JBoss</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2040">JBAS-2040</a>]
+- Spring Deployer</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2505">JBAS-2505</a>]
+- Hibernate integration in JBoss5</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-2522">JBAS-2522</a>]
+- Integration of JGroups 2.2.9 final with JBossAS 5</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3170">JBAS-3170</a>]
+- ProfileService Bootstrapping of the MC</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3218">JBAS-3218</a>]
+- Handle expiration of replicated sessions found in the buddy
+replication subtree</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-3410">JBAS-3410</a>]
+- VDF Deployer migration tasks</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4148">JBAS-4148</a>]
+- Replace Gjt code used in the ejb 2.x validation phase</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4180">JBAS-4180</a>]
+- Reduce coupling between JMX and HASingleton</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4215">JBAS-4215</a>]
+- Need to externalize the web container class loader to use outside of
+the web container</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4276">JBAS-4276</a>]
+- Replace injection of PartitionName or ClusterPartitionMBean with
+HAPartition</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4378">JBAS-4378</a>]
+- Update the management CRUD usecases</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4647">JBAS-4647</a>]
+- Track jboss and thirdparty dependencies upgrades for JBoss 5.0.0.Beta4</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4706">JBAS-4706</a>]
+- Deployer to synchronize meta data after the unguaranteed parsing
+deployers</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4762">JBAS-4762</a>]
+- Make distributable webapps depend on the clustering cache</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-4997">JBAS-4997</a>]
+- Package StatefulPassivationActivationUnitTestCase with its own
+HAPartition</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5016">JBAS-5016</a>]
+- Make release notes for Beta4</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5059">JBAS-5059</a>]
+- Update Service Binding configuration for JBossMessaging</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5060">JBAS-5060</a>]
+- Upgrade jfreechart to v1.0.2</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5062">JBAS-5062</a>]
+- AudtManager should be on demand</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5077">JBAS-5077</a>]
+- JBoss Messaging ServerPeer refactorings for better JBossAS integration</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5086">JBAS-5086</a>]
+- Remove deprecated JGroups properties from multiplexer-stacks.xml</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5098">JBAS-5098</a>]
+- Performance Issues</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5101">JBAS-5101</a>]
+- Re-enable JGroups message bundling</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5104">JBAS-5104</a>]
+- Upgrade JBossMessaging to 1.4.0.SP3</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5153">JBAS-5153</a>]
+- Pull web class loader creation into WarClassLoaderDeployer</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5181">JBAS-5181</a>]
+- Inject MBeanServer into JChannelFactory</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5191">JBAS-5191</a>]
+- Manage JBoss Web runtime lifecycle via a JMX service in deploy</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5193">JBAS-5193</a>]
+- Separate HAPartition deployment from other cluster services</li>
+<li>[<a href="http://jira.jboss.com/jira/browse/JBAS-5207">JBAS-5207</a>]
+- Upgrade Hibernate EntityManager to 3.3.2.Beta3</li>
+</ul><!-- ================= Sub-task ============================== --><!-- ======================================================= --><h2><a name="Documentation">Documentation
+and Help</a></h2>The&nbsp;<a href="http://labs.jboss.org/jbossas/">JBossAS community
+project</a> is hosted on jboss.org labs. Documentation and help
+may
+be obtained from the following locations.
+<ul><li><a href="http://labs.jboss.org/jbossas/docs">JBoss
+AS Documentation</a></li>
+<li><a href="http://wiki.jboss.org/">JBoss Wiki</a></li>
+<li><a href="http://jira.jboss.org/">JBoss JIRA</a></li>
+<li><a href="http://www.jboss.org/index.html?module=bb">JBoss
+Forums</a></li>
+</ul><!-- ======================================================= --><h2><a name="Licenses">Licenses</a></h2>
+<p>JBoss Application Server&nbsp; is licensed under the <a href="lgpl.html">LGPL</a>,
+as explained in the <a href="JBossORG-EULA.txt">JBoss End
+User License Agreement</a>. The licence texts for JBoss and the
+thirdparty components it uses may be found in the docs/licenses
+directory of the distribution. <a href="docs/licenses">Browse
+Licences</a>
+</p><!-- ======================================================= --><h2><a name="About">About JBoss, a
+division of RedHat</a></h2>
+<p>JBoss, a division of <a href="http://www.redhat.com/jboss/">Red
+Hat</a>, is in the business of providing
+superior technical support to our customers. Our goal is to make
+Professional Open Source&trade; the <b>SAFE CHOICE</b>
+for you. We accomplish this by backing up our open source Java products
+with technical support services that are delivered by the core
+developers themselves. We can help you to train your staff and provide
+you with support at every stage of the application lifecycle - from
+development and integration through deployment and maintenance. Visit
+the <a href="http://www.jboss.org/services/index">JBoss
+Services</a> page for more information.</p>
+</body></html>

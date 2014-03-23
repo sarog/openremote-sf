@@ -141,11 +141,6 @@ public class Constants
    * Specific subcategory of {@link #INIT_LOG_CATEGORY} for deployement lifecycles.
    */
   public final static String DEPLOYER_LOG_CATEGORY = INIT_LOG_CATEGORY + ".deployer";
-  
-  /**
-   * Specific subcategory of {@link #INIT_LOG_CATEGORY} for BeehiveCommandChecker lifecycles.
-   */
-  public final static String BEEHIVE_COMMAND_CHECKER_LOG_CATEGORY = INIT_LOG_CATEGORY + ".beehivecheckservice";
 
   /**
    * Specific subcategory of {@link #INIT_LOG_CATEGORY} that logs event processor initialization.
@@ -301,7 +296,5 @@ public class Constants
    * HTTP parameter name used for JSON-P function callback name.
    */
   public final static String CALLBACK_PARAM_NAME = "callback";
-
-
 
 }

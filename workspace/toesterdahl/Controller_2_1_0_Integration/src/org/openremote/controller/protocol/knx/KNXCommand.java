@@ -25,6 +25,7 @@ import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -182,7 +183,7 @@ abstract class KNXCommand implements Command
   static KNXCommand createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                   GroupAddress address, CommandParameter parameter)
   {
-    name = name.trim().toUpperCase();
+    name = Strings.toUpperCase(name.trim());
     
     IpInterfaceMonitor monitorCmd = IpInterfaceMonitor.createCommand(name, mgr, address, dpt);
     if(monitorCmd != null)
@@ -220,14 +221,11 @@ abstract class KNXCommand implements Command
    * Destination address for this command.
    */
   private GroupAddress address;
-  
-
-  // Protected Instance Fields ----------------------------------------------------------------------
 
   /**
    * Connection manager to be used to transmit this command.
    */
-  protected KNXIpConnectionManager connectionManager;
+  private KNXIpConnectionManager connectionManager;
 
 
 
@@ -330,22 +328,32 @@ abstract class KNXCommand implements Command
 
 
   /**
-   * Relay a read command to an open KNX/IP connection. 
-   * The value which is received after this read is handled by the KNXConnection which updates the sensor
-   * 
-   * @param command KNX read command
+   * Relay a read command to an open KNX/IP connection.
+   *
+   * TODO : call semantics on return value 
+   *
+   * @param command   KNX read command
+   *
+   * @return  Returns the application protocol data unit (APDU) for a Group Value Read Response
+   *          frame. This frame contains the response value from the device. <P>
+   *
+   *          NOTE: may return <code>null</code> in case there's a connection exception or the
+   *          read response is not available from the device yet.
    */
-  void triggerRead(GroupValueRead command)
+  ApplicationProtocolDataUnit read(GroupValueRead command)
   {
     KNXConnection connection = connectionManager.getCurrentConnection();
 
     if (connection == null)
     {
        log.info("KNX connection not available.");
+
+       return null;
     }
+
     else
     {
-      connection.read(command);
+      return connection.read(command);
     }
   }
   

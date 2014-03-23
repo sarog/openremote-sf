@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -35,6 +35,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * 
  * @author <a href="mailto:andrew.puch.1@gmail.com">Andrew Puch</a>
  * @author <a href="mailto:aball@osintegrators.com">Andrew D. Ball</a>
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class Isy99CommandBuilder implements CommandBuilder
 {
@@ -50,6 +51,14 @@ public class Isy99CommandBuilder implements CommandBuilder
   public final static String ISY99_XMLPROPERTY_ADDRESS = "address";
 
   public final static String ISY99_XMLPROPERTY_COMMAND = "command";
+
+  /**
+   * Implicit name property for all commands that were introduced in Designer 2.13.x and later.
+   * This property should be eventually provided by the API, at which point this constant can
+   * be replaced.
+   */
+  public final static String COMMAND_XMLPROPERTY_NAME = "name";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -119,6 +128,7 @@ public class Isy99CommandBuilder implements CommandBuilder
   {
     String address = null;
     String command = null;
+    String commandName = null;  // Currently unused but useful for logging [JPL]
 
     @SuppressWarnings("unchecked")
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
@@ -137,6 +147,12 @@ public class Isy99CommandBuilder implements CommandBuilder
       {
         command = propertyValue;
       }
+
+      else if (COMMAND_XMLPROPERTY_NAME.equalsIgnoreCase(propertyName))
+      {
+        commandName = propertyValue;
+      }
+
       else
       {
         log.warn("Unknown ISY-99 property '<" + XML_ELEMENT_PROPERTY + " " +

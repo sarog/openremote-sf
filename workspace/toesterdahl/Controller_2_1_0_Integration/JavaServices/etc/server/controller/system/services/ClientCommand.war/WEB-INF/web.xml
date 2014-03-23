@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!--
+ | OpenRemote, the Internet-enabled Home.
+ |
+ | This work is licensed under Creative Commons Attribution-Noncommercial-Share Alike 3.0
+ | United States, http://creativecommons.org/licenses/by-nc-sa/3.0/us/
+ +-->
+
+
+<!--
+ | OpenRemote Controller Client Command REST Interface.
+ |
+ | Author: Juha Lindfors
+ | Revision: $Id: $
+ +-->
+<web-app xmlns = "http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd"
+         version = "2.5">
+
+  <display-name>OpenRemote Controller Client HTTP (REST) Interface</display-name>
+
+  <listener>
+    <listener-class>org.openremote.controller.client.ClientStartup</listener-class>
+  </listener>
+  
+  <servlet>
+    <servlet-name>REST Interface</servlet-name>
+    <servlet-class>org.openremote.controller.client.ClientCommand</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>REST Interface</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+</web-app>
