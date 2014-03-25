@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2012, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2014, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -117,14 +117,17 @@ public class UDPListenerCommand implements EventListener {
                 // the (first) group is returned as the event value instead of just a simple
                 // timestamp.
 
-                if (matcher.groupCount() > 0)
+                if (matcher.find())
                 {
-                  sensor.update(matcher.group(1));
-                }
+                  if (matcher.groupCount() > 0)
+                  {
+                    sensor.update(matcher.group(1));
+                  }
 
-                else
-                {
-                  sensor.update("" + System.currentTimeMillis());
+                  else
+                  {
+                    sensor.update("" + System.currentTimeMillis());
+                  }
                 }
               }
 
