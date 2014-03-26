@@ -2,7 +2,7 @@
 
 <!--
   OpenRemote, the Home of the Digital Home.
-  Copyright 2008-2013, OpenRemote Inc.
+  Copyright 2008-2014, OpenRemote Inc.
 
   See the contributors.txt file in the distribution for a
   full listing of individual contributors.
@@ -113,6 +113,7 @@
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-logging-0.1.0" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-security-0.2.0" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/openremote-object-model-0.1.0" includes = "**/*.jar"/>
   </path>
 
   <path id = "samsungtv.compile.path.id">
@@ -221,6 +222,9 @@
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/openremote-security-0.2.0">
+        <include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/openremote-object-model-0.1.0">
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/bouncycastle-1.50">
