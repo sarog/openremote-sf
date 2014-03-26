@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -67,7 +68,9 @@ import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.model.DeviceDiscovery;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
@@ -716,6 +719,64 @@ public class Deployer
      synchronized (discoveredDevicesToAnnounce) {
         discoveredDevicesToAnnounce.addAll(list);
      }
+  }
+
+  //
+  // TODO :
+  //
+  //   Alternative API for device discoveries. This is a temporary utility method that accepts
+  //   a new version of the DeviceDiscovery instance. Internally it is still converted to the
+  //   previous model instance.
+  //
+  //   Slight differences in API design:
+  //     - Use of sets instead of lists (order is not relevant)
+  //     - New DeviceDiscovery does not use an additional tuple class for attributes but
+  //       an internal map instead
+  //
+  public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
+  {
+    // This is a helper class that translates the new discovery model to older version
+    class ModelMigration extends DeviceDiscovery
+    {
+      ModelMigration(DeviceDiscovery dd)
+      {
+        super(dd);
+      }
+
+      DiscoveredDeviceDTO createDTO()
+      {
+        DiscoveredDeviceDTO dto = new DiscoveredDeviceDTO();
+        dto.setModel(super.model);
+        dto.setName(super.deviceName);
+        dto.setProtocol(super.protocol);
+        dto.setType(super.type);
+        dto.setUsed(false);
+
+        List<DiscoveredDeviceAttrDTO> attributeList = new ArrayList<DiscoveredDeviceAttrDTO>(1);
+
+        for (String key : super.deviceAttributes.keySet())
+        {
+          DiscoveredDeviceAttrDTO attr = new DiscoveredDeviceAttrDTO();
+          attr.setName(key);
+          attr.setValue(deviceAttributes.get(key));
+
+          attributeList.add(attr);
+        }
+
+        dto.setDeviceAttrs(attributeList);
+
+        return dto;
+      }
+    }
+
+    List<DiscoveredDeviceDTO> list = new ArrayList<DiscoveredDeviceDTO>(3);
+
+    for (DeviceDiscovery dd : discoveredDevices)
+    {
+      list.add(new ModelMigration(dd).createDTO());
+    }
+
+    announceDiscoveredDevices(list);
   }
 
   /**
