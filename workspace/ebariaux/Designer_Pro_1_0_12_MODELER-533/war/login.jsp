@@ -243,7 +243,7 @@
       <div class = "logo">
         <p>
           <a href = "http://www.openremote.org">
-            <img src    = "http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png"
+            <img src    = "image/OpenRemote-singleline-full-logo_400x83.png"
                  border = "0"
                  alt    = "OpenRemote Logo"
             />
@@ -253,7 +253,7 @@
       <!-- 'watermark' -->
 
       <img class  = "watermark"
-           src    = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
+           src    = "image/OpenRemote.Logo.512x512.png"
            border = "0"
            alt    = "watermark"
       />
