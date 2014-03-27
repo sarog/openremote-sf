@@ -347,14 +347,17 @@
 
         <div class = "box">
 
-            <h2 class = "box-header">Update to Latest OpenRemote Controller</h2>
+            <h2 class = "box-header">Update to the latest OpenRemote Professional Controller</h2>
 
-            <p>
-              In order to use all the latest Designer features, make sure you've
-              installed the latest OpenRemote Controller.<br><br>
-              You can access your version from the download menu, after you logged in.
-            </p>
+            <p>In order to use all the latest Designer features, make sure you have
+ 			   installed the latest OpenRemote Professional Controller.<p>
+			<p>You can access the latest version from the "Download Resources"
+			   menu, after you have logged in.</p>
 
+
+			
+
+			
 <!--
             <h2 class = "box-header">Have You Installed OpenRemote Controller?</h2>
 
