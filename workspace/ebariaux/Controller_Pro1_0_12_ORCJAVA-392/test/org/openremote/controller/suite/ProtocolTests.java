@@ -27,6 +27,7 @@ import org.openremote.controller.protocol.amx_ni.AMXNICommandBuilderTest;
 import org.openremote.controller.protocol.datetime.DateTimeCommandBuilderTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddressTest;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTest;
+import org.openremote.controller.protocol.socket.UDPListenerCommandTest;
 
 /**
  * Test protocol support classes.
@@ -41,7 +42,8 @@ import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilderTe
        LutronHomeWorksCommandBuilderTest.class,
        AMXNICommandBuilderTest.class,
        MarantzAVRTests.class,
-       DateTimeCommandBuilderTest.class
+       DateTimeCommandBuilderTest.class,
+       UDPListenerCommandTest.class
    }
 )
 public class ProtocolTests
