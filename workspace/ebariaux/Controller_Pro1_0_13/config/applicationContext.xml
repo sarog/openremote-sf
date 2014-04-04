@@ -525,9 +525,12 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <property name = "deployer" ref = "deployer"/>
   </bean>
 	
-	<bean id = "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder">
+  <bean id = "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
-	</bean>
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
 
 </beans>
 
