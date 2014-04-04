@@ -111,6 +111,7 @@ public class RrdGraphServlet extends HttpServlet {
          String relativePath = request.getPathInfo();
          InputStream is = new FileInputStream(a);
          if (is != null) {
+            response.setContentType("image/png");
             FileCopyUtils.copy(is, response.getOutputStream());
          } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, relativePath);
