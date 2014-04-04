@@ -7,6 +7,7 @@ New Features:
     (Greg Rapp, Phil Taylor, ORCJAVA-302)
   - Update logo to current version (ORCJAVA-429)
   - Update copyright date on home page (ORCJAVA-430)
+  - Extend UDP listener to accept event values from a regexp group (ORCJAVA-392)
 
 Bug Fixes:
 
@@ -130,7 +131,7 @@ Bug Fixes:
   - Controller Error occurs when there are spaces in the path (ORCJAVA-263)
   - NPE when controller checking for commands from remote proxy (ORCJAVA-288)
   - Ensure that Restlet ClientResource is not released too soon (ORCJAVA-295)
-
+	  
 Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 ===========================================
 
