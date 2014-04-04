@@ -12,6 +12,7 @@ New Features:
 Bug Fixes:
 
   - Clean-up testApplicationContext.xml file (ORCJAVA-428)
+  - Fixed : NPE while executing a gesture with a command linked to it (ORCJAVA-421)
 
 Controller Pro 1.0.12
 =====================
