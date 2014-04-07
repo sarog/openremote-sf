@@ -14,6 +14,7 @@ Bug Fixes:
   - Clean-up testApplicationContext.xml file (ORCJAVA-428)
   - Fixed : NPE while executing a gesture with a command linked to it (ORCJAVA-421)
   - Fixed: RRD4JServlet doesn't set the content-type heading to 'image/png' (ORCJAVA-423)
+  - Patch drools for Java 7 support (ORCJAVA-258)
 
 Controller Pro 1.0.12
 =====================
