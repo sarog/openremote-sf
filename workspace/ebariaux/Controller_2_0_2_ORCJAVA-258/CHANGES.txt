@@ -1,3 +1,8 @@
+ORCJAVA-258
+===========
+
+ - Patch drools for Java 7 support
+
 Controller 2.0.2 (2013-02-26)
 ============================
 
