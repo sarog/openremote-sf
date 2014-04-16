@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2012, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2014, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -110,9 +110,25 @@ public class UDPListenerCommand implements EventListener {
                  Sensor sensor = entry.getValue();
                  Pattern regexPattern = Pattern.compile(regex);
                  Matcher matcher = regexPattern.matcher(msg);
-                 if (matcher.find()) {
-                    sensor.update(""+System.currentTimeMillis());
-                 }
+
+                // This is a patch from ORCJAVA-392:
+                //
+                // If a regular expression group is defined and there's a match,
+                // the (first) group is returned as the event value instead of just a simple
+                // timestamp.
+
+                if (matcher.find())
+                {
+                  if (matcher.groupCount() > 0)
+                  {
+                    sensor.update(matcher.group(1));
+                  }
+
+                  else
+                  {
+                    sensor.update("" + System.currentTimeMillis());
+                  }
+                }
               }
 
               // Reset the length of the packet before reusing it.

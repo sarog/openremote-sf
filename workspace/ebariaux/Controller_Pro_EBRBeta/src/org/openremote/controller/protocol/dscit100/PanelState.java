@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,92 +23,382 @@ package org.openremote.controller.protocol.dscit100;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Logger;
+
 
 /**
- * Class to store the security panel's current state in memory
- * 
+ * Class to store the security panel's current state in memory.
+ *
+ * @author Greg Rapp
+ * @author Phil Taylor
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class PanelState
+class PanelState
 {
-  // Constants
-  // --------------------------------------------------------------------------------
 
-  // Class Members
-  // --------------------------------------------------------------------------------
+  // Class Members --------------------------------------------------------------------------------
 
   /**
-   * DSCIT100 logger. Uses a common category for all DSCIT100 related logging.
+   * DSC logger. Uses a common category for all DSC related logging.
    */
-  private final static Logger log = Logger
-      .getLogger(DSCIT100CommandBuilder.DSCIT100_LOG_CATEGORY);
+  private final static Logger log = Logger.getLogger(DSCIT100CommandBuilder.DSC_LOG_CATEGORY);
 
-  // Instance Fields
-  // ------------------------------------------------------------------------------
 
-  public interface State
+  // Enums ----------------------------------------------------------------------------------------
+
+  enum StateType
   {
+    ZONE, ZONE_ALARM, PARTITION, LABEL, LED
   }
 
-  public enum StateType
-  {
-    ZONE, ZONE_ALARM, PARTITION, LABEL
-  }
-
-  public enum ZoneState implements State
+  enum ZoneState implements State
   {
     OPEN, RESTORED, FAULT
   }
 
-  public enum AlarmState implements State
+  enum AlarmState implements State
   {
     NORMAL, ALARM
   }
 
-  public enum PartitionState implements State
+  enum PartitionState implements State
   {
-    READY, NOTREADY, ARMED_AWAY, ARMED_STAY, ARMED_AWAY_NODELAY, ARMED_STAY_NODELAY, ALARM, DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
+    READY, NOTREADY, AWAYARMED, STAYARMED,
+    AWAYARMEDND /* ND = NO DELAY */, STAYARMEDND /* ND = NO DELAY */,
+    ALARM, DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
   }
 
   /**
    * A security system label (i.e. Back Door, Basement Motion Detector)
-   * 
    */
-  public class Label implements State
+  enum LedState implements State
   {
-    private String label;
-
-    public Label(String label)
-    {
-      this.label = label;
-    }
-
-    public String toString()
-    {
-      return label;
-    }
+    OFF, ON, FLASH
   }
 
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+
   /**
-   * <code>Map</code> containing Maps of State objects. Outside key is the state
+   * Map containing Maps of State objects. Outside key is the state
    * type, inside key is state target (zone number, partition number)
    */
   private Map<StateType, Map<String, State>> internalState;
 
-  // Constructors
-  // ------------------------------------------------------------------------------
 
-  public PanelState()
+  // Constructors ---------------------------------------------------------------------------------
+
+  PanelState()
   {
     internalState = new HashMap<StateType, Map<String, State>>();
   }
 
-  // Private Instance Methods
-  // -------------------------------------------------------------
+  // Protected Instance Methods -------------------------------------------------------------------
 
   /**
-   * Update the internal <code>State</code <code>Map</code>
+   * Called by a connection listener to process incoming data
    * 
+   * @param packet
+   *          Incoming <code>Packet</code>
+   */
+  protected synchronized void processPacket(Packet packet)
+  {
+    if (packet.getCommand().equals("510"))
+    {
+      // Led Update
+      int leds = Integer.parseInt(packet.getData().substring(0, 2),16);
+      int mask = 1 << 7;
+
+      for (int c = 1;c <= 8; c++)
+      {
+        log.debug("LED Status update [LED"+String.valueOf(c)+"="+((leds&mask)==0?"OFF":"ON")+"]");
+
+        updateInternalState(
+            StateType.LED, String.valueOf(c), (leds & mask) == 0 ? LedState.OFF : LedState.ON
+        );
+
+        leds <<= 1;
+      }
+    }
+
+    else if (packet.getCommand().equals("511"))
+    {
+      // Led Update
+      int leds = Integer.parseInt(packet.getData().substring(0, 2),16);
+      int mask = 1 << 7;
+
+      for (int c = 8;c > 0; c--)
+      {
+        log.debug("LED Status update [LED"+String.valueOf(c)+"="+((leds&mask)==0?"OFF":"FLASH")+"]");
+
+        updateInternalState(
+            StateType.LED, String.valueOf(c), (leds & mask) == 0 ? LedState.OFF : LedState.FLASH
+        );
+
+        leds <<= 1;
+      }
+    }
+
+    else if (packet.getCommand().equals("570"))
+    {
+      // Broadcast Labels
+      String num = packet.getData().substring(0, 3);
+      num = trimLeadingZeros(num);
+
+      String label = packet.getData().substring(3).trim();
+
+      log.debug("Broadcast label [number=" + num + ",label=" + label + "]");
+
+      updateInternalState(StateType.LABEL, num, new Label(label));
+    }
+
+    else if (packet.getCommand().equals("601"))
+    {
+      // Zone Alarm
+      String partition = packet.getData().substring(0, 1);
+      String zone = packet.getData().substring(1, 4);
+
+      zone = trimLeadingZeros(zone);
+
+      log.debug("Zone alarm [partition=" + partition + ",zone=" + zone + "]");
+
+      updateInternalState(StateType.ZONE_ALARM, zone, AlarmState.ALARM);
+    }
+
+    else if (packet.getCommand().equals("602"))
+    {
+      // Zone Alarm Restore
+      String partition = packet.getData().substring(0, 1);
+      String zone = packet.getData().substring(1, 4);
+
+      zone = trimLeadingZeros(zone);
+
+      log.debug("Zone alarm restore [partition=" + partition + ",zone=" + zone + "]");
+
+      updateInternalState(StateType.ZONE_ALARM, zone, AlarmState.NORMAL);
+    }
+
+    else if (packet.getCommand().equals("609"))
+    {
+      // Zone open
+      String zone = packet.getData().substring(0, 3);
+      zone = trimLeadingZeros(zone);
+
+      log.debug("Zone open [zone=" + zone + "]");
+
+      updateInternalState(StateType.ZONE, zone, ZoneState.OPEN);
+    }
+
+    else if (packet.getCommand().equals("610"))
+    {
+      // Zone restored
+      String zone = packet.getData().substring(0, 3);
+      zone = trimLeadingZeros(zone);
+
+      log.debug("Zone restored [zone=" + zone + "]");
+
+      updateInternalState(StateType.ZONE, zone, ZoneState.RESTORED);
+    }
+
+    else if (packet.getCommand().equals("650"))
+    {
+      // Partition ready
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition ready [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.READY);
+    }
+
+    else if (packet.getCommand().equals("651"))
+    {
+      // Partition not ready
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition not ready [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.NOTREADY);
+    }
+
+    else if (packet.getCommand().equals("652"))
+    {
+      // Partition armed
+      String partition = packet.getData().substring(0, 1);
+      String mode = packet.getData().substring(1, 2);
+
+      log.debug("Partition armed [partition=" + partition + ",mode=" + mode + "]");
+
+      if (mode.equals("0"))
+      {
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMED);
+      }
+
+      else if (mode.equals("1"))
+      {
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMED);
+      }
+
+      else if (mode.equals("2"))
+      {
+        updateInternalState(StateType.PARTITION, partition, PartitionState.AWAYARMEDND);
+      }
+
+      else if (mode.equals("3"))
+      {
+        updateInternalState(StateType.PARTITION, partition, PartitionState.STAYARMEDND);
+      }
+    }
+
+    else if (packet.getCommand().equals("654"))
+    {
+      // Partition alarm
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition in alarm [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.ALARM);
+    }
+
+    else if (packet.getCommand().equals("655"))
+    {
+      // Partition alarm
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition disarmed [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.DISARMED);
+    }
+
+    else if (packet.getCommand().equals("656"))
+    {
+      // Partition exit delay
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition in exit delay [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.EXITDELAY);
+    }
+
+    else if (packet.getCommand().equals("657"))
+    {
+      // Partition entry delay
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition in entry delay [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.ENTRYDELAY);
+    }
+
+    else if (packet.getCommand().equals("672"))
+    {
+      // Partition failed to arm
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition failed to arm [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.FAILTOARM);
+    }
+
+    else if (packet.getCommand().equals("673"))
+    {
+      // Partition busy
+      String partition = packet.getData().substring(0, 1);
+
+      log.debug("Partition busy [partition=" + partition + "]");
+
+      updateInternalState(StateType.PARTITION, partition, PartitionState.BUSY);
+    }
+
+    else if (packet.getCommand().equals("903"))
+    {
+      // Annoyingly the IT-100 uses this instead of 510/511 for led status but never mind!
+
+      String led = packet.getData().substring(0,1);
+      int led_state=Integer.parseInt(packet.getData().substring(1,2));
+
+      log.debug("LED Status update [LED"+led+"="+String.valueOf(led_state)+"]");
+
+      if (led_state==0)
+      {
+        updateInternalState(StateType.LED, led, LedState.OFF);
+      }
+
+      else
+      {
+        updateInternalState(
+            StateType.LED, led, (led_state) == 1 ? LedState.ON : LedState.FLASH
+        );
+      }
+    }
+  }
+
+
+  protected synchronized State getState(StateDefinition stateDefinition)
+  {
+    if (!this.internalState.containsKey(stateDefinition.getType()))
+    {
+      log.warn("Cannot find state type information for " + stateDefinition);
+      return null;
+    }
+
+    Map<String, State> members = this.internalState.get(stateDefinition.getType());
+
+    if (members == null || (!members.containsKey(stateDefinition.getTarget())))
+    {
+      log.warn("Cannot find state information for " + stateDefinition);
+      return null;
+    }
+
+    return members.get(stateDefinition.getTarget());
+  }
+
+  protected synchronized ZoneState getZoneState(Integer zone)
+  {
+    if (!this.internalState.containsKey(StateType.ZONE))
+      return null;
+
+    Map<String, State> zones = this.internalState.get(StateType.ZONE);
+
+    if (zones == null || (!zones.containsKey(String.valueOf(zone))))
+      return null;
+
+    return (ZoneState) zones.get(String.valueOf(zone));
+  }
+
+  protected synchronized AlarmState getZoneAlarmState(Integer zone)
+  {
+    if (!this.internalState.containsKey(StateType.ZONE_ALARM))
+      return null;
+
+    Map<String, State> zones = this.internalState.get(StateType.ZONE_ALARM);
+
+    if (zones == null || (!zones.containsKey(String.valueOf(zone))))
+      return null;
+
+    return (AlarmState) zones.get(String.valueOf(zone));
+  }
+
+  protected synchronized PartitionState getPartitionState(Integer partition)
+  {
+    if (!this.internalState.containsKey(StateType.PARTITION))
+      return null;
+
+    Map<String, State> partitions = this.internalState.get(StateType.PARTITION);
+
+    if (partitions == null
+        || (!partitions.containsKey(String.valueOf(partition))))
+      return null;
+
+    return (PartitionState) partitions.get(String.valueOf(partition));
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  /**
+   * Update the internal state map
+   *
    * @param type
    *          State type
    * @param target
@@ -125,216 +415,45 @@ public class PanelState
       tmp = internalState.get(type);
       tmp.put(target, state);
     }
+
     else
     {
       tmp = new HashMap<String, State>();
       tmp.put(target, state);
     }
+
     internalState.put(type, tmp);
   }
 
   /**
-   * Remote leading zeros from passed in String
+   * Remove leading zeros from passed in string
    */
   private String trimLeadingZeros(String str)
   {
     return str.replaceFirst("^0+(?!$)", "");
   }
 
-  // Public Instance Methods
-  // -------------------------------------------------------------
 
-  /**
-   * Called by a connection listener to process incoming data
-   * 
-   * @param packet
-   *          Incoming <code>Packet</code>
-   */
-  public synchronized void processPacket(Packet packet)
+  // Inner classes --------------------------------------------------------------------------------
+
+  public interface State
   {
-    if (packet.getCommand().equals("570"))
-    { // Broadcast Labels
-      String num = packet.getData().substring(0, 3);
-      num = trimLeadingZeros(num);
-      String label = packet.getData().substring(3).trim();
-      log.debug("Broadcast label [number=" + num + ",label=" + label + "]");
-      updateInternalState(StateType.LABEL, num, new Label(label));
-    }
-    else if (packet.getCommand().equals("601"))
-    { // Zone Alarm
-      String partition = packet.getData().substring(0, 1);
-      String zone = packet.getData().substring(1, 4);
-      zone = trimLeadingZeros(zone);
-      log.debug("Zone alarm [partition=" + partition + ",zone=" + zone + "]");
-      updateInternalState(StateType.ZONE_ALARM, zone, AlarmState.ALARM);
-    }
-    else if (packet.getCommand().equals("602"))
-    { // Zone Alarm Restore
-      String partition = packet.getData().substring(0, 1);
-      String zone = packet.getData().substring(1, 4);
-      zone = trimLeadingZeros(zone);
-      log.debug("Zone alarm restore [partition=" + partition + ",zone=" + zone
-          + "]");
-      updateInternalState(StateType.ZONE_ALARM, zone, AlarmState.NORMAL);
-    }
-    else if (packet.getCommand().equals("609"))
-    { // Zone open
-      String zone = packet.getData().substring(0, 3);
-      zone = trimLeadingZeros(zone);
-      log.debug("Zone open [zone=" + zone + "]");
-
-      updateInternalState(StateType.ZONE, zone, ZoneState.OPEN);
-    }
-    else if (packet.getCommand().equals("610"))
-    { // Zone restored
-      String zone = packet.getData().substring(0, 3);
-      zone = trimLeadingZeros(zone);
-      log.debug("Zone restored [zone=" + zone + "]");
-
-      updateInternalState(StateType.ZONE, zone, ZoneState.RESTORED);
-    }
-    else if (packet.getCommand().equals("650"))
-    { // Partition ready
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition ready [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition, PartitionState.READY);
-    }
-    else if (packet.getCommand().equals("651"))
-    { // Partition not ready
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition not ready [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition,
-          PartitionState.NOTREADY);
-    }
-    else if (packet.getCommand().equals("652"))
-    { // Partition armed
-      String partition = packet.getData().substring(0, 1);
-      String mode = packet.getData().substring(1, 2);
-      log.debug("Partition armed [partition=" + partition + ",mode=" + mode
-          + "]");
-      if (mode.equals("0"))
-        updateInternalState(StateType.PARTITION, partition,
-            PartitionState.ARMED_AWAY);
-      else if (mode.equals("1"))
-        updateInternalState(StateType.PARTITION, partition,
-            PartitionState.ARMED_STAY);
-      else if (mode.equals("2"))
-        updateInternalState(StateType.PARTITION, partition,
-            PartitionState.ARMED_AWAY_NODELAY);
-      else if (mode.equals("3"))
-        updateInternalState(StateType.PARTITION, partition,
-            PartitionState.ARMED_STAY_NODELAY);
-    }
-    else if (packet.getCommand().equals("654"))
-    { // Partition alarm
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition in alarm [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition, PartitionState.ALARM);
-    }
-    else if (packet.getCommand().equals("655"))
-    { // Partition alarm
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition disarmed [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition,
-          PartitionState.DISARMED);
-    }
-    else if (packet.getCommand().equals("656"))
-    { // Partition exit delay
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition in exit delay [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition,
-          PartitionState.EXITDELAY);
-    }
-    else if (packet.getCommand().equals("657"))
-    { // Partition entry delay
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition in entry delay [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition,
-          PartitionState.ENTRYDELAY);
-    }
-    else if (packet.getCommand().equals("672"))
-    { // Partition failed to arm
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition failed to arm [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition,
-          PartitionState.FAILTOARM);
-    }
-    else if (packet.getCommand().equals("673"))
-    { // Partition busy
-      String partition = packet.getData().substring(0, 1);
-      log.debug("Partition busy [partition=" + partition + "]");
-
-      updateInternalState(StateType.PARTITION, partition, PartitionState.BUSY);
-    }
   }
 
-  // Public Instance Methods
-  // -------------------------------------------------------------
 
-  public synchronized State getState(StateDefinition stateDefinition)
+  public class Label implements State
   {
-    if (!this.internalState.containsKey(stateDefinition.getType()))
+    private String label;
+
+    public Label(String label)
     {
-      log.warn("Cannot find state type information for " + stateDefinition);
-      return null;
+      this.label = label;
     }
 
-    Map<String, State> members = this.internalState.get(stateDefinition
-        .getType());
-
-    if (members == null || (!members.containsKey(stateDefinition.getTarget())))
+    public String toString()
     {
-      log.warn("Cannot find state information for " + stateDefinition);
-      return null;
+      return label;
     }
-
-    return members.get(stateDefinition.getTarget());
   }
 
-  public synchronized ZoneState getZoneState(Integer zone)
-  {
-    if (!this.internalState.containsKey(StateType.ZONE))
-      return null;
-
-    Map<String, State> zones = this.internalState.get(StateType.ZONE);
-
-    if (zones == null || (!zones.containsKey(String.valueOf(zone))))
-      return null;
-
-    return (ZoneState) zones.get(String.valueOf(zone));
-  }
-
-  public synchronized AlarmState getZoneAlarmState(Integer zone)
-  {
-    if (!this.internalState.containsKey(StateType.ZONE_ALARM))
-      return null;
-
-    Map<String, State> zones = this.internalState.get(StateType.ZONE_ALARM);
-
-    if (zones == null || (!zones.containsKey(String.valueOf(zone))))
-      return null;
-
-    return (AlarmState) zones.get(String.valueOf(zone));
-  }
-
-  public synchronized PartitionState getPartitionState(Integer partition)
-  {
-    if (!this.internalState.containsKey(StateType.PARTITION))
-      return null;
-
-    Map<String, State> partitions = this.internalState.get(StateType.PARTITION);
-
-    if (partitions == null
-        || (!partitions.containsKey(String.valueOf(partition))))
-      return null;
-
-    return (PartitionState) partitions.get(String.valueOf(partition));
-  }
 }

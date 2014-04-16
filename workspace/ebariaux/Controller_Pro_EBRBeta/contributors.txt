@@ -18,6 +18,7 @@ Ivan Martinez
 Greg Rapp
 Daniel Berenguer
 Kevin Purney
+Phil Taylor
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
