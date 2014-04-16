@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2013, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,30 +22,44 @@ package org.openremote.controller.protocol.dscit100;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.Constants;
+import org.openremote.controller.utils.Logger;
 
+/**
+ * IP-based integration to DSC security systems. This implementation currently covers integration
+ * via two different gateways -- DSC IT-100 and Envisalink.
+ *
+ * @author Greg Rapp
+ * @author Phil Taylor
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
 public class DSCIT100CommandBuilder implements CommandBuilder
 {
 
-  // Constants
-  // ------------------------------------------------------------------------------------
+  //
+  // TODO  :
+  //
+  //   - This implementation is now used for both DSC IT-100 interface and Envisalink
+  //     interface -- may be a candidate for a rename to simply DSC
+
+
+  // Constants ------------------------------------------------------------------------------------
 
   /**
    * A common log category name intended to be used across all classes related
-   * to DSCIT100 implementation.
+   * to DSC implementation.
    */
-  public final static String DSCIT100_LOG_CATEGORY = "DSCIT100";
+  public final static String DSC_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "dsc";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 addresses (
-   * <code>{@value}</code>):
+   * This constant is the expected property name value for DSC addresses
+   * (<code>{@value}</code>):
    * 
    * <pre>
    * {@code
@@ -58,14 +72,12 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * }
    * </pre>
    */
-  public final static String DSCIT100_XMLPROPERTY_ADDRESS = "address";
+  public final static String DSC_XMLPROPERTY_ADDRESS = "address";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
-   * ({@value} ):
+   * This constant is the expected property name value for DSC commands ({@value} ):
    * 
    * <pre>
    * {@code
@@ -78,14 +90,12 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * }
    * </pre>
    */
-  public final static String DSCIT100_XMLPROPERTY_COMMAND = "command";
+  public final static String DSC_XMLPROPERTY_COMMAND = "command";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
-   * ({@value} ):
+   * This constant is the expected property name value for DSC codes ({@value} ):
    * 
    * <pre>
    * {@code
@@ -98,14 +108,12 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * }
    * </pre>
    */
-  public final static String DSCIT100_XMLPROPERTY_CODE = "code";
+  public final static String DSC_XMLPROPERTY_CODE = "code";
 
   /**
-   * String constant for parsing DSCIT100 protocol XML entries from
-   * controller.xml file.
+   * String constant for parsing DSC protocol XML entries from controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 commands
-   * ({@value} ):
+   * This constant is the expected property name value for DSC targets ({@value} ):
    * 
    * <pre>
    * {@code
@@ -118,33 +126,66 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * }
    * </pre>
    */
-  public final static String DSCIT100_XMLPROPERTY_TARGET = "target";
-
-  // Class Members
-  // --------------------------------------------------------------------------------
+  public final static String DSC_XMLPROPERTY_TARGET = "target";
 
   /**
-   * Logging. Use common DSCIT100 log category for all DSCIT100 related classes.
+   * Implicit name property for all commands that were introduced in Designer 2.13.x and later.
+   * This property should be eventually provided by the API, at which point this constant can
+   * be replaced.
    */
-  private static Logger log = Logger.getLogger(DSCIT100_LOG_CATEGORY);
+  public final static String COMMAND_XMLPROPERTY_NAME = "name";
 
-  // Instance Fields
-  // ------------------------------------------------------------------------------
 
-  private final DSCIT100ConnectionManager connectionManager = new DSCIT100ConnectionManager();
+  // Class Members --------------------------------------------------------------------------------
 
-  // Constructors
-  // ---------------------------------------------------------------------------------
+  /**
+   * Logging. Use common DSC log category for all DSC related classes.
+   */
+  private static Logger log = Logger.getLogger(DSC_LOG_CATEGORY);
 
-  public DSCIT100CommandBuilder()
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  /**
+   * Connection manager handles the IP connections to gateway(s). The commands parsed and
+   * instantiated by this builder will be handled to this connection manager to send to the
+   * gateway.
+   */
+  private final DSCIT100ConnectionManager connectionManager;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * DSCIT100CommandBuilder is responsible for parsing the XML model from controller.xml and
+   * creating appropriate DSC command objects. These commands are IP based commands towards
+   * either an IT-100 or Envisalink gateways. <p>
+   *
+   * The structure of a DSC command XML snippet from controller.xml is shown below:
+   *
+   * <pre>{@code
+   * <command protocol = "dscit100" >
+   *   <property name = "address" value = "x.x.x.x:xxxx"/>
+   *   <property name = "command" value = "ARM"/>
+   *   <property name = "code" value = "1234"/>
+   *   <property name = "target" value = "1"/>
+   * </command>
+   * }</pre>
+   *
+   * The protocol identifier is "dscit100" as is shown in the command element's protocol attribute. <p>
+   *
+   * @param credentials
+   *          Connection authentication credentials for the gateway. These are required for
+   *          connections towards Envisalink gateways. For IT-100 gateway, use a null argument
+   *          for no credentials (IT-100 does not require connection credentials).
+   */
+  public DSCIT100CommandBuilder(String credentials)
   {
-    // TODO Auto-generated constructor stub
+	  connectionManager = new DSCIT100ConnectionManager(credentials);
   }
 
   /**
-   * Parses the DSCIT100 command XML snippets and builds a corresponding
-   * DSCIT100 command instance.
-   * <p>
+   * Parses the DSC command XML snippets and builds a corresponding DSC command instance. <p>
    * 
    * The expected XML structure is:
    * 
@@ -159,25 +200,29 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * }
    * </pre>
    * 
-   * Additional properties not listed here are ignored.
-   * 
    * @see DSCIT100Command
    * 
    * @throws NoSuchCommandException
-   *           if the DSCIT100 command instance cannot be constructed from the
+   *           if the DSC command instance cannot be constructed from the
    *           XML snippet for any reason
    * 
-   * @return an immutable DSCIT100 command instance with known configured
+   * @return an immutable DSC command instance with known configured
    *         properties set
    */
-  @Override
-  public Command build(Element element)
+  @Override public Command build(Element element)
   {
-
     String address = null;
     String command = null;
     String code = null;
     String target = null;
+
+    // Implementation note:
+    //
+    //  - Command names were added as implicit command properties since OpenRemote Designer 2.13.x
+    //    releases. Configuration created by earlier versions of Designer may not include the
+    //    name property, hence the default value set below.
+
+    String commandName = "<not available>";
 
     // Get the list of properties from XML...
 
@@ -190,27 +235,39 @@ public class DSCIT100CommandBuilder implements CommandBuilder
       String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
       String propertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
 
-      if (DSCIT100_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
+      if (DSC_XMLPROPERTY_ADDRESS.equalsIgnoreCase(propertyName))
       {
         address = propertyValue;
       }
-      else if (DSCIT100_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName))
+
+      else if (DSC_XMLPROPERTY_COMMAND.equalsIgnoreCase(propertyName))
       {
         command = propertyValue;
       }
-      else if (DSCIT100_XMLPROPERTY_CODE.equalsIgnoreCase(propertyName))
+
+      else if (DSC_XMLPROPERTY_CODE.equalsIgnoreCase(propertyName))
       {
         code = propertyValue;
       }
-      else if (DSCIT100_XMLPROPERTY_TARGET.equalsIgnoreCase(propertyName))
+
+      else if (DSC_XMLPROPERTY_TARGET.equalsIgnoreCase(propertyName))
       {
         target = propertyValue;
       }
+
+      // NOTE : grabbing the implicit command name so not to generate a misleading warning
+      //        about unused variable.
+
+      else if (COMMAND_XMLPROPERTY_NAME.equalsIgnoreCase(propertyName))
+      {
+        commandName = propertyValue;
+      }
+
       else
       {
-        log.warn("Unknown DSCIT100 property '<" + XML_ELEMENT_PROPERTY + " "
+        log.warn("Unknown DSC property '<" + XML_ELEMENT_PROPERTY + " "
             + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" "
-            + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
+            + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'. Value is ignored.");
       }
     }
 
@@ -218,22 +275,23 @@ public class DSCIT100CommandBuilder implements CommandBuilder
 
     if (address == null || "".equals(address))
     {
-      throw new NoSuchCommandException("DSCIT100 command must have a '"
-          + DSCIT100_XMLPROPERTY_ADDRESS + "' property.");
+      throw new NoSuchCommandException("DSC command must have a '"
+          + DSC_XMLPROPERTY_ADDRESS + "' property.");
     }
 
     if (command == null || "".equals(command))
     {
-      throw new NoSuchCommandException("DSCIT100 command must have a '"
-          + DSCIT100_XMLPROPERTY_COMMAND + "' property.");
+      throw new NoSuchCommandException("DSC command must have a '"
+          + DSC_XMLPROPERTY_COMMAND + "' property.");
     }
 
-    Command cmd = DSCIT100Command.createCommand(command, address, code, target,
-        connectionManager);
+    Command cmd = DSCIT100Command.createCommand(
+        command, address, code, target, connectionManager
+    );
 
-    log.info("Created DSCIT100 Command " + cmd);
+    log.info("Created DSC Command " + cmd);
 
     return cmd;
-  } // end build(Element element)
+  }
 
 }
