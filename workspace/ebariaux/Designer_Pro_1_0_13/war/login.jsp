@@ -108,6 +108,11 @@
 
         position:              relative;
       }
+	  
+	  div.dark-background
+	  {
+        background-color:      rgba(200, 200, 200, 0.6);
+	  }
 
       H2.box-header
       {
@@ -196,18 +201,6 @@
         margin-left:        40px;
       }
 
-      div.inner-boundary
-      {
-        border:             1px solid #A6A6A6;
-      }
-
-      div.inner-border
-      {
-        border:             1px solid #FEFEFE;
-        background-color:   rgba(230, 219, 209, .7);
-        padding:            20px;
-      }
-
       p.input
       {
         text-align:         right;
@@ -243,7 +236,7 @@
       <div class = "logo">
         <p>
           <a href = "http://www.openremote.org">
-            <img src    = "http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png"
+            <img src    = "image/OpenRemote-singleline-full-logo_400x83.png"
                  border = "0"
                  alt    = "OpenRemote Logo"
             />
@@ -253,7 +246,7 @@
       <!-- 'watermark' -->
 
       <img class  = "watermark"
-           src    = "http://www.openremote.org/download/attachments/11468891/OpenRemote iTunes Icon 512x512.png"
+           src    = "image/OpenRemote.Logo.512x512.png"
            border = "0"
            alt    = "watermark"
       />
@@ -274,8 +267,7 @@
 
         <form method="POST" action="j_security_check">
 
-          <div class="inner-boundary">
-            <div class="inner-border">
+	        <div class = "box dark-background">
 
               <p class="title">Login to OpenRemote Designer (@VERSION.NAME@)</p>
 
@@ -336,7 +328,6 @@
                 </div>
               </c:if>
 
-            </div>
 		  </div>
 	    </form>
 
@@ -356,20 +347,17 @@
 
         <div class = "box">
 
-          <img style  = "position: absolute; left: -50px; bottom: 0px;"
-               src    = "http://www.openremote.org/download/attachments/12845303/ControllerBox_192x144.png"
-               border = "0" />
-            
-          <div style = "margin: 0px 0px 30px 120px;">
+            <h2 class = "box-header">Update to the latest OpenRemote Professional Controller</h2>
 
-            <h2 class = "box-header">Update to Latest OpenRemote Controller</h2>
+            <p>In order to use all the latest Designer features, make sure you have
+ 			   installed the latest OpenRemote Professional Controller.<p>
+			<p>You can access the latest version from the "Download Resources"
+			   menu, after you have logged in.</p>
 
-            <p>
-              In order to use all the latest Designer features, make sure you've
-              installed the latest OpenRemote Controller.<br><br>
-              You can access your version from the download menu, after you logged in.
-            </p>
 
+			
+
+			
 <!--
             <h2 class = "box-header">Have You Installed OpenRemote Controller?</h2>
 
@@ -383,8 +371,6 @@
               Mac OS X, Synology NAS, ReadyNAS, QNAP NAS and <a href = "http://openremote.org/display/orb/Building+OpenRemote+Hardware+Reference+Implementation">ALIX</a>.
             </p>
 -->
-
-          </div>
 
         </div>
 

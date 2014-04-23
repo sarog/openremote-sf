@@ -51,7 +51,7 @@
 
         BODY
         {
-          background-image:    url('http://www.openremote.org/download/attachments/11960338/OpenRemote-singleline-full-logo_400x62.png');
+          background-image:    url('image/OpenRemote-singleline-full-logo_400x83.png');
           background-repeat:   no-repeat;
           background-position: center 20px;
         }
