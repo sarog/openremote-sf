@@ -8,6 +8,9 @@ Fixes:
  - Fixed: walking functionality from MODELER-437 iterates multiple times over the same component (MODELER-497)
  - Implement unit tests proving MODELER-497 (MODELER-498)
 
+New features:
+ - Update OR logo to current version (MODELER-533)
+
 Pro 1.0.12
 ==========
 
@@ -29,7 +32,6 @@ Fixes:
  - Designer can't handle multiple login with the same account (MODELER-508)
 
 New features:
-
  - Support new features in Marantz AVR protocol: multiple-zone support and additional commandsr (MODELER-516)
  - Update DateTime protocol configuration (MODELER-517)
  - Add ip and port parameters to RRD4J graph protocol (MODELER-520)
