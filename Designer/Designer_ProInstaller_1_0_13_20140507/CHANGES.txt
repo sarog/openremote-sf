@@ -1,8 +1,3 @@
-MODELER-535
-===========
-
- - Define serialVersionUID on DeviceMacro to fix de-serialization issues
-
 Pro 1.0.13
 ==========
 
@@ -12,6 +7,7 @@ Fixes:
  - Refactor walking the UIComponent objects within a panels collection (MODELER-437)
  - Fixed: walking functionality from MODELER-437 iterates multiple times over the same component (MODELER-497)
  - Implement unit tests proving MODELER-497 (MODELER-498)
+ - Define serialVersionUID on DeviceMacro to fix de-serialization issues (MODELER-535)
 
 New features:
  - Update OR logo to current version (MODELER-533)
