@@ -1,3 +1,8 @@
+MODELER-535
+===========
+
+ - Define serialVersionUID on DeviceMacro to fix de-serialization issues
+
 Pro 1.0.13
 ==========
 
