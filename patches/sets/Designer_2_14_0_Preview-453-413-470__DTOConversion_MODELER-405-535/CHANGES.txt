@@ -1,9 +1,12 @@
+MODELER-535
+===========
+
+ - Define serialVersionUID on DeviceMacro to fix de-serialization issues
+
 MODELER-470
 ===========
 
   - EnOcean configuration (Rainer Hitz)
-
-
 
 Designer 2.14.0 (2012-08-XX Markab)
 ===================================
