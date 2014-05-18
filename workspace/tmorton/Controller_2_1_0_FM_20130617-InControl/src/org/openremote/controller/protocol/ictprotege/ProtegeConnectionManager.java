@@ -9,10 +9,14 @@ package org.openremote.controller.protocol.ictprotege;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import org.openremote.controller.exception.ConnectionException;
+import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -21,23 +25,29 @@ import org.openremote.controller.utils.Logger;
  */
 public class ProtegeConnectionManager implements Runnable
 {
-    private final static Logger log = Logger.getLogger(ProtegeCommandBuilder.PROTEGE_LOG_CATEGORY);
+    private static Logger log = ProtegeSystemConstants.log;
     
     private String address;
     private int port;
     private int encryptionType;
     private int checksumType;
+    private String PIN;
     private Socket socket;
     private BufferedInputStream inputStream; 
     private BufferedOutputStream outputStream;//Possibly wrap with DataOutputStream?  Seems unnecesary for this.
     private boolean stopRequested;
+    private Map<String, Sensor> sensors;
+    private boolean loggedIn;
     
-    public ProtegeConnectionManager(String address, int port, int encryptionType, int checksumType)
+    public ProtegeConnectionManager(String address, int port, int encryptionType, int checksumType, String PIN)
     {
+        log.setLevel(Level.ALL);
         this.address = address;
         this.port = port;
         this.encryptionType = encryptionType;
         this.checksumType = checksumType;
+        this.sensors = new HashMap<>();
+        this.PIN = PIN;
         initiate();
     }
     
@@ -45,17 +55,28 @@ public class ProtegeConnectionManager implements Runnable
     {
         //set up encryption and other settings
         connectToController();
+        
+    }
+    
+    private void registerListener(String ID, Sensor sensor)
+    {
+        sensors.put(ID, sensor);
     }
     
     @Override
     public void run()
     {
+        log.error("Starting listener thread");
         listenForInput();
         disconnect();
     }    
     
+    /**
+     * Stops the ConnectionManager and releases resources.
+     */
     private void disconnect()
     {
+        requestStop();
         try {
             outputStream.close();
         } catch (IOException ex) {}
@@ -67,22 +88,39 @@ public class ProtegeConnectionManager implements Runnable
         } catch (IOException ex) {}
     }
     
+    /**
+     * Sends a packet to the Protege Controller.
+     * 
+     * @param packet
+     * @throws ConnectionException 
+     */
     public void send(ProtegePacket packet) 
             throws ConnectionException
     {       
-        //parse the params and create a command String
+        log.error("Attempting to send Protege packet " + packet.getCommandType().name());
         //open connection to the controller (or use existing?)
         connectToController();
-        //login if not already logged in
-        checkAuthorization();
-        try {
-            //send packet
-            outputStream.write(packet.getPacket());
-        } catch (IOException ex) {
-                log.error("Error sending command '" + packet.getCommandType().name() +
-                        "' to controller.");
+        if (!loggedIn)
+        {
+            login();
         }
-            //wait for acknowledge this will be caught on the other thread?
+        log.error("Socket / In / Out:" + (socket == null) + (inputStream == null)
+                + (outputStream == null));
+        //login if not already logged in
+        if (checkAuthorization())
+        {
+            try {
+                //send packet
+                log.error("Writing packet to stream: " + packet.toString());
+                outputStream.write(packet.getPacket());
+                outputStream.flush();
+            } catch (IOException ex) {
+                    log.error("Error sending command '" + packet.getCommandType().name() +
+                            "' to controller.");
+            }
+            //wait for acknowledge (butthis will be caught on the other thread?)
+        }
+        loggedIn = false; //TODO remove; for test
     }    
     
     /**
@@ -98,18 +136,30 @@ public class ProtegeConnectionManager implements Runnable
                 log.error("Cannot connect to the Protege Controller at '" +
                         address + ":" + port);
             }
-        }
-        
-        try {
-            inputStream = new BufferedInputStream(socket.getInputStream());
-            outputStream = new BufferedOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            log.error("Cannot connect to the Protege Controller at '" +
-                    address + ":" + port);
-            
-        }
+            try {
+                inputStream = new BufferedInputStream(socket.getInputStream());
+                outputStream = new BufferedOutputStream(socket.getOutputStream());
+            } catch (IOException e) {
+                log.error("Cannot connect to the Protege Controller at '" +
+                        address + ":" + port);
+
+            }
+        }        
     }    
-    
+    private void login()
+    {
+        Map loginMap = new HashMap<>();
+        loginMap.put(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_TYPE, "SYSTEM");
+        loginMap.put(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_COMMAND, "SYSTEM_LOGIN");
+        loginMap.put(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_PIN, PIN);
+        ProtegePacket packet = new ProtegePacket(loginMap, encryptionType, checksumType);
+        try {
+            loggedIn = true;
+            send(packet);
+        } catch (ConnectionException e) {
+            log.error("Failed to login: " + e);
+        }
+    }
     /**
      * Checks if logged in.
      * @return 
@@ -127,9 +177,10 @@ public class ProtegeConnectionManager implements Runnable
             try {
                 //TODO check for a better way to do this
                 boolean packetInitiated = false;
-                while (!packetInitiated)
+                do
                 {
                     byte received = (byte) inputStream.read();
+                    log.error("Received byte: " + received);
                     if (received == ProtegePacket.HEADER_LOW)
                     {
                         received = (byte) inputStream.read();
@@ -138,11 +189,12 @@ public class ProtegeConnectionManager implements Runnable
                             packetInitiated = true;
                         }
                     }
-                }
+                } while (!packetInitiated);
+                log.error("ICT Packet found");
                 //Have received a valid packet header, now read              
                 byte packetLengthLow = (byte) inputStream.read();
                 byte packetLengthHigh = (byte) inputStream.read();
-                int packetLength = packetLengthLow + packetLengthHigh; //TODO this is probably wrong.. HEX convert
+                int packetLength = packetLengthLow + packetLengthHigh;
                 //Set up the array to store the packet and put in received values for checksums
                 byte[] input = new byte[packetLength];
                 input[0] = ProtegePacket.HEADER_LOW;
@@ -157,292 +209,28 @@ public class ProtegeConnectionManager implements Runnable
                     bytesRead += received;
                 } while (socket != null && socket.isConnected() && bytesRead < packetLength && received != -1); //TODO confirm the -1 check won't mess up on slow connection
                 //TODO move this into an event broadcast so that we don't lock up the listener thread
-                processPacket(input);
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(ProtegeConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+                log.error("Received packet:");
+                for(byte b : input)
+                {
+                    log.error(Byte.toString(b));
+                }
+                log.error("Received packet printed");
+                ProtegePacketHandler handler = new ProtegePacketHandler(this, input);
+                new Thread(handler, "ProtegePacketHandler").start();
+            } catch (IOException e) {
+                log.error(("Protege network error: " + e));
             }
         }
     }
     
-    /**
-     * TODO Should ***NOT*** be executed in the read thread!!!
-     * 
-     * @param input 
-     */
-    private void processPacket(byte[] input)
-    {
-        //check the checksum first
-        boolean packetValid = false;
-        switch (checksumType)
-        {
-            case ProtegeSystemConstants.CHECKSUM_8 :
-                packetValid = validateChecksum8Bit(input);
-                break;
-                
-            case ProtegeSystemConstants.CHECKSUM_16 :
-                packetValid = validateChecksum16Bit(input);
-                break;
-            
-            case ProtegeSystemConstants.CHECKSUM_NONE :
-            default :
-                packetValid = true;
-        }
-        switch (encryptionType)
-        {
-            case ProtegeSystemConstants.ENCRYPTION_AES_128 :
-                input = decryptAES128(input);
-                break;
-                
-            case ProtegeSystemConstants.ENCRYPTION_AES_192 :
-                input = decryptAES192(input);
-                break;
-                
-            case ProtegeSystemConstants.ENCRYPTION_AES_256 :
-                input = decryptAES256(input);
-                break;
-                
-            case ProtegeSystemConstants.ENCRYPTION_NONE :
-            default :
-                //no decryption required
-        }
-        //Decide what packet it is
-        //TODO update these values with constants / enums 
-        switch (input[0])
-        {
-            case 0x00 :
-                    readCommandPacket(input);
-                break;
-                
-            case 0x01 :
-                    readDataPacket(input);
-                break;
-                
-            case 0x02 :
-                    readSystemPacket(input);
-                break;
-            
-            default :
-                log.warn("Unknown packet type received: '" + Byte.toString(input[0]) + "'.");
-        }
-    }
-    
-    private boolean validateChecksum8Bit(byte[] packet)
-    {
-        //sum all bytes before the checksum bytes
-        byte sum = 0;
-        for (int i = 0; i < packet.length - 2; i++)
-        {
-            sum += packet[i];
-        }
-        return packet[packet.length - 2] == sum;
-    }
-    
-    /**
-     * TODO implement
-     * @param packet
-     * @return 
-     */
-    private boolean validateChecksum16Bit(byte[] packet)
-    {
-        return true;
-    }
-    
-    private byte[] decryptAES128(byte[] packet)
-    {
-        return packet;
-    }
-    
-    private byte[] decryptAES192(byte[] packet)
-    {
-        return packet;
-    }
-    
-    private byte[] decryptAES256(byte[] packet)
-    {
-        return packet;
-    }
-    
-    private void readCommandPacket(byte[] packet)
-    {
-        //Doesn't make sense to receive one of these?
-    }
-    
-    /**
-     * Process a response from the Protege Controller.
-     * It is possible to receive multiple data packets within
-     * a single message, so the sub method 
-     * <code>processDataPacket</code> handles each
-     * of these data packets.
-     * Note that this will read and attempt to process the message terminator.
-     */
-    private void readDataPacket(byte[] message)
-    {
-        int currentByte = 4; //skip the headers
-        while (currentByte < message.length)
-        {
-            //read each, increment after
-            byte dataTypeLow = message[currentByte++];
-            byte dataTypeHigh = message[currentByte++];
-            byte dataLength = message[currentByte++];            
-            byte[] dataPacket = new byte[dataLength];
-            for (int i = 0; i < dataLength; i++)
-            {
-                dataPacket[i] = message[i + currentByte];
-            }
-            //Could use an if statement to ignore the packet terminator
-            processDataPacket(ProtegeDataType.getDataType(dataTypeLow, dataTypeHigh), dataPacket);
-        }
-    }
-    
-    private void processDataPacket(ProtegeDataType dataType, byte[] dataPacket)
-    {
-        //analyze packet
-        switch (dataType)
-        {
-            case PANEL_SERIAL_NUMBER :
-                String serialNumber = getSerialNumber(dataPacket); //4 Bytes
-                break;
-                
-            case PANEL_HARDWARE_VERSION :
-                String hardwareVersion = getSerialNumber(dataPacket); //1 Byte
-                break;
-                
-            case FIRMWARE_TYPE :
-                String firmwareType = getSerialNumber(dataPacket); //2 Bytes
-                break;
-                
-            case FIRMWARE_VERSION :
-                String firmwareVersion = getSerialNumber(dataPacket); //2 Bytes
-                break;
-                
-            case FIRMWARE_BUILD :
-                String firmwareBuild = getSerialNumber(dataPacket); //2 Bytes
-                break;
-                
-            case DOOR_STATUS :
-                //4 bytes for record index
-                //1 byte door lock state
-                ProtegeDataState lockState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_LOCK_STATE, dataPacket[4]);
-                //1 byte door state
-                ProtegeDataState doorState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_DOOR_STATE, dataPacket[5]);
-                //2 bytes reserved
-                break;
-                
-            case AREA_STATUS :
-                //4 bytes for record index
-                //1 byte area state
-                ProtegeDataState areaState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_AREA_STATE, dataPacket[4]);
-                //1 byte area tamper state
-                ProtegeDataState areaTamperState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_AREA_TAMPER_STATE, dataPacket[5]);
-                //1 byte for area state flag(s)                
-                ProtegeDataState areaStateFlags = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_AREA_STATE_FLAG, dataPacket[6]);
-                //1 byte reserved
-                break;
-                
-            case OUTPUT_STATUS :
-                //4 bytes for record index
-                //8 bytes for ASCII value
-                //1 byte output state
-                ProtegeDataState outputState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_OUTPUT_STATE, dataPacket[12]);               
-                //3 bytes reserved
-                break;
-                
-            case INPUT_STATUS :
-                //4 bytes for record index
-                //8 bytes for ASCII value
-                //1 byte input state
-                ProtegeDataState inputState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_INPUT_STATE, dataPacket[12]); 
-                //1 byte input bypass state
-                ProtegeDataState inputBypassState = ProtegeDataState.getDataState(dataType, 
-                        ProtegeDataState.INDEX_INPUT_BYPASS_STATE, dataPacket[13]);               
-                //2 bytes reserved
-                break;                
-                
-            case VARIABLE_STATUS :
-                //4 bytes for record index
-                //2 bytes variable value                
-                int variableValue = getVariableValue(dataPacket);
-                //2 bytes reserved
-                break;              
-                
-            case SYSTEM_EVENT_NUMERICAL :
-                //2 bytes event code
-                //6 bytes event data               
-                //TODO implement numerical events
-                throw new UnsupportedOperationException("Numerical events not yet implemented");                
-                //break;          
-                
-            case SYSTEM_EVENT_ASCII :
-                //TODO implement numerical events
-                String event = getASCIIEvent(dataPacket);
-                throw new UnsupportedOperationException("Numerical events not yet implemented");                
-                //break;
-                
-        }
-        //create event
-        
-        //send ACK to Protege Controller
-        
-    }
-    
-    /**
-     * 4 Bytes
-     * @param dataPacket
-     * @return 
-     */
-    private String getSerialNumber(byte[] dataPacket)
-    {
-        String serialNumber = "";
-        try {
-            serialNumber = new String(dataPacket, "UTF-8"); //TODO I don't think this will work
-        } catch (UnsupportedEncodingException ex) {
-            java.util.logging.Logger.getLogger(ProtegeConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return serialNumber;
-    }
-    
-    /**
-     * TODO make this work properly.
-     * @param dataPacket
-     * @return 
-     */
-    private int getVariableValue(byte[] dataPacket)
-    {
-        byte valueLow = dataPacket[4];
-        byte valueHigh = dataPacket[5];
-        
-        return ((int) valueLow) + ((int) valueHigh);
-    }
-    
-    /**
-     * TODO test this works.
-     * @param dataPacket
-     * @return 
-     */
-    private String getASCIIEvent(byte[] dataPacket)
-    {
-        String result = ""; 
-        try {
-            result = new String(dataPacket, "US-ASCII");
-        } catch (UnsupportedEncodingException ex) {
-            java.util.logging.Logger.getLogger(ProtegeConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result.substring(2, result.length() - 1);
-    }
+   
     
     //http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
     //inefficent
     public static String byteArrayToHex(byte[] a) {
         StringBuilder sb = new StringBuilder();
         for(byte b: a)
-           sb.append(String.format("%02x", b&0xff));
+           sb.append(String.format("%02X", b&0xff));
         return sb.toString();
      }
     //efficient
@@ -455,14 +243,34 @@ public class ProtegeConnectionManager implements Runnable
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
-    }
-    private void readSystemPacket(byte[] packet)
-    {
-        
-    }
+    }    
     
     public void requestStop()
     {
         stopRequested = true;
     }
+    
+    public static int byteArrayToInt(byte[] input)
+    {
+        ByteBuffer buffer = ByteBuffer.wrap(input);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        return buffer.getInt();
+    }
+
+    public int getEncryptionType()
+    {
+        return encryptionType;
+    }
+
+    public int getChecksumType()
+    {
+        return checksumType;
+    }
+
+    public Map<String, Sensor> getSensors()
+    {
+        return sensors;
+    }
+    
+    
 }

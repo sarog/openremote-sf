@@ -20,10 +20,7 @@
  */
 package org.openremote.controller.protocol.ictprotege;
 
-import java.util.Map;
-import org.openremote.controller.command.CommandType;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
@@ -45,7 +42,7 @@ public class ProtegeCommand implements ExecutableCommand, EventListener
 
     // Class Members --------------------------------------------------------------------------------
 
-    private final static Logger log = Logger.getLogger(ProtegeCommandBuilder.PROTEGE_LOG_CATEGORY);
+    private final static Logger log = ProtegeSystemConstants.log;
 
 
     // Private Instance Fields ----------------------------------------------------------------------

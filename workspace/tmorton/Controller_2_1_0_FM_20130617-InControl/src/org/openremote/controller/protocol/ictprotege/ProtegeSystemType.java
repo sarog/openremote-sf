@@ -12,39 +12,40 @@ package org.openremote.controller.protocol.ictprotege;
  */
 public enum ProtegeSystemType {
     //Ack and Nack headers
-    SYSTEM_ACK_LOW (0xFF),
-    SYSTEM_ACK_HIGH (0x00),
-    SYSTEM_NACK_LOW (0xFF),
-    SYSTEM_NACK_HIGH (0xFF),
+    SYSTEM_ACK ((byte) 0xFF, (byte) 0x00),
+    SYSTEM_NACK ((byte) 0xFF, (byte)  0xFF),
     
     //System packet types
-    SERVICE_INDEX_NOT_VALID (0x0121), //The index of the record to control was not valid.
-    SERVICE_COMMAND_NOT_VALID (0x0120), //The requested command was not valid.
-    USER_LOGIN (0x0300), //A login command was received while a User was already logged in.
-    USER_LOGOUT (0x0301), //A control command was received while no User was logged in.
-    USER_INVALID (0x0302), //A login command was received but the PIN did not match a valid User.
-    USER_DOOR_GROUP (0x030A), //The Door group was not valid or the User did not have access rights to that Door group.
-    USER_AXS_DOOR_AXS_LVL (0x030F), //The Door action was denied because the User does not have any valid access levels assigned.
-    DOOR_SVC_DENIED_LOCKDOWN (0x0A23), //The Door action was denied because the Door was in lock‐down mode.    
-    DOOR_ALREADY_IN_STATE (0x0A32), //The Door action was valid but the Door did not change state because it was already in that state.
-    DOOR_INTERLOCK_ACTIVE (0x0A12), //The Door action was denied because of an interlock on the Door.
-    AREA_NO_CHANGE (0x0869), //The Area action was valid but the Area did not change state because it was already in that state.
-    USER_ACCESS_RIGHTS (0x0303), //The Area action was denied because the User did not have sufficient Arm/Disarm rights.
-    ZONE_COMMAND_FAILED (0x040E); //The Zone was unable to be bypassed either because of Zone configuration or because it's in an armed Area. 
+    SERVICE_INDEX_NOT_VALID ((byte) 0x21, (byte)  0x01), //The index of the record to control was not valid.
+    SERVICE_COMMAND_NOT_VALID ((byte) 0x20, (byte)  0x01), //The requested command was not valid.
+    USER_LOGIN ((byte) 0x00, (byte)  0x03), //A login command was received while a User was already logged in.
+    USER_LOGOUT ((byte) 0x01, (byte)  0x03), //A control command was received while no User was logged in.
+    USER_INVALID ((byte) 0x02, (byte)  0x03), //A login command was received but the PIN did not match a valid User.
+    USER_DOOR_GROUP ((byte) 0x0A, (byte)  0x03), //The Door group was not valid or the User did not have access rights to that Door group.
+    USER_AXS_DOOR_AXS_LVL ((byte) 0x0F, (byte)  0x03), //The Door action was denied because the User does not have any valid access levels assigned.
+    DOOR_SVC_DENIED_LOCKDOWN ((byte) 0x23, (byte)  0x0A), //The Door action was denied because the Door was in lock-down mode.    
+    DOOR_ALREADY_IN_STATE ((byte) 0x32, (byte)  0x0A), //The Door action was valid but the Door did not change state because it was already in that state.
+    DOOR_INTERLOCK_ACTIVE ((byte) 0x12, (byte)  0x0A), //The Door action was denied because of an interlock on the Door.
+    AREA_NO_CHANGE ((byte) 0x69, (byte)  0x08), //The Area action was valid but the Area did not change state because it was already in that state.
+    USER_ACCESS_RIGHTS ((byte) 0x03, (byte)  0x03), //The Area action was denied because the User did not have sufficient Arm/Disarm rights.
+    ZONE_COMMAND_FAILED ((byte) 0x0E, (byte)  0x04),; //The Zone was unable to be bypassed either because of Zone configuration or because it's in an armed Area. 
     
     
-    private int typeValue;
+    private byte typeValueLow;
+    private byte typeValueHigh;
     
-    private ProtegeSystemType(int typeValue)
+    private ProtegeSystemType(byte typeValueLow, byte typeValueHigh)
     {
-        this.typeValue = typeValue;
+        this.typeValueLow = typeValueLow;
+        this.typeValueHigh = typeValueHigh;
     }
     
-    public static ProtegeSystemType getSystemType(int typeValue)
+    public static ProtegeSystemType getSystemType(byte typeValueLow, byte typeValueHigh)
     {
         for (ProtegeSystemType systemType : ProtegeSystemType.values())
         {
-            if (systemType.typeValue == typeValue)
+            if (systemType.typeValueLow == typeValueLow
+                    && systemType.typeValueHigh == typeValueHigh)
             {
                 return systemType;
             }
@@ -52,8 +53,8 @@ public enum ProtegeSystemType {
         return null;
     }
     
-    public int getTypeValue()
+    public byte[] getTypeValue()
     {
-        return typeValue;
+        return new byte[] {typeValueLow, typeValueHigh};
     }
 }
