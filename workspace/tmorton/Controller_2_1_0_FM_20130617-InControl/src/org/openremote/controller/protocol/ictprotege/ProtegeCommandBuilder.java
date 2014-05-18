@@ -9,8 +9,8 @@ package org.openremote.controller.protocol.ictprotege;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.jdom.Element;
-import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -64,13 +64,7 @@ public class ProtegeCommandBuilder implements CommandBuilder{
      *  PROTEGE_XML_PROPERTY_ACTIVTION_TIME //optional, apply to outputs
      */
     
-    
-    /**
-     * A common log category name intended to be used across all classes related to
-     * Protege implementation.
-     */
-    public final static String PROTEGE_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "ICTPROTEGE";
-    private static Logger log = Logger.getLogger(PROTEGE_LOG_CATEGORY);
+    private static Logger log = ProtegeSystemConstants.log;
     
 //EXAMPLE DOCUMENTATION FOR COMMANDS
    /**
@@ -89,25 +83,24 @@ public class ProtegeCommandBuilder implements CommandBuilder{
 //
     
     public final static String PROTEGE_XMLPROPERTY_LOGIN_PIN = "pin"; //2 bytes
-    public final static String PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT = "logintime"; //2 bytes
-    public final static String PROTEGE_XMLPROPERTY_RECORD_TYPE = "recordtype";
-    public final static String PROTEGE_XMLPROPERTY_RECORD_COMMAND = "recordcommand";  
-    public final static String PROTEGE_XMLPROPERTY_RECORD_INDEX = "recordindex";    //4 bytes
-    public final static String PROTEGE_XMLPROPERTY_OUTPUT_TIMED = "outputactivationtime"; //2 bytes
-    public final static String PROTEGE_XMLPROPERTY_VARIABLE_SET_VALUE = "variablevalue"; //2 bytes
+    public final static String PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT = "login-time"; //2 bytes
+    public final static String PROTEGE_XMLPROPERTY_RECORD_TYPE = "record-type";
+    public final static String PROTEGE_XMLPROPERTY_RECORD_COMMAND = "record-command";  
+    public final static String PROTEGE_XMLPROPERTY_RECORD_INDEX = "record-index";    //4 bytes
+    public final static String PROTEGE_XMLPROPERTY_RECORD_VALUE = "record-value"; //2 bytes
     
     private ProtegeConnectionManager connectionManager;
     private int encryptionType;
     private int checksumType;
    
-    public ProtegeCommandBuilder(String address, int port, int encryptionType, int checksumType)
-    {        
-        //TODO Could move to build to save on startup costs - BUT requires storing the params so wastes memory.
-        if (connectionManager == null)
-        {
-            connectionManager = new ProtegeConnectionManager(address, port, encryptionType, checksumType);
-        }
-    }
+//    public ProtegeCommandBuilder(String address, int port, int encryptionType, int checksumType)
+//    {        
+//        if (connectionManager == null)
+//        {
+//            connectionManager = new ProtegeConnectionManager(address, port, encryptionType, checksumType);
+//        }
+//    }
+    
     /**
      * Processes an element from the XML and creates a Command instance.
      * 
@@ -117,6 +110,21 @@ public class ProtegeCommandBuilder implements CommandBuilder{
     @Override
     public Command build(Element element)
     {
+        if (connectionManager == null)
+        {            
+            log.setLevel(Level.ALL);
+            try
+            {                
+                connectionManager = new ProtegeConnectionManager("203.97.50.236", 9189, 
+                        ProtegeSystemConstants.ENCRYPTION_NONE, ProtegeSystemConstants.CHECKSUM_NONE, "1");
+            } catch(Exception e)
+            {
+                connectionManager = new ProtegeConnectionManager("10.47.192.209", 9189, 
+                        ProtegeSystemConstants.ENCRYPTION_NONE, ProtegeSystemConstants.CHECKSUM_NONE, "123456");                    
+            }
+            Thread thread = new Thread(connectionManager, "ProtegePacketListener");
+            thread.start();
+        }
         Map<String, String> paramMap = new HashMap<>();        
     
         List<Element> propertyElements = element.getChildren(
@@ -126,7 +134,7 @@ public class ProtegeCommandBuilder implements CommandBuilder{
         {
             String protegePropertyName = e.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
             String protegePropertyValue = e.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
-
+            log.error("Reading from XML: " + protegePropertyName + "=" + protegePropertyValue);
             switch (protegePropertyName.toLowerCase())
             {                
                 case PROTEGE_XMLPROPERTY_LOGIN_PIN :
@@ -137,25 +145,21 @@ public class ProtegeCommandBuilder implements CommandBuilder{
                     paramMap.put(PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT, protegePropertyValue);
                     break;
                     
-                case PROTEGE_XMLPROPERTY_OUTPUT_TIMED :
-                    paramMap.put(PROTEGE_XMLPROPERTY_OUTPUT_TIMED, protegePropertyValue);
+                case PROTEGE_XMLPROPERTY_RECORD_VALUE :
+                    paramMap.put(PROTEGE_XMLPROPERTY_RECORD_VALUE, protegePropertyValue);
                     break;                    
                     
                 case PROTEGE_XMLPROPERTY_RECORD_COMMAND :
-                    paramMap.put(PROTEGE_XMLPROPERTY_RECORD_COMMAND, protegePropertyValue);
+                    paramMap.put(PROTEGE_XMLPROPERTY_RECORD_COMMAND, protegePropertyValue.toUpperCase());
                     break;
                     
                 case PROTEGE_XMLPROPERTY_RECORD_TYPE :
-                    paramMap.put(PROTEGE_XMLPROPERTY_RECORD_TYPE, protegePropertyValue);
+                    paramMap.put(PROTEGE_XMLPROPERTY_RECORD_TYPE, protegePropertyValue.toUpperCase());
                     break;
                     
                 case PROTEGE_XMLPROPERTY_RECORD_INDEX :
                     paramMap.put(PROTEGE_XMLPROPERTY_RECORD_INDEX, protegePropertyValue);
-                    break;                    
-                    
-                case PROTEGE_XMLPROPERTY_VARIABLE_SET_VALUE :
-                    paramMap.put(PROTEGE_XMLPROPERTY_VARIABLE_SET_VALUE, protegePropertyValue);
-                    break;
+                    break;       
                     
                 default :
                     log.warn("Unknown Protege property '<" + CommandBuilder.XML_ELEMENT_PROPERTY + " " +

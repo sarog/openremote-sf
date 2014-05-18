@@ -13,17 +13,17 @@ package org.openremote.controller.protocol.ictprotege;
 public enum ProtegeDataType {
     
     PANEL_SERIAL_NUMBER ((byte) 0x00, (byte) 0x00),
-    PANEL_HARDWARE_VERSION  ((byte) 0x00, (byte) 0x01),
-    FIRMWARE_TYPE  ((byte) 0x00, (byte) 0x02),
-    FIRMWARE_VERSION  ((byte) 0x00, (byte) 0x03),
-    FIRMWARE_BUILD  ((byte) 0x00, (byte) 0x04),
-    DOOR_STATUS ((byte) 0x01, (byte) 0x00),
-    AREA_STATUS ((byte) 0x02, (byte) 0x00),
-    OUTPUT_STATUS  ((byte) 0x03, (byte) 0x00),
-    INPUT_STATUS ((byte) 0x04, (byte) 0x00),
-    VARIABLE_STATUS ( (byte) 05,  (byte) 00),
-    SYSTEM_EVENT_NUMERICAL  ((byte) 0x30, (byte) 0x00),
-    SYSTEM_EVENT_ASCII ((byte) 0x30, (byte) 0x01),
+    PANEL_HARDWARE_VERSION  ((byte) 0x01, (byte) 0x00),
+    FIRMWARE_TYPE  ((byte) 0x02, (byte) 0x00),
+    FIRMWARE_VERSION  ((byte) 0x03, (byte) 0x00),
+    FIRMWARE_BUILD  ((byte) 0x04, (byte) 0x00),
+    DOOR_STATUS ((byte) 0x00, (byte) 0x01),
+    AREA_STATUS ((byte) 0x00, (byte) 0x02),
+    OUTPUT_STATUS  ((byte) 0x00, (byte) 0x03),
+    INPUT_STATUS ((byte) 0x00, (byte) 0x04),
+    VARIABLE_STATUS ( (byte) 0x00,  (byte) 0x05),
+    SYSTEM_EVENT_NUMERICAL  ((byte) 0x00, (byte) 0x30),
+    SYSTEM_EVENT_ASCII ((byte) 0x01, (byte) 0x30),
     END_OF_DATA ((byte) 0xFF, (byte) 0xFF) ;
 
    

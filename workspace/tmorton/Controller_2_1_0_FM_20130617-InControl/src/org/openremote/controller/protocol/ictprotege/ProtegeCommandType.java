@@ -16,7 +16,7 @@ public enum ProtegeCommandType
     //SYSTEM
     SYSTEM_POLL(0x0, 0),
     SYSTEM_DESCRIPTION(0x01, 0),
-    SYSTEM_LOGIN(0x02, 6),
+    SYSTEM_LOGIN(0x02, 2),
     SYSTEM_LOGOUT(0x03, 0),
     SYSTEM_LOGIN_TIME(0x04, 2),
     SYSTEM_REQUEST_MONITOR(0x05, 8),
@@ -29,7 +29,7 @@ public enum ProtegeCommandType
     DOOR_UNLOCK_LATCHED(0x02, 4),
     
     //AREA
-    AREA_DISARM_AREA(0x00, 4),
+    AREA_DISARM(0x00, 4),
     AREA_DISARM_24HR(0x01, 4),
     AREA_DISARM_ALL(0x02, 4),
     AREA_ARM(0x03, 4),
@@ -51,7 +51,7 @@ public enum ProtegeCommandType
     VARIABLE_SET(0x00, 6),
     
     //ALL
-    REQUEST_STATUS(0x80, 4); //TODO check this is correct (listed as 128, assuming thats in dec)
+    REQUEST_STATUS(0x80, 4);
     
     private int command;
     private int dataLength;
@@ -76,15 +76,5 @@ public enum ProtegeCommandType
     public int getDataLength()
     {
         return dataLength;
-    }
-    
-    /**
-     * TODO NOT USED AT THIS STAGE
-     * @param commandType
-     * @return 
-     */
-    public static int getDataLength(ProtegeCommandType commandType)
-    {
-        return commandType.getDataLength();
     }
 }
