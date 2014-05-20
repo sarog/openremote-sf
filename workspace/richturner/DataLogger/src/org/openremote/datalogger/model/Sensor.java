@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,6 +21,7 @@ package org.openremote.datalogger.model;
 
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,6 +30,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.persistence.*;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 /**
  *
@@ -40,6 +47,7 @@ import javax.persistence.*;
 @XmlRootElement(name="data")
 @Entity
 @Table(name = "sensors")
+@DynamoDBTable(tableName="ANCustomer_Sensors")
 public class Sensor {
 	@XmlTransient
 	@Id
@@ -65,8 +73,9 @@ public class Sensor {
 	@ManyToOne
 	@JoinColumn(name="userId", nullable = false)
 	private User user;
-	
-	public User getUser() {
+
+	@DynamoDBIgnore
+  public User getUser() {
 		return user;
 	}
 
@@ -74,6 +83,7 @@ public class Sensor {
 		this.user = user;
 	}
 
+  @DynamoDBIgnore
 	public Long getId() {
 		return id;
 	}
@@ -82,6 +92,7 @@ public class Sensor {
 		this.id = id;
 	}
 
+	@DynamoDBHashKey(attributeName="SensorName")
 	public String getName() {
 		return name;
 	}
@@ -90,6 +101,7 @@ public class Sensor {
 		this.name = name;
 	}
 
+	@DynamoDBIgnore
 	public List<SensorValue> getNewSensorValues() {
 		return newSensorValues;
 	}
@@ -98,6 +110,7 @@ public class Sensor {
 		this.newSensorValues = newSensorValues;
 	}
 
+	@DynamoDBIgnore
 	public Set<SensorValue> getSensorValues() {
 		return sensorValues;
 	}
@@ -106,6 +119,7 @@ public class Sensor {
 		this.sensorValues = sensorValues;
 	}
 
+	@DynamoDBAttribute(attributeName="CurrentValue")
 	public String getCurrentValue() {
 		return currentValue;
 	}
@@ -113,5 +127,4 @@ public class Sensor {
 	public void setCurrentValue(String currentValue) {
 		this.currentValue = currentValue;
 	}
-
 }

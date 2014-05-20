@@ -20,9 +20,9 @@
     <url-pattern>/rest</url-pattern>
   </servlet-mapping>
 
-  <listener>
+<!--   <listener>
       <listener-class>org.openremote.datalogger.rest.EMF</listener-class>
-  </listener>  		
+  </listener>  	 -->	
   
   <resource-ref>
     <description>postgreSQL Datasource example</description>

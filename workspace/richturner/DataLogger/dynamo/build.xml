@@ -1,0 +1,11 @@
+<project name="Amazon DynamoDB Installer" default="run" basedir=".">
+    <path id="classpath">
+        <fileset dir="${basedir}/../lib" includes="**/*.jar"/>
+        <pathelement location="."/>
+    </path>
+
+    <target name="run">
+        <javac srcdir="." destdir="." classpathref="classpath"/>
+        <java classname="org.openremote.datalogger.DynamoDBInstaller" classpathref="classpath" fork="true"/>
+    </target>
+</project>

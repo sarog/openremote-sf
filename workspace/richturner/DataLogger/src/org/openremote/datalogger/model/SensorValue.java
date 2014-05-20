@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,6 +24,8 @@ import java.util.Date;
 import javax.xml.bind.annotation.*;
 import javax.persistence.*;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
+
 /**
  *
  * 
@@ -34,6 +36,7 @@ import javax.persistence.*;
 @XmlRootElement(name="value")
 @Entity
 @Table(name="sensorValues")
+@DynamoDBTable(tableName="ANCustomer_SensorValues")
 public class SensorValue {
 	@XmlTransient
 	@Id
@@ -54,6 +57,10 @@ public class SensorValue {
 	@JoinColumn(name="sensorId", nullable = false)
 	private Sensor sensor;
 	
+	@XmlTransient
+	private String sensorName;
+	
+	@DynamoDBIgnore
 	public Long getId() {
 		return Id;
 	}
@@ -62,6 +69,7 @@ public class SensorValue {
 		Id = id;
 	}
 
+	@DynamoDBAttribute(attributeName="Value")
 	public String getValue() {
 		return value;
 	}
@@ -70,6 +78,7 @@ public class SensorValue {
 		this.value = value;
 	}
 
+	@DynamoDBRangeKey(attributeName="Timestamp")
 	public Date getTimestamp() {
 		return timestamp;
 	}
@@ -84,5 +93,13 @@ public class SensorValue {
 
 	public void setSensor(Sensor sensor) {
 		this.sensor = sensor;
+	}
+	
+	@DynamoDBHashKey(attributeName="SensorName")
+	public String getSensorName() {
+	  return sensorName == null && sensor != null ? sensor.getName().toLowerCase() : sensorName.toLowerCase(); 
+	}
+	public void setSensorName(String sensorName) {
+	  this.sensorName = sensorName;
 	}
 }
