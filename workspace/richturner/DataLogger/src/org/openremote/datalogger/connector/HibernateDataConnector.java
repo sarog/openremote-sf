@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,6 +22,7 @@ package org.openremote.datalogger.connector;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
@@ -29,11 +30,19 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openremote.datalogger.exception.*;
 import org.openremote.datalogger.model.*;
 import org.openremote.datalogger.rest.EMF;
 
 /**
+ * Connector for SQL DBs using the Java Persistence API.
+ * For this connector to work the tables and users must have already been setup.
+ * Users Table - Stores user credentials
+ * Sensors Table - Stores Sensor metadata
+ * SensorValues Table - Stores Sensor values
+ * 
+ * See sql/Install.sql for more details
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  *
  */
@@ -64,14 +73,6 @@ public class HibernateDataConnector implements DataConnector {
 	 */
 	@Override
 	public void addSensorValues(String apiKey, String sensorName, Set<SensorValue> values, String currentValue) throws DataSecurityException, DataConnectorException {
-		if (apiKey == null || apiKey.isEmpty()) {
-			throw new DataSecurityException("No API Key provided");
-		}
-		
-		if (sensorName == null || sensorName.isEmpty()) {
-			throw new DataConnectorException("No Sensor name provided");
-		}
-		
 		if (values == null) {
 			values = new HashSet<SensorValue>();
 		}
@@ -145,82 +146,134 @@ public class HibernateDataConnector implements DataConnector {
 			em.close();	
 		}		
 	}
+	
+  /* (non-Javadoc)
+   * @see org.openremote.datalogger.connector.DataConnector#getAverageSensorValue(java.lang.String, java.lang.String, java.util.Date, java.util.Date)
+   */
+  @Override
+  public Double getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException {
+    EntityManager em = EMF.createEntityManager();
+    
+    try {
+      CriteriaBuilder builder = em.getCriteriaBuilder();
+      
+      // Get the user for this apiKey
+      CriteriaQuery<User> uCriteria = builder.createQuery(User.class);
+      Root<User> userRoot = uCriteria.from(User.class);
+      uCriteria.select(userRoot);
+      uCriteria.where(
+          builder.equal(userRoot.get("readKey"), apiKey),
+          builder.equal(userRoot.get("status"), true)
+          );
+      User user;
+          
+      try {
+        user = em.createQuery(uCriteria).getSingleResult();
+      } catch (NoResultException e) {
+        throw new DataSecurityException("Invalid API Key provided");
+      }
+      
+      // Get the sensor object
+      CriteriaQuery<Sensor> sCriteria = builder.createQuery(Sensor.class);
+      Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
+      sCriteria.select(sensorRoot);
+      sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
+                      builder.equal(sensorRoot.get("user"), user));
+      Sensor sensor;      
 
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.rest.DataConnector#finish()
-	 */
+      try {
+        sensor = em.createQuery(sCriteria).getSingleResult();
+      }  catch (NoResultException e) {
+        return 0d; // Kludge to prevent controller from freezing
+        //throw new DataConnectorException(String.format("Sensor '%1$s' does not exist", sensorName));
+      }
+
+      EntityTransaction transaction = em.getTransaction();
+      transaction.begin();
+            
+      // This should be changed to a JPA compliant query but this query is pretty standard SQL and should work on most DBs
+      Query query = em.createNativeQuery("SELECT AVG(value) FROM " +
+          "(SELECT cast(value as float) " +
+            "FROM sensorValues " +
+            "WHERE isnumeric(value) AND timestamp >= '" + fromTime + "' AND timestamp <= '" + toTime + "' AND sensorId = " + sensor.getId() + ") RangeValues");
+      Object result = query.getSingleResult();
+      transaction.commit();
+      return (Double)result;
+    } catch (DataSecurityException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new DataConnectorException(e);
+    } finally {
+      em.close(); 
+    } 
+  }
+
+  @Override
+  public SensorOutputValue getLatestSensorValue(String apiKey, String sensorName)
+          throws DataSecurityException, DataConnectorException {
+    EntityManager em = EMF.createEntityManager();
+    
+    try {
+      CriteriaBuilder builder = em.getCriteriaBuilder();
+      
+      // Get the user for this apiKey
+      CriteriaQuery<User> uCriteria = builder.createQuery(User.class);
+      Root<User> userRoot = uCriteria.from(User.class);
+      uCriteria.select(userRoot);
+      uCriteria.where(
+          builder.equal(userRoot.get("readKey"), apiKey),
+          builder.equal(userRoot.get("status"), true)
+          );
+      User user;
+          
+      try {
+        user = em.createQuery(uCriteria).getSingleResult();
+      } catch (NoResultException e) {
+        throw new DataSecurityException("Invalid API Key provided");
+      }
+      
+      // Get the sensor object
+      CriteriaQuery<Sensor> sCriteria = builder.createQuery(Sensor.class);
+      Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
+      sCriteria.select(sensorRoot);
+      sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
+                      builder.equal(sensorRoot.get("user"), user));
+
+      Sensor sensor = null;      
+      SensorOutputValue output = new SensorOutputValue();
+      output.setName(sensorName);
+      
+      try {
+        sensor = em.createQuery(sCriteria).getSingleResult();
+      }  catch (NoResultException e) {
+      }
+      
+      // Get latest value for this sensor
+      CriteriaQuery<SensorValue> vCriteria = builder.createQuery(SensorValue.class);
+      Root<SensorValue> valueRoot = sCriteria.from(SensorValue.class);
+      vCriteria.select(valueRoot);
+      vCriteria.where(builder.equal(valueRoot.get("sensor"), sensor),
+                      builder.equal(sensorRoot.get("user"), user));
+      vCriteria.orderBy(builder.desc(valueRoot.get("timestamp")));
+
+      try {
+        SensorValue val = em.createQuery(vCriteria).getSingleResult();
+        output.setValue(val.getValue());
+      }  catch (NoResultException e) {
+      }
+      
+      return output;
+    } catch (DataSecurityException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new DataConnectorException(e);
+    } finally {
+      em.close(); 
+    } 
+  }
+
 	@Override
 	public void destroy() {
 		// Nothing to do here
 	}
-
-	/* (non-Javadoc)
-	 * @see org.openremote.datalogger.connector.DataConnector#getAverageSensorValue(java.lang.String, java.lang.String, java.util.Date, java.util.Date)
-	 */
-	@Override
-	public Double getAverageSensorValue(String apiKey, String sensorName, Date fromTime, Date toTime) throws DataSecurityException, DataConnectorException {
-		if (apiKey == null || apiKey.isEmpty()) {
-			throw new DataSecurityException("No API Key provided");
-		}
-		
-		if (sensorName == null || sensorName.isEmpty()) {
-			throw new DataConnectorException("No Sensor name provided");
-		}
-		
-		EntityManager em = EMF.createEntityManager();
-		
-		try {
-			CriteriaBuilder builder = em.getCriteriaBuilder();
-			
-			// Get the user for this apiKey
-			CriteriaQuery<User> uCriteria = builder.createQuery(User.class);
-			Root<User> userRoot = uCriteria.from(User.class);
-			uCriteria.select(userRoot);
-			uCriteria.where(
-					builder.equal(userRoot.get("readKey"), apiKey),
-					builder.equal(userRoot.get("status"), true)
-					);
-			User user;
-					
-			try {
-				user = em.createQuery(uCriteria).getSingleResult();
-			} catch (NoResultException e) {
-				throw new DataSecurityException("Invalid API Key provided");
-			}
-			
-			// Get the sensor object
-			CriteriaQuery<Sensor> sCriteria = builder.createQuery(Sensor.class);
-			Root<Sensor> sensorRoot = sCriteria.from(Sensor.class);
-			sCriteria.select(sensorRoot);
-			sCriteria.where(builder.equal(sensorRoot.get("name"), sensorName),
-											builder.equal(sensorRoot.get("user"), user));
-			Sensor sensor;			
-
-			try {
-				sensor = em.createQuery(sCriteria).getSingleResult();
-			}  catch (NoResultException e) {
-				return 0d; // Kludge to prevent controller from freezing
-				//throw new DataConnectorException(String.format("Sensor '%1$s' does not exist", sensorName));
-			}
-
-			EntityTransaction transaction = em.getTransaction();
-			transaction.begin();
-						
-			// This should be changed to a JPA compliant query but this query is pretty standard SQL and should work on most DBs
-			Query query = em.createNativeQuery("SELECT AVG(value) FROM " +
-					"(SELECT cast(value as float)	" +
-						"FROM sensorValues " +
-						"WHERE timestamp >= '" + fromTime + "' AND timestamp <= '" + toTime + "' AND sensorId = " + sensor.getId() + ") RangeValues");
-			Object result = query.getSingleResult();
-			transaction.commit();
-			return (Double)result;
-		} catch (DataSecurityException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new DataConnectorException(e);
-		} finally {
-			em.close();	
-		}	
-	}
-
 }

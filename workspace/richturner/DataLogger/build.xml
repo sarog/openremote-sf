@@ -34,6 +34,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<property name="lib.dir" value="lib" />
 	<property name="war.dir" value="war" />
 	<property name="src.dir" value="src"/>
+	<property name="config.dir" value="config"/>
 	<property name="test.dir" value="test"/>
 	<property name="build.dir" value="build"/>
 	<property name="classes.dir" value = "${build.dir}/classes"/>
@@ -42,7 +43,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	
 	<path id="project.class.path">
 		<pathelement location="${war.dir}/WEB-INF/classes"/>
-		<fileset dir="${war.dir}/WEB-INF/lib">
+		<fileset dir="lib">
 		  <include name="**/*.jar" />
 		</fileset>
 		<fileset dir="${catalina.home}/lib">
@@ -69,6 +70,17 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<mkdir dir="${output.dir}"/>
 		<mkdir dir="${war-output.dir}"/>
 
+		
+		<!-- Copy Dynamo Credentials File -->
+		<copy tofile="${war.dir}/WEB-INF/classes/aws.properties" file="${config.dir}/aws.properties" />
+		
+		<!-- Copy libs -->
+		<copy todir="${war.dir}/WEB-INF/lib" flatten="true">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		
 		<copy todir="${war-output.dir}">
 		  <fileset dir="${war.dir}">
 			<include name="**"/>

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,6 +32,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
 /**
  *
  * 
@@ -40,6 +46,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "dataUsers", uniqueConstraints={@UniqueConstraint(columnNames={"username"})})
+@DynamoDBTable(tableName="Users")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,46 +68,59 @@ public class User {
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	private Set<Sensor> sensors;
 	
+	private Boolean write;
+	private String key;
+	
+  @DynamoDBHashKey(attributeName="Key")
+  public String getKey() {
+    return key;
+  }
+  public void setKey(String key) {
+    this.key = key;
+  }
+	
+	@DynamoDBIgnore
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	@DynamoDBIgnore
 	public boolean isStatus() {
 		return status;
 	}
-
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
 
+	@DynamoDBAttribute(attributeName="Username")
 	public String getUsername() {
 		return username;
 	}
-
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	@DynamoDBIgnore  
 	public String getReadKey() {
-		return readKey;
-	}
-
+		return readKey != null ? readKey : key;
+	}	
 	public void setReadKey(String readKey) {
 		this.readKey = readKey;
 	}
 
+	@DynamoDBIgnore
 	public String getWriteKey() {
-		return writeKey;
+		return writeKey != null ? writeKey : key;
 	}
 
 	public void setWriteKey(String writeKey) {
 		this.writeKey = writeKey;
 	}
-
+	
+	@DynamoDBIgnore
 	public Set<Sensor> getSensors() {
 		return sensors;
 	}
@@ -108,4 +128,12 @@ public class User {
 	public void setSensors(Set<Sensor> sensors) {
 		this.sensors = sensors;
 	}
+	
+	@DynamoDBRangeKey(attributeName="Writable")
+	public boolean isWrite() {
+	  return write;
+	}
+  public void setWrite(boolean write) {
+    this.write = write;
+  }
 }
