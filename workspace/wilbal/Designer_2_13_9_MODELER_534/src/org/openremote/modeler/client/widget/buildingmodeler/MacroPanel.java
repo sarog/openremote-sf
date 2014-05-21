@@ -157,13 +157,13 @@ public class MacroPanel extends ContentPanel {
          public void componentSelected(ButtonEvent ce) {
             final MacroWindow macroWindow = new MacroWindow();
 
-            macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+           /* macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
                  eventBus.fireEvent(new MacrosCreatedEvent((MacroDTO) be.getData()));
                   macroWindow.hide();
                }
-            });
+            });*/
          }
       });
       macroToolBar.add(newMacroBtn);
@@ -237,15 +237,15 @@ public class MacroPanel extends ContentPanel {
    private void onEditDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof MacroDTO) {
         MacroDTO macro = macroTree.getSelectionModel().getSelectedItem().getBean();
-         final MacroWindow macroWindow = new MacroWindow(macro);
-         macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         MacroWindow macroWindow = new MacroWindow(macro);
+         /*macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
               eventBus.fireEvent(new MacroUpdatedEvent((MacroDTO) be.getData()));
                macroWindow.hide();
             }
-         });
-         macroWindow.show();
+         });*/
+        // macroWindow.show();
       }
    }
 
