@@ -1,0 +1,43 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+   xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+   xmlns:c='urn:import:com.google.gwt.user.cellview.client'>
+   <ui:style>
+      .errorMessageStyle {
+         color: red;
+         text-align: left;
+         margin-left: 2em;
+      }
+   </ui:style>
+      <g:FormPanel ui:field="macroForm" width="100%" height="100%">      
+         <g:DockLayoutPanel unit="EM" ui:field="mainPanel" width="100%" height="100%">
+            <g:north size="4">
+               <g:VerticalPanel >
+                     <g:Label  text="Macro Name:" />
+                     <g:TextBox ui:field="macroName"/>
+               </g:VerticalPanel>
+            </g:north>
+            <g:south size="2">
+              <g:SubmitButton ui:field="submitButton">Ok</g:SubmitButton>
+            </g:south>
+            <g:center>
+               <g:CaptionPanel captionText="Add Macro Item(drag from left to right)" width="95%" height="95%">
+                   <g:HorizontalPanel width="95%">
+
+                        <g:TabPanel width="20%">
+                           <g:Tab text="Device Command">
+                              <g:HorizontalPanel ui:field="devicePanel"></g:HorizontalPanel>
+                           </g:Tab>
+                           <g:Tab text="Macro" >
+                              <g:HorizontalPanel ui:field="macroPanel"></g:HorizontalPanel>                           
+                           </g:Tab>
+                        </g:TabPanel>
+                        <g:HorizontalPanel  width="80%">
+                           <g:Label text="test"></g:Label>
+                           </g:HorizontalPanel>
+                   </g:HorizontalPanel>
+               </g:CaptionPanel>
+            </g:center>
+         </g:DockLayoutPanel>
+         </g:FormPanel>
+</ui:UiBinder> 

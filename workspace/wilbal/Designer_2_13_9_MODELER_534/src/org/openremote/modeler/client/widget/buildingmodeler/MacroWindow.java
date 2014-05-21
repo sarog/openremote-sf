@@ -19,69 +19,62 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.gxtextends.ListViewDropTargetMacroDragExt;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
-import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
-import org.openremote.modeler.client.listener.ConfirmDeleteListener;
-import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
-import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.selenium.DebugId;
-import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
-import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
-import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.dnd.DND.Feedback;
-import com.extjs.gxt.ui.client.dnd.DND.Operation;
-import com.extjs.gxt.ui.client.dnd.ListViewDragSource;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.FormEvent;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.ListView;
-import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.TabItem;
-import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.extjs.gxt.ui.client.widget.Text;
-import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.FieldSet;
-import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
-import com.extjs.gxt.ui.client.widget.form.TextField;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
-import com.extjs.gxt.ui.client.widget.layout.HBoxLayoutData;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 
 /**
  * The window to creates or updates a macro.
  */
-public class MacroWindow extends FormWindow {
+public class MacroWindow extends PopupPanel {
 
+  //private static DialogBoxCaptionWithCancel caption = new DialogBoxCaptionWithCancel();
+
+  interface MacroWindowUiBinder extends UiBinder<Widget, MacroWindow> {
+  }
+  private static MacroWindowUiBinder uiBinder = GWT.create(MacroWindowUiBinder.class);
+
+  @UiField
+  DockLayoutPanel mainPanel;
+
+  @UiField
+  TextBox macroName;
+  
+  @UiField 
+  FormPanel macroForm;
+  
+  @UiField
+  Button submitButton;
+  
+  @UiField
+  HorizontalPanel devicePanel;
+  
+  @UiField
+  HorizontalPanel macroPanel;
+  
   private MacroDTO macro;
   private MacroDetailsDTO macroDetails;
 
@@ -94,19 +87,19 @@ public class MacroWindow extends FormWindow {
   private Icons icons = GWT.create(Icons.class);
 
   /** The macro name field. */
-  private TextField<String> macroNameField = null;
+ // private TextField<String> macroNameField = null;
 
   /** The add macro item container. */
-  private LayoutContainer addMacroItemContainer;
+//  private LayoutContainer addMacroItemContainer;
 
   /** The device command tree. */
-  private TreePanel<BeanModel> deviceCommandTree = null;
+    private TreePanel<BeanModel> deviceCommandTree = null;
 
   /** The left macro list. */
-  private TreePanel<BeanModel> leftMacroList = null;
+//  private TreePanel<BeanModel> leftMacroList = null;
 
   /** The right macro item list view. */
-  private ListView<BeanModel> rightMacroItemListView = null;
+//  private ListView<BeanModel> rightMacroItemListView = null;
 
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
@@ -115,9 +108,13 @@ public class MacroWindow extends FormWindow {
    * Instantiates a macro window to create a new macro.
    */
   public MacroWindow() {
-    setHeading("New Macro");
-    setup();
-    macroDetails = new MacroDetailsDTO();
+   uiBinder.createAndBindUi(this);
+    this.center();
+ //   setText("New Macro");
+    //setup();
+   // macroDetails = new MacroDetailsDTO();
+    mainPanel.setSize("650px", "520px");
+    center();
     show();
   }
 
@@ -127,15 +124,21 @@ public class MacroWindow extends FormWindow {
    * @param deviceMacroModel the device macro
    */
   public MacroWindow(MacroDTO macro) {
+    setWidget(uiBinder.createAndBindUi(this));
+    this.center();
     this.macro = macro;
-    setHeading("Edit Macro");
     edit = true;
+    mainPanel.setSize("650px", "520px");
+
+    center();
+    show();
+  //  setText("Edit Macro");
     
     DeviceMacroBeanModelProxy.loadMacroDetails(macro, new AsyncSuccessCallback<BeanModel>() {
       public void onSuccess(BeanModel result) {
         MacroWindow.this.macroDetails = result.getBean();
         setup();
-        layout();
+    //    layout();
       }
     });
   }
@@ -145,14 +148,14 @@ public class MacroWindow extends FormWindow {
    */
   private void setup() {
     selectionService = new SelectionServiceExt<BeanModel>();
-    setPlain(true);
+    /*setPlain(true);
     setBlinkModal(true);
     setWidth(530);
     setHeight(460);
-    setResizable(false);
+    setResizable(false);*/
     createFormElement();
 
-    form.setLabelAlign(LabelAlign.TOP);
+    /*form.setLabelAlign(LabelAlign.TOP);
     form.setHeight(400);
     form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
       public void handleEvent(FormEvent be) {
@@ -160,38 +163,39 @@ public class MacroWindow extends FormWindow {
       }
 
     });
-    add(form);
+    add(form);*/
   }
 
   /**
    * Creates the form element.
    */
   private void createFormElement() {
-    macroNameField = new TextField<String>();
+    
     
     if (edit) {
-      macroNameField.setValue(macroDetails.getName());
+      macroName.setValue(macroDetails.getName());
     }
-    macroNameField.setAllowBlank(false);
+    /* macroNameField.setAllowBlank(false);
     macroNameField.setFieldLabel("Macro Name");
     macroNameField.setName("macroName");
     macroNameField.setStyleAttribute("marginBottom", "10px");
     macroNameField.ensureDebugId(DebugId.DEVICE_MACRO_NAME_FIELD);
     form.add(macroNameField);
-
+*/
     createSelectCommandContainer();
-
+/*
     Button submitBtn = new Button("OK");
     submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
 
     form.addButton(submitBtn);
+    */
   }
 
   /**
    * Creates the select command container.
    */
   private void createSelectCommandContainer() {
-    addMacroItemContainer = new LayoutContainer();
+   /* addMacroItemContainer = new LayoutContainer();
     FieldSet fieldSet = new FieldSet();
 
     AdapterField adapterField = new AdapterField(addMacroItemContainer);
@@ -205,25 +209,26 @@ public class MacroWindow extends FormWindow {
     layout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
     addMacroItemContainer.setLayout(layout);
     addMacroItemContainer.setHeight(280);
-
+    */
     createLeftCommandMacroTab();
-    createRightMacroList();
+   // createRightMacroList();
+
   }
 
   /**
    * Creates the left command macro tab.
    */
   private void createLeftCommandMacroTab() {
-    TabPanel leftCommandMacroTabPanel = new TabPanel();
+   /* TabPanel leftCommandMacroTabPanel = new TabPanel();
     leftCommandMacroTabPanel.setWidth(220);
     leftCommandMacroTabPanel.setPlain(true);
     leftCommandMacroTabPanel.setHeight(275);
 
     TabItem deviceCommandTab = new TabItem("Device Command");
-    deviceCommandTab.setLayout(new FitLayout());
+    deviceCommandTab.setLayout(new FitLayout());*/
 
-    deviceCommandTab.add(createDeviceCommandTree());
-    leftCommandMacroTabPanel.add(deviceCommandTab);
+    createDeviceCommandTree();
+   /* leftCommandMacroTabPanel.add(deviceCommandTab);
     deviceCommandTab.scrollIntoView(leftCommandMacroTabPanel);
 
     TabItem macroTab = new TabItem("Macro");
@@ -231,7 +236,8 @@ public class MacroWindow extends FormWindow {
     macroTab.add(createLeftMacroTree());
     leftCommandMacroTabPanel.add(macroTab);
 
-    addMacroItemContainer.add(leftCommandMacroTabPanel);
+    addMacroItemContainer.add(leftCommandMacroTabPanel);*/
+     
   }
 
   /**
@@ -239,12 +245,8 @@ public class MacroWindow extends FormWindow {
    * 
    * @return the layout container
    */
-  private LayoutContainer createDeviceCommandTree() {
-    LayoutContainer treeContainer = new LayoutContainer();
-    // overflow-auto style is for IE hack.
-    treeContainer.addStyleName("overflow-auto");
-    treeContainer.setStyleAttribute("backgroundColor", "white");
-    treeContainer.setBorders(false);
+    private void createDeviceCommandTree() {
+
 
     deviceCommandTree = TreePanelBuilder.buildDeviceCommandTree();
     deviceCommandTree.setHeight("100%");
@@ -265,18 +267,20 @@ public class MacroWindow extends FormWindow {
 
     });
     dragSource.setGroup(MACRO_DND_GROUP);
+    devicePanel.add(deviceCommandTree);
+    Window.alert("Done "+deviceCommandTree+"   "+deviceCommandTree.getModel());
+    //treeContainer.add(deviceCommandTree);
 
-    treeContainer.add(deviceCommandTree);
-
-    return treeContainer;
+    //return treeContainer;
   }
+ 
 
   /**
    * Creates the left macro list.
    * 
    * @return the layout container
    */
-  private LayoutContainer createLeftMacroTree() {
+/*  private LayoutContainer createLeftMacroTree() {
     LayoutContainer leftMacroListContainer = new LayoutContainer();
     // overflow-auto style is for IE hack.
     leftMacroListContainer.addStyleName("overflow-auto");
@@ -309,12 +313,12 @@ public class MacroWindow extends FormWindow {
     dragSource.setGroup(MACRO_DND_GROUP);
 
     return leftMacroListContainer;
-  }
+  }*/
 
   /**
    * Creates the right macro list.
    */
-  private void createRightMacroList() {
+ /* private void createRightMacroList() {
     ContentPanel rightListContainer = new ContentPanel();
     rightListContainer.setHeaderVisible(false);
     rightListContainer.setWidth(230);
@@ -336,14 +340,14 @@ public class MacroWindow extends FormWindow {
     flex.setFlex(1);
     addMacroItemContainer.add(new Text(), flex);
     addMacroItemContainer.add(rightListContainer);
-  }
+  }*/
 
   /**
    * Creates the right macro item list toolbar.
    * 
    * @return the tool bar
    */
-  private ToolBar createRightMacroItemListToolbar() {
+ /* private ToolBar createRightMacroItemListToolbar() {
     ToolBar toolBar = new ToolBar();
     List<Button> editDelBtns = new ArrayList<Button>();
 
@@ -388,12 +392,12 @@ public class MacroWindow extends FormWindow {
     editDelBtns.add(deleteBtn);
     selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
     return toolBar;
-  }
+  }*/
 
   /**
    * Setup right macro item dnd.
    */
-  private void setupRightMacroItemDND() {
+/*  private void setupRightMacroItemDND() {
     ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
     dropTarget.setAllowSelfAsSource(true);
     dropTarget.setGroup(MACRO_DND_GROUP);
@@ -402,14 +406,14 @@ public class MacroWindow extends FormWindow {
 
     ListViewDragSource dragSource = new ListViewDragSource(rightMacroItemListView);
     dragSource.setGroup(MACRO_DND_GROUP);
-  }
+  }*/
 
   /**
    * Setup right macro item list view.
    * 
    * @return the list view< bean model>
    */
-  private ListView<BeanModel> createRightMacroItemListView() {
+ /* private ListView<BeanModel> createRightMacroItemListView() {
     rightMacroItemListView = new ListView<BeanModel>();
     rightMacroItemListView.setDisplayProperty("displayName");
 
@@ -423,13 +427,13 @@ public class MacroWindow extends FormWindow {
       }
     }
     return rightMacroItemListView;
-  }
+  }*/
 
   /**
    * Before form submit.
    */
-  private void beforeFormSubmit() {
-    AsyncSuccessCallback<MacroDTO> callback = new AsyncSuccessCallback<MacroDTO>() {
+/*  private void beforeFormSubmit() {
+   /* AsyncSuccessCallback<MacroDTO> callback = new AsyncSuccessCallback<MacroDTO>() {
       @Override
       public void onSuccess(MacroDTO result) {
         if (macro == null) {
@@ -453,13 +457,12 @@ public class MacroWindow extends FormWindow {
     } else {
       DeviceMacroBeanModelProxy.saveNewMacro(macroDetails, callback);
     }
-
   }
-
+*/
   /**
    * On delete macro item btn clicked.
    */
-  private void onDeleteMacroItemBtnClicked() {
+ /* private void onDeleteMacroItemBtnClicked() {
     for (BeanModel data : rightMacroItemListView.getSelectionModel().getSelectedItems()) {
       int index = rightMacroItemListView.getStore().indexOf(data);
       rightMacroItemListView.getStore().remove(data);
@@ -468,11 +471,11 @@ public class MacroWindow extends FormWindow {
       }
     }
   }
-
+*/
   /**
    * Adds the delay.
    */
-  private void addDelay() {
+/*  private void addDelay() {
     final DelayWindow delayWindow = new DelayWindow();
     delayWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
       @Override
@@ -485,11 +488,11 @@ public class MacroWindow extends FormWindow {
     });
     delayWindow.show();
   }
-
+*/
   /**
    * Edits the delay.
    */
-  private void editDelay() {
+/*  private void editDelay() {
     BeanModel data = rightMacroItemListView.getSelectionModel().getSelectedItem();
     if (data.getBean() instanceof MacroItemDetailsDTO && ((MacroItemDetailsDTO) data.getBean()).getType() == MacroItemType.Delay) {
       final DelayWindow editDelayWindow = new DelayWindow((MacroItemDetailsDTO) data.getBean());
@@ -505,5 +508,6 @@ public class MacroWindow extends FormWindow {
     } else {
       MessageBox.info("Warn", "Please select a delay", null);
     }
-  }
+  }*/
+  
 }
