@@ -20,28 +20,23 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
-import org.openremote.modeler.client.gxtextends.TreePanelDragSourceMacroDragExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.TreePanelBuilder;
-import org.openremote.modeler.shared.dto.DeviceCommandDTO;
+import org.openremote.modeler.client.widget.DeviceCommandTreeModel;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.event.DNDEvent;
-import com.extjs.gxt.ui.client.event.DNDListener;
-import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -70,10 +65,10 @@ public class MacroWindow extends PopupPanel {
   Button submitButton;
   
   @UiField
-  HorizontalPanel devicePanel;
+  ScrollPanel devicePanel;
   
   @UiField
-  HorizontalPanel macroPanel;
+  ScrollPanel macroPanel;
   
   private MacroDTO macro;
   private MacroDetailsDTO macroDetails;
@@ -93,7 +88,7 @@ public class MacroWindow extends PopupPanel {
 //  private LayoutContainer addMacroItemContainer;
 
   /** The device command tree. */
-    private TreePanel<BeanModel> deviceCommandTree = null;
+    private CellTree deviceCommandTree = null;
 
   /** The left macro list. */
 //  private TreePanel<BeanModel> leftMacroList = null;
@@ -248,10 +243,12 @@ public class MacroWindow extends PopupPanel {
     private void createDeviceCommandTree() {
 
 
-    deviceCommandTree = TreePanelBuilder.buildDeviceCommandTree();
+    deviceCommandTree = new CellTree(new DeviceCommandTreeModel(), null);
+    
     deviceCommandTree.setHeight("100%");
+    deviceCommandTree.setWidth("100%");
 
-    TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
+    /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
     dragSource.addDNDListener(new DNDListener() {
       @SuppressWarnings("unchecked")
       @Override
@@ -265,10 +262,10 @@ public class MacroWindow extends PopupPanel {
         super.dragStart(e);
       }
 
-    });
-    dragSource.setGroup(MACRO_DND_GROUP);
+    });*/
+   // dragSource.setGroup(MACRO_DND_GROUP);
     devicePanel.add(deviceCommandTree);
-    Window.alert("Done "+deviceCommandTree+"   "+deviceCommandTree.getModel());
+    deviceCommandTree.setVisible(true);
     //treeContainer.add(deviceCommandTree);
 
     //return treeContainer;
