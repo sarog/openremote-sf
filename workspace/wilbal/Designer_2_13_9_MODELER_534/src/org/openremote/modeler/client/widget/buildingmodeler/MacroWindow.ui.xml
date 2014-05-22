@@ -24,14 +24,16 @@
                <g:CaptionPanel captionText="Add Macro Item(drag from left to right)" width="95%" height="95%">
                    <g:HorizontalPanel width="95%">
 
-                        <g:TabPanel width="20%">
-                           <g:Tab text="Device Command">
-                              <g:HorizontalPanel ui:field="devicePanel"></g:HorizontalPanel>
-                           </g:Tab>
-                           <g:Tab text="Macro" >
-                              <g:HorizontalPanel ui:field="macroPanel"></g:HorizontalPanel>                           
-                           </g:Tab>
-                        </g:TabPanel>
+                        <g:TabLayoutPanel width="300px" height="200px" barUnit="EM" barHeight="2">
+                           <g:tab>
+                              <g:header>Device Command</g:header>
+                              <g:ScrollPanel ui:field="devicePanel" width="95%" height="95%"/>
+                           </g:tab>
+                           <g:tab>
+                              <g:header>Macro</g:header>
+                              <g:ScrollPanel ui:field="macroPanel" width="95%" height="95%"/>                           
+                           </g:tab>
+                        </g:TabLayoutPanel>
                         <g:HorizontalPanel  width="80%">
                            <g:Label text="test"></g:Label>
                            </g:HorizontalPanel>
