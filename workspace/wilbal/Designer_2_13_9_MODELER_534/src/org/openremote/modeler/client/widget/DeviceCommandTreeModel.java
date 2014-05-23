@@ -7,12 +7,10 @@ import org.openremote.modeler.client.proxy.DeviceProxyGWT;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
-import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.TreeViewModel;
@@ -62,47 +60,45 @@ public class DeviceCommandTreeModel implements TreeViewModel {
         }
       }
     }
-   public DeviceCommandTreeModel() {
-      deviceDTOList = new AsyncDataProvider<DeviceDTO>() {
-         
-         @Override
-         protected void onRangeChanged(HasData<DeviceDTO> display) {
-            DeviceProxyGWT.loadDevice(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
-               
-               @Override
-               public void onSuccess(ArrayList<DeviceDTO> result) {
-                  deviceDTOList.updateRowData(0, result);
-                  
-               }
-            });
-            
-         }
-      };
-      deviceCommandsDTOList = new AsyncDataProvider<DeviceCommandDTO>() {
-         
-         @Override
-         protected void onRangeChanged(HasData<DeviceCommandDTO> display) {
-            DeviceProxyGWT.loadDevice((DeviceDTO)currentDeviceValue, new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
-
-               @Override
-               public void onSuccess(ArrayList<DeviceCommandDTO> result) {
-                  deviceCommandsDTOList.updateRowData(0, result);
-               }
-            } );
-            
-         }
-      };
-      
+   public DeviceCommandTreeModel() { 
    }
    
    @Override
    public <T> NodeInfo<?> getNodeInfo(final T value) {
       if (value==null){
+        deviceDTOList = new AsyncDataProvider<DeviceDTO>() {
+          
+          @Override
+          protected void onRangeChanged(HasData<DeviceDTO> display) {
+             DeviceProxyGWT.loadDevice(new AsyncSuccessCallback<ArrayList<DeviceDTO>>() {
+                
+                @Override
+                public void onSuccess(ArrayList<DeviceDTO> result) {
+                   deviceDTOList.updateRowData(0, result);
+                   deviceDTOList.updateRowCount(result.size(), true);
+                }
+             });
+             
+          }
+       };
          return new DefaultNodeInfo<DeviceDTO>(deviceDTOList, new DeviceCell());
       } else if (value instanceof DeviceDTO){
-         
          currentDeviceValue = (DeviceDTO) value;
-         Window.alert(" Device changed "+currentDeviceValue);
+         deviceCommandsDTOList = new AsyncDataProvider<DeviceCommandDTO>() {
+           
+           @Override
+           protected void onRangeChanged(HasData<DeviceCommandDTO> display) {
+              DeviceProxyGWT.loadDevice((DeviceDTO)currentDeviceValue, new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
+
+                 @Override
+                 public void onSuccess(ArrayList<DeviceCommandDTO> result) {
+                    deviceCommandsDTOList.updateRowData(0, result);
+                    deviceCommandsDTOList.updateRowCount(result.size(), true);
+                 }
+              } );
+              
+           }
+        };
          return new DefaultNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
       }
       return null;
@@ -110,8 +106,7 @@ public class DeviceCommandTreeModel implements TreeViewModel {
 
    @Override
    public boolean isLeaf(Object value) {
-      // TODO Auto-generated method stub
-      return false;
+      return (value instanceof DeviceCommandDTO);
    }
 
 }
