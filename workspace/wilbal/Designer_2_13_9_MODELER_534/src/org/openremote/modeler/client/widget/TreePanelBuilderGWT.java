@@ -124,10 +124,6 @@ public class TreePanelBuilderGWT {
             DeviceProxyGWT.loadDeviceAndCommand(o,new AsyncSuccessCallback<List<DeviceDTO>>() {
                public void onSuccess(List<DeviceDTO> result) {
                   listAsyncCallback.onSuccess(result);
-                  for (DeviceDTO deviceDTO : result) {
-                     GWT.log(" "+deviceDTO.getDisplayName()+" "+deviceDTO.getOid() );
-                  }
-
                }
             });
          }
