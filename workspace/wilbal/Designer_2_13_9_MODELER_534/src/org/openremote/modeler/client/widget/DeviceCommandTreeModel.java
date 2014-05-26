@@ -9,7 +9,10 @@ import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 
 import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -49,15 +52,27 @@ public class DeviceCommandTreeModel implements TreeViewModel {
       private final String imageHtml;
 
       public CommandCell() {
+        super("dragstart");
         this.imageHtml = ICON.deviceCmd().getHTML();
       }
 
       @Override
       public void render(Context context, DeviceCommandDTO value, SafeHtmlBuilder sb) {
         if (value != null) {
-          sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
-          sb.appendEscaped(value.getDisplayName());
+          sb.appendHtmlConstant("<div draggable=\"true\">").appendHtmlConstant(imageHtml).appendEscaped(" ");
+          sb.appendEscaped(value.getDisplayName()).appendHtmlConstant("</div>");
         }
+      }
+      
+      @Override
+      public void onBrowserEvent(com.google.gwt.cell.client.Cell.Context context,
+        Element parent, DeviceCommandDTO value, NativeEvent event,
+        ValueUpdater<DeviceCommandDTO> valueUpdater) {
+      // TODO Auto-generated method stub
+      //super.onBrowserEvent(context, parent, value, event, valueUpdater);
+        
+      event.getDataTransfer().setDragImage(parent, 10, 10);
+      event.getDataTransfer().setData("deviceCommandId", Long.toString(value.getOid()));
       }
     }
    public DeviceCommandTreeModel() { 
@@ -99,7 +114,9 @@ public class DeviceCommandTreeModel implements TreeViewModel {
               
            }
         };
-         return new DefaultNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
+         DefaultNodeInfo<DeviceCommandDTO> node = new DefaultNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
+         //node.getCell().onBrowserEvent(context, parent, value, event, valueUpdater);
+         return node;
       }
       return null;
    }
