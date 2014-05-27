@@ -19,7 +19,13 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import gwtquery.plugins.draggable.client.DraggableOptions;
+import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
+import gwtquery.plugins.droppable.client.DroppableOptions;
+import gwtquery.plugins.droppable.client.DroppableOptions.DroppableFunction;
+import gwtquery.plugins.droppable.client.events.DragAndDropContext;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellList;
+import gwtquery.plugins.droppable.client.gwt.DragAndDropCellTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,35 +36,21 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.DeviceCommandTreeModel;
 import org.openremote.modeler.client.widget.utils.DeviceCommandDTOCell;
-import org.openremote.modeler.client.widget.utils.DeviceDTOCell;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.DragEvent;
-import com.google.gwt.event.dom.client.DragHandler;
-import com.google.gwt.event.dom.client.DragLeaveEvent;
-import com.google.gwt.event.dom.client.DragLeaveHandler;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DragOverHandler;
-import com.google.gwt.event.dom.client.DragStartEvent;
-import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.dom.client.DropHandler;
-import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.CellTree;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -68,7 +60,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The window to creates or updates a macro.
  */
-public class MacroWindow extends PopupPanel {
+public class MacroWindow extends DialogBox {
 
   //private static DialogBoxCaptionWithCancel caption = new DialogBoxCaptionWithCancel();
 
@@ -127,7 +119,7 @@ public class MacroWindow extends PopupPanel {
 
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
-  private DragAndDropCellList<DeviceDTO> selectedCommands;
+  private DragAndDropCellList<DeviceCommandDTO> selectedCommands;
   private DeviceCommandDTOCell deviceCommandDTOCell;
   /**
    * Instantiates a macro window to create a new macro.
@@ -135,7 +127,7 @@ public class MacroWindow extends PopupPanel {
   public MacroWindow() {
    uiBinder.createAndBindUi(this);
     this.center();
- //   setText("New Macro");
+    setText("New Macro");
     //setup();
    // macroDetails = new MacroDetailsDTO();
     mainPanel.setSize("650px", "520px");
@@ -150,6 +142,8 @@ public class MacroWindow extends PopupPanel {
    */
   public MacroWindow(MacroDTO macro) {
     setWidget(uiBinder.createAndBindUi(this));
+    setText("Edit Macro");
+
     this.center();
     this.macro = macro;
     edit = true;
@@ -158,21 +152,69 @@ public class MacroWindow extends PopupPanel {
     center();
     show();
     deviceCommandDTOCell = new DeviceCommandDTOCell();
-    DragAndDropCellList<DeviceDTO>selectedCommands = new DragAndDropCellList<DeviceDTO>(deviceCommandDTOCell);
+    final DragAndDropCellList<DeviceCommandDTO> selectedCommands = new DragAndDropCellList<DeviceCommandDTO>(deviceCommandDTOCell);
+ // setup the drag operation
+    DraggableOptions dragOptions = new DraggableOptions();
+    // use a clone of the original cell as drag helper
+    dragOptions.setHelper(HelperType.CLONE);
+    // set the opacity of the drag helper
+    dragOptions.setOpacity((float) 0.8);
+    // append the drag helper to the body element
+    dragOptions.setAppendTo("body");
+    dragOptions.setSnap(true);
+    // configure the drag operations of the cell list with this options
+    selectedCommands.setDraggableOptions(dragOptions);
 
-    selectedCommands.setWidth("80px");
-    selectedCommands.setHeight("100px");
-    List<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
-    DeviceDTO ddto1 = new DeviceDTO();
+    DroppableOptions dropOptions = new DroppableOptions();
+    
+    dropOptions.setOnOver(new DroppableFunction() {
+      
+      @Override
+      public void f(DragAndDropContext context) {
+         GWT.log("moving inside widget"+context.getDraggable().getAbsoluteTop()+"  "+context.getDroppable().getAbsoluteTop()+" "+context.getDroppable().getOffsetHeight());         
+      }
+   });
+    dropOptions.setOnDrop(new DroppableFunction() {
+      
+      @Override
+      public void f(DragAndDropContext context) {
+         DeviceCommandDTO droppedCommands = context.getDraggableData();
+         DeviceCommandDTO overCommand = context.getDroppableData();
+         List<DeviceCommandDTO> currentList = new ArrayList<DeviceCommandDTO>(selectedCommands.getVisibleItems());
+         int reorderingIndexStart = currentList.indexOf(droppedCommands);
+         if (reorderingIndexStart>=0 && (context.getDraggable().getClass()==context.getDroppable().getClass())) {
+            
+            int indexForInsertion = currentList.indexOf(overCommand);
+            currentList.add(indexForInsertion, droppedCommands);
+            if (indexForInsertion<reorderingIndexStart) {
+               currentList.remove(reorderingIndexStart+1);
+            } else {
+               currentList.remove(reorderingIndexStart);
+            }
+            selectedCommands.setRowData(currentList);
+            
+         } else {
+            GWT.log("adding new");
+            int indexForInsertion = currentList.indexOf(overCommand);
+            currentList.add(indexForInsertion, droppedCommands);
+            selectedCommands.setRowData(currentList);   
+         }
+         
+        
+      }
+   });
+    selectedCommands.setDroppableOptions(dropOptions);
+    List<DeviceCommandDTO> deviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
+    DeviceCommandDTO ddto1 = new DeviceCommandDTO();
     ddto1.setDisplayName("ddto1");
     ddto1.setOid(1L);
     
-    DeviceDTO ddto2 = new DeviceDTO();
+    DeviceCommandDTO ddto2 = new DeviceCommandDTO();
     ddto2.setDisplayName("ddto2");
     ddto2.setOid(2L);
-    deviceDTOs.add(ddto1);
-    deviceDTOs.add(ddto2);
-    selectedCommands.setRowData(deviceDTOs );
+    deviceCommandDTOs.add(ddto1);
+    deviceCommandDTOs.add(ddto2);
+    selectedCommands.setRowData(deviceCommandDTOs);
     currentCommandsPanel.add(selectedCommands);
 
   //  setText("Edit Macro");
@@ -291,8 +333,8 @@ public class MacroWindow extends PopupPanel {
     private void createDeviceCommandTree() {
 
 
-    deviceCommandTree = new CellTree(new DeviceCommandTreeModel(), null);
-    
+    deviceCommandTree = new DragAndDropCellTree(new DeviceCommandTreeModel(), null);
+    deviceCommandTree.setAnimationEnabled(true);
     deviceCommandTree.setHeight("100%");
     deviceCommandTree.setWidth("100%");
     /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
