@@ -16,7 +16,6 @@ public class DeviceDTOCell extends AbstractCell<DeviceDTO> {
   private final String imageHtml;
 
   public DeviceDTOCell() {
-    super("dragstart","dragover","drop","dragleave");
     this.imageHtml = ICON.device().getHTML();
     }
 
@@ -24,19 +23,11 @@ public class DeviceDTOCell extends AbstractCell<DeviceDTO> {
   public void render(com.google.gwt.cell.client.Cell.Context context,
       DeviceDTO value, SafeHtmlBuilder sb) {
     if (value != null) {
-      sb.appendHtmlConstant("<div draggable=\"true\">").appendHtmlConstant(imageHtml).appendEscaped(" ");
-      sb.appendEscaped(value.getDisplayName()).appendHtmlConstant("</div>");
+      sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
+      sb.appendEscaped(value.getDisplayName());
     }
     
   }
-  
-  @Override
-  public void onBrowserEvent(com.google.gwt.cell.client.Cell.Context context,
-      Element parent, DeviceDTO value, NativeEvent event,
-      ValueUpdater<DeviceDTO> valueUpdater) {
-    // TODO Auto-generated method stub
-    event.getDataTransfer().setDragImage(parent, 10, 10);
-    event.getDataTransfer().setData("deviceCommandId", Long.toString(value.getOid()));
-  }
+ 
 
 }
