@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone="yes"?>
+<Context>
+  <Resource name="jdbc/db" auth="container"
+   type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+   url="jdbc:postgresql://localhost:5432/datalogger"
+   username="openremote" password="OpenR3motE" maxActive="20" maxIdle="10" maxWait="-1"/>
+</Context>
