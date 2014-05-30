@@ -459,13 +459,15 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     	<list>
     		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
     		<ref bean="rrd4jLogger"/>
-     		
+		    <ref bean="dataLogger"/>
     	</list>
     </property>
   </bean>
 
   <bean id = "rrd4jLogger" class = "org.openremote.controller.statuscache.rrd4j.Rrd4jDataLogger" />
-
+ 
+  <bean id = "dataLogger" class = "org.openremote.controller.statuscache.datalogger.DataLogger" />
+  
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
 	 | Implementation specific builders for the UI component Factory bean. In short, each distinct command
