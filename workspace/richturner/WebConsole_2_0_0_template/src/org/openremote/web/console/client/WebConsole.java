@@ -22,8 +22,11 @@ package org.openremote.web.console.client;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openremote.web.console.controller.ControllerCredentials;
 import org.openremote.web.console.panel.entity.PanelSizeInfo;
+import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.AutoBeanService;
+import org.openremote.web.console.service.EnumDataMap;
 import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.unit.ConsoleUnit;
@@ -36,6 +39,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.web.bindery.autobean.shared.AutoBean;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -48,7 +52,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class WebConsole implements EntryPoint {
 	private static ConsoleUnit consoleUnit;
-	private static final String DEFAULT_PANEL_SIZE_INFO = "{\"panelSizeType\": \"fixed\", \"panelSizeWidth\": 320, \"panelSizeHeight\": 480}";
+	public static final String WELCOME_MESSAGE_STRING = "Welcome to the latest Web Console!\n\nClick <a href=\"http://openremote.org/display/docs/Web+Console\" target=\"_blank\">here</a> for release notes and help on using the Web Console.";
+	public static final String COOKIE_WARNING_MESSAGE_STRING = "Cookies / Local Storage must be enabled for the Web Console to work correctly!";
 	private Logger logger = Logger.getLogger("");
 	
 	public void onModuleLoad() {
@@ -77,44 +82,82 @@ public class WebConsole implements EntryPoint {
 		BrowserUtils.initWindow();
 		
 		BrowserUtils.setupHistory();
-		
-    // Initialise the Console Unit - if mobile or Setting defined to load in fullscreen mode
-    if (BrowserUtils.isMobile) {
+
+    // Display warning if cookies disabled
+    if (!LocalDataServiceImpl.getInstance().isAvailable())
+    {
+      BrowserUtils.showAlert(COOKIE_WARNING_MESSAGE_STRING);
+      return;
+    }
+    
+    // Display welcome message
+    if (BrowserUtils.showWelcomeMessage()) {
+      // Show welcome message
+      BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);      
+      WelcomeFlag welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
+      welcomeFlag.setWelcomeVersion(BrowserUtils.getBuildVersion());      
+      LocalDataServiceImpl.getInstance().setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
+    }
+    
+    PanelSizeInfo sizeInfo = BrowserUtils.getDefaultPanelSize();
+    
+    // Show sliding toolbar if not disabled
+    if (BrowserUtils.showToolbar()) {
+      SlidingToolbar.initialise(sizeInfo);
+    }
+    
+    // Configure the default panel and controller
+    // Check for GET variables
+    String cUrl = Window.Location.getParameter("controllerURL");
+    String pName = Window.Location.getParameter("panelName");
+    
+    if (cUrl == null || !cUrl.isEmpty() || pName == null || pName.isEmpty())
+    {
+      cUrl = BrowserUtils.getControllerUrlString();
+      pName = BrowserUtils.getPanelNameString();
+    }
+    
+    if (cUrl != null && !cUrl.isEmpty() && pName != null && !pName.isEmpty())
+    {
+      ControllerCredentials controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
+      controllerCreds.setUrl(cUrl);
+      controllerCreds.setDefaultPanel(pName);
+      LocalDataServiceImpl.getInstance().setLastControllerCredentials(controllerCreds);
+    }
+    
+    // Check if console frame should be shown
+    String showFrameStr = Window.Location.getParameter("showConsoleFrame");
+    if (showFrameStr == null || (!showFrameStr.equalsIgnoreCase("true") && !showFrameStr.equalsIgnoreCase("false"))) {
+      showFrameStr = BrowserUtils.getShowFrameString();
+    }
+    
+    if (showFrameStr != null && (showFrameStr.equalsIgnoreCase("true") || showFrameStr.equalsIgnoreCase("false"))) {
+      boolean showFrame = Boolean.parseBoolean(showFrameStr);
+      if (!showFrame) {
+        ConsoleUnit.FRAME_WIDTH_BOTTOM = 0;
+        ConsoleUnit.FRAME_WIDTH_TOP = 0;
+        ConsoleUnit.FRAME_WIDTH_LEFT = 0;
+        ConsoleUnit.FRAME_WIDTH_RIGHT = 0;
+        ConsoleUnit.BOSS_WIDTH = 0;
+      }
+    }
+
+    // Initialise the Console Unit
+    boolean requestFullscreen = sizeInfo.getPanelSizeType().equals("fullscreen");
+    if (BrowserUtils.isMobile || requestFullscreen) {
+      // load in full screen mode with fixed orientation
       consoleUnit = new ConsoleUnit(true);
     } else {
-      // Check preferences
-      LocalDataService dataService = LocalDataServiceImpl.getInstance();
-      PanelSizeInfo sizeInfo = null;
-
-      String panelSizeInfo = dataService.getObjectString("panelSizeInfo");
-      if (panelSizeInfo == null) {
-        // Generate defaults
-        dataService.setObject("panelSizeInfo", DEFAULT_PANEL_SIZE_INFO);
-        sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, DEFAULT_PANEL_SIZE_INFO).as();
-      } else {
-        sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, panelSizeInfo).as();
+      consoleUnit = new ConsoleUnit(sizeInfo.getPanelSizeWidth(), sizeInfo.getPanelSizeHeight());
+      
+      // Check orientation setting
+      String orientation = Window.Location.getParameter("orientation");
+      if (orientation == null || (!orientation.equalsIgnoreCase("portrait") && !orientation.equalsIgnoreCase("landscape"))) {
+        orientation = BrowserUtils.getOrientationString();
       }
       
-      if (sizeInfo != null) {
-        String fullscreen = Window.Location.getParameter("fullscreen");
-        if (fullscreen != null) {
-          sizeInfo.setPanelSizeType("fullscreen");
-        }
-        
-        // Get stored size info
-        if (sizeInfo.getPanelSizeType().equals("fullscreen")) {
-          consoleUnit = new ConsoleUnit(true);
-        } else {
-          consoleUnit = new ConsoleUnit(sizeInfo.getPanelSizeWidth(), sizeInfo.getPanelSizeHeight());
-        }
-      } else {
-        consoleUnit = new ConsoleUnit();
-      }
-      
-      // Show sliding toolbar if not disabled with GET parameter
-      String showToolbar = Window.Location.getParameter("showToolbar");
-      if (showToolbar == null) {
-        SlidingToolbar.initialise(sizeInfo);
+      if (orientation != null && (orientation.equalsIgnoreCase("portrait") || orientation.equalsIgnoreCase("landscape"))) {
+        consoleUnit.setOrientation(orientation);
       }
     }
 		
@@ -122,7 +165,7 @@ public class WebConsole implements EntryPoint {
 			RootPanel.get().add(consoleUnit, 0, 0);
 			getConsoleUnit().onAdd();
 		} else {
-			Window.alert("Failed to create Console Unit!");
+			BrowserUtils.showAlert("Failed to create Console Unit!");
 		}
 	}
 	
