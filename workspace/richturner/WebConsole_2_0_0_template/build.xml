@@ -47,21 +47,9 @@
 				<!-- Replace @VERSION@ with the version -->
 				<filter token="VERSION" value="${Revision}" />
 				<filter token="TITLE" value="${project.title}" />
-				<filter token="CONTROLLERURL" value="${controller.url.internal}" />
-				<filter token="PANELNAME" value="${controller.panel.name}" />
 			</filterset>
 		</copy>
-		
-		<copy file="index.html.template" tofile="war/external.html" overwrite="true">
-			<filterset>
-				<!-- Replace @VERSION@ with the version -->
-				<filter token="VERSION" value="${Revision}" />
-				<filter token="TITLE" value="${project.title}" />
-				<filter token="CONTROLLERURL" value="${controller.url.external}" />
-				<filter token="PANELNAME" value="${controller.panel.name}" />
-			</filterset>
-		</copy>
-		
+				
         <echo>Revision found: ${Revision}</echo>
 		<echo>Title found: ${project.title}</echo>
   </target>
