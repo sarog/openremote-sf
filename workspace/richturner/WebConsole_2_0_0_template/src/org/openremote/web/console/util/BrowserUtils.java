@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,8 +23,14 @@ import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.ui.WindowResizeEvent;
+import org.openremote.web.console.panel.entity.PanelSizeInfo;
+import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.AsyncControllerCallback;
+import org.openremote.web.console.service.AutoBeanService;
+import org.openremote.web.console.service.EnumDataMap;
+import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.unit.ConsoleUnit;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -49,9 +55,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.web.bindery.autobean.shared.AutoBean;
 
 /**
  * 
@@ -439,6 +444,157 @@ import com.google.gwt.user.client.ui.SimplePanel;
 			return values;
 		}
 		
+		/**
+		 * Determines if the welcome message should be shown by checking: -
+		 *  URL parameter
+		 *  Javascript variable
+		 *  Local storage
+		 * @return
+		 */
+		public static boolean showWelcomeMessage() {
+		  boolean showWelcome = true;
+		  
+		  String param = Window.Location.getParameter("showWelcome");
+		  
+		  if (param == null || (!param.equalsIgnoreCase("true") && param.equalsIgnoreCase("false"))) {
+		    param = getShowWelcomeString();
+		  }
+
+      if (param != null && (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("false"))) {
+        showWelcome = Boolean.parseBoolean(param);
+      } else {
+		    // Check local storage
+		    int version = getBuildVersion();
+	      
+	      String welcomeObj = LocalDataServiceImpl.getInstance().getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
+	      AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
+	      Integer welcomeVersion = -1;
+	      WelcomeFlag welcomeFlag = null;
+	      
+	      if (bean != null) {
+	        welcomeFlag = (WelcomeFlag)bean.as();
+	        welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
+	      }
+	  
+	      showWelcome = welcomeVersion < version;
+		  }
+		  
+		  return showWelcome;
+		}
+		
+    /**
+     * Determines if the toolbar should be shown by checking: -
+     *  URL parameter
+     *  Javascript variable
+     *  Local storage
+     * @return
+     */
+    public static boolean showToolbar() {
+      boolean showToolbar = true;
+      
+      // Check URL parameter
+      String param = Window.Location.getParameter("showToolbar");
+      
+      if (param == null || (!param.equalsIgnoreCase("true") && !param.equalsIgnoreCase("false"))) {
+        param = getShowToolbarString();
+      }
+
+      if (param != null && (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("false"))) {
+        showToolbar = Boolean.parseBoolean(param);
+      }
+
+      return showToolbar;
+    }
+    
+    /**
+     * Determines if the failsafe method of getting back to the settings screen should work by checking: -
+     *  URL parameter
+     *  Javascript variable
+     *  Local storage
+     * @return
+     */
+    public static boolean disableFailsafe() {
+      boolean disableFailsafe = false;
+      
+      // Check URL parameter
+      String param = Window.Location.getParameter("dsiableFailsafe");
+      
+      if (param == null || (!param.equalsIgnoreCase("true") && !param.equalsIgnoreCase("false"))) {
+        param = getDisableFailsafeString();
+      }
+
+      if (param != null && (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("false"))) {
+        disableFailsafe = Boolean.parseBoolean(param);
+      }
+
+      return disableFailsafe;
+    }
+		
+		public static PanelSizeInfo getDefaultPanelSize() {
+      PanelSizeInfo sizeInfo = AutoBeanService.getInstance().getFactory().create(PanelSizeInfo.class).as();
+      sizeInfo.setPanelSizeWidth(ConsoleUnit.DEFAULT_DISPLAY_WIDTH);
+      sizeInfo.setPanelSizeHeight(ConsoleUnit.DEFAULT_DISPLAY_HEIGHT);
+      
+      // Check URL parameters
+      String fullscreenStr = Window.Location.getParameter("fullscreen");
+      String widthStr = Window.Location.getParameter("consoleWidth");
+      String heightStr = Window.Location.getParameter("consoleHeight");
+      
+      if (fullscreenStr != null && !fullscreenStr.isEmpty() || (widthStr != null && heightStr != null && !widthStr.isEmpty() && !heightStr.isEmpty())) {
+        String sizeType = Boolean.parseBoolean(fullscreenStr) ? "fullscreen" : "fixed";
+        sizeInfo.setPanelSizeType(sizeType);
+        
+        if (widthStr != null && heightStr != null) {
+          try {
+            int width = Integer.parseInt(widthStr);
+            int height = Integer.parseInt(heightStr);
+            sizeInfo.setPanelSizeWidth(width);
+            sizeInfo.setPanelSizeHeight(height);
+          } catch (Exception e) {}
+        }
+        return sizeInfo;
+      }
+      
+      // Check Javascript variables
+      fullscreenStr = getFullscreenString();
+      widthStr = getWidthString();
+      heightStr = getHeightString();
+      
+      if (fullscreenStr != null && !fullscreenStr.isEmpty() || (widthStr != null && heightStr != null && !widthStr.isEmpty() && !heightStr.isEmpty())) {
+        String sizeType = Boolean.parseBoolean(fullscreenStr) ? "fullscreen" : "fixed";
+        sizeInfo.setPanelSizeType("fixed");
+        
+        if (widthStr != null && heightStr != null) {
+          try {
+            int width = Integer.parseInt(widthStr);
+            int height = Integer.parseInt(heightStr);
+            sizeInfo.setPanelSizeWidth(width);
+            sizeInfo.setPanelSizeHeight(height);
+          } catch (Exception e) {}
+        }
+        return sizeInfo;
+      }
+      
+      // Check local storage
+      String panelSizeInfo = LocalDataServiceImpl.getInstance().getObjectString("panelSizeInfo");
+      if (panelSizeInfo != null && !panelSizeInfo.isEmpty()) {
+        sizeInfo = AutoBeanService.getInstance().fromJsonString(PanelSizeInfo.class, panelSizeInfo).as();
+      }
+      
+      return sizeInfo;
+		}
+		
+		public static int getBuildVersion() {
+      String versionStr = BrowserUtils.getBuildVersionString();
+      int version = 0;
+      
+      try {
+        version = Integer.parseInt(versionStr);
+      } catch (Exception e) {}
+      
+      return version;
+		}
+		
 // -------------------------------------------------------------
 //			NATIVE METHODS BELOW HERE
 // -------------------------------------------------------------		
@@ -496,8 +652,48 @@ import com.google.gwt.user.client.ui.SimplePanel;
 		}-*/;
 		
 		public static native String getBuildVersionString() /*-{
-		return $wnd.buildVersionStr;
-	}-*/;
+		  return $wnd.buildVersionStr;
+	  }-*/;
+
+		public static native String getShowWelcomeString() /*-{
+      return $wnd.showWelcome;
+    }-*/;
+    
+    public static native String getShowToolbarString() /*-{
+      return $wnd.showToolbar;
+    }-*/;
+    
+    public static native String getDisableFailsafeString() /*-{
+      return $wnd.disableFailsafe;
+    }-*/;
+  
+    public static native String getFullscreenString() /*-{
+      return $wnd.fullscreen;
+    }-*/;
+    
+    public static native String getWidthString() /*-{
+      return $wnd.consoleWidth;
+    }-*/;
+    
+    public static native String getHeightString() /*-{
+      return $wnd.consoleHeight;
+    }-*/;
+    
+    public static native String getOrientationString() /*-{
+      return $wnd.orientation;
+    }-*/;
+    
+    public static native String getShowFrameString() /*-{
+      return $wnd.showConsoleFrame;
+    }-*/;
+    
+    public static native String getControllerUrlString() /*-{
+      return $wnd.controllerUrl;
+    }-*/;
+
+    public static native String getPanelNameString() /*-{
+      return $wnd.panelName;
+    }-*/;
 		
     public static native boolean supportsTouch() /*-{
       var supportsTouch = false;
