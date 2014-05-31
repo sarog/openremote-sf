@@ -111,9 +111,13 @@ public class WebConsole implements EntryPoint {
     String cUrl = Window.Location.getParameter("controllerURL");
     String pName = Window.Location.getParameter("panelName");
     
-    if (cUrl == null || !cUrl.isEmpty() || pName == null || pName.isEmpty())
+    if (cUrl == null || !cUrl.isEmpty())
     {
       cUrl = BrowserUtils.getControllerUrlString();
+    }
+    
+    if (pName == null || pName.isEmpty())
+    {
       pName = BrowserUtils.getPanelNameString();
     }
     
