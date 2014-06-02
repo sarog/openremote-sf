@@ -1,45 +1,70 @@
 package org.openremote.modeler.client.widget;
 
 import gwtquery.plugins.draggable.client.DraggableOptions;
-import gwtquery.plugins.draggable.client.DraggableOptions.CursorAt;
-import gwtquery.plugins.draggable.client.DraggableOptions.DragFunction;
 import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
-import gwtquery.plugins.draggable.client.DraggableOptions.RevertOption;
-import gwtquery.plugins.draggable.client.events.DragContext;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropNodeInfo;
 
 import java.util.ArrayList;
 
+import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceProxyGWT;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.widget.utils.DeviceCommandDTOCell;
-import org.openremote.modeler.client.widget.utils.DeviceDTOCell;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 
+import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Cursor;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 
 public class DeviceCommandTreeModel implements TreeViewModel {
 
+   private static final Icons ICON = GWT.create(Icons.class);
    private AsyncDataProvider<DeviceDTO> deviceDTOList;
    private AsyncDataProvider<DeviceCommandDTO> deviceCommandsDTOList;
    protected DeviceDTO currentDeviceValue;
-   
-   static interface Templates extends SafeHtmlTemplates {
-      Templates INSTANCE = GWT.create(Templates.class);
+   private static class DeviceCell extends AbstractCell<DeviceDTO> {
 
-      @Template("<div id='dragHelper' class='{0}'></div>")
-      SafeHtml outerHelper(String cssClassName);
+      /**
+       * The html of the image used for contacts.
+       */
+      private final String imageHtml;
+
+      public DeviceCell() {
+        this.imageHtml = ICON.device().getHTML();
+      }
+
+      @Override
+      public void render(Context context, DeviceDTO value, SafeHtmlBuilder sb) {
+        if (value != null) {
+          sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
+          sb.appendEscaped(value.getDisplayName());
+        }
+      }
     }
    
+   private static class CommandCell extends AbstractCell<DeviceCommandDTO> {
 
+      /**
+       * The html of the image used for contacts.
+       */
+      private final String imageHtml;
+
+      public CommandCell() {
+        this.imageHtml = ICON.deviceCmd().getHTML();
+      }
+
+      @Override
+      public void render(Context context, DeviceCommandDTO value, SafeHtmlBuilder sb) {
+        if (value != null) {
+          sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
+          sb.appendEscaped(value.getDisplayName());
+        }
+      }
+
+    }
    public DeviceCommandTreeModel() { 
    }
    
@@ -61,9 +86,7 @@ public class DeviceCommandTreeModel implements TreeViewModel {
              
           }
        };
-       DragAndDropNodeInfo<DeviceDTO> node = new DragAndDropNodeInfo<DeviceDTO>(deviceDTOList, new DeviceDTOCell());
-       
-       return node;
+         return new DefaultNodeInfo<DeviceDTO>(deviceDTOList, new DeviceCell());
       } else if (value instanceof DeviceDTO){
          currentDeviceValue = (DeviceDTO) value;
          deviceCommandsDTOList = new AsyncDataProvider<DeviceCommandDTO>() {
@@ -81,23 +104,11 @@ public class DeviceCommandTreeModel implements TreeViewModel {
               
            }
         };
-        DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new DeviceCommandDTOCell(), new SingleSelectionModel<DeviceCommandDTO>(),null);
-        DraggableOptions options = new DraggableOptions();
-        options.setHelper(HelperType.CLONE);
-        options.setOpacity((float) 0.9);
-        options.setCursor(Cursor.MOVE);
-        options.setCursorAt(new CursorAt(10, 10, null, null));
-        options.setAppendTo("body");
-        options.setRevert(RevertOption.ON_INVALID_DROP);
-        options.setRevertDuration(100);
-        options.setOnDragStart(new DragFunction() {
-          public void f(DragContext context) {
-            DeviceCommandDTO deviceCommandDTO = context.getDraggableData();
-            context.getHelper().setInnerHTML(deviceCommandDTO.getDisplayName());
-          }
-        }); 
-        node.setDraggableOptions(options);
-        return node;
+         DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
+         DraggableOptions options = node.getDraggableOptions();
+         options.setHelper(HelperType.CLONE);
+         options.setAppendTo("body");
+         return node;
       }
       return null;
    }

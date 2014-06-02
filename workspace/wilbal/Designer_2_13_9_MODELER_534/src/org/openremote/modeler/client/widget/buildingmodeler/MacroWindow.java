@@ -19,11 +19,16 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
-import gwtquery.plugins.draggable.client.DraggableOptions;
-import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
+import gwtquery.plugins.draggable.client.events.DragEvent;
+import gwtquery.plugins.draggable.client.events.DragEvent.DragEventHandler;
+import gwtquery.plugins.draggable.client.gwt.DraggableWidget;
 import gwtquery.plugins.droppable.client.DroppableOptions;
 import gwtquery.plugins.droppable.client.DroppableOptions.DroppableFunction;
 import gwtquery.plugins.droppable.client.events.DragAndDropContext;
+import gwtquery.plugins.droppable.client.events.OutDroppableEvent;
+import gwtquery.plugins.droppable.client.events.OutDroppableEvent.OutDroppableEventHandler;
+import gwtquery.plugins.droppable.client.events.OverDroppableEvent;
+import gwtquery.plugins.droppable.client.events.OverDroppableEvent.OverDroppableEventHandler;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellList;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellTree;
 
@@ -36,18 +41,19 @@ import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.DeviceCommandTreeModel;
 import org.openremote.modeler.client.widget.utils.DeviceCommandDTOCell;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -60,10 +66,28 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The window to creates or updates a macro.
  */
-public class MacroWindow extends DialogBox {
+public class MacroWindow extends PopupPanel {
 
   //private static DialogBoxCaptionWithCancel caption = new DialogBoxCaptionWithCancel();
+  public class CustomDragHandler implements OverDroppableEventHandler, OutDroppableEventHandler, DragEventHandler{
 
+    private HandlerRegistration dragHandlerRegistration;
+    
+    public void onOutDroppable(OutDroppableEvent event) {
+      dragHandlerRegistration.removeHandler();
+    }
+
+    public void onOverDroppable(OverDroppableEvent event) {
+      DraggableWidget<?> draggable = event.getDraggableWidget();
+      dragHandlerRegistration = draggable.addDragHandler(this);
+    }
+
+    public void onDrag(DragEvent event) {
+      GWT.log("position "+event.getDraggableWidget().getAbsoluteTop());
+      
+    }
+
+  }
   interface MacroWindowUiBinder extends UiBinder<Widget, MacroWindow> {
   }
   private static MacroWindowUiBinder uiBinder = GWT.create(MacroWindowUiBinder.class);
@@ -93,7 +117,6 @@ public class MacroWindow extends DialogBox {
   
   private MacroDTO macro;
   private MacroDetailsDTO macroDetails;
-
   private boolean edit;
 
   /** The Constant MACRO_DND_GROUP. */
@@ -109,7 +132,7 @@ public class MacroWindow extends DialogBox {
 //  private LayoutContainer addMacroItemContainer;
 
   /** The device command tree. */
-    private CellTree deviceCommandTree = null;
+    private DragAndDropCellTree deviceCommandTree = null;
 
   /** The left macro list. */
 //  private TreePanel<BeanModel> leftMacroList = null;
@@ -119,7 +142,7 @@ public class MacroWindow extends DialogBox {
 
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
-  private DragAndDropCellList<DeviceCommandDTO> selectedCommands;
+  private DragAndDropCellList<MacroItemDetailsDTO> selectedCommands;
   private DeviceCommandDTOCell deviceCommandDTOCell;
   /**
    * Instantiates a macro window to create a new macro.
@@ -127,7 +150,7 @@ public class MacroWindow extends DialogBox {
   public MacroWindow() {
    uiBinder.createAndBindUi(this);
     this.center();
-    setText("New Macro");
+ //   setText("New Macro");
     //setup();
    // macroDetails = new MacroDetailsDTO();
     mainPanel.setSize("650px", "520px");
@@ -142,8 +165,6 @@ public class MacroWindow extends DialogBox {
    */
   public MacroWindow(MacroDTO macro) {
     setWidget(uiBinder.createAndBindUi(this));
-    setText("Edit Macro");
-
     this.center();
     this.macro = macro;
     edit = true;
@@ -152,69 +173,53 @@ public class MacroWindow extends DialogBox {
     center();
     show();
     deviceCommandDTOCell = new DeviceCommandDTOCell();
-    final DragAndDropCellList<DeviceCommandDTO> selectedCommands = new DragAndDropCellList<DeviceCommandDTO>(deviceCommandDTOCell);
- // setup the drag operation
-    DraggableOptions dragOptions = new DraggableOptions();
-    // use a clone of the original cell as drag helper
-    dragOptions.setHelper(HelperType.CLONE);
-    // set the opacity of the drag helper
-    dragOptions.setOpacity((float) 0.8);
-    // append the drag helper to the body element
-    dragOptions.setAppendTo("body");
-    dragOptions.setSnap(true);
-    // configure the drag operations of the cell list with this options
-    selectedCommands.setDraggableOptions(dragOptions);
+    selectedCommands = new DragAndDropCellList<MacroItemDetailsDTO>(deviceCommandDTOCell);
+    CustomDragHandler dragoverHandler = new CustomDragHandler();
+    selectedCommands.addOutDroppableHandler(dragoverHandler);
+    selectedCommands.addOverDroppableHandler(dragoverHandler);
 
-    DroppableOptions dropOptions = new DroppableOptions();
-    
-    dropOptions.setOnOver(new DroppableFunction() {
+    /*DraggableOptions dragOptions = selectedCommands.getDraggableOptions();
+    dragOptions.setOnDrag(new DragFunction() {
       
       @Override
-      public void f(DragAndDropContext context) {
-         GWT.log("moving inside widget"+context.getDraggable().getAbsoluteTop()+"  "+context.getDroppable().getAbsoluteTop()+" "+context.getDroppable().getOffsetHeight());         
+      public void f(DragContext context) {
+        GWT.log("moving");
       }
-   });
+    });*/
+    /*selectedCommands.setWidth("80px");
+    selectedCommands.setHeight("100px");*/
+    
+    DroppableOptions dropOptions = selectedCommands.getDroppableOptions();
     dropOptions.setOnDrop(new DroppableFunction() {
       
       @Override
       public void f(DragAndDropContext context) {
-         DeviceCommandDTO droppedCommands = context.getDraggableData();
-         DeviceCommandDTO overCommand = context.getDroppableData();
-         List<DeviceCommandDTO> currentList = new ArrayList<DeviceCommandDTO>(selectedCommands.getVisibleItems());
-         int reorderingIndexStart = currentList.indexOf(droppedCommands);
-         if (reorderingIndexStart>=0 && (context.getDraggable().getClass()==context.getDroppable().getClass())) {
-            
-            int indexForInsertion = currentList.indexOf(overCommand);
-            currentList.add(indexForInsertion, droppedCommands);
-            if (indexForInsertion<reorderingIndexStart) {
-               currentList.remove(reorderingIndexStart+1);
-            } else {
-               currentList.remove(reorderingIndexStart);
-            }
-            selectedCommands.setRowData(currentList);
-            
-         } else {
-            GWT.log("adding new");
-            int indexForInsertion = currentList.indexOf(overCommand);
-            currentList.add(indexForInsertion, droppedCommands);
-            selectedCommands.setRowData(currentList);   
-         }
-         
+        MacroItemDetailsDTO overCommand = context.getDroppableData();
+        List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+
         
+        // if dropped a device command, add it else reorder items in list
+        if (context.getDraggableData() instanceof DeviceCommandDTO) {
+          DeviceCommandDTO droppedCommands = context.getDraggableData();          
+          MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, droppedCommands.getDisplayName(), new DTOReference(droppedCommands.getOid()));
+          int insertIndex = 0;
+          if (overCommand!=null){
+            insertIndex = currentList.indexOf(overCommand);
+          } else {
+            insertIndex = currentList.size()-1;
+            GWT.log("dropping command");
+          }
+          currentList.add(insertIndex, newDetail);
+        } else  if (context.getDraggableData() instanceof MacroItemDetailsDTO) {
+          MacroItemDetailsDTO droppedCommands = context.getDraggableData();  
+          GWT.log("moved "+droppedCommands.getClass() +" on "+overCommand.getClass()+" in current list "+currentList.getClass());
+          
+          
+        }
+        
+        selectedCommands.setRowData(currentList);
       }
-   });
-    selectedCommands.setDroppableOptions(dropOptions);
-    List<DeviceCommandDTO> deviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
-    DeviceCommandDTO ddto1 = new DeviceCommandDTO();
-    ddto1.setDisplayName("ddto1");
-    ddto1.setOid(1L);
-    
-    DeviceCommandDTO ddto2 = new DeviceCommandDTO();
-    ddto2.setDisplayName("ddto2");
-    ddto2.setOid(2L);
-    deviceCommandDTOs.add(ddto1);
-    deviceCommandDTOs.add(ddto2);
-    selectedCommands.setRowData(deviceCommandDTOs);
+    });
     currentCommandsPanel.add(selectedCommands);
 
   //  setText("Edit Macro");
@@ -232,7 +237,9 @@ public class MacroWindow extends DialogBox {
    * Sets the window style and initializes the form.
    */
   private void setup() {
-    selectionService = new SelectionServiceExt<BeanModel>();
+
+    selectedCommands.setRowData(this.macroDetails.getItems() );
+
     /*setPlain(true);
     setBlinkModal(true);
     setWidth(530);
@@ -296,7 +303,7 @@ public class MacroWindow extends DialogBox {
     addMacroItemContainer.setHeight(280);
     */
     createLeftCommandMacroTab();
-   // createRightMacroList();
+    createRightMacroList();
 
   }
 
@@ -334,7 +341,6 @@ public class MacroWindow extends DialogBox {
 
 
     deviceCommandTree = new DragAndDropCellTree(new DeviceCommandTreeModel(), null);
-    deviceCommandTree.setAnimationEnabled(true);
     deviceCommandTree.setHeight("100%");
     deviceCommandTree.setWidth("100%");
     /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
@@ -405,29 +411,11 @@ public class MacroWindow extends DialogBox {
   /**
    * Creates the right macro list.
    */
- /* private void createRightMacroList() {
-    ContentPanel rightListContainer = new ContentPanel();
-    rightListContainer.setHeaderVisible(false);
-    rightListContainer.setWidth(230);
-    rightListContainer.setHeight(275);
-    rightListContainer.setLayout(new FitLayout());
-
-    ToolBar toolBar = createRightMacroItemListToolbar();
-
-    rightListContainer.setTopComponent(toolBar);
-
-    rightMacroItemListView = createRightMacroItemListView();
-
-    selectionService.addListener(new SourceSelectionChangeListenerExt(rightMacroItemListView.getSelectionModel()));
-    selectionService.register(rightMacroItemListView.getSelectionModel());
-    setupRightMacroItemDND();
-
-    rightListContainer.add(rightMacroItemListView);
-    HBoxLayoutData flex = new HBoxLayoutData(new Margins(0, 5, 0, 0));
-    flex.setFlex(1);
-    addMacroItemContainer.add(new Text(), flex);
-    addMacroItemContainer.add(rightListContainer);
-  }*/
+  private void createRightMacroList() {
+    for (MacroItemDetailsDTO item : macroDetails.getItems()) {
+      GWT.log("macro detail "+item.getOid()+" "+item.getDisplayName()+" "+item.getDelay()+" "+item.getDto()+" "+item.getType());
+    }
+  }
 
   /**
    * Creates the right macro item list toolbar.
