@@ -3,7 +3,7 @@
 	<url>http://localhost:8080/datalogger/rest</url>
 	<key>ba8779a281ee4a4fb216ef2bf214e75b</key>
 	
-	<sensor name="Camera 1 Count In" logRepeatSeconds="3600" />
+	<sensor name="Camera 1 Count In" displayName="Camera One Count In" logRepeatSeconds="3600" />
 	<sensor name="Camera 2 Count In" logRepeatSeconds="3600" />
 	<sensor name="Camera 3 Count In" logRepeatSeconds="3600" />
 	<sensor name="Camera 4 Count In" logRepeatSeconds="3600" />

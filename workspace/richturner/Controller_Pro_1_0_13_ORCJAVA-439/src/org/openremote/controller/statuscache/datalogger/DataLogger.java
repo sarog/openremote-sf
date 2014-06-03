@@ -20,7 +20,6 @@
 package org.openremote.controller.statuscache.datalogger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -115,6 +114,7 @@ public class DataLogger extends EventProcessor {
          }
          
          if (sensor != null) {
+            String displayName = sensor.getDisplayName() != null && !sensor.getDisplayName().isEmpty() ? sensor.getDisplayName() : sensorName;
             boolean okToLog = false;
             Date lastLogTime = sensor.getLastLogTime();
             Date now = new Date();
@@ -143,7 +143,7 @@ public class DataLogger extends EventProcessor {
             SensorValue value = new SensorValue();
             value.setSensorValue(sensorValue);
             value.setTimestamp(now);
-            queueProcessor.queueValue(sensorName, value);
+            queueProcessor.queueValue(displayName, value);
          }
       } catch (Exception e) {
          log.error("Unknown error", e);
@@ -232,12 +232,15 @@ public class DataLogger extends EventProcessor {
             Node nNode = nList.item(temp);
             NamedNodeMap attributes = nNode.getAttributes();
             String name = attributes.getNamedItem("name").getNodeValue();
+            Node dNameNode = attributes.getNamedItem("displayName");
+            String displayName = dNameNode != null ? dNameNode.getNodeValue() : null;
             String logRepeat = attributes.getNamedItem("logRepeatSeconds") != null ? attributes.getNamedItem("logRepeatSeconds").getNodeValue() : null;
             int logRepeatSeconds = logRepeat != null ? Integer.parseInt(logRepeat) : DEFAULT_LOG_REPEAT_SECONDS;
             
             if (name != null && !name.isEmpty()) {
                DataLoggerSensor sensor = new DataLoggerSensor();
                sensor.setSensorName(name);
+               sensor.setDisplayName(displayName);
                sensor.setLogRepeatSeconds(logRepeatSeconds);
                sensors.add(sensor);
             }

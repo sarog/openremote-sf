@@ -31,24 +31,38 @@ import java.util.Date;
  */
 public class DataLoggerSensor {
    String sensorName;
+   String displayName;
    int logRepeatSeconds;
    Date lastLogTime;
    
    public String getSensorName() {
       return sensorName;
    }
+   
    public void setSensorName(String sensorName) {
       this.sensorName = sensorName;
    }
+   
+   String getDisplayName() {
+      return displayName;
+   }
+   
+   void setDisplayName(String displayName) {
+      this.displayName = displayName;
+   }
+   
    public int getLogRepeatSeconds() {
       return logRepeatSeconds;
    }
+   
    public void setLogRepeatSeconds(int logRepeatSeconds) {
       this.logRepeatSeconds = logRepeatSeconds;
    }
+   
    public Date getLastLogTime() {
       return lastLogTime;
    }
+   
    public void setLastLogTime(Date lastLogTime) {
       this.lastLogTime = lastLogTime;
    }   
