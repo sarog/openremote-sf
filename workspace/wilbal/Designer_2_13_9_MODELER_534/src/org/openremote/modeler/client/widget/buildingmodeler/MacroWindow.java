@@ -21,14 +21,9 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 
 import gwtquery.plugins.draggable.client.events.DragEvent;
 import gwtquery.plugins.draggable.client.events.DragEvent.DragEventHandler;
-import gwtquery.plugins.draggable.client.gwt.DraggableWidget;
 import gwtquery.plugins.droppable.client.DroppableOptions;
 import gwtquery.plugins.droppable.client.DroppableOptions.DroppableFunction;
 import gwtquery.plugins.droppable.client.events.DragAndDropContext;
-import gwtquery.plugins.droppable.client.events.OutDroppableEvent;
-import gwtquery.plugins.droppable.client.events.OutDroppableEvent.OutDroppableEventHandler;
-import gwtquery.plugins.droppable.client.events.OverDroppableEvent;
-import gwtquery.plugins.droppable.client.events.OverDroppableEvent.OverDroppableEventHandler;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellList;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellTree;
 
@@ -50,7 +45,8 @@ import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -68,26 +64,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MacroWindow extends PopupPanel {
 
-  //private static DialogBoxCaptionWithCancel caption = new DialogBoxCaptionWithCancel();
-  public class CustomDragHandler implements OverDroppableEventHandler, OutDroppableEventHandler, DragEventHandler{
-
-    private HandlerRegistration dragHandlerRegistration;
-    
-    public void onOutDroppable(OutDroppableEvent event) {
-      dragHandlerRegistration.removeHandler();
-    }
-
-    public void onOverDroppable(OverDroppableEvent event) {
-      DraggableWidget<?> draggable = event.getDraggableWidget();
-      dragHandlerRegistration = draggable.addDragHandler(this);
-    }
-
-    public void onDrag(DragEvent event) {
-      GWT.log("position "+event.getDraggableWidget().getAbsoluteTop());
-      
-    }
-
-  }
   interface MacroWindowUiBinder extends UiBinder<Widget, MacroWindow> {
   }
   private static MacroWindowUiBinder uiBinder = GWT.create(MacroWindowUiBinder.class);
@@ -119,6 +95,8 @@ public class MacroWindow extends PopupPanel {
   private MacroDetailsDTO macroDetails;
   private boolean edit;
 
+  private ArrayList<Integer> selectedCommandCellsVerticalCenter;
+  private int dropIndex;
   /** The Constant MACRO_DND_GROUP. */
   private static final String MACRO_DND_GROUP = "macro";
 
@@ -174,26 +152,26 @@ public class MacroWindow extends PopupPanel {
     show();
     deviceCommandDTOCell = new DeviceCommandDTOCell();
     selectedCommands = new DragAndDropCellList<MacroItemDetailsDTO>(deviceCommandDTOCell);
-    CustomDragHandler dragoverHandler = new CustomDragHandler();
-    selectedCommands.addOutDroppableHandler(dragoverHandler);
-    selectedCommands.addOverDroppableHandler(dragoverHandler);
-
-    /*DraggableOptions dragOptions = selectedCommands.getDraggableOptions();
-    dragOptions.setOnDrag(new DragFunction() {
-      
-      @Override
-      public void f(DragContext context) {
-        GWT.log("moving");
-      }
-    });*/
-    /*selectedCommands.setWidth("80px");
-    selectedCommands.setHeight("100px");*/
+    selectedCommands.getElement().getStyle().setBackgroundColor("#DDD");
+    
+    selectedCommands.setWidth("100%");
+    selectedCommands.setHeight("100%");
     
     DroppableOptions dropOptions = selectedCommands.getDroppableOptions();
+    selectedCommands.setPageSize(20);
+    dropOptions.setOnOver(new DroppableFunction() {
+      
+      @Override
+      public void f(DragAndDropContext context) {
+         GWT.log("over !");
+         
+      }
+   });
     dropOptions.setOnDrop(new DroppableFunction() {
       
       @Override
       public void f(DragAndDropContext context) {
+         GWT.log("drop !");
         MacroItemDetailsDTO overCommand = context.getDroppableData();
         List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
 
@@ -202,14 +180,7 @@ public class MacroWindow extends PopupPanel {
         if (context.getDraggableData() instanceof DeviceCommandDTO) {
           DeviceCommandDTO droppedCommands = context.getDraggableData();          
           MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, droppedCommands.getDisplayName(), new DTOReference(droppedCommands.getOid()));
-          int insertIndex = 0;
-          if (overCommand!=null){
-            insertIndex = currentList.indexOf(overCommand);
-          } else {
-            insertIndex = currentList.size()-1;
-            GWT.log("dropping command");
-          }
-          currentList.add(insertIndex, newDetail);
+          currentList.add(dropIndex, newDetail);
         } else  if (context.getDraggableData() instanceof MacroItemDetailsDTO) {
           MacroItemDetailsDTO droppedCommands = context.getDraggableData();  
           GWT.log("moved "+droppedCommands.getClass() +" on "+overCommand.getClass()+" in current list "+currentList.getClass());
@@ -218,6 +189,11 @@ public class MacroWindow extends PopupPanel {
         }
         
         selectedCommands.setRowData(currentList);
+        selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+        for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+           Element command = selectedCommands.getRowElement(i);
+           selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+       }
       }
     });
     currentCommandsPanel.add(selectedCommands);
@@ -239,6 +215,10 @@ public class MacroWindow extends PopupPanel {
   private void setup() {
 
     selectedCommands.setRowData(this.macroDetails.getItems() );
+    for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+       Element command = selectedCommands.getRowElement(0);
+       selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+   }
 
     /*setPlain(true);
     setBlinkModal(true);
@@ -341,8 +321,36 @@ public class MacroWindow extends PopupPanel {
 
 
     deviceCommandTree = new DragAndDropCellTree(new DeviceCommandTreeModel(), null);
-    deviceCommandTree.setHeight("100%");
+    deviceCommandTree.setHeight("100px;");
     deviceCommandTree.setWidth("100%");
+    deviceCommandTree.addDragHandler(new DragEventHandler() {
+       
+       @Override
+       public void onDrag(DragEvent event) {
+          int currentIndex = 0;
+          for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
+             GWT.log("helper left "+event.getHelper().getAbsoluteLeft()+" list "+selectedCommands.getRowElement(currentIndex).getAbsoluteLeft());
+            if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(2, Unit.PX);
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
+               dropIndex = currentIndex;
+            } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter){
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(2, Unit.PX);
+               dropIndex = currentIndex+1;
+            } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)){
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(2, Unit.PX);
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX); 
+               dropIndex = currentIndex+1;
+            } else {
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
+               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
+            }
+            currentIndex += 1;
+         }
+       }
+    });
+    
     /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
     dragSource.addDNDListener(new DNDListener() {
       @SuppressWarnings("unchecked")

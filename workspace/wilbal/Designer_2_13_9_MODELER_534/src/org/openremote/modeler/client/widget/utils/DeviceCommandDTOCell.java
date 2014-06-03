@@ -20,7 +20,7 @@ public class DeviceCommandDTOCell extends AbstractCell<MacroItemDetailsDTO> {
   public void render(com.google.gwt.cell.client.Cell.Context context,
       MacroItemDetailsDTO value, SafeHtmlBuilder sb) {
     if (value != null) {
-       sb.appendHtmlConstant("<div style='margin:-1px -5px -5px -5px;' >");
+       sb.appendHtmlConstant("<div style='background-color:white;' >");
        sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
        sb.appendEscaped(value.getDisplayName());
        sb.appendHtmlConstant("</div>");
