@@ -41,9 +41,9 @@ public class WebElementComponent extends PassiveConsoleComponent implements Sens
 	}
 	
 	public void setURL(String url) {
-		if (url.indexOf("https://") > 0)
+		if (url.indexOf("https://") >= 0)
 			urlPrefix = "https://";
-		if (url.indexOf("http://") > 0)
+		if (url.indexOf("http://") >= 0)
 			urlPrefix = "http://";
 		url = url.replace(urlPrefix, "");
 		this.url = url;
