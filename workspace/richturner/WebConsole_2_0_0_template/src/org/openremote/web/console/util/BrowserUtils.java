@@ -688,7 +688,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
     }-*/;
     
     public static native String getControllerUrlString() /*-{
-      return $wnd.controllerUrl;
+      return $wnd.controllerURL;
     }-*/;
 
     public static native String getPanelNameString() /*-{
