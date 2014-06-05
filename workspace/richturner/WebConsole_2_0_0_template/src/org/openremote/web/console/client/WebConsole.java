@@ -27,7 +27,6 @@ import org.openremote.web.console.panel.entity.PanelSizeInfo;
 import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.EnumDataMap;
-import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.unit.ConsoleUnit;
 import org.openremote.web.console.util.BrowserUtils;
@@ -39,7 +38,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.web.bindery.autobean.shared.AutoBean;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -111,7 +109,7 @@ public class WebConsole implements EntryPoint {
     String cUrl = Window.Location.getParameter("controllerURL");
     String pName = Window.Location.getParameter("panelName");
     
-    if (cUrl == null || !cUrl.isEmpty())
+    if (cUrl == null || cUrl.isEmpty())
     {
       cUrl = BrowserUtils.getControllerUrlString();
     }
