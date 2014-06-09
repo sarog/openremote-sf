@@ -1,3 +1,9 @@
+Designer MODELER-437
+====================
+
+  - Refactor walking the UIComponent objects within a panels collection 
+
+
 Designer MODELER-398
 ====================
 
