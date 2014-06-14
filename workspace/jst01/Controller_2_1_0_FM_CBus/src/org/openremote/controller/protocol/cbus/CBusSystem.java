@@ -255,6 +255,18 @@ public class CBusSystem
       pulseCache.add(pulseCacheElement);
       
    }
+
+   /**
+    * Returns the project that CGate will run
+    * @return the project address to use
+    */
+   public String getProjectToRun() 
+   {
+      if(CBusProject.getInstance().isInstanceBuilt())
+         return CBusProject.getInstance().getProjectAddress();
+      else
+         return null;
+   }
      
 }
 

@@ -96,6 +96,7 @@ public class CBusGateway
       {
          //initialise system
          this.getSystem().initialiseProjects(config.getProjectFile());
+         
 
          if (connectionThread == null) 
          {
@@ -104,6 +105,7 @@ public class CBusGateway
             connectionThread.name = "CBUS Main Port";
             connectionThread.hasWriterThread = true;
             connectionThread.port = config.getPort();
+            addInitialCommandsToWriteQueue();
             connectionThread.start();
          }
 
@@ -151,6 +153,16 @@ public class CBusGateway
          log.info("Project File >" + config.getProjectFile() + "<");
 
       }
+   }
+   
+   /**
+    * adds commands to the queue to start the CBUS project. These commands are not required if CGate automatically
+    * starts a project
+    */
+   private synchronized void addInitialCommandsToWriteQueue()
+   {
+      queue.add(new CGateDeviceCommand("PROJECT USE " + getSystem().getProjectToRun()));
+      queue.add(new CGateDeviceCommand("PROJECT START"));
    }
 
    /**
@@ -233,91 +245,90 @@ public class CBusGateway
       public void run() 
       {
 
-         if(sock == null)
-         {
-            sock = new Socket();               
 
-            while (!isInterrupted()) 
+         while (!isInterrupted()) 
+         {
+            try 
             {
+
+               log.info("Trying to connect to " + name + " at " + config.getAddress() + " on port " + port);
+
+               sock = new Socket();
+               sock.connect(new InetSocketAddress(config.getAddress(), port), 5000); //times out pretty quickly
+               log.info(name + " socket connected");
+               readerThread = new CGateReaderThread(sock, log);
+               readerThread.start();
+               log.info("Reader thread for " + name + " started");
+               if(hasWriterThread)
+               {
+                  writerThread = new CGateWriterThread(sock, log);
+                  writerThread.start();
+                  log.info("Writer thread for " + name + " started");
+               }
+               else
+                  log.info(name + " has no writer thread");
+
+
+               // Wait for the read thread to die, this would indicate the connection was dropped
+               while (readerThread != null) 
+               {
+                  readerThread.join(1000);
+                  if (!readerThread.isAlive()) 
+                  {
+                     log.info("Reader thread for " + name + " is dead, clean and re-try to connect");
+                     sock.close();
+                     readerThread = null;
+                     if(hasWriterThread)
+                     {
+                        writerThread.interrupt();
+                        writerThread = null;
+                     }
+                  }
+
+                  //turn off any expired pulse commands if we are in the main thread
+                  if(hasWriterThread)
+                     getSystem().turnOffExpiredPulses();
+               }
+            } 
+            catch (SocketException e) 
+            {
+               e.printStackTrace();
+               log.error("SocketException occurred for " + name + ": " + e.getMessage());
+
+               // We could not connect, sleep for a while before trying again
                try 
                {
-
-                  log.info("Trying to connect to " + name + " at " + config.getAddress() + " on port " + port);
-                  sock.connect(new InetSocketAddress(config.getAddress(), port), 5000); //times out pretty quickly
-                  log.info(name + " socket connected");
-                  readerThread = new CGateReaderThread(sock.getInputStream(), log);
-                  readerThread.start();
-                  log.info("Reader thread for " + name + " started");
-                  if(hasWriterThread)
-                  {
-                     writerThread = new CGateWriterThread(sock.getOutputStream(), log);
-                     writerThread.start();
-                     log.info("Writer thread for " + name + " started");
-                  }
-                  else
-                     log.info(name + " has no writer thread");
-
-
-                  // Wait for the read thread to die, this would indicate the connection was dropped
-                  while (readerThread != null) 
-                  {
-                     readerThread.join(1000);
-                     if (!readerThread.isAlive()) 
-                     {
-                        log.info("Reader thread for " + name + " is dead, clean and re-try to connect");
-                        sock.close();
-                        readerThread = null;
-                        if(hasWriterThread)
-                        {
-                           writerThread.interrupt();
-                           writerThread = null;
-                        }
-                     }
-
-                     //turn off any expired pulse commands if we are in the main thread
-                     if(hasWriterThread)
-                        getSystem().turnOffExpiredPulses();
-                  }
+                  Thread.sleep(15000);
                } 
-               catch (SocketException e) 
+               catch (InterruptedException e1) 
                {
-                  e.printStackTrace();
-                  log.error("SocketException occurred for " + name + ": " + e.getMessage());
+                  e1.printStackTrace();
+               }
 
-                  // We could not connect, sleep for a while before trying again
-                  try 
-                  {
-                     Thread.sleep(15000);
-                  } 
-                  catch (InterruptedException e1) 
-                  {
-                     e1.printStackTrace();
-                  }
-
-               } 
-               catch (IOException e) 
+            } 
+            catch (IOException e) 
+            {
+               e.printStackTrace();
+               log.error("IOException occurred for " + name + ": " + e.getMessage());
+               // We could not connect, sleep for a while before trying again
+               try 
                {
-                  e.printStackTrace();
-                  log.error("IOException occurred for " + name + ": " + e.getMessage());
-                  // We could not connect, sleep for a while before trying again
-                  try 
-                  {
-                     Thread.sleep(15000);
-                  } 
-                  catch (InterruptedException e1) 
-                  {
-                     // TODO Auto-generated catch block
-                     e1.printStackTrace();
-                  }
-
+                  Thread.sleep(15000);
                } 
-               catch (InterruptedException e) 
+               catch (InterruptedException e1) 
                {
                   // TODO Auto-generated catch block
-                  e.printStackTrace();
+                  e1.printStackTrace();
                }
+
+            } 
+            catch (InterruptedException e) 
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
             }
          }
+
       }
 
       /**
@@ -334,22 +345,23 @@ public class CBusGateway
          private Logger log;
 
          /**
-          * The stream to write data to the port
+          * The socket the main controlling thread has opened
           */
-         protected OutputStream os;
-
+         protected Socket sock;
+         
+         
          /**
           * Constructor
           * 
-          * @param os
-          *           The output stream
+          * @param socket
+          *           The socket from the parent connection thread
           * @param log
           *           The logger to use
           */
-         public CGateWriterThread(OutputStream os, Logger log) 
+         public CGateWriterThread(Socket sock, Logger log) 
          {
             super();
-            this.os = os;
+            this.sock = sock;
             this.log = log;
          }
 
@@ -359,18 +371,42 @@ public class CBusGateway
          {
             log.info("Writer thread starting");
 
-            PrintWriter pr = new PrintWriter(os, true);
-
-            while (!isInterrupted()) 
+            try
             {
-               CGateDeviceCommand cmd = queue.blockingPoll();
-               if (cmd != null) 
+               if(sock == null)
+                  throw new Exception("Socket is null");
+               
+               OutputStream os = sock.getOutputStream();
+               PrintWriter pr = new PrintWriter(os, true);
+
+               while (!isInterrupted()) 
                {
-                  log.debug("Sending >" + cmd.toString() + "< to CGate");
-                  pr.print(cmd.toString() + cmd.getCommandTerminator());
-                  pr.flush();                   
+                  CGateDeviceCommand cmd = queue.blockingPoll();
+                  if (cmd != null && sock != null && !sock.isClosed() && sock.isConnected()) 
+                  {
+                     log.debug("Sending >" + cmd.toString() + "< to CGate");
+                     pr.print(cmd.toString() + cmd.getCommandTerminator());
+                     pr.flush();                   
+                  }
                }
             }
+            catch(Exception e)
+            {
+               log.error("*CBUS ERROR* Error occurred in writer thread " + this.getName() + ": " + e.getStackTrace()[0]);
+            }
+            
+            //close the stream if we're exiting
+            try
+            {
+               if(sock != null && sock.getOutputStream() != null)
+                  sock.getOutputStream().close();
+            }
+            catch(Exception ex)
+            {
+               //do nothing
+            }
+            
+            log.info("CBus writer thread exiting");
          }
 
       }
@@ -389,9 +425,9 @@ public class CBusGateway
          private Logger log;
 
          /**
-          * The stream of data from CGate
+          * The socket the main controlling thread has opened
           */
-         protected InputStream is;
+         protected Socket sock;
 
          /**
           * Constructor
@@ -400,10 +436,10 @@ public class CBusGateway
           *           The input stream to read from
           *           
           */
-         public CGateReaderThread(InputStream is, Logger log) 
+         public CGateReaderThread(Socket sock, Logger log) 
          {
             super();
-            this.is = is;
+            this.sock = sock;
             this.log = log;
          }
 
@@ -412,12 +448,17 @@ public class CBusGateway
          {
             log.debug("Reader thread starting");
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            
 
             String line = null;
+            BufferedReader br = null;
             try 
             {
-               line = br.readLine();
+               br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+               if(br == null || sock == null || sock.isClosed() || !sock.isConnected())
+                  line = null;
+               else
+                  line = br.readLine();
             } 
             catch (Exception e1) 
             {
@@ -444,7 +485,10 @@ public class CBusGateway
                      }
                   }                  
 
-                  line = br.readLine();
+                  if(br == null || sock == null || sock.isClosed() || !sock.isConnected())
+                     line = null;
+                  else
+                     line = br.readLine();
                } 
                catch (Exception e) 
                {
@@ -453,6 +497,17 @@ public class CBusGateway
                }
             } 
             while (line != null && !isInterrupted());
+            
+            //close the stream if we're exiting
+            try
+            {
+               if(sock != null && sock.getInputStream() != null)
+                  sock.getInputStream().close();
+            }
+            catch(Exception ex)
+            {
+               //do nothing
+            }
             
             log.warn("*CBUS WARNING* Reader thread exiting...");
          }
