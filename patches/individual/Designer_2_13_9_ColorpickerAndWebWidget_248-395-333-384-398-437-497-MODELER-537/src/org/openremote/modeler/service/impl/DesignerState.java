@@ -44,6 +44,8 @@ import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.domain.Panel.UIComponentOperation;
+import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.ConfigurationException;
@@ -414,7 +416,16 @@ class DesignerState
           restoreLegacyDesignerUIState(legacyPanelsObjFile);
 
           restoreLog.info("Restored UI state : {0}", this);
+          
+          MaxComponentOidComputeOperation maxComponentOidOperation = new MaxComponentOidComputeOperation();
+          Panel.walkAllUIComponents(panels, maxComponentOidOperation);
+          long computedOid = maxComponentOidOperation.getMaxOid();
 
+          if (computedOid != this.maxOID) {
+        	  restoreLog.warn("Restored maxOID ({0}) does not match computed one ({1}), setting to {2}", this.maxOID, computedOid, computedOid + 1);
+        	  this.maxOID = computedOid + 1;
+          }
+          
           return;
         }
 
@@ -1180,5 +1191,27 @@ class DesignerState
       super(msg, cause);
     }
   }
+  
+  /**
+   * Operation used to walk the UI tree and compute the maximum value used for a component oid.
+   * 
+   * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+   */
+  private class MaxComponentOidComputeOperation implements UIComponentOperation {
+
+	private long maxOid = 0;
+	  
+    @Override
+    public void execute(UIComponent component) {
+      if (component.getOid() > maxOid) {
+         maxOid = component.getOid();
+      }
+    }
+
+    public long getMaxOid() {
+      return maxOid;
+    }
+  }
+  
 }
 
