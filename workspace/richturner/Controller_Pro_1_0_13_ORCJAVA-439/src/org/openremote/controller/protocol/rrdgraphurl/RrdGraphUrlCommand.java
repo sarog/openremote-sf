@@ -181,10 +181,10 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
          cmd.port = "" + configuration.getWebappPort();
       }
       String url = "http://" + cmd.ip + ":" + cmd.port + "/controller/graph?name=" + cmd.graphName 
-         + "&amp;start=" + cmd.start 
-         + "&amp;end=" + cmd.end 
-         + "&amp;width=" + cmd.width 
-         + "&amp;height=" + cmd.height;
+         + "&start=" + cmd.start 
+         + "&end=" + cmd.end 
+         + "&width=" + cmd.width 
+         + "&height=" + cmd.height;
       return url;
    }
 }
