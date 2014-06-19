@@ -46,6 +46,7 @@ import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.conf.AssertBehaviorOption;
+import org.drools.conf.EventProcessingOption;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.Globals;
 import org.drools.runtime.rule.FactHandle;
@@ -247,6 +248,7 @@ public class RuleEngine extends EventProcessor
 
     KnowledgeBaseConfiguration kbConfiguration = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
     kbConfiguration.setOption(AssertBehaviorOption.EQUALITY);
+    kbConfiguration.setOption(EventProcessingOption.STREAM);
 
     kb = KnowledgeBaseFactory.newKnowledgeBase(kbConfiguration);
 
