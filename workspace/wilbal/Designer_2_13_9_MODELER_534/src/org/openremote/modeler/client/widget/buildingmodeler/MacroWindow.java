@@ -23,9 +23,13 @@ import gwtquery.plugins.draggable.client.events.DragEvent;
 import gwtquery.plugins.draggable.client.events.DragEvent.DragEventHandler;
 import gwtquery.plugins.droppable.client.DroppableOptions;
 import gwtquery.plugins.droppable.client.DroppableOptions.DroppableFunction;
+import gwtquery.plugins.droppable.client.DroppableOptions.DroppableTolerance;
 import gwtquery.plugins.droppable.client.events.DragAndDropContext;
+import gwtquery.plugins.droppable.client.events.DropEvent;
+import gwtquery.plugins.droppable.client.events.DropEvent.DropEventHandler;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellList;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropCellTree;
+import gwtquery.plugins.droppable.client.gwt.DroppableWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +51,24 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.SelectionModel;
+import com.google.gwt.view.client.SingleSelectionModel;
 
 
 /**
@@ -86,10 +98,11 @@ public class MacroWindow extends PopupPanel {
   @UiField
   ScrollPanel macroPanel;
   
- 
   @UiField
   HorizontalPanel currentCommandsPanel;
-;  
+
+  @UiField
+  FlowPanel currentCommandsButtonsFlowPanel;
   
   private MacroDTO macro;
   private MacroDetailsDTO macroDetails;
@@ -121,6 +134,7 @@ public class MacroWindow extends PopupPanel {
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
   private DragAndDropCellList<MacroItemDetailsDTO> selectedCommands;
+  private SelectionModel<MacroItemDetailsDTO> selectedCommandsSelectionModel = new SingleSelectionModel<MacroItemDetailsDTO>();
   private DeviceCommandDTOCell deviceCommandDTOCell;
   /**
    * Instantiates a macro window to create a new macro.
@@ -152,51 +166,39 @@ public class MacroWindow extends PopupPanel {
     show();
     deviceCommandDTOCell = new DeviceCommandDTOCell();
     selectedCommands = new DragAndDropCellList<MacroItemDetailsDTO>(deviceCommandDTOCell);
-    selectedCommands.getElement().getStyle().setBackgroundColor("#DDD");
+    
+    selectedCommands.setEmptyListWidget(new Label("No commands found"));
     
     selectedCommands.setWidth("100%");
     selectedCommands.setHeight("100%");
     
-    DroppableOptions dropOptions = selectedCommands.getDroppableOptions();
     selectedCommands.setPageSize(20);
-    dropOptions.setOnOver(new DroppableFunction() {
-      
-      @Override
-      public void f(DragAndDropContext context) {
-         GWT.log("over !");
-         
-      }
-   });
-    dropOptions.setOnDrop(new DroppableFunction() {
-      
-      @Override
-      public void f(DragAndDropContext context) {
-         GWT.log("drop !");
-        MacroItemDetailsDTO overCommand = context.getDroppableData();
-        List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+    
 
-        
-        // if dropped a device command, add it else reorder items in list
-        if (context.getDraggableData() instanceof DeviceCommandDTO) {
-          DeviceCommandDTO droppedCommands = context.getDraggableData();          
-          MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, droppedCommands.getDisplayName(), new DTOReference(droppedCommands.getOid()));
-          currentList.add(dropIndex, newDetail);
-        } else  if (context.getDraggableData() instanceof MacroItemDetailsDTO) {
-          MacroItemDetailsDTO droppedCommands = context.getDraggableData();  
-          GWT.log("moved "+droppedCommands.getClass() +" on "+overCommand.getClass()+" in current list "+currentList.getClass());
-          
-          
+    DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>> htTest = new DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>>(selectedCommands);
+    htTest.setTolerance(DroppableTolerance.POINTER);
+    currentCommandsPanel.add(htTest);
+    htTest.addDropHandler(new DropEventHandler() {
+      
+      @Override
+      public void onDrop(DropEvent event) {
+          List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+          if (event.getDraggableData() instanceof DeviceCommandDTO) {
+            DeviceCommandDTO droppedCommands = event.getDraggableData();          
+            MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, droppedCommands.getDisplayName(), new DTOReference(droppedCommands.getOid()));
+            currentList.add(dropIndex, newDetail);
+            selectedCommands.setRowData(currentList);
+            selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+            for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+               Element command = selectedCommands.getRowElement(i);
+               selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+           }
+//          }
+        }  else  if (event.getDraggableData() instanceof MacroItemDetailsDTO) {
+
         }
-        
-        selectedCommands.setRowData(currentList);
-        selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
-        for (int i = 0; i < selectedCommands.getRowCount(); i++) {
-           Element command = selectedCommands.getRowElement(i);
-           selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
-       }
       }
     });
-    currentCommandsPanel.add(selectedCommands);
 
   //  setText("Edit Macro");
     
@@ -214,9 +216,13 @@ public class MacroWindow extends PopupPanel {
    */
   private void setup() {
 
+    selectedCommands.setSelectionModel(selectedCommandsSelectionModel);
     selectedCommands.setRowData(this.macroDetails.getItems() );
     for (int i = 0; i < selectedCommands.getRowCount(); i++) {
        Element command = selectedCommands.getRowElement(0);
+       if (selectedCommandCellsVerticalCenter==null) {
+         selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+       }
        selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
    }
 
@@ -329,26 +335,25 @@ public class MacroWindow extends PopupPanel {
        public void onDrag(DragEvent event) {
           int currentIndex = 0;
           for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
-             GWT.log("helper left "+event.getHelper().getAbsoluteLeft()+" list "+selectedCommands.getRowElement(currentIndex).getAbsoluteLeft());
             if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(2, Unit.PX);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
+               highlightBorders (selectedCommands.getRowElement(currentIndex),true,false);
                dropIndex = currentIndex;
             } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter){
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(2, Unit.PX);
+               highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
                dropIndex = currentIndex+1;
             } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)){
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(2, Unit.PX);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX); 
+              highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
                dropIndex = currentIndex+1;
             } else {
+              highlightBorders (selectedCommands.getRowElement(currentIndex),false,false);
                selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
                selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
             }
             currentIndex += 1;
          }
        }
+
+
     });
     
     /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
@@ -421,61 +426,61 @@ public class MacroWindow extends PopupPanel {
    */
   private void createRightMacroList() {
     for (MacroItemDetailsDTO item : macroDetails.getItems()) {
-      GWT.log("macro detail "+item.getOid()+" "+item.getDisplayName()+" "+item.getDelay()+" "+item.getDto()+" "+item.getType());
     }
+    createRightMacroItemListToolbar();
   }
 
   /**
    * Creates the right macro item list toolbar.
+   * @return 
    * 
    * @return the tool bar
    */
- /* private ToolBar createRightMacroItemListToolbar() {
-    ToolBar toolBar = new ToolBar();
-    List<Button> editDelBtns = new ArrayList<Button>();
+  private void createRightMacroItemListToolbar() {
 
-    Button addDelayBtn = new Button();
-    addDelayBtn.setToolTip("Add Delay");
-    addDelayBtn.setIcon(icons.addDelayIcon());
-    addDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+    Button addDelayBtn = new Button(icons.addDelayIcon().getHTML());
+    addDelayBtn.setTitle("Add Delay");
+    addDelayBtn.addClickHandler(new ClickHandler() {
+      
       @Override
-      public void componentSelected(ButtonEvent ce) {
-        addDelay();
+      public void onClick(ClickEvent event) {
+       // addDelay();
       }
-
     });
-    toolBar.add(addDelayBtn);
+    
+    currentCommandsButtonsFlowPanel.add(addDelayBtn);
 
     Button editDelayBtn = new Button();
     editDelayBtn.setEnabled(false);
-    editDelayBtn.setToolTip("Edit Delay");
-    editDelayBtn.setIcon(icons.editDelayIcon());
-    editDelayBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+    editDelayBtn.setTitle("Edit Delay");
+    editDelayBtn.setHTML(icons.editDelayIcon().getHTML());
+    editDelayBtn.addClickHandler(new ClickHandler() {
+      
       @Override
-      public void componentSelected(ButtonEvent ce) {
-        editDelay();
+      public void onClick(ClickEvent event) {
+      //  editDelay();        
       }
     });
-    toolBar.add(editDelayBtn);
-    editDelBtns.add(editDelayBtn);
+    
+    currentCommandsButtonsFlowPanel.add(editDelayBtn);
+    //editDelBtns.add(editDelayBtn);
 
     Button deleteBtn = new Button();
     deleteBtn.setEnabled(false);
-    deleteBtn.setToolTip("Delete Macro Item");
-    deleteBtn.setIcon(icons.delete());
-    deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
-
+    deleteBtn.setTitle("Delete Macro Item");
+    deleteBtn.setHTML(icons.delete().getHTML());
+    deleteBtn.addClickHandler(new ClickHandler() {
+      
       @Override
-      public void onDelete(ButtonEvent ce) {
-        onDeleteMacroItemBtnClicked();
+      public void onClick(ClickEvent event) {
+      //  onDeleteMacroItemBtnClicked();
       }
-
     });
-    toolBar.add(deleteBtn);
-    editDelBtns.add(deleteBtn);
-    selectionService.addListener(new EditDelBtnSelectionListener(editDelBtns));
-    return toolBar;
-  }*/
+    
+    currentCommandsButtonsFlowPanel.add(deleteBtn);
+   
+  }
 
   /**
    * Setup right macro item dnd.
@@ -592,5 +597,18 @@ public class MacroWindow extends PopupPanel {
       MessageBox.info("Warn", "Please select a delay", null);
     }
   }*/
+  public native void highlightBorders(Element rowElement, boolean top, boolean bottom) /*-{
+  if (top) {
+    rowElement.style.borderTop = "2px dotted #0000FF";
+  } else {
+     rowElement.style.borderTop = "none";
+  } 
   
+  if (bottom) {
+    rowElement.style.borderBottom = "2px dotted #0000FF";    
+  } else {
+    rowElement.style.borderBottom = "none"; 
+  }
+  
+  }-*/;
 }
