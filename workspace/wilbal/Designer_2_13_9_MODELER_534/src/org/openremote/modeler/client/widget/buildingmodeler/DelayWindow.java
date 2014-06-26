@@ -25,6 +25,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.shared.dto.DTOHelper;
+import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
 
@@ -34,24 +35,52 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Creates a delay command for the macro.
  */
-public class DelayWindow extends FormWindow {
+public class DelayWindow extends DialogBox {
 
+   interface DelayWindowUiBinder extends UiBinder<Widget, DelayWindow> {
+   }
+   
+   @UiField
+   TextBox delayTextBox;
+   
+   private static final DelayWindowUiBinder binder = GWT.create(DelayWindowUiBinder.class);
+   
    /** The Constant DELAY. */
    public static final String DELAY = "delay";
    
    MacroItemDetailsDTO macroItem;
 
+   private boolean clickedSave;
+
+   public boolean isClickedSave() {
+      return clickedSave;
+   }
+
+   public void setClickedSave(boolean clickedSave) {
+      this.clickedSave = clickedSave;
+   }
+
    /**
     * Instantiates a new delay window.
     */
    public DelayWindow() {
-      super();
+      setWidget(binder.createAndBindUi(this));
+
       initial("Add Delay");
-      macroItem = new MacroItemDetailsDTO(); // Important that this is after initial call, as macroItem == null means field is not populated
+      macroItem = new MacroItemDetailsDTO();
       macroItem.setType(MacroItemType.Delay);
    }
    
@@ -61,7 +90,7 @@ public class DelayWindow extends FormWindow {
     * @param commandDelayModel the command delay model
     */
    public DelayWindow(MacroItemDetailsDTO macroItem) {
-      super();
+      setWidget(binder.createAndBindUi(this));
       this.macroItem = macroItem;
       initial("Edit Delay");
    }
@@ -72,8 +101,10 @@ public class DelayWindow extends FormWindow {
     * @param heading the heading
     */
    private void initial(String heading) {
-      setHeading(heading);
-      setSize(280, 140);
+      setSize("200px", "100px");
+      center();
+      //setHeading(heading);
+     /* setSize(280, 140);
 
       Button addBtn = new Button("OK");      
       addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
@@ -83,27 +114,25 @@ public class DelayWindow extends FormWindow {
             List<Field<?>> list = form.getFields();
             String delay = list.get(0).getValue().toString();
             macroItem.setDelay(Integer.parseInt(delay));
-            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(DTOHelper.getBeanModel(macroItem)));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(macroItem));
          }         
       });
       createField();
-      add(form);
+      add(form);*/
+   }
+
+   @UiHandler("okButton")
+   void handleOkButtonclicked(ClickEvent e) {
+      macroItem.setDelay(Integer.parseInt(delayTextBox.getText()));
+      macroItem.setDto(new DTOReference());
+      this.setClickedSave(true);
+      this.hide();
    }
    
-   /**
-    * Creates the field.
-    */
-   private void createField() {
-      NumberField delayField = new NumberField();
-      delayField.setName(DELAY);
-      delayField.setFieldLabel("Delay(ms)");
-      delayField.setAllowBlank(false);
-      delayField.setAutoWidth(true);
-      delayField.setRegex("^[1-9][0-9]*$");
-      delayField.getMessages().setRegexText("The delay must be a positive integer");
-      if (macroItem != null) {
-         delayField.setValue(macroItem.getDelay());
-      }
-      form.add(delayField);
+   @UiHandler("cancelButton")
+   void handleCancelButtonclicked(ClickEvent e) {
+      this.setClickedSave(false);
+      this.hide();
    }
+  
 }
