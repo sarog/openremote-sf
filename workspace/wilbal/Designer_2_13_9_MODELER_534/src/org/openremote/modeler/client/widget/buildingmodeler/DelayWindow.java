@@ -80,7 +80,7 @@ public class DelayWindow extends DialogBox {
       setWidget(binder.createAndBindUi(this));
 
       initial("Add Delay");
-      macroItem = new MacroItemDetailsDTO();
+      macroItem = new MacroItemDetailsDTO(null, MacroItemType.Delay, null, new DTOReference());
       macroItem.setType(MacroItemType.Delay);
    }
    
