@@ -154,6 +154,10 @@ public class MacroWindow extends PopupPanel {
      };
   private MultiSelectionModel<MacroItemDetailsDTO> selectedCommandsSelectionModel = new MultiSelectionModel<MacroItemDetailsDTO>(keyProvider);
   private DeviceCommandDTOCell deviceCommandDTOCell;
+  
+  
+  MacroItemDetailsDTO editedCommand;
+
   /**
    * Instantiates a macro window to create a new macro.
    */
@@ -376,12 +380,7 @@ public class MacroWindow extends PopupPanel {
     form.add(macroNameField);
 */
     createSelectCommandContainer();
-/*
-    Button submitBtn = new Button("OK");
-    submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
-
-    form.addButton(submitBtn);
-    */
+    
   }
 
   /**
@@ -573,7 +572,7 @@ public class MacroWindow extends PopupPanel {
       
       @Override
       public void onClick(ClickEvent event) {
-      //  editDelay();        
+        editDelay();        
       }
     });
     
@@ -588,7 +587,7 @@ public class MacroWindow extends PopupPanel {
       
       @Override
       public void onClick(ClickEvent event) {
-      //  onDeleteMacroItemBtnClicked();
+        onDeleteMacroItemBtnClicked();
       }
     });
     
@@ -664,30 +663,26 @@ public class MacroWindow extends PopupPanel {
   /**
    * On delete macro item btn clicked.
    */
- /* private void onDeleteMacroItemBtnClicked() {
-    for (MacroItemDetailsDTO data : selectedCommands.getSelectionModel().getSelectedItems()) {
-      int index = rightMacroItemListView.getStore().indexOf(data);
-      rightMacroItemListView.getStore().remove(data);
-      if (rightMacroItemListView.getStore().getCount() > 0) {
-        rightMacroItemListView.getSelectionModel().select(index, false);
-      }
-    }
-  }*/
+  private void onDeleteMacroItemBtnClicked() {
+    for (MacroItemDetailsDTO data : selectedCommandsSelectionModel.getSelectedSet()) {
+      final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+      currentList.remove(data);
+      selectedCommands.setRowData(currentList);
+      selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+      for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+         Element command = selectedCommands.getRowElement(i);
+         selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+     }
+     }
+    selectedCommands.redraw();
+
+  }
 
   /**
    * Adds the delay.
    */
   private void addDelay() {
     final DelayWindow delayWindow = new DelayWindow();
-   /* delayWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-      @Override
-      public void afterSubmit(SubmitEvent be) {
-        delayWindow.hide();
-        BeanModel delayModel = be.getData();
-        rightMacroItemListView.getStore().add(delayModel);
-        rightMacroItemListView.getSelectionModel().select(delayModel, false);
-      }
-    });*/
     delayWindow.getElement().getStyle().setZIndex(10000);
     delayWindow.show();
     delayWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
@@ -697,7 +692,6 @@ public class MacroWindow extends PopupPanel {
          if (delayWindow.isClickedSave()) {
             GWT.log(" added  "+delayWindow.macroItem.getDto());
             final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
-
             currentList.add(delayWindow.macroItem);
             selectedCommands.setRowData(currentList);
             selectedCommands.redraw();
@@ -716,23 +710,32 @@ public class MacroWindow extends PopupPanel {
   /**
    * Edits the delay.
    */
-/*  private void editDelay() {
-    BeanModel data = rightMacroItemListView.getSelectionModel().getSelectedItem();
-    if (data.getBean() instanceof MacroItemDetailsDTO && ((MacroItemDetailsDTO) data.getBean()).getType() == MacroItemType.Delay) {
-      final DelayWindow editDelayWindow = new DelayWindow((MacroItemDetailsDTO) data.getBean());
-      editDelayWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-        @Override
-        public void afterSubmit(SubmitEvent be) {
-          editDelayWindow.hide();
-          BeanModel delayModel = be.getData();
-          rightMacroItemListView.getStore().update(delayModel);
-        }
-      });
-      editDelayWindow.show();
-    } else {
-      MessageBox.info("Warn", "Please select a delay", null);
-    }
-  }*/
+  private void editDelay() {
+    editedCommand = selectedCommandsSelectionModel.getSelectedSet().iterator().next();
+    final DelayWindow delayWindow = new DelayWindow(editedCommand);
+    delayWindow.getElement().getStyle().setZIndex(10000);
+    delayWindow.show();
+    delayWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
+      
+      @Override
+      public void onClose(CloseEvent<PopupPanel> arg0) {
+         if (delayWindow.isClickedSave()) {
+            final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+            editedCommand = delayWindow.macroItem;
+            selectedCommands.setRowData(currentList);
+            selectedCommands.redraw();
+            selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+            for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+               Element command = selectedCommands.getRowElement(i);
+               selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+           }
+         }
+         
+      }
+   });
+    
+    
+  }
   
   @UiHandler("submitButton")
   void submitButtonClicked(ClickEvent e) {
