@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
+import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
@@ -80,7 +81,8 @@ public class DelayWindow extends DialogBox {
       setWidget(binder.createAndBindUi(this));
 
       initial("Add Delay");
-      macroItem = new MacroItemDetailsDTO(null, MacroItemType.Delay, null, new DTOReference());
+      macroItem = new MacroItemDetailsDTO(null, MacroItemType.Delay, null, null);
+      GWT.log(" current ID"+IDUtil.currentID());
       macroItem.setType(MacroItemType.Delay);
    }
    
@@ -92,6 +94,7 @@ public class DelayWindow extends DialogBox {
    public DelayWindow(MacroItemDetailsDTO macroItem) {
       setWidget(binder.createAndBindUi(this));
       this.macroItem = macroItem;
+      delayTextBox.setText(macroItem.getDelay().toString());
       initial("Edit Delay");
    }
    
@@ -103,10 +106,10 @@ public class DelayWindow extends DialogBox {
    private void initial(String heading) {
       setSize("200px", "100px");
       center();
-      //setHeading(heading);
-     /* setSize(280, 140);
+      setText(heading);
+      setSize("280px", "140px");
 
-      Button addBtn = new Button("OK");      
+      /*Button addBtn = new Button("OK");      
       addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
       form.addButton(addBtn);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
@@ -124,7 +127,6 @@ public class DelayWindow extends DialogBox {
    @UiHandler("okButton")
    void handleOkButtonclicked(ClickEvent e) {
       macroItem.setDelay(Integer.parseInt(delayTextBox.getText()));
-      macroItem.setDto(new DTOReference());
       this.setClickedSave(true);
       this.hide();
    }
