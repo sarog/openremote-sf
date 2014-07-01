@@ -67,8 +67,11 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * The panel contains a toolbar and a treePanel to manage macro.
@@ -156,7 +159,13 @@ public class MacroPanel extends ContentPanel {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final MacroWindow macroWindow = new MacroWindow();
-
+            macroWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
+               
+               @Override
+               public void onClose(CloseEvent<PopupPanel> event) {
+                 eventBus.fireEvent(new MacrosCreatedEvent(macroWindow.getMacro()));
+               }
+            });
            /* macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -237,14 +246,15 @@ public class MacroPanel extends ContentPanel {
    private void onEditDeviceMacroBtnClicked() {
       if (macroTree.getSelectionModel().getSelectedItem() != null && macroTree.getSelectionModel().getSelectedItem().getBean() instanceof MacroDTO) {
         MacroDTO macro = macroTree.getSelectionModel().getSelectedItem().getBean();
-         MacroWindow macroWindow = new MacroWindow(macro);
-         /*macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         final MacroWindow macroWindow = new MacroWindow(macro);
+         macroWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
+            
             @Override
-            public void afterSubmit(SubmitEvent be) {
-              eventBus.fireEvent(new MacroUpdatedEvent((MacroDTO) be.getData()));
-               macroWindow.hide();
+            public void onClose(CloseEvent<PopupPanel> event) {
+               eventBus.fireEvent(new MacroUpdatedEvent(macroWindow.getMacro()));
             }
-         });*/
+         });
+         
         // macroWindow.show();
       }
    }
