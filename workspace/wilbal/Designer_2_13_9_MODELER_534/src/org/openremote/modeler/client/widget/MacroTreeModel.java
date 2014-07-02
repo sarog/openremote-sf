@@ -62,6 +62,8 @@ public class MacroTreeModel implements TreeViewModel {
              imageHtml = ICON.deviceCmd().getHTML();
           } else if (value.getType()==MacroItemType.Delay) {
              imageHtml = ICON.delayIcon().getHTML();
+          } else if (value.getType()==MacroItemType.Macro) {
+             imageHtml = ICON.macroIcon().getHTML();
           }
           sb.appendHtmlConstant(imageHtml).appendEscaped(" ");
           sb.appendEscaped(value.getDisplayName());
@@ -90,17 +92,21 @@ public class MacroTreeModel implements TreeViewModel {
              
           }
        };
-         return new DefaultNodeInfo<MacroDTO>(deviceDTOList, new MacroCell());
-      } /*else if (value instanceof MacroDTO){
+       DragAndDropNodeInfo<MacroDTO> node = new DragAndDropNodeInfo<MacroDTO>(deviceDTOList,new MacroCell());
+       DraggableOptions options = node.getDraggableOptions();
+       options.setHelper(HelperType.CLONE);
+       options.setAppendTo("#macroDialogBox");
+       return node;
+      } else if (value instanceof MacroDTO){
          currentMacroValue = (MacroDTO) value;
-         deviceCommandsDTOList = new AsyncDataProvider<DeviceCommandDTO>() {
+         deviceCommandsDTOList = new AsyncDataProvider<MacroItemDTO>() {
            
            @Override
-           protected void onRangeChanged(HasData<DeviceCommandDTO> display) {
-              DeviceProxyGWT.loadDevice((DeviceDTO)currentDeviceValue, new AsyncSuccessCallback<ArrayList<DeviceCommandDTO>>() {
+           protected void onRangeChanged(HasData<MacroItemDTO> display) {
+              DeviceMacroGWTProxy.loadDeviceMacroDetails((MacroDTO)currentMacroValue, new AsyncSuccessCallback<ArrayList<MacroItemDTO>>() {
 
                  @Override
-                 public void onSuccess(ArrayList<DeviceCommandDTO> result) {
+                 public void onSuccess(ArrayList<MacroItemDTO> result) {
                     deviceCommandsDTOList.updateRowData(0, result);
                     deviceCommandsDTOList.updateRowCount(result.size(), true);
                  }
@@ -108,18 +114,15 @@ public class MacroTreeModel implements TreeViewModel {
               
            }
         };
-         DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
-         DraggableOptions options = node.getDraggableOptions();
-         options.setHelper(HelperType.CLONE);
-         options.setAppendTo("body");
-         return node;
-      }*/
+        return new DefaultNodeInfo<MacroItemDTO>(deviceCommandsDTOList, new MacroItemCell());
+
+      }
       return null;
    }
 
    @Override
    public boolean isLeaf(Object value) {
-      return (value instanceof DeviceCommandDTO);
+      return (value instanceof MacroItemDTO);
    }
 
 }

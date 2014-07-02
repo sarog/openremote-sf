@@ -49,6 +49,7 @@ public class DialogBoxCaptionWithCancel extends Composite implements Caption,
 
     public DialogBoxCaptionWithCancel() {
         initWidget(binder.createAndBindUi(this));
+        handlerManager = new HandlerManager(this);
 
         mainPanel.setStyleName("Caption");
         
@@ -65,7 +66,6 @@ public class DialogBoxCaptionWithCancel extends Composite implements Caption,
     protected void onLoad() {
         super.onLoad();
 
-        handlerManager = new HandlerManager(this);
     }
 
     @UiHandler("cancelButton")

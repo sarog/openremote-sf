@@ -164,6 +164,7 @@ public class MacroPanel extends ContentPanel {
                @Override
                public void onClose(CloseEvent<PopupPanel> event) {
                  eventBus.fireEvent(new MacrosCreatedEvent(macroWindow.getMacro()));
+                 macroWindow.removeFromParent();
                }
             });
            /* macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
@@ -252,6 +253,7 @@ public class MacroPanel extends ContentPanel {
             @Override
             public void onClose(CloseEvent<PopupPanel> event) {
                eventBus.fireEvent(new MacroUpdatedEvent(macroWindow.getMacro()));
+               macroWindow.removeFromParent();
             }
          });
          

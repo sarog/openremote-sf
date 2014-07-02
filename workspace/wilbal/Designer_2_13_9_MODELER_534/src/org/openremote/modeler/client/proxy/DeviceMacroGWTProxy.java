@@ -29,8 +29,10 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.google.gwt.core.client.GWT;
 
 
 /**
@@ -83,6 +85,12 @@ public class DeviceMacroGWTProxy {
    }
    public static void updateMacroWithDTO(final MacroDetailsDTO macro, final AsyncSuccessCallback<MacroDTO> callback) {
      AsyncServiceFactory.getDeviceMacroServiceAsync().updateMacroWithDTO(macro, callback);
+   }
+
+   public static void loadDeviceMacroDetails(MacroDTO currentMacroValue,
+         AsyncSuccessCallback<ArrayList<MacroItemDTO>> callback) {
+      callback.onSuccess(currentMacroValue.getItems());
+
    }
 
 }
