@@ -25,6 +25,7 @@ import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.utils.DialogBoxCaptionWithCancel;
 import org.openremote.modeler.shared.dto.DTOHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.MacroItemDetailsDTO;
@@ -38,6 +39,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -49,11 +51,12 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Creates a delay command for the macro.
  */
-public class DelayWindow extends DialogBox {
+public class DelayWindow extends DialogBox implements ClickHandler {
 
    interface DelayWindowUiBinder extends UiBinder<Widget, DelayWindow> {
    }
-   
+   private static DialogBoxCaptionWithCancel caption = new DialogBoxCaptionWithCancel();
+
    @UiField
    TextBox delayTextBox;
    
@@ -78,11 +81,11 @@ public class DelayWindow extends DialogBox {
     * Instantiates a new delay window.
     */
    public DelayWindow() {
+      super(false,true,caption);
       setWidget(binder.createAndBindUi(this));
 
       initial("Add Delay");
       macroItem = new MacroItemDetailsDTO(null, MacroItemType.Delay, null, null);
-      GWT.log(" current ID"+IDUtil.currentID());
       macroItem.setType(MacroItemType.Delay);
    }
    
@@ -92,6 +95,7 @@ public class DelayWindow extends DialogBox {
     * @param commandDelayModel the command delay model
     */
    public DelayWindow(MacroItemDetailsDTO macroItem) {
+      super(false,true,caption);
       setWidget(binder.createAndBindUi(this));
       this.macroItem = macroItem;
       delayTextBox.setText(macroItem.getDelay().toString());
@@ -108,6 +112,7 @@ public class DelayWindow extends DialogBox {
       center();
       setText(heading);
       setSize("280px", "140px");
+      caption.addClickHandler(this);
 
       /*Button addBtn = new Button("OK");      
       addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
@@ -128,13 +133,14 @@ public class DelayWindow extends DialogBox {
    void handleOkButtonclicked(ClickEvent e) {
       macroItem.setDelay(Integer.parseInt(delayTextBox.getText()));
       this.setClickedSave(true);
+      caption = new DialogBoxCaptionWithCancel();   
       this.hide();
-   }
-   
-   @UiHandler("cancelButton")
-   void handleCancelButtonclicked(ClickEvent e) {
-      this.setClickedSave(false);
-      this.hide();
-   }
+   }  
+
+@Override
+public void onClick(ClickEvent event) {
+   this.removeFromParent();
+   caption = new DialogBoxCaptionWithCancel();   
+}
   
 }

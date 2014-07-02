@@ -106,8 +106,9 @@ public class DeviceCommandTreeModel implements TreeViewModel {
         };
          DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
          DraggableOptions options = node.getDraggableOptions();
+         options.setSnap(true);
          options.setHelper(HelperType.CLONE);
-         options.setAppendTo("body");
+         options.setAppendTo("#macroDialogBox");
          return node;
       }
       return null;
