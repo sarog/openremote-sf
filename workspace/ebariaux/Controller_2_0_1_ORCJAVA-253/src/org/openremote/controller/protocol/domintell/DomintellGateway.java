@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
+import org.openremote.controller.protocol.domintell.model.InputModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
@@ -72,6 +73,8 @@ public class DomintellGateway {
       moduleClasses.put("TE2", TemperatureModule.class);
       moduleClasses.put("LC3", TemperatureModule.class);
       moduleClasses.put("PBL", TemperatureModule.class);
+      moduleClasses.put("IS4", InputModule.class);
+      moduleClasses.put("IS8", InputModule.class);
    }
    
    public synchronized void startGateway() {
