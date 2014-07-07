@@ -5,10 +5,13 @@ import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropNodeInfo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceProxyGWT;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.utils.DraggableHelper;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 
@@ -17,6 +20,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.TreeViewModel;
 
 public class DeviceCommandTreeModel implements TreeViewModel {
@@ -24,7 +30,10 @@ public class DeviceCommandTreeModel implements TreeViewModel {
    private static final Icons ICON = GWT.create(Icons.class);
    private AsyncDataProvider<DeviceDTO> deviceDTOList;
    private AsyncDataProvider<DeviceCommandDTO> deviceCommandsDTOList;
+   private MultiSelectionModel<DeviceCommandDTO> selectionModel= new MultiSelectionModel<DeviceCommandDTO>();
    protected DeviceDTO currentDeviceValue;
+   private Set<DeviceCommandDTO> selectedDeviceCommands = new HashSet<DeviceCommandDTO>();
+   private DraggableHelper<DeviceCommandDTO> helperLabel = new DraggableHelper<DeviceCommandDTO>();
    private static class DeviceCell extends AbstractCell<DeviceDTO> {
 
       /**
@@ -65,7 +74,34 @@ public class DeviceCommandTreeModel implements TreeViewModel {
       }
 
     }
-   public DeviceCommandTreeModel() { 
+   public Set<DeviceCommandDTO> getSelectedDeviceCommands() {
+    return selectedDeviceCommands;
+  }
+
+  public void setSelectedDeviceCommands(Set<DeviceCommandDTO> selectedDeviceCommands) {
+    this.selectedDeviceCommands = selectedDeviceCommands;
+  }
+
+
+  public void setHelperLabel(DraggableHelper<DeviceCommandDTO> helperLabel) {
+    this.helperLabel = helperLabel;
+  }
+  
+
+  public DraggableHelper<DeviceCommandDTO> getHelperLabel() {
+    return this.helperLabel;
+  }
+
+  public DeviceCommandTreeModel() {  
+     selectionModel.addSelectionChangeHandler(new Handler() {
+      
+      @Override
+      public void onSelectionChange(SelectionChangeEvent event) {
+        selectedDeviceCommands= selectionModel.getSelectedSet();
+        helperLabel.setDraggedData(selectedDeviceCommands);
+        
+      }
+    });
    }
    
    @Override
@@ -86,7 +122,8 @@ public class DeviceCommandTreeModel implements TreeViewModel {
              
           }
        };
-         return new DefaultNodeInfo<DeviceDTO>(deviceDTOList, new DeviceCell());
+        DefaultNodeInfo<DeviceDTO> topNode = new DefaultNodeInfo<DeviceDTO>(deviceDTOList, new DeviceCell());
+         return topNode;
       } else if (value instanceof DeviceDTO){
          currentDeviceValue = (DeviceDTO) value;
          deviceCommandsDTOList = new AsyncDataProvider<DeviceCommandDTO>() {
@@ -104,10 +141,11 @@ public class DeviceCommandTreeModel implements TreeViewModel {
               
            }
         };
-         DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell());
+         DragAndDropNodeInfo<DeviceCommandDTO> node = new DragAndDropNodeInfo<DeviceCommandDTO>(deviceCommandsDTOList,new CommandCell(),selectionModel,null);
          DraggableOptions options = node.getDraggableOptions();
          options.setSnap(true);
-         options.setHelper(HelperType.CLONE);
+         options.setHelper(helperLabel.getElement());
+         options.setHelper(HelperType.ELEMENT);
          options.setAppendTo("#macroDialogBox");
          return node;
       }

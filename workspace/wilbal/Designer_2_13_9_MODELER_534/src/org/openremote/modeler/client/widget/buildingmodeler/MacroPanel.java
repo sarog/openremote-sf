@@ -30,13 +30,11 @@ import org.openremote.modeler.client.event.MacroUpdatedEvent;
 import org.openremote.modeler.client.event.MacroUpdatedEventHandler;
 import org.openremote.modeler.client.event.MacrosCreatedEvent;
 import org.openremote.modeler.client.event.MacrosCreatedEventHandler;
-import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
 import org.openremote.modeler.client.gxtextends.SourceSelectionChangeListenerExt;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.ConfirmDeleteListener;
 import org.openremote.modeler.client.listener.EditDelBtnSelectionListener;
-import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.DeviceMacroBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
@@ -158,15 +156,7 @@ public class MacroPanel extends ContentPanel {
       newMacroBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            final MacroWindow macroWindow = new MacroWindow();
-            macroWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
-               
-               @Override
-               public void onClose(CloseEvent<PopupPanel> event) {
-                 eventBus.fireEvent(new MacrosCreatedEvent(macroWindow.getMacro()));
-                 macroWindow.removeFromParent();
-               }
-            });
+            onCreateDeviceMacroBtnClicked();
            /* macroWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @Override
                public void afterSubmit(SubmitEvent be) {
@@ -280,48 +270,21 @@ public class MacroPanel extends ContentPanel {
          }
       }
    }
-
+   
    /**
-    * Gets the drag source bean model change listener.
-    * 
-    * @param target
-    *           the target
-    * 
-    * @return the drag source bean model change listener
+    * On new macro button clicked
     */
-   private ChangeListener getDragSourceBeanModelChangeListener(final BeanModel target) {
-      if (changeListenerMap == null) {
-         changeListenerMap = new HashMap<BeanModel, ChangeListener>();
-      }
-      ChangeListener changeListener = changeListenerMap.get(target);
-      if (changeListener == null) {
-         changeListener = new ChangeListener() {
-            public void modelChanged(ChangeEvent changeEvent) {
-               if (changeEvent.getType() == ChangeEventSupport.Remove) {
-                  macroTree.getStore().remove(target);
-               }
-               if (changeEvent.getType() == ChangeEventSupport.Update) {
-                  BeanModel source = (BeanModel) changeEvent.getItem();
-                  if (source.getBean() instanceof DeviceMacro) {
-                     DeviceMacro deviceMacro = (DeviceMacro) source.getBean();
-                     DeviceMacroRef deviceMacroRef = (DeviceMacroRef) target.getBean();
-                     deviceMacroRef.setTargetDeviceMacro(deviceMacro);
-                  } else if (source.getBean() instanceof DeviceCommand) {
-                     DeviceCommand deviceCommand = (DeviceCommand) source.getBean();
-                     DeviceCommandRef deviceCommandRef = (DeviceCommandRef) target.getBean();
-                     deviceCommandRef.setDeviceCommand(deviceCommand);
-                  } else if (source.getBean() instanceof Device) {
-                     Device device = (Device) source.getBean();
-                     DeviceCommandRef targetDeviceCommandRef = (DeviceCommandRef) target.getBean();
-                     targetDeviceCommandRef.setDeviceName(device.getName());
-                  }
-                  macroTree.getStore().update(target);
-               }
-            }
-         };
-         changeListenerMap.put(target, changeListener);
-      }
-      return changeListener;
+   private void onCreateDeviceMacroBtnClicked() {
+     final MacroWindow macroWindow = new MacroWindow();
+     macroWindow.addCloseHandler(new CloseHandler<PopupPanel>() {
+        
+        @Override
+        public void onClose(CloseEvent<PopupPanel> event) {
+          eventBus.fireEvent(new MacrosCreatedEvent(macroWindow.getMacro()));
+          macroWindow.removeFromParent();
+        }
+     });
+     
    }
 
   @Override

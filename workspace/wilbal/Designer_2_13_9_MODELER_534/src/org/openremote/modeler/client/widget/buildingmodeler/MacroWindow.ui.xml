@@ -3,28 +3,62 @@
    xmlns:g="urn:import:com.google.gwt.user.client.ui" 
    xmlns:c="urn:import:com.google.gwt.user.cellview.client">
    <ui:style>
+   @external .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent .gwt-TabLayoutPanelContentContainer .gwt-TabLayoutPanelTab .gwt-TabLayoutPanelTab-selected .cellTreeTopItemImageValue;
+             
       .errorMessageStyle {
          color: red;
          text-align: left;
          margin-left: 2em;
       }
+      .widgetsMargin {
+	      margin-left:10px;
+	      margin-top:10px;
+      }
+      .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+	        border:none;
+      }
+      
+      .gwt-TabLayoutPanelContentContainer {
+	        border-color:black;
+	        border-width: thin;
+	   }
+	   
+	   .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+	        border-top: thin #a1a1a1;
+	        border-bottom : none;
+	        border-top-left-radius:3px;
+           border-top-right-radius:3px;
+	        background:#ECECEC;
+           font-weight:400;
+	        height:27px;
+	   }
+	   
+	   .gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+           background:#ECECEC;
+           font-weight:900;
+           height:27px;
+      }
+      
+      .cellTreeTopItemImageValue {
+	     border:none !important;
+	}
+	   
    </ui:style>
-      <g:FormPanel ui:field="macroForm" width="100%" height="100%">      
          <g:DockLayoutPanel unit="EM" ui:field="mainPanel" width="100%" height="100%">
-            <g:north size="4">
+            <g:north size="5">
                <g:VerticalPanel >
-                     <g:Label  text="Macro Name:" />
-                     <g:TextBox ui:field="macroName"/>
+                     <g:Label  text="Macro Name:" styleName="{style.widgetsMargin}"/>
+                     <g:TextBox ui:field="macroName" styleName="{style.widgetsMargin}"/>
                </g:VerticalPanel>
             </g:north>
             <g:south size="2">
               <g:SubmitButton ui:field="submitButton">Ok</g:SubmitButton>
             </g:south>
             <g:center>
-               <g:CaptionPanel captionText="Add Macro Item(drag from left to right)" width="95%" height="95%">
-                   <g:LayoutPanel width="95%" height="90%">
-                        <g:layer width="50%" height="100%">
-                        <g:TabLayoutPanel barUnit="EM" barHeight="3" width="50%">
+               <g:CaptionPanel captionText="Add Macro Item(drag from left to right)" width="95%" height="95%" styleName="{style.widgetsMargin}">
+                   <g:LayoutPanel width="95%" height="90%" styleName="{style.widgetsMargin}">
+                        <g:layer width="40%" height="100%">
+                        <g:TabLayoutPanel barUnit="EM" barHeight="3" width="50%" height="90%">
                            <g:tab>
                               <g:header>Device Command</g:header>
                               <g:ScrollPanel ui:field="devicePanel" width="95%" height="90%"/>
@@ -35,7 +69,7 @@
                            </g:tab>
                         </g:TabLayoutPanel>
                         </g:layer>
-                        <g:layer width="50%" left="50%" height="100%">
+                        <g:layer width="40%" left="60%" height="100%">
                            <g:TabLayoutPanel barUnit="EM" barHeight="3" width="100%" height="90%">
                               <g:tab>
                                  <g:customHeader>
@@ -52,5 +86,4 @@
                </g:CaptionPanel>
             </g:center>
          </g:DockLayoutPanel>
-         </g:FormPanel>
 </ui:UiBinder> 

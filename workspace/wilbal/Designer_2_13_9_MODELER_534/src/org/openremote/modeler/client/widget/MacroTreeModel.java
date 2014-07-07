@@ -8,10 +8,7 @@ import java.util.ArrayList;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceMacroGWTProxy;
-import org.openremote.modeler.client.proxy.DeviceProxyGWT;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.shared.dto.DeviceCommandDTO;
-import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
@@ -21,6 +18,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 
 public class MacroTreeModel implements TreeViewModel {
@@ -28,6 +26,7 @@ public class MacroTreeModel implements TreeViewModel {
    private static final Icons ICON = GWT.create(Icons.class);
    private AsyncDataProvider<MacroDTO> deviceDTOList;
    private AsyncDataProvider<MacroItemDTO> deviceCommandsDTOList;
+   private MultiSelectionModel<MacroDTO> selectionModel= new MultiSelectionModel<MacroDTO>();
    protected MacroDTO currentMacroValue;
    private static class MacroCell extends AbstractCell<MacroDTO> {
 
@@ -92,7 +91,7 @@ public class MacroTreeModel implements TreeViewModel {
              
           }
        };
-       DragAndDropNodeInfo<MacroDTO> node = new DragAndDropNodeInfo<MacroDTO>(deviceDTOList,new MacroCell());
+       DragAndDropNodeInfo<MacroDTO> node = new DragAndDropNodeInfo<MacroDTO>(deviceDTOList,new MacroCell(),selectionModel,null);
        DraggableOptions options = node.getDraggableOptions();
        options.setHelper(HelperType.CLONE);
        options.setAppendTo("#macroDialogBox");
