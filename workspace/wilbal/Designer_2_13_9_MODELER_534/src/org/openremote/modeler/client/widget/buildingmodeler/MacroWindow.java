@@ -20,15 +20,16 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import gwtquery.plugins.draggable.client.DraggableOptions.AxisOption;
+import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
 import gwtquery.plugins.draggable.client.events.BeforeDragStartEvent;
 import gwtquery.plugins.draggable.client.events.BeforeDragStartEvent.BeforeDragStartEventHandler;
 import gwtquery.plugins.draggable.client.events.DragEvent;
-import gwtquery.plugins.draggable.client.events.DragStartEvent;
-import gwtquery.plugins.draggable.client.events.DragStopEvent;
 import gwtquery.plugins.draggable.client.events.DragEvent.DragEventHandler;
-import gwtquery.plugins.draggable.client.events.DragStartEvent.DragStartEventHandler;
+import gwtquery.plugins.draggable.client.events.DragStopEvent;
 import gwtquery.plugins.draggable.client.events.DragStopEvent.DragStopEventHandler;
+import gwtquery.plugins.droppable.client.DroppableOptions.AcceptFunction;
 import gwtquery.plugins.droppable.client.DroppableOptions.DroppableTolerance;
+import gwtquery.plugins.droppable.client.events.DragAndDropContext;
 import gwtquery.plugins.droppable.client.events.DropEvent;
 import gwtquery.plugins.droppable.client.events.DropEvent.DropEventHandler;
 import gwtquery.plugins.droppable.client.events.OutDroppableEvent;
@@ -51,6 +52,7 @@ import org.openremote.modeler.client.widget.DeviceCommandTreeModel;
 import org.openremote.modeler.client.widget.MacroTreeModel;
 import org.openremote.modeler.client.widget.utils.DeviceCommandDTOCell;
 import org.openremote.modeler.client.widget.utils.DialogBoxCaptionWithCancel;
+import org.openremote.modeler.client.widget.utils.DraggableHelper;
 import org.openremote.modeler.shared.dto.DTOReference;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
@@ -60,8 +62,6 @@ import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,7 +75,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -102,9 +101,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
 
   @UiField
   TextBox macroName;
-  
-  @UiField 
-  FormPanel macroForm;
   
   @UiField
   Button submitButton;
@@ -138,20 +134,11 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   /** The icons. */
   private Icons icons = GWT.create(Icons.class);
 
-  /** The macro name field. */
- // private TextField<String> macroNameField = null;
-
-  /** The add macro item container. */
-//  private LayoutContainer addMacroItemContainer;
-
   /** The device command tree. */
     private DragAndDropCellTree deviceCommandTree = null;
 
   /** The left macro list. */
   private DragAndDropCellTree macroTree = null;
-
-  /** The right macro item list view. */
-//  private ListView<BeanModel> rightMacroItemListView = null;
 
   /** The selection service. */
   private SelectionServiceExt<BeanModel> selectionService;
@@ -164,7 +151,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
      };
   private MultiSelectionModel<MacroItemDetailsDTO> selectedCommandsSelectionModel = new MultiSelectionModel<MacroItemDetailsDTO>();
   private DeviceCommandDTOCell deviceCommandDTOCell;
-  
+  private DraggableHelper<MacroItemDetailsDTO> reorderingHelper = new DraggableHelper<MacroItemDetailsDTO>();
   
   MacroItemDetailsDTO editedCommand;
 
@@ -181,14 +168,16 @@ public class MacroWindow extends DialogBox implements ClickHandler {
    */
   public MacroWindow() {
      super(false, true, caption);
-   uiBinder.createAndBindUi(this);
-    this.center();
+     setWidget(uiBinder.createAndBindUi(this));
+     caption.addClickHandler(this);
+     this.macro = new MacroDTO();
+    init();
     setText("New Macro");
-    //setup();
-   // macroDetails = new MacroDetailsDTO();
+    setup();
+    macroDetails = new MacroDetailsDTO();
     mainPanel.setSize("650px", "520px");
-    center();
-    show();
+    this.getElement().setId("macroDialogBox");
+    this.center();
   }
 
   /**
@@ -199,24 +188,31 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   public MacroWindow(MacroDTO macro) {
      super(false, true, caption);
     setWidget(uiBinder.createAndBindUi(this));
+    this.hide();
     caption.addClickHandler(this);
-    this.center();
     this.macro = macro;
     edit = true;
     mainPanel.setSize("650px", "520px");
     this.getElement().setId("macroDialogBox");
-    center();
-    show();
-    /*ClickHandler myClkHandler = new ClickHandler() {
-       @Override
-       public void onClick(ClickEvent event) {
-           if (!selectionChanged) {
-              selectedCommandsSelectionModel.clear();
-           }
-           selectionChanged = false;
-       }
-   };*/
-    
+    init();
+    setText("Edit Macro");
+    DeviceMacroGWTProxy.loadMacroDetails(macro, new AsyncSuccessCallback<MacroDetailsDTO>() {
+      public void onSuccess(MacroDetailsDTO result) {
+        MacroWindow.this.macroDetails = result;
+        setup();
+        center();
+        for (int i = 0; i < selectedCommands.getRowCount(); i++) {
+          Element command = selectedCommands.getRowElement(i);
+          if (selectedCommandCellsVerticalCenter==null) {
+            selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
+          }
+          selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
+      }
+      }
+    });
+  }
+
+  private void init() {
     deviceCommandDTOCell = new DeviceCommandDTOCell();
     selectedCommands = new DragAndDropCellList<MacroItemDetailsDTO>(deviceCommandDTOCell,keyProvider);
     
@@ -226,22 +222,20 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     selectedCommands.setHeight("100%");
     
     selectedCommands.setPageSize(20);
-    
+    selectedCommands.getDraggableOptions().setHelper(reorderingHelper.getElement());
+    selectedCommands.getDraggableOptions().setHelper(HelperType.ELEMENT);
     selectedCommands.getDraggableOptions().setAxis(AxisOption.Y_AXIS);
     selectedCommands.addDragStopHandler(new DragStopEventHandler() {
       
       @Override
       public void onDragStop(DragStopEvent event) {
-         GWT.log("drag stopped");
          if (event.getDraggableData() instanceof MacroItemDetailsDTO) {
             final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
-
-         MacroItemDetailsDTO reorderedCommand = event.getDraggableData();
-         currentList.remove(reorderedCommand);
+         currentList.removeAll(reorderingHelper.getDraggedData());
          if (dropIndex>0) {
-            dropIndex--;
+            dropIndex = dropIndex-reorderingHelper.getDraggedData().size();
          }
-         currentList.add(dropIndex, reorderedCommand);
+         currentList.addAll(dropIndex, reorderingHelper.getDraggedData());
          selectedCommands.setRowData(currentList);
          selectedCommands.redraw();
          selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
@@ -256,16 +250,17 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>> selectedCommandsContainer = new DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>>(selectedCommands);
     selectedCommandsContainer.setTolerance(DroppableTolerance.TOUCH);
     currentCommandsPanel.add(selectedCommandsContainer);
-    //currentCommandsPanel.addDomHandler(myClkHandler, ClickEvent.getType());
     selectedCommandsContainer.addDropHandler(new DropEventHandler() {
       
       @Override
       public void onDrop(final DropEvent event) {
-          final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
+      final List<MacroItemDetailsDTO> currentList = new ArrayList<MacroItemDetailsDTO>(selectedCommands.getVisibleItems());
           if (event.getDraggableData() instanceof DeviceCommandDTO) {
-            DeviceCommandDTO droppedCommands = event.getDraggableData();          
-            MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, droppedCommands.getDisplayName(), new DTOReference(droppedCommands.getOid()));
-            currentList.add(dropIndex, newDetail);
+            for (DeviceCommandDTO deviceCommandDTO : ((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getHelperLabel().getDraggedData()) {
+              MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, deviceCommandDTO.getDisplayName(), new DTOReference(deviceCommandDTO.getOid()));
+              currentList.add(dropIndex, newDetail);
+              GWT.log("hello");
+            }
             selectedCommands.setRowData(currentList);
             selectedCommands.redraw();
             selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
@@ -274,7 +269,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
                selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
            }
         } else if (event.getDraggableData() instanceof MacroDTO) {
-           MacroDTO droppedMacro = event.getDraggableData();          
+           MacroDTO droppedMacro = event.getDraggableData();
            MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Macro, droppedMacro.getDisplayName(), new DTOReference(droppedMacro.getOid()));
            currentList.add(dropIndex, newDetail);
            selectedCommands.setRowData(currentList);
@@ -284,28 +279,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
               Element command = selectedCommands.getRowElement(i);
               selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
           }
-        } else  if (event.getDraggableData() instanceof MacroItemDetailsDTO) {
-           
-           /*Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-              @Override
-              public void execute() {
-                 MacroItemDetailsDTO reorderedCommand = event.getDraggableData();
-                 currentList.remove(reorderedCommand);
-                 if (dropIndex>0) {
-                    dropIndex--;
-                 }
-                 currentList.add(dropIndex, reorderedCommand);
-                 selectedCommands.setRowData(currentList);
-                 selectedCommands.redraw();
-                 selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
-                 for (int i = 0; i < selectedCommands.getRowCount(); i++) {
-                    Element command = selectedCommands.getRowElement(i);
-                    selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
-                }
-                 }
-          });*/
-           
         }
       }
     });
@@ -322,48 +295,44 @@ public class MacroWindow extends DialogBox implements ClickHandler {
       
       @Override
       public void onOverDroppable(OverDroppableEvent event) {
-         event.getDragHelper().getStyle().setBackgroundColor("transparent");
+         event.getDragHelper().getStyle().setBackgroundColor("white");
          
       }
    });
+    
+    selectedCommandsContainer.setAccept(new AcceptFunction() {
+      
+      @Override
+      public boolean acceptDrop(DragAndDropContext context) {
+       if (context.getDraggableData() instanceof MacroDTO) {
+         MacroDTO droppableMacro = (MacroDTO)context.getDraggableData();
+         if (droppableMacro.getOid()==macro.getOid()) {
+           return false;
+         }
+       }
+        return true;
+      }
+    });
+    selectedCommands.addBeforeDragHandler( new BeforeDragStartEventHandler() {
+      
+      @Override
+      public void onBeforeDragStart(BeforeDragStartEvent event) {
+        //selectedCommandsSelectionModel.setSelected((MacroItemDetailsDTO) event.getDraggableData(), true);
+        reorderingHelper.setDraggedData(selectedCommandsSelectionModel.getSelectedSet());
+        reorderingHelper.setText(""+selectedCommandsSelectionModel.getSelectedSet().size()+" items selected");
+        
+      }
+    });
     selectedCommands.addDragHandler(new DragEventHandler() {
        
        @Override
        public void onDrag(DragEvent event) {
-          int currentIndex = 0;
-          for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
-
-            if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
-               highlightBorders (selectedCommands.getRowElement(currentIndex),true,false);
-               dropIndex = currentIndex;
-            } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter){
-               highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-               dropIndex = currentIndex+1;
-            } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)){
-              highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-               dropIndex = currentIndex+1;
-            } else {
-              highlightBorders (selectedCommands.getRowElement(currentIndex),false,false);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
-            }
-            currentIndex += 1;
-         }
+         computeDropPosition(event);
        }
 
 
     });
-
-
-    setText("Edit Macro");
     
-    DeviceMacroGWTProxy.loadMacroDetails(macro, new AsyncSuccessCallback<MacroDetailsDTO>() {
-      public void onSuccess(MacroDetailsDTO result) {
-        MacroWindow.this.macroDetails = result;
-        setup();
-    //    layout();
-      }
-    });
   }
 
   /**
@@ -376,8 +345,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
       
       @Override
       public void onSelectionChange(SelectionChangeEvent selectionChangeEvent) {
-         GWT.log("selection changed");
-
          if (selectedCommandsSelectionModel.getSelectedSet() !=null && selectedCommandsSelectionModel.getSelectedSet().size()>0) {
             if (selectedCommandsSelectionModel.getSelectedSet().size()==1 && selectedCommandsSelectionModel.getSelectedSet().iterator().next().getType()==MacroItemType.Delay) {
                editDelayBtn.setEnabled(true);               
@@ -392,31 +359,10 @@ public class MacroWindow extends DialogBox implements ClickHandler {
          selectionChanged = true;
       }
    });
-    selectedCommands.setRowData(this.macroDetails.getItems() );
-    for (int i = 0; i < selectedCommands.getRowCount(); i++) {
-       Element command = selectedCommands.getRowElement(i);
-       if (selectedCommandCellsVerticalCenter==null) {
-         selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
-       }
-       selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
-   }
-
-    /*setPlain(true);
-    setBlinkModal(true);
-    setWidth(530);
-    setHeight(460);
-    setResizable(false);*/
+    if (edit) {
+      selectedCommands.setRowData(this.macroDetails.getItems());
+    }
     createFormElement();
-
-    /*form.setLabelAlign(LabelAlign.TOP);
-    form.setHeight(400);
-    form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-      public void handleEvent(FormEvent be) {
-        beforeFormSubmit();
-      }
-
-    });
-    add(form);*/
   }
 
   /**
@@ -428,36 +374,13 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     if (edit) {
       macroName.setValue(macroDetails.getName());
     }
-    /* macroNameField.setAllowBlank(false);
-    macroNameField.setFieldLabel("Macro Name");
-    macroNameField.setName("macroName");
-    macroNameField.setStyleAttribute("marginBottom", "10px");
-    macroNameField.ensureDebugId(DebugId.DEVICE_MACRO_NAME_FIELD);
-    form.add(macroNameField);
-*/
     createSelectCommandContainer();
-    
   }
 
   /**
    * Creates the select command container.
    */
   private void createSelectCommandContainer() {
-   /* addMacroItemContainer = new LayoutContainer();
-    FieldSet fieldSet = new FieldSet();
-
-    AdapterField adapterField = new AdapterField(addMacroItemContainer);
-    adapterField.setAutoWidth(true);
-    fieldSet.add(adapterField);
-    fieldSet.setHeading("Add Macro Item(drag from left to right)");
-
-    form.add(fieldSet);
-
-    HBoxLayout layout = new HBoxLayout();
-    layout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
-    addMacroItemContainer.setLayout(layout);
-    addMacroItemContainer.setHeight(280);
-    */
     createLeftCommandMacroTab();
     createRightMacroList();
 
@@ -468,29 +391,8 @@ public class MacroWindow extends DialogBox implements ClickHandler {
    * Creates the left command macro tab.
    */
   private void createLeftCommandMacroTab() {
-   /* TabPanel leftCommandMacroTabPanel = new TabPanel();
-    leftCommandMacroTabPanel.setWidth(220);
-    leftCommandMacroTabPanel.setPlain(true);
-    leftCommandMacroTabPanel.setHeight(275);
-
-    TabItem deviceCommandTab = new TabItem("Device Command");
-    deviceCommandTab.setLayout(new FitLayout());*/
-
     createDeviceCommandTree();
     createMacroTree();
-    
-    
-    
-   /* leftCommandMacroTabPanel.add(deviceCommandTab);
-    deviceCommandTab.scrollIntoView(leftCommandMacroTabPanel);
-
-    TabItem macroTab = new TabItem("Macro");
-    macroTab.setLayout(new FitLayout());
-    macroTab.add(createLeftMacroTree());
-    leftCommandMacroTabPanel.add(macroTab);
-
-    addMacroItemContainer.add(leftCommandMacroTabPanel);*/
-     
   }
 
   /**
@@ -504,65 +406,54 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     deviceCommandTree = new DragAndDropCellTree(new DeviceCommandTreeModel(), null);
     deviceCommandTree.setHeight("100px;");
     deviceCommandTree.setWidth("100%");
-    deviceCommandTree.addDragStartHandler(new DragStartEventHandler() {
+    deviceCommandTree.addCellBeforeDragHandler(new BeforeDragStartEventHandler() {
       
       @Override
-      public void onDragStart(DragStartEvent event) {
-         event.getHelper().getStyle().setHeight(20, Unit.PX);
-         
+      public void onBeforeDragStart(BeforeDragStartEvent event) {
+        ((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getHelperLabel().setDraggedData(((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getSelectedDeviceCommands());
+        ((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getHelperLabel().setText(""+((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getSelectedDeviceCommands().size()+"  items selected");
       }
-   });
+    });
     deviceCommandTree.addDragHandler(new DragEventHandler() {
        
        @Override
        public void onDrag(DragEvent event) {
-          int currentIndex = 0;
-          for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
-            if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
-               highlightBorders (selectedCommands.getRowElement(currentIndex),true,false);
-               dropIndex = currentIndex;
-            } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter){
-               highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-               dropIndex = currentIndex+1;
-            } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)){
-              highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-               dropIndex = currentIndex+1;
-            } else {
-              highlightBorders (selectedCommands.getRowElement(currentIndex),false,false);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
-               selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
-            }
-            currentIndex += 1;
-         }
+          computeDropPosition(event);
        }
 
 
     });
     
-    /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
-    dragSource.addDNDListener(new DNDListener() {
-      @SuppressWarnings("unchecked")
-      @Override
-      public void dragStart(DNDEvent e) {
-        TreePanel<BeanModel> tree = (TreePanel<BeanModel>) e.getComponent();
-        BeanModel beanModel = tree.getSelectionModel().getSelectedItem();
-        if (!(beanModel.getBean() instanceof DeviceCommandDTO)) {
-          e.setCancelled(true);
-          e.getStatus().setStatus(false);
-        }
-        super.dragStart(e);
-      }
-
-    });*/
-    //deviceCommandTree.getTreeViewModel().getNodeInfo(Device)
-   // dragSource.setGroup(MACRO_DND_GROUP);
     devicePanel.add(deviceCommandTree);
     deviceCommandTree.setVisible(true);
-    //treeContainer.add(deviceCommandTree);
-
-    //return treeContainer;
   }
  
+    protected void computeDropPosition(DragEvent event) {
+      int currentIndex = 0;
+      for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
+        if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
+          GWT.log(""+event.getHelper().getAbsoluteTop()+"  "+cellCenter);
+
+           highlightBorders(selectedCommands.getRowElement(currentIndex),true,false);
+           dropIndex = currentIndex;
+        } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter) {
+           highlightBorders(selectedCommands.getRowElement(currentIndex),false,true);
+           dropIndex = currentIndex+1;
+        } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)) {
+          highlightBorders(selectedCommands.getRowElement(currentIndex),false,true);
+           dropIndex = currentIndex+1;
+        } else {
+          highlightBorders(selectedCommands.getRowElement(currentIndex),false,false);
+           selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
+           selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
+        }
+        GWT.log(""+dropIndex);
+        currentIndex += 1;
+     }
+      GWT.log(" result : "+dropIndex);
+    
+  }
+
     private void createMacroTree() {
        macroTree = new DragAndDropCellTree(new MacroTreeModel(), null);
        macroTree.setHeight("100px;");
@@ -571,95 +462,16 @@ public class MacroWindow extends DialogBox implements ClickHandler {
           
           @Override
           public void onDrag(DragEvent event) {
-             int currentIndex = 0;
-             for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
-               if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
-                  highlightBorders (selectedCommands.getRowElement(currentIndex),true,false);
-                  dropIndex = currentIndex;
-               } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter){
-                  highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-                  dropIndex = currentIndex+1;
-               } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)){
-                 highlightBorders (selectedCommands.getRowElement(currentIndex),false,true);
-                  dropIndex = currentIndex+1;
-               } else {
-                 highlightBorders (selectedCommands.getRowElement(currentIndex),false,false);
-                  selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
-                  selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
-               }
-               currentIndex += 1;
-            }
+            computeDropPosition(event);
           }
 
 
        });
        
-       /*TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(deviceCommandTree);
-       dragSource.addDNDListener(new DNDListener() {
-         @SuppressWarnings("unchecked")
-         @Override
-         public void dragStart(DNDEvent e) {
-           TreePanel<BeanModel> tree = (TreePanel<BeanModel>) e.getComponent();
-           BeanModel beanModel = tree.getSelectionModel().getSelectedItem();
-           if (!(beanModel.getBean() instanceof DeviceCommandDTO)) {
-             e.setCancelled(true);
-             e.getStatus().setStatus(false);
-           }
-           super.dragStart(e);
-         }
-
-       });*/
-       //deviceCommandTree.getTreeViewModel().getNodeInfo(Device)
-      // dragSource.setGroup(MACRO_DND_GROUP);
        macroPanel.add(macroTree);
        macroTree.setVisible(true);
-       //treeContainer.add(deviceCommandTree);
-
-       //return treeContainer;
      }
     
-    
-    
-    
-  /**
-   * Creates the left macro list.
-   * 
-   * @return the layout container
-   */
-/*  private LayoutContainer createLeftMacroTree() {
-    LayoutContainer leftMacroListContainer = new LayoutContainer();
-    // overflow-auto style is for IE hack.
-    leftMacroListContainer.addStyleName("overflow-auto");
-    leftMacroListContainer.setStyleAttribute("backgroundColor", "white");
-    leftMacroListContainer.setBorders(false);
-
-    leftMacroList = TreePanelBuilder.buildMacroTree();
-    leftMacroListContainer.setHeight("100%");
-    leftMacroListContainer.add(leftMacroList);
-
-    TreePanelDragSourceMacroDragExt dragSource = new TreePanelDragSourceMacroDragExt(leftMacroList);
-    dragSource.addDNDListener(new DNDListener() {
-
-      @SuppressWarnings("unchecked")
-      @Override
-      public void dragStart(DNDEvent e) {
-        TreePanel<BeanModel> tree = ((TreePanel<BeanModel>) e.getComponent());
-        BeanModel beanModel = tree.getSelectionModel().getSelectedItem();
-        if (!(beanModel.getBean() instanceof MacroDTO)) {
-          e.setCancelled(true);
-          e.getStatus().setStatus(false);
-        } else if (((MacroDTO)beanModel.getBean()).getOid() == macroDetails.getOid()) { // when edit macro, can not dnd oneself.
-          e.setCancelled(true);
-          e.getStatus().setStatus(false);
-        }
-        super.dragStart(e);
-      }
-
-    });
-    dragSource.setGroup(MACRO_DND_GROUP);
-
-    return leftMacroListContainer;
-  }*/
 
   /**
    * Creates the right macro list.
@@ -703,7 +515,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     });
     
     currentCommandsButtonsFlowPanel.add(editDelayBtn);
-    //editDelBtns.add(editDelayBtn);
 
     deleteBtn = new Button();
     deleteBtn.setEnabled(false);
@@ -717,76 +528,9 @@ public class MacroWindow extends DialogBox implements ClickHandler {
         onDeleteMacroItemBtnClicked();
       }
     });
-    
     currentCommandsButtonsFlowPanel.add(deleteBtn);
-   
   }
 
-  /**
-   * Setup right macro item dnd.
-   */
-/*  private void setupRightMacroItemDND() {
-    ListViewDropTargetMacroDragExt dropTarget = new ListViewDropTargetMacroDragExt(rightMacroItemListView);
-    dropTarget.setAllowSelfAsSource(true);
-    dropTarget.setGroup(MACRO_DND_GROUP);
-    dropTarget.setFeedback(Feedback.INSERT);
-    dropTarget.setOperation(Operation.MOVE);
-
-    ListViewDragSource dragSource = new ListViewDragSource(rightMacroItemListView);
-    dragSource.setGroup(MACRO_DND_GROUP);
-  }*/
-
-  /**
-   * Setup right macro item list view.
-   * 
-   * @return the list view< bean model>
-   */
- /* private ListView<BeanModel> createRightMacroItemListView() {
-    rightMacroItemListView = new ListView<BeanModel>();
-    rightMacroItemListView.setDisplayProperty("displayName");
-
-    ListStore<BeanModel> store = new ListStore<BeanModel>();
-
-    rightMacroItemListView.setStore(store);
-    rightMacroItemListView.setHeight(203);
-    if (macroDetails != null) {
-      for (MacroItemDetailsDTO item : macroDetails.getItems()) {
-        rightMacroItemListView.getStore().add(DTOHelper.getBeanModel(item));
-      }
-    }
-    return rightMacroItemListView;
-  }*/
-
-  /**
-   * Before form submit.
-   */
-/*  private void beforeFormSubmit() {
-   /* AsyncSuccessCallback<MacroDTO> callback = new AsyncSuccessCallback<MacroDTO>() {
-      @Override
-      public void onSuccess(MacroDTO result) {
-        if (macro == null) {
-          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
-        } else {
-          macro.setDisplayName(result.getDisplayName());
-          macro.setItems(result.getItems());
-          fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(macro));
-        }
-      }
-    };
-
-    macroDetails.setName(macroNameField.getValue());
-    ArrayList<MacroItemDetailsDTO> items = new ArrayList<MacroItemDetailsDTO>();
-    for (BeanModel bm : rightMacroItemListView.getStore().getModels()) {
-      items.add((MacroItemDetailsDTO) bm.getBean());
-    }
-    macroDetails.setItems(items);
-    if (edit) {
-      DeviceMacroBeanModelProxy.updateMacroWithDTO(macroDetails, callback);
-    } else {
-      DeviceMacroBeanModelProxy.saveNewMacro(macroDetails, callback);
-    }
-  }
-*/
   /**
    * On delete macro item btn clicked.
    */
@@ -865,12 +609,17 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   
   @UiHandler("submitButton")
   void submitButtonClicked(ClickEvent e) {
+     if (macroName.getText().length()<=0) {
+       macroName.getElement().getStyle().setBorderColor("red");
+     } else {
+       macroName.getElement().getStyle().setBorderColor("grey");
      AsyncSuccessCallback<MacroDTO> callback = new AsyncSuccessCallback<MacroDTO>() {
         @Override
         public void onSuccess(MacroDTO result) {
-          if (macro != null) {
+          if (result != null) {
             macro.setDisplayName(result.getDisplayName());
             macro.setItems(result.getItems());
+            macro.setOid(result.getOid());
             caption = new DialogBoxCaptionWithCancel();
             hide();
           }
@@ -888,6 +637,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
       } else {
         DeviceMacroBeanModelProxy.saveNewMacro(macroDetails, callback);
       }
+     }
   }
   
   public native void highlightBorders(Element rowElement, boolean top, boolean bottom) /*-{
