@@ -41,7 +41,6 @@ import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.google.gwt.core.shared.GWT;
 
 
 /**

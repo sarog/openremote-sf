@@ -157,4 +157,9 @@ public class DeviceCommandTreeModel implements TreeViewModel {
       return (value instanceof DeviceCommandDTO);
    }
 
+   public void clearSelections() {
+      this.selectionModel.clear();
+      
+   }
+
 }

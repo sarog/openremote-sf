@@ -5,10 +5,14 @@ import gwtquery.plugins.draggable.client.DraggableOptions.HelperType;
 import gwtquery.plugins.droppable.client.gwt.DragAndDropNodeInfo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.proxy.DeviceMacroGWTProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.widget.utils.DraggableHelper;
+import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroItemDTO;
 import org.openremote.modeler.shared.dto.MacroItemType;
@@ -19,7 +23,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.TreeViewModel;
+import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
 public class MacroTreeModel implements TreeViewModel {
 
@@ -28,6 +34,9 @@ public class MacroTreeModel implements TreeViewModel {
    private AsyncDataProvider<MacroItemDTO> deviceCommandsDTOList;
    private MultiSelectionModel<MacroDTO> selectionModel= new MultiSelectionModel<MacroDTO>();
    protected MacroDTO currentMacroValue;
+   private Set<MacroDTO> selectedMacros = new HashSet<MacroDTO>();
+   private DraggableHelper<MacroDTO> helperLabel = new DraggableHelper<MacroDTO>();
+
    private static class MacroCell extends AbstractCell<MacroDTO> {
 
       /**
@@ -70,7 +79,30 @@ public class MacroTreeModel implements TreeViewModel {
       }
 
     }
+   
+   public void setHelperLabel(DraggableHelper<MacroDTO> helperLabel) {
+      this.helperLabel = helperLabel;
+    }
+    
+
+    public DraggableHelper<MacroDTO> getHelperLabel() {
+      return this.helperLabel;
+    }
+   public Set<MacroDTO> getSelectedMacros() {
+      return selectedMacros;
+   }
+
+
    public MacroTreeModel() { 
+      selectionModel.addSelectionChangeHandler(new Handler() {
+         
+         @Override
+         public void onSelectionChange(SelectionChangeEvent event) {
+           selectedMacros= selectionModel.getSelectedSet();
+           helperLabel.setDraggedData(selectedMacros);
+           
+         }
+       });
    }
    
    @Override
@@ -93,7 +125,8 @@ public class MacroTreeModel implements TreeViewModel {
        };
        DragAndDropNodeInfo<MacroDTO> node = new DragAndDropNodeInfo<MacroDTO>(deviceDTOList,new MacroCell(),selectionModel,null);
        DraggableOptions options = node.getDraggableOptions();
-       options.setHelper(HelperType.CLONE);
+       options.setHelper(helperLabel.getElement());
+       options.setHelper(HelperType.ELEMENT);
        options.setAppendTo("#macroDialogBox");
        return node;
       } else if (value instanceof MacroDTO){
@@ -122,6 +155,12 @@ public class MacroTreeModel implements TreeViewModel {
    @Override
    public boolean isLeaf(Object value) {
       return (value instanceof MacroItemDTO);
+   }
+
+
+   public void clearSelections() {
+      this.selectionModel.clear();
+      
    }
 
 }
