@@ -66,6 +66,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -112,7 +114,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   ScrollPanel macroPanel;
   
   @UiField
-  HorizontalPanel currentCommandsPanel;
+  ScrollPanel currentCommandsPanel;
 
   @UiField
   FlowPanel currentCommandsButtonsFlowPanel;
@@ -152,7 +154,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   private MultiSelectionModel<MacroItemDetailsDTO> selectedCommandsSelectionModel = new MultiSelectionModel<MacroItemDetailsDTO>();
   private DeviceCommandDTOCell deviceCommandDTOCell;
   private DraggableHelper<MacroItemDetailsDTO> reorderingHelper = new DraggableHelper<MacroItemDetailsDTO>();
-  
+  private int selectCommandsScrollPosition;
   MacroItemDetailsDTO editedCommand;
 
   protected MacroDTO getMacro() {
@@ -250,6 +252,14 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>> selectedCommandsContainer = new DroppableWidget<DragAndDropCellList<MacroItemDetailsDTO>>(selectedCommands);
     selectedCommandsContainer.setTolerance(DroppableTolerance.TOUCH);
     currentCommandsPanel.add(selectedCommandsContainer);
+    currentCommandsPanel.addScrollHandler(new ScrollHandler() {
+      
+      @Override
+      public void onScroll(ScrollEvent event) {
+         selectCommandsScrollPosition= currentCommandsPanel.getVerticalScrollPosition();
+         GWT.log("scroll position "+selectCommandsScrollPosition);
+      }
+   });
     selectedCommandsContainer.addDropHandler(new DropEventHandler() {
       
       @Override
@@ -259,7 +269,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
             for (DeviceCommandDTO deviceCommandDTO : ((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).getHelperLabel().getDraggedData()) {
               MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Command, deviceCommandDTO.getDisplayName(), new DTOReference(deviceCommandDTO.getOid()));
               currentList.add(dropIndex, newDetail);
-              GWT.log("hello");
             }
             selectedCommands.setRowData(currentList);
             selectedCommands.redraw();
@@ -268,10 +277,12 @@ public class MacroWindow extends DialogBox implements ClickHandler {
                Element command = selectedCommands.getRowElement(i);
                selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
            }
+            ((DeviceCommandTreeModel)deviceCommandTree.getTreeViewModel()).clearSelections();
         } else if (event.getDraggableData() instanceof MacroDTO) {
-           MacroDTO droppedMacro = event.getDraggableData();
-           MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Macro, droppedMacro.getDisplayName(), new DTOReference(droppedMacro.getOid()));
-           currentList.add(dropIndex, newDetail);
+           for (MacroDTO macroDTO : ((MacroTreeModel)macroTree.getTreeViewModel()).getHelperLabel().getDraggedData()) {
+              MacroItemDetailsDTO newDetail = new MacroItemDetailsDTO(null, MacroItemType.Macro, macroDTO.getDisplayName(), new DTOReference(macroDTO.getOid()));
+              currentList.add(dropIndex, newDetail);
+            }
            selectedCommands.setRowData(currentList);
            selectedCommands.redraw();
            selectedCommandCellsVerticalCenter = new ArrayList<Integer>();
@@ -279,6 +290,7 @@ public class MacroWindow extends DialogBox implements ClickHandler {
               Element command = selectedCommands.getRowElement(i);
               selectedCommandCellsVerticalCenter.add(command.getAbsoluteTop()-(command.getOffsetHeight()/2));
           }
+           ((MacroTreeModel)macroTree.getTreeViewModel()).clearSelections();
         }
       }
     });
@@ -431,26 +443,22 @@ public class MacroWindow extends DialogBox implements ClickHandler {
     protected void computeDropPosition(DragEvent event) {
       int currentIndex = 0;
       for (Integer cellCenter : selectedCommandCellsVerticalCenter) {
-        if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<cellCenter) {
-          GWT.log(""+event.getHelper().getAbsoluteTop()+"  "+cellCenter);
-
+        if (currentIndex == 0 && event.getHelper().getAbsoluteTop()<(cellCenter-selectCommandsScrollPosition)) {
            highlightBorders(selectedCommands.getRowElement(currentIndex),true,false);
            dropIndex = currentIndex;
-        } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>cellCenter) {
+        } else if (currentIndex==selectedCommandCellsVerticalCenter.size()-1 && event.getHelper().getAbsoluteTop()>(cellCenter-selectCommandsScrollPosition)) {
            highlightBorders(selectedCommands.getRowElement(currentIndex),false,true);
            dropIndex = currentIndex+1;
-        } else if (event.getHelper().getAbsoluteTop()>cellCenter && event.getHelper().getAbsoluteTop()<=selectedCommandCellsVerticalCenter.get(currentIndex+1)) {
-          highlightBorders(selectedCommands.getRowElement(currentIndex),false,true);
+        } else if (event.getHelper().getAbsoluteTop()>(cellCenter-selectCommandsScrollPosition) && event.getHelper().getAbsoluteTop()<=(selectedCommandCellsVerticalCenter.get(currentIndex+1)-selectCommandsScrollPosition)) {
+           highlightBorders(selectedCommands.getRowElement(currentIndex),false,true);
            dropIndex = currentIndex+1;
         } else {
-          highlightBorders(selectedCommands.getRowElement(currentIndex),false,false);
+           highlightBorders(selectedCommands.getRowElement(currentIndex),false,false);
            selectedCommands.getRowElement(currentIndex).getStyle().setPaddingTop(0, Unit.PX);
            selectedCommands.getRowElement(currentIndex).getStyle().setPaddingBottom(0, Unit.PX);
         }
-        GWT.log(""+dropIndex);
         currentIndex += 1;
      }
-      GWT.log(" result : "+dropIndex);
     
   }
 
@@ -458,6 +466,15 @@ public class MacroWindow extends DialogBox implements ClickHandler {
        macroTree = new DragAndDropCellTree(new MacroTreeModel(), null);
        macroTree.setHeight("100px;");
        macroTree.setWidth("100%");
+       macroTree.addCellBeforeDragHandler(new BeforeDragStartEventHandler() {
+         
+         @Override
+         public void onBeforeDragStart(BeforeDragStartEvent event) {
+            ((MacroTreeModel)macroTree.getTreeViewModel()).getHelperLabel().setDraggedData(((MacroTreeModel)macroTree.getTreeViewModel()).getSelectedMacros());
+            ((MacroTreeModel)macroTree.getTreeViewModel()).getHelperLabel().setText(""+((MacroTreeModel)macroTree.getTreeViewModel()).getSelectedMacros().size()+"  items selected");
+            
+         }
+      });
        macroTree.addDragHandler(new DragEventHandler() {
           
           @Override
@@ -604,7 +621,6 @@ public class MacroWindow extends DialogBox implements ClickHandler {
       }
    });
     
-    
   }
   
   @UiHandler("submitButton")
@@ -641,17 +657,17 @@ public class MacroWindow extends DialogBox implements ClickHandler {
   }
   
   public native void highlightBorders(Element rowElement, boolean top, boolean bottom) /*-{
-  if (top) {
-    rowElement.style.borderTop = "2px dotted #0000FF";
-  } else {
-     rowElement.style.borderTop = "none";
-  } 
+     if (top) {
+       rowElement.style.borderTop = "2px dotted #0000FF";
+     } else {
+        rowElement.style.borderTop = "none";
+     } 
   
-  if (bottom) {
-    rowElement.style.borderBottom = "2px dotted #0000FF";    
-  } else {
-    rowElement.style.borderBottom = "none"; 
-  }
+     if (bottom) {
+       rowElement.style.borderBottom = "2px dotted #0000FF";    
+     } else {
+       rowElement.style.borderBottom = "none"; 
+     }
   
   }-*/;
 
