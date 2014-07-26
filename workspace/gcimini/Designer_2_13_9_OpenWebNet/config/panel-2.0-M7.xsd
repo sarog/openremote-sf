@@ -305,6 +305,8 @@
 			<xsd:element ref="switch"/>
 			<xsd:element ref="image"/>
 			<xsd:element ref="slider"/>
+			<xsd:element ref="web"/>			
+			<xsd:element ref="colorpicker"/>
 		</xsd:choice>
 	</xsd:group>
 	
@@ -475,7 +477,26 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+		<!-- ###############  web  ################ -->
 	
+	<xsd:element name="web">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				web component to display some information. 
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="link" minOccurs="0" maxOccurs="1"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required"/>
+			<xsd:attribute name="fontSize" type="xsd:int" use="optional"/>
+			<xsd:attribute name="color" type="xsd:string" use="optional"/>
+			<xsd:attribute name="src" type="xsd:string" use="required"/>
+			<xsd:attribute name="username" type="xsd:string" use="optional"/>
+			<xsd:attribute name="password" type="xsd:string" use="optional"/>			
+		</xsd:complexType>
+	</xsd:element>
 	<!-- ###############  slider  ################ -->
 	
 	<xsd:element name="slider">
@@ -573,6 +594,23 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="link" minOccurs="0" maxOccurs="2"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- ###############  color picker  ################ -->
+	
+	<xsd:element name="colorpicker">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				a color picker widget. 
+				sub element: image. 
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+		   <xsd:sequence>
+			   <xsd:element ref="image" minOccurs="0" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required"/>
 		</xsd:complexType>

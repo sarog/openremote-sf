@@ -1,3 +1,51 @@
+Designer 2.14.0 (2013-XX-XX Markab)
+===================================
+
+ New Features:
+
+   - EnOcean configuration (Rainer Hitz, MODELER-470)
+   - Round-robin database (RRD) configuration (MODELER-394)
+   - Add web view widget (MODELER-248, MODELER-384, MODELER-395,
+     MODELER-398)
+   - Add color picker widget (MODELER-333, MODELER-384)
+   - Add polling interval and regex attributes to ShellExe
+     protocol (MODELER-463, Marcus Redeker)
+   - Add polling interval to telnet protocol (MODELER-464,
+     Marcus Redeker)
+   - Add IP address to Samsung SmartTV protocol, enabling
+     use of multiple devices (MODELER-465, Ivan Martinez)
+   - Controller configuration sections have a "reset to
+     default values" button (MODELER-453, Eric Bariaux)
+
+
+ Fixes:
+
+   - Fixes to image asset manager (Eric Bariaux, related 
+     to MODELER-292)
+   - MODELER-302, MODELER-385: List of widgets does not 
+     scroll anymore, double scrollbar on widget selection
+     (Eric Bariaux)
+   - MODELER-304, MODELER-334: UI elements (from panels.obj) 
+     restored on login and not when UI designer pane is 
+     displayed. "Please wait" message on login only dismissed 
+     when UI has been built and initialized. (Eric Bariaux)
+   - MODELER-391: Add Domintell connection configuration
+     (Eric Bariaux)
+   - MODELER-392: Fractional Widget Coordinates when Browser
+     has non-default zoom (Eric Bariaux)
+   - MODELER-453: Error when attempting to set a controller
+     configuration property to an empty value (Eric Bariaux)
+
+
+ Internal:
+
+  - Image Asset Picker converted to GXT3 (Eric Bariaux, MODELER-330)
+  - Hibernate lazy initialization errors on device attributes, 
+    correct handling of sensor ID assignments in transactions,
+    changes to XML id generation
+    (Eric Bariaux, MODELER-389, MODELER-396, MODELER-413)
+  
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
@@ -41,7 +89,6 @@ Designer 2.13.6 (2012-09-20 Rosemary)
 =====================================
 
 Bug fix release:
-
  
  - Increase maximum command field length from 1000
    characters to 4000 characters for UDP, TCP, HTTP
