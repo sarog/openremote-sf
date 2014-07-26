@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.openremote.org" targetNamespace="http://www.openremote.org">
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[
+            OpenRemote OpenWebNet plugin describe XML, version 1.0.
+            Authors: Marco Miccini.
+
+            This document describe all the useful infomation for the OpenWebNet plugin.
+        ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="openremote">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="who" minOccurs="1" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="who">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="commandtype" minOccurs="0" maxOccurs="4" />
+            </xsd:sequence>
+            <xsd:attribute name="value" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="commandtype">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="field" minOccurs="1" maxOccurs="3" />
+            </xsd:sequence>
+            <xsd:attribute name="name" type="cmdtype" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="field">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="value" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+            <xsd:attribute name="name" type="fld" use="required" />
+            <xsd:attribute name="optional" type="xsd:boolean" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="value">
+    </xsd:element>
+
+    <xsd:simpleType name="cmdtype">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Status Command" />
+            <xsd:enumeration value="Status Request" />
+            <xsd:enumeration value="Dimension Request" />
+            <xsd:enumeration value="Dimension Write" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="fld">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="what" />
+            <xsd:enumeration value="where" />
+            <xsd:enumeration value="dimension" />
+            <xsd:enumeration value="values" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
