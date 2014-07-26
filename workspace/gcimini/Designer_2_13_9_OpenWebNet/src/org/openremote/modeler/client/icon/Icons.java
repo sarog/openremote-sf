@@ -138,4 +138,9 @@ public interface Icons extends ImageBundle {
    @Resource("user.png")
    AbstractImagePrototype userIcon();
 
+   @Resource("webview.png")
+   AbstractImagePrototype webviewIcon();
+   
+   @Resource("color_picker.png")
+   AbstractImagePrototype colorpickerIcon();
 }

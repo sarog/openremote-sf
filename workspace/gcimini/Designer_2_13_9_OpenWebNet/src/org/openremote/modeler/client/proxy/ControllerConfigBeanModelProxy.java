@@ -62,5 +62,13 @@ public class ControllerConfigBeanModelProxy {
         }
       });
    }
-
+   
+   public static void resetToDefaults(final HashSet<Long> configIds, final AsyncCallback<Void> callback) {
+     AsyncServiceFactory.getControllerConfigPRCServiceAsync().resetToDefaults(configIds, new AsyncSuccessCallback<Void>() {
+      @Override
+      public void onSuccess(Void result) {
+        callback.onSuccess(result);
+      }
+     });
+   }
 }

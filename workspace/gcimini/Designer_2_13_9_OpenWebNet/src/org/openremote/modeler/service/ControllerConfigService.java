@@ -75,4 +75,6 @@ public interface ControllerConfigService {
 
    Set<ControllerConfig> saveAllDTOs(HashSet<ControllerConfigDTO> configDTOs);
 
+   void resetToDefaults(HashSet<Long> configIds);
+
 }

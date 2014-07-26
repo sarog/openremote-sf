@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +31,14 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.client.utils.OpenWebNet;
 import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.openwebnet.OpenWebNetCommandType;
+import org.openremote.modeler.openwebnet.OpenWebNetField;
+import org.openremote.modeler.openwebnet.OpenWebNetWho;
 import org.openremote.modeler.protocol.ProtocolAttrDefinition;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.protocol.ProtocolValidator;
@@ -51,6 +56,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
@@ -71,6 +77,11 @@ public class DeviceCommandWindow extends FormWindow {
    /** The Constant DEVICE_COMMAND_PROTOCOL. */
    public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
    
+   // ---------- ADDED by MARCO MICCINI ---------- //
+   private static Map<String, OpenWebNetWho> OWNDefinition = null;
+   private static List<StringComboBoxData> typeOWN = null;
+   // -------------------------------------------- //
+
    private EventBus eventBus;
    
    private DeviceDTO device;
@@ -90,6 +101,9 @@ public class DeviceCommandWindow extends FormWindow {
       this.device = device;
       this.eventBus = eventBus;
       setHeading("New command");
+      // ---------- ADDED by MARCO MICCINI ---------- //
+      setOWNDefinition();
+      // -------------------------------------------- //
       this.deviceCommand = new DeviceCommandDetailsDTO();
       initial();
       show();
@@ -105,6 +119,9 @@ public class DeviceCommandWindow extends FormWindow {
       this.device = device;
       this.eventBus = eventBus;
       setHeading("Edit command");
+      // ---------- ADDED by MARCO MICCINI ---------- //
+      setOWNDefinition();
+      // -------------------------------------------- //
       AsyncServiceFactory.getDeviceCommandServiceAsync().loadCommandDetailsDTO(command.getOid(),
             new AsyncSuccessCallback<DeviceCommandDetailsDTO>() {
          public void onSuccess(DeviceCommandDetailsDTO cmd) {
@@ -245,6 +262,9 @@ public class DeviceCommandWindow extends FormWindow {
                   form.getItem(3).removeFromParent();
                }
             }
+            // ---------- ADDED by MARCO MICCINI ---------- //
+            setOWNDefinition();
+            // -------------------------------------------- //
             addAttrs((ComboBoxDataModel<ProtocolDefinition>) se.getSelectedItem());
          }
       });
@@ -295,17 +315,79 @@ public class DeviceCommandWindow extends FormWindow {
             }
             comboAttrField.setFieldLabel(attrDefinition.getLabel());
             ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
-            for (String option : options) {
-               if (!"".equals(option)) {
-                  StringComboBoxData comboData = new StringComboBoxData(option, option);
-                  comboAttrField.getStore().add(comboData);
-                  if (value.equals(option)) {
-                     comboAttrField.setValue(comboData);
+
+            // ---------- ADDED by MARCO MICCINI ---------- //
+            if (!data.getLabel().equals("OpenWebNet") || !attrDefinition.getName().equals("type"))
+            // -------------------------------------------- //
+               for (String option : options) {
+                  if (!"".equals(option)) {
+                     StringComboBoxData comboData = new StringComboBoxData(option, option);
+                     comboAttrField.getStore().add(comboData);
+                     if (value.equals(option)) {
+                        comboAttrField.setValue(comboData);
+                     }
                   }
                }
-            }
             setComboBoxValidators(comboAttrField, comboBoxMessages, attrDefinition.getValidators());
             attrSet.add(comboAttrField);
+
+
+            // ---------- ADDED by MARCO MICCINI ---------- //
+            if (data.getLabel().equals("OpenWebNet"))
+            {
+               if (attrDefinition.getName().equals("who"))
+               {
+                  comboAttrField.addSelectionChangedListener(new SelectionChangedListener<ModelData>()
+                  {
+                     @SuppressWarnings("unchecked")
+                     public void selectionChanged(SelectionChangedEvent<ModelData> se)
+                     {
+                        int index = 0;
+                        if (info == null)
+                           index = 2;
+                        else if (form.getItems().size() > 3)
+                           index = 3;
+                        resetOWN((FieldSet) form.getItem(index));
+
+                        setTypeOWN((ComboBoxExt) ((FieldSet) form.getItem(index)).getItem(2), (StringComboBoxData) se.getSelectedItem(), null);
+                     }
+                  });
+               }
+               else if (attrDefinition.getName().equals("type"))
+               {
+                  if (typeOWN == null)
+                  {
+                     typeOWN = new ArrayList<StringComboBoxData>();
+                     for (String option : options)
+                        typeOWN.add(new StringComboBoxData(option, option));
+                  }
+
+                  if (deviceCommand.getOid() == null)
+                     comboAttrField.disable();
+                  else
+                     setTypeOWN(comboAttrField, (StringComboBoxData) ((ComboBoxExt) attrSet.getItem(1)).getValue(), value);
+
+                  comboAttrField.addSelectionChangedListener(new SelectionChangedListener<ModelData>()
+                  {
+                     @SuppressWarnings("unchecked")
+                     public void selectionChanged(SelectionChangedEvent<ModelData> se)
+                     {
+                        int index = 0;
+                        if (info == null)
+                           index = 2;
+                        else if (form.getItems().size() > 3)
+                           index = 3;
+                        resetOWN((FieldSet) form.getItem(index));
+
+                        setFieldsOWN((FieldSet) form.getItem(index), (StringComboBoxData) ((ComboBoxExt) ((FieldSet) form.getItem(index)).getItem(1)).getValue(),
+                              (StringComboBoxData) se.getSelectedItem());
+                     }
+                  });
+               }
+            }
+            // -------------------------------------------- //
+
+
          } else {
             TextField<String> attrField = new TextField<String>();
             attrField.setName(attrDefinition.getName());
@@ -314,6 +396,14 @@ public class DeviceCommandWindow extends FormWindow {
             }
             TextField<String>.TextFieldMessages messages = attrField.getMessages();
             attrField.setFieldLabel(attrDefinition.getLabel());
+
+
+            // ---------- ADDED by MARCO MICCINI ---------- //
+            if (data.getLabel().equals("OpenWebNet") && !attrDefinition.getName().equals("url"))
+               attrField.disable();
+            // -------------------------------------------- //
+
+
             if (!"".equals(value)) {
                attrField.setValue(value);
             }
@@ -321,13 +411,158 @@ public class DeviceCommandWindow extends FormWindow {
             attrSet.add(attrField);
          }
       }
+
+
+      // ---------- ADDED by MARCO MICCINI ---------- //
+      if (data.getLabel().equals("OpenWebNet") && deviceCommand.getOid() != null)
+      {
+         setFieldsOWN(attrSet, (StringComboBoxData) ((ComboBoxExt) attrSet.getItem(1)).getValue(),
+               (StringComboBoxData) ((ComboBoxExt) attrSet.getItem(2)).getValue());
+      }
+      // -------------------------------------------- //
+
+
       form.add(attrSet);
       form.layout();
       if (isRendered()) {
          center();
       }
    }
-   
+
+
+
+   // ---------- NEW METHODS by MARCO MICCINI ---------- //
+   /**
+    * Sets the OpenWebNet definition map
+    */
+   private void setOWNDefinition()
+   {
+      if (OWNDefinition == null)
+         OWNDefinition = OpenWebNet.getInstance();
+   }
+
+   /**
+    * Resets the OpenWebNet fields, except URL and WHO.
+    * @param attrSet the attribute set of the protocol form
+    */
+   private void resetOWN(FieldSet attrSet)
+   {
+      for (int i = 3; i < attrSet.getItemCount(); i++)
+      {
+         Component field = attrSet.getItem(i);
+         ((TextField<String>) field).clear();
+         field.disable();
+      }
+   }
+
+   /**
+    * Removes the unnecessary type items.
+    * @param type the type combo box
+    * @param whoItem the selected who item
+    * @param value the type value
+    */
+   private void setTypeOWN(ComboBoxExt type, StringComboBoxData whoItem, String value)
+   {
+      OpenWebNetWho who = OWNDefinition.get(whoItem.getLabel());
+
+      if (value == null)
+      {
+         type.clearSelections();
+         type.getStore().removeAll();
+         if (!type.isEnabled())
+            type.enable();
+      }
+
+      List<OpenWebNetCommandType> commandTypes = who.getCommandTypes();
+      for (StringComboBoxData option : typeOWN)
+      {
+         boolean flag = false;
+         for (OpenWebNetCommandType commandType : commandTypes)
+            if (option.getLabel().equals(commandType.getName()))
+            {
+               flag = true;
+               break;
+            }
+         if (flag)
+            type.getStore().add(option);
+
+         if (option.getLabel().equals(value))
+            type.setValue(option);
+      }
+   }
+
+   /**
+    * Sets all the OWN fields except URL, who and type
+    * @param attrSet the attribute set of the protocol form
+    * @param whoItem the who selected
+    * @param typeItem the type selected
+    */
+   private void setFieldsOWN(FieldSet attrSet, StringComboBoxData whoItem, StringComboBoxData typeItem)
+   {
+      OpenWebNetWho who = OWNDefinition.get(whoItem.getLabel());
+      List<OpenWebNetCommandType> types = who.getCommandTypes();
+      for (OpenWebNetCommandType type : types)
+         if (type.getName().equals(typeItem.getLabel()))
+         {
+            if (type.getName().equals("Status Request"))
+               attrSet.getItem(7).enable();
+            else if (type.getName().equals("Dimension Request"))
+            {
+               attrSet.getItem(7).enable();
+               attrSet.getItem(8).enable();
+               attrSet.getItem(9).enable();
+            }
+
+            List<OpenWebNetField> fields = type.getFields();
+            for (OpenWebNetField field : fields)
+            {
+               if (field.getName().equals("what"))
+               {
+                  TextField<String> what = (TextField<String>) attrSet.getItem(3);
+                  what.enable();
+                  setValidators(what, what.getMessages(), field.getValues());
+                  if (field.getOptional())
+                     what.setAllowBlank(true);
+                  else
+                     what.setAllowBlank(false);
+               }
+               else if (field.getName().equals("where"))
+               {
+                  TextField<String> where = (TextField<String>) attrSet.getItem(4);
+                  where.enable();
+                  setValidators(where, where.getMessages(), field.getValues());
+                  if (field.getOptional())
+                     where.setAllowBlank(true);
+                  else
+                     where.setAllowBlank(false);
+               }
+               else if (field.getName().equals("dimension"))
+               {
+                  TextField<String> dimension = (TextField<String>) attrSet.getItem(5);
+                  dimension.enable();
+                  setValidators(dimension, dimension.getMessages(), field.getValues());
+                  if (field.getOptional())
+                     dimension.setAllowBlank(true);
+                  else
+                     dimension.setAllowBlank(false);
+               }
+               else if (field.getName().equals("values"))
+               {
+                  TextField<String> values = (TextField<String>) attrSet.getItem(6);
+                  values.enable();
+                  setValidators(values, values.getMessages(), field.getValues());
+                  if (field.getOptional())
+                     values.setAllowBlank(true);
+                  else
+                     values.setAllowBlank(false);
+               }
+            }
+         }
+   }
+   // -------------------------------------------------- //
+
+
+
    /**
     * Sets the validators.
     * 
