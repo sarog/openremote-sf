@@ -100,8 +100,12 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
             result = new UILabel();
          } else if (uiComponent instanceof UIImage) {
             result = new UIImage();
+         } else if (uiComponent instanceof ColorPicker) {
+            result = new ColorPicker();
          } else if (uiComponent instanceof UITabbar) {
-            return new UITabbar();
+        	 result = new UITabbar();
+         }else if (uiComponent instanceof UIWebView) {
+        	 result = new UIWebView();
          }
       }
       result.setOid(IDUtil.nextID());
@@ -128,6 +132,10 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
             return new UIImage((UIImage) uiComponent);
          }  else if (uiComponent instanceof UITabbar) {
             return new UITabbar((UITabbar)uiComponent);
+         } else if (uiComponent instanceof UIWebView) {
+             return new UIWebView((UIWebView)uiComponent);
+         }  else if (uiComponent instanceof ColorPicker) {
+            return new ColorPicker((ColorPicker)uiComponent);
          }
       }
       return null;

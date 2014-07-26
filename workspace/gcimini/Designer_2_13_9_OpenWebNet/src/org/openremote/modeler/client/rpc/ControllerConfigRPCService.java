@@ -38,4 +38,5 @@ public interface ControllerConfigRPCService extends RemoteService{
    
    HashSet<ControllerConfigDTO> saveAllDTOs(HashSet<ControllerConfigDTO> configs);
 
+   void resetToDefaults(HashSet<Long> configIds);
 }

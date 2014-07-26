@@ -88,6 +88,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.SensorLinkOwner;
@@ -625,7 +626,7 @@ public class ResourceServiceImpl implements ResourceService
   }
 
 
-   @Override
+   @Override @Transactional
    public String getPanelsJson(Collection<Panel> panels) {
       try {
          String[] includedPropertyNames = { "groupRefs", "tabbar.tabbarItems", "tabbar.tabbarItems.navigate",
@@ -722,6 +723,7 @@ public class ResourceServiceImpl implements ResourceService
             .getUIComponentsByType(UISlider.class);
       Collection<UIComponent> uiImages = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIImage.class);
       Collection<UIComponent> uiLabels = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UILabel.class);
+      Collection<UIComponent> colorPickers = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(ColorPicker.class);
       Collection<ControllerConfig> configs = controllerConfigService.listAllConfigs();
       configs.removeAll(controllerConfigService.listAllexpiredConfigs());
       configs.addAll(controllerConfigService.listAllMissingConfigs());
@@ -758,6 +760,7 @@ public class ResourceServiceImpl implements ResourceService
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
       context.put("images", uiImages);
+      context.put("colorPickers", colorPickers);
       context.put("maxId", maxId);
       context.put("configs", configs);
       
@@ -889,11 +892,41 @@ public class ResourceServiceImpl implements ResourceService
        dbSensors.removeAll(duplicateDBSensors);
       // PATCH R3181 END --->8-------
 
+       // MODELER-396
+       
+       // Validate there are no duplicate ids
+       Set<Long> ids = new HashSet<Long>();
+       
+       // First in sensors from UI
+       for (Sensor s : sensorWithoutDuplicate) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != sensorWithoutDuplicate.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       // Then in sensors from DB
+       ids.clear();
+       for (Sensor s : dbSensors) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != dbSensors.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       
+       // Then combined
+       for (Sensor s : sensorWithoutDuplicate) {
+         ids.add(s.getOid());
+       }
+       if (ids.size() != sensorWithoutDuplicate.size() + dbSensors.size()) {
+         AdministratorAlert.getInstance(AdministratorAlert.Type.DESIGNER_STATE).alert("Found sensors with same id but different data");
+       }
+       
+       // MODELER-396 end
 
       /*
        * reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
        */
-
+       /* MODELER-396
       for (Sensor sensor : sensorWithoutDuplicate) {
          long currentSensorId = maxId.maxId();
          Collection<Sensor> sensorsWithSameOid = new ArrayList<Sensor>();
@@ -907,6 +940,7 @@ public class ResourceServiceImpl implements ResourceService
             s.setOid(currentSensorId);
          }
       }
+      */
       return sensorWithoutDuplicate;
    }
 
@@ -1074,6 +1108,13 @@ public class ResourceServiceImpl implements ResourceService
         uiButton.setUiCommand(null);
       }
     }
+    if (component instanceof ColorPicker) {
+      ColorPicker colorPicker = (ColorPicker)component;
+      if (colorPicker.getUiCommandDTO() == null && colorPicker.getUiCommand() != null) {
+        colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommand()));
+        colorPicker.setUiCommand(null);
+      }
+    }
   }
 
   private UICommandDTO createUiCommandDTO(UICommand uiCommand)
@@ -1130,7 +1171,7 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * {@inheritDoc}
    */
-  @Override
+  @Override @Transactional
   public void resolveDTOReferences(Collection<Panel> panels) {
     for (Panel panel : panels) {
       for (GroupRef groupRef : panel.getGroupRefs()) {
@@ -1204,6 +1245,13 @@ public class ResourceServiceImpl implements ResourceService
         uiButton.setUiCommandDTO(null);
       }
     }
+    if (component instanceof ColorPicker) {
+      ColorPicker colorPicker = (ColorPicker)component;
+      if (colorPicker.getUiCommand() == null && colorPicker.getUiCommandDTO() != null) {
+        colorPicker.setUiCommand(lookupUiCommandFromDTO(colorPicker.getUiCommandDTO()));
+        colorPicker.setUiCommandDTO(null);
+      }
+    }
   }
 
   private UICommand lookupUiCommandFromDTO(UICommandDTO uiCommandDTO) {
@@ -1224,7 +1272,7 @@ public class ResourceServiceImpl implements ResourceService
    //
    //  - should be internalized to resource cache as part of MODELER-287
    //
-   @Override public void initResources(Collection<Panel> panels, long maxOid) {
+   @Override @Transactional public void initResources(Collection<Panel> panels, long maxOid) {
       // 1, we must serialize panels at first, otherwise after integrating panel's ui component and commands(such as
       // device command, sensor ...)
       // the oid would be changed, that is not ought to happen. for example : after we restore panels, we create a
@@ -1259,10 +1307,12 @@ public class ResourceServiceImpl implements ResourceService
       }
 
       /*
-       * down load the default image.
+       * copy the default image and default colorpicker image.
        */
       File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
       FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
+      File defaultColorPickerImage = new File(pathConfig.getWebRootFolder() + ColorPicker.DEFAULT_COLORPICKER_URL);
+      FileUtilsExt.copyFile(defaultColorPickerImage, new File(userFolder, defaultColorPickerImage.getName()));
 
       File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
       File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
@@ -1423,7 +1473,7 @@ public class ResourceServiceImpl implements ResourceService
   /**
    * This implementation has been moved and delegates to {@link DesignerState#save}.
    */
-  @Override @Deprecated public void saveResourcesToBeehive(Collection<Panel> panels)
+  @Override @Deprecated @Transactional public void saveResourcesToBeehive(Collection<Panel> panels)
   {
     // Create a set of panels to eliminate potential duplicate instances...
 
