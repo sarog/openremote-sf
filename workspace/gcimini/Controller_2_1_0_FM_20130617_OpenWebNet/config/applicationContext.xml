@@ -265,6 +265,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "openwebnet"       value-ref = "openwebnetCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -302,6 +303,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	
 	<!-- rrdGraphUrl Command Builder -->
 	<bean id = "rrdGraphUrlCommandBuilder" class = "org.openremote.controller.protocol.rrdgraphurl.RrdGraphUrlCommandBuilder"/>
+
+	<!-- OpenWebNet Command Builder -->
+	<bean id = "openwebnetCommandBuilder" class = "org.openremote.controller.protocol.openwebnet.OpenWebNetCommandBuilder"/>
 
 	<!-- shellexe Command Builder -->
 	<bean id = "shellexeCommandBuilder" class = "org.openremote.controller.protocol.shellexe.ShellExeCommandBuilder"/>

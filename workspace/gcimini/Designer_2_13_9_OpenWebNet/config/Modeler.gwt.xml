@@ -8,6 +8,8 @@
   
   <inherits name='com.extjs.gxt.ui.GXT'/>
   
+  <inherits name='com.sencha.gxt.ui.GXT'/>
+  
   <inherits name="com.google.gwt.inject.Inject" />
   <inherits name='net.customware.gwt.dispatch.Dispatch' />
   <inherits name='org.restlet.Restlet' />
@@ -27,6 +29,7 @@
 	<source path='client'/>
 	<source path='shared'/>
 	<source path='protocol'/>
+    <source path='openwebnet'/>
 	<source path='touchpanel'/>
 	<source path='auth'/>
 	<source path='selenium'/>
@@ -39,4 +42,7 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openremote.modeler.client.Modeler'/>
+  
+  @_BROWSER_LIMIT_@
+
 </module>

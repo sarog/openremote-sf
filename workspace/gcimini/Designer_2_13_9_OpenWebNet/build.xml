@@ -139,6 +139,7 @@
 			<fileset dir="${src.dir}" excludes="**/*.java"/>
 			<fileset dir="${config.dir}" includes="**/**"/>
 			<fileset dir="protocols" includes="**/**"/>
+            <fileset dir="openwebnet" includes="**/**"/>
 			<fileset dir="touchpanels" includes="**/**"/>
       			<filterchain><expandproperties/></filterchain>
 		</copy>
