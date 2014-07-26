@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ OpenRemote, the Home of the Digital Home.
+ Copyright 2008-2012, OpenRemote Inc.
+
+ See the contributors.txt file in the distribution for a
+ full listing of individual contributors.
+
+ This is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 3.0 of
+ the License, or (at your option) any later version.
+
+ This software is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public
+ License along with this software; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+ -->
+
+<!--
+ |  Extra OpenWebNet protocol configuration for OpenRemote Designer.
+ |
+ |  Author: Marco Miccini
+ +-->
+<openremote xmlns = "http://www.openremote.org"
+    xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation = "http://www.openremote.org openwebnet.xsd">
+
+
+    <who value="0">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>^(([1-9]|1[0-9]|20)|(4[0-2]#([1-9]|1[0-6]))|(4[2-6]))$</value>
+            </field>
+            <field name="where">
+                <value>^(0[1-9]|[1-9][0-9])(#4#I)?$</value>
+            </field>
+    	</commandtype>
+    </who>
+
+    <who value="1">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^(([12]?[0-9]|3[01])|
+                    ([01]#[1-9]?[0-9]|1[0-9]?[0-9]|2[0-4][0-9]|25[0-5])|
+                    (3[01]#[1-9]|[1-9][0-9]|100#[1-9]?[0-9]|1[0-9]?[0-9]|2[0-4][0-9]|25[0-5]))$
+                </value>
+            </field>
+            <field name="where">
+                <value>
+                    ^(([0-9](#4#I)?)|
+                    (#[1-9](#4#I)?)|
+                    ([1-9][1-9](#4#I)?))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Status Request">
+            <field name="where">
+                <value>
+                    ^(([0-9](#4#I)?)|
+                    (#[1-9](#4#I)?)|
+                    ([1-9][1-9](#4#I)?))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where">
+                <value>
+                    ^(([0-9](#4#I)?)|
+                    (#[1-9](#4#I)?)|
+                    ([1-9][1-9](#4#I)?))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>[12]</value>
+            </field>
+            <field name="values">
+                <value>
+                    ^(((1[0-9][0-9]|200);([1-9]?[0-9]|1[0-9]?[0-9]|2[0-4][0-9]|25[0-5]))|
+                    (([1-9]?[0-9]|1[0-9]?[0-9]|2[0-4][0-9]|25[0-5]);([1-5]?[0-9]);([1-5]?[0-9])))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="2">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>[0-2]</value>
+            </field>
+            <field name="where">
+                <value>
+                    ^(([0-9](#4#I)?)|
+                    (#[1-9](#4#I)?)|
+                    ([1-9][1-9](#4#I)?))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Status Request">
+            <field name="where">
+                <value>
+                    ^(([0-9](#4#I)?)|
+                    (#[1-9](#4#I)?)|
+                    ([1-9][1-9](#4#I)?))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="3">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>[0-3]</value>
+            </field>
+            <field name="where">
+                <value>#[1-8]</value>
+            </field>
+        </commandtype>
+        <commandtype name="Status Request">
+            <field name="where" optional="true">
+                <value>#[1-8]</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>10</value>
+            </field>
+            <field name="dimension">
+                <value>[0-4]</value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="4">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^(([01])|
+                    ([1-3](0[23]|1[01]))|
+                    ([12]10#0(0[2-9][0-9]|[1-3][0-9]|4[0-2][0-9]|430))|
+                    ((115#)?110[1-3])|
+                    ((215#)?210[1-3])|
+                    ((315#)?310[1-3])|
+                    ([1-3]3(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])#310[1-3])|
+                    (3000#310[1-3])|
+                    ([1-3]2(0[1-9]|1[0-6]))|
+                    (3[0-2]00)|
+                    (2[0-4]|3[01]|40))$
+                </value>
+            </field>
+            <field name="where">
+                <value>
+                    ^(([1-9]|[1-9][0-9])|
+                    (#([0-9]|[1-9][0-9])))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Status Request">
+            <field name="where">
+                <value>
+                    ^(([1-9]|[1-9][0-9])|
+                    (#([0-9]|[1-9][0-9])))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>
+                    ^((#0)|
+                    ([1-9]|[1-9][0-9])|
+                    ([0-8](0[1-9]|[1-9][0-9]))|
+                    (3#([0-9]|[1-9][0-9])#[1-9]))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>^(0|1[2-49]|22|3[01])$</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where">
+                <value>
+                    ^((#([0-9]|[1-9][0-9]))|
+                    ((3#)?([0-9]|[1-9][0-9])#[1-9]))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>^(14|22|3[01])$</value>
+            </field>
+            <field name="values">
+                <value>
+                    ^((0(0[5-9][0-9]|[1-3][0-9][0-9]|400);[1-3])|
+                    (([0-5]|NULL);(0[0-9]{3}|1([0-1][0-9][0-9]|2[0-6][0-9]|270));([0-4]|NULL);([01]|NULL))|
+                    ((0[1-9]|[12][0-9]|3[01]);(0[1-9]|1[0-2]);(20[0-9][0-9]))|
+                    (([01][0-9]|2[0-3]);([0-5][0-9])))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="5">
+        <commandtype name="Status Request">
+            <field name="where" optional="true">
+                <value>
+                    ^((0)|
+                    (#[1-8]))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="6"></who>
+
+    <who value="7">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^((0|9|1[2-8][01])|
+                    (3[1-4][1-4]))$
+                </value>
+            </field>
+            <field name="where" optional="true">
+                <value>^(4[0-9]{3}|5000)$</value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="9">
+        <commandtype name="Status Request">
+            <field name="where" optional="true"></field>
+        </commandtype>
+    </who>
+
+    <who value="13">
+        <commandtype name="Dimension Request">
+            <field name="where" optional="true"></field>
+            <field name="dimension">
+                <value>^[01]|1[0-2569]|2[2-4]$</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where" optional="true"></field>
+            <field name="dimension">
+                <value>0|1|22</value>
+            </field>
+            <field name="values">
+                <value>
+                    ^((([01][0-9]|2[0-3]);([0-5][0-9]);([0-5][0-9]);([01](0[0-9]|1[0-2])))|
+                    ((([01][0-9]|2[0-3]);([0-5][0-9]);([0-5][0-9]);([01](0[0-9]|1[0-2]));)?(0[0-6]);(0[1-9]|[12][0-9]|3[01]);(0[1-9]|1[0-2]);(20[0-9][0-9])))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="14"></who>
+
+    <who value="15">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>^([0-2][0-9]|3[01])(#[1-3])?$</value>
+            </field>
+            <field name="where">
+                <value>^([1-9][1-9]|[01]00[1-9]|[01]01[0-5]|0[1-9]1[0-5])(#3|#4#(0[1-9]|1[0-5]))?$</value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="16">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^(([1-35]?[03]|40)|
+                    (10[12])|
+                    ([16][01](0[1-9]|1[0-5]))|
+                    (5[01](0[0-9]|1[0-5])))$
+                </value>
+            </field>
+            <field name="where">
+                <value>
+                    ^((0|#[0-9])|
+                    (0[1-9]|[1-9][0-9]|10[0-9]))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>
+                    ^((0|#[0-9])|
+                    (0[1-9]|[1-9][0-9]|10[0-9]))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>[15-8]</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where">
+                <value>
+                    ^((0|#[0-9])|
+                    (0[1-9]|[1-9][0-9]|10[1-9]))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>([167]|10)</value>
+            </field>
+            <field name="values">
+                <value>
+                    ^(([0-9]|[12][0-9]|3[01])|
+                    (0;([0-9]{6})))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="17"></who>
+
+    <who value="18">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^((2[67]|7[134])|
+                    (57#(0[1-9]|1[0-2])#(0[1-9]|[12][0-9]|3[01]))|
+                    (5([89]|10)#(0[1-9]|1[0-2]))|
+                    (73#([1-9]|[1-9][0-9]||1[0-9][0-9]|2[0-4][0-9]|25[0-4]))|
+                    (75#[12]))$
+                </value>
+            </field>
+            <field name="where">
+                <value>
+                    ^((1([1-9]|[1-9][0-9]|1[01][0-9]|12[0-7]))|
+                    (5([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|
+                    (7([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])#0))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>
+                    ^((1([1-9]|[1-9][0-9]|1[01][0-9]|12[0-7]))|
+                    (5([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|
+                    (7([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])#0))$
+                </value>
+            </field>
+            <field name="dimension">
+                <value>
+                    ^((5[134]|7[13]|113|25[0-9]|26[0-3])|
+                    (511#(0[1-9]|1[0-2])#(0[1-9]|[12][0-9]|3[01]))|
+                    (52#([0-9][0-9])#(0[1-9]|1[0-2]))|
+                    (72#[12]))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where">
+                <value>^5([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$</value>
+            </field>
+            <field name="dimension">
+                <value>1200#1</value>
+            </field>
+            <field name="values">
+                <value>([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$</value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="22"></who>
+
+    <who value="24">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^((1#[1-9])|
+                    (2#[01]))$
+                </value>
+            </field>
+            <field name="where">
+                <value>^(0|100[0-9])#((1|4|8|9999?1)[1-9]?)#00#(0|100[0-9])#((1|4|8|9999?1)[1-9]?)$</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>^(0|100[0-9])#((1|4|8|9999?1)[1-9]?)#00#(0|100[0-9])#((1|4|8|9999?1)[1-9]?)$</value>
+            </field>
+            <field name="dimension">
+                <value>[1-9]|1[0-27]</value>
+            </field>
+        </commandtype>
+        <commandtype name="Dimension Write">
+            <field name="where">
+                <value>^(0|100[0-9])#((1|4|8|9999?1)[1-9]?)#00#(0|100[0-9])#((1|4|8|9999?1)[1-9]?)$</value>
+            </field>
+            <field name="dimension">
+                <value>[1-9]|1[0-278]</value>
+            </field>
+            <field name="values">
+                <value>
+                    ^(([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[12][0-9]{3}|3[0-5][0-9][0-9]|3600)|
+                    (([0-2]);(1-5);(1?[0-9]|2[0-3]);([1-5]?[0-9]);([1-5]?[0-9]))|
+                    (([1-9]);([0-9]|[1-9][0-9]|[1-9][0-9][0-9]|1[0-9]{3}|2000);([0-2])))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="25">
+        <commandtype name="Status Command">
+            <field name="what">
+                <value>
+                    ^((2[1-4]#([12]?[0-9]|3[01]))|
+                    (3[12]#1))$
+                </value>
+            </field>
+            <field name="where">
+                <value>
+                    ^((2([1-9]?[0-9]|1?[1-9][0-9][0-9]|20[0-3][0-9]|204[0-7]))|
+                    (3([1-9]|1?[1-9][0-9]|20[01]))|
+                    (3[1-9][1-9]))$
+                </value>
+            </field>
+        </commandtype>
+        <commandtype name="Status Request">
+            <field name="where">
+                <value>
+                    ^((3([1-9]|1?[1-9][0-9]|20[01]))|
+                    (3[1-9][1-9]))$
+                </value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="1000"></who>
+
+    <who value="1001"></who>
+
+    <who value="1004">
+        <commandtype name="Dimension Request">
+            <field name="where">
+                <value>^#[1-9]?[0-9]$</value>
+            </field>
+            <field name="dimension">
+                <value>^(7|2[013])$</value>
+            </field>
+        </commandtype>
+    </who>
+
+    <who value="1013"></who>
+
+</openremote>
